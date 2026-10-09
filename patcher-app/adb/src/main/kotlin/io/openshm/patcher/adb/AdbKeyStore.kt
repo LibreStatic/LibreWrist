@@ -3,6 +3,7 @@ package io.openshm.patcher.adb
 import android.content.Context
 import java.io.ByteArrayInputStream
 import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 import java.math.BigInteger
 import java.security.KeyFactory
@@ -12,8 +13,12 @@ import java.security.PrivateKey
 import java.security.SecureRandom
 import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
+import java.security.interfaces.RSAPrivateKey
+import java.security.interfaces.RSAPublicKey
 import java.security.spec.PKCS8EncodedKeySpec
 import java.util.Date
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.security.auth.x500.X500Principal
 import org.bouncycastle.x509.X509V3CertificateGenerator
 
@@ -29,55 +34,69 @@ import org.bouncycastle.x509.X509V3CertificateGenerator
  *   additionally restricted to the owner where the filesystem allows it.
  * - Key material is never logged, never put in exception messages, and never returned as text.
  *   [fingerprint] exposes only a SHA-256 digest of the public key.
+ * - All instances for one directory share one process-wide lock, so concurrent first runs cannot
+ *   interleave. Every read re-loads the files under that lock and checks that the certificate's
+ *   public key matches the private key.
+ * - Write order: certificate first, then key, each fsynced before its rename. The only partial
+ *   state a crash can leave is a lone certificate, which counts as "not created yet".
  */
 class AdbKeyStore(private val dir: File) {
-    private var cached: Identity? = null
+    private val lock: Any = lockFor(dir)
 
     private class Identity(val privateKey: PrivateKey, val certificate: X509Certificate)
 
     /** The private key, creating the identity on first use. */
-    @Synchronized
-    fun privateKey(): PrivateKey = identity().privateKey
+    fun privateKey(): PrivateKey = synchronized(lock) { identity().privateKey }
 
     /** The self-signed certificate wrapping the public key. */
-    @Synchronized
-    fun certificate(): X509Certificate = identity().certificate
+    fun certificate(): X509Certificate = synchronized(lock) { identity().certificate }
 
     /** Lowercase hex SHA-256 of the public key, safe to show or log. */
-    @Synchronized
-    fun fingerprint(): String =
+    fun fingerprint(): String = synchronized(lock) {
         MessageDigest.getInstance("SHA-256").digest(identity().certificate.publicKey.encoded)
             .joinToString("") { "%02x".format(it) }
+    }
 
-    /** Deletes the identity. Devices that paired with it will need to pair again. */
-    @Synchronized
-    fun reset() {
-        cached = null
+    /**
+     * Deletes the identity. Devices that paired with it will need to pair again.
+     *
+     * libadb caches its TLS context, built from the first key it sees, for the life of the
+     * process. If TLS has already used this process's key (see [markTlsUse]), a new key cannot take
+     * effect until the process restarts, so after such a reset [markTlsUse] (called by
+     * [LibAdbBackend] before every pair and connect) throws [AdbException.RestartRequired].
+     */
+    fun reset() = synchronized(lock) {
         File(dir, KEY_FILE).delete()
         File(dir, CERT_FILE).delete()
+        if (tlsUsed.get()) restartRequired.set(true)
     }
 
     private fun identity(): Identity {
-        cached?.let { return it }
         val keyFile = File(dir, KEY_FILE)
         val certFile = File(dir, CERT_FILE)
-        val loaded = when {
+        return when {
             keyFile.isFile && certFile.isFile -> load(keyFile, certFile)
-            keyFile.exists() || certFile.exists() ->
-                throw IOException("ADB key store is incomplete; call reset() to regenerate it")
+            keyFile.exists() -> throw IOException("ADB key store is incomplete; call reset() to regenerate it")
+            // Nothing, or a lone certificate left by an interrupted first run: not created yet.
             else -> generate(keyFile, certFile)
         }
-        cached = loaded
-        return loaded
     }
 
-    private fun load(keyFile: File, certFile: File): Identity = try {
-        val key = KeyFactory.getInstance("RSA").generatePrivate(PKCS8EncodedKeySpec(keyFile.readBytes()))
-        val cert = parseCertificate(certFile.readBytes())
-        Identity(key, cert)
-    } catch (e: Exception) {
-        // Deliberately no cause message: it could echo file contents.
-        throw IOException("ADB key store is unreadable; call reset() to regenerate it")
+    private fun load(keyFile: File, certFile: File): Identity {
+        val unreadable = IOException("ADB key store is unreadable; call reset() to regenerate it")
+        val key: PrivateKey
+        val cert: X509Certificate
+        try {
+            key = KeyFactory.getInstance("RSA").generatePrivate(PKCS8EncodedKeySpec(keyFile.readBytes()))
+            cert = parseCertificate(certFile.readBytes())
+        } catch (e: Exception) {
+            // Deliberately no cause: it could echo file contents.
+            throw unreadable
+        }
+        val priv = key as? RSAPrivateKey
+        val pub = cert.publicKey as? RSAPublicKey
+        if (priv == null || pub == null || priv.modulus != pub.modulus) throw unreadable
+        return Identity(key, cert)
     }
 
     @Suppress("DEPRECATION")
@@ -102,8 +121,9 @@ class AdbKeyStore(private val dir: File) {
         val certDer = generated.encoded
         val cert = parseCertificate(certDer)
 
-        writePrivate(keyFile, pair.private.encoded)
+        // Certificate first, key last: the key file's existence is the "created" marker.
         writePrivate(certFile, certDer)
+        writePrivate(keyFile, pair.private.encoded)
         return Identity(pair.private, cert)
     }
 
@@ -119,7 +139,11 @@ class AdbKeyStore(private val dir: File) {
         tmp.setWritable(false, false)
         tmp.setReadable(true, true)
         tmp.setWritable(true, true)
-        tmp.writeBytes(bytes)
+        FileOutputStream(tmp).use {
+            it.write(bytes)
+            it.flush()
+            it.fd.sync()
+        }
         if (!tmp.renameTo(target)) {
             tmp.delete()
             throw IOException("Cannot store the ADB key file")
@@ -132,6 +156,28 @@ class AdbKeyStore(private val dir: File) {
         private const val KEY_BITS = 2048
         private const val DAY_MS = 24L * 60 * 60 * 1000
         private const val VALID_DAYS = 365L * 30
+
+        private val locks = ConcurrentHashMap<String, Any>()
+        private val tlsUsed = AtomicBoolean(false)
+        private val restartRequired = AtomicBoolean(false)
+
+        private fun lockFor(dir: File): Any = locks.computeIfAbsent(dir.absoluteFile.normalize().path) { Any() }
+
+        /**
+         * Called before libadb uses the key for TLS (pairing or connecting). Throws
+         * [AdbException.RestartRequired] if the key was reset after TLS had already used a key in
+         * this process; otherwise records that TLS now holds the current key.
+         */
+        fun markTlsUse() {
+            if (restartRequired.get()) throw AdbException.RestartRequired()
+            tlsUsed.set(true)
+        }
+
+        /** Clears the process-wide TLS bookkeeping. Tests only. */
+        internal fun resetProcessStateForTests() {
+            tlsUsed.set(false)
+            restartRequired.set(false)
+        }
 
         /** The key store of this app, under `noBackupFilesDir/adb`. */
         fun forContext(context: Context): AdbKeyStore =

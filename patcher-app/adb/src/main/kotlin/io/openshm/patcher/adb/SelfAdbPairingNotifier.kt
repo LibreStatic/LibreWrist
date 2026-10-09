@@ -30,6 +30,7 @@ data class SelfAdbTexts(
     val pairing: String = "Pairing...",
     val connecting: String = "Connecting...",
     val connected: String = "Connected to this phone's ADB",
+    val ambiguous: String = "More than one Wireless debugging service was found on this phone. Turn Wireless debugging off and on, then try again.",
     val failed: String = "Could not connect",
 )
 
@@ -106,6 +107,8 @@ class SelfAdbPairingNotifier(
                     .setOngoing(true)
                     .addAction(replyAction())
             }
+            SelfAdbState.AmbiguousService ->
+                builder.setContentTitle(texts.failed).setContentText(texts.ambiguous).setOngoing(true)
             SelfAdbState.Pairing -> builder.setContentTitle(texts.pairing).setOngoing(true)
             SelfAdbState.WaitingForConnectService, SelfAdbState.Connecting ->
                 builder.setContentTitle(texts.connecting).setOngoing(true)

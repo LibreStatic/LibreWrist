@@ -47,6 +47,14 @@ sealed class AdbException(message: String, cause: Throwable? = null) : IOExcepti
     class CommandFailed(val command: String, val result: ShellResult) :
         AdbException("Command failed (exit ${result.exitCode}): ${result.stderr.ifBlank { result.stdout }.trim().take(300)}")
 
+    /** The ADB key was reset after TLS used it in this process; libadb caches it until restart. */
+    class RestartRequired :
+        AdbException("The ADB key was reset; restart the app before pairing or connecting again")
+
+    /** Our Conscrypt provider cannot be used, so TLS 1.3 would silently fall back to the platform. */
+    class TlsProviderUnavailable(cause: Throwable? = null) :
+        AdbException("The bundled Conscrypt TLS provider is not available", cause)
+
     class Discovery(message: String) : AdbException(message)
 
     class Notifications(message: String) : AdbException(message)

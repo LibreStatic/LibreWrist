@@ -63,7 +63,7 @@ class GrantCommandBuilder(private val target: GrantTarget) {
         val APPOP = Regex("[A-Z][A-Z0-9_]*")
         val COMPONENT = Regex("(\\.[A-Za-z][A-Za-z0-9_]*)+|[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z][A-Za-z0-9_]*)+")
         val SETTING_KEY = Regex("[a-z][a-z0-9_]*")
-        val SETTING_VALUE = Regex("[A-Za-z0-9_.-]{1,64}")
+        val SETTING_VALUE = Regex("[A-Za-z0-9_.][A-Za-z0-9_.-]{0,63}") // no leading "-": it would be read as an option
     }
 }
 

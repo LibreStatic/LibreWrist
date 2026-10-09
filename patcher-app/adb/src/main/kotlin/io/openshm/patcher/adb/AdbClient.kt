@@ -46,6 +46,20 @@ class AdbClient(
         }
     }
 
+    /**
+     * Model and serial of the device, validated, so the app can record them at pairing time and
+     * compare on later connects (the app owns that policy).
+     */
+    suspend fun deviceIdentity(): DeviceIdentity {
+        val model = shell("getprop ro.product.model").requireSuccess().stdout.trim()
+        val serial = shell("getprop ro.serialno").requireSuccess().stdout.trim()
+        if (!DeviceIdentity.MODEL.matches(model)) throw AdbException.Protocol("Unexpected device model value")
+        if (serial.isNotEmpty() && !DeviceIdentity.SERIAL.matches(serial)) {
+            throw AdbException.Protocol("Unexpected device serial value")
+        }
+        return DeviceIdentity(model, serial)
+    }
+
     override fun close() {
         transport.close()
     }
@@ -81,9 +95,16 @@ class AdbClient(
             port: Int,
             timeoutMillis: Long = 15_000,
         ): AdbClient {
+            val abort = AbortScope()
             val transport = try {
-                blockingIo(timeoutMillis + 2_000, "connecting to $host:$port") {
-                    backend.connect(host, port, timeoutMillis)
+                blockingIo(timeoutMillis + 2_000, "connecting to $host:$port", onAbort = abort::close) {
+                    val t = backend.connect(host, port, timeoutMillis, abort)
+                    if (abort.isAborted) {
+                        // The result arrived after the caller gave up: do not leak it.
+                        runCatching { t.close() }
+                        throw AdbException.Timeout("connecting to $host:$port")
+                    }
+                    t
                 }
             } catch (t: kotlinx.coroutines.CancellationException) {
                 throw t
@@ -92,6 +113,14 @@ class AdbClient(
             }
             return AdbClient(transport)
         }
+    }
+}
+
+/** [serial] is empty when the device does not expose one. */
+data class DeviceIdentity(val model: String, val serial: String) {
+    companion object {
+        val MODEL = Regex("[A-Za-z0-9][A-Za-z0-9 ._+-]{0,63}")
+        val SERIAL = Regex("[A-Za-z0-9][A-Za-z0-9._-]{0,63}")
     }
 }
 

@@ -14,12 +14,13 @@ import org.junit.Test
 class PairingAndErrorsTest {
     private class FakeBackend(val onPair: (String, Int, String) -> Unit = { _, _, _ -> }) : AdbBackend {
         val pairCalls = mutableListOf<Triple<String, Int, String>>()
-        override fun pair(host: String, port: Int, code: String) {
+        override fun pair(host: String, port: Int, code: String, abort: AbortScope) {
             pairCalls += Triple(host, port, code)
             onPair(host, port, code)
         }
 
-        override fun connect(host: String, port: Int, timeoutMillis: Long): AdbTransport = FakeTransport { FakeChannel() }
+        override fun connect(host: String, port: Int, timeoutMillis: Long, abort: AbortScope): AdbTransport =
+            FakeTransport { FakeChannel() }
     }
 
     private fun reason(t: Throwable) = (AdbErrors.mapPairing(t) as AdbException.Pairing).reason
@@ -102,5 +103,43 @@ class PairingAndErrorsTest {
         } finally {
             latch.countDown()
         }
+    }
+
+    @Test
+    fun `a timed-out pairing closes the resources the backend registered`() = runBlocking {
+        val latch = java.util.concurrent.CountDownLatch(1)
+        var closed = false
+        val backend = object : AdbBackend {
+            override fun pair(host: String, port: Int, code: String, abort: AbortScope) {
+                abort.register(java.io.Closeable { closed = true; latch.countDown() })
+                latch.await(5, java.util.concurrent.TimeUnit.SECONDS)
+            }
+
+            override fun connect(host: String, port: Int, timeoutMillis: Long, abort: AbortScope): AdbTransport = error("unused")
+        }
+        try {
+            AdbPairing(backend, timeoutMillis = 150).pair("h", 1, "123456")
+            fail()
+        } catch (e: AdbException.Pairing) {
+            assertEquals(PairingFailure.TIMEOUT, e.reason)
+        }
+        assertTrue(closed)
+    }
+
+    @Test
+    fun `abort scope closes registered and late resources`() {
+        val scope = AbortScope()
+        var first = false
+        var late = false
+        scope.register(java.io.Closeable { first = true })
+        scope.close()
+        assertTrue(first)
+        assertTrue(scope.isAborted)
+        try {
+            scope.register(java.io.Closeable { late = true })
+            fail()
+        } catch (e: IOException) {
+        }
+        assertTrue(late)
     }
 }

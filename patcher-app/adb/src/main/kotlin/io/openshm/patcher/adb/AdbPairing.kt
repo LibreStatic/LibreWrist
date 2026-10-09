@@ -15,7 +15,10 @@ class AdbPairing(
     suspend fun pair(host: String, port: Int, code: String) {
         if (!isValidCode(code)) throw AdbException.Pairing(PairingFailure.INVALID_CODE_FORMAT)
         try {
-            blockingIo(timeoutMillis, "pairing with $host:$port") { backend.pair(host, port, code) }
+            val abort = AbortScope()
+            blockingIo(timeoutMillis, "pairing with $host:$port", onAbort = abort::close) {
+                backend.pair(host, port, code, abort)
+            }
         } catch (e: CancellationException) {
             throw e
         } catch (e: AdbException.Timeout) {

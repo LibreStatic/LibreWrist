@@ -18,6 +18,7 @@ class AdbKeyStoreTest {
 
     @After
     fun cleanup() {
+        AdbKeyStore.resetProcessStateForTests()
         dir.deleteRecursively()
     }
 
@@ -76,6 +77,65 @@ class AdbKeyStoreTest {
             AdbKeyStore(dir).certificate()
             fail()
         } catch (e: IOException) {
+        }
+    }
+
+    @Test
+    fun `a lone certificate from an interrupted first run is regenerated`() {
+        AdbKeyStore(dir).fingerprint()
+        File(dir, AdbKeyStore.KEY_FILE).delete()
+        val store = AdbKeyStore(dir)
+        store.privateKey()
+        assertTrue(File(dir, AdbKeyStore.KEY_FILE).isFile)
+        store.certificate().verify(store.certificate().publicKey)
+    }
+
+    @Test
+    fun `a certificate that does not match the key is rejected`() {
+        val other = File(dir.path + "-other")
+        try {
+            AdbKeyStore(dir).fingerprint()
+            AdbKeyStore(other).fingerprint()
+            File(other, AdbKeyStore.CERT_FILE).copyTo(File(dir, AdbKeyStore.CERT_FILE), overwrite = true)
+            try {
+                AdbKeyStore(dir).privateKey()
+                fail()
+            } catch (e: IOException) {
+                assertTrue(e.message!!.contains("reset"))
+            }
+        } finally {
+            other.deleteRecursively()
+        }
+    }
+
+    @Test
+    fun `concurrent first runs through separate instances yield one consistent identity`() {
+        val results = java.util.concurrent.ConcurrentLinkedQueue<String>()
+        val start = java.util.concurrent.CountDownLatch(1)
+        val threads = (1..6).map {
+            Thread {
+                start.await()
+                results += AdbKeyStore(File(dir.path)).fingerprint()
+            }.also { it.start() }
+        }
+        start.countDown()
+        threads.forEach { it.join(60_000) }
+        assertEquals(6, results.size)
+        assertEquals(1, results.toSet().size)
+        AdbKeyStore(dir).privateKey() // loads and passes the key/cert match check
+    }
+
+    @Test
+    fun `reset after TLS use demands a restart, reset before it does not`() {
+        val store = AdbKeyStore(dir)
+        store.fingerprint()
+        store.reset()
+        AdbKeyStore.markTlsUse() // no TLS yet at reset time: fine
+        store.reset() // now TLS holds a key
+        try {
+            AdbKeyStore.markTlsUse()
+            fail()
+        } catch (e: AdbException.RestartRequired) {
         }
     }
 }

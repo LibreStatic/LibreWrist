@@ -62,6 +62,8 @@ class GrantCommandBuilderTest {
             { watch.build(pkg, Grant.SecureSetting("key", "$(id)")) },
             { watch.build(pkg, Grant.SecureSetting("key", "x".repeat(65))) },
             { watch.build(pkg, Grant.SecureSetting("key", "")) },
+            { watch.build(pkg, Grant.SecureSetting("key", "-1")) },
+            { watch.build(pkg, Grant.SecureSetting("key", "--user")) },
         )
         for (case in bad) {
             try {

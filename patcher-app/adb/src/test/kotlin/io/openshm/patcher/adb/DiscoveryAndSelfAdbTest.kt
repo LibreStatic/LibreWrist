@@ -43,19 +43,24 @@ class DiscoveryAndSelfAdbTest {
         val pairCalls = mutableListOf<Triple<String, Int, String>>()
         val connectCalls = mutableListOf<Pair<String, Int>>()
         var failPairing: Throwable? = null
+        var pairGate: java.util.concurrent.CountDownLatch? = null
         val backend = object : AdbBackend {
-            override fun pair(host: String, port: Int, code: String) {
+            override fun pair(host: String, port: Int, code: String, abort: AbortScope) {
                 pairCalls += Triple(host, port, code)
+                pairGate?.await(5, java.util.concurrent.TimeUnit.SECONDS)
                 failPairing?.let { throw it }
             }
 
-            override fun connect(host: String, port: Int, timeoutMillis: Long): AdbTransport {
+            override fun connect(host: String, port: Int, timeoutMillis: Long, abort: AbortScope): AdbTransport {
                 connectCalls += host to port
                 return FakeTransport { FakeChannel() }
             }
         }
         val scope = CoroutineScope(Dispatchers.Default)
-        val session = SelfAdbSession(backend, pairing, connect, scope, connectServiceTimeoutMillis = 300)
+        val session = SelfAdbSession(
+            backend, pairing, connect, scope, connectServiceTimeoutMillis = 300,
+            isLocalHost = { it.startsWith("192.168.1.5") || it.startsWith("10.0.0.") },
+        )
     }
 
     private suspend fun SelfAdbSession.await(predicate: (SelfAdbState) -> Boolean) =
@@ -83,7 +88,7 @@ class DiscoveryAndSelfAdbTest {
         val env = Env()
         env.failPairing = java.io.IOException("Exchanging message wasn't successful.")
         env.session.start()
-        env.pairing.value = listOf(AdbService("adb-x", "h", 40002, AdbServiceType.PAIRING))
+        env.pairing.value = listOf(AdbService("adb-x", "192.168.1.5", 40002, AdbServiceType.PAIRING))
         env.session.await { it is SelfAdbState.WaitingForCode }
         env.session.submitCode("000000")
         env.session.await { it == SelfAdbState.WaitingForCode(40002, PairingFailure.WRONG_CODE) }
@@ -95,12 +100,87 @@ class DiscoveryAndSelfAdbTest {
         val env = Env()
         env.session.start()
         assertNull(env.session.submitCode("123456"))
-        env.pairing.value = listOf(AdbService("adb-x", "h", 40003, AdbServiceType.PAIRING))
+        env.pairing.value = listOf(AdbService("adb-x", "192.168.1.5", 40003, AdbServiceType.PAIRING))
         env.session.await { it is SelfAdbState.WaitingForCode }
         env.session.submitCode("123456")
         val failed = env.session.await { it is SelfAdbState.Failed } as SelfAdbState.Failed
         assertTrue(failed.error is AdbException.Discovery)
         assertTrue(env.connectCalls.isEmpty())
+        env.scope.cancel()
+    }
+
+    @Test
+    fun `services advertised by other hosts are ignored`() = runBlocking {
+        val env = Env()
+        env.session.start()
+        env.pairing.value = listOf(AdbService("watch", "192.168.1.77", 39999, AdbServiceType.PAIRING))
+        Thread.sleep(150)
+        assertEquals(SelfAdbState.WaitingForPairingService, env.session.state.value)
+        env.pairing.value = listOf(
+            AdbService("watch", "192.168.1.77", 39999, AdbServiceType.PAIRING),
+            AdbService("me", "192.168.1.5", 40010, AdbServiceType.PAIRING),
+        )
+        env.session.await { it == SelfAdbState.WaitingForCode(40010) }
+
+        // A remote connect service is not dialled either.
+        env.connect.value = listOf(AdbService("watch", "192.168.1.77", 45555, AdbServiceType.CONNECT))
+        env.session.submitCode("123456")
+        val failed = env.session.await { it is SelfAdbState.Failed } as SelfAdbState.Failed
+        assertTrue(failed.error is AdbException.Discovery)
+        assertTrue(env.connectCalls.isEmpty())
+        env.scope.cancel()
+    }
+
+    @Test
+    fun `two local pairing services are ambiguous and recover when one disappears`() = runBlocking {
+        val env = Env()
+        env.session.start()
+        val a = AdbService("a", "192.168.1.5", 40020, AdbServiceType.PAIRING)
+        val b = AdbService("b", "10.0.0.2", 40021, AdbServiceType.PAIRING)
+        env.pairing.value = listOf(a, b)
+        env.session.await { it == SelfAdbState.AmbiguousService }
+        assertNull(env.session.submitCode("123456"))
+        assertTrue(env.pairCalls.isEmpty())
+        env.pairing.value = listOf(b)
+        env.session.await { it == SelfAdbState.WaitingForCode(40021) }
+        env.scope.cancel()
+    }
+
+    @Test
+    fun `two local connect services are ambiguous and nothing is dialled`() = runBlocking {
+        val env = Env()
+        env.session.start()
+        env.pairing.value = listOf(AdbService("p", "192.168.1.5", 40030, AdbServiceType.PAIRING))
+        env.session.await { it is SelfAdbState.WaitingForCode }
+        env.connect.value = listOf(
+            AdbService("a", "192.168.1.5", 41001, AdbServiceType.CONNECT),
+            AdbService("b", "10.0.0.2", 41002, AdbServiceType.CONNECT),
+        )
+        env.session.submitCode("123456")
+        env.session.await { it == SelfAdbState.AmbiguousService }
+        assertTrue(env.connectCalls.isEmpty())
+        env.scope.cancel()
+    }
+
+    @Test
+    fun `second submit while pairing is ignored and a stale result cannot overwrite the state`() = runBlocking {
+        val env = Env()
+        env.pairGate = java.util.concurrent.CountDownLatch(1)
+        env.session.start()
+        env.pairing.value = listOf(AdbService("p", "192.168.1.5", 40040, AdbServiceType.PAIRING))
+        env.session.await { it is SelfAdbState.WaitingForCode }
+        assertTrue(env.session.submitCode("111111") != null)
+        assertEquals(SelfAdbState.Pairing, env.session.state.value) // set synchronously
+        assertNull(env.session.submitCode("222222"))
+
+        // Restarting invalidates the in-flight pairing; its late completion must change nothing.
+        env.connect.value = listOf(AdbService("c", "192.168.1.5", 41040, AdbServiceType.CONNECT))
+        env.session.start()
+        env.pairGate!!.countDown()
+        Thread.sleep(300)
+        assertTrue(env.session.state.value !is SelfAdbState.Connected)
+        assertTrue(env.connectCalls.isEmpty())
+        assertEquals(1, env.pairCalls.size)
         env.scope.cancel()
     }
 }

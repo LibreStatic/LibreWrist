@@ -14,11 +14,46 @@ import kotlinx.coroutines.withTimeout
  * with fakes; [LibAdbBackend] is the only implementation that touches libadb.
  */
 interface AdbBackend {
-    /** Pairs with the Wireless debugging pairing service. Blocking. */
-    fun pair(host: String, port: Int, code: String)
+    /**
+     * Pairs with the Wireless debugging pairing service. Blocking. Every socket-owning resource
+     * must be registered with [abort] as soon as it exists, so a timeout can close it.
+     */
+    fun pair(host: String, port: Int, code: String, abort: AbortScope)
 
-    /** Opens an authenticated connection. Blocking. */
-    fun connect(host: String, port: Int, timeoutMillis: Long): AdbTransport
+    /** Opens an authenticated connection. Blocking. Same [abort] contract as [pair]. */
+    fun connect(host: String, port: Int, timeoutMillis: Long, abort: AbortScope): AdbTransport
+}
+
+/**
+ * Resources of one blocking operation. [close] (called on timeout or cancellation) closes
+ * everything registered so far and everything registered later, which unblocks libadb calls that
+ * have no timeout of their own.
+ */
+class AbortScope : Closeable {
+    private val resources = ArrayList<Closeable>()
+    private var aborted = false
+
+    val isAborted: Boolean @Synchronized get() = aborted
+
+    /** Registers [resource]; if the scope is already aborted, closes it and throws. */
+    fun register(resource: Closeable) {
+        val closeNow = synchronized(this) {
+            if (!aborted) resources += resource
+            aborted
+        }
+        if (closeNow) {
+            runCatching { resource.close() }
+            throw java.io.IOException("Operation aborted")
+        }
+    }
+
+    override fun close() {
+        val toClose = synchronized(this) {
+            aborted = true
+            resources.toList().also { resources.clear() }
+        }
+        toClose.forEach { runCatching { it.close() } }
+    }
 }
 
 /** One authenticated ADB connection that can open service streams. */

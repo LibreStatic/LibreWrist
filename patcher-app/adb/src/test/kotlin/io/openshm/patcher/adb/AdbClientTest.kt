@@ -110,8 +110,8 @@ class AdbClientTest {
     @Test
     fun `connect maps backend failures to typed errors`() = runBlocking {
         fun backendThrowing(t: Throwable) = object : AdbBackend {
-            override fun pair(host: String, port: Int, code: String) = Unit
-            override fun connect(host: String, port: Int, timeoutMillis: Long): AdbTransport = throw t
+            override fun pair(host: String, port: Int, code: String, abort: AbortScope) = Unit
+            override fun connect(host: String, port: Int, timeoutMillis: Long, abort: AbortScope): AdbTransport = throw t
         }
         try {
             AdbClient.connect(backendThrowing(java.net.ConnectException("refused")), "h", 1)
@@ -125,12 +125,55 @@ class AdbClientTest {
         }
         val ok = AdbClient.connect(
             object : AdbBackend {
-                override fun pair(host: String, port: Int, code: String) = Unit
-                override fun connect(host: String, port: Int, timeoutMillis: Long) = FakeTransport { FakeChannel() }
+                override fun pair(host: String, port: Int, code: String, abort: AbortScope) = Unit
+                override fun connect(host: String, port: Int, timeoutMillis: Long, abort: AbortScope) =
+                    FakeTransport { FakeChannel() }
             },
             "h",
             1,
         )
         assertTrue(ok.isConnected)
+    }
+
+    @Test
+    fun `a connect that times out aborts the backend and a late transport is closed`() = runBlocking {
+        val late = FakeTransport { FakeChannel() }
+        val release = java.util.concurrent.CountDownLatch(1)
+        var abortSeen = false
+        val backend = object : AdbBackend {
+            override fun pair(host: String, port: Int, code: String, abort: AbortScope) = Unit
+            override fun connect(host: String, port: Int, timeoutMillis: Long, abort: AbortScope): AdbTransport {
+                abort.register(java.io.Closeable { abortSeen = true })
+                release.await(5, java.util.concurrent.TimeUnit.SECONDS)
+                return late // arrives after the caller gave up
+            }
+        }
+        try {
+            AdbClient.connect(backend, "h", 1, timeoutMillis = 100) // outer wait = 100 + 2000 ms
+            fail()
+        } catch (e: AdbException.Timeout) {
+        } finally {
+            release.countDown()
+        }
+        assertTrue(abortSeen)
+        val deadline = System.currentTimeMillis() + 3000
+        while (late.closedCount == 0 && System.currentTimeMillis() < deadline) Thread.sleep(20)
+        assertEquals(1, late.closedCount)
+    }
+
+    @Test
+    fun `device identity is read and validated`() = runBlocking {
+        fun client(model: String, serial: String) = AdbClient(
+            scriptedTransport(shell = { if (it == "getprop ro.product.model") ok("$model\n") else ok("$serial\n") }),
+        )
+        assertEquals(DeviceIdentity("SM-L305F", "R5AB123XYZ"), client("SM-L305F", "R5AB123XYZ").deviceIdentity())
+        assertEquals(DeviceIdentity("Pixel 8", ""), client("Pixel 8", "").deviceIdentity())
+        for ((m, sn) in listOf("bad;model" to "S1", "ok" to "s n", "ok" to "\$(id)")) {
+            try {
+                client(m, sn).deviceIdentity()
+                fail("accepted $m / $sn")
+            } catch (e: AdbException.Protocol) {
+            }
+        }
     }
 }

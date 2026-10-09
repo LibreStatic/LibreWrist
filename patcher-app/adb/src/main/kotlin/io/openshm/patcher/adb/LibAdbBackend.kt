@@ -20,31 +20,62 @@ class LibAdbBackend(
     private val peerApi: Int = Build.VERSION.SDK_INT,
 ) : AdbBackend {
 
-    override fun pair(host: String, port: Int, code: String) {
-        PairingConnectionCtx(
+    override fun pair(host: String, port: Int, code: String, abort: AbortScope) {
+        beforeTls()
+        val ctx = PairingConnectionCtx(
             host,
             port,
             code.toByteArray(Charsets.UTF_8),
             keys.privateKey(),
             keys.certificate(),
             deviceName,
-        ).use { it.start() }
+        )
+        // Closing the context closes its socket, which unblocks a wedged read after a timeout.
+        abort.register(ctx)
+        ctx.use { it.start() }
     }
 
-    override fun connect(host: String, port: Int, timeoutMillis: Long): AdbTransport {
+    override fun connect(host: String, port: Int, timeoutMillis: Long, abort: AbortScope): AdbTransport {
+        beforeTls()
         val connection = AdbConnection.create(host, port, keys.privateKey(), keys.certificate(), peerApi)
-        connection.setDeviceName(deviceName)
-        val established = try {
-            connection.connect(timeoutMillis, TimeUnit.MILLISECONDS, false)
+        try {
+            abort.register(connection)
+            connection.setDeviceName(deviceName)
+            if (!connection.connect(timeoutMillis, TimeUnit.MILLISECONDS, false)) {
+                throw AdbException.Timeout("waiting for the ADB daemon to accept the connection")
+            }
         } catch (t: Throwable) {
             runCatching { connection.close() }
             throw t
         }
-        if (!established) {
-            runCatching { connection.close() }
-            throw AdbException.Timeout("waiting for the ADB daemon to accept the connection")
-        }
         return LibAdbTransport(connection)
+    }
+
+    /**
+     * Fails closed before any TLS use: the key must not have been reset in this process, and our
+     * Conscrypt provider (which libadb loads by this same reflective path) must be usable, because
+     * otherwise libadb silently falls back to the platform TLS stack.
+     */
+    private fun beforeTls() {
+        AdbKeyStore.markTlsUse()
+        ensureConscrypt()
+    }
+
+    private companion object {
+        @Volatile
+        var conscryptChecked = false
+
+        fun ensureConscrypt() {
+            if (conscryptChecked) return
+            try {
+                val provider = Class.forName("org.conscrypt.OpenSSLProvider")
+                    .getDeclaredConstructor().newInstance() as java.security.Provider
+                javax.net.ssl.SSLContext.getInstance("TLSv1.3", provider)
+            } catch (t: Throwable) {
+                throw AdbException.TlsProviderUnavailable(t)
+            }
+            conscryptChecked = true
+        }
     }
 }
 
