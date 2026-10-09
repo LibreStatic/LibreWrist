@@ -182,6 +182,7 @@ class InstallSection(unittest.TestCase):
             {'kind': 'secureSetting', 'key': 'k', 'value': 'x' * 65},
             {'kind': 'secureSetting', 'key': 'k', 'value': 'a b'},
             {'kind': 'secureSetting', 'key': 'k', 'value': '$(id)'},
+            {'kind': 'secureSetting', 'key': 'k', 'value': '--user'},
             {'kind': 'deviceIdleWhitelist', 'optional': 'yes'},
             {'kind': 'deviceIdleWhitelist', 'note': 'two\nlines'},
             {'kind': 'deviceIdleWhitelist', 'note': ''},
