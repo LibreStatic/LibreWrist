@@ -45,12 +45,15 @@ must show the watch configuration with `IsConnected=true`.
 
 1. **Phone SHM**: `adb -s $P install -r dist/<shm-phone>.apk`. Complete the ECG/BP onboarding on
    the phone.
-2. **Watch SHM**: `adb -s $W install -r dist/<shm-watch>.apk`, then
-   `adb -s $W shell appops set com.samsung.android.shealthmonitors SCHEDULE_EXACT_ALARM allow`.
+2. **Watch SHM**: `adb -s $W install -r dist/<shm-watch>.apk`, then its grants from the catalogue
+   (`appops set com.samsung.android.shealthmonitors SCHEDULE_EXACT_ALARM allow`).
    It installs next to the system SHM (different package); the system one keeps showing the
    regional error and is not used.
 3. **Watch bridge** and **Alarm fork** on the watch; **phone bridge** on the phone. Permissions,
-   appops and exemptions to grant: [shm-bridge/README.md](../shm-bridge/README.md).
+   appops, notification listeners and exemptions to grant: the `grants` section of
+   `catalogue/catalogue.json` (per output; format in [patches.md](patches.md)), summarized in
+   [shm-bridge/README.md](../shm-bridge/README.md). The `installOrder` section of the catalogue
+   gives the order above; `stockAppsToDisable` lists the optional stock apps to disable.
 
 To upgrade without losing data: same key and same `PKG_PREFIX` as the previous install.
 

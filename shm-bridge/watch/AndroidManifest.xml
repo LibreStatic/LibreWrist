@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="shminterop.shmbridge.watch"
-    android:versionCode="12" android:versionName="1.11-gwhub">
+    android:versionCode="13" android:versionName="1.12">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"/>
     <!-- connectedDevice: avoids the 6 h daily dataSync cap (API 35+); needs BLUETOOTH_CONNECT
-         granted (used by the relay RFCOMM link) or CHANGE_NETWORK_STATE -->
+         granted (used by the RFCOMM link) or CHANGE_NETWORK_STATE -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE"/>
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
@@ -48,15 +45,7 @@
             </intent-filter>
         </activity>
         <service android:name=".BridgeService" android:exported="false"
-            android:foregroundServiceType="connectedDevice|dataSync"/>
-        <service android:name=".ShmCaptureService" android:exported="false"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
-            <intent-filter>
-                <action android:name="android.accessibilityservice.AccessibilityService"/>
-            </intent-filter>
-            <meta-data android:name="android.accessibilityservice"
-                android:resource="@xml/accessibility_service_config"/>
-        </service>
+            android:foregroundServiceType="connectedDevice"/>
 
         <!-- /__bridge__/ communications channel (notifications, alarms, calls).
              The receivers are exported but protected with DUMP: only the system, the app

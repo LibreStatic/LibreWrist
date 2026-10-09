@@ -15,8 +15,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -26,22 +24,16 @@ import java.util.concurrent.TimeUnit;
 /**
  * Link of the {@code /__bridge__/} communications channel (docs/bridge-comms-protocol.md).
  *
- * <p>Two transports (pref {@code comms_transport}, see {@link CommsHub}):</p>
- * <ul>
- *   <li>{@code bt} (default; the only supported one): RFCOMM server on the phone with the service UUID. The
- *   watch's {@code BtRelayClient} connects by itself (tries the paired devices) and its
- *   {@code FrameMux} sends the {@code /__bridge__/*} frames here. No PC in between: the
- *   phone does the demux. Frames
- *   that do not belong to the channel (plain heartbeats, {@code /__gw__/*}) are ignored.</li>
- *   <li>{@code tcp}: client of {@code 127.0.0.1:8775} (target: a PC gateway that is
- *   not included in this repo). Kept as-is, unsupported.</li>
- * </ul>
+ * <p>Direct RFCOMM session: the phone is the RFCOMM server (service UUID {@link #RFCOMM_UUID});
+ * the watch's {@code RfcommLink} connects by itself (it tries the paired devices) and its
+ * {@code FrameMux} sends the {@code /__bridge__/*} frames here. Frames that do not belong to
+ * the channel (bare heartbeats, any other path) are ignored.</p>
  *
  * <p>Frame: {@code [int len][short pathLen][path UTF-8][data]} big-endian. The own keepalive
- * is an empty {@code /__bridge__/ping} every 2.5 s; plain heartbeats (len=2,
- * pathLen=0) belong exclusively to SHM's relay and are never sent here. Reconnects with
- * back-off; if no frame arrives in 15 s (the peer sends its ping every 2.5 s) the
- * connection is considered dead (watched by the writer: RFCOMM has no read timeout).</p>
+ * is an empty {@code /__bridge__/ping} every 2.5 s; bare heartbeats (len=2, pathLen=0) are
+ * not part of the channel and are never sent. Reconnects with back-off; if no frame arrives
+ * in 15 s (the peer sends its ping every 2.5 s) the connection is considered dead (watched by
+ * the writer: RFCOMM has no read timeout).</p>
  */
 final class BridgeLink {
 
@@ -52,8 +44,6 @@ final class BridgeLink {
     }
 
     static final String TAG = "SHMBridgeComms";
-    static final String HOST = "127.0.0.1";
-    static final int PORT = 8775;
     static final String PREFIX = "/__bridge__/";
     static final String PING = PREFIX + "ping";
     static final int MAX_FRAME = 16 * 1024 * 1024;
@@ -61,7 +51,7 @@ final class BridgeLink {
     static final long PING_MS = 2500;
     static final int READ_TIMEOUT_MS = 15000;
     private static final byte[] STOP = new byte[0];
-    /** Same UUID as the watch's {@code BtRelayClient.RELAY_UUID}. */
+    /** Same UUID as the watch's {@code RfcommLink.RFCOMM_UUID}. */
     static final UUID RFCOMM_UUID = UUID.fromString("8b6d5c1e-3a24-4c0d-9f1b-6a7e2d5c4b3b");
 
     /** One connection opened by the transport. */
@@ -84,6 +74,7 @@ final class BridgeLink {
     private volatile boolean running;
     private volatile Conn socket;
     private volatile long lastRx;
+    private volatile long lastFrameAt;  // wall clock of the last received frame; 0 = never
     private volatile boolean up;      // socket connected (writable)
     private volatile boolean ready;   // and, in addition, the host has already sent a frame
     private Thread worker;
@@ -95,32 +86,6 @@ final class BridgeLink {
     }
 
     String describe() { return transport.describe(); }
-
-    /** TCP client of 127.0.0.1:8775 (host with adb reverse; unsupported). */
-    static Transport tcp() {
-        return new Transport() {
-            @Override public Conn open() throws IOException {
-                final Socket s = new Socket();
-                try {
-                    s.connect(new InetSocketAddress(HOST, PORT), 5000);
-                    s.setTcpNoDelay(true);
-                    s.setKeepAlive(true);
-                    s.setSoTimeout(READ_TIMEOUT_MS);
-                } catch (IOException e) {
-                    try { s.close(); } catch (IOException ignored) {}
-                    throw e;
-                }
-                return new Conn() {
-                    @Override public InputStream in() throws IOException { return s.getInputStream(); }
-                    @Override public OutputStream out() throws IOException { return s.getOutputStream(); }
-                    @Override public void close() throws IOException { s.close(); }
-                    @Override public String describe() { return "TCP " + HOST + ":" + PORT; }
-                };
-            }
-            @Override public void abort() {}
-            @Override public String describe() { return "tcp " + HOST + ":" + PORT; }
-        };
-    }
 
     /** RFCOMM server (service UUID): the watch connects directly to the phone. */
     static Transport rfcomm(final Context ctx) {
@@ -181,6 +146,12 @@ final class BridgeLink {
     }
 
     boolean isUp() { return up && ready; }
+
+    /** Milliseconds since the last received frame (pings included); -1 if none ever arrived. */
+    long lastRxAgeMs() {
+        long t = lastFrameAt;
+        return t == 0 ? -1 : Math.max(0, System.currentTimeMillis() - t);
+    }
 
     /** Queues a frame; false if there is no link or the queue is full (does not block).
      *  Before verification only hello should be sent (onLinkUp does it). */
@@ -261,18 +232,18 @@ final class BridgeLink {
                 byte[] db = new byte[len - 2 - plen];
                 if (db.length > 0) in.readFully(db);
                 lastRx = System.currentTimeMillis();
+                lastFrameAt = lastRx;
                 if (!verified) {
-                    // adb reverse accepts even if nobody is on the host's 8776: the
-                    // link counts as up only after the first received frame
+                    // the link counts as up only after the first received frame from the peer
                     verified = true;
                     ready = true;
                     Log.i(TAG, "link: peer verified");
                     listener.onLinkUp();
                 }
-                if (plen == 0) continue;  // plain heartbeat: not part of the channel, ignored
+                if (plen == 0) continue;  // bare heartbeat: not part of the channel, ignored
                 String path = new String(pb, StandardCharsets.UTF_8);
                 if (PING.equals(path)) continue;
-                if (!path.startsWith(PREFIX)) continue;  // /__gw__/* or other mux channels
+                if (!path.startsWith(PREFIX)) continue;  // outside the channel: ignored
                 listener.onFrame(path, db);
             }
         } catch (SocketTimeoutException e) {

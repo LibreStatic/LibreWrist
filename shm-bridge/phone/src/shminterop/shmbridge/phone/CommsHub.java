@@ -36,8 +36,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * <p>Configuration (prefs {@code comms}, changed with {@code CommsDebugReceiver}, path
  * {@code config}):</p>
  * <ul>
- *   <li>{@code transport}: {@code bt} (default, direct RFCOMM with the watch, no PC) or
- *   {@code tcp} (127.0.0.1:8775 via a host gateway, unsupported). Applied on process restart.</li>
  *   <li>{@code caps}: capabilities that are mirrored, comma-separated. Default {@code alarm}:
  *   with the watch paired through Galaxy Wearable, notifications and calls already arrive
  *   natively, and mirroring them again would duplicate them. {@code notif,alarm,call} = everything.</li>
@@ -49,7 +47,6 @@ final class CommsHub implements BridgeLink.Listener {
     static final String P = BridgeLink.PREFIX;
     static final long HELLO_MIN_MS = 3000;
     static final String PREFS = "comms";
-    static final String DEFAULT_TRANSPORT = "bt";
     static final String DEFAULT_CAPS = "alarm";
 
     private static volatile CommsHub instance;
@@ -65,6 +62,10 @@ final class CommsHub implements BridgeLink.Listener {
         return h;
     }
 
+    /** The hub if it already exists, else null. Never creates it and never starts the link
+     *  (used by {@link StatusProvider}, which must not have side effects). */
+    static CommsHub peek() { return instance; }
+
     final Context ctx;
     final Handler handler;
     final BridgeLink link;
@@ -78,6 +79,10 @@ final class CommsHub implements BridgeLink.Listener {
     private volatile String callState = "idle";
     private String clockPkg;
     private volatile Set<String> caps;
+    /** A watch {@code /__bridge__/hello} was received on the current link. */
+    private volatile boolean peerHello;
+    /** Capabilities announced in that hello (csv, known names only), "" if none. */
+    private volatile String peerCaps = "";
 
     private CommsHub(Context app) {
         this.ctx = app;
@@ -85,11 +90,9 @@ final class CommsHub implements BridgeLink.Listener {
         ht.start();
         this.handler = new Handler(ht.getLooper());
         SharedPreferences sp = prefs(app);
-        String transport = sp.getString("transport", DEFAULT_TRANSPORT);
-        this.link = new BridgeLink(this,
-                "tcp".equals(transport) ? BridgeLink.tcp() : BridgeLink.rfcomm(app));
+        this.link = new BridgeLink(this, BridgeLink.rfcomm(app));
         this.caps = parseCaps(sp.getString("caps", DEFAULT_CAPS));
-        Log.i(TAG, "config: transporte " + link.describe() + ", caps " + caps);
+        Log.i(TAG, "config: " + link.describe() + ", caps " + caps);
     }
 
     static SharedPreferences prefs(Context c) {
@@ -105,19 +108,38 @@ final class CommsHub implements BridgeLink.Listener {
         return out;
     }
 
-    /** CommsDebugReceiver path=config: stores transport/caps; caps takes effect immediately. */
-    void configure(String transport, String capsCsv) {
+    /** CommsDebugReceiver path=config: stores caps; takes effect immediately. */
+    void configure(String capsCsv) {
         SharedPreferences.Editor e = prefs(ctx).edit();
-        if (transport != null && (transport.equals("bt") || transport.equals("tcp"))) {
-            e.putString("transport", transport);
-        }
         if (capsCsv != null) {
             e.putString("caps", capsCsv);
             caps = parseCaps(capsCsv);
         }
         e.apply();
-        Log.i(TAG, "config: saved (transport " + prefs(ctx).getString("transport", DEFAULT_TRANSPORT)
-                + " on restart; caps " + caps + ")");
+        Log.i(TAG, "config: saved (caps " + caps + ")");
+    }
+
+    /** Own capabilities as csv, in the canonical order. */
+    String capsCsv() {
+        return joinKnown(caps);
+    }
+
+    boolean hasPeerHello() { return peerHello; }
+
+    String peerCapsCsv() { return peerCaps; }
+
+    long lastRxAgeMs() { return link.lastRxAgeMs(); }
+
+    boolean isLinkUp() { return link.isUp(); }
+
+    private static String joinKnown(Set<String> set) {
+        StringBuilder sb = new StringBuilder();
+        for (String c : new String[] {"notif", "alarm", "call"}) {
+            if (!set.contains(c)) continue;
+            if (sb.length() > 0) sb.append(',');
+            sb.append(c);
+        }
+        return sb.toString();
     }
 
     /** Capability of a channel path ("notif/post" → notif); null = always allowed. */
@@ -138,6 +160,7 @@ final class CommsHub implements BridgeLink.Listener {
     /** When the link comes up: own hello. The state goes out with the watch's hello; if none
      *  arrived within 4 s (e.g. lost at the host), it is sent anyway. */
     @Override public void onLinkUp() {
+        resetPeer();
         handler.post(() -> {
             final long upAt = System.currentTimeMillis();
             linkUpAt = upAt;
@@ -151,7 +174,14 @@ final class CommsHub implements BridgeLink.Listener {
         });
     }
 
-    @Override public void onLinkDown() {}
+    @Override public void onLinkDown() {
+        resetPeer();
+    }
+
+    private void resetPeer() {
+        peerHello = false;
+        peerCaps = "";
+    }
 
     @Override public void onFrame(final String path, final byte[] data) {
         handler.post(() -> dispatch(path, data));
@@ -205,6 +235,7 @@ final class CommsHub implements BridgeLink.Listener {
         Log.i(TAG, "rx " + path + " (" + data.length + " B)" + (o.has("id") ? " id=" + o.optString("id") : ""));
         switch (path) {
             case P + "hello":
+                recordPeerHello(o);
                 // contract rule: reply with own hello only if we did not send one within 3 s
                 if (System.currentTimeMillis() - lastHelloSent > HELLO_MIN_MS) sendHello();
                 sendState();
@@ -220,6 +251,16 @@ final class CommsHub implements BridgeLink.Listener {
             case P + "call/pulled": CallNotice.show(ctx); break;
             default: Log.i(TAG, "rx " + path + ": no handler");
         }
+    }
+
+    private void recordPeerHello(JSONObject o) {
+        Set<String> pc = ConcurrentHashMap.newKeySet();
+        JSONArray ca = o.optJSONArray("caps");
+        if (ca != null) {
+            for (int i = 0; i < ca.length(); i++) pc.addAll(parseCaps(ca.optString(i, "")));
+        }
+        peerCaps = joinKnown(pc);
+        peerHello = true;
     }
 
     private StatusBarNotification findById(String id) {
@@ -605,6 +646,7 @@ final class CommsHub implements BridgeLink.Listener {
 
     String status() {
         return "link " + (link.isUp() ? "up" : "down") + " (" + link.describe() + ")"
+                + "; hello " + (peerHello ? "yes" : "no") + " peer caps [" + peerCaps + "]"
                 + "; caps " + caps
                 + "; listener " + (BridgeNotificationListener.instance != null ? "connected" : "not connected")
                 + "; mirrored " + keys.size() + "; call " + callState;

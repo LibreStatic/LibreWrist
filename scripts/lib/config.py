@@ -7,8 +7,8 @@ import subprocess
 
 SHM_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 _KEYS = ('PKG_PREFIX', 'ANDROID_HOME', 'BUILD_TOOLS_VERSION', 'PLATFORM_API', 'APKTOOL_JAR',
-         'APKTOOL_HEAP', 'PSW_AAR', 'APKS_DIR', 'KEYSTORE', 'KEY_ALIAS', 'KS_PASS',
-         'WORK_DIR', 'DIST_DIR', 'CATALOGUE_KEY')
+         'APKTOOL_HEAP', 'APKS_DIR', 'KEYSTORE', 'KEY_ALIAS', 'KS_PASS',
+         'WORK_DIR', 'DIST_DIR', 'CATALOGUE_KEY', 'PATCHER_CERT_SHA256')
 
 
 def _load():

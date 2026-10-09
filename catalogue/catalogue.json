@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "serial": 1,
+  "serial": 2,
   "minAppVersion": 1,
   "inputs": [
     {
@@ -1597,5 +1597,195 @@
         }
       ]
     }
-  }
+  },
+  "outputs": [
+    {
+      "id": "shm-phone",
+      "device": "phone",
+      "package": "com.samsung.android.shealthmonitors",
+      "from": {
+        "input": "shm-phone",
+        "profile": "gms"
+      }
+    },
+    {
+      "id": "shm-watch",
+      "device": "watch",
+      "package": "com.samsung.android.shealthmonitors",
+      "from": {
+        "input": "shm-watch",
+        "profile": "gms"
+      }
+    },
+    {
+      "id": "alarm-fork",
+      "device": "watch",
+      "package": "${PKG_PREFIX}.shmbridge.alarm",
+      "from": {
+        "input": "alarm-watch",
+        "profile": "alarm"
+      }
+    },
+    {
+      "id": "bridge-watch",
+      "device": "watch",
+      "package": "${PKG_PREFIX}.shmbridge.watch",
+      "from": {
+        "ownApp": "shm-bridge/watch"
+      }
+    },
+    {
+      "id": "bridge-phone",
+      "device": "phone",
+      "package": "${PKG_PREFIX}.shmbridge.phone",
+      "from": {
+        "ownApp": "shm-bridge/phone"
+      }
+    }
+  ],
+  "installOrder": [
+    {
+      "output": "shm-phone",
+      "then": "userOnboarding"
+    },
+    {
+      "output": "shm-watch"
+    },
+    {
+      "output": "bridge-watch"
+    },
+    {
+      "output": "alarm-fork"
+    },
+    {
+      "output": "bridge-phone"
+    }
+  ],
+  "grants": {
+    "shm-phone": [],
+    "shm-watch": [
+      {
+        "kind": "appop",
+        "op": "SCHEDULE_EXACT_ALARM",
+        "mode": "allow",
+        "note": "SCHEDULE_EXACT_ALARM is declared in the watch manifest and is revocable, so it is granted as an appop."
+      },
+      {
+        "kind": "secureSetting",
+        "key": "doze_always_on",
+        "value": "0",
+        "optional": true,
+        "note": "Recommended for measurements: keeps the watch out of the always-on Doze display state."
+      }
+    ],
+    "bridge-watch": [
+      {
+        "kind": "permission",
+        "name": "android.permission.POST_NOTIFICATIONS"
+      },
+      {
+        "kind": "permission",
+        "name": "android.permission.BLUETOOTH_CONNECT"
+      },
+      {
+        "kind": "permission",
+        "name": "android.permission.READ_PHONE_STATE"
+      },
+      {
+        "kind": "permission",
+        "name": "android.permission.ANSWER_PHONE_CALLS"
+      },
+      {
+        "kind": "appop",
+        "op": "SCHEDULE_EXACT_ALARM",
+        "mode": "allow"
+      },
+      {
+        "kind": "appop",
+        "op": "USE_FULL_SCREEN_INTENT",
+        "mode": "allow",
+        "note": "Alarm and call screens (revocable on Android 14+)."
+      },
+      {
+        "kind": "appop",
+        "op": "SYSTEM_ALERT_WINDOW",
+        "mode": "allow",
+        "note": "Background activity launch exemption for the alarm and call screens."
+      },
+      {
+        "kind": "appop",
+        "op": "MANAGE_ONGOING_CALLS",
+        "mode": "allow",
+        "note": "Lets Telecom bind CallWatchService."
+      },
+      {
+        "kind": "notificationListener",
+        "component": "SamsungAlarmListener",
+        "note": "Sees the Samsung Alarm app ringing."
+      },
+      {
+        "kind": "deviceIdleWhitelist",
+        "note": "Battery (Doze) exemption so the RFCOMM link stays up."
+      }
+    ],
+    "alarm-fork": [
+      {
+        "kind": "permission",
+        "name": "android.permission.POST_NOTIFICATIONS"
+      },
+      {
+        "kind": "appop",
+        "op": "USE_FULL_SCREEN_INTENT",
+        "mode": "allow",
+        "note": "Alarm screen (revocable on Android 14+)."
+      },
+      {
+        "kind": "deviceIdleWhitelist",
+        "optional": true,
+        "note": "Not required by the manifest; keeps link intents from being deferred while an alarm rings."
+      }
+    ],
+    "bridge-phone": [
+      {
+        "kind": "permission",
+        "name": "android.permission.ANSWER_PHONE_CALLS"
+      },
+      {
+        "kind": "permission",
+        "name": "android.permission.READ_PHONE_STATE"
+      },
+      {
+        "kind": "permission",
+        "name": "android.permission.POST_NOTIFICATIONS"
+      },
+      {
+        "kind": "permission",
+        "name": "android.permission.BLUETOOTH_CONNECT"
+      },
+      {
+        "kind": "appop",
+        "op": "ACCESS_RESTRICTED_SETTINGS",
+        "mode": "allow",
+        "note": "Allows enabling the notification listener for a sideloaded app."
+      },
+      {
+        "kind": "appop",
+        "op": "SYSTEM_ALERT_WINDOW",
+        "mode": "allow",
+        "note": "Background activity launch exemption (notification open, alarm control)."
+      },
+      {
+        "kind": "notificationListener",
+        "component": "BridgeNotificationListener"
+      }
+    ]
+  },
+  "stockAppsToDisable": [
+    {
+      "device": "watch",
+      "package": "com.samsung.android.shealthmonitor",
+      "optional": true,
+      "reason": "The stock Samsung Health Monitor on the watch keeps showing its regional error and is not used; the rebranded copy replaces it. Reversible with pm enable."
+    }
+  ]
 }

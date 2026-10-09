@@ -18,7 +18,7 @@ import android.util.Log;
 
 /**
  * FGS (specialUse type) that holds the {@code /__bridge__/} channel on the phone side:
- * the link (RFCOMM, or TCP to 127.0.0.1:8775), the next-alarm notice
+ * the RFCOMM link, the next-alarm notice
  * ({@code ACTION_NEXT_ALARM_CLOCK_CHANGED}) and the call state.
  *
  * <p>Start without a visible activity: {@code CommsBootReceiver} (BOOT_COMPLETED /
@@ -29,7 +29,9 @@ import android.util.Log;
 public class CommsService extends Service {
 
     static final String CHANNEL = "bridge_comms";
-    static final int NOTIF_ID = 8775;
+    static final int NOTIF_ID = 4101;
+    /** True between onCreate and onDestroy (read by {@link StatusProvider}). */
+    static volatile boolean running;
 
     private BroadcastReceiver alarmRx;
     private TelephonyCallback callCb;
@@ -37,6 +39,7 @@ public class CommsService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        running = true;
         goForeground();
         CommsHub hub = CommsHub.get(this);
         hub.start();
@@ -117,6 +120,7 @@ public class CommsService extends Service {
                 getSystemService(TelephonyManager.class).unregisterTelephonyCallback(callCb);
             }
         } catch (Exception ignored) {}
+        running = false;
         Log.i(CommsHub.TAG, "CommsService detenido");
         super.onDestroy();
     }

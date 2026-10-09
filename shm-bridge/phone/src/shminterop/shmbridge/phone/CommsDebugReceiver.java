@@ -18,7 +18,7 @@ import android.util.Log;
  * With {@code --ez inject true} the frame is not sent to the watch: it is processed locally as
  * if it had arrived from the watch (phone-side test without touching the watch).
  * With {@code --es path status} it only logs the hub state.
- * With {@code --es path config [--es transport bt|tcp] [--es caps alarm,notif,call]} it stores the
+ * With {@code --es path config [--es caps alarm,notif,call]} it stores the
  * channel configuration (see {@link CommsHub}).
  */
 public class CommsDebugReceiver extends BroadcastReceiver {
@@ -37,7 +37,7 @@ public class CommsDebugReceiver extends BroadcastReceiver {
             return;
         }
         if ("config".equals(path)) {
-            hub.configure(intent.getStringExtra("transport"), intent.getStringExtra("caps"));
+            hub.configure(intent.getStringExtra("caps"));
             return;
         }
         if ("bt-sdp".equals(path) || "bt-uuids".equals(path)) {

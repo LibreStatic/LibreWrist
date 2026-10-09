@@ -1,49 +1,24 @@
 # SHM Bridge — phone app + Wear OS companion
 
-A portable mechanism to use the Samsung Health Monitor (SHM) feature set of a Galaxy Watch
-(verified on the author's own watch, One UI 8 / Android 16) from **any Android phone**,
-based on the permission and access-path audit of that watch:
-
-- **F2 — exported activities without a permission**: stock SHM exposes `EcgMainActivity`,
-  `BpMainActivity`, `BpMeasureRunActivity` and `MainActivity`. They can be launched with
-  `startActivity` from another app, with no root and no mod.
-- **BAL exemption (F2+)**: One UI blocks background `startActivity`; this is solved with the
-  `SYSTEM_ALERT_WINDOW` appop (`BAL_ALLOW_SAW_PERMISSION` exemption, verified on the device).
-- **Dangerous permissions**: `BODY_SENSORS` / `READ_ADDITIONAL_HEALTH_DATA` and the Health
-  Connect ones are granted with `pm grant` over ADB.
-- **Result capture**: an `AccessibilityService` that reads the SHM result screen (for BP/ECG,
-  which do not go through Health Connect; on this watch Health Connect is not even present).
-
-## Architecture
+Our own pair of apps that mirror **notifications, alarms and call state** between an Android phone
+and a Galaxy Watch over **one direct RFCOMM session** (no PC, no Wi-Fi). Everything else
+(SHM data, ECG/BP) travels over the GMS Data Layer created by the stock Galaxy Wearable pairing and
+is not handled here: see [../docs/architecture.md](../docs/architecture.md).
 
 ```
-┌──────────────────┐   TCP/LAN (token)   ┌──────────────────────────┐
-│  Android phone   │ ──────────────────► │  Galaxy Watch            │
-│  SHM Bridge      │  ECG/BP/SYNC/LAST   │  SHM Bridge (companion)  │
-│  (shminterop.    │ ◄────────────────── │   • launches exported    │
-│   shmbridge.phone│   DATA (results)    │     SHM activities       │
-└──────────────────┘                     │   • measurement wake lock│
-                                         │   • SHM screen capture   │
-                                         │   • reads Health Connect │
-                                         │     (if present)         │
-                                         └──────────────────────────┘
-                                                        │ startActivity
-                                                        ▼
-                                         ┌──────────────────────────┐
-                                         │ stock SHM 1.5.1.022      │
-                                         │ (ECG / BP / measurement) │
-                                         └──────────────────────────┘
+┌──────────────────────────┐   RFCOMM (UUID 8b6d5c1e-…)   ┌──────────────────────────┐
+│ Phone: SHM Bridge        │ ◄─────────────────────────── │ Watch: SHM Bridge        │
+│  BridgeLink (RFCOMM      │   /__bridge__/* frames       │  RfcommLink + FrameMux   │
+│  server) + CommsHub      │ ────────────────────────────►│  BridgeHub               │
+│  StatusProvider          │                              │  ⇄ Alarm fork (intents)  │
+└──────────────────────────┘                              └──────────────────────────┘
 ```
 
 No GMS, no Gradle: plain Java built with `javac` + `d8` + `aapt2` + `apksigner`
-(`scripts/build-bridge.sh`). Text protocol over a socket with a pairing token.
+(`scripts/build-bridge.sh`).
 
 The package prefix `shminterop` is a marker: builds rewrite it to `PKG_PREFIX`
 (`config.env`, see `scripts/lib/stage_prefix.py`). The examples in this README use the default.
-
-> **Supported transport: direct RFCOMM phone <-> watch** (default `bt`). The code keeps the
-> `tcp` transport and the `/__gw__/` channel (`GwHub`), which target a PC gateway that is
-> **not included** in this repo; they are not part of the supported flow.
 
 ## Build
 
@@ -52,66 +27,66 @@ The package prefix `shminterop` is a marker: builds rewrite it to `PKG_PREFIX`
 BRIDGE_ONLY=phone ./shm-bridge/scripts/build-bridge.sh   # only one of them (watch|phone)
 ```
 
-It needs the play-services-wearable AAR (`scripts/fetch_deps.sh`) and signs with the local
-keystore (`KEYSTORE` in `config.env`, generated if missing). `versionCode` / `versionName`
-come from each `AndroidManifest.xml`.
+It signs with the local keystore (`KEYSTORE` in `config.env`, generated if missing).
+`versionCode` / `versionName` come from each `AndroidManifest.xml` (watch 13 / 1.12, phone 7 / 1.6).
+Optional `PATCHER_CERT_SHA256`: see "Status provider" below.
 
-## Install (watch)
+## Install and grants
+
+Install with `adb install -r` (same key and `PKG_PREFIX` as the previous install to upgrade in
+place). **The authoritative list of permissions, appops, notification listeners and exemptions
+is the `grants` section of [`catalogue/catalogue.json`](../catalogue/catalogue.json)** (format in
+[../docs/patches.md](../docs/patches.md)); the installer app reads it from there. They must be
+repeated after every reinstall. The equivalent manual commands, derived from the catalogue:
 
 ```bash
-adb install -r dist/shm-bridge-watch.apk
+# Watch bridge (output "bridge-watch")
+W=shminterop.shmbridge.watch
+for p in POST_NOTIFICATIONS BLUETOOTH_CONNECT READ_PHONE_STATE ANSWER_PHONE_CALLS; do
+  adb -s $WATCH shell pm grant $W android.permission.$p; done
+for op in SCHEDULE_EXACT_ALARM USE_FULL_SCREEN_INTENT SYSTEM_ALERT_WINDOW MANAGE_ONGOING_CALLS; do
+  adb -s $WATCH shell appops set $W $op allow; done
+adb -s $WATCH shell cmd notification allow_listener $W/$W.SamsungAlarmListener
+adb -s $WATCH shell dumpsys deviceidle whitelist +$W
 
-# permissions
-adb shell pm grant shminterop.shmbridge.watch android.permission.POST_NOTIFICATIONS
-for p in READ_HEART_RATE READ_RESTING_HEART_RATE READ_HEART_RATE_VARIABILITY \
-         READ_OXYGEN_SATURATION READ_BLOOD_PRESSURE READ_SLEEP READ_STEPS \
-         READ_BODY_TEMPERATURE READ_RESPIRATORY_RATE; do
-  adb shell pm grant shminterop.shmbridge.watch android.permission.health.$p
-done
+# Alarm fork (output "alarm-fork")
+F=shminterop.shmbridge.alarm
+adb -s $WATCH shell pm grant $F android.permission.POST_NOTIFICATIONS
+adb -s $WATCH shell appops set $F USE_FULL_SCREEN_INTENT allow
+adb -s $WATCH shell dumpsys deviceidle whitelist +$F          # optional
 
-# BAL exemption + restricted settings + screen capture
-adb shell appops set shminterop.shmbridge.watch SYSTEM_ALERT_WINDOW allow
-adb shell appops set shminterop.shmbridge.watch ACCESS_RESTRICTED_SETTINGS allow
-adb shell settings put secure enabled_accessibility_services \
-    shminterop.shmbridge.watch/.ShmCaptureService
-adb shell settings put secure accessibility_enabled 1
-adb shell settings put secure doze_always_on 0   # recommended for measurements
-
-# start (shows IP + token on screen and in logcat)
-adb shell am start -n shminterop.shmbridge.watch/.MainActivity
+# Phone bridge (output "bridge-phone")
+P=shminterop.shmbridge.phone
+for p in ANSWER_PHONE_CALLS READ_PHONE_STATE POST_NOTIFICATIONS BLUETOOTH_CONNECT; do
+  adb -s $PHONE shell pm grant --user 0 $P android.permission.$p; done
+for op in ACCESS_RESTRICTED_SETTINGS SYSTEM_ALERT_WINDOW; do
+  adb -s $PHONE shell appops set --user 0 $P $op allow; done
+adb -s $PHONE shell cmd notification allow_listener $P/$P.BridgeNotificationListener 0
+adb -s $PHONE shell am start-foreground-service --user 0 -n $P/.CommsService
 ```
 
-> Note: **every reinstall resets** accessibility and the appops; repeat the block above.
+The watch app starts its link service when opened (`am start -n $W/.MainActivity`); the phone
+service also starts after boot and after an upgrade (`CommsBootReceiver`).
 
 ## Communications channel `/__bridge__/` (watch)
 
-Phone notifications, alarms and calls mirrored on the watch over the same direct RFCOMM
-session. The protocol is documented in the comments of `FrameMux`, `BridgeHub` and `NotifCodec`.
+Phone notifications, alarms and calls mirrored on the watch. The protocol is documented in the
+comments of `FrameMux`, `BridgeHub` and `NotifCodec` and in
+[../docs/architecture.md](../docs/architecture.md).
 
-- `BtRelayClient` uses `FrameMux` (pure Java): it parses `[int len][short pathLen][path][data]`
-  frames in both directions. `/__bridge__/*` frames go to `BridgeHub` (in-process); everything
-  else is passed byte for byte to the SHM at `127.0.0.1:8773`. All RFCOMM writes are complete
-  frames under a single lock. The 8773 side is optional: without SHM the session stays alive
-  for the channel, an own heartbeat is emitted after 2.5 s of inactivity and the 8773 is
-  retried in the background. An absurd `len` (< 2 or > 16 MB) means desynchronization and
-  closes the session.
+- `RfcommLink` (started by `BridgeService`, a `connectedDevice` FGS) connects to the phone's
+  RFCOMM server (it tries the bonded devices, reconnects with back-off) and drives `FrameMux`
+  (pure Java): it parses `[int len][short pathLen][path][data]` frames in both directions.
+  `/__bridge__/*` frames go to `BridgeHub` (in-process); any other frame is dropped (logged once
+  per session, path length only). All RFCOMM writes are complete frames under a single lock, an
+  own `/__bridge__/ping` keepalive is emitted after 2.5 s of inactivity, and an absurd `len`
+  (< 2 or > 16 MB) or `pathLen` means desynchronization and closes the session.
 - `BridgeNotifier` (tag `br:<id>`, channels `br_<pkg>` DEFAULT and `br_<pkg>_hi` HIGH for
   the msg/call/alarm categories), `AlarmMirror` + `AlarmRinger` + `RingActivity` (one managed
   `setAlarmClock` at `t + 5 s`, suppressed if `alarm/ring` arrived from the phone),
   `CallMirror` (`CATEGORY_CALL` notification with Answer/Reject).
 - Log: tag `SHMBridgeComms`, only path/id/package/lengths.
 - Host-side tests of the mux: `watch/test/run-tests.sh`.
-
-Permissions/appops after every install (they reset on reinstall):
-
-```bash
-W=shminterop.shmbridge.watch
-adb shell pm grant $W android.permission.POST_NOTIFICATIONS
-adb shell appops set $W SCHEDULE_EXACT_ALARM allow     # USE_EXACT_ALARM is already in the manifest
-adb shell appops set $W USE_FULL_SCREEN_INTENT allow   # alarm screen (Android 14+)
-adb shell appops set $W SYSTEM_ALERT_WINDOW allow      # BAL exemption (opens RingActivity with the screen on)
-adb shell dumpsys deviceidle whitelist +$W             # battery exemption (Doze)
-```
 
 Debugging (receiver protected by `android.permission.DUMP`: only shell and the app itself):
 
@@ -124,73 +99,62 @@ adb shell 'am broadcast '"$R"' -a shminterop.shmbridge.DEBUG_SEND --es path /__b
 adb logcat -s SHMBridgeComms
 ```
 
-## `/__gw__/` channel and GwHub (phase 2: Galaxy Wearable / heartplugin)
+## Communications channel `/__bridge__/` (phone)
 
-A second in-process hub of the watch bridge: the `/__gw__/*` frames of the RFCOMM session are
-served by `GwHub` (same pattern as `BridgeHub`), which answers over the same channel. It is
-the watch side of phase 2: heartplugin talks the GMS Data Layer with the watch through the
-bridge instead of through GMS. It targets a PC gateway that is not included in this repo;
-with direct RFCOMM the phone ignores these frames.
+Phone side in `phone/src/shminterop/shmbridge/phone/`: `CommsService` (`specialUse` FGS;
+link `BridgeLink`, ping `/__bridge__/ping` every 2.5 s, alarm/next and call/state),
+`BridgeNotificationListener` + `NotifCodec` (notif/*, alarm/ring|stop), `CommsHub` (dispatch
+and watch actions), `StatusProvider`, `CommsDebugReceiver`, `CommsBootReceiver`, and a minimal
+`MainActivity` that starts the service and shows the same state as the provider.
 
-- `FrameMux` routes three channels: `/__bridge__/*` -> `BridgeHub`, `/__gw__/*` -> `GwHub`
-  (prefix already stripped, `Listener.onGwFrame`), everything else byte for byte to the SHM's
-  8773; SHM heartbeats are untouched. `sendGw(path, data)` requires a leading slash and rejects
-  already-prefixed paths; on the RFCOMM it goes out as `/__gw__/` + GMS path (intentional
-  double slash, removed by the phone's GW client).
-- **What `GwHub` answers** (payloads = serialized GMS DataMap, `GwDataMap` encoder; mirror
-  store of the DataClient in `GwData`):
-  - **Battery**: DataItems `wear://watch/c_devicecare/battery/base_info` and
-    `wear://watch/w_module_sec_watch_setting/battery_changed` (host `watch`, as required by the
-    heartplugin Settings WLS filter) on session open, on BatteryInfoProvider requests
-    (`c_battery/syncBatteryInfo`, `c_battery/refreshBatteryInfo`,
-    `c_devicecare/battery/{base_info,sync,refresh}`) and on every `ACTION_BATTERY_CHANGED`
-    (5 s anti-spam).
-  - **RAM**: `c_ram/requestRamInfo` -> message `/c_ram/resultRamInfo` + DataItem
-    `wear://watch/c_devicecare/memory/info` (`mem_total`/`mem_available`/`memory_used`).
-  - **State**: DataItem `wear://watch/w_module_sec_watch_setting/state` (own extension, no
-    verified stock consumer) with `Build.*`, settings readable without a permission, volumes,
-    brightness and next wake-up.
-  - **Mirror store `/__d__/*`**: put/del update it; `all` answers `all-r` with the snapshot
-    (the direction is fixed: the phone requests it once the link is verified).
-- **What it does not answer** (documented, not improvised): the real application of the
-  watch settings (psm, dnd, advanced, show_on_phone, wrist_detection) is done by gws
-  (`sharedUserId=android.uid.system`, cannot be forked) and there is no public API; those
-  messages are logged and left silent. Same for any path without a handler: `sendMessage`
-  does not require a reply, so silence is the documented answer.
-- Log: tag `SHMBridgeGw`, only paths/uris and lengths.
-- Host-side tests: `watch/test/run-tests.sh` compiles `FrameMux`+`GwData`+`GwDataMap` (pure
-  Java) and runs `FrameMuxTest` and `GwMuxTest`: GW routing with the prefix stripped and never
-  to the 8773, `sendGw` guards, GW+bridge+SHM interleaving without breaking framing, exact
-  put/del/all/all-r framing, codec and DataMap vectors with unknown-field skipping.
+`BridgeLink` opens an RFCOMM server on the phone with the service UUID. The watch's `RfcommLink`
+connects by itself and its `FrameMux` delivers the `/__bridge__/*` frames. The phone ignores
+frames outside the channel. SHM does not use this channel: it goes through the native GMS Data
+Layer. A link counts as up after the first frame received from the watch.
 
-## Install (phone)
+Mirrored capabilities (`caps`), default `alarm`: with the watch paired through Galaxy
+Wearable, notifications and calls arrive natively and mirroring them would duplicate.
+Configuration (prefs `comms`, applied immediately):
 
-Side-load `dist/shm-bridge-phone.apk` on the phone. Enter the watch IP and the token (shown
-by the watch app when opened). Buttons: ECG, BP measure, BP menu, SHM home, Sync (Health
-Connect) and Last result (watch screen capture).
+```bash
+P=shminterop.shmbridge.phone; r() { adb -s <phone-serial> "$@"; }
+r shell am broadcast --user 0 -n $P/.CommsDebugReceiver -a shminterop.shmbridge.DEBUG_SEND \
+  --es path config --es caps alarm            # or notif,alarm,call
+r logcat -s SHMBridgeComms                    # only ids, packages, paths and lengths
+# status / inject a frame as if it came from the watch / send one to the watch
+r shell am broadcast --user 0 -n $P/.CommsDebugReceiver -a shminterop.shmbridge.DEBUG_SEND --es path status
+r shell am broadcast --user 0 -n $P/.CommsDebugReceiver -a shminterop.shmbridge.DEBUG_SEND \
+  --es path /__bridge__/notif/dismiss --es json "'{\"id\":\"<id>\"}'" --ez inject true
+```
 
-## Verified state on the author's own watch (One UI 8)
+## Status provider (phone)
 
-| Function | State |
+`<prefix>.shmbridge.phone.status` (`StatusProvider`, exported) gives a read-only, single-row view of
+the bridge state for the patcher app. Reading requires the signature permission
+`<prefix>.shmbridge.permission.STATUS` (declared by the phone bridge); insert/update/delete throw
+`UnsupportedOperationException`. It never creates the hub nor starts the service or the link:
+without a hub it reports zeros and empty strings.
+
+| Column | Meaning |
 |---|---|
-| Launch ECG/BP from the phone through the companion (background, without touching the watch) | OK: `BAL_ALLOW_SAW_PERMISSION`, result=2 (TASK_TO_FRONT) |
-| Token-protected TCP bridge on the LAN | OK |
-| Measurement wake lock (screen on for 15 s) | OK |
-| Result screen capture (accessibility) | OK: bound service + located window; in real use the watch must be on the wrist (off-wrist the system returns to the watchface after ~10 s and aborts the capture) |
-| Health Connect on the watch | Not present on this firmware (`android.software.health_connect` = false); the SYNC code is kept for watches that have it |
+| `service_running` | 0/1: `CommsService` is running |
+| `link_up` | 0/1: RFCOMM session up and the watch has sent a frame (`BridgeLink.isUp()`) |
+| `hello` | 0/1: a watch `/__bridge__/hello` was received on the current link |
+| `peer_caps` | csv of the capabilities in that hello (`notif,alarm,call` subset), `""` if none |
+| `caps` | csv of the phone's own mirrored capabilities |
+| `last_rx_age_ms` | ms since the last frame received from the watch, `-1` if never |
+| `version_code` | the phone bridge `versionCode` |
 
-## Known limitations
+```bash
+adb shell content query --uri content://shminterop.shmbridge.phone.status   # as the shell it needs the permission
+```
 
-- Off-wrist, the watch returns to the watchface: for the full flow (measurement + capture)
-  it has to be worn. Without a wrist the trigger still works but the measurement does not
-  progress.
-- BP requires a prior calibration (done once against a cuff); ECG requires touching the
-  crown. Both are unavoidable physical interactions; the bridge only orchestrates.
-- ECG/BP do not travel through Health Connect from SHM: the value is read from the screen
-  (accessibility) or seen directly on the watch. The capture returns the raw text of the
-  active SHM window.
-- The token travels in clear over the LAN (useful for testing); for prolonged use switch to
-  TLS or bind the port to the Bluetooth/Companion link.
+**Patcher app signer.** The patcher app is signed with a different key than the bridge, so a plain
+`signature` permission would not match it. Set `PATCHER_CERT_SHA256` (64 hex characters, colons
+optional; `config.env`) when building: `build-bridge.sh` then declares the permission as
+`signature|knownSigner` with `android:knownCerts="<digest>"`. Empty (default) keeps plain
+`signature`. `knownSigner` only exists since API 31 and is ignored below it (the phone `minSdk` is
+29); there only apps signed with the bridge key qualify.
 
 ## Alarm Fork (`shminterop.shmbridge.alarm`)
 
@@ -202,13 +166,19 @@ from the official APK; this repo only contains its source classes under `alarm-f
 `alarm-fork/README.md`).
 
 **Priority chain** (in `AlarmMirror`): **AlarmFork** -> **AlarmRinger**. If the fork is
-installed and has `SYSTEM_ALERT_WINDOW` (appop), alarms use Samsung's native UI. Otherwise
-`AlarmRinger` rings as a fallback. The local alarm from `onFire` (link down) also uses the
-fork when available.
+installed and the watch bridge has `SYSTEM_ALERT_WINDOW` (appop), alarms use Samsung's native UI.
+Otherwise `AlarmRinger` rings as a fallback. The local alarm from `onFire` (link down) also uses
+the fork when available.
 
 Both packages (`watch` and `alarm`) are signed with the same local keystore (`KEYSTORE` in
 `config.env`, generated if missing) and protected by the signature permission
 `shminterop.shmbridge.permission.ALARM_LINK` (declared in the bridge, used by the fork).
+
+## Known limitations
+
+- With the watch paired through Galaxy Wearable, mirroring notifications and calls duplicates the
+  native ones: that is why only `alarm` is mirrored by default.
+- `knownSigner` (see above) is ignored on Android 10 (API 29-30).
 
 ## Layout
 
@@ -216,28 +186,30 @@ Both packages (`watch` and `alarm`) are signed with the same local keystore (`KE
 shm-bridge/
 ├── watch/            # Wear OS companion (Java, no dependencies)
 │   ├── AndroidManifest.xml
-│   ├── res/xml/accessibility_service_config.xml
 │   └── src/shminterop/shmbridge/watch/
-│       ├── MainActivity.java     # watch UI + direct SHM launch
-│       ├── BridgeService.java    # FGS: TCP socket, token, wake lock, notification fallback
-│       ├── HcReader.java         # Health Connect reader (optional, depends on firmware)
-│       ├── ShmCaptureService.java# accessibility: captures the SHM result screen
-│       ├── BtRelayClient.java    # RFCOMM session with the phone + FrameMux
-│       ├── FrameMux.java         # frame demux: SHM 8773 <-> RFCOMM <-> BridgeHub/GwHub (pure Java)
+│       ├── MainActivity.java     # minimal status screen + start BridgeService
+│       ├── BridgeService.java    # FGS (connectedDevice) hosting the RFCOMM link
+│       ├── RfcommLink.java       # RFCOMM client session with the phone + FrameMux
+│       ├── FrameMux.java         # frame codec / session loop: RFCOMM <-> BridgeHub (pure Java)
 │       ├── BridgeHub.java        # /__bridge__/ channel: dispatch, hello, send()
-│       ├── GwHub.java            # /__gw__/ channel: battery/RAM/state for heartplugin, mirror store
-│       ├── GwData.java           # DataClient /__d__/* codec and store (pure Java)
-│       ├── GwDataMap.java        # GMS DataMap encoder (protobuf, scalar tags)
 │       ├── BridgeNotifier.java   # mirrored notifications
 │       ├── BridgeActionReceiver.java # actions/dismissals -> phone, DEBUG_SEND/DEBUG_RECV
 │       ├── AlarmMirror.java, AlarmRinger.java, BridgeAlarmReceiver.java, RingActivity.java
+│       ├── SamsungAlarm.java, SamsungAlarmListener.java # Samsung Alarm app integration
 │       ├── AlarmFork.java        # integration with the Samsung Alarm app fork
 │       ├── AlarmForkReceiver.java # receives dismiss/snooze from the fork
-│       └── CallMirror.java       # incoming call (no audio)
+│       └── CallMirror.java, CallActivity.java, CallWatchService.java # incoming call (no audio)
 │   └── test/                     # host-side FrameMux tests (run-tests.sh)
-├── phone/            # phone app (Java; the Wearable API classes come from the AAR)
-│   ├── src/shminterop/...
-│   └── stubs/        # compile-only stubs (Task/Tasks/...), never dexed
+├── phone/            # phone app (Java, no dependencies)
+│   ├── AndroidManifest.xml
+│   └── src/shminterop/shmbridge/phone/
+│       ├── MainActivity.java     # minimal status screen (same data as StatusProvider)
+│       ├── CommsService.java     # FGS: link, alarm watcher, call watcher
+│       ├── BridgeLink.java       # RFCOMM server + framing + keepalive
+│       ├── CommsHub.java         # dispatch, state, capabilities, peer hello tracking
+│       ├── StatusProvider.java   # read-only status ContentProvider (signature permission)
+│       ├── BridgeNotificationListener.java, NotifCodec.java, CallNotice.java
+│       └── CommsBootReceiver.java, CommsDebugReceiver.java
 ├── alarm-fork/       # source classes of the alarm fork (own short README)
 │   └── src/shminterop/shmbridge/alarm/
 │       ├── Link.java             # transport: /c_alarm/* in, /w_alarm/* -> bridge
@@ -246,52 +218,4 @@ shm-bridge/
 └── scripts/
     ├── build-bridge.sh           # Gradle-free build (javac+d8+aapt2+apksigner)
     └── gen-call-notice-strings.py # generates the call_notice / alarm_label resources
-```
-
-## Protocol commands (TCP transport)
-
-`AUTH <token>` -> `OK` · `PING` -> `PONG` · `ECG` / `BP` / `BPRUN` / `MAIN` ->
-`OK <activity>` (or `OK-NOTIF <activity>` without BAL exemption: tap the notification) ·
-`SYNC` -> `DATA {Health Connect json}` · `LAST` -> `DATA <SHM screen text>` · `BYE`.
-
-## Communications channel `/__bridge__/` (phone)
-
-Phone side in `phone/src/shminterop/shmbridge/phone/`: `CommsService` (`specialUse` FGS;
-link `BridgeLink`, ping `/__bridge__/ping` every 2.5 s, alarm/next and call/state),
-`BridgeNotificationListener` + `NotifCodec` (notif/*, alarm/ring|stop), `CommsHub` (dispatch
-and watch actions), `CommsDebugReceiver`, `CommsBootReceiver`. The app does **not** start
-`BtServer`/`BtRelayServer` by itself (BT autostart sits behind the `bt_autostart` pref, off).
-
-**Transport (since 1.5-rfcomm, default `bt`): no PC.** `BridgeLink` opens an RFCOMM server on
-the phone with the service UUID. The watch's `BtRelayClient` tries the bonded devices,
-connects by itself, and its `FrameMux` delivers the `/__bridge__/*` frames. The phone ignores
-plain heartbeats and `/__gw__/*`. SHM does not use this channel: it goes through the native
-GMS Data Layer.
-
-Mirrored capabilities (`caps`), default `alarm`: with the watch paired through Galaxy
-Wearable, notifications and calls arrive natively and mirroring them would duplicate.
-Configuration (prefs `comms`; the transport is applied on process restart):
-
-```bash
-r shell am broadcast --user 0 -n $P/.CommsDebugReceiver -a shminterop.shmbridge.DEBUG_SEND \
-  --es path config --es caps alarm            # or notif,alarm,call
-r shell am broadcast --user 0 -n $P/.CommsDebugReceiver -a shminterop.shmbridge.DEBUG_SEND \
-  --es path config --es transport bt          # only supported transport (tcp: see above)
-```
-
-```bash
-P=shminterop.shmbridge.phone; r() { adb -s <phone-serial> "$@"; }
-BRIDGE_ONLY=phone shm-bridge/scripts/build-bridge.sh
-r install -r --user 0 dist/shm-bridge-phone.apk
-r shell appops set --user 0 $P ACCESS_RESTRICTED_SETTINGS allow
-r shell appops set --user 0 $P SYSTEM_ALERT_WINDOW allow      # BAL exemption (notif/open, alarms)
-for x in ANSWER_PHONE_CALLS READ_PHONE_STATE POST_NOTIFICATIONS; do
-  r shell pm grant --user 0 $P android.permission.$x; done
-r shell cmd notification allow_listener $P/$P.BridgeNotificationListener 0
-r shell am start-foreground-service --user 0 -n $P/.CommsService
-r logcat -s SHMBridgeComms                                     # only ids, packages, paths and lengths
-# status / inject a frame as if it came from the watch / send one to the watch
-r shell am broadcast --user 0 -n $P/.CommsDebugReceiver -a shminterop.shmbridge.DEBUG_SEND --es path status
-r shell am broadcast --user 0 -n $P/.CommsDebugReceiver -a shminterop.shmbridge.DEBUG_SEND \
-  --es path /__bridge__/notif/dismiss --es json "'{\"id\":\"<id>\"}'" --ez inject true
 ```

@@ -184,6 +184,11 @@ class Interpreter(Tree):
                                  'optional': optional, 'ops': ops}}
         cat['profiles'] = {'p': {'description': 'd', 'families': {'shm-phone': ['t']},
                                  'inject': {}}}
+        # the install section refers to the real profiles; this reduced catalogue has none
+        out = copy.deepcopy(cat['outputs'][0])
+        out['from']['profile'] = 'p'
+        cat.update(outputs=[out], installOrder=[{'output': out['id']}],
+                   grants={out['id']: []}, stockAppsToDisable=[])
         self.assertEqual(P.validate_catalogue(cat), [])
         return cat
 

@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 # Downloads the third-party build dependencies into third_party/ and verifies their hashes.
 #   - apktool 3.0.3 (GitHub release)
-#   - play-services-wearable 19.0.0 AAR (Google Maven)
-# Nothing is redistributed by this repo: third_party/*.jar and *.aar are gitignored.
+# Nothing is redistributed by this repo: third_party/*.jar is gitignored.
 set -euo pipefail
 SHM_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 DEST="$SHM_ROOT/third_party"
@@ -10,8 +9,6 @@ mkdir -p "$DEST"
 
 APKTOOL_URL="https://github.com/iBotPeaches/Apktool/releases/download/v3.0.3/apktool_3.0.3.jar"
 APKTOOL_SHA256="dbf930b076c6b9be08d57c449cacefc3bdd6b71ebd59b3066fc0e1f5b14f9423"
-PSW_URL="https://dl.google.com/android/maven2/com/google/android/gms/play-services-wearable/19.0.0/play-services-wearable-19.0.0.aar"
-PSW_SHA256="0d19788ce6d51cbf670890cfd4daf4633322247b116612f898e3a2ead8539000"
 
 sha256_of() { sha256sum "$1" | awk '{print $1}'; }
 
@@ -42,4 +39,3 @@ fetch() {
 }
 
 fetch "$APKTOOL_URL" "$DEST/apktool_3.0.3.jar" "$APKTOOL_SHA256" yes
-fetch "$PSW_URL" "$DEST/play-services-wearable-19.0.0.aar" "$PSW_SHA256" no

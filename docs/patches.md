@@ -31,8 +31,46 @@ scripts/build_shm_watch.sh        # -> $DIST_DIR/shm-watch-1.5.1.022-gms.apk
   "profiles": { "<name>": {"description", "families": {"<family>": ["<pattern id>", ...]},
                            "inject": {"<family>": ["<injection name>", ...]}} },
   "patterns": { "<id>": {"families": [...] | "*", "title", "description", "optional": false,
-                         "ops": [ {"op": "<name>", ...args}, ... ]} } }
+                         "ops": [ {"op": "<name>", ...args}, ... ]} },
+  "outputs", "installOrder", "grants", "stockAppsToDisable": install section, see below }
 ```
+
+- **Install section** (top level, same file): what to install and how, for the app that drives
+  the install. It is data too, and every value that could reach an `adb shell` command line is
+  matched against a strict whitelist regex by `validate_catalogue` (unknown kinds or fields are
+  rejected):
+
+  ```
+  "outputs":      [ {"id", "device": "phone"|"watch", "package",
+                     "from": {"input": "<inputs id>", "profile": "<profile>"}      (patched APK)
+                           | {"ownApp": "<repo-relative dir>"} } ],               (our own app)
+  "installOrder": [ {"output": "<output id>", "then"?: "userOnboarding"} ],   every output once
+  "grants":       { "<output id>": [ <grant>, ... ] },
+  "stockAppsToDisable": [ {"device", "package", "optional": bool, "reason"} ]
+  ```
+
+  - `outputs[].package` is the package of the built APK; `${PKG_PREFIX}` is the only placeholder.
+    `from.input` must target the same device as the output and have patterns in `from.profile`.
+    `(device, package)` is unique.
+  - `installOrder` lists every output exactly once; `then` is a follow-up the app performs after
+    that install (`userOnboarding` = the user completes the in-app onboarding).
+  - `grants`: closed set of kinds, each with exactly these fields plus the optional
+    `"optional": true` (best effort / recommended) and `"note"` (one line, <= 300 chars):
+
+    | `kind` | fields | meaning (adb equivalent) |
+    |---|---|---|
+    | `permission` | `name` | runtime permission (`pm grant <pkg> <name>`) |
+    | `appop` | `op`, `mode` = `allow` | `appops set <pkg> <op> allow` |
+    | `notificationListener` | `component` | `cmd notification allow_listener <pkg>/<class>`; a name without dots, or starting with `.`, is relative to the output package |
+    | `deviceIdleWhitelist` | none | `dumpsys deviceidle whitelist +<pkg>` |
+    | `secureSetting` | `key`, `value` | `settings put secure <key> <value>` |
+
+    Regexes: permission `^[a-zA-Z][\w.]*$`, appop `^[A-Z][A-Z0-9_]*$`, setting key
+    `^[a-z][a-z0-9_]*$`, value `^[\w.-]{1,64}$`, component `^\.?[A-Za-z][\w.$]*$`, package
+    `^[a-zA-Z]\w*(\.[a-zA-Z]\w*)+$` (after expansion). The `grants` keys are output ids; an
+    output without grants has an empty list. Grants are repeated after every reinstall.
+  - `stockAppsToDisable`: stock system apps that should be disabled on a device
+    (`pm disable-user --user 0 <package>`); `optional` apps are offered, not forced.
 
 - **Family detection**: the first rule whose `package` equals the manifest `package` and, if
   `markerClass` is set (a class type without `L`/`;`), whose class exists in any `smali*` dir.

@@ -3,7 +3,8 @@ package shminterop.shmbridge.watch;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -11,21 +12,22 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
- * SHM Bridge — WearOS companion.
- * Takes advantage of the fact that stock SHM (com.samsung.android.shealthmonitors) exposes its
- * ECG/BP measurement activities exported and without permission: they are launched directly with startActivity,
- * without going through the app's home or its gates (finding F2).
+ * Minimal status screen: starts {@link BridgeService} (the RFCOMM link to the phone) and shows
+ * the link state.
  */
 public class MainActivity extends Activity {
 
-    static final String SHM_PKG = "com.samsung.android.shealthmonitors";
-    static final String ACT_MAIN = "com.samsung.android.shealthmonitors.ui.activity.MainActivity";
-    static final String ACT_ECG = "com.samsung.android.shealthmonitors.ecg.ui.activity.EcgMainActivity";
-    static final String ACT_BP = "com.samsung.android.shealthmonitors.bp.ui.activity.BpMainActivity";
-    static final String ACT_BP_RUN = "com.samsung.android.shealthmonitors.bp.ui.activity.BpMeasureRunActivity";
+    private final Handler handler = new Handler(Looper.getMainLooper());
+    private TextView link;
+    private TextView hello;
 
-    private TextView status;
-    private TextView info;
+    private final Runnable refresh = new Runnable() {
+        @Override public void run() {
+            link.setText("Enlace: " + RfcommLink.status);
+            hello.setText("Hello del teléfono: " + (BridgeHub.get(MainActivity.this).peerHello ? "sí" : "no"));
+            handler.postDelayed(this, 2000);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,85 +38,48 @@ public class MainActivity extends Activity {
         int pad = (int) (12 * getResources().getDisplayMetrics().density);
         root.setPadding(pad, pad, pad, pad);
 
-        status = new TextView(this);
-        status.setGravity(Gravity.CENTER);
-        status.setText("SHM Bridge");
-        root.addView(status);
+        TextView title = new TextView(this);
+        title.setGravity(Gravity.CENTER);
+        title.setText("SHM Bridge");
+        root.addView(title);
 
-        final TextView bt = new TextView(this);
-        bt.setGravity(Gravity.CENTER);
-        bt.setTextSize(11f);
-        root.addView(bt);
-        // Simple refresh of the BT state every 2 s while the activity is visible.
-        final android.os.Handler h = new android.os.Handler(android.os.Looper.getMainLooper());
-        final Runnable refresh = new Runnable() {
-            @Override public void run() {
-                bt.setText("BT: " + BtClient.status);
-                h.postDelayed(this, 2000);
-            }
-        };
-        h.post(refresh);
+        link = new TextView(this);
+        link.setGravity(Gravity.CENTER);
+        link.setTextSize(12f);
+        root.addView(link);
 
-        info = new TextView(this);
-        info.setGravity(Gravity.CENTER);
-        info.setTextSize(12f);
-        root.addView(info);
+        hello = new TextView(this);
+        hello.setGravity(Gravity.CENTER);
+        hello.setTextSize(12f);
+        root.addView(hello);
 
-        root.addView(button("INICIAR BRIDGE", new View.OnClickListener() {
+        Button start = new Button(this);
+        start.setText("INICIAR BRIDGE");
+        start.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this, BridgeService.class);
-                startForegroundService(i);
-                status.setText("Bridge activo");
-                info.setText("IP: " + BridgeService.localIp() + "\nPuerto: " + BridgeService.PORT
-                        + "\nToken: " + BridgeService.token(MainActivity.this));
+                startForegroundService(new Intent(MainActivity.this, BridgeService.class));
             }
-        }));
-
-        root.addView(button("ECG", new View.OnClickListener() {
-            @Override public void onClick(View v) { launch(ACT_ECG); }
-        }));
-
-        root.addView(button("BP (medir)", new View.OnClickListener() {
-            @Override public void onClick(View v) { launch(ACT_BP_RUN); }
-        }));
-
-        root.addView(button("BP (menú)", new View.OnClickListener() {
-            @Override public void onClick(View v) { launch(ACT_BP); }
-        }));
-
-        root.addView(button("SHM (home)", new View.OnClickListener() {
-            @Override public void onClick(View v) { launch(ACT_MAIN); }
-        }));
-
-        setContentView(root);
-        // auto-start the bridge if it is not running yet
-        Intent i = new Intent(this, BridgeService.class);
-        startForegroundService(i);
-        status.setText("Bridge activo");
-        info.setText("IP: " + BridgeService.localIp() + "\nPuerto: " + BridgeService.PORT
-                + "\nToken: " + BridgeService.token(this));
-    }
-
-    private Button button(String label, View.OnClickListener l) {
-        Button b = new Button(this);
-        b.setText(label);
-        b.setOnClickListener(l);
+        });
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         lp.topMargin = 8;
-        b.setLayoutParams(lp);
-        return b;
+        start.setLayoutParams(lp);
+        root.addView(start);
+
+        setContentView(root);
+        // auto-start the bridge if it is not running yet
+        startForegroundService(new Intent(this, BridgeService.class));
     }
 
-    private void launch(String cls) {
-        try {
-            Intent i = new Intent();
-            i.setClassName(SHM_PKG, cls);
-            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(i);
-            status.setText("Lanzado:\n" + cls.substring(cls.lastIndexOf('.') + 1));
-        } catch (Exception e) {
-            status.setText("ERR: " + e.getMessage());
-        }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        handler.post(refresh);
+    }
+
+    @Override
+    protected void onPause() {
+        handler.removeCallbacks(refresh);
+        super.onPause();
     }
 }

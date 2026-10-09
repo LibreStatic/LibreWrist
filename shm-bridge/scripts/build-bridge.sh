@@ -8,10 +8,16 @@ HERE="$(cd "$(dirname "$0")/.." && pwd)"
 source "$HERE/../scripts/lib/common.sh"
 require_tools
 
-[ -f "$PSW_AAR" ] || die "missing $PSW_AAR (run scripts/fetch_deps.sh)"
-PSW_JAR="$WORK_DIR/bridge-build/psw-classes.jar"
+# Optional: certificate digest of the patcher app (see config.env). Validated and normalized
+# (lowercase hex, no colons) here so a malformed value fails the build instead of the manifest.
+PATCHER_CERT=""
+if [ -n "${PATCHER_CERT_SHA256:-}" ]; then
+  PATCHER_CERT="$(printf '%s' "$PATCHER_CERT_SHA256" | tr -d ':' | tr 'A-F' 'a-f')"
+  [[ "$PATCHER_CERT" =~ ^[0-9a-f]{64}$ ]] \
+    || die "PATCHER_CERT_SHA256 must be 64 hex characters (colons optional)"
+fi
+
 mkdir -p "$WORK_DIR/bridge-build"
-unzip -p "$PSW_AAR" classes.jar > "$PSW_JAR"
 
 build_one() { # $1 = dir (watch|phone) $2 = minSdk $3 = targetSdk $4 = out apk
   local dir="$1" minsdk="$2" targetsdk="$3" out="$4"
@@ -19,19 +25,26 @@ build_one() { # $1 = dir (watch|phone) $2 = minSdk $3 = targetSdk $4 = out apk
   rm -rf "$b"; mkdir -p "$b/classes" "$b/dex"
   # Sources (src, res, manifest) with the prefix applied.
   python3 "$SHM_ROOT/scripts/lib/stage_prefix.py" "$HERE/$dir" "$b/stage" >/dev/null
-  local extracp=""
-  if [ "$dir" = "phone" ]; then
-    # Task/Tasks (play-services-tasks) are not in the AAR: compile-only stubs.
-    mkdir -p "$b/stub-classes"
-    javac -nowarn -d "$b/stub-classes" $(find "$HERE/phone/stubs" -name '*.java')
-    extracp="$PSW_JAR:$b/stub-classes"
+  if [ "$dir" = "phone" ] && [ -n "$PATCHER_CERT" ]; then
+    # StatusProvider's read permission: `signature` -> `signature|knownSigner` + knownCerts, so the
+    # patcher app (signed with a different key) can read it. knownSigner is ignored below API 31
+    # (the phone minSdk is 29): there only the bridge's own signature qualifies.
+    python3 - "$b/stage/AndroidManifest.xml" "$PATCHER_CERT" <<'PYEOF'
+import re, sys
+path, cert = sys.argv[1], sys.argv[2]
+s = open(path, encoding='utf-8').read()
+pat = re.compile(r'(<permission\b[^>]*android:name="[^"]*\.shmbridge\.permission\.STATUS"[^>]*?)'
+                 r'android:protectionLevel="signature"')
+s, n = pat.subn(r'\1android:protectionLevel="signature|knownSigner" android:knownCerts="' + cert + '"', s)
+if n != 1:
+    sys.exit('STATUS permission not found in the staged phone manifest')
+open(path, 'w', encoding='utf-8').write(s)
+PYEOF
   fi
-  javac --release 11 -nowarn -encoding UTF-8 -classpath "$PLATFORM_JAR:$extracp" -d "$b/classes" \
+  javac --release 11 -nowarn -encoding UTF-8 -classpath "$PLATFORM_JAR" -d "$b/classes" \
     $(find "$b/stage/src" -name '*.java')
   (cd "$b/classes" && jar cf "$b/classes.jar" .)
   local dexinputs=("$b/classes.jar")
-  # Real Wearable API classes go into the phone dex.
-  [ "$dir" = "phone" ] && dexinputs+=("$PSW_JAR")
   "$BT/d8" --release --lib "$PLATFORM_JAR" --min-api "$minsdk" --output "$b/dex" "${dexinputs[@]}"
   local resargs=()
   if [ -d "$b/stage/res" ]; then
@@ -55,4 +68,4 @@ PYEOF
 [ "${BRIDGE_ONLY:-}" != phone ] && build_one watch 30 36 "$DIST_DIR/shm-bridge-watch.apk"
 [ "${BRIDGE_ONLY:-}" != watch ] && build_one phone 29 35 "$DIST_DIR/shm-bridge-phone.apk"
 
-echo "Install and grant permissions as described in shm-bridge/README.md (repeat the grants after every reinstall)."
+echo "Install and grant permissions as described in shm-bridge/README.md (authoritative list: catalogue/catalogue.json \"grants\"; repeat the grants after every reinstall)."

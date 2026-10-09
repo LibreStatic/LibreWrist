@@ -4,7 +4,7 @@
 
 ```
 watch: patched SHM   ⇄ GMS Data Layer (stock pairing) ⇄ phone: patched SHM
-watch: bridge (BtRelayClient/FrameMux) ⇄ direct RFCOMM ⇄ phone: bridge (BridgeLink, transport `bt`)
+watch: bridge (RfcommLink/FrameMux) ⇄ direct RFCOMM ⇄ phone: bridge (BridgeLink)
 watch: Alarm fork ⇄ local intents ⇄ watch bridge
 ```
 
@@ -26,20 +26,28 @@ Everything runs between the phone and the watch; no PC is involved.
 Frames: `[int len][short pathLen][UTF-8 path][data]`, big-endian,
 `len = 2 + pathLen + data.length`. Heartbeat: empty `/__bridge__/ping` frame.
 
-The watch `FrameMux` routes by prefix: `/__bridge__/*` to the bridge, `/__gw__/*` to the GW channel
-(no counterpart, see below). Forwarding every other frame to the SHM (`:8773`) belonged to the PC
-variant and is inactive: the SHM uses GMS.
+Both ends only handle `/__bridge__/*` frames; any other frame is dropped (the SHM does not use this
+link: it goes through the GMS Data Layer). A framing violation (`len` < 2 or > 16 MB, `pathLen` >
+`len - 2`) closes the session.
 
 ## Bridge transport
 
-The phone `BridgeLink` has pluggable transports:
-- `bt` (default): RFCOMM server on the relay UUID; the watch `BtRelayClient` probes the bonded
-  devices and connects. 15 s no-traffic watchdog (RFCOMM has no read timeout). No PC needed.
-- `tcp`: `127.0.0.1:8775`, towards a PC gateway that is **not included** (dropped variant); the
-  code is still there but unused.
+Direct RFCOMM, no PC: the phone `BridgeLink` is the RFCOMM server (UUID
+`8b6d5c1e-3a24-4c0d-9f1b-6a7e2d5c4b3b`); the watch `RfcommLink` probes the bonded devices and
+connects, and its `FrameMux` carries the session. 15 s no-traffic watchdog on the phone (RFCOMM has
+no read timeout); both ends send their own `/__bridge__/ping` keepalive.
 
-The configuration is changed through the bridge debug receiver (`path=config`); see
-`shm-bridge/README.md`.
+The only configuration is the mirrored capabilities (`caps`), changed through the bridge debug
+receiver (`path=config`); see `shm-bridge/README.md`.
+
+## Status provider (phone)
+
+The phone bridge exposes a read-only `ContentProvider`, `<prefix>.shmbridge.phone.status`, protected
+by the signature permission `<prefix>.shmbridge.permission.STATUS` (optionally also granted to the
+patcher app's certificate with `PATCHER_CERT_SHA256`). One row: service running, link up, watch
+`hello` received, peer and own capabilities, ms since the last received frame and the bridge
+`versionCode`. It never creates the hub or starts the link. Columns and details:
+[shm-bridge/README.md](../shm-bridge/README.md).
 
 ## `/__bridge__/` channel — messages (UTF-8 JSON, ≤ 64 KB per frame)
 
@@ -72,15 +80,6 @@ and calls natively, so by default the phone only announces `caps=["alarm"]`.
 
 ### Privacy
 Notification bodies, names and numbers are never logged: only id, package, path and lengths.
-
-## `/__gw__/` channel and DataClient
-
-The watch bridge (`GwHub`/`GwData`) also implements a `/__gw__/` channel with a mirrored
-DataClient (`/__d__/put|del|all|all-r`), meant to let Galaxy Wearable talk to the watch without
-GMS. **The gateway and the phone side of that channel (patched heartplugin) are not included**: it
-never worked (GMS node/capability queries were still not redirected), and the verified setup uses
-stock Galaxy Wearable paired through GMS. The code stays in the watch bridge because it is part of
-the verified build and is harmless without a counterpart.
 
 ## Device-free tests
 

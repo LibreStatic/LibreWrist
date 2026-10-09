@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="shminterop.shmbridge.phone"
-    android:versionCode="6" android:versionName="1.5-rfcomm">
+    android:versionCode="7" android:versionName="1.6">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <!-- /__bridge__/ channel (CommsService, BridgeNotificationListener) -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
@@ -20,6 +17,12 @@
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
 
+    <!-- Read permission of StatusProvider. Plain `signature` here; scripts/build-bridge.sh rewrites it
+         to `signature|knownSigner` + android:knownCerts when PATCHER_CERT_SHA256 is set (the
+         patcher app is signed with a different key; knownSigner is ignored below API 31). -->
+    <permission android:name="shminterop.shmbridge.permission.STATUS"
+        android:protectionLevel="signature"/>
+
     <application android:label="SHM Bridge" android:allowBackup="false">
         <activity android:name=".MainActivity" android:exported="true">
             <intent-filter>
@@ -27,20 +30,6 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-                <service android:name="shminterop.relay.VendorReplyListenerService" android:exported="true">
-            <intent-filter>
-                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED"/>
-                <action android:name="com.google.android.gms.wearable.DATA_CHANGED"/>
-                <data android:scheme="wear" android:host="*"/>
-            </intent-filter>
-        </service>
-        <service android:name=".RelayKeepAliveService" android:exported="false"
-            android:foregroundServiceType="dataSync"/>
-        <service android:name=".BtServer" android:exported="false"
-            android:foregroundServiceType="dataSync"/>
-        <service android:name=".BtRelayServer" android:exported="false"
-            android:foregroundServiceType="dataSync"/>
-
         <!-- /__bridge__/ communications channel (docs/architecture.md).
              Exported for the shell only (DUMP permission): am start-foreground-service, user 0,
              shminterop.shmbridge.phone/.CommsService -->
@@ -48,7 +37,7 @@
             android:permission="android.permission.DUMP"
             android:foregroundServiceType="specialUse">
             <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-                android:value="Companion link to the owner's smartwatch over a local relay (notifications, alarms, call state)"/>
+                android:value="Companion link to the owner's smartwatch over a direct Bluetooth link (notifications, alarms, call state)"/>
         </service>
         <service android:name=".BridgeNotificationListener" android:exported="true"
             android:label="SHM Bridge (reloj)"
@@ -57,6 +46,11 @@
                 <action android:name="android.service.notification.NotificationListenerService"/>
             </intent-filter>
         </service>
+        <!-- Read-only bridge status for the patcher app (signature permission, no side effects). -->
+        <provider android:name=".StatusProvider"
+            android:authorities="shminterop.shmbridge.phone.status"
+            android:exported="true"
+            android:readPermission="shminterop.shmbridge.permission.STATUS"/>
         <receiver android:name=".CommsBootReceiver" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>

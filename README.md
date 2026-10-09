@@ -36,7 +36,7 @@ Galaxy Wearable proxy (it never worked).
 ## Quick start
 
 ```bash
-scripts/fetch_deps.sh                 # apktool and play-services-wearable into third_party/
+scripts/fetch_deps.sh                 # apktool into third_party/
 # copy the official APKs into apks/ with the names listed in apks/SHA256SUMS
 PKG_PREFIX=com.example scripts/build_all.sh
 ```
