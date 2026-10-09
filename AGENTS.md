@@ -45,3 +45,11 @@ watch-mod/test/run-tests.sh
 python3 -m unittest discover -s scripts -p 'test_*.py'
 python3 -m unittest discover -s superpatcher -p 'test_*.py'
 ```
+
+## Patcher app (`patcher-app/`)
+
+Gradle multi-module build (`:engine` pure JVM, `:adb` Android library, `:app` Compose app). The
+launcher `patcher-app/gradlew` is a jar-free shell script (the repo carries no jars); run it with a
+JDK 17 (`JAVA_HOME=<jdk17> patcher-app/gradlew :engine:test`). Every shipped library needs a row
+in `patcher-app/THIRD_PARTY.md` before it is added. The app's own code lives in `io.openshm.patcher`;
+code injected into vendor APKs still uses the `shminterop` placeholder.

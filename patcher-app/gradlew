@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Jar-free Gradle launcher: the repo never carries jar files, so instead of gradle-wrapper.jar
+# this script resolves the distribution named in gradle/wrapper/gradle-wrapper.properties under
+# $GRADLE_USER_HOME/wrapper/dists (downloading it once if missing) and runs it.
+# Gradle needs a JDK 17-21 to run AGP; set JAVA_HOME accordingly (e.g. a java-17-openjdk).
+set -euo pipefail
+here="$(cd "$(dirname "$0")" && pwd)"
+props="$here/gradle/wrapper/gradle-wrapper.properties"
+url="$(sed -n 's/^distributionUrl=//p' "$props" | sed 's/\\:/:/g')"
+sum="$(sed -n 's/^distributionSha256Sum=//p' "$props")"
+name="$(basename "$url" .zip)"            # gradle-X.Y.Z-bin
+version="${name#gradle-}"; version="${version%-bin}"; version="${version%-all}"
+base="${GRADLE_USER_HOME:-$HOME/.gradle}/wrapper/dists/$name"
+gradle_bin="$(ls -d "$base"/*/gradle-"$version"/bin/gradle 2>/dev/null | head -n1 || true)"
+if [ -z "$gradle_bin" ]; then
+  dest="$base/shminterop-launcher"
+  mkdir -p "$dest"
+  echo "Downloading $url" >&2
+  curl -fsSL "$url" -o "$dest/$name.zip"
+  if [ -n "$sum" ]; then
+    echo "$sum  $dest/$name.zip" | sha256sum -c - >&2
+  fi
+  unzip -q "$dest/$name.zip" -d "$dest"
+  rm -f "$dest/$name.zip"
+  gradle_bin="$dest/gradle-$version/bin/gradle"
+fi
+exec "$gradle_bin" -p "$here" "$@"
