@@ -1,0 +1,1601 @@
+{
+  "schema": 1,
+  "serial": 1,
+  "minAppVersion": 1,
+  "inputs": [
+    {
+      "id": "shm-phone",
+      "file": "shm-phone-1.4.6.001.apk",
+      "sha256": "3f20656e8c2ea34b95acb0b4d006b8aab3210fcc37cfb16abd2a7e4b91ca8524",
+      "label": "Samsung Health Monitor (phone)",
+      "package": "com.samsung.android.shealthmonitor",
+      "versionName": "1.4.6.001",
+      "versionCode": 1406001,
+      "minSdk": 31,
+      "targetSdk": 35,
+      "abis": [
+        "arm64-v8a",
+        "armeabi-v7a"
+      ],
+      "dpi": "nodpi",
+      "format": "apk",
+      "target": "phone",
+      "role": "patched",
+      "obtain": {
+        "apkmirror": "samsung-electronics-co-ltd/samsung-health-monitor-2",
+        "pullFrom": [
+          "phone"
+        ]
+      }
+    },
+    {
+      "id": "shm-watch",
+      "file": "shm-watch-1.5.1.022.apk",
+      "sha256": "a714e9a5950f456b8da4843bd6cdb19948a0c6fd9101b473e24beb3384a2c620",
+      "label": "Samsung Health Monitor (Wear OS)",
+      "package": "com.samsung.android.shealthmonitor",
+      "versionName": "1.5.1.022",
+      "versionCode": 1501022,
+      "minSdk": 30,
+      "targetSdk": 36,
+      "abis": [
+        "armeabi-v7a"
+      ],
+      "dpi": "nodpi",
+      "format": "apk",
+      "target": "watch",
+      "role": "patched",
+      "obtain": {
+        "apkmirror": "samsung-electronics-co-ltd/samsung-health-monitor-wear-os",
+        "pullFrom": [
+          "watch"
+        ]
+      }
+    },
+    {
+      "id": "alarm-watch",
+      "file": "alarm-watch-1.3.05.9.apk",
+      "sha256": "141832f22d7fb8bb7a6bb5e11695829015da6a33c5e19671a8695ecea276e8bd",
+      "label": "Alarm (Wear OS)",
+      "package": "com.samsung.android.watch.alarm",
+      "versionName": "1.3.05.9",
+      "versionCode": 130509000,
+      "minSdk": 34,
+      "targetSdk": 36,
+      "abis": [],
+      "dpi": "nodpi",
+      "format": "apk",
+      "target": "watch",
+      "role": "patched",
+      "obtain": {
+        "apkmirror": "samsung-electronics-co-ltd/alarm-wear-os",
+        "pullFrom": [
+          "watch"
+        ]
+      }
+    }
+  ],
+  "families": [
+    {
+      "id": "shm-phone",
+      "package": "com.samsung.android.shealthmonitor",
+      "markerClass": "com/samsung/android/shealthmonitor/version/api/AppVersionCheckResponse"
+    },
+    {
+      "id": "shm-watch",
+      "package": "com.samsung.android.shealthmonitor"
+    },
+    {
+      "id": "alarm-watch",
+      "package": "com.samsung.android.watch.alarm"
+    }
+  ],
+  "profiles": {
+    "gms": {
+      "description": "Native GMS Data Layer between watch and phone (no PC). Both SHM apps share package and signing certificate.",
+      "families": {
+        "shm-phone": [
+          "generic-manufacturer-check",
+          "generic-vendor-check",
+          "shm-min-age-22-to-16",
+          "shm-supported-type-ordinals",
+          "shm-region-supportedtype",
+          "shm-region-countrylist",
+          "shm-root-packagevalidator",
+          "shm-force-update-response",
+          "shm-force-update-pref",
+          "shm-main-gates",
+          "shm-setup-network-gate",
+          "shm-sleep-apnea-support",
+          "phone-rebrand-gms"
+        ],
+        "shm-watch": [
+          "generic-manufacturer-check",
+          "watch-rebrand-coexist",
+          "watch-queries-health-service",
+          "watch-companion-vendor",
+          "watch-alarm-system-app",
+          "watch-mobile-installed",
+          "watch-ecg-sensor-adapter",
+          "watch-apnea-country",
+          "watch-apnea-reeval-not-supported"
+        ]
+      },
+      "inject": {
+        "shm-phone": [],
+        "shm-watch": [
+          "watch-mod"
+        ]
+      }
+    },
+    "alarm": {
+      "description": "Fork of the watch Alarm app (AlarmWatch 1.3.05.9) that receives phone alarms from the SHM bridge over direct intents instead of the GMS Data Layer. No launcher icon, own label.",
+      "families": {
+        "alarm-watch": [
+          "alarm-verify-symbols",
+          "alarm-rebrand-manifest",
+          "alarm-rebrand-code",
+          "alarm-permissions-prune",
+          "alarm-notification-permissions",
+          "alarm-queries-libs",
+          "alarm-components-prune",
+          "alarm-provider-open",
+          "alarm-link-components",
+          "alarm-appfunctions-drop",
+          "alarm-semgesture-skip",
+          "alarm-gms-observer-drop",
+          "alarm-service-stop-on-destroy",
+          "alarm-force-sound-vibrate",
+          "alarm-link-send",
+          "alarm-hide-launcher",
+          "alarm-relabel"
+        ]
+      },
+      "inject": {
+        "alarm-watch": [
+          "alarm-fork"
+        ]
+      }
+    }
+  },
+  "patterns": {
+    "generic-manufacturer-check": {
+      "families": "*",
+      "title": "Manufacturer check",
+      "description": "Manufacturer check \"samsung\".contains/equals -> auto-true",
+      "optional": false,
+      "ops": [
+        {
+          "op": "sweepStringCompareAutoTrue",
+          "constValue": "samsung",
+          "replaceValue": "android",
+          "excludeRegex": [
+            "/(androidx|com/google|com/bumptech|android/support)/"
+          ],
+          "expect": "atLeastOne"
+        }
+      ]
+    },
+    "generic-vendor-check": {
+      "families": "*",
+      "title": "Samsung SDK vendor check",
+      "description": "SsdkVendorCheck: \"Samsung\" -> \"Android\" (compare auto-true)",
+      "optional": false,
+      "ops": [
+        {
+          "op": "sweepStringCompareAutoTrue",
+          "constValue": "Samsung",
+          "replaceValue": "Android",
+          "compare": [
+            "compareToIgnoreCase"
+          ],
+          "expect": "atLeastOne"
+        }
+      ]
+    },
+    "shm-min-age-22-to-16": {
+      "families": [
+        "shm-phone",
+        "shm-watch"
+      ],
+      "title": "Minimum age 16",
+      "description": "MIN_AGE 0x16 (22) -> 0x10 (16) in util/c",
+      "optional": false,
+      "ops": [
+        {
+          "op": "swapConst",
+          "fileRegex": "/shealthmonitor/util/c\\.smali$",
+          "old": "const/16 v0, 0x16",
+          "new": "const/16 v0, 0x10",
+          "context": "shealthmonitor/util/c",
+          "expect": 1
+        }
+      ]
+    },
+    "shm-supported-type-ordinals": {
+      "families": [
+        "shm-phone"
+      ],
+      "title": "Region ordinals",
+      "description": "MCC/CSC/ALL/NO_SIM ordinals -> 0 (rejection = supported)",
+      "optional": false,
+      "ops": [
+        {
+          "op": "enumOrdinalsZero",
+          "fileRegex": "CommonConstants\\$SupportedType\\.smali",
+          "values": [
+            "0x1",
+            "0x2",
+            "0x3",
+            "0x4"
+          ],
+          "expect": 1
+        }
+      ]
+    },
+    "shm-region-supportedtype": {
+      "families": [
+        "shm-phone"
+      ],
+      "title": "Region check",
+      "description": "Region check returning SupportedType -> always .a (supported)",
+      "optional": false,
+      "ops": [
+        {
+          "op": "returnSingleton",
+          "fileRegex": "/shealthmonitor/util/",
+          "fileAny": [
+            "MCC_NOT_SUPPORT",
+            "CountryDefine"
+          ],
+          "sigRegex": ".*\\)Lcom/samsung/android/shealthmonitor/util/CommonConstants\\$SupportedType;",
+          "sigExclude": [
+            "valueOf",
+            "values"
+          ],
+          "field": "a",
+          "expect": 1
+        }
+      ]
+    },
+    "shm-region-countrylist": {
+      "families": [
+        "shm-phone"
+      ],
+      "title": "Country list",
+      "description": "Boolean country check (\"BH\" in list) -> true",
+      "optional": false,
+      "ops": [
+        {
+          "op": "insertAtMethodStart",
+          "fileRegex": "/shealthmonitor/util/",
+          "sigRegex": ".*\\)Z",
+          "bodyAll": [
+            "\"BH\""
+          ],
+          "insert": [
+            "",
+            "    const/4 v0, 0x1",
+            "",
+            "    return v0",
+            ""
+          ],
+          "expect": 1
+        }
+      ]
+    },
+    "shm-root-packagevalidator": {
+      "families": [
+        "shm-phone"
+      ],
+      "title": "Certificate validation",
+      "description": "PackageValidator/root: validation methods -> false",
+      "optional": false,
+      "ops": [
+        {
+          "op": "insertAtMethodStart",
+          "fileAll": [
+            "S HealthMonitor - PackageValidator"
+          ],
+          "sigRegex": ".*\\)Z.*",
+          "bodyAll": [
+            "PackageValidator"
+          ],
+          "insert": [
+            "",
+            "    const/4 v0, 0x0",
+            "",
+            "    return v0",
+            ""
+          ],
+          "expect": 1
+        },
+        {
+          "op": "insertAtMethodStart",
+          "fileAll": [
+            "S HealthMonitor - PackageValidator"
+          ],
+          "sigRegex": ".*\\)Z.*",
+          "bodyAll": [
+            "[[B"
+          ],
+          "bodyNone": [
+            "const/4 v0, 0x0"
+          ],
+          "insert": [
+            "",
+            "    const/4 v0, 0x0",
+            "",
+            "    return v0",
+            ""
+          ],
+          "expect": 1
+        }
+      ]
+    },
+    "shm-force-update-response": {
+      "families": [
+        "shm-phone"
+      ],
+      "title": "Update check response",
+      "description": "AppVersionCheckResponse: failed/updateNeeded -> false; non-null version (the watch response can come back failed without versionName and the NPE kills the process mid-handshake)",
+      "optional": false,
+      "ops": [
+        {
+          "op": "insertAtMethodStart",
+          "fileRegex": "/version/api/AppVersionCheckResponse\\.smali$",
+          "sigRegex": "(public|private).*is(ResponseFailed|UpdateNeeded)\\(\\)Z",
+          "insert": [
+            "",
+            "    const/4 v0, 0x0",
+            "",
+            "    return v0",
+            ""
+          ],
+          "expect": 2
+        },
+        {
+          "op": "insertAtMethodStart",
+          "fileRegex": "/version/api/AppVersionCheckResponse\\.smali$",
+          "sigRegex": "public.*getVersionName\\(\\)Ljava/lang/String;",
+          "insert": [
+            "",
+            "    const-string v0, \"1.5.1.022\"",
+            "",
+            "    return-object v0",
+            ""
+          ],
+          "expect": 1
+        },
+        {
+          "op": "insertAtMethodStart",
+          "fileRegex": "/version/api/AppVersionCheckResponse\\.smali$",
+          "sigRegex": "public.*getVersionCode\\(\\)Ljava/lang/String;",
+          "insert": [
+            "",
+            "    const-string v0, \"1501022\"",
+            "",
+            "    return-object v0",
+            ""
+          ],
+          "expect": 1
+        }
+      ]
+    },
+    "shm-force-update-pref": {
+      "families": [
+        "shm-phone"
+      ],
+      "title": "Forced update flag",
+      "description": "Method reading the required-version pref -> false",
+      "optional": false,
+      "ops": [
+        {
+          "op": "insertAtMethodStart",
+          "sigRegex": ".*\\)Z",
+          "bodyAll": [
+            "shealth_monitor_base_app_update_latest_version_code"
+          ],
+          "insert": [
+            "",
+            "    const/4 v0, 0x0",
+            "",
+            "    return v0",
+            ""
+          ],
+          "expect": 1
+        }
+      ]
+    },
+    "shm-main-gates": {
+      "families": [
+        "shm-phone"
+      ],
+      "title": "Start-up gates",
+      "description": "checkSystem/updateVersionCheck -> void; isScreenLockEnabled -> success",
+      "optional": false,
+      "ops": [
+        {
+          "op": "insertAtMethodStart",
+          "fileRegex": "/SHealthMonitorMainActivity\\.smali$",
+          "sigRegex": "private final checkSystem\\(\\)V",
+          "insert": [
+            "",
+            "    return-void",
+            ""
+          ],
+          "expect": 1
+        },
+        {
+          "op": "insertAtMethodStart",
+          "fileRegex": "/SHealthMonitorMainActivity\\.smali$",
+          "sigRegex": "private final updateVersionCheck\\(\\)V",
+          "insert": [
+            "",
+            "    return-void",
+            ""
+          ],
+          "expect": 1
+        },
+        {
+          "op": "returnSingleton",
+          "fileRegex": "/SHealthMonitorMainActivity\\.smali$",
+          "sigRegex": "private final isScreenLockEnabled\\(\\)L[^;]+;",
+          "field": "a",
+          "expect": 1
+        }
+      ]
+    },
+    "shm-setup-network-gate": {
+      "families": [
+        "shm-phone"
+      ],
+      "title": "Setup network gate",
+      "description": "checkNoNetworkError -> void (no SIM/region gate in setup)",
+      "optional": false,
+      "ops": [
+        {
+          "op": "insertAtMethodStart",
+          "fileRegex": "/SHealthMonitorSetupActivity\\.smali$",
+          "sigRegex": "private .*checkNoNetworkError\\(\\)V",
+          "insert": [
+            "",
+            "    return-void",
+            ""
+          ],
+          "expect": 1
+        }
+      ]
+    },
+    "shm-sleep-apnea-support": {
+      "families": [
+        "shm-phone"
+      ],
+      "title": "Sleep apnea support",
+      "description": "isPhoneSupportSleepApnea -> true (const after move-result)",
+      "optional": false,
+      "ops": [
+        {
+          "op": "forceConstAfterMove",
+          "anchor": "\"[isPhoneSupportSleepApnea] isSleepApneaModel = \"",
+          "value": "0x1",
+          "expect": 1
+        }
+      ]
+    },
+    "phone-rebrand-gms": {
+      "families": [
+        "shm-phone"
+      ],
+      "title": "Phone package rebrand",
+      "description": "Phone: package -> com.samsung.android.shealthmonitors (same package and certificate as the watch app: the GMS Data Layer only delivers between equal AppKeys)",
+      "optional": false,
+      "ops": [
+        {
+          "op": "manifestRebrand",
+          "oldPkg": "com.samsung.android.shealthmonitor",
+          "newPkg": "com.samsung.android.shealthmonitors"
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "com.samsung.android.shealthmonitor",
+          "new": "com.samsung.android.shealthmonitors",
+          "expect": "atLeastOne"
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "com.samsung.android.shealthmonitor.sleep",
+          "new": "com.samsung.android.shealthmonitors.sleep",
+          "expect": "any"
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "com.samsung.android.shealthmonitor.bp",
+          "new": "com.samsung.android.shealthmonitors.bp",
+          "expect": "any"
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "com.samsung.android.shealthmonitor.ecg",
+          "new": "com.samsung.android.shealthmonitors.ecg",
+          "expect": "any"
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "com.samsung.android.shealthmonitor.fileprovider",
+          "new": "com.samsung.android.shealthmonitors.fileprovider",
+          "expect": "any"
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "com.samsung.android.shealthmonitor.pdf.fileprovider",
+          "new": "com.samsung.android.shealthmonitors.pdf.fileprovider",
+          "expect": "atLeastOne"
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "content://com.samsung.android.shealthmonitor.fileprovider/",
+          "new": "content://com.samsung.android.shealthmonitors.fileprovider/",
+          "expect": "atLeastOne"
+        }
+      ]
+    },
+    "watch-rebrand-coexist": {
+      "families": [
+        "shm-watch"
+      ],
+      "title": "Watch package rebrand",
+      "description": "Watch: package -> shealthmonitors (manifest, permissions, authorities, tile package) so it coexists with the system app",
+      "optional": false,
+      "ops": [
+        {
+          "op": "manifestRebrand",
+          "oldPkg": "com.samsung.android.shealthmonitor",
+          "newPkg": "com.samsung.android.shealthmonitors"
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "com.samsung.android.shealthmonitor",
+          "new": "com.samsung.android.shealthmonitors",
+          "expect": "atLeastOne"
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "com.samsung.android.shealthmonitor.sleep",
+          "new": "com.samsung.android.shealthmonitors.sleep",
+          "expect": "any"
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "com.samsung.android.shealthmonitor.bp",
+          "new": "com.samsung.android.shealthmonitors.bp",
+          "expect": "any"
+        }
+      ]
+    },
+    "watch-queries-health-service": {
+      "families": [
+        "shm-watch"
+      ],
+      "title": "Health service visibility",
+      "description": "Watch: manifest <queries> declares com.samsung.android.service.health (package visibility for the Health Tracking Service)",
+      "optional": false,
+      "ops": [
+        {
+          "op": "manifestAddQueryPackage",
+          "pkg": "com.samsung.android.service.health"
+        }
+      ]
+    },
+    "watch-companion-vendor": {
+      "families": [
+        "shm-watch"
+      ],
+      "title": "Companion vendor",
+      "description": "Watch: accept any companion vendor (\"samsung\" match forced; READ_COMPANION_INFO denial path -> TRUE)",
+      "optional": false,
+      "ops": [
+        {
+          "op": "forceInvokeResult",
+          "fileAnchor": "SHWearMonitor-WearCoreServiceRepository",
+          "invokeRegex": "L\\w+;->\\w+\\(Ljava/lang/String;Ljava/lang/String;Z\\)Z",
+          "precedingConst": "\"samsung\"",
+          "value": "0x1",
+          "expect": 1
+        },
+        {
+          "op": "replaceAllInFilesWithAnchor",
+          "fileContains": "SHWearMonitor-WearCoreServiceRepository",
+          "old": "Ljava/lang/Boolean;->FALSE:Ljava/lang/Boolean;",
+          "new": "Ljava/lang/Boolean;->TRUE:Ljava/lang/Boolean;",
+          "expect": 1
+        }
+      ]
+    },
+    "watch-alarm-system-app": {
+      "families": [
+        "shm-watch"
+      ],
+      "title": "Exact alarm scheduling",
+      "description": "Watch: setExactAlarmForSystemApp lookup renamed -> stock setAlarmClock path",
+      "optional": false,
+      "ops": [
+        {
+          "op": "replaceConstStringExact",
+          "old": "setExactAlarmForSystemApp",
+          "new": "setExactAlarmForSystemApp__not_system_app",
+          "expect": 1
+        }
+      ]
+    },
+    "watch-mobile-installed": {
+      "families": [
+        "shm-watch"
+      ],
+      "title": "Phone app installed",
+      "description": "Watch: \"phone app installed\" getter -> true (opens the ECG capability gate)",
+      "optional": false,
+      "ops": [
+        {
+          "op": "setMethodBody",
+          "sigRegex": "public static \\w+\\(\\)Z",
+          "bodyAll": [
+            "\"application_installed_in_mobile\"",
+            "Ljava/lang/Boolean;->FALSE:"
+          ],
+          "body": [
+            "    .locals 1",
+            "",
+            "    # PATCH: always report the phone app as installed (capability_ecg gate)",
+            "    const/4 v0, 0x1",
+            "",
+            "    return v0"
+          ],
+          "expect": 1
+        }
+      ]
+    },
+    "watch-ecg-sensor-adapter": {
+      "families": [
+        "shm-watch"
+      ],
+      "title": "ECG sensor",
+      "description": "Watch: ECG sensor (0x1b) via EcgAdapter (Health Tracking SDK) + availability exemption for IHRN (0x25) and SpO2/apnea (0x31)",
+      "optional": false,
+      "ops": [
+        {
+          "op": "insertAtMethodStart",
+          "sigRegex": "public final \\w+\\(I\\)Z",
+          "bodyAll": [
+            "Lcom/samsung/android/hardware/sensormanager/SemSensorManager;->isAvailable(I)Z"
+          ],
+          "needRegs": 3,
+          "expect": 1,
+          "insert": [
+            "",
+            "    move v2, p1",
+            "",
+            "    const/16 v0, 0x1b",
+            "",
+            "    if-ne p1, v0, :ss_skip_a",
+            "",
+            "    const/4 v0, 0x1",
+            "",
+            "    return v0",
+            "",
+            "    :ss_skip_a",
+            ""
+          ],
+          "tail": [
+            "    invoke-static {v2, p0}, L${PKG_PATH}/watch/WatchOverrides;->sensorAvailability(IZ)Z",
+            "",
+            "    move-result p0",
+            "",
+            ""
+          ]
+        },
+        {
+          "op": "insertAtMethodStart",
+          "sigRegex": "public final \\w+\\(ILjava/lang/String;\\)Z",
+          "bodyAll": [
+            "Lcom/samsung/android/hardware/sensormanager/SemSensorManager;->isFeatureSupported("
+          ],
+          "expect": 1,
+          "insert": [
+            "",
+            "    const/16 v0, 0x1b",
+            "",
+            "    if-ne p1, v0, :ss_skip_b",
+            "",
+            "    const/4 v0, 0x1",
+            "",
+            "    return v0",
+            "",
+            "    :ss_skip_b",
+            ""
+          ]
+        },
+        {
+          "op": "insertAtMethodStart",
+          "sigRegex": "public final \\w+\\(Lcom/samsung/android/hardware/sensormanager/SemSensorListener;I\\)Z",
+          "bodyAll": [
+            "Lcom/samsung/android/hardware/sensormanager/SemSensorManager;->registerListener("
+          ],
+          "expect": 1,
+          "insert": [
+            "",
+            "    const/16 v0, 0x1b",
+            "",
+            "    if-ne p2, v0, :ss_skip_c",
+            "",
+            "    invoke-static {p1, p2}, L${PKG_PATH}/ecg/EcgAdapter;->start(Lcom/samsung/android/hardware/sensormanager/SemSensorListener;I)Z",
+            "",
+            "    move-result v0",
+            "",
+            "    return v0",
+            "",
+            "    :ss_skip_c",
+            ""
+          ]
+        },
+        {
+          "op": "insertAtMethodStart",
+          "sigRegex": "public final \\w+\\(Lcom/samsung/android/hardware/sensormanager/SemSensorListener;I\\)V",
+          "bodyAll": [
+            "Lcom/samsung/android/hardware/sensormanager/SemSensorManager;->unregisterListener("
+          ],
+          "expect": 1,
+          "insert": [
+            "",
+            "    const/16 v0, 0x1b",
+            "",
+            "    if-ne p2, v0, :ss_skip_e",
+            "",
+            "    invoke-static {p1, p2}, L${PKG_PATH}/ecg/EcgAdapter;->stop(Lcom/samsung/android/hardware/sensormanager/SemSensorListener;I)V",
+            "",
+            "    return-void",
+            "",
+            "    :ss_skip_e",
+            ""
+          ]
+        }
+      ]
+    },
+    "watch-apnea-country": {
+      "families": [
+        "shm-watch"
+      ],
+      "title": "Apnea country check",
+      "description": "Watch: apnea country check -> true (regional check disabled)",
+      "optional": false,
+      "ops": [
+        {
+          "op": "insertAtMethodStart",
+          "sigRegex": "public static \\w+\\(\\)Z",
+          "bodyAll": [
+            "\"isApneaSupportCountry : \"",
+            "\"SHWearMonitor-CSCUtils\""
+          ],
+          "needRegs": 2,
+          "expect": 1,
+          "insert": [
+            "",
+            "    const-string v0, \"SHWearMonitor-CSCUtils\"",
+            "",
+            "    const-string v1, \"isApneaSupportCountry : regional check disabled (vendor override)\"",
+            "",
+            "    invoke-static {v0, v1}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I",
+            "",
+            "    const/4 v0, 0x1",
+            "",
+            "    return v0",
+            ""
+          ]
+        }
+      ]
+    },
+    "watch-apnea-reeval-not-supported": {
+      "families": [
+        "shm-watch"
+      ],
+      "title": "Apnea support re-evaluation",
+      "description": "Watch: persisted NOT_SUPPORTED apnea version is re-evaluated",
+      "optional": false,
+      "ops": [
+        {
+          "op": "insertInMethodAtMatch",
+          "sigRegex": "public static \\w+\\(\\)L\\w+;",
+          "bodyAll": [
+            "\"Stored device version : \""
+          ],
+          "pattern": "sget-object (?P<reg>v\\d), (?P<etype>L\\w+;)->\\w+:(?P=etype)\\n\\n    if-eq (?P<stored>v\\d), (?P=reg), :(?P<label>\\w+)\\n\\n(?P<at>    return-object (?P=stored)\\n)",
+          "enumFields": {
+            "field": {
+              "enumType": "etype",
+              "constant": "NOT_SUPPORTED"
+            }
+          },
+          "insert": [
+            "    sget-object {{reg}}, {{etype}}->{{field}}:{{etype}}",
+            "",
+            "    if-eq {{stored}}, {{reg}}, :{{label}}",
+            "",
+            ""
+          ],
+          "expect": 1
+        }
+      ]
+    },
+    "alarm-verify-symbols": {
+      "families": [
+        "alarm-watch"
+      ],
+      "title": "Link dependencies",
+      "description": "Link dependencies (o2.b/o2.c JSON model, k0.b local broadcast, AlarmSyncService.m) exist",
+      "optional": false,
+      "ops": [
+        {
+          "op": "verifyClassContains",
+          "checks": [
+            {
+              "className": "o2/b",
+              "contains": ".method public static a(Ljava/lang/String;)"
+            },
+            {
+              "className": "o2/c",
+              "contains": ".method public final f()"
+            },
+            {
+              "className": "k0/b",
+              "contains": ".method public static a(Landroid/content/Context;)"
+            },
+            {
+              "className": "k0/b",
+              "contains": ".method public final c(Landroid/content/Intent;)V"
+            },
+            {
+              "className": "com/samsung/android/watch/alarm/service/AlarmSyncService",
+              "contains": " m:J"
+            }
+          ]
+        }
+      ]
+    },
+    "alarm-rebrand-manifest": {
+      "families": [
+        "alarm-watch"
+      ],
+      "title": "Fork package rebrand (manifest)",
+      "description": "Manifest: package, dynamic-receiver permission and provider authorities -> fork package",
+      "optional": false,
+      "ops": [
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": ".",
+            "attr": {
+              "package": "com.samsung.android.watch.alarm"
+            }
+          },
+          "attrs": {
+            "package": "${PKG_PREFIX}.shmbridge.alarm"
+          },
+          "expect": 1
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "permission",
+            "attr": {
+              "android:name": "com.samsung.android.watch.alarm.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+            }
+          },
+          "attrs": {
+            "android:name": "${PKG_PREFIX}.shmbridge.alarm.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+          },
+          "expect": 1
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "uses-permission",
+            "attr": {
+              "android:name": "com.samsung.android.watch.alarm.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+            }
+          },
+          "attrs": {
+            "android:name": "${PKG_PREFIX}.shmbridge.alarm.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+          },
+          "expect": 1
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "application/provider",
+            "attr": {
+              "android:authorities": "com.samsung.android.watch.alarm"
+            }
+          },
+          "attrs": {
+            "android:authorities": "${PKG_PREFIX}.shmbridge.alarm"
+          },
+          "expect": 1
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "application/provider",
+            "attr": {
+              "android:authorities": "com.samsung.android.watch.alarm.androidx-startup"
+            }
+          },
+          "attrs": {
+            "android:authorities": "${PKG_PREFIX}.shmbridge.alarm.androidx-startup"
+          },
+          "expect": 1
+        }
+      ]
+    },
+    "alarm-rebrand-code": {
+      "families": [
+        "alarm-watch"
+      ],
+      "title": "Fork package rebrand (code)",
+      "description": "Smali: content URI (u2/b) and exact package strings (c0/c, J0/e, e2/i, Z1/b) -> fork package",
+      "optional": false,
+      "ops": [
+        {
+          "op": "replaceInClass",
+          "className": "u2/b",
+          "old": "\"content://com.samsung.android.watch.alarm/alarm\"",
+          "new": "\"content://${PKG_PREFIX}.shmbridge.alarm/alarm\""
+        },
+        {
+          "op": "replaceInClass",
+          "className": "c0/c",
+          "old": "\"com.samsung.android.watch.alarm\"",
+          "new": "\"${PKG_PREFIX}.shmbridge.alarm\"",
+          "count": 3
+        },
+        {
+          "op": "replaceInClass",
+          "className": "J0/e",
+          "old": "\"com.samsung.android.watch.alarm\"",
+          "new": "\"${PKG_PREFIX}.shmbridge.alarm\"",
+          "count": 1
+        },
+        {
+          "op": "replaceInClass",
+          "className": "e2/i",
+          "old": "\"com.samsung.android.watch.alarm\"",
+          "new": "\"${PKG_PREFIX}.shmbridge.alarm\"",
+          "count": 2
+        },
+        {
+          "op": "replaceInClass",
+          "className": "Z1/b",
+          "old": "\"com.samsung.android.watch.alarm\"",
+          "new": "\"${PKG_PREFIX}.shmbridge.alarm\"",
+          "count": 1
+        }
+      ]
+    },
+    "alarm-permissions-prune": {
+      "families": [
+        "alarm-watch"
+      ],
+      "title": "Privileged permissions",
+      "description": "Manifest: drop privileged/system uses-permission and the vendor permission declarations",
+      "optional": false,
+      "ops": [
+        {
+          "op": "manifestRemove",
+          "select": {
+            "path": "uses-permission",
+            "attrIn": {
+              "android:name": [
+                "android.permission.START_ACTIVITIES_FROM_BACKGROUND",
+                "android.permission.DEVICE_POWER",
+                "com.samsung.android.scloud.sync.permission.READ",
+                "com.samsung.android.scloud.sync.permission.WRITE",
+                "com.samsung.android.permisson.ACCESS_SYSTEM_KEY_DISPATCHING",
+                "android.permission.BLUETOOTH",
+                "android.permission.LOCAL_MAC_ADDRESS",
+                "android.permission.STOP_APP_SWITCHES",
+                "com.samsung.android.wear.retailmode.permission.RETAILMODE",
+                "android.permission.READ_PRIVILEGED_PHONE_STATE",
+                "com.samsung.wear.permission.SHOW_TILE_TOAST_PRIVILEGED",
+                "android.permission.REAL_GET_TASKS",
+                "com.samsung.accessibility.permission.REGISTER_UNIVERSAL_GESTURE_ACTION",
+                "com.samsung.permission.SSENSOR",
+                "com.samsung.android.clockwork.settings.permission.CHANGE_TOUCH_LOCK"
+              ]
+            }
+          },
+          "expect": "eachListed"
+        },
+        {
+          "op": "manifestRemove",
+          "select": {
+            "path": "permission",
+            "attrIn": {
+              "android:name": [
+                "com.samsung.android.watch.alarm.BIND_COMPLICATION_PROVIDER",
+                "com.samsung.android.watch.alarm.permission.READ_ALARM",
+                "com.samsung.android.watch.alarm.permission.WRITE_ALARM",
+                "com.samsung.android.watch.alarm.permission.EDIT_ALARM"
+              ]
+            }
+          },
+          "expect": "eachListed"
+        },
+        {
+          "op": "manifestExpect",
+          "select": {
+            "path": "permission"
+          },
+          "expect": 1
+        }
+      ]
+    },
+    "alarm-notification-permissions": {
+      "families": [
+        "alarm-watch"
+      ],
+      "title": "Notification permissions",
+      "description": "Manifest: add POST_NOTIFICATIONS and USE_FULL_SCREEN_INTENT",
+      "optional": false,
+      "ops": [
+        {
+          "op": "manifestExpect",
+          "select": {
+            "path": "uses-permission",
+            "attr": {
+              "android:name": "android.permission.POST_NOTIFICATIONS"
+            }
+          },
+          "expect": 0
+        },
+        {
+          "op": "manifestExpect",
+          "select": {
+            "path": "uses-permission",
+            "attr": {
+              "android:name": "android.permission.USE_FULL_SCREEN_INTENT"
+            }
+          },
+          "expect": 0
+        },
+        {
+          "op": "manifestAddChild",
+          "parent": {
+            "path": "."
+          },
+          "tag": "uses-permission",
+          "attrs": {
+            "android:name": "android.permission.POST_NOTIFICATIONS"
+          }
+        },
+        {
+          "op": "manifestAddChild",
+          "parent": {
+            "path": "."
+          },
+          "tag": "uses-permission",
+          "attrs": {
+            "android:name": "android.permission.USE_FULL_SCREEN_INTENT"
+          }
+        }
+      ]
+    },
+    "alarm-queries-libs": {
+      "families": [
+        "alarm-watch"
+      ],
+      "title": "Queries and libraries",
+      "description": "Manifest: drop <queries> and the wear-sdk/window/appfunctions libs; wearable lib optional",
+      "optional": false,
+      "ops": [
+        {
+          "op": "manifestRemove",
+          "select": {
+            "path": "queries"
+          },
+          "expect": 1
+        },
+        {
+          "op": "manifestRemove",
+          "select": {
+            "path": "application/uses-library",
+            "attrIn": {
+              "android:name": [
+                "wear-sdk",
+                "androidx.window.extensions",
+                "androidx.window.sidecar",
+                "com.android.extensions.appfunctions"
+              ]
+            }
+          },
+          "expect": "eachListed"
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "application/uses-library",
+            "attr": {
+              "android:name": "com.google.android.wearable"
+            }
+          },
+          "attrs": {
+            "android:required": "false"
+          },
+          "expect": 1
+        }
+      ]
+    },
+    "alarm-components-prune": {
+      "families": [
+        "alarm-watch"
+      ],
+      "title": "Vendor components",
+      "description": "Manifest: drop GMS/tile/complication/backup/bixby/appfunctions components and meta-data",
+      "optional": false,
+      "ops": [
+        {
+          "op": "manifestRemove",
+          "select": {
+            "path": [
+              "application/activity",
+              "application/service",
+              "application/receiver",
+              "application/provider"
+            ],
+            "simpleNameIn": {
+              "android:name": [
+                "ClientProvider",
+                "RetailModeReceiver",
+                "DetachModeReceiver",
+                "AlarmBackupRestoreReceiver",
+                "AlarmSyncService",
+                "AlarmTileService2x1",
+                "AlarmTileService",
+                "AlarmComplicationMessengerService",
+                "AlarmComplicationProviderService",
+                "AlarmEditService",
+                "AlarmCTSHandleActivity",
+                "CapsuleProvider",
+                "ProfileInstallReceiver",
+                "GoogleApiActivity",
+                "MainAppFunctionService",
+                "MultiInstanceInvalidationService"
+              ]
+            }
+          },
+          "expect": "eachListed"
+        },
+        {
+          "op": "manifestRemove",
+          "select": {
+            "path": "application/meta-data",
+            "attrIn": {
+              "android:name": [
+                "com.google.android.wearable.standalone",
+                "com.samsung.android.sdk.bixby2.companionApp",
+                "wear-oem-home-app-path-prefixes",
+                "backup_name",
+                "backup_content_uri",
+                "com.google.android.gms.version",
+                "com.samsung.android.sdk.bixby2.version",
+                "SPDE.build.signature",
+                "SPDE.env.version"
+              ]
+            }
+          },
+          "expect": "eachListed"
+        }
+      ]
+    },
+    "alarm-provider-open": {
+      "families": [
+        "alarm-watch"
+      ],
+      "title": "Alarm provider access",
+      "description": "Manifest: AlarmProvider without the vendor read/write permissions",
+      "optional": false,
+      "ops": [
+        {
+          "op": "manifestRemoveAttr",
+          "select": {
+            "path": "application/provider",
+            "attr": {
+              "android:name": "com.samsung.android.watch.alarm.provider.AlarmProvider"
+            }
+          },
+          "attrs": [
+            "android:readPermission",
+            "android:writePermission"
+          ],
+          "expect": 1
+        }
+      ]
+    },
+    "alarm-link-components": {
+      "families": [
+        "alarm-watch"
+      ],
+      "title": "Phone alarm link",
+      "description": "Manifest: ALARM_LINK signature permission, LinkActivity, LinkReceiver (action IN)",
+      "optional": false,
+      "ops": [
+        {
+          "op": "manifestExpect",
+          "select": {
+            "path": "**",
+            "attr": {
+              "android:name": "${PKG_PREFIX}.shmbridge.permission.ALARM_LINK"
+            }
+          },
+          "expect": 0
+        },
+        {
+          "op": "manifestExpect",
+          "select": {
+            "path": "**",
+            "attr": {
+              "android:name": "${PKG_PREFIX}.shmbridge.alarm.LinkActivity"
+            }
+          },
+          "expect": 0
+        },
+        {
+          "op": "manifestExpect",
+          "select": {
+            "path": "**",
+            "attr": {
+              "android:name": "${PKG_PREFIX}.shmbridge.alarm.LinkReceiver"
+            }
+          },
+          "expect": 0
+        },
+        {
+          "op": "manifestAddChild",
+          "parent": {
+            "path": "."
+          },
+          "tag": "permission",
+          "attrs": {
+            "android:name": "${PKG_PREFIX}.shmbridge.permission.ALARM_LINK",
+            "android:protectionLevel": "signature"
+          }
+        },
+        {
+          "op": "manifestAddChild",
+          "parent": {
+            "path": "."
+          },
+          "tag": "uses-permission",
+          "attrs": {
+            "android:name": "${PKG_PREFIX}.shmbridge.permission.ALARM_LINK"
+          }
+        },
+        {
+          "op": "manifestAddChild",
+          "parent": {
+            "path": "application"
+          },
+          "tag": "activity",
+          "attrs": {
+            "android:name": "${PKG_PREFIX}.shmbridge.alarm.LinkActivity",
+            "android:exported": "true",
+            "android:theme": "@android:style/Theme.NoDisplay",
+            "android:excludeFromRecents": "true",
+            "android:permission": "${PKG_PREFIX}.shmbridge.permission.ALARM_LINK"
+          }
+        },
+        {
+          "op": "manifestAddChild",
+          "parent": {
+            "path": "application"
+          },
+          "tag": "receiver",
+          "attrs": {
+            "android:name": "${PKG_PREFIX}.shmbridge.alarm.LinkReceiver",
+            "android:exported": "true",
+            "android:permission": "${PKG_PREFIX}.shmbridge.permission.ALARM_LINK"
+          },
+          "children": [
+            {
+              "tag": "intent-filter",
+              "children": [
+                {
+                  "tag": "action",
+                  "attrs": {
+                    "android:name": "${PKG_PREFIX}.shmbridge.alarm.IN"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "alarm-appfunctions-drop": {
+      "families": [
+        "alarm-watch"
+      ],
+      "title": "Appfunctions tree",
+      "description": "Smali: remove the appfunctions_aggregated_deps tree (its component is gone)",
+      "optional": false,
+      "ops": [
+        {
+          "op": "removeSmaliDir",
+          "rel": "appfunctions_aggregated_deps"
+        }
+      ]
+    },
+    "alarm-semgesture-skip": {
+      "families": [
+        "alarm-watch"
+      ],
+      "title": "Gesture manager",
+      "description": "SemGestureManager: skip the sem_gesture lookup (w2/k, w2/j) and the pauseGesture null path",
+      "optional": false,
+      "ops": [
+        {
+          "op": "replaceInClass",
+          "className": "w2/k",
+          "old": [
+            "    iget-object v7, v1, Lw2/k;->o:Lcom/samsung/android/hardware/gesturemanager/SemGestureManager;",
+            "",
+            "    if-nez v7, :cond_8",
+            "",
+            "    const-string v7, \"sem_gesture\"",
+            ""
+          ],
+          "new": [
+            "    iget-object v7, v1, Lw2/k;->o:Lcom/samsung/android/hardware/gesturemanager/SemGestureManager;",
+            "",
+            "    goto :cond_8",
+            "",
+            "    const-string v7, \"sem_gesture\"",
+            ""
+          ]
+        },
+        {
+          "op": "replaceInClass",
+          "className": "w2/k",
+          "old": [
+            "    if-eqz v7, :cond_1c",
+            "",
+            "    invoke-virtual {v7, v6}, Lcom/samsung/android/hardware/gesturemanager/SemGestureManager;->pauseGesture(Z)V",
+            ""
+          ],
+          "new": [
+            "    if-eqz v7, :interop_no_gesture",
+            "",
+            "    invoke-virtual {v7, v6}, Lcom/samsung/android/hardware/gesturemanager/SemGestureManager;->pauseGesture(Z)V",
+            "",
+            "    :interop_no_gesture",
+            ""
+          ]
+        },
+        {
+          "op": "replaceInClass",
+          "className": "w2/j",
+          "old": [
+            "    if-ne p1, v3, :cond_5",
+            "",
+            "    const-string p1, \"sem_gesture\"",
+            ""
+          ],
+          "new": [
+            "    goto :cond_5",
+            "",
+            "    const-string p1, \"sem_gesture\"",
+            ""
+          ]
+        }
+      ]
+    },
+    "alarm-gms-observer-drop": {
+      "families": [
+        "alarm-watch"
+      ],
+      "title": "GMS connection observer",
+      "description": "CAlarmService.onCreate: remove the GMS connection observer (it stops the service early)",
+      "optional": false,
+      "ops": [
+        {
+          "op": "replaceInClass",
+          "className": "com/samsung/android/watch/alarm/viewmodel/CAlarmService",
+          "old": [
+            "    new-instance v0, Lw2/n;",
+            "",
+            "    const/4 v1, 0x0",
+            "",
+            "    invoke-direct {v0, p0, v1}, Lw2/n;-><init>(Lcom/samsung/android/watch/alarm/viewmodel/CAlarmService;LI2/d;)V",
+            "",
+            "    const/4 v2, 0x3",
+            "",
+            "    iget-object v3, p0, Lcom/samsung/android/watch/alarm/viewmodel/CAlarmService;->y:Le3/e;",
+            "",
+            "    invoke-static {v3, v1, v0, v2}, LZ2/x;->m(LZ2/u;La3/d;LR2/p;I)LZ2/m0;",
+            "",
+            "    move-result-object v0",
+            "",
+            "    iput-object v0, p0, Lcom/samsung/android/watch/alarm/viewmodel/CAlarmService;->z:LZ2/m0;",
+            "",
+            ""
+          ],
+          "new": ""
+        }
+      ]
+    },
+    "alarm-service-stop-on-destroy": {
+      "families": [
+        "alarm-watch"
+      ],
+      "title": "Stop on destroy",
+      "description": "w2/k.onDestroy: call t() first so sound/vibration is never orphaned",
+      "optional": false,
+      "ops": [
+        {
+          "op": "insertInClassMethod",
+          "className": "w2/k",
+          "header": "public onDestroy()V",
+          "insert": [
+            "",
+            "    invoke-virtual {p0}, Lw2/k;->t()V",
+            ""
+          ]
+        }
+      ]
+    },
+    "alarm-force-sound-vibrate": {
+      "families": [
+        "alarm-watch"
+      ],
+      "title": "Sound and vibration",
+      "description": "CAlarmService.r(): play mode always 0x11 (sound+vibrate), ignoring the ringer mode",
+      "optional": false,
+      "ops": [
+        {
+          "op": "replaceClassMethod",
+          "className": "com/samsung/android/watch/alarm/viewmodel/CAlarmService",
+          "header": "public final r()V",
+          "body": [
+            "    .locals 2",
+            "",
+            "    invoke-virtual {p0}, Lw2/k;->e()Lw2/f;",
+            "",
+            "    move-result-object v0",
+            "",
+            "    if-eqz v0, :skip",
+            "",
+            "    const/16 v1, 0x11",
+            "",
+            "    invoke-virtual {v0, v1}, Lw2/f;->e(I)V",
+            "",
+            "    :skip",
+            "    return-void"
+          ],
+          "mustContain": [
+            "semGetRingerModeInternal"
+          ]
+        }
+      ]
+    },
+    "alarm-link-send": {
+      "families": [
+        "alarm-watch"
+      ],
+      "title": "Send alarms through the link",
+      "description": "o2/b.e() (sendMessageToAll): body replaced by Link.send(context, path, data)",
+      "optional": false,
+      "ops": [
+        {
+          "op": "replaceClassMethod",
+          "className": "o2/b",
+          "header": "public static e(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;LC1/c;)V",
+          "body": [
+            "    .locals 0",
+            "    invoke-static {p0, p1, p2}, L${PKG_PATH}/shmbridge/alarm/Link;->send(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V",
+            "    return-void"
+          ],
+          "mustContain": [
+            "sendMessageToAll path = "
+          ]
+        }
+      ]
+    },
+    "alarm-hide-launcher": {
+      "families": [
+        "alarm-watch"
+      ],
+      "title": "Hide launcher icon",
+      "description": "AlarmMainActivity: MAIN/LAUNCHER intent-filter removed (no launcher icon; activity kept)",
+      "optional": false,
+      "ops": [
+        {
+          "op": "manifestExpect",
+          "select": {
+            "path": "application/activity",
+            "attr": {
+              "android:name": "com.samsung.android.watch.alarm.activity.AlarmMainActivity"
+            }
+          },
+          "expect": 1
+        },
+        {
+          "op": "manifestRemove",
+          "select": {
+            "path": "application/activity/intent-filter",
+            "parentAttr": {
+              "android:name": "com.samsung.android.watch.alarm.activity.AlarmMainActivity"
+            },
+            "hasChild": [
+              {
+                "tag": "category",
+                "attr": {
+                  "android:name": "android.intent.category.LAUNCHER"
+                }
+              },
+              {
+                "tag": "action",
+                "attr": {
+                  "android:name": "android.intent.action.MAIN"
+                }
+              }
+            ]
+          },
+          "expect": 1
+        }
+      ]
+    },
+    "alarm-relabel": {
+      "families": [
+        "alarm-watch"
+      ],
+      "title": "App label",
+      "description": "Application and launcher activity label -> \"Phone alarms\" (es: \"Alarmas del teléfono\")",
+      "optional": false,
+      "ops": [
+        {
+          "op": "addStringResources",
+          "name": "interop_app_label",
+          "values": {
+            "": "Phone alarms",
+            "-es": "Alarmas del teléfono"
+          }
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "application",
+            "attr": {
+              "android:label": "@string/app_name"
+            }
+          },
+          "attrs": {
+            "android:label": "@string/interop_app_label"
+          },
+          "expect": 1
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "application/activity",
+            "attr": {
+              "android:name": "com.samsung.android.watch.alarm.activity.AlarmMainActivity",
+              "android:label": "@string/app_name"
+            }
+          },
+          "attrs": {
+            "android:label": "@string/interop_app_label"
+          },
+          "expect": 1
+        }
+      ]
+    }
+  }
+}

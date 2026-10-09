@@ -15,7 +15,7 @@ Tested with: Galaxy Watch5 Pro (SM-R920, Wear OS API 36) and a Motorola foldable
 
 | Path | What it is |
 |---|---|
-| `superpatcher/`, `scripts/superpatcher.py`, `profiles/` | Patch engine and the patterns needed for the official SHM APKs, in application order (`profiles/gms`). Details in [docs/patches.md](docs/patches.md). |
+| `superpatcher/`, `scripts/superpatcher.py`, `catalogue/` | Patch engine (named ops) and the signed patch catalogue (`catalogue/catalogue.json`: the patterns for the official APKs as data, plus the profiles with their application order). Details in [docs/patches.md](docs/patches.md). |
 | `watch-mod/` | Our own code injected into the watch SHM (ECG adapter on top of Health Tracking, vendor overrides). |
 | `shm-bridge/` | Our own bridge apps (phone ⇄ watch over direct RFCOMM) and the fork of the watch Alarm app. |
 | `scripts/` | Builds (`build_all.sh`, `build_shm_*.sh`, `fetch_deps.sh`) and shared helpers in `scripts/lib/`. |

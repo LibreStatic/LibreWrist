@@ -4,8 +4,9 @@
 #   scripts/build_alarm_fork.sh
 #
 # official AlarmWatch APK (sha256 verified) -> shm-bridge/alarm-fork (Link, LinkActivity,
-# LinkReceiver) compiled to smali -> superpatcher (profiles/alarm.json) injecting it as a new
-# smali_classesN dir -> apktool b -> sign -> $DIST_DIR/alarm-fork-1.3.05.9.apk
+# LinkReceiver) compiled to smali -> superpatcher (catalogue/catalogue.json, profile alarm)
+# injecting it as a new smali_classesN dir -> apktool b -> sign ->
+# $DIST_DIR/alarm-fork-1.3.05.9.apk
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/lib/common.sh"
 require_tools

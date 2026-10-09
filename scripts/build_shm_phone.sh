@@ -3,8 +3,8 @@
 #
 #   scripts/build_shm_phone.sh [gms]
 #
-# official APK (sha256 verified) -> superpatcher (profiles/gms.json) -> apktool b -> sign
-# -> $DIST_DIR/shm-phone-1.4.6.001-gms.apk
+# official APK (sha256 verified) -> superpatcher (catalogue/catalogue.json, profile gms) ->
+# apktool b -> sign -> $DIST_DIR/shm-phone-1.4.6.001-gms.apk
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/lib/common.sh"
 

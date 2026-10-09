@@ -24,9 +24,11 @@ on top of Health Tracking, alarm bridge over direct RFCOMM). See `README.md` and
 - Build data and temporary files go in `WORK_DIR` (default `~/.cache/shm-interop`), never in `/tmp`,
   `/dev/shm` or the repo. apktool needs a lot of RAM: the scripts serialize it with a lock.
 - Never commit keystores, keys or tokens (`keys/` is ignored).
-- Patches: each one is a pattern anchored to the official APK (`superpatcher/patterns.py`) and the
-  order lives in `profiles/gms`. Adding a patch = pattern + profile entry + note in
-  `docs/patches.md`. If an anchor stops matching with a new APK version, the engine must fail, not
+- Patches: each one is a pattern anchored to the official APK, written as DATA in
+  `catalogue/catalogue.json` (the engine, `superpatcher/engine.py` + `patterns.py`, interprets named
+  ops; the catalogue never contains code) and the order lives in its `profiles`. Adding a patch =
+  catalogue pattern + profile entry + note in `docs/patches.md`, then `scripts/catalogue.py check`
+  (and `sign`). If an anchor stops matching with a new APK version, the engine must fail, not
   continue silently.
 - Wording: interoperability vocabulary (*vendor override*, *regional check disabled*, *BAL
   exemption*), not offensive-security vocabulary.

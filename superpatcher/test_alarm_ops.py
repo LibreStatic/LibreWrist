@@ -14,11 +14,20 @@ import config  # noqa: E402
 from superpatcher import engine as E  # noqa: E402
 from superpatcher import patterns as P  # noqa: E402
 
+CAT = P.load_catalogue()
+ALARM_PKG = 'com.samsung.android.watch.alarm'
+ALARM_MAIN_ACTIVITY = ALARM_PKG + '.activity.AlarmMainActivity'
+ALARM_LABEL_NAME = 'interop_app_label'
+
+
+def run_pattern(tree, pid):
+    return P.run_pattern(tree, CAT['patterns'][pid])
+
 ANDROID = 'xmlns:android="http://schemas.android.com/apk/res/android"'
 MANIFEST = f'''<?xml version="1.0" encoding="utf-8"?>
-<manifest {ANDROID} package="{P.ALARM_PKG}">
+<manifest {ANDROID} package="{ALARM_PKG}">
     <application android:label="@string/app_name">
-        <activity android:label="@string/app_name" android:name="{P.ALARM_MAIN_ACTIVITY}">
+        <activity android:label="@string/app_name" android:name="{ALARM_MAIN_ACTIVITY}">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -119,7 +128,7 @@ class ManifestPatterns(Tree):
         self.put('AndroidManifest.xml', MANIFEST)
 
     def test_hide_launcher_keeps_activity_and_other_filters(self):
-        P.PATTERNS['alarm-hide-launcher']['run'](self.tree, [])
+        run_pattern(self.tree, 'alarm-hide-launcher')
         m = self.get('AndroidManifest.xml')
         self.assertNotIn('LAUNCHER', m)
         self.assertNotIn('android.intent.action.MAIN', m)
@@ -127,14 +136,14 @@ class ManifestPatterns(Tree):
         self.assertIn('android.intent.action.VIEW', m)
 
     def test_hide_launcher_fails_when_anchor_missing(self):
-        P.PATTERNS['alarm-hide-launcher']['run'](self.tree, [])
+        run_pattern(self.tree, 'alarm-hide-launcher')
         with self.assertRaises(RuntimeError):
-            P.PATTERNS['alarm-hide-launcher']['run'](self.tree, [])
+            run_pattern(self.tree, 'alarm-hide-launcher')
 
     def test_relabel(self):
         self.put('res/values/strings.xml', '<resources>\n</resources>\n')
         self.put('res/values-es/strings.xml', '<resources>\n</resources>\n')
-        P.PATTERNS['alarm-relabel']['run'](self.tree, [])
+        run_pattern(self.tree, 'alarm-relabel')
         m = self.get('AndroidManifest.xml')
         self.assertEqual(m.count('@string/interop_app_label'), 2)
         self.assertNotIn('@string/app_name', m)
@@ -143,10 +152,10 @@ class ManifestPatterns(Tree):
 
     def test_relabel_name_collision_fails(self):
         self.put('res/values/strings.xml',
-                 f'<resources>\n<string name="{P.ALARM_LABEL_NAME}">x</string>\n</resources>\n')
+                 f'<resources>\n<string name="{ALARM_LABEL_NAME}">x</string>\n</resources>\n')
         self.put('res/values-es/strings.xml', '<resources>\n</resources>\n')
         with self.assertRaises(RuntimeError):
-            P.PATTERNS['alarm-relabel']['run'](self.tree, [])
+            run_pattern(self.tree, 'alarm-relabel')
 
     def test_family_detection(self):
         self.assertEqual(P.detect_family(self.tree), 'alarm-watch')
@@ -155,15 +164,13 @@ class ManifestPatterns(Tree):
         for pid in ('alarm-rebrand-code', 'alarm-semgesture-skip', 'alarm-link-send',
                     'alarm-components-prune', 'alarm-permissions-prune'):
             with self.assertRaises(RuntimeError, msg=pid):
-                P.PATTERNS[pid]['run'](self.tree, [])
+                run_pattern(self.tree, pid)
 
 
 class Profile(unittest.TestCase):
     def test_profile_ids_exist_and_order(self):
-        import json
-        with open(os.path.join(ROOT, 'profiles', 'alarm.json')) as f:
-            ids = json.load(f)['families']['alarm-watch']
-        self.assertTrue(all(i in P.PATTERNS for i in ids))
+        ids = CAT['profiles']['alarm']['families']['alarm-watch']
+        self.assertTrue(all(i in CAT['patterns'] for i in ids))
         self.assertEqual(ids[-2:], ['alarm-hide-launcher', 'alarm-relabel'])
         self.assertEqual(len(ids), len(set(ids)))
 

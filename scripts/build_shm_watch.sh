@@ -5,8 +5,8 @@
 #
 # official APK (sha256 verified) -> watch-mod (EcgAdapter, WatchOverrides and the
 # shminterop.hsdk Health Tracking client) compiled to smali -> superpatcher
-# (profiles/gms.json) injecting it as a new smali_classesN dir -> apktool b -> sign
-# -> $DIST_DIR/shm-watch-1.5.1.022-gms.apk
+# (catalogue/catalogue.json, profile gms) injecting it as a new smali_classesN dir ->
+# apktool b -> sign -> $DIST_DIR/shm-watch-1.5.1.022-gms.apk
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/lib/common.sh"
 

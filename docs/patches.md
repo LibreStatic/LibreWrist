@@ -1,11 +1,14 @@
 # Patches
 
-Everything is applied by `scripts/superpatcher.py` following an **ordered** profile
-(`profiles/gms.json`). Each pattern is anchored to strings or signatures that exist in the
-official APK (log strings, semantic method names, pref keys, SDK call signatures), not to
-obfuscated names, so it survives renames between builds. A pattern listed in the profile that
-does not match aborts the build (every listed pattern is implicitly required): an APK missing a
-patch is never signed.
+The patches are **data**: `catalogue/catalogue.json` (format below) is interpreted by
+`scripts/superpatcher.py` (`superpatcher/patterns.py` + the named ops of `superpatcher/engine.py`),
+following an **ordered** profile (`gms`, `alarm`) stored in the same file. The catalogue never
+contains code, so another engine (the Android app) can interpret the very same file; it is
+published and signed (see "Catalogue" below). Each pattern is anchored to strings or signatures
+that exist in the official APK (log strings, semantic method names, pref keys, SDK call
+signatures), not to obfuscated names, so it survives renames between builds. A pattern listed in
+the profile that does not match aborts the build (every listed pattern is implicitly required): an
+APK missing a patch is never signed.
 
 Official inputs (hash-checked against `apks/SHA256SUMS`): SHM phone **1.4.6.001** and
 SHM watch **1.5.1.022**. The SHM profile is `gms` (native GMS Data Layer between watch
@@ -17,13 +20,84 @@ scripts/build_shm_phone.sh        # -> $DIST_DIR/shm-phone-1.4.6.001-gms.apk
 scripts/build_shm_watch.sh        # -> $DIST_DIR/shm-watch-1.5.1.022-gms.apk
 ```
 
+## Catalogue
+
+`catalogue/catalogue.json` (indent 2, key order preserved; `scripts/catalogue.py` writes it):
+
+```
+{ "schema": 1, "serial": N, "minAppVersion": 1,
+  "inputs":   [ ...copy of apks/inputs.json "inputs" (scripts/catalogue.py sync-inputs) ],
+  "families": [ {"id", "package", "markerClass"?}, ... ],       first match wins
+  "profiles": { "<name>": {"description", "families": {"<family>": ["<pattern id>", ...]},
+                           "inject": {"<family>": ["<injection name>", ...]}} },
+  "patterns": { "<id>": {"families": [...] | "*", "title", "description", "optional": false,
+                         "ops": [ {"op": "<name>", ...args}, ... ]} } }
+```
+
+- **Family detection**: the first rule whose `package` equals the manifest `package` and, if
+  `markerClass` is set (a class type without `L`/`;`), whose class exists in any `smali*` dir.
+- **Profile**: an ORDERED list of pattern ids per family. `inject` lists the names of the extra
+  smali sets the build merges in (ids only: that code ships separately, never in the catalogue).
+- **Pattern**: `ops` run in order; the logs of all steps are concatenated. A pattern whose
+  combined log is empty fails the build (unless `optional`), and so does any step that raises.
+- **Ops are named and documented** in `superpatcher/engine.py` (`OPS` registry; the docstring of
+  each `op_*` function is its semantics contract, also for the Kotlin port). An unknown op, an
+  unknown or missing argument, or a wrong argument type is a hard error. JSON argument names are
+  camelCase (`fileRegex`); the catalogue has no expressions, lambdas or code of any kind.
+- **Regex dialect**: regex arguments use Python `re` syntax. Keep to the subset that maps
+  one-to-one onto `java.util.regex`: named groups are written `(?P<name>...)` and back-references
+  `(?P=name)`, which a JVM interpreter rewrites to `(?<name>...)` and `\k<name>`. No
+  Python-only constructs (conditional groups, `(?L)`, `(?u)`).
+- **Counts are asserted** with `expect`: an exact integer, `"atLeastOne"` (the default of the
+  smali ops) or `"any"` (no assertion; used on purpose where a candidate may not exist in every
+  build). The structural manifest ops add `"eachListed"` (every listed name matched exactly once
+  and nothing else). Class-targeted ops (`replaceInClass`, ...) assert their own counts.
+- **Multi-line text** (smali snippets): wherever an op takes `text`, a string or a list of
+  strings joined with `"\n"`. One array element per line; end the list with `""` for a trailing
+  newline, and use `""` elements for blank lines.
+- **Placeholders**: string values may contain `${PKG_PREFIX}` (e.g. `com.example`) and
+  `${PKG_PATH}` (`com/example`), expanded from `config.env` before the op runs. Nothing else is
+  templated (except the `{{capture}}` variables of `insertInMethodAtMatch`).
+
+Ops (one line each; the full contract is the docstring):
+
+| Op | What it does |
+|---|---|
+| `insertAtMethodStart` | insert smali after `.locals` of every selected method (selector: `fileRegex`, `fileAll`, `fileAny`, `sigRegex`, `sigExclude`, `bodyAll`, `bodyNone`); optional `needRegs`, `tail` |
+| `returnSingleton` | same selector; the method returns `sget-object <its return type>-><field>` |
+| `setMethodBody` | same selector; replace the whole method body |
+| `insertInMethodAtMatch` | same selector; regex with named captures (and enum field lookups) + `{{var}}` template inserted at group `at` |
+| `swapConst`, `enumOrdinalsZero` | text swap in files matching `fileRegex`; enum ordinal constants to 0 |
+| `sweepStringCompareAutoTrue` | comparisons against a string constant become "value compared with itself" |
+| `forceConstAfterMove`, `forceInvokeResult` | force a `const/4` after a `move-result` (before an anchor / after a given invoke) |
+| `replaceConstStringExact`, `replaceAllInFilesWithAnchor` | exact `const-string` replacement; replace text in files that contain an anchor |
+| `verifyClassContains`, `replaceInClass`, `replaceClassMethod`, `insertInClassMethod`, `removeSmaliDir` | class-targeted ops for pinned builds (every one asserts what it found) |
+| `addStringResources` | add a `<string>` to `res/values*/strings.xml` |
+| `manifestRebrand`, `manifestAddQueryPackage` | text edits of `AndroidManifest.xml` (exact semantics in the docstrings) |
+| `manifestExpect`, `manifestRemove`, `manifestSetAttr`, `manifestRemoveAttr`, `manifestAddChild` | structural manifest edits: select elements (`path`, `attr`, `attrIn`, `simpleNameIn`, `parentAttr`, `hasChild`), assert the count, then act |
+
+**Adding a patch** = a pattern entry in `catalogue/catalogue.json` + its id in the profile (order
+matters) + a note in this file. Then `python3 scripts/catalogue.py check` (it validates every op
+and argument, the cross references and that every pattern is used by a profile), run the tests,
+and sign (`scripts/catalogue.py sign`). If an anchor stops matching with a new APK version the
+engine fails, it never continues silently.
+
+**Signing**: `scripts/catalogue.py genkey` once (ECDSA P-256 key at `$CATALOGUE_KEY`, public key
+`catalogue/catalogue.pub`), then `scripts/catalogue.py sign` after every change (it increments
+`serial` and writes `catalogue/catalogue.json.sig`, a DER ECDSA/SHA-256 signature; verify with
+`scripts/catalogue.py verify`).
+
+**Regression oracle** for engine changes: build everything before and after with the same
+`PKG_PREFIX`, then `scripts/oracle_decoded_diff.sh <distBefore> <distAfter>` decodes both with
+apktool and must report no difference.
+
 The vocabulary is interoperability vocabulary: *vendor override*, *regional check disabled*,
 *exemption*. All changes are applied to local copies of the owner's own APKs, re-signed with a
 local key, never redistributed.
 
 ## SHM phone 1.4.6.001
 
-Application order (the `order` column is the order in `profiles/gms.json`).
+Application order (the `#` column is the order in the `gms` profile of the catalogue).
 
 | # | Pattern id | What it does | Why it is needed |
 |---|---|---|---|
@@ -80,7 +154,7 @@ manifest, all patched stock smali and the imported SDK are equivalent. Accepted 
 ## Alarm fork (AlarmWatch 1.3.05.9)
 
 Official input `alarm-watch-1.3.05.9.apk` (`com.samsung.android.watch.alarm`), profile
-`profiles/alarm.json`, build `scripts/build_alarm_fork.sh` -> `$DIST_DIR/alarm-fork-1.3.05.9.apk`.
+`alarm` of the catalogue, build `scripts/build_alarm_fork.sh` -> `$DIST_DIR/alarm-fork-1.3.05.9.apk`.
 The fork receives the phone's alarms from the SHM bridge (direct intents to `LinkActivity` /
 `LinkReceiver`, signature permission `<prefix>.shmbridge.permission.ALARM_LINK`) instead of the
 GMS Data Layer. Unlike the SHM families, this input is one exact build, so the patterns name

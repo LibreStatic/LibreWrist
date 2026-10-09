@@ -1,8 +1,8 @@
 # Alarm Fork (source classes)
 
 The alarm fork (`shminterop.shmbridge.alarm`) is **not built from this directory**. It is
-produced by the patch pipeline (`profiles/alarm.json`, `scripts/build_alarm_fork.sh`) from the official
-`alarm-watch-1.3.05.9` APK, which the user extracts from their own watch (see `apks/README.md`).
+produced by the patch pipeline (profile `alarm` of `catalogue/catalogue.json`,
+`scripts/build_alarm_fork.sh`) from the official `alarm-watch-1.3.05.9` APK, which the user extracts from their own watch (see `apks/README.md`).
 The patch list is documented in [docs/patches.md](../../docs/patches.md#alarm-fork-1305-9).
 No vendor code is stored in this repo.
 

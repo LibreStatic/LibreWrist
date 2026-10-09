@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """Super-patcher CLI for the Samsung Health Monitor (SHM) APKs.
 
-  superpatcher.py analyze <apk> [--profile gms]
+  superpatcher.py analyze <apk> [--profile gms] [--catalogue PATH]
       decode (read-only) and report what the profile would patch
-  superpatcher.py patch <apk> -o <dir> [--profile gms] [--name N] [--inject NAME=DIR ...]
+  superpatcher.py patch <apk> -o <dir> [--profile gms] [--catalogue PATH] [--name N]
+                        [--inject NAME=DIR ...]
       decode -> patch (profile order) -> inject extra smali -> apktool b -> <dir>/<name>-unsigned.apk
 
-Profiles live in profiles/<name>.json: an ORDERED list of pattern ids per family plus the
+The patches and the profiles are data: catalogue/catalogue.json (default; see
+docs/patches.md). A profile is an ORDERED list of pattern ids per family plus the names of the
 extra smali the build injects. A listed pattern that does not match aborts the build.
 Signing is done by scripts/build_shm_*.sh (sign_apk in scripts/lib/common.sh).
 
@@ -14,7 +16,6 @@ apktool runs serialised with the global lock ($WORK_DIR/.apktool.lock) and the h
 config.env; temporary trees live under $WORK_DIR.
 """
 import argparse
-import json
 import os
 import shutil
 import subprocess
@@ -41,14 +42,18 @@ def apktool(*args):
         raise SystemExit(f'apktool {" ".join(args[:2])} failed')
 
 
-def load_profile(name):
-    path = os.path.join(ROOT, 'profiles', name + '.json')
-    if not os.path.exists(path):
-        avail = sorted(f[:-5] for f in os.listdir(os.path.join(ROOT, 'profiles'))
-                       if f.endswith('.json'))
-        raise SystemExit(f'unknown profile {name!r} (available: {", ".join(avail)})')
-    with open(path) as fh:
-        return json.load(fh)
+def load_catalogue(path):
+    try:
+        return P.load_catalogue(path)
+    except (OSError, ValueError) as e:
+        raise SystemExit(f'cannot use the catalogue: {e}')
+
+
+def load_profile(cat, name):
+    try:
+        return P.get_profile(cat, name)
+    except KeyError as e:
+        raise SystemExit(e.args[0])
 
 
 def smali_dir_count(tree):
@@ -85,16 +90,16 @@ def report(family, results):
     print(f'\nTotal patched sites: {total}')
 
 
-def decode_and_patch(apk, profile, work):
+def decode_and_patch(apk, cat, profile, work):
     print(f'>> decoding {os.path.basename(apk)}')
     apktool('d', apk, '-o', work, '-f')
-    family = P.detect_family(work)
+    family = P.detect_family(work, cat)
     print(f'>> family: {family}')
     ids = profile['families'].get(family)
     if ids is None:
         raise SystemExit(f'profile {profile["name"]!r} has no patch list for family {family!r}')
     try:
-        results = P.run_profile(work, ids)
+        results = P.run_profile(work, ids, catalogue=cat)
     except P.PatternRequiredError as e:
         report(family, e.report)
         raise SystemExit(str(e))
@@ -112,19 +117,21 @@ def fresh_work(tag):
 def cmd_analyze(args):
     work = fresh_work('analyze')
     try:
-        decode_and_patch(os.path.abspath(args.apk), load_profile(args.profile), work)
+        cat = load_catalogue(args.catalogue)
+        decode_and_patch(os.path.abspath(args.apk), cat, load_profile(cat, args.profile), work)
     finally:
         shutil.rmtree(work, ignore_errors=True)
 
 
 def cmd_patch(args):
     apk = os.path.abspath(args.apk)
-    profile = load_profile(args.profile)
+    cat = load_catalogue(args.catalogue)
+    profile = load_profile(cat, args.profile)
     out_dir = os.path.abspath(args.out)
     os.makedirs(out_dir, exist_ok=True)
     work = fresh_work('patch')
     try:
-        family = decode_and_patch(apk, profile, work)
+        family = decode_and_patch(apk, cat, profile, work)
         wanted = profile.get('inject', {}).get(family, [])
         given = dict(i.split('=', 1) for i in args.inject)
         if set(wanted) != set(given):
@@ -154,6 +161,8 @@ def main():
     for a in (a1, a2):
         a.add_argument('apk')
         a.add_argument('--profile', default='gms')
+        a.add_argument('--catalogue', default=None,
+                       help='catalogue file (default: catalogue/catalogue.json)')
     args = ap.parse_args()
     {'analyze': cmd_analyze, 'patch': cmd_patch}[args.cmd](args)
 
