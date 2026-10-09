@@ -174,6 +174,7 @@ class InstallSection(unittest.TestCase):
             {'kind': 'notificationListener', 'component': 'a b'},
             {'kind': 'notificationListener', 'component': '9x'},
             {'kind': 'notificationListener', 'component': 'A;id'},
+            {'kind': 'notificationListener', 'component': 'BareClassName'},
             {'kind': 'deviceIdleWhitelist', 'package': 'x'},
             {'kind': 'secureSetting', 'key': 'Bad', 'value': '0'},
             {'kind': 'secureSetting', 'key': 'a; id', 'value': '0'},

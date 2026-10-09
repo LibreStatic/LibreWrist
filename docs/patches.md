@@ -61,12 +61,12 @@ scripts/build_shm_watch.sh        # -> $DIST_DIR/shm-watch-1.5.1.022-gms.apk
     |---|---|---|
     | `permission` | `name` | runtime permission (`pm grant <pkg> <name>`) |
     | `appop` | `op`, `mode` = `allow` | `appops set <pkg> <op> allow` |
-    | `notificationListener` | `component` | `cmd notification allow_listener <pkg>/<class>`; a name without dots, or starting with `.`, is relative to the output package |
+    | `notificationListener` | `component` | `cmd notification allow_listener <pkg>/<class>`; either `.Class` (relative to the output package) or a fully qualified class name — a bare class name is rejected because `ComponentName` would not resolve it |
     | `deviceIdleWhitelist` | none | `dumpsys deviceidle whitelist +<pkg>` |
     | `secureSetting` | `key`, `value` | `settings put secure <key> <value>` |
 
     Regexes: permission `^[a-zA-Z][\w.]*$`, appop `^[A-Z][A-Z0-9_]*$`, setting key
-    `^[a-z][a-z0-9_]*$`, value `^[\w.-]{1,64}$`, component `^\.?[A-Za-z][\w.$]*$`, package
+    `^[a-z][a-z0-9_]*$`, value `^[\w.-]{1,64}$`, component `.Class` or `fully.qualified.Class` (no `$`), package
     `^[a-zA-Z]\w*(\.[a-zA-Z]\w*)+$` (after expansion). The `grants` keys are output ids; an
     output without grants has an empty list. Grants are repeated after every reinstall.
   - `stockAppsToDisable`: stock system apps that should be disabled on a device

@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "serial": 2,
+  "serial": 3,
   "minAppVersion": 1,
   "inputs": [
     {
@@ -1720,7 +1720,7 @@
       },
       {
         "kind": "notificationListener",
-        "component": "SamsungAlarmListener",
+        "component": ".SamsungAlarmListener",
         "note": "Sees the Samsung Alarm app ringing."
       },
       {
@@ -1776,7 +1776,7 @@
       },
       {
         "kind": "notificationListener",
-        "component": "BridgeNotificationListener"
+        "component": ".BridgeNotificationListener"
       }
     ]
   },
