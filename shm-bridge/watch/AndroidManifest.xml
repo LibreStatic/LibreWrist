@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="shminterop.shmbridge.watch"
+    android:versionCode="12" android:versionName="1.11-gwhub">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"/>
+    <!-- connectedDevice: avoids the 6 h daily dataSync cap (API 35+); needs BLUETOOTH_CONNECT
+         granted (used by the relay RFCOMM link) or CHANGE_NETWORK_STATE -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE"/>
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <!-- BAL exemption: allows startActivity from the background service
+         (also requires: adb shell appops set shminterop.shmbridge.watch SYSTEM_ALERT_WINDOW allow) -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <!-- /__bridge__/ channel (docs/architecture.md): mirrored alarm and ringer -->
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
+    <!-- appop alternative: adb shell appops set shminterop.shmbridge.watch SCHEDULE_EXACT_ALARM allow -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+    <!-- appop revocable on Android 14+: adb shell appops set shminterop.shmbridge.watch USE_FULL_SCREEN_INTENT allow -->
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <!-- Answer/reject through the local Telecom when the call arrives over HFP. -->
+    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <!-- CallWatchService (headless InCallService): Telecom binds it with the appop
+         adb shell appops set shminterop.shmbridge.watch MANAGE_ONGOING_CALLS allow -->
+    <uses-permission android:name="android.permission.MANAGE_ONGOING_CALLS"/>
+    <!-- Phone alarm in the Samsung Alarm app (AlarmClock.ACTION_SET_ALARM and related). -->
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
+
+    <!-- Signature permission shared with the Samsung Alarm app fork (shminterop.shmbridge.alarm). -->
+    <permission android:name="shminterop.shmbridge.permission.ALARM_LINK"
+        android:protectionLevel="signature"/>
+    <uses-permission android:name="shminterop.shmbridge.permission.ALARM_LINK"/>
+
+    <application android:label="SHM Bridge" android:allowBackup="false">
+        <activity android:name=".MainActivity" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <service android:name=".BridgeService" android:exported="false"
+            android:foregroundServiceType="connectedDevice|dataSync"/>
+        <service android:name=".ShmCaptureService" android:exported="false"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService"/>
+            </intent-filter>
+            <meta-data android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config"/>
+        </service>
+
+        <!-- /__bridge__/ communications channel (notifications, alarms, calls).
+             The receivers are exported but protected with DUMP: only the system, the app
+             itself (its PendingIntents) and the shell (adb) can send them broadcasts. -->
+        <receiver android:name=".BridgeActionReceiver" android:exported="true"
+            android:permission="android.permission.DUMP">
+            <intent-filter>
+                <action android:name="shminterop.shmbridge.DEBUG_SEND"/>
+                <action android:name="shminterop.shmbridge.DEBUG_RECV"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".BridgeAlarmReceiver" android:exported="true"
+            android:permission="android.permission.DUMP">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+                <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED"/>
+            </intent-filter>
+        </receiver>
+        <service android:name=".CallWatchService" android:exported="true"
+            android:permission="android.permission.BIND_INCALL_SERVICE">
+            <intent-filter>
+                <action android:name="android.telecom.InCallService"/>
+            </intent-filter>
+        </service>
+        <!-- Sees the Samsung alarm ringing (SamsungAlarm). Access via adb:
+             cmd notification allow_listener shminterop.shmbridge.watch/shminterop.shmbridge.watch.SamsungAlarmListener -->
+        <service android:name=".SamsungAlarmListener" android:exported="true"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService"/>
+            </intent-filter>
+        </service>
+        <activity android:name=".CallActivity" android:exported="false"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask"
+            android:taskAffinity="shminterop.shmbridge.watch.call"
+            android:excludeFromRecents="true"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"/>
+        <activity android:name=".RingActivity" android:exported="false"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask"
+            android:taskAffinity="shminterop.shmbridge.watch.ring"
+            android:excludeFromRecents="true"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"/>
+        <!-- Receiver for actions from the Samsung Alarm fork (user dismiss/snooze). -->
+        <receiver android:name=".AlarmForkReceiver" android:exported="true"
+            android:permission="shminterop.shmbridge.permission.ALARM_LINK">
+            <intent-filter>
+                <action android:name="shminterop.shmbridge.alarm.OUT"/>
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>

@@ -1,0 +1,335 @@
+package shminterop.shmbridge.phone;
+
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothManager;
+import android.bluetooth.BluetoothServerSocket;
+import android.bluetooth.BluetoothSocket;
+import android.content.Context;
+import android.util.Log;
+
+import java.io.BufferedInputStream;
+import java.io.Closeable;
+import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * Link of the {@code /__bridge__/} communications channel (docs/bridge-comms-protocol.md).
+ *
+ * <p>Two transports (pref {@code comms_transport}, see {@link CommsHub}):</p>
+ * <ul>
+ *   <li>{@code bt} (default; the only supported one): RFCOMM server on the phone with the service UUID. The
+ *   watch's {@code BtRelayClient} connects by itself (tries the paired devices) and its
+ *   {@code FrameMux} sends the {@code /__bridge__/*} frames here. No PC in between: the
+ *   phone does the demux. Frames
+ *   that do not belong to the channel (plain heartbeats, {@code /__gw__/*}) are ignored.</li>
+ *   <li>{@code tcp}: client of {@code 127.0.0.1:8775} (target: a PC gateway that is
+ *   not included in this repo). Kept as-is, unsupported.</li>
+ * </ul>
+ *
+ * <p>Frame: {@code [int len][short pathLen][path UTF-8][data]} big-endian. The own keepalive
+ * is an empty {@code /__bridge__/ping} every 2.5 s; plain heartbeats (len=2,
+ * pathLen=0) belong exclusively to SHM's relay and are never sent here. Reconnects with
+ * back-off; if no frame arrives in 15 s (the peer sends its ping every 2.5 s) the
+ * connection is considered dead (watched by the writer: RFCOMM has no read timeout).</p>
+ */
+final class BridgeLink {
+
+    interface Listener {
+        void onLinkUp();
+        void onLinkDown();
+        void onFrame(String path, byte[] data);
+    }
+
+    static final String TAG = "SHMBridgeComms";
+    static final String HOST = "127.0.0.1";
+    static final int PORT = 8775;
+    static final String PREFIX = "/__bridge__/";
+    static final String PING = PREFIX + "ping";
+    static final int MAX_FRAME = 16 * 1024 * 1024;
+    static final int MAX_JSON = 64 * 1024;
+    static final long PING_MS = 2500;
+    static final int READ_TIMEOUT_MS = 15000;
+    private static final byte[] STOP = new byte[0];
+    /** Same UUID as the watch's {@code BtRelayClient.RELAY_UUID}. */
+    static final UUID RFCOMM_UUID = UUID.fromString("8b6d5c1e-3a24-4c0d-9f1b-6a7e2d5c4b3b");
+
+    /** One connection opened by the transport. */
+    interface Conn extends Closeable {
+        InputStream in() throws IOException;
+        OutputStream out() throws IOException;
+        String describe();
+    }
+
+    /** Opens (or waits for) the next connection; blocks. */
+    interface Transport {
+        Conn open() throws IOException;
+        /** Unblocks an in-progress open() (stop). */
+        void abort();
+        String describe();
+    }
+
+    private final Listener listener;
+    private final Transport transport;
+    private volatile boolean running;
+    private volatile Conn socket;
+    private volatile long lastRx;
+    private volatile boolean up;      // socket connected (writable)
+    private volatile boolean ready;   // and, in addition, the host has already sent a frame
+    private Thread worker;
+    private final LinkedBlockingQueue<byte[]> outq = new LinkedBlockingQueue<>(512);
+
+    BridgeLink(Listener listener, Transport transport) {
+        this.listener = listener;
+        this.transport = transport;
+    }
+
+    String describe() { return transport.describe(); }
+
+    /** TCP client of 127.0.0.1:8775 (host with adb reverse; unsupported). */
+    static Transport tcp() {
+        return new Transport() {
+            @Override public Conn open() throws IOException {
+                final Socket s = new Socket();
+                try {
+                    s.connect(new InetSocketAddress(HOST, PORT), 5000);
+                    s.setTcpNoDelay(true);
+                    s.setKeepAlive(true);
+                    s.setSoTimeout(READ_TIMEOUT_MS);
+                } catch (IOException e) {
+                    try { s.close(); } catch (IOException ignored) {}
+                    throw e;
+                }
+                return new Conn() {
+                    @Override public InputStream in() throws IOException { return s.getInputStream(); }
+                    @Override public OutputStream out() throws IOException { return s.getOutputStream(); }
+                    @Override public void close() throws IOException { s.close(); }
+                    @Override public String describe() { return "TCP " + HOST + ":" + PORT; }
+                };
+            }
+            @Override public void abort() {}
+            @Override public String describe() { return "tcp " + HOST + ":" + PORT; }
+        };
+    }
+
+    /** RFCOMM server (service UUID): the watch connects directly to the phone. */
+    static Transport rfcomm(final Context ctx) {
+        return new Transport() {
+            private volatile BluetoothServerSocket server;
+
+            @Override public Conn open() throws IOException {
+                BluetoothManager bm = ctx.getSystemService(BluetoothManager.class);
+                BluetoothAdapter ad = bm == null ? null : bm.getAdapter();
+                if (ad == null || !ad.isEnabled()) throw new IOException("BT apagado");
+                final BluetoothSocket s;
+                try {
+                    BluetoothServerSocket ss = ad.listenUsingInsecureRfcommWithServiceRecord(
+                            "SHMBridgeComms", RFCOMM_UUID);
+                    server = ss;
+                    Log.i(TAG, "link: RFCOMM escuchando");
+                    try {
+                        s = ss.accept();  // blocking; abort() cuts it
+                    } finally {
+                        server = null;
+                        try { ss.close(); } catch (IOException ignored) {}
+                    }
+                } catch (SecurityException e) {
+                    throw new IOException("missing BLUETOOTH_CONNECT", e);
+                }
+                String name;
+                try { name = s.getRemoteDevice().getName(); } catch (SecurityException e) { name = "?"; }
+                final String who = name;
+                return new Conn() {
+                    @Override public InputStream in() throws IOException { return s.getInputStream(); }
+                    @Override public OutputStream out() throws IOException { return s.getOutputStream(); }
+                    @Override public void close() throws IOException { s.close(); }
+                    @Override public String describe() { return "RFCOMM " + who; }
+                };
+            }
+            @Override public void abort() {
+                BluetoothServerSocket ss = server;
+                if (ss != null) try { ss.close(); } catch (IOException ignored) {}
+            }
+            @Override public String describe() { return "bt rfcomm"; }
+        };
+    }
+
+    synchronized void start() {
+        if (running) return;
+        running = true;
+        worker = new Thread(this::loop, "bridge-comms-link");
+        worker.setDaemon(true);
+        worker.start();
+    }
+
+    synchronized void stop() {
+        running = false;
+        transport.abort();
+        closeSocket();
+        if (worker != null) worker.interrupt();
+        worker = null;
+    }
+
+    boolean isUp() { return up && ready; }
+
+    /** Queues a frame; false if there is no link or the queue is full (does not block).
+     *  Before verification only hello should be sent (onLinkUp does it). */
+    boolean send(String path, byte[] data) {
+        if (!up) return false;
+        byte[] frame = encode(path, data);
+        if (frame == null) return false;
+        return outq.offer(frame);
+    }
+
+    static byte[] encode(String path, byte[] data) {
+        byte[] p = path.getBytes(StandardCharsets.UTF_8);
+        int dlen = data == null ? 0 : data.length;
+        if (p.length > 0xFFFF || 2L + p.length + dlen > MAX_FRAME) return null;
+        byte[] f = new byte[6 + p.length + dlen];
+        int len = 2 + p.length + dlen;
+        f[0] = (byte) (len >>> 24); f[1] = (byte) (len >>> 16);
+        f[2] = (byte) (len >>> 8); f[3] = (byte) len;
+        f[4] = (byte) (p.length >>> 8); f[5] = (byte) p.length;
+        System.arraycopy(p, 0, f, 6, p.length);
+        if (dlen > 0) System.arraycopy(data, 0, f, 6 + p.length, dlen);
+        return f;
+    }
+
+    private void loop() {
+        long backoff = 1000;
+        while (running) {
+            boolean served = false;
+            try {
+                Conn c = transport.open();
+                socket = c;
+                if (!running) break;
+                served = serve(c);
+            } catch (IOException e) {
+                Log.d(TAG, "link: no connection " + transport.describe() + " (" + e.getMessage() + ")");
+            } finally {
+                closeSocket();
+            }
+            if (!running) break;
+            // a session that got to receive frames resets the back-off
+            backoff = served ? 1000 : Math.min(backoff * 2, 30000);
+            try {
+                Thread.sleep(backoff);
+            } catch (InterruptedException e) {
+                break;
+            }
+        }
+    }
+
+    /** true if at least one frame from the peer arrived (verified link). */
+    private boolean serve(Conn s) throws IOException {
+        DataInputStream in = new DataInputStream(new BufferedInputStream(s.in()));
+        final DataOutputStream out = new DataOutputStream(new BufferedOutputStream(s.out()));
+        lastRx = System.currentTimeMillis();
+        outq.clear();
+        Thread writer = new Thread(() -> writeLoop(out), "bridge-comms-writer");
+        writer.setDaemon(true);
+        boolean verified = false;
+        String reason = "EOF";
+        try {
+            // the writer starts before the first read: the initial ping verifies us to the host
+            up = true;
+            writer.start();
+            Log.i(TAG, "link: connected (" + s.describe() + ")");
+            while (running) {
+                int len = in.readInt();
+                if (len < 2 || len > MAX_FRAME) {
+                    reason = "desync len=" + len;
+                    break;
+                }
+                int plen = in.readUnsignedShort();
+                if (plen > len - 2) {
+                    reason = "desync pathLen=" + plen;
+                    break;
+                }
+                byte[] pb = new byte[plen];
+                in.readFully(pb);
+                byte[] db = new byte[len - 2 - plen];
+                if (db.length > 0) in.readFully(db);
+                lastRx = System.currentTimeMillis();
+                if (!verified) {
+                    // adb reverse accepts even if nobody is on the host's 8776: the
+                    // link counts as up only after the first received frame
+                    verified = true;
+                    ready = true;
+                    Log.i(TAG, "link: peer verified");
+                    listener.onLinkUp();
+                }
+                if (plen == 0) continue;  // plain heartbeat: not part of the channel, ignored
+                String path = new String(pb, StandardCharsets.UTF_8);
+                if (PING.equals(path)) continue;
+                if (!path.startsWith(PREFIX)) continue;  // /__gw__/* or other mux channels
+                listener.onFrame(path, db);
+            }
+        } catch (SocketTimeoutException e) {
+            reason = "no traffic in " + READ_TIMEOUT_MS + " ms";
+        } catch (IOException e) {
+            reason = staleSince() > READ_TIMEOUT_MS ? "no traffic in " + READ_TIMEOUT_MS + " ms"
+                    : e.getClass().getSimpleName();
+        } finally {
+            boolean wasUp = up;
+            up = false;
+            ready = false;
+            outq.clear();
+            outq.offer(STOP);
+            writer.interrupt();
+            Log.i(TAG, "link: closed (" + reason + ")" + (verified ? "" : " no verified peer"));
+            if (wasUp && verified) listener.onLinkDown();
+        }
+        return verified;
+    }
+
+    private void writeLoop(DataOutputStream out) {
+        byte[] ping = encode(PING, null);
+        try {
+            out.write(ping);
+            out.flush();
+            while (up) {
+                byte[] f = outq.poll(PING_MS, TimeUnit.MILLISECONDS);
+                if (f == STOP) break;
+                if (staleSince() > READ_TIMEOUT_MS) {
+                    // RFCOMM has no soTimeout: closing unblocks the reader
+                    Log.i(TAG, "link: no traffic in " + READ_TIMEOUT_MS + " ms; closing");
+                    closeSocket();
+                    return;
+                }
+                out.write(f == null ? ping : f);
+                // drain whatever is already queued before the flush
+                byte[] more;
+                while ((more = outq.poll()) != null) {
+                    if (more == STOP) { out.flush(); return; }
+                    out.write(more);
+                }
+                out.flush();
+            }
+        } catch (InterruptedException ignored) {
+        } catch (IOException e) {
+            Log.i(TAG, "link: escritura: " + e.getClass().getSimpleName());
+            closeSocket();
+        }
+    }
+
+    private long staleSince() { return System.currentTimeMillis() - lastRx; }
+
+    private void closeSocket() {
+        Conn s = socket;
+        socket = null;
+        if (s != null) {
+            try { s.close(); } catch (IOException ignored) {}
+        }
+    }
+}

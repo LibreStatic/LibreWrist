@@ -1,0 +1,36 @@
+{
+  "name": "gms",
+  "description": "Native GMS Data Layer between watch and phone (no PC). Both SHM apps share package and signing certificate.",
+  "families": {
+    "shm-phone": [
+      "generic-manufacturer-check",
+      "generic-vendor-check",
+      "shm-min-age-22-to-16",
+      "shm-supported-type-ordinals",
+      "shm-region-supportedtype",
+      "shm-region-countrylist",
+      "shm-root-packagevalidator",
+      "shm-force-update-response",
+      "shm-force-update-pref",
+      "shm-main-gates",
+      "shm-setup-network-gate",
+      "shm-sleep-apnea-support",
+      "phone-rebrand-gms"
+    ],
+    "shm-watch": [
+      "generic-manufacturer-check",
+      "watch-rebrand-coexist",
+      "watch-queries-health-service",
+      "watch-companion-vendor",
+      "watch-alarm-system-app",
+      "watch-mobile-installed",
+      "watch-ecg-sensor-adapter",
+      "watch-apnea-country",
+      "watch-apnea-reeval-not-supported"
+    ]
+  },
+  "inject": {
+    "shm-phone": [],
+    "shm-watch": ["watch-mod"]
+  }
+}

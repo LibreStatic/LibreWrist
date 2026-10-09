@@ -1,0 +1,9 @@
+apks/*.apk
+third_party/*.jar
+third_party/*.aar
+keys/
+dist/
+build/
+__pycache__/
+*.pyc
+*.idsig

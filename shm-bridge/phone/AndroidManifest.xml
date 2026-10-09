@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="shminterop.shmbridge.phone"
+    android:versionCode="6" android:versionName="1.5-rfcomm">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <!-- /__bridge__/ channel (CommsService, BridgeNotificationListener) -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS"/>
+    <!-- BAL exemption for notif/open and alarm/*: appops set SYSTEM_ALERT_WINDOW allow -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
+
+    <application android:label="SHM Bridge" android:allowBackup="false">
+        <activity android:name=".MainActivity" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+                <service android:name="shminterop.relay.VendorReplyListenerService" android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED"/>
+                <action android:name="com.google.android.gms.wearable.DATA_CHANGED"/>
+                <data android:scheme="wear" android:host="*"/>
+            </intent-filter>
+        </service>
+        <service android:name=".RelayKeepAliveService" android:exported="false"
+            android:foregroundServiceType="dataSync"/>
+        <service android:name=".BtServer" android:exported="false"
+            android:foregroundServiceType="dataSync"/>
+        <service android:name=".BtRelayServer" android:exported="false"
+            android:foregroundServiceType="dataSync"/>
+
+        <!-- /__bridge__/ communications channel (docs/architecture.md).
+             Exported for the shell only (DUMP permission): am start-foreground-service, user 0,
+             shminterop.shmbridge.phone/.CommsService -->
+        <service android:name=".CommsService" android:exported="true"
+            android:permission="android.permission.DUMP"
+            android:foregroundServiceType="specialUse">
+            <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Companion link to the owner's smartwatch over a local relay (notifications, alarms, call state)"/>
+        </service>
+        <service android:name=".BridgeNotificationListener" android:exported="true"
+            android:label="SHM Bridge (reloj)"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService"/>
+            </intent-filter>
+        </service>
+        <receiver android:name=".CommsBootReceiver" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".CommsDebugReceiver" android:exported="true"
+            android:permission="android.permission.DUMP">
+            <intent-filter>
+                <action android:name="shminterop.shmbridge.DEBUG_SEND"/>
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>
