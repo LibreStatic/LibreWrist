@@ -6,7 +6,7 @@ our own bridge for alarms, notifications and calls.
 
 This repository **contains no vendor code and no APKs**: only the patches (as patterns anchored to
 the official APK), our own code and the scripts that rebuild everything from the official APKs each
-user pulls from their own devices. The resulting APKs are signed with a local key and are for
+user downloads from APKMirror. The resulting APKs are signed with a local key and are for
 personal use; they are not redistributed.
 
 Tested with: Galaxy Watch5 Pro (SM-R920, Wear OS API 36) and a Motorola foldable phone.

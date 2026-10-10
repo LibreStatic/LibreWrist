@@ -21,9 +21,6 @@ data class InputApp(
     val sha256: String,
     val packageName: String,
     val apkMirrorSlug: String,
-    /** Where the file can be pulled from instead of downloading (`obtain.pullFrom`). */
-    val pullFromPhone: Boolean,
-    val pullFromWatch: Boolean,
     /** Variant facts shown as chips on the card. */
     val variantChips: List<VariantChip>,
 )
@@ -80,8 +77,6 @@ object BundledCatalogue {
             sha256 = "3f20656e8c2ea34b95acb0b4d006b8aab3210fcc37cfb16abd2a7e4b91ca8524",
             packageName = "com.samsung.android.shealthmonitor",
             apkMirrorSlug = "samsung-electronics-co-ltd/samsung-health-monitor-2",
-            pullFromPhone = true,
-            pullFromWatch = false,
             variantChips = listOf(VariantChip.ApkNotBundle, VariantChip.NoDpi, VariantChip.MinAndroid11),
         ),
         InputApp(
@@ -92,8 +87,6 @@ object BundledCatalogue {
             sha256 = "a714e9a5950f456b8da4843bd6cdb19948a0c6fd9101b473e24beb3384a2c620",
             packageName = "com.samsung.android.shealthmonitor",
             apkMirrorSlug = "samsung-electronics-co-ltd/samsung-health-monitor-wear-os",
-            pullFromPhone = false,
-            pullFromWatch = true,
             variantChips = listOf(VariantChip.ApkNotBundle, VariantChip.NoDpi),
         ),
         InputApp(
@@ -104,8 +97,6 @@ object BundledCatalogue {
             sha256 = "141832f22d7fb8bb7a6bb5e11695829015da6a33c5e19671a8695ecea276e8bd",
             packageName = "com.samsung.android.watch.alarm",
             apkMirrorSlug = "samsung-electronics-co-ltd/alarm-wear-os",
-            pullFromPhone = false,
-            pullFromWatch = true,
             variantChips = listOf(VariantChip.ApkNotBundle, VariantChip.NoDpi, VariantChip.MinAndroid14),
         ),
     )

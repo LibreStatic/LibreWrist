@@ -17,13 +17,12 @@ internal fun AcquireUiState.updateCard(inputId: String, change: (AcquireCard) ->
 internal fun AcquireUiState.reduce(event: AcquireEvent): AcquireUiState = when (event) {
     is AcquireEvent.ToggleMoreWays -> updateCard(event.inputId) { it.copy(moreWaysExpanded = !it.moreWaysExpanded) }
     is AcquireEvent.UseFile -> updateCard(event.inputId) { it.copy(moreWaysExpanded = false) }
-    is AcquireEvent.PullFromDevice -> updateCard(event.inputId) { it.copy(moreWaysExpanded = false) }
     is AcquireEvent.OpenMirror -> this
 }
 
 /**
- * Shell-stage view model. Choosing a file or pulling from a device runs a simulated transfer so the
- * flow can be walked end to end; the real file picker, device pull and SHA-256 check replace
+ * Shell-stage view model. Choosing a file runs a simulated transfer so the
+ * flow can be walked end to end; the real file picker and SHA-256 check replace
  * [simulateTransfer] when the platform layer lands (the screen state does not change).
  */
 class AcquireViewModel : ViewModel() {
@@ -38,7 +37,6 @@ class AcquireViewModel : ViewModel() {
         _state.update { it.reduce(event) }
         when (event) {
             is AcquireEvent.UseFile -> simulateTransfer(event.inputId)
-            is AcquireEvent.PullFromDevice -> simulateTransfer(event.inputId)
             else -> Unit
         }
     }

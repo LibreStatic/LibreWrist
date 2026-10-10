@@ -17,8 +17,7 @@
       "target": "phone",
       "role": "patched",
       "obtain": {
-        "apkmirror": "samsung-electronics-co-ltd/samsung-health-monitor-2",
-        "pullFrom": ["phone"]
+        "apkmirror": "samsung-electronics-co-ltd/samsung-health-monitor-2"
       }
     },
     {
@@ -37,8 +36,7 @@
       "target": "watch",
       "role": "patched",
       "obtain": {
-        "apkmirror": "samsung-electronics-co-ltd/samsung-health-monitor-wear-os",
-        "pullFrom": ["watch"]
+        "apkmirror": "samsung-electronics-co-ltd/samsung-health-monitor-wear-os"
       }
     },
     {
@@ -57,8 +55,7 @@
       "target": "watch",
       "role": "patched",
       "obtain": {
-        "apkmirror": "samsung-electronics-co-ltd/alarm-wear-os",
-        "pullFrom": ["watch"]
+        "apkmirror": "samsung-electronics-co-ltd/alarm-wear-os"
       }
     }
   ]

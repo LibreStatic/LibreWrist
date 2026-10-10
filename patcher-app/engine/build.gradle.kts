@@ -27,6 +27,8 @@ tasks.test {
     // Heap for the equivalence oracle, which handles whole APKs; the Gradle daemon stays small.
     maxHeapSize = "3g"
     systemProperty("shm.repoRoot", rootProject.projectDir.parentFile.absolutePath)
+    // The tests read the committed catalogue and its signature: re-run them when it changes.
+    inputs.dir(rootProject.projectDir.parentFile.resolve("catalogue")).withPropertyName("catalogue")
     for (name in oracleVariables) {
         providers.environmentVariable(name).orNull?.let { environment(name, it) }
     }

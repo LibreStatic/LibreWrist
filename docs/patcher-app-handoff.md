@@ -78,7 +78,7 @@ an app asset, generated at build time.
 | Input | Version | Target | Notes |
 |---|---|---|---|
 | SHM phone | 1.4.6.001 | phone | — |
-| SHM watch | 1.5.1.022 | watch | It may already be on the user's watch as the system app; see "pull from my watch" below. |
+| SHM watch | 1.5.1.022 | watch | Pinned version: downloaded from APKMirror or picked as a file. |
 | AlarmWatch | 1.3.05.9 | watch | Exact build. The alarm patterns name obfuscated classes directly. Usually preinstalled on the watch. |
 
 | Output | Package | Signed with |
@@ -101,10 +101,10 @@ time to smali or dex assets that use the placeholder.
 
 "More ways to get this app" should offer:
 - **Choose a file** (SAF).
-- **Pull from my watch** over ADB (`pm path` + `pull`), for SHM watch and AlarmWatch, if the
-  installed build matches the hash. This only works after watch pairing, which argues for pairing
-  the watch earlier (§8).
-- **Pull from this phone**, if it is installed.
+
+The patcher never pulls APKs from the watch or the phone. Every input is a pinned version
+(SHA-256 + versionCode in `apks/inputs.json`) that the user downloads from APKMirror (guided
+browser) or picks as a file; the hash is checked either way.
 
 ### 4.2 The real patch catalogue
 
@@ -324,8 +324,8 @@ bridge.
 These answer the open questions of the first draft. The ordered roadmap lives in the project plan;
 this section records only the decisions.
 
-1. **Step order**: Galaxy Wearable stock pairing → watch ADB pairing → Acquire. "Pull from my
-   watch" is then available for the watch inputs.
+1. **Step order**: Galaxy Wearable stock pairing → watch ADB pairing → Acquire. Inputs are
+   never pulled from a device: APKMirror or a chosen file only.
 2. **Profile and Verify**: Profile (phone + watch model) selects the catalogue profile set; Verify
    stays inline in Acquire, with Continue disabled until every hash passes.
 3. **Health SDK input**: none. The Health Tracking client is our own clean-room code
@@ -342,8 +342,7 @@ this section records only the decisions.
    bridge exposes a signature-protected status provider for the self-test. Grants, install order
    and stock apps to disable live in the catalogue (`grants`, `installOrder`,
    `stockAppsToDisable`).
-9. **Inputs**: `apks/inputs.json` describes each input (package, version, variant, APKMirror slug,
-   pull source); `apks/SHA256SUMS` is generated from it.
+9. **Inputs**: `apks/inputs.json` describes each input (package, version, variant, APKMirror slug); `apks/SHA256SUMS` is generated from it.
 
 ## 9. Suggested slices
 

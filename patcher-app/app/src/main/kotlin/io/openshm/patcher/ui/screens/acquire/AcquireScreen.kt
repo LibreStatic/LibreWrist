@@ -10,7 +10,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.FolderOpen
 import androidx.compose.material.icons.rounded.OpenInBrowser
 import androidx.compose.material.icons.rounded.PhoneAndroid
-import androidx.compose.material.icons.rounded.Usb
 import androidx.compose.material.icons.rounded.VerifiedUser
 import androidx.compose.material.icons.rounded.Watch
 import androidx.compose.material3.DropdownMenu
@@ -69,7 +68,6 @@ sealed interface AcquireEvent {
     data class OpenMirror(val inputId: String) : AcquireEvent
     data class ToggleMoreWays(val inputId: String) : AcquireEvent
     data class UseFile(val inputId: String) : AcquireEvent
-    data class PullFromDevice(val inputId: String) : AcquireEvent
 }
 
 @Composable
@@ -177,19 +175,6 @@ private fun GetActions(card: AcquireCard, onEvent: (AcquireEvent) -> Unit) {
                 leadingIcon = { Icon(Icons.Rounded.FolderOpen, contentDescription = null) },
                 onClick = { onEvent(AcquireEvent.UseFile(id)) },
             )
-            if (card.input.pullFromPhone || card.input.pullFromWatch) {
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            stringResource(
-                                if (card.input.pullFromPhone) R.string.acquire_pull_phone else R.string.acquire_pull_watch,
-                            ),
-                        )
-                    },
-                    leadingIcon = { Icon(Icons.Rounded.Usb, contentDescription = null) },
-                    onClick = { onEvent(AcquireEvent.PullFromDevice(id)) },
-                )
-            }
         }
     }
 }

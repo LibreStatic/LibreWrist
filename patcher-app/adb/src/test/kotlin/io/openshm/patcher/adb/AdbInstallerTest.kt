@@ -1,7 +1,6 @@
 package io.openshm.patcher.adb
 
 import java.io.ByteArrayInputStream
-import java.security.MessageDigest
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
@@ -127,61 +126,5 @@ class AdbInstallerTest {
             fail()
         } catch (e: IllegalArgumentException) {
         }
-    }
-
-    @Test
-    fun `puller streams, hashes and checks the size`() = runBlocking {
-        val content = ByteArray(70_000) { (it * 7).toByte() }
-        val transport = scriptedTransport(
-            shell = { if (it == "stat -c %s '/data/app/~~a==/p-b==/base.apk'") ok("70000\n") else ShellResult(1, "", "?") },
-            exec = { dest ->
-                assertEquals("exec:cat '/data/app/~~a==/p-b==/base.apk'", dest)
-                FakeChannel(content)
-            },
-        )
-        val sink = java.io.ByteArrayOutputStream()
-        val pulled = AdbPuller(AdbClient(transport)).pull("/data/app/~~a==/p-b==/base.apk", sink)
-        assertArrayEquals(content, sink.toByteArray())
-        assertEquals(70_000L, pulled.sizeBytes)
-        assertEquals(MessageDigest.getInstance("SHA-256").digest(content).joinToString("") { "%02x".format(it) }, pulled.sha256)
-    }
-
-    @Test
-    fun `puller rejects an error message masquerading as content and unsafe paths`() = runBlocking {
-        val transport = scriptedTransport(
-            shell = { ok("1000\n") },
-            exec = { FakeChannel("cat: /x: No such file or directory\n".toByteArray()) },
-        )
-        try {
-            AdbPuller(AdbClient(transport)).pull("/x/y.apk", java.io.ByteArrayOutputStream())
-            fail()
-        } catch (e: AdbException.Protocol) {
-        }
-        for (bad in listOf("relative.apk", "/a b", "/a'; id; '", "/a/../b;x", "/a\nb")) {
-            try {
-                AdbPuller.requireSafePath(bad)
-                fail("accepted $bad")
-            } catch (e: IllegalArgumentException) {
-            }
-        }
-    }
-
-    @Test
-    fun `pullPackage pulls base and splits and closes each sink`() = runBlocking {
-        val files = mapOf("/data/app/p/base.apk" to ByteArray(10) { 1 }, "/data/app/p/split_x.apk" to ByteArray(4) { 2 })
-        val transport = scriptedTransport(
-            shell = { cmd ->
-                when {
-                    cmd == "pm path io.x.app" -> ok("package:/data/app/p/base.apk\npackage:/data/app/p/split_x.apk\n")
-                    cmd.startsWith("stat -c %s '") -> ok("${files.getValue(cmd.substringAfter("'").dropLast(1)).size}\n")
-                    else -> ShellResult(1, "", "?")
-                }
-            },
-            exec = { dest -> FakeChannel(files.getValue(dest.removePrefix("exec:cat '").dropLast(1))) },
-        )
-        var closed = 0
-        val results = AdbPuller(AdbClient(transport)).pullPackage("io.x.app", { java.io.ByteArrayOutputStream() to { closed++ } })
-        assertEquals(listOf(10L, 4L), results.map { it.sizeBytes })
-        assertEquals(2, closed)
     }
 }

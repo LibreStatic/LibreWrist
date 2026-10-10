@@ -102,8 +102,6 @@
     <string name="acquire_open_mirror">Open on APKMirror</string>
     <string name="acquire_more_ways">More ways to get this app</string>
     <string name="acquire_use_file">Use a file I already have</string>
-    <string name="acquire_pull_phone">Copy it from this phone</string>
-    <string name="acquire_pull_watch">Copy it from the watch</string>
     <string name="acquire_downloading">Downloading…  %1$d%% · %2$d of %3$d MB</string>
     <string name="acquire_verified">Matches the expected file · %1$d MB</string>
     <string name="acquire_verify_note">Each file is checked against a known checksum before it is used.</string>
