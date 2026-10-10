@@ -154,6 +154,17 @@ class PatcherTest {
         }
     }
 
+    @Test fun unknownProfileOrInputIsReported() {
+        val apk = File(dir, "syn.apk").also { syntheticApk(it) }
+        val inj = mapOf("extra" to StagedInjection(extra, "org.test"))
+        for (req in listOf(PatchRequest(apk, "syn", "nope", "org.test", inj, null, null, dir),
+                           PatchRequest(apk, "nope", "p", "org.test", inj, null, null, dir))) {
+            val report = Patcher(catalogue(apk)).analyze(req)
+            assertFalse(report.ok)
+            assertEquals(listOf("check-request"), report.phases.map { it.name })
+        }
+    }
+
     @Test fun wrongPackageIsNotAKnownFamily() {
         val apk = File(dir, "syn.apk")
         syntheticApk(apk, pkg = "com.other.app")

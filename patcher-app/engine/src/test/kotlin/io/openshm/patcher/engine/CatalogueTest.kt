@@ -72,6 +72,37 @@ class CatalogueTest {
         }
     }
 
+    @Test fun malformedInputsAreCatalogueErrors() {
+        for (bad in listOf("5", "{}", "{\"id\": \"x\"}")) {
+            val text = mutated { it.replaceFirst("\"inputs\": [", "\"inputs\": [$bad, ") }
+            try {
+                Catalogue.parse(text)
+                fail(bad)
+            } catch (e: CatalogueException) {
+                assertTrue(e.problems.toString(), e.problems.any { "inputs[0]" in it })
+            }
+        }
+        val dupSha = mutated { it.replaceFirst(Regex("\"sha256\": \"[0-9a-f]{64}\""), "\"sha256\": \"ABC\"") }
+        try {
+            Catalogue.parse(dupSha)
+            fail()
+        } catch (e: CatalogueException) {
+            assertTrue(e.problems.any { "sha256" in it })
+        }
+    }
+
+    @Test fun parseSignedVerifiesBeforeParsing() {
+        val key = CatalogueVerifier.parsePublicKey(pem)
+        assertEquals(38, Catalogue.parseSigned(catalogueBytes, signature, key).patterns.size)
+        val tampered = catalogueBytes.copyOf().also { it[100] = (it[100].toInt() xor 1).toByte() }
+        try {
+            Catalogue.parseSigned(tampered, signature, key)
+            fail()
+        } catch (e: CatalogueException) {
+            assertTrue(e.problems.any { "signature" in it })
+        }
+    }
+
     @Test fun duplicateKeysAreRejected() {
         try {
             Catalogue.parse("{\"schema\": 1, \"schema\": 1}")

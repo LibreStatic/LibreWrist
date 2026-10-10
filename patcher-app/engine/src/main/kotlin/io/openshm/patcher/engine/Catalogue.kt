@@ -143,7 +143,32 @@ class Catalogue private constructor(
             val problems = validate(cat)
             if (problems.isNotEmpty()) throw CatalogueException(problems)
             @Suppress("UNCHECKED_CAST")
-            return build(cat as Map<String, Any?>)
+            return try {
+                build(cat as Map<String, Any?>)
+            } catch (e: RuntimeException) {
+                // validate() should have caught it; never let a malformed catalogue escape as anything else
+                throw CatalogueException(listOf("malformed catalogue: ${e.message ?: e.javaClass.simpleName}"))
+            }
+        }
+
+        /**
+         * The only entry point for a catalogue from outside the app: verifies [signature] over the
+         * exact [bytes] with [publicKey], decodes them as strict UTF-8 and parses them. Throws
+         * [CatalogueException] on any failure, including a bad signature.
+         */
+        fun parseSigned(bytes: ByteArray, signature: ByteArray, publicKey: java.security.PublicKey): Catalogue {
+            if (!CatalogueVerifier.verify(bytes, signature, publicKey)) {
+                throw CatalogueException(listOf("the catalogue signature does not verify"))
+            }
+            val text = try {
+                Charsets.UTF_8.newDecoder()
+                    .onMalformedInput(java.nio.charset.CodingErrorAction.REPORT)
+                    .onUnmappableCharacter(java.nio.charset.CodingErrorAction.REPORT)
+                    .decode(java.nio.ByteBuffer.wrap(bytes)).toString()
+            } catch (e: java.nio.charset.CharacterCodingException) {
+                throw CatalogueException(listOf("the catalogue is not valid UTF-8"))
+            }
+            return parse(text)
         }
 
         // ------------------------------------------------------------------ validation
@@ -307,6 +332,36 @@ class Catalogue private constructor(
             return problems
         }
 
+        private val SHA256_RE = Regex("^[0-9a-f]{64}$")
+        private val INPUT_ROLES = listOf("patched", "installed-stock")
+
+        /** The checks of `scripts/gen_sha256sums.py validate` on the catalogue's copy of the inputs. */
+        private fun validateInputs(inputs: Any?): List<String> {
+            if (inputs !is List<*>) return listOf("inputs must be a list")
+            val problems = ArrayList<String>()
+            val ids = HashSet<String>()
+            for ((n, e) in inputs.withIndex()) {
+                val where = "inputs[$n]"
+                if (e !is Map<*, *>) {
+                    problems.add("$where: must be an object")
+                    continue
+                }
+                val id = e["id"]
+                if (id !is String || !ID_RE.matches(id)) problems.add("$where: id must match ${ID_RE.pattern}")
+                else if (!ids.add(id)) problems.add("$where: duplicate id '$id'")
+                for (k in listOf("file", "versionName")) if (e[k] !is String) problems.add("$where: $k must be a string")
+                val sha = e["sha256"]
+                if (sha !is String || !SHA256_RE.matches(sha)) problems.add("$where: sha256 is not 64 lowercase hex chars")
+                val pkg = e["package"]
+                if (pkg !is String || !PACKAGE_RE.matches(pkg)) problems.add("$where: package is not a valid package name")
+                if (!isInt(e["versionCode"])) problems.add("$where: versionCode must be an integer")
+                if (e["target"] !in DEVICES) problems.add("$where: target must be one of $DEVICES")
+                if (e["role"] !in INPUT_ROLES) problems.add("$where: role must be one of $INPUT_ROLES")
+                if (e.containsKey("label") && e["label"] !is String) problems.add("$where: label must be a string")
+            }
+            return problems
+        }
+
         /** Problems of the structure, cross references and every op step. Empty list = valid. */
         fun validate(cat: Any?): List<String> {
             if (cat !is Map<*, *>) return listOf("top level must be an object")
@@ -319,7 +374,7 @@ class Catalogue private constructor(
                 val v = cat[k]
                 if (!(isInt(v) && (v as Long) >= 1)) problems.add("$k must be an integer >= 1")
             }
-            if (cat["inputs"] !is List<*>) problems.add("inputs must be a list")
+            problems.addAll(validateInputs(cat["inputs"]))
 
             val famIds = ArrayList<String>()
             val fams = cat["families"]

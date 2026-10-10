@@ -78,6 +78,10 @@ class PatchReport(
 
 /** What to patch and with what. */
 class PatchRequest(
+    /**
+     * The APK to patch. It must sit in app-private storage: it is hashed and then reopened by
+     * path, so a file another process can write to could be swapped between the two.
+     */
     val inputApk: File,
     /** Id of the catalogue input the APK must be (its sha256 is checked). */
     val inputId: String,
@@ -143,10 +147,11 @@ class Patcher(private val catalogue: Catalogue) {
             }
         }
         try {
-            phase("check-request") { PrefixStager.requireValidPrefix(req.prefix) }
-            val profile = catalogue.profile(req.profile)
-            val input = catalogue.inputs.firstOrNull { it.id == req.inputId }
-                ?: throw PatchFailure("the catalogue has no input '${req.inputId}'")
+            val (profile, input) = phase("check-request") {
+                PrefixStager.requireValidPrefix(req.prefix)
+                catalogue.profile(req.profile) to (catalogue.inputs.firstOrNull { it.id == req.inputId }
+                    ?: throw PatchFailure("the catalogue has no input '${req.inputId}'"))
+            }
             val runner = catalogue.runner(req.prefix)
 
             phase("verify-input") { d ->
