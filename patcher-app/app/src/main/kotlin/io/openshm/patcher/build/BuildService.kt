@@ -114,6 +114,7 @@ class BuildService : Service() {
                 BuiltBuild(
                     key, prefix, catalogue.serial, System.currentTimeMillis(),
                     outcome.files.map { BuiltRecord(it.outputId, it.file.path, it.sizeBytes, it.sha256) },
+                    buildFacts(catalogue, outputIds),
                 ),
             )
             BuildController.succeed()

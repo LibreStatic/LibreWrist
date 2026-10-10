@@ -8,7 +8,7 @@ import java.nio.file.StandardCopyOption
 import java.security.MessageDigest
 
 /** Why an imported file was not accepted. */
-enum class RejectReason { WrongApp, WrongVersion, NotExpectedFile, Unreadable }
+enum class RejectReason { WrongApp, WrongVersion, NotExpectedFile, Unreadable, DownloadFailed, TooLarge }
 
 sealed interface ImportResult {
     data class Verified(val sizeBytes: Long) : ImportResult

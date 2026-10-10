@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import io.openshm.patcher.R
 import io.openshm.patcher.data.AppCatalogue
+import io.openshm.patcher.data.DownloadRequest
 import io.openshm.patcher.data.ImportResult
 import io.openshm.patcher.data.InputStore
 import io.openshm.patcher.data.RejectReason
@@ -33,6 +34,8 @@ internal fun RejectReason.messageRes(): Int = when (this) {
     RejectReason.WrongVersion -> R.string.acquire_rejected_wrong_version
     RejectReason.NotExpectedFile -> R.string.acquire_rejected_not_expected
     RejectReason.Unreadable -> R.string.acquire_rejected_unreadable
+    RejectReason.DownloadFailed -> R.string.acquire_rejected_download_failed
+    RejectReason.TooLarge -> R.string.acquire_rejected_too_large
 }
 
 /**
@@ -75,9 +78,20 @@ class AcquireViewModel(application: Application) : AndroidViewModel(application)
         pendingPick = null
         if (uri == null) return
         val input = AppCatalogue.current.input(inputId)
+        runImport(inputId) { onProgress -> store.import(input, uri, onProgress) }
+    }
+
+    /** A download the guided browser intercepted; shown and verified exactly like a picked file. */
+    fun downloadFrom(inputId: String, request: DownloadRequest) {
+        val input = AppCatalogue.current.input(inputId)
+        if (_state.value.cards.firstOrNull { it.input.id == inputId }?.progress is AcquireProgress.Downloading) return
+        runImport(inputId) { onProgress -> store.download(input, request, onProgress) }
+    }
+
+    private fun runImport(inputId: String, import: suspend ((Long, Long) -> Unit) -> ImportResult) {
         viewModelScope.launch {
             _state.update { s -> s.updateCard(inputId) { it.copy(progress = AcquireProgress.Downloading(0, 0)) } }
-            val result = store.import(input, uri) { done, total ->
+            val result = import { done, total ->
                 _state.update { s -> s.updateCard(inputId) { it.copy(progress = AcquireProgress.Downloading(done, total)) } }
             }
             _state.update { s ->

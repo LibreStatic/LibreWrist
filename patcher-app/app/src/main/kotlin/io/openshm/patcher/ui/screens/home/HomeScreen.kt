@@ -1,5 +1,6 @@
 package io.openshm.patcher.ui.screens.home
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,10 +34,14 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
@@ -62,7 +67,11 @@ import io.openshm.patcher.ui.components.StatusShape
 /** Overall health from the last self-test; [daysAgo] null means it never ran. */
 data class HomeStatus(val status: CheckStatus, val daysAgo: Int?)
 
-data class UpdateOffer(val appLabel: String, val fromVersion: String, val toVersion: String)
+/** [patchesOnly]: the input is the same, only the patches applied to it changed. */
+data class UpdateOffer(val appLabel: String, val fromVersion: String, val toVersion: String, val patchesOnly: Boolean = false)
+
+/** A line shown once after a catalogue check; [id] makes a repeated identical message show again. */
+data class CatalogueMessage(@StringRes val textRes: Int, val serial: Long? = null, val id: Long = 0L)
 
 data class InstalledBuild(val id: String, val label: String, val packageName: String, val device: Device)
 
@@ -72,6 +81,8 @@ data class HomeUiState(
     val builds: List<InstalledBuild> = emptyList(),
     val menuOpen: Boolean = false,
     val restoreSheetVisible: Boolean = false,
+    val catalogueMessage: CatalogueMessage? = null,
+    val checkingCatalogue: Boolean = false,
 )
 
 sealed interface HomeEvent {
@@ -87,6 +98,8 @@ sealed interface HomeEvent {
     data object RestoreWatch : HomeEvent
     data object Uninstall : HomeEvent
     data object OpenSigningKey : HomeEvent
+    data object CheckCatalogue : HomeEvent
+    data object MessageShown : HomeEvent
 }
 
 @Composable
@@ -96,7 +109,9 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
 ) {
     val colors = MaterialTheme.colorScheme
+    val snackbar = remember { SnackbarHostState() }
     Box(modifier.fillMaxSize().background(colors.surface).windowInsetsPadding(WindowInsets.safeDrawing)) {
+        SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).padding(bottom = 88.dp))
         Column(
             Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 104.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -135,6 +150,12 @@ fun HomeScreen(
                     onClick = { onEvent(HomeEvent.RunSelfTest) },
                 )
                 DropdownMenuItem(
+                    text = { Text(stringResource(R.string.home_menu_check_catalogue)) },
+                    leadingIcon = { Icon(Icons.Rounded.Update, contentDescription = null) },
+                    enabled = !state.checkingCatalogue,
+                    onClick = { onEvent(HomeEvent.CheckCatalogue) },
+                )
+                DropdownMenuItem(
                     text = { Text(stringResource(R.string.home_menu_signing_key)) },
                     leadingIcon = { Icon(Icons.Rounded.Key, contentDescription = null) },
                     onClick = { onEvent(HomeEvent.OpenSigningKey) },
@@ -153,6 +174,13 @@ fun HomeScreen(
         }
     }
     if (state.restoreSheetVisible) RestoreSheet(onEvent)
+    state.catalogueMessage?.let { message ->
+        val text = if (message.serial != null) stringResource(message.textRes, message.serial) else stringResource(message.textRes)
+        LaunchedEffect(message) {
+            snackbar.showSnackbar(text)
+            onEvent(HomeEvent.MessageShown)
+        }
+    }
 }
 
 @Composable
@@ -203,7 +231,8 @@ private fun UpdateCard(update: UpdateOffer, onEvent: (HomeEvent) -> Unit) {
             Column(Modifier.weight(1f)) {
                 Text(stringResource(R.string.home_update_title), style = MaterialTheme.typography.titleSmall)
                 Text(
-                    stringResource(R.string.home_update_detail, update.appLabel, update.fromVersion, update.toVersion),
+                    if (update.patchesOnly) stringResource(R.string.home_update_patches, update.appLabel)
+                    else stringResource(R.string.home_update_detail, update.appLabel, update.fromVersion, update.toVersion),
                     style = MaterialTheme.typography.bodySmall,
                 )
             }

@@ -89,14 +89,21 @@ internal object PreviewData {
         AppCatalogue.current.inputs.map { AcquireCard(it, AcquireProgress.Verified(40 * MB)) },
     )
 
-    fun guidedBrowser() = GuidedBrowserUiState(
-        host = "www.apkmirror.com",
-        appLabel = AppCatalogue.current.input("shm-watch").label,
-        coachStep = 2,
-        coachTotal = 3,
-        coachTitle = "Pick the variant",
-        coachBody = "Choose the APK, not the bundle, and the nodpi build for your Android version.",
-    )
+    fun guidedBrowser(step: Int = 2, wrongVersion: Boolean = false): GuidedBrowserUiState {
+        val (title, body) = when (step) {
+            1 -> "Open the right release" to "Choose the version named on the card, not a newer or older one."
+            2 -> "Pick the variant" to "Choose the APK, not the bundle, and the nodpi build for your Android version."
+            else -> "Download" to "Tap Download APK. The patcher picks the file up when it finishes."
+        }
+        return GuidedBrowserUiState(
+            host = "www.apkmirror.com",
+            appLabel = AppCatalogue.current.input("shm-watch").label,
+            coachStep = step,
+            coachTotal = 3,
+            coachTitle = title,
+            coachBody = if (wrongVersion) "That is another version. Go back and open 1.5.1.022." else body,
+        )
+    }
 
     fun customize(): CustomizeUiState = customizeStateFor(session)
 
@@ -295,9 +302,13 @@ internal object PreviewData {
 
     fun allSet() = AllSetUiState(passed = 8, total = 8)
 
-    fun home(update: Boolean = true, restoreSheet: Boolean = false, menu: Boolean = false) = HomeUiState(
+    fun home(update: Boolean = true, restoreSheet: Boolean = false, menu: Boolean = false, patchesOnly: Boolean = false) = HomeUiState(
         status = HomeStatus(CheckStatus.Passed, daysAgo = 2),
-        update = if (update) UpdateOffer(AppCatalogue.current.input("shm-watch").label, "1.5.1.022", "1.5.2.004") else null,
+        update = when {
+            !update -> null
+            patchesOnly -> UpdateOffer(AppCatalogue.current.input("shm-watch").label, "1.5.1.022", "1.5.1.022", patchesOnly = true)
+            else -> UpdateOffer(AppCatalogue.current.input("shm-watch").label, "1.5.1.022", "1.5.2.004")
+        },
         builds = AppCatalogue.current.outputs.map { InstalledBuild(it.id, it.label, it.packageName(PREFIX), it.device) },
         menuOpen = menu,
         restoreSheetVisible = restoreSheet,

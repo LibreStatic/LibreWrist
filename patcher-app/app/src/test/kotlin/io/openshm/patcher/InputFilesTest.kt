@@ -88,4 +88,15 @@ class InputFilesTest {
         files.file("demo").writeBytes(content.copyOf(10))
         assertNull(files.status(input()))
     }
+
+    @Test
+    fun cancellingMidwayLeavesNoPartialFile() {
+        val result = runCatching {
+            InputFiles(dir).import(input(), content.inputStream(), content.size.toLong(), { null }) { _, _ ->
+                throw java.util.concurrent.CancellationException("stop")
+            }
+        }
+        assertTrue(result.exceptionOrNull() is java.util.concurrent.CancellationException)
+        assertEquals(emptyList<String>(), dir.list().orEmpty().toList())
+    }
 }

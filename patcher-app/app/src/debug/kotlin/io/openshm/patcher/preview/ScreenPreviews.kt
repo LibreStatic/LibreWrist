@@ -49,6 +49,16 @@ private fun GuidedBrowserPreview(@PreviewParameter(ColorModeProvider::class) mod
 
 @ScreenPreviews
 @Composable
+private fun GuidedBrowserWrongVersionPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { GuidedBrowserSample(step = 1, wrongVersion = true) }
+
+@ScreenPreviews
+@Composable
+private fun GuidedBrowserStep3Preview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { GuidedBrowserSample(step = 3) }
+
+@ScreenPreviews
+@Composable
 private fun CustomizePreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
     PreviewHost(mode) { CustomizeSample() }
 
@@ -111,6 +121,11 @@ private fun AllSetPreview(@PreviewParameter(ColorModeProvider::class) mode: Colo
 @Composable
 private fun HomePreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
     PreviewHost(mode) { HomeSample() }
+
+@ScreenPreviews
+@Composable
+private fun HomePatchesUpdatePreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { HomeSample(patchesOnly = true) }
 
 @ScreenPreviews
 @Composable

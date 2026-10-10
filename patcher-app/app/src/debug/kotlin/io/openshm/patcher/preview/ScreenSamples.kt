@@ -43,7 +43,8 @@ internal fun WatchPairSample(ready: Boolean = false) =
 internal fun AcquireSample() = AcquireScreen(PreviewData.acquire(), {}, {}, {})
 
 @Composable
-internal fun GuidedBrowserSample() = GuidedBrowserScreen(PreviewData.guidedBrowser(), {})
+internal fun GuidedBrowserSample(step: Int = 2, wrongVersion: Boolean = false) =
+    GuidedBrowserScreen(PreviewData.guidedBrowser(step, wrongVersion), {})
 
 @Composable
 internal fun CustomizeSample() = CustomizeScreen(PreviewData.customize(), {}, {}, {})
@@ -84,8 +85,8 @@ internal enum class SelfTestVariant { Passed, Failures, WatchOff }
 internal fun AllSetSample() = AllSetScreen(PreviewData.allSet(), {}, {})
 
 @Composable
-internal fun HomeSample(restoreSheet: Boolean = false, menu: Boolean = false) =
-    HomeScreen(PreviewData.home(restoreSheet = restoreSheet, menu = menu), {})
+internal fun HomeSample(restoreSheet: Boolean = false, menu: Boolean = false, patchesOnly: Boolean = false) =
+    HomeScreen(PreviewData.home(restoreSheet = restoreSheet, menu = menu, patchesOnly = patchesOnly), {})
 
 @Composable
 internal fun SigningKeySample(

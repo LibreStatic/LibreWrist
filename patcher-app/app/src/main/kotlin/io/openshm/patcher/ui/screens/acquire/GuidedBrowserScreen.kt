@@ -21,11 +21,18 @@ import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.OpenInBrowser
 import androidx.compose.material.icons.rounded.UTurnLeft
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -37,9 +44,9 @@ import io.openshm.patcher.R
 import io.openshm.patcher.ui.components.IconAction
 
 /**
- * The guided browser around the APKMirror page. The page itself is a WebView that the platform
- * layer supplies through [page]; the shell renders a labeled placeholder so the chrome can be
- * previewed and rendered headlessly.
+ * The guided browser around the APKMirror page. The page itself is a WebView ([ApkMirrorWebView])
+ * supplied through [page]; the default renders a labeled placeholder so the chrome can be previewed
+ * and rendered headlessly.
  */
 data class GuidedBrowserUiState(
     val host: String,
@@ -48,11 +55,17 @@ data class GuidedBrowserUiState(
     val coachTotal: Int,
     val coachTitle: String,
     val coachBody: String,
+    val notice: BrowserNotice? = null,
 )
+
+/** A short message over the page, such as a blocked link; [canOpenExternally] offers the system browser. */
+data class BrowserNotice(val text: String, val canOpenExternally: Boolean = false)
 
 sealed interface GuidedBrowserEvent {
     data object Close : GuidedBrowserEvent
-    data object More : GuidedBrowserEvent
+    data object Reload : GuidedBrowserEvent
+    data object OpenNoticeExternally : GuidedBrowserEvent
+    data object DismissNotice : GuidedBrowserEvent
     data object UseFile : GuidedBrowserEvent
     data object OpenInBrowser : GuidedBrowserEvent
     data object BackToRightPage : GuidedBrowserEvent
@@ -89,7 +102,20 @@ fun GuidedBrowserScreen(
                     )
                 }
             }
-            IconAction(Icons.Rounded.MoreVert, stringResource(R.string.action_more_options), { onEvent(GuidedBrowserEvent.More) })
+            var menuOpen by remember { mutableStateOf(false) }
+            Box {
+                IconAction(Icons.Rounded.MoreVert, stringResource(R.string.action_more_options), { menuOpen = true })
+                DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.browser_reload)) },
+                        onClick = { menuOpen = false; onEvent(GuidedBrowserEvent.Reload) },
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.browser_open_external)) },
+                        onClick = { menuOpen = false; onEvent(GuidedBrowserEvent.OpenInBrowser) },
+                    )
+                }
+            }
         }
         Box(Modifier.weight(1f).fillMaxWidth()) {
             page()
@@ -98,6 +124,7 @@ fun GuidedBrowserScreen(
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
+                state.notice?.let { NoticeCard(it, onEvent) }
                 CoachCard(state)
                 NavPill(state, onEvent)
             }
@@ -115,6 +142,28 @@ private fun WebPagePlaceholder() {
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = 32.dp),
         )
+    }
+}
+
+@Composable
+private fun NoticeCard(notice: BrowserNotice, onEvent: (GuidedBrowserEvent) -> Unit) {
+    Surface(
+        shape = RoundedCornerShape(20.dp),
+        color = MaterialTheme.colorScheme.errorContainer,
+        contentColor = MaterialTheme.colorScheme.onErrorContainer,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Column(Modifier.padding(start = 16.dp, end = 8.dp, top = 12.dp, bottom = 4.dp)) {
+            Text(notice.text, style = MaterialTheme.typography.bodyMedium)
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                if (notice.canOpenExternally) {
+                    TextButton({ onEvent(GuidedBrowserEvent.OpenNoticeExternally) }) {
+                        Text(stringResource(R.string.browser_notice_open))
+                    }
+                }
+                TextButton({ onEvent(GuidedBrowserEvent.DismissNotice) }) { Text(stringResource(R.string.browser_notice_dismiss)) }
+            }
+        }
     }
 }
 

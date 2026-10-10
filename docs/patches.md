@@ -125,6 +125,20 @@ engine fails, it never continues silently.
 `serial` and writes `catalogue/catalogue.json.sig`, a DER ECDSA/SHA-256 signature; verify with
 `scripts/catalogue.py verify`).
 
+**Publishing a catalogue update** (no app release needed): change the catalogue, `scripts/catalogue.py
+check`, `scripts/catalogue.py sign` (bumps `serial`), commit `catalogue.json` and `catalogue.json.sig`
+and push. A patcher app built with `CATALOGUE_URL` set (config.env; an https base URL of the raw
+`catalogue/` directory, exported to Gradle) checks `<CATALOGUE_URL>/catalogue.json` and `.sig` when
+Home is shown, at most once a day, or on demand from the Home menu. It accepts a download only if
+the signature verifies with the *bundled* `catalogue.pub` (the key is never downloaded), the serial
+is newer than the highest ever accepted, and `minAppVersion` fits (raise `minAppVersion` when an
+update needs new engine ops). Accepted files are kept in the app's private storage and used from
+the next time Home is shown with no build running, or the next start; a bundled catalogue with a
+higher serial (app update) replaces a stored one. Home offers an "update" only when the new serial
+changes an input hash or the patches of the user's last build; nothing is downloaded automatically
+(the user fetches changed inputs on the Acquire screen, then rebuilds). Never rotate the key this way:
+a new key needs a new app release.
+
 **Regression oracle** for engine changes: build everything before and after with the same
 `PKG_PREFIX`, then `scripts/oracle_decoded_diff.sh <distBefore> <distAfter>` decodes both with
 apktool and must report no difference.

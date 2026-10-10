@@ -36,6 +36,15 @@ fun AcquireDriver() = PreviewHost(ColorMode.Fallback) { AcquireSample() }
 fun GuidedBrowserDriver() = PreviewHost(ColorMode.Fallback) { GuidedBrowserSample() }
 
 @Composable
+fun GuidedBrowserStep1Driver() = PreviewHost(ColorMode.Fallback) { GuidedBrowserSample(step = 1) }
+
+@Composable
+fun GuidedBrowserWrongVersionDriver() = PreviewHost(ColorMode.Fallback) { GuidedBrowserSample(step = 1, wrongVersion = true) }
+
+@Composable
+fun GuidedBrowserStep3Driver() = PreviewHost(ColorMode.Fallback) { GuidedBrowserSample(step = 3) }
+
+@Composable
 fun CustomizeDriver() = PreviewHost(ColorMode.Fallback) { CustomizeSample() }
 
 @Composable
@@ -79,6 +88,9 @@ fun AllSetDriver() = PreviewHost(ColorMode.Fallback) { AllSetSample() }
 
 @Composable
 fun HomeDriver() = PreviewHost(ColorMode.Fallback) { HomeSample() }
+
+@Composable
+fun HomePatchesUpdateDriver() = PreviewHost(ColorMode.Fallback) { HomeSample(patchesOnly = true) }
 
 @Composable
 fun HomeRestoreDriver() = PreviewHost(ColorMode.Fallback) { HomeSample(restoreSheet = true) }

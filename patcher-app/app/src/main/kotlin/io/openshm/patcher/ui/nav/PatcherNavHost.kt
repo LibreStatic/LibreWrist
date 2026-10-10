@@ -46,9 +46,7 @@ import io.openshm.patcher.ui.screens.signingkey.SigningKeyViewModel
 import io.openshm.patcher.ui.screens.acquire.AcquireEvent
 import io.openshm.patcher.ui.screens.acquire.AcquireScreen
 import io.openshm.patcher.ui.screens.acquire.AcquireViewModel
-import io.openshm.patcher.ui.screens.acquire.GuidedBrowserEvent
-import io.openshm.patcher.ui.screens.acquire.GuidedBrowserScreen
-import io.openshm.patcher.ui.screens.acquire.GuidedBrowserUiState
+import io.openshm.patcher.ui.screens.acquire.GuidedBrowserHost
 import io.openshm.patcher.ui.screens.build.BuildDoneScreen
 import io.openshm.patcher.ui.screens.build.BuildScreen
 import io.openshm.patcher.ui.screens.build.BuildViewModel
@@ -80,10 +78,6 @@ import io.openshm.patcher.ui.screens.wearable.WearablePairingScreen
 import io.openshm.patcher.ui.screens.wearable.WearablePairingViewModel
 import io.openshm.patcher.ui.screens.welcome.WelcomeScreen
 import io.openshm.patcher.ui.screens.welcome.WelcomeViewModel
-
-private const val BROWSER_HOST = "www.apkmirror.com"
-private const val COACH_TOTAL = 3
-private const val COACH_VARIANT_STEP = 2
 
 @Composable
 fun PatcherNavHost(
@@ -287,6 +281,8 @@ fun PatcherNavHost(
                     if (event is HomeEvent.NewBuild) navController.navigate(Route.Profile.path)
                     if (event is HomeEvent.RunSelfTest || event is HomeEvent.TestAgain) navController.navigate(Route.SelfTest.path)
                     if (event is HomeEvent.OpenSigningKey) navController.navigate(Route.SigningKey.path)
+                    // Inputs whose verified files still match are already Verified on Acquire.
+                    if (event is HomeEvent.StartUpdate) navController.navigate(Route.Acquire.path)
                 },
             )
         }
@@ -299,31 +295,17 @@ private fun GuidedBrowserDestination(entry: NavBackStackEntry, navController: Na
     val input = AppCatalogue.current.input(inputId)
     val acquireEntry = remember(entry) { navController.getBackStackEntry(Route.Acquire.path) }
     val acquire: AcquireViewModel = viewModel(acquireEntry)
-    // The coach step follows the WebView's page once the platform layer provides it; the shell shows
-    // the variant-picking step, the one people get stuck on.
-    val step = COACH_VARIANT_STEP
-    GuidedBrowserScreen(
-        state = GuidedBrowserUiState(
-            host = BROWSER_HOST,
-            appLabel = input.label,
-            coachStep = step,
-            coachTotal = COACH_TOTAL,
-            coachTitle = stringResource(coachTitle(step)),
-            coachBody = stringResource(coachBody(step)),
-        ),
-        onEvent = { event ->
-            when (event) {
-                GuidedBrowserEvent.Close -> navController.popBackStack()
-                GuidedBrowserEvent.UseFile -> {
-                    navController.popBackStack()
-                    acquire.onEvent(AcquireEvent.UseFile(inputId))
-                }
-                GuidedBrowserEvent.BackToRightPage,
-                GuidedBrowserEvent.More,
-                GuidedBrowserEvent.OpenInBrowser,
-                -> Unit
-            }
+    GuidedBrowserHost(
+        input = input,
+        onDownload = { request ->
+            acquire.downloadFrom(inputId, request)
+            navController.popBackStack()
         },
+        onUseFile = {
+            navController.popBackStack()
+            acquire.onEvent(AcquireEvent.UseFile(inputId))
+        },
+        onClose = { navController.popBackStack() },
     )
 }
 
@@ -354,15 +336,3 @@ private fun shareReport(context: Context, text: String) {
 private const val PKCS12_MIME = "application/x-pkcs12"
 private const val BACKUP_FILE_NAME = "openshm-signing-key.p12"
 private const val APK_MIME = "application/vnd.android.package-archive"
-
-private fun coachTitle(step: Int) = when (step) {
-    1 -> R.string.browser_coach_1_title
-    2 -> R.string.browser_coach_2_title
-    else -> R.string.browser_coach_3_title
-}
-
-private fun coachBody(step: Int) = when (step) {
-    1 -> R.string.browser_coach_1_body
-    2 -> R.string.browser_coach_2_body
-    else -> R.string.browser_coach_3_body
-}

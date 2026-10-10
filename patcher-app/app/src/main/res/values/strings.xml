@@ -113,6 +113,8 @@
     <string name="acquire_rejected_wrong_version">That file is a different version of the app than the expected one.</string>
     <string name="acquire_rejected_not_expected">That file does not match the expected build (another variant, or damaged). Download it again.</string>
     <string name="acquire_rejected_unreadable">That file could not be read.</string>
+    <string name="acquire_rejected_download_failed">The download did not finish. Check your connection and try again.</string>
+    <string name="acquire_rejected_too_large">That download is far larger than the expected file, so it was stopped.</string>
     <string name="acquire_verify_note">Each file is checked against a known checksum before it is used.</string>
     <plurals name="acquire_waiting">
         <item quantity="one">Waiting on %1$d app</item>
@@ -128,6 +130,13 @@
     <string name="browser_coach_2_body">Choose the APK, not the bundle, and the nodpi build for your Android version.</string>
     <string name="browser_coach_3_title">Download</string>
     <string name="browser_coach_3_body">Tap Download APK. The patcher picks the file up when it finishes.</string>
+    <string name="browser_coach_wrong_version_body">That is another version. Go back and open %1$s.</string>
+    <string name="browser_notice_blocked">Blocked a link to another site: %1$s</string>
+    <string name="browser_notice_bundle">That is a bundle file (.apkm, .xapk, .apks or .zip). Go back and pick the plain APK variant.</string>
+    <string name="browser_notice_not_https">That download is not a secure https link, so it was not fetched.</string>
+    <string name="browser_notice_open">Open in my browser</string>
+    <string name="browser_notice_dismiss">Dismiss</string>
+    <string name="browser_reload">Reload</string>
     <string name="browser_step_dots">Step %1$d of %2$d</string>
     <string name="browser_use_file">Use a file instead</string>
     <string name="browser_open_external">Open in my browser</string>
@@ -400,6 +409,13 @@
     <string name="home_test_again">Test again</string>
     <string name="home_update_title">An update is ready</string>
     <string name="home_update_detail">%1$s: %2$s to %3$s</string>
+    <string name="home_update_patches">Updated patches for %1$s</string>
+    <string name="home_menu_check_catalogue">Check for catalogue updates</string>
+    <string name="home_catalogue_updated">Catalogue updated to version %1$d</string>
+    <string name="home_catalogue_up_to_date">The catalogue is up to date</string>
+    <string name="home_catalogue_rejected">The downloaded catalogue was not accepted</string>
+    <string name="home_catalogue_failed">Could not reach the update server</string>
+    <string name="home_catalogue_disabled">This build has no catalogue update channel</string>
     <string name="home_current_builds">Current builds</string>
     <string name="home_rebuild_description">Change patches and rebuild %1$s</string>
     <string name="home_restore_description">Restore %1$s</string>

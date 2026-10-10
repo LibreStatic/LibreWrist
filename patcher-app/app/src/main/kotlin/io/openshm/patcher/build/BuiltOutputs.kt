@@ -16,6 +16,8 @@ data class BuiltBuild(
     val catalogueSerial: Long,
     val builtAtMillis: Long,
     val outputs: List<BuiltRecord>,
+    /** What the build depended on (see [buildFacts]); empty for a record written before this existed. */
+    val facts: Map<String, String> = emptyMap(),
 )
 
 /**
@@ -38,6 +40,8 @@ class BuiltOutputs(private val file: File) {
                 key = p.getProperty("key"), prefix = p.getProperty("prefix"),
                 catalogueSerial = p.getProperty("serial").toLong(), builtAtMillis = p.getProperty("builtAt").toLong(),
                 outputs = records,
+                facts = p.stringPropertyNames().filter { it.startsWith(FACT_PREFIX) }
+                    .associate { it.removePrefix(FACT_PREFIX) to p.getProperty(it) },
             )
         } catch (e: Exception) {
             return null
@@ -51,6 +55,7 @@ class BuiltOutputs(private val file: File) {
         p.setProperty("prefix", build.prefix)
         p.setProperty("serial", build.catalogueSerial.toString())
         p.setProperty("builtAt", build.builtAtMillis.toString())
+        for ((k, v) in build.facts) p.setProperty(FACT_PREFIX + k, v)
         p.setProperty("ids", build.outputs.joinToString(",") { it.outputId })
         for (o in build.outputs) {
             p.setProperty("${o.outputId}.path", o.path)
@@ -65,6 +70,10 @@ class BuiltOutputs(private val file: File) {
         } finally {
             tmp.delete()
         }
+    }
+
+    private companion object {
+        const val FACT_PREFIX = "fact."
     }
 
     @Synchronized

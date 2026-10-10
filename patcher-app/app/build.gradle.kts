@@ -15,6 +15,13 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "0.1.0"
+        // Base URL of the raw `catalogue/` directory of the public repository (config.env CATALOGUE_URL,
+        // or -PcatalogueUrl). Empty disables catalogue updates. Only https is accepted.
+        val catalogueUrl = (providers.gradleProperty("catalogueUrl").orNull ?: System.getenv("CATALOGUE_URL") ?: "").trim()
+        require(catalogueUrl.isEmpty() || (catalogueUrl.startsWith("https://") && catalogueUrl.none { it == '"' || it == '\\' || it.isWhitespace() })) {
+            "CATALOGUE_URL must be an https:// URL without quotes, backslashes or spaces"
+        }
+        buildConfigField("String", "CATALOGUE_URL", "\"$catalogueUrl\"")
     }
     // The patcher's own fixed key, shared by every checkout (OPENSHM_KEYS_DIR, default
     // ~/.local/share/openshm/keys, see config.env). Without it builds fall back to the SDK debug key.

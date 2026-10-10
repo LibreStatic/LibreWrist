@@ -11,6 +11,7 @@ import io.openshm.patcher.engine.CatalogueVerifier
 import io.openshm.patcher.engine.CatalogueInput
 import io.openshm.patcher.engine.CatalogueOutput
 import io.openshm.patcher.engine.OutputSource
+import java.io.File
 
 /**
  * The verified catalogue as the screens see it: the engine model mapped into the app model classes
@@ -195,9 +196,52 @@ object AppCatalogue {
         loaded = catalogue
     }
 
-    /** Loads the bundled catalogue from [context] unless one is installed already (previews, tests). */
+    @Volatile private var bundled: LoadedCatalogue? = null
+
+    /** The catalogue shipped inside the app; its serial is the floor for every update. */
+    val bundledSerial: Long get() = bundled?.serial ?: 0L
+
+    /**
+     * Loads the catalogue unless one is installed already (previews, tests): the stored (downloaded)
+     * one when it still verifies and is not older than the bundled one, else the bundled one.
+     */
     fun ensure(context: Context) {
-        if (loaded == null) install(loadBundled(context.applicationContext.assets, context.applicationContext::getString))
+        if (loaded == null) adoptStored(context)
+    }
+
+    /** Installs the stored catalogue if valid (see [select]); called at startup and when Home adopts an update. */
+    fun adoptStored(context: Context) {
+        val app = context.applicationContext
+        val base = bundled ?: loadBundled(app.assets, app::getString).also { bundled = it }
+        install(select(base, StoredCatalogue(File(app.filesDir, DIR)), publicKey(app.assets), BuildConfig.VERSION_CODE, app::getString))
+    }
+
+    private fun publicKey(assets: AssetManager) = assets.open("$DIR/catalogue.pub").use { String(it.readBytes(), Charsets.UTF_8) }
+
+    /**
+     * The stored catalogue when it re-verifies with the bundled key, fits this app and is not older
+     * than [bundled] (an app update with a newer bundled catalogue wins); otherwise the stored files
+     * are deleted and [bundled] is used.
+     */
+    @VisibleForTesting
+    internal fun select(
+        bundled: LoadedCatalogue,
+        store: StoredCatalogue,
+        publicKeyPem: String,
+        appVersionCode: Int,
+        resolve: (Int) -> String,
+    ): LoadedCatalogue {
+        val files = store.read() ?: return bundled
+        val stored = try {
+            fromBytes(files.json, files.signature, publicKeyPem, appVersionCode, resolve)
+        } catch (e: RuntimeException) {
+            null
+        }
+        if (stored == null || stored.serial < bundled.serial) {
+            store.delete()
+            return bundled
+        }
+        return stored
     }
 
     private const val DIR = "catalogue"
@@ -208,10 +252,14 @@ object AppCatalogue {
      */
     fun loadBundled(assets: AssetManager, resolve: (Int) -> String): LoadedCatalogue {
         fun read(name: String) = assets.open("$DIR/$name").use { it.readBytes() }
-        return fromBytes(
-            read("catalogue.json"), read("catalogue.json.sig"), String(read("catalogue.pub"), Charsets.UTF_8),
-            BuildConfig.VERSION_CODE, resolve,
-        )
+        return try {
+            fromBytes(
+                read("catalogue.json"), read("catalogue.json.sig"), String(read("catalogue.pub"), Charsets.UTF_8),
+                BuildConfig.VERSION_CODE, resolve,
+            )
+        } catch (e: IllegalStateException) {
+            throw IllegalStateException("the bundled catalogue is unusable (broken build): ${e.message}", e)
+        }
     }
 
     /** Verifies [bytes] against [signature] and [publicKeyPem], parses them and checks the app version. */
@@ -226,10 +274,10 @@ object AppCatalogue {
         val engine = try {
             Catalogue.parseSigned(bytes, signature, CatalogueVerifier.parsePublicKey(publicKeyPem))
         } catch (e: RuntimeException) {
-            throw IllegalStateException("the bundled catalogue failed verification (broken build): ${e.message}", e)
+            throw IllegalStateException("the catalogue failed verification: ${e.message}", e)
         }
         check(engine.minAppVersion <= appVersionCode) {
-            "the bundled catalogue needs app version ${engine.minAppVersion}, this is $appVersionCode (broken build)"
+            "the catalogue needs app version ${engine.minAppVersion}, this is $appVersionCode"
         }
         return LoadedCatalogue(engine, resolve)
     }
