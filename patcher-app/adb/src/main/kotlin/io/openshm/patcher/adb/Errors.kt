@@ -96,6 +96,9 @@ internal object AdbErrors {
         }
     }
 
+    /** True when the cause chain is a refused TCP connection (nothing listens on the port). */
+    fun isRefused(t: Throwable): Boolean = chain(t).any { it is ConnectException }
+
     private fun isNetwork(t: Throwable) =
         t is ConnectException || t is NoRouteToHostException || t is UnknownHostException ||
             t is SocketException || t is SSLException

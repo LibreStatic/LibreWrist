@@ -43,6 +43,8 @@ class DiscoveryAndSelfAdbTest {
         val pairCalls: MutableList<Triple<String, Int, String>> = java.util.Collections.synchronizedList(mutableListOf())
         val connectCalls = mutableListOf<Pair<String, Int>>()
         var failPairing: Throwable? = null
+        var failConnect: Throwable? = null
+        val refusedPorts: MutableSet<Int> = java.util.Collections.synchronizedSet(mutableSetOf())
         var pairGate: java.util.concurrent.CountDownLatch? = null
         val backend = object : AdbBackend {
             override fun pair(host: String, port: Int, code: String, abort: AbortScope) {
@@ -53,6 +55,8 @@ class DiscoveryAndSelfAdbTest {
 
             override fun connect(host: String, port: Int, timeoutMillis: Long, abort: AbortScope): AdbTransport {
                 connectCalls += host to port
+                failConnect?.let { throw it }
+                if (port in refusedPorts) throw java.net.ConnectException("ECONNREFUSED")
                 return FakeTransport { FakeChannel() }
             }
         }
@@ -147,18 +151,59 @@ class DiscoveryAndSelfAdbTest {
     }
 
     @Test
-    fun `two local connect services are ambiguous and nothing is dialled`() = runBlocking {
+    fun `a stale local connect announcement is skipped for the live one`() = runBlocking {
         val env = Env()
+        env.refusedPorts += 41001
         env.session.start()
         env.pairing.value = listOf(AdbService("p", "192.168.1.5", 40030, AdbServiceType.PAIRING))
         env.session.await { it is SelfAdbState.WaitingForCode }
+        // As seen on a real phone: the old port first, the live "(2)" copy a moment later.
+        env.connect.value = listOf(AdbService("adb-x", "192.168.1.5", 41001, AdbServiceType.CONNECT))
+        env.session.submitCode("123456")
+        env.session.await { it == SelfAdbState.WaitingForConnectService && env.connectCalls.isNotEmpty() }
         env.connect.value = listOf(
-            AdbService("a", "192.168.1.5", 41001, AdbServiceType.CONNECT),
-            AdbService("b", "10.0.0.2", 41002, AdbServiceType.CONNECT),
+            AdbService("adb-x", "192.168.1.5", 41001, AdbServiceType.CONNECT),
+            AdbService("adb-x (2)", "192.168.1.5", 41002, AdbServiceType.CONNECT),
+            AdbService("watch", "192.168.1.77", 45555, AdbServiceType.CONNECT),
+        )
+        env.session.await { it is SelfAdbState.Connected }
+        assertEquals(listOf("127.0.0.1" to 41001, "127.0.0.1" to 41002), env.connectCalls)
+        env.scope.cancel()
+    }
+
+    @Test
+    fun `only refused local ports means a connection failure after the timeout`() = runBlocking {
+        val env = Env()
+        env.refusedPorts += listOf(41003, 41004)
+        env.session.start()
+        env.pairing.value = listOf(AdbService("p", "192.168.1.5", 40031, AdbServiceType.PAIRING))
+        env.session.await { it is SelfAdbState.WaitingForCode }
+        env.connect.value = listOf(
+            AdbService("a", "192.168.1.5", 41003, AdbServiceType.CONNECT),
+            AdbService("b", "10.0.0.2", 41004, AdbServiceType.CONNECT),
         )
         env.session.submitCode("123456")
-        env.session.await { it == SelfAdbState.AmbiguousService }
-        assertTrue(env.connectCalls.isEmpty())
+        val failed = env.session.await { it is SelfAdbState.Failed } as SelfAdbState.Failed
+        assertTrue(failed.error is AdbException.ConnectionFailed)
+        assertEquals(listOf("127.0.0.1" to 41003, "127.0.0.1" to 41004), env.connectCalls)
+        env.scope.cancel()
+    }
+
+    @Test
+    fun `a connect error other than a refusal is final`() = runBlocking {
+        val env = Env()
+        env.session.start()
+        env.pairing.value = listOf(AdbService("p", "192.168.1.5", 40032, AdbServiceType.PAIRING))
+        env.session.await { it is SelfAdbState.WaitingForCode }
+        env.connect.value = listOf(
+            AdbService("a", "192.168.1.5", 41005, AdbServiceType.CONNECT),
+            AdbService("b", "192.168.1.5", 41006, AdbServiceType.CONNECT),
+        )
+        env.failConnect = javax.net.ssl.SSLException("handshake")
+        env.session.submitCode("123456")
+        val failed = env.session.await { it is SelfAdbState.Failed } as SelfAdbState.Failed
+        assertTrue(failed.error is AdbException.ConnectionFailed)
+        assertEquals(1, env.connectCalls.size)
         env.scope.cancel()
     }
 

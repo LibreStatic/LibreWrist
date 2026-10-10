@@ -11,6 +11,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assume.assumeTrue
@@ -29,6 +30,9 @@ import org.junit.runners.MethodSorters
  *   test app is already paired). The pairing port is found through mDNS.
  * - `watchInstall`: `true` to install this test APK on the watch and uninstall it again.
  * - `selfCode`: the code of this phone's own "Pair device with pairing code" dialog (self-ADB).
+ * - `selfConnect`: `true` to connect to this phone's own adbd without pairing (already trusted);
+ *   `selfPort` overrides the port found by mDNS.
+ * - `watchSeconds`: log every `_adb-tls-connect` snapshot seen during that many seconds.
  *
  * Results are logged under the tag [TAG].
  */
@@ -131,6 +135,7 @@ class DeviceAdbTest {
             session.submitCode(code!!)
             val end = withTimeout(60_000) { session.state.first { it is SelfAdbState.Connected || it is SelfAdbState.Failed || it == SelfAdbState.AmbiguousService || (it is SelfAdbState.WaitingForCode && it.lastFailure != null) } }
             log("self-ADB end state $end")
+            (end as? SelfAdbState.Failed)?.let { log(Log.getStackTraceString(it.error)) }
             assertTrue(end.toString(), end is SelfAdbState.Connected)
             val client = (end as SelfAdbState.Connected).client
             val id = client.shell("id -u; getprop ro.product.model")
@@ -141,6 +146,41 @@ class DeviceAdbTest {
             session.stop()
             scope.cancel()
         }
+    }
+
+    /** Self-ADB connect only, for a phone that already trusts this app's key (`selfConnect=true`). */
+    @Test
+    fun b2_selfConnectAlreadyPaired() = runBlocking {
+        assumeTrue(arg("selfConnect") == "true")
+        val service = withTimeout(DISCOVERY_TIMEOUT_MS) {
+            AdbDiscovery(context).discover(AdbServiceType.CONNECT)
+                .first { list -> list.any { SelfAdbSession.isOwnAddress(it.host) } }
+                .single { SelfAdbSession.isOwnAddress(it.host) }
+        }
+        log("own connect service ${service.name} at ${service.host}:${service.port}")
+        val port = arg("selfPort")?.toInt() ?: service.port
+        for (host in listOf("127.0.0.1", service.host)) {
+            try {
+                val client = AdbClient.connect(backend, host, port)
+                log("connect via $host OK: ${client.shell("id -u").stdout.trim()}")
+                client.close()
+            } catch (e: AdbException) {
+                log("connect via $host failed: ${Log.getStackTraceString(e)}")
+            }
+        }
+    }
+
+    /** Logs every connect-service snapshot for `watchSeconds` seconds. */
+    @Test
+    fun c1_logConnectServices() = runBlocking {
+        val seconds = arg("watchSeconds")?.toLong()
+        assumeTrue(seconds != null)
+        withTimeoutOrNull(seconds!! * 1000) {
+            AdbDiscovery(context).discover(AdbServiceType.CONNECT).collect { list ->
+                log("connect services: " + list.joinToString { "${it.name}@${it.host}:${it.port}" })
+            }
+        }
+        Unit
     }
 
     companion object {

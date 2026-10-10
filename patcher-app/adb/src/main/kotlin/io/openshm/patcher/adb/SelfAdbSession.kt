@@ -18,8 +18,8 @@ sealed interface SelfAdbState {
     data object WaitingForPairingService : SelfAdbState
 
     /**
-     * More than one service on this device's own addresses; the session refuses to guess. It
-     * recovers by itself if the list shrinks to one (for example a stale announcement expires).
+     * More than one pairing service on this device's own addresses; the session refuses to guess.
+     * It recovers by itself if the list shrinks to one (for example a stale announcement expires).
      */
     data object AmbiguousService : SelfAdbState
 
@@ -39,8 +39,10 @@ sealed interface SelfAdbState {
  *
  * Only services advertised from one of this device's own addresses are considered ([isLocalHost]);
  * a watch on the same Wi-Fi advertises the same service types and must never be dialled on its
- * port. If several local services remain, the session goes to [SelfAdbState.AmbiguousService]
- * instead of choosing by name or order.
+ * port. If several local pairing services remain, the session goes to
+ * [SelfAdbState.AmbiguousService] instead of choosing by name or order, since the code must only
+ * reach the dialog the user is looking at. Several local connect services are all dialled in turn:
+ * they can only be this device's own adbd, and stale ones refuse the connection.
  */
 class SelfAdbSession(
     private val backend: AdbBackend,
@@ -154,29 +156,56 @@ class SelfAdbSession(
             return
         }
         if (!transition(gen, SelfAdbState.WaitingForConnectService)) return
-        val candidates = withTimeoutOrNull(connectServiceTimeoutMillis) {
-            connectServices.first { list -> list.any { isLocalHost(it.host) } }.filter { isLocalHost(it.host) }
-        }
-        if (candidates == null) {
-            transition(
-                gen,
-                SelfAdbState.Failed(AdbException.Discovery("The Wireless debugging connect service was not found")),
-            )
-            return
-        }
-        if (candidates.size > 1) {
-            transition(gen, SelfAdbState.AmbiguousService)
-            return
-        }
-        if (!transition(gen, SelfAdbState.Connecting)) return
         val client = try {
-            AdbClient.connect(backend, localHost, candidates.single().port)
+            connectToLocalService(gen)
         } catch (e: AdbException) {
             transition(gen, SelfAdbState.Failed(e))
             return
-        }
+        } ?: return
         // A late result must never replace a newer state, and must not leak the connection.
         if (!transition(gen, SelfAdbState.Connected(client))) runCatching { client.close() }
+    }
+
+    /**
+     * Dials every local connect port as it is announced until one accepts. NsdManager keeps
+     * announcements of earlier Wireless debugging sessions next to the live one (seen on Android
+     * 16: the same instance name at the old port plus a "(2)" copy at the new one), and the stale
+     * port refuses the connection at once. Only a refused port moves on to the next candidate; any
+     * other error is final. Returns null when [gen] went stale.
+     */
+    private suspend fun connectToLocalService(gen: Int): AdbClient? {
+        val tried = HashSet<Int>()
+        var refused: AdbException? = null
+        var client: AdbClient? = null
+        var superseded = false
+        val done = withTimeoutOrNull(connectServiceTimeoutMillis) {
+            connectServices.first { list ->
+                for (port in list.filter { isLocalHost(it.host) }.map { it.port }.distinct()) {
+                    if (!tried.add(port)) continue
+                    if (!transition(gen, SelfAdbState.Connecting)) {
+                        superseded = true
+                        return@first true
+                    }
+                    try {
+                        client = AdbClient.connect(backend, localHost, port)
+                        return@first true
+                    } catch (e: AdbException.ConnectionFailed) {
+                        if (!AdbErrors.isRefused(e)) throw e
+                        refused = e
+                    }
+                }
+                if (tried.isNotEmpty() && !transition(gen, SelfAdbState.WaitingForConnectService)) {
+                    superseded = true
+                    return@first true
+                }
+                false
+            }
+        }
+        if (superseded) return null
+        if (done == null) {
+            throw refused ?: AdbException.Discovery("The Wireless debugging connect service was not found")
+        }
+        return client
     }
 
     companion object {
