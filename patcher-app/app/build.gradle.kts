@@ -39,6 +39,7 @@ kotlin {
 dependencies {
     implementation(project(":engine"))
     implementation(project(":adb"))
+    implementation(libs.bouncycastle.bcprov)
     implementation(platform(libs.compose.bom))
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material.icons.extended)

@@ -220,6 +220,13 @@
     <string name="build_stage_sign">Sign</string>
     <string name="build_stage_selfcheck">Self-check</string>
     <string name="build_can_leave">You can leave. We\'ll notify you when it\'s done.</string>
+    <string name="build_channel_name">Build progress</string>
+    <string name="build_channel_description">Shows while your apps are being built and signed.</string>
+    <string name="build_notification_title">Building your apps</string>
+    <string name="build_notification_progress">%1$s: %2$s</string>
+    <string name="build_notification_done">Your apps are built and signed.</string>
+    <string name="build_notification_failed">The build failed. Open the app to see why.</string>
+    <string name="build_error_title">The build did not finish</string>
     <string name="build_show_log">Show log</string>
     <string name="build_log_title">Build log</string>
     <string name="build_log_empty">Nothing logged yet.</string>

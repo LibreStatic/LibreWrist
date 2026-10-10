@@ -1,16 +1,23 @@
 package io.openshm.patcher.ui.screens.build
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import io.openshm.patcher.build.BuildController
+import io.openshm.patcher.build.BuildRunPhase
+import io.openshm.patcher.build.BuildRunState
+import io.openshm.patcher.build.BuildService
+import io.openshm.patcher.build.BuildStorage
+import io.openshm.patcher.build.buildKey
 import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.SetupSession
 import io.openshm.patcher.ui.components.CheckStatus
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 /** Marks [stage] as running and every earlier stage as passed. */
 internal fun BuildUiState.startStage(stage: BuildStage): BuildUiState = copy(
@@ -25,54 +32,76 @@ internal fun BuildUiState.startStage(stage: BuildStage): BuildUiState = copy(
 
 internal fun BuildUiState.finish(): BuildUiState = copy(stages = stages.map { it.copy(status = CheckStatus.Passed) })
 
-internal fun builtOutputs(): BuildDoneUiState {
+/** The screen's view of the controller state; [logVisible] is the only state the screen owns. */
+internal fun BuildRunState.toUiState(patchCount: Int, logVisible: Boolean): BuildUiState {
+    val base = BuildUiState(patchCount = patchCount, log = log, logVisible = logVisible, overall = progress)
+    return when (phase) {
+        BuildRunPhase.Succeeded -> base.finish()
+        BuildRunPhase.Failed -> base.copy(
+            failed = true,
+            error = error,
+            stages = base.stages.map { row ->
+                when {
+                    stage == null -> row
+                    row.stage.ordinal < stage.ordinal -> row.copy(status = CheckStatus.Passed)
+                    row.stage == stage -> row.copy(status = CheckStatus.Failed)
+                    else -> row
+                }
+            },
+        )
+        else -> stage?.let { base.startStage(it) } ?: base
+    }
+}
+
+/** The finished build for the current setup, read from the record the build service writes. */
+internal fun builtOutputs(storage: BuildStorage): BuildDoneUiState {
     val session = SetupSession.state.value
     val profile = session.watchProfile
+    val sizes = storage.record.read()?.outputs?.associate { it.outputId to it.sizeBytes }.orEmpty()
     return BuildDoneUiState(
         outputs = AppCatalogue.current.outputs.filter { it.id in profile.outputIds }.map {
-            BuiltOutput(it.id, it.label, it.device, it.packageName(session.packagePrefix), sizeBytes = 0L)
+            BuiltOutput(it.id, it.label, it.device, it.packageName(session.packagePrefix), sizeBytes = sizes[it.id] ?: 0L)
         },
         patchCount = AppCatalogue.current.patternCount(profile.inputIds),
     )
 }
 
 /**
- * Shell-stage view model: walks the stages on a timer. The engine run (unpack, fingerprint check,
- * patch, rename, rebuild, sign, self-check) replaces [run] and reports the same [BuildStage]s.
+ * Shows the build that [BuildController] reports. The build itself runs in [BuildService], so leaving
+ * the screen or rotating changes nothing; [start] asks for a build unless one is running or a finished
+ * one for the same inputs and prefix exists.
  */
-class BuildViewModel : ViewModel() {
+class BuildViewModel(application: Application) : AndroidViewModel(application) {
+    private val storage = BuildStorage(application)
     private val patchCount = AppCatalogue.current.patternCount(SetupSession.state.value.watchProfile.inputIds)
-    private val _state = MutableStateFlow(BuildUiState(patchCount = patchCount))
-    val state: StateFlow<BuildUiState> = _state.asStateFlow()
+    private val key = SetupSession.state.value.let { buildKey(AppCatalogue.current.serial, it.packagePrefix, it.watchProfile.outputIds) }
+    private val logVisible = MutableStateFlow(false)
+    private val recordedFinished = MutableStateFlow(false)
 
-    private val _finished = MutableStateFlow(false)
-    val finished: StateFlow<Boolean> = _finished.asStateFlow()
+    val state: StateFlow<BuildUiState> = combine(BuildController.state, logVisible) { run, visible ->
+        run.toUiState(patchCount, visible)
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, BuildUiState(patchCount = patchCount))
 
-    init {
-        run()
-    }
+    val finished: StateFlow<Boolean> = combine(BuildController.state, recordedFinished) { run, recorded ->
+        if (run.phase == BuildRunPhase.Running) false else (run.phase == BuildRunPhase.Succeeded && run.key == key) || recorded
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     fun onEvent(event: BuildEvent) {
         when (event) {
-            BuildEvent.ShowLog -> _state.update { it.copy(logVisible = true) }
-            BuildEvent.HideLog -> _state.update { it.copy(logVisible = false) }
-            BuildEvent.Retry -> run()
+            BuildEvent.ShowLog -> logVisible.update { true }
+            BuildEvent.HideLog -> logVisible.update { false }
+            BuildEvent.Retry -> BuildService.start(getApplication())
         }
     }
 
-    private fun run() {
-        viewModelScope.launch {
-            _finished.value = false
-            for (stage in BuildStage.entries) {
-                _state.update { it.startStage(stage).copy(log = it.log + "start ${stage.name.lowercase()}") }
-                delay(STAGE_DELAY_MS)
-            }
-            _state.update { it.finish().copy(log = it.log + "done") }
-            _finished.value = true
+    /** Idempotent: safe to call again after a rotation or a permission result. */
+    fun start() {
+        val run = BuildController.state.value
+        when {
+            run.phase == BuildRunPhase.Running -> Unit
+            run.key == key && run.phase != BuildRunPhase.Idle -> Unit // finished (or failed: Retry restarts) for this setup
+            storage.record.read()?.key == key -> recordedFinished.value = true
+            else -> BuildService.start(getApplication())
         }
-    }
-
-    private companion object {
-        const val STAGE_DELAY_MS = 700L
     }
 }

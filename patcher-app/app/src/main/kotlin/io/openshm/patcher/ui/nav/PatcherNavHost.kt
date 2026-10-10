@@ -1,6 +1,15 @@
 package io.openshm.patcher.ui.nav
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
+import io.openshm.patcher.build.BuildStorage
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -126,11 +135,22 @@ fun PatcherNavHost(
             val vm: BuildViewModel = viewModel()
             val state by vm.state.collectAsStateWithLifecycle()
             val finished by vm.finished.collectAsStateWithLifecycle()
+            val context = LocalContext.current
+            var asked by rememberSaveable { mutableStateOf(false) }
+            // The build runs without the notification, so the answer only decides whether progress shows there.
+            val notificationPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { vm.start() }
+            LaunchedEffect(Unit) {
+                val needsAsk = Build.VERSION.SDK_INT >= 33 && !asked &&
+                    ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+                asked = true
+                if (needsAsk) notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS) else vm.start()
+            }
             LaunchedEffect(finished) { if (finished) next(Route.Build) }
             BuildScreen(state, vm::onEvent, onBack = back)
         }
         composable(Route.BuildDone.path) {
-            BuildDoneScreen(remember { builtOutputs() }, onInstall = { next(Route.BuildDone) }, onBack = back)
+            val context = LocalContext.current
+            BuildDoneScreen(remember { builtOutputs(BuildStorage(context)) }, onInstall = { next(Route.BuildDone) }, onBack = back)
         }
         composable(Route.InstallPhone.path) {
             val vm: InstallPhoneViewModel = viewModel()

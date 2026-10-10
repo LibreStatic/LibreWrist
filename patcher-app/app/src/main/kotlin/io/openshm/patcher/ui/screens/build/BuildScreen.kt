@@ -30,6 +30,7 @@ import io.openshm.patcher.ui.components.FooterHint
 import io.openshm.patcher.ui.components.GroupedItem
 import io.openshm.patcher.ui.components.GroupedSpacing
 import io.openshm.patcher.ui.components.OutlinedAction
+import io.openshm.patcher.ui.components.PrimaryAction
 import io.openshm.patcher.ui.components.SetupStep
 import io.openshm.patcher.ui.components.StatusShape
 import io.openshm.patcher.ui.components.StepScreenScaffold
@@ -46,9 +47,14 @@ data class BuildUiState(
     val log: List<String> = emptyList(),
     val logVisible: Boolean = false,
     val failed: Boolean = false,
+    /** Why the build failed (shown when [failed]). */
+    val error: String? = null,
+    /** Overall progress across all outputs; when null it is derived from the stage list. */
+    val overall: Float? = null,
 ) {
     val progress: Float
         get() {
+            overall?.let { return it.coerceIn(0f, 1f) }
             val done = stages.count { it.status == CheckStatus.Passed }
             val running = if (stages.any { it.status == CheckStatus.Running }) 0.5f else 0f
             return ((done + running) / stages.size).coerceIn(0f, 1f)
@@ -75,7 +81,16 @@ fun BuildScreen(
         onBack = onBack,
         modifier = modifier,
         footer = {
-            FooterHint(stringResource(R.string.build_can_leave))
+            if (state.failed) {
+                Text(
+                    stringResource(R.string.build_error_title) + (state.error?.let { ": $it" } ?: ""),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error,
+                )
+                PrimaryAction(stringResource(R.string.action_retry), { onEvent(BuildEvent.Retry) })
+            } else {
+                FooterHint(stringResource(R.string.build_can_leave))
+            }
             OutlinedAction(stringResource(R.string.build_show_log), { onEvent(BuildEvent.ShowLog) }, Icons.Rounded.Article)
         },
     ) {
