@@ -170,7 +170,8 @@ internal object ShellV2 {
             if (id == ID_EXIT) break
         }
         val code = exit ?: throw AdbException.Protocol("The shell ended without an exit status")
-        return ShellResult(code, stdout.toString(Charsets.UTF_8), stderr.toString(Charsets.UTF_8))
+        // toString(String), not toString(Charset): the Charset overload is API 33 and minSdk is 31.
+        return ShellResult(code, stdout.toString("UTF-8"), stderr.toString("UTF-8"))
     }
 
     /** Fills the first [count] bytes of [target]; false when the stream ended before the first byte. */

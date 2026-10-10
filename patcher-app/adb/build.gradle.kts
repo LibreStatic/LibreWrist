@@ -19,6 +19,10 @@ android {
     testOptions {
         unitTests.isReturnDefaultValues = true
     }
+    lint {
+        // minSdk 31: a call above it must fail the build, not just appear in a report.
+        error += "NewApi"
+    }
 }
 
 dependencies {

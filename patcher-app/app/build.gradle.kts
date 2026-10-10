@@ -47,6 +47,10 @@ android {
         buildConfig = true
     }
     testOptions { unitTests { isIncludeAndroidResources = true } }
+    lint {
+        // minSdk 31: a call above it must fail the build, not just appear in a report.
+        error += "NewApi"
+    }
 }
 
 kotlin {
@@ -116,7 +120,11 @@ rootProject.findProject(":tools:compose-driver")?.let { driver ->
 // Our own code (watch-mod, alarm-fork, shm-bridge apps) and the signed catalogue as placeholder-form
 // assets; see own-code.gradle.kts.
 extra["ownCode.sdkDirectory"] = androidComponents.sdkComponents.sdkDirectory.map { it.asFile.path }
-apply(from = "own-code.gradle.kts")
+// Applied through the `apply {}` block on purpose: lint's Gradle detector follows
+// `apply(from = "...")` into the referenced script and crashes on its top-level declarations
+// ("findFirCompiledSymbol only works on compiled declarations", lint 32.3), which aborts the whole
+// lint run, so no check (NewApi included) is enforced.
+apply { from("own-code.gradle.kts") }
 @Suppress("UNCHECKED_CAST")
 val ownCodeAssets = extra["ownCode.assetsTask"] as TaskProvider<Task>
 androidComponents.onVariants { variant ->
