@@ -19,6 +19,7 @@ import java.security.KeyPairGenerator
 import java.security.KeyStore
 import java.security.MessageDigest
 import java.security.PrivateKey
+import java.security.Provider
 import java.security.SecureRandom
 import java.security.Signature
 import java.security.cert.CertificateFactory
@@ -31,6 +32,7 @@ import javax.crypto.Cipher
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 import javax.security.auth.x500.X500Principal
+import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.bouncycastle.x509.X509V3CertificateGenerator
 
 /**
@@ -71,34 +73,103 @@ class SigningKeyStore(private val dir: File, private val wrapKey: () -> SecretKe
     /** Lowercase hex SHA-256 of the signing certificate (DER), as Android shows and `knownCerts` expects. */
     fun certificateSha256(): String = sha256Hex(load().certificates.first())
 
-    /** The key as a PKCS#12 file protected by [password], for a backup the user keeps. */
+    /**
+     * The key as a PKCS#12 file protected by [password], for a backup the user keeps. Unlike the
+     * on-device file this one leaves the device, so it uses the modern profile (PBES2 with
+     * PBKDF2-HMAC-SHA-256 and AES-256, HMAC-SHA-256 MAC, see [ModernPkcs12]) instead of the
+     * platform's legacy 3DES/RC2 and SHA-1 MAC. OpenSSL 3, `keytool` and `apksigner` read it.
+     */
     fun exportPkcs12(password: CharArray): ByteArray = synchronized(LOCK) {
         val key = load()
-        pkcs12(key.privateKey, key.certificates, password)
+        ModernPkcs12.write(ALIAS, key.privateKey, key.certificates, password)
     }
 
     /**
      * Replaces the identity with the single key in the PKCS#12 stream. The caller confirms with the
      * user first. The key must match its certificate and be RSA of at least [MIN_RSA_BITS] bits or EC.
+     * Failures are [KeyImportException]s with a stable [KeyImportException.reason].
      */
     fun importPkcs12(stream: InputStream, password: CharArray) = synchronized(LOCK) {
-        val ks = KeyStore.getInstance(PKCS12)
+        val (key, chain) = readImportable(stream.readBounded(MAX_IMPORT_BYTES), password)
+        replace(key, chain)
+    }
+
+    /**
+     * Runs every check of [importPkcs12] without changing anything and returns the lowercase hex
+     * SHA-256 of the certificate the file would install, for the confirmation the user sees first.
+     */
+    fun inspectPkcs12(bytes: ByteArray, password: CharArray): String =
+        sha256Hex(readImportable(bytes, password).second.first())
+
+    private fun readImportable(bytes: ByteArray, password: CharArray): Pair<PrivateKey, List<X509Certificate>> {
+        // Untrusted input: refuse it cheaply before any reader tries a password, and report every
+        // failure as a KeyImportException with a stable reason.
+        Pkcs12Guard.check(bytes)
         try {
-            ks.load(stream, password)
-        } catch (e: IOException) {
-            throw IOException("the file is not a PKCS#12 key store or the password is wrong")
+            val (raw, certificates) = readAnyPkcs12(bytes, password)
+            val chain = certificates.map { parseCertificate(it.encoded) }
+            val key = platformKey(raw)
+            checkImportable(key, chain.first())
+            return key to chain
+        } catch (e: KeyImportException) {
+            throw e
+        } catch (e: java.security.cert.CertificateException) {
+            throw KeyImportException(KeyImportException.Reason.NoCertificate)
+        } catch (e: Exception) {
+            throw KeyImportException(KeyImportException.Reason.NoUsableKey)
         }
+    }
+
+    /**
+     * The platform store reads the usual files, Bouncy Castle's the ones it cannot, and
+     * [ModernPkcs12] the modern profile where neither of them can on the running platform.
+     */
+    private fun readAnyPkcs12(bytes: ByteArray, password: CharArray): Pair<PrivateKey, List<X509Certificate>> {
+        for (provider in listOf<Provider?>(null, BouncyCastleProvider())) {
+            val ks = if (provider == null) KeyStore.getInstance(PKCS12) else KeyStore.getInstance(PKCS12, provider)
+            try {
+                ks.load(ByteArrayInputStream(bytes), password)
+            } catch (e: IOException) {
+                continue // Another reader may still understand the file.
+            } catch (e: java.security.GeneralSecurityException) {
+                continue
+            } catch (e: RuntimeException) {
+                continue
+            }
+            return identityOf(ks, password)
+        }
+        try {
+            return ModernPkcs12.read(bytes, password)
+        } catch (e: KeyImportException) {
+            throw e
+        } catch (e: IOException) {
+            throw KeyImportException(KeyImportException.Reason.WrongPasswordOrNotPkcs12)
+        }
+    }
+
+    private fun identityOf(ks: KeyStore, password: CharArray): Pair<PrivateKey, List<X509Certificate>> {
         val alias = ks.aliases().toList().filter { ks.isKeyEntry(it) }.singleOrNull()
-            ?: throw IOException("the file must hold exactly one key")
+            ?: throw KeyImportException(KeyImportException.Reason.NotOneKey)
         val key = try {
             ks.getKey(alias, password) as? PrivateKey
         } catch (e: java.security.GeneralSecurityException) {
             null
-        } ?: throw IOException("the file has no usable private key")
+        } ?: throw KeyImportException(KeyImportException.Reason.NoUsableKey)
         val chain = ks.getCertificateChain(alias)?.map { it as X509Certificate }?.takeIf { it.isNotEmpty() }
-            ?: throw IOException("the file has no certificate")
-        checkImportable(key, chain.first())
-        replace(key, chain)
+            ?: throw KeyImportException(KeyImportException.Reason.NoCertificate)
+        return key to chain
+    }
+
+    /** Re-creates the key with the platform provider, so signing never depends on which reader produced it. */
+    private fun platformKey(key: PrivateKey): PrivateKey {
+        val encoded = key.encoded ?: throw KeyImportException(KeyImportException.Reason.NoUsableKey)
+        try {
+            return java.security.KeyFactory.getInstance(key.algorithm).generatePrivate(java.security.spec.PKCS8EncodedKeySpec(encoded))
+        } catch (e: java.security.GeneralSecurityException) {
+            throw KeyImportException(KeyImportException.Reason.NoUsableKey)
+        } finally {
+            encoded.fill(0)
+        }
     }
 
     private fun create() = persist(newPassword(), generateIdentity())
@@ -148,18 +219,23 @@ class SigningKeyStore(private val dir: File, private val wrapKey: () -> SecretKe
 
     private fun persist(chars: CharArray, identity: Pair<PrivateKey, List<X509Certificate>>) {
         dir.mkdirs()
-        writeAtomically(passwordFile, wrap(String(chars).toByteArray(Charsets.US_ASCII)))
+        val ascii = ByteArray(chars.size) { chars[it].code.toByte() } // base64 text, so one byte per char
+        try {
+            writeAtomically(passwordFile, wrap(ascii))
+        } finally {
+            ascii.fill(0)
+        }
         writeAtomically(p12File, pkcs12(identity.first, identity.second, chars))
     }
 
     private fun checkImportable(key: PrivateKey, cert: X509Certificate) {
         val algorithm = when (key) {
             is RSAPrivateKey -> {
-                if (key.modulus.bitLength() < MIN_RSA_BITS) throw IOException("the RSA key is shorter than $MIN_RSA_BITS bits")
+                if (key.modulus.bitLength() < MIN_RSA_BITS) throw KeyImportException(KeyImportException.Reason.WeakKey)
                 "SHA256withRSA"
             }
             is ECPrivateKey -> "SHA256withECDSA"
-            else -> throw IOException("only RSA and EC keys can sign APKs here")
+            else -> throw KeyImportException(KeyImportException.Reason.UnsupportedKeyType)
         }
         val nonce = ByteArray(32).also { SecureRandom().nextBytes(it) }
         val signature = Signature.getInstance(algorithm).run {
@@ -176,7 +252,7 @@ class SigningKeyStore(private val dir: File, private val wrapKey: () -> SecretKe
         } catch (e: java.security.GeneralSecurityException) {
             false
         }
-        if (!matches) throw IOException("the key does not match its certificate")
+        if (!matches) throw KeyImportException(KeyImportException.Reason.KeyCertificateMismatch)
     }
 
     private fun read(): SigningKey {
@@ -245,6 +321,8 @@ class SigningKeyStore(private val dir: File, private val wrapKey: () -> SecretKe
         const val WRAP_KEY_ALIAS = "openshm-signing-wrap"
 
         private const val PKCS12 = "PKCS12"
+
+        private const val MAX_IMPORT_BYTES = 1 shl 20
         private const val KEY_BITS = 3072
         private const val MIN_RSA_BITS = 2048
         private const val PASSWORD_BYTES = 32
@@ -261,6 +339,44 @@ class SigningKeyStore(private val dir: File, private val wrapKey: () -> SecretKe
 
         private fun parseCertificate(der: ByteArray): X509Certificate =
             CertificateFactory.getInstance("X.509").generateCertificate(ByteArrayInputStream(der)) as X509Certificate
+    }
+}
+
+/**
+ * Reads at most [max] bytes plus one, so a caller can tell "too big" from "exactly max". Written out
+ * because `InputStream.readNBytes(int)` needs API 33 and the app supports API 31.
+ */
+internal fun InputStream.readBounded(max: Int): ByteArray {
+    val out = ByteArrayOutputStream()
+    val buffer = ByteArray(8192)
+    var remaining = max + 1
+    while (remaining > 0) {
+        val n = read(buffer, 0, minOf(buffer.size, remaining))
+        if (n < 0) break
+        out.write(buffer, 0, n)
+        remaining -= n
+    }
+    return out.toByteArray()
+}
+
+/**
+ * Why an import was refused. [reason] is stable for callers to map to a message; the text never
+ * carries file content or the password.
+ */
+class KeyImportException(val reason: Reason) : IOException(reason.name) {
+    enum class Reason {
+        /** The password is wrong, or the file is not a PKCS#12 store (the two cannot be told apart). */
+        WrongPasswordOrNotPkcs12,
+        NotPkcs12,
+        NotOneKey,
+        NoUsableKey,
+        NoCertificate,
+        WeakKey,
+        UnsupportedKeyType,
+        KeyCertificateMismatch,
+
+        /** The file asks for more key derivation work than any real tool writes. */
+        TooManyIterations,
     }
 }
 

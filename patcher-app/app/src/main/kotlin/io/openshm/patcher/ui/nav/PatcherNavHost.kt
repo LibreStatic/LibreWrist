@@ -32,6 +32,15 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import io.openshm.patcher.R
 import io.openshm.patcher.data.AppCatalogue
+import io.openshm.patcher.data.PrefsExportedCertRecord
+import io.openshm.patcher.data.signingKeyBackupDue
+import io.openshm.patcher.data.signingKeyStore
+import androidx.compose.runtime.produceState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import io.openshm.patcher.ui.screens.signingkey.SigningKeyRequest
+import io.openshm.patcher.ui.screens.signingkey.SigningKeyScreen
+import io.openshm.patcher.ui.screens.signingkey.SigningKeyViewModel
 import io.openshm.patcher.ui.screens.acquire.AcquireEvent
 import io.openshm.patcher.ui.screens.acquire.AcquireScreen
 import io.openshm.patcher.ui.screens.acquire.AcquireViewModel
@@ -90,7 +99,7 @@ fun PatcherNavHost(
         composable(Route.Welcome.path) {
             val vm: WelcomeViewModel = viewModel()
             val state by vm.state.collectAsStateWithLifecycle()
-            WelcomeScreen(state, vm::onEvent, onGetStarted = { next(Route.Welcome) }, onSettings = {})
+            WelcomeScreen(state, vm::onEvent, onGetStarted = { next(Route.Welcome) }, onSettings = { navController.navigate(Route.SigningKey.path) })
         }
         composable(Route.Profile.path) {
             val vm: ProfileViewModel = viewModel()
@@ -158,7 +167,17 @@ fun PatcherNavHost(
         }
         composable(Route.BuildDone.path) {
             val context = LocalContext.current
-            BuildDoneScreen(remember { builtOutputs(BuildStorage(context)) }, onInstall = { next(Route.BuildDone) }, onBack = back)
+            val base = remember { builtOutputs(BuildStorage(context)) }
+            // Decrypting the key is real work, so the nudge appears once it is known.
+            val backupDue by produceState(false) {
+                value = withContext(Dispatchers.IO) { signingKeyBackupDue(signingKeyStore(context), PrefsExportedCertRecord(context)) }
+            }
+            BuildDoneScreen(
+                base.copy(backupDue = backupDue),
+                onInstall = { next(Route.BuildDone) },
+                onBack = back,
+                onBackUpKey = { navController.navigate(Route.SigningKey.path) },
+            )
         }
         composable(Route.InstallPhone.path) {
             val vm: InstallPhoneViewModel = viewModel()
@@ -217,6 +236,23 @@ fun PatcherNavHost(
                 onShare = {},
             )
         }
+        composable(Route.SigningKey.path) {
+            val vm: SigningKeyViewModel = viewModel()
+            val state by vm.state.collectAsStateWithLifecycle()
+            val createBackup = rememberLauncherForActivityResult(
+                ActivityResultContracts.CreateDocument(PKCS12_MIME), vm::onBackupFileCreated,
+            )
+            val pickKey = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument(), vm::onKeyFilePicked)
+            LaunchedEffect(vm) {
+                vm.requests.collect { request ->
+                    when (request) {
+                        SigningKeyRequest.CreateBackupFile -> createBackup.launch(BACKUP_FILE_NAME)
+                        SigningKeyRequest.PickKeyFile -> pickKey.launch(arrayOf(PKCS12_MIME, "application/octet-stream"))
+                    }
+                }
+            }
+            SigningKeyScreen(state, vm::onEvent, onBack = back)
+        }
         composable(Route.Home.path) {
             val vm: HomeViewModel = viewModel()
             val state by vm.state.collectAsStateWithLifecycle()
@@ -226,6 +262,7 @@ fun PatcherNavHost(
                     vm.onEvent(event)
                     if (event is HomeEvent.NewBuild) navController.navigate(Route.Profile.path)
                     if (event is HomeEvent.RunSelfTest) navController.navigate(Route.SelfTest.path)
+                    if (event is HomeEvent.OpenSigningKey) navController.navigate(Route.SigningKey.path)
                 },
             )
         }
@@ -265,6 +302,8 @@ private fun GuidedBrowserDestination(entry: NavBackStackEntry, navController: Na
     )
 }
 
+private const val PKCS12_MIME = "application/x-pkcs12"
+private const val BACKUP_FILE_NAME = "openshm-signing-key.p12"
 private const val APK_MIME = "application/vnd.android.package-archive"
 
 private fun coachTitle(step: Int) = when (step) {

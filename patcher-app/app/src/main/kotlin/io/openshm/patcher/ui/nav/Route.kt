@@ -18,6 +18,8 @@ enum class Route(val path: String) {
     SelfTest("self-test"),
     AllSet("all-set"),
     Home("home"),
+    /** Reached from Home, Welcome and the build-done nudge; not part of [SetupFlow]. */
+    SigningKey("signing-key"),
     ;
 
     companion object {

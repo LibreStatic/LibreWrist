@@ -1,5 +1,7 @@
 package io.openshm.patcher
 
+import io.openshm.patcher.data.KeyImportException
+import io.openshm.patcher.data.KeyImportException.Reason
 import io.openshm.patcher.data.SigningKeyStore
 import java.io.ByteArrayInputStream
 import java.io.File
@@ -144,32 +146,129 @@ class SigningKeyStoreTest {
         return java.io.ByteArrayOutputStream().also { ks.store(it, password.toCharArray()) }.toByteArray()
     }
 
-    private fun assertImportFails(bytes: ByteArray, password: String, messagePart: String) {
+    private fun assertImportFails(bytes: ByteArray, password: String, reason: Reason) {
         val s = store()
         val before = s.load().certificates.first().encoded
         try {
             s.importPkcs12(ByteArrayInputStream(bytes), password.toCharArray())
             fail("imported an unusable file")
-        } catch (e: IOException) {
-            assertTrue(e.message, e.message!!.contains(messagePart))
+        } catch (e: KeyImportException) {
+            assertEquals(reason, e.reason)
         }
         assertArrayEquals(before, store().load().certificates.first().encoded)
     }
 
     @Test fun importRejectsAWrongPassword() {
         val exported = store().exportPkcs12("right".toCharArray())
-        assertImportFails(exported, "wrong", "password")
+        assertImportFails(exported, "wrong", Reason.WrongPasswordOrNotPkcs12)
     }
 
     @Test fun importRejectsAKeyThatDoesNotMatchItsCertificate() {
         val cert = store().load().certificates.first()
         val stranger = java.security.KeyPairGenerator.getInstance("RSA").apply { initialize(2048) }.generateKeyPair()
-        assertImportFails(p12(stranger.private, cert, "p"), "p", "does not match")
+        assertImportFails(p12(stranger.private, cert, "p"), "p", Reason.KeyCertificateMismatch)
     }
 
     @Test fun importRejectsAShortRsaKey() {
         val cert = store().load().certificates.first()
         val weak = java.security.KeyPairGenerator.getInstance("RSA").apply { initialize(1024) }.generateKeyPair()
-        assertImportFails(p12(weak.private, cert, "p"), "p", "shorter than")
+        assertImportFails(p12(weak.private, cert, "p"), "p", Reason.WeakKey)
     }
+
+    @Test fun importRejectsAFileThatIsNotPkcs12() {
+        assertImportFails("not a key store".toByteArray(), "p", Reason.WrongPasswordOrNotPkcs12)
+    }
+
+    @Test fun importRejectsAStoreWithoutAKey() {
+        val cert = store().load().certificates.first()
+        val ks = KeyStore.getInstance("PKCS12").apply { load(null, null) }
+        ks.setCertificateEntry("only-cert", cert)
+        val bytes = java.io.ByteArrayOutputStream().also { ks.store(it, "p".toCharArray()) }.toByteArray()
+        assertImportFails(bytes, "p", Reason.NotOneKey)
+    }
+
+    @Test fun inspectReportsTheDigestWithoutChangingAnything() {
+        val other = Files.createTempDirectory("signing-other").toFile()
+        try {
+            val otherWrap = aes()
+            val otherStore = SigningKeyStore(other) { otherWrap }
+            val exported = otherStore.exportPkcs12("a-long-password".toCharArray())
+            val a = store()
+            val before = a.certificateSha256()
+            assertEquals(otherStore.certificateSha256(), a.inspectPkcs12(exported, "a-long-password".toCharArray()))
+            assertEquals(before, a.certificateSha256())
+        } finally {
+            other.deleteRecursively()
+        }
+    }
+
+    // A file like the one the PC keystore is: written by the JDK's own PKCS12 KeyStore (AES / PBKDF2 in JDK 17+).
+    @Test fun importsAFileWrittenByTheJdkKeyStore() {
+        val source = store()
+        val original = source.load()
+        val bytes = p12(original.privateKey, original.certificates.first(), "jdk-written-pass")
+        dir.deleteRecursively()
+        dir.mkdirs()
+        val target = store(aes())
+        target.importPkcs12(ByteArrayInputStream(bytes), "jdk-written-pass".toCharArray())
+        assertArrayEquals(original.certificates.first().encoded, target.load().certificates.first().encoded)
+        assertArrayEquals(original.privateKey.encoded, target.load().privateKey.encoded)
+    }
+
+    @Test fun exportIsReadableByTheJdkKeyStore() {
+        val source = store()
+        val original = source.load()
+        val bytes = source.exportPkcs12("export-pass-123".toCharArray())
+        val ks = KeyStore.getInstance("PKCS12").apply { load(ByteArrayInputStream(bytes), "export-pass-123".toCharArray()) }
+        val alias = ks.aliases().toList().single()
+        assertArrayEquals(original.privateKey.encoded, ks.getKey(alias, "export-pass-123".toCharArray()).encoded)
+        assertArrayEquals(original.certificates.first().encoded, ks.getCertificate(alias).encoded)
+        try {
+            KeyStore.getInstance("PKCS12").load(ByteArrayInputStream(bytes), "wrong-password".toCharArray())
+            fail("opened with the wrong password")
+        } catch (expected: IOException) {
+        }
+    }
+
+    @Test fun exportUsesPbes2AndAes256NotTheLegacyAlgorithms() {
+        val bytes = store().exportPkcs12("export-pass-123".toCharArray())
+        assertTrue("PBES2", contains(bytes, oid(0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x05, 0x0D)))
+        assertTrue("AES-256-CBC", contains(bytes, oid(0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x01, 0x2A)))
+        assertTrue("PBKDF2", contains(bytes, oid(0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x05, 0x0C)))
+        assertTrue("SHA-256", contains(bytes, oid(0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x01)))
+        assertFalse("3DES PBE", contains(bytes, oid(0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x0C, 0x01, 0x03)))
+        assertFalse("RC2-40 PBE", contains(bytes, oid(0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x0C, 0x01, 0x06)))
+        assertFalse("SHA-1 digest", contains(bytes, oid(0x2B, 0x0E, 0x03, 0x02, 0x1A)))
+    }
+
+    @Test fun exportedBytesAreWrittenForManualToolChecks() {
+        // Lets the build directory hold a file for `keytool` / `openssl pkcs12 -info`; see the Gradle test task.
+        val out = File("build/export-check/openshm-signing-key.p12")
+        out.parentFile.mkdirs()
+        out.writeBytes(store().exportPkcs12("export-pass-123".toCharArray()))
+        assertTrue(out.length() > 0)
+    }
+
+    @Test fun theModernReaderReadsBothItsOwnFilesAndTheJdkOnes() {
+        val original = store().load()
+        val own = store().exportPkcs12("export-pass-123".toCharArray())
+        val jdk = p12(original.privateKey, original.certificates.first(), "export-pass-123")
+        for (bytes in listOf(own, jdk)) {
+            val (key, chain) = io.openshm.patcher.data.ModernPkcs12.read(bytes, "export-pass-123".toCharArray())
+            assertArrayEquals(original.privateKey.encoded, key.encoded)
+            assertArrayEquals(original.certificates.first().encoded, chain.single().encoded)
+            try {
+                io.openshm.patcher.data.ModernPkcs12.read(bytes, "wrong-pass-1234".toCharArray())
+                fail("read with the wrong password")
+            } catch (expected: IOException) {
+            }
+        }
+    }
+
+    // DER OBJECT IDENTIFIER: tag 0x06, length, content.
+    private fun oid(vararg content: Int): ByteArray =
+        byteArrayOf(0x06, content.size.toByte()) + ByteArray(content.size) { content[it].toByte() }
+
+    private fun contains(haystack: ByteArray, needle: ByteArray): Boolean =
+        (0..haystack.size - needle.size).any { i -> needle.indices.all { haystack[i + it] == needle[it] } }
 }

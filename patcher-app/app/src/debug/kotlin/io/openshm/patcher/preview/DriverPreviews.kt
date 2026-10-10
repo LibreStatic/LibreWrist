@@ -1,6 +1,8 @@
 package io.openshm.patcher.preview
 
 import androidx.compose.runtime.Composable
+import io.openshm.patcher.R
+import io.openshm.patcher.ui.screens.signingkey.SigningKeyForm
 
 /*
  * Public zero-argument composables for the Compose Driver (tools/compose-driver). They use the
@@ -46,6 +48,9 @@ fun BuildLogDriver() = PreviewHost(ColorMode.Fallback) { BuildSample(logSheet = 
 fun BuildDoneDriver() = PreviewHost(ColorMode.Fallback) { BuildDoneSample() }
 
 @Composable
+fun BuildDoneBackupDriver() = PreviewHost(ColorMode.Fallback) { BuildDoneSample(backupDue = true) }
+
+@Composable
 fun InstallPhoneDriver() = PreviewHost(ColorMode.Fallback) { InstallPhoneSample() }
 
 @Composable
@@ -71,3 +76,19 @@ fun HomeDriver() = PreviewHost(ColorMode.Fallback) { HomeSample() }
 
 @Composable
 fun HomeRestoreDriver() = PreviewHost(ColorMode.Fallback) { HomeSample(restoreSheet = true) }
+
+@Composable
+fun SigningKeyDriver() = PreviewHost(ColorMode.Fallback) { SigningKeySample() }
+
+@Composable
+fun SigningKeyEmptyDriver() = PreviewHost(ColorMode.Fallback) { SigningKeySample(keyExists = false) }
+
+@Composable
+fun SigningKeyExportDriver() = PreviewHost(ColorMode.Fallback) {
+    SigningKeySample(form = SigningKeyForm.Export, formError = R.string.signing_key_error_short)
+}
+
+@Composable
+fun SigningKeyImportConfirmDriver() = PreviewHost(ColorMode.Fallback) {
+    SigningKeySample(form = SigningKeyForm.Import, confirmation = true)
+}

@@ -37,6 +37,9 @@ import io.openshm.patcher.ui.screens.selftest.selfTestSections
 import io.openshm.patcher.ui.screens.watchpair.WatchPairUiState
 import io.openshm.patcher.ui.screens.wearable.WearablePairingUiState
 import io.openshm.patcher.ui.screens.wearable.initialWearableChecks
+import io.openshm.patcher.ui.screens.signingkey.ImportConfirmation
+import io.openshm.patcher.ui.screens.signingkey.SigningKeyForm
+import io.openshm.patcher.ui.screens.signingkey.SigningKeyUiState
 import io.openshm.patcher.ui.screens.welcome.WelcomeUiState
 import io.openshm.patcher.ui.screens.welcome.buildChanges
 import io.openshm.patcher.R
@@ -101,7 +104,8 @@ internal object PreviewData {
     fun buildFinished() =
         BuildUiState(patchCount = AppCatalogue.current.patternCount(WatchProfile.WearOs5.inputIds)).finish()
 
-    fun buildDone() = BuildDoneUiState(
+    fun buildDone(backupDue: Boolean = false) = BuildDoneUiState(
+        backupDue = backupDue,
         outputs = AppCatalogue.current.outputs.map {
             BuiltOutput(it.id, it.label, it.device, it.packageName(PREFIX), sizeBytes = (30 + it.id.length * 3) * MB)
         },
@@ -175,5 +179,24 @@ internal object PreviewData {
         builds = AppCatalogue.current.outputs.map { InstalledBuild(it.id, it.label, it.packageName(PREFIX), it.device) },
         menuOpen = menu,
         restoreSheetVisible = restoreSheet,
+    )
+
+    private const val SAMPLE_SHA = "dc277d5d75f361b48da0bff95496463c464ad303419d8f19da38a990d8239d99"
+    private const val OTHER_SHA = "3b9a0c41e2d57f86a1c4d09be7f2538a64d1e0c97b35f82a46de10b9c78f5a02"
+
+    fun signingKey(
+        keyExists: Boolean = true,
+        form: SigningKeyForm = SigningKeyForm.None,
+        formError: Int? = null,
+        backedUp: Boolean = false,
+        confirmation: Boolean = false,
+    ) = SigningKeyUiState(
+        loading = false,
+        keyExists = keyExists,
+        certificateSha256 = if (keyExists) SAMPLE_SHA else null,
+        backedUp = backedUp,
+        form = form,
+        formError = formError,
+        confirmation = if (confirmation) ImportConfirmation(SAMPLE_SHA, OTHER_SHA) else null,
     )
 }

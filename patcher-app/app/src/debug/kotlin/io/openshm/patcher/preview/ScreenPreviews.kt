@@ -1,6 +1,8 @@
 package io.openshm.patcher.preview
 
 import androidx.compose.runtime.Composable
+import io.openshm.patcher.R
+import io.openshm.patcher.ui.screens.signingkey.SigningKeyForm
 import androidx.compose.ui.tooling.preview.PreviewParameter
 
 /* One preview per screen; each expands to light/dark x font scale 1.0/2.0 x dynamic/fallback. */
@@ -104,3 +106,28 @@ private fun HomePreview(@PreviewParameter(ColorModeProvider::class) mode: ColorM
 @Composable
 private fun HomeRestorePreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
     PreviewHost(mode) { HomeSample(restoreSheet = true) }
+
+@ScreenPreviews
+@Composable
+private fun BuildDoneBackupPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { BuildDoneSample(backupDue = true) }
+
+@ScreenPreviews
+@Composable
+private fun SigningKeyPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { SigningKeySample() }
+
+@ScreenPreviews
+@Composable
+private fun SigningKeyEmptyPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { SigningKeySample(keyExists = false) }
+
+@ScreenPreviews
+@Composable
+private fun SigningKeyExportPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { SigningKeySample(form = SigningKeyForm.Export, formError = R.string.signing_key_error_short) }
+
+@ScreenPreviews
+@Composable
+private fun SigningKeyImportConfirmPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { SigningKeySample(form = SigningKeyForm.Import, confirmation = true) }

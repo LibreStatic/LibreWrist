@@ -14,6 +14,8 @@ import io.openshm.patcher.ui.screens.install.WatchInstallScreen
 import io.openshm.patcher.ui.screens.profile.ProfileScreen
 import io.openshm.patcher.ui.screens.selftest.AllSetScreen
 import io.openshm.patcher.ui.screens.selftest.SelfTestScreen
+import io.openshm.patcher.ui.screens.signingkey.SigningKeyForm
+import io.openshm.patcher.ui.screens.signingkey.SigningKeyScreen
 import io.openshm.patcher.ui.screens.watchpair.WatchPairScreen
 import io.openshm.patcher.ui.screens.wearable.WearablePairingScreen
 import io.openshm.patcher.ui.screens.welcome.WelcomeScreen
@@ -51,7 +53,7 @@ internal fun BuildSample(logSheet: Boolean = false) =
     BuildScreen(PreviewData.build(BuildStage.Apply).copy(logVisible = logSheet, log = listOf("start unpack", "start fingerprints", "start apply")), {}, {})
 
 @Composable
-internal fun BuildDoneSample() = BuildDoneScreen(PreviewData.buildDone(), {}, {})
+internal fun BuildDoneSample(backupDue: Boolean = false) = BuildDoneScreen(PreviewData.buildDone(backupDue), {}, {})
 
 @Composable
 internal fun InstallPhoneSample(grants: Boolean = false) =
@@ -75,3 +77,11 @@ internal fun AllSetSample() = AllSetScreen(PreviewData.allSet(), {}, {})
 @Composable
 internal fun HomeSample(restoreSheet: Boolean = false, menu: Boolean = false) =
     HomeScreen(PreviewData.home(restoreSheet = restoreSheet, menu = menu), {})
+
+@Composable
+internal fun SigningKeySample(
+    keyExists: Boolean = true,
+    form: SigningKeyForm = SigningKeyForm.None,
+    formError: Int? = null,
+    confirmation: Boolean = false,
+) = SigningKeyScreen(PreviewData.signingKey(keyExists, form, formError, confirmation = confirmation), {}, {})

@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Fitbit
+import androidx.compose.material.icons.rounded.Key
 import androidx.compose.material.icons.rounded.PhoneAndroid
 import androidx.compose.material.icons.rounded.SettingsBackupRestore
 import androidx.compose.material.icons.rounded.Tune
@@ -85,6 +86,7 @@ sealed interface HomeEvent {
     data object RunSelfTest : HomeEvent
     data object RestoreWatch : HomeEvent
     data object Uninstall : HomeEvent
+    data object OpenSigningKey : HomeEvent
 }
 
 @Composable
@@ -131,6 +133,11 @@ fun HomeScreen(
                     text = { Text(stringResource(R.string.home_menu_self_test)) },
                     leadingIcon = { Icon(Icons.Rounded.Fitbit, contentDescription = null) },
                     onClick = { onEvent(HomeEvent.RunSelfTest) },
+                )
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.home_menu_signing_key)) },
+                    leadingIcon = { Icon(Icons.Rounded.Key, contentDescription = null) },
+                    onClick = { onEvent(HomeEvent.OpenSigningKey) },
                 )
                 DropdownMenuItem(
                     text = { Text(stringResource(R.string.home_menu_restore_watch)) },

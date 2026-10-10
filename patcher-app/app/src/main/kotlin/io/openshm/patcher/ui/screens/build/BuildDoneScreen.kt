@@ -15,7 +15,13 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Key
 import androidx.compose.material.icons.rounded.Link
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
@@ -48,6 +54,8 @@ data class BuiltOutput(val id: String, val label: String, val device: Device, va
 data class BuildDoneUiState(
     val outputs: List<BuiltOutput> = emptyList(),
     val patchCount: Int = 0,
+    /** The signing key exists and its certificate was never exported. */
+    val backupDue: Boolean = false,
 )
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -57,6 +65,7 @@ fun BuildDoneScreen(
     onInstall: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    onBackUpKey: () -> Unit = {},
 ) {
     val colors = MaterialTheme.colorScheme
     Column(
@@ -111,9 +120,33 @@ fun BuildDoneScreen(
                 }
             }
             NoteRow(Icons.Rounded.Link, stringResource(R.string.build_done_link_note))
+            if (state.backupDue) BackupNudge(onBackUpKey)
         }
         Column(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp)) {
             PrimaryAction(stringResource(R.string.build_done_install), onInstall)
+        }
+    }
+}
+
+/** Asks for a backup of the signing key: losing it means installed apps can only be reinstalled. */
+@Composable
+private fun BackupNudge(onBackUp: () -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    Surface(shape = RoundedCornerShape(28.dp), color = colors.tertiaryContainer, contentColor = colors.onTertiaryContainer) {
+        Row(
+            Modifier.fillMaxWidth().padding(start = 20.dp, end = 12.dp, top = 12.dp, bottom = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Icon(Icons.Rounded.Key, contentDescription = null)
+            Column(Modifier.weight(1f)) {
+                Text(stringResource(R.string.signing_key_nudge_title), style = MaterialTheme.typography.titleSmall)
+                Text(stringResource(R.string.signing_key_nudge_body), style = MaterialTheme.typography.bodySmall)
+            }
+            Button(
+                onClick = onBackUp,
+                colors = ButtonDefaults.buttonColors(containerColor = colors.tertiary, contentColor = colors.onTertiary),
+            ) { Text(stringResource(R.string.signing_key_nudge_action)) }
         }
     }
 }
