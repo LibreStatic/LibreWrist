@@ -2,6 +2,8 @@ package io.openshm.patcher.ui.nav
 
 import android.Manifest
 import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -68,6 +70,8 @@ import io.openshm.patcher.ui.screens.profile.ProfileScreen
 import io.openshm.patcher.ui.screens.profile.ProfileViewModel
 import io.openshm.patcher.ui.screens.selftest.AllSetScreen
 import io.openshm.patcher.ui.screens.selftest.AllSetUiState
+import io.openshm.patcher.ui.screens.selftest.SelfTestEvent
+import io.openshm.patcher.ui.screens.selftest.SelfTestFix
 import io.openshm.patcher.ui.screens.selftest.SelfTestScreen
 import io.openshm.patcher.ui.screens.selftest.SelfTestViewModel
 import io.openshm.patcher.ui.screens.watchpair.WatchPairScreen
@@ -117,7 +121,9 @@ fun PatcherNavHost(
             LaunchedEffect(state.paired) {
                 if (state.paired) {
                     vm.onNavigated()
-                    next(Route.WatchPair)
+                    // Opened from the self-test to fix a missing link: go back there instead of walking on.
+                    if (navController.previousBackStackEntry?.destination?.route == Route.SelfTest.path) navController.popBackStack()
+                    else next(Route.WatchPair)
                 }
             }
             WatchPairScreen(state, vm::onEvent, onBack = back)
@@ -225,15 +231,31 @@ fun PatcherNavHost(
         composable(Route.SelfTest.path) {
             val vm: SelfTestViewModel = viewModel()
             val state by vm.state.collectAsStateWithLifecycle()
-            SelfTestScreen(state, vm::onEvent, onContinue = { next(Route.SelfTest) }, onBack = back)
+            val context = LocalContext.current
+            // After a fix the checks run again when this screen is back in front.
+            LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { vm.onResumed() }
+            SelfTestScreen(
+                state,
+                onEvent = { event ->
+                    when (event) {
+                        is SelfTestEvent.Fix -> vm.fixFor(event.rowId)?.let { navController.navigate(it.route().path) }
+                        SelfTestEvent.Share -> shareReport(context, vm.reportText())
+                        else -> vm.onEvent(event)
+                    }
+                },
+                onContinue = { next(Route.SelfTest) },
+                onBack = back,
+            )
         }
-        composable(Route.AllSet.path) {
-            val vm: SelfTestViewModel = viewModel(navController.getBackStackEntry(Route.SelfTest.path))
+        composable(Route.AllSet.path) { entry ->
+            val selfTest = remember(entry) { navController.getBackStackEntry(Route.SelfTest.path) }
+            val vm: SelfTestViewModel = viewModel(selfTest)
             val state by vm.state.collectAsStateWithLifecycle()
+            val context = LocalContext.current
             AllSetScreen(
                 AllSetUiState(state.passedCount, state.totalCount),
                 onDone = { next(Route.AllSet) },
-                onShare = {},
+                onShare = { shareReport(context, vm.reportText()) },
             )
         }
         composable(Route.SigningKey.path) {
@@ -256,12 +278,14 @@ fun PatcherNavHost(
         composable(Route.Home.path) {
             val vm: HomeViewModel = viewModel()
             val state by vm.state.collectAsStateWithLifecycle()
+            // The self-test may have finished since Home was last shown.
+            LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { vm.refresh() }
             HomeScreen(
                 state,
                 onEvent = { event ->
                     vm.onEvent(event)
                     if (event is HomeEvent.NewBuild) navController.navigate(Route.Profile.path)
-                    if (event is HomeEvent.RunSelfTest) navController.navigate(Route.SelfTest.path)
+                    if (event is HomeEvent.RunSelfTest || event is HomeEvent.TestAgain) navController.navigate(Route.SelfTest.path)
                     if (event is HomeEvent.OpenSigningKey) navController.navigate(Route.SigningKey.path)
                 },
             )
@@ -273,7 +297,8 @@ fun PatcherNavHost(
 private fun GuidedBrowserDestination(entry: NavBackStackEntry, navController: NavHostController) {
     val inputId = requireNotNull(entry.arguments?.getString(Route.INPUT_ID_ARG))
     val input = AppCatalogue.current.input(inputId)
-    val acquire: AcquireViewModel = viewModel(navController.getBackStackEntry(Route.Acquire.path))
+    val acquireEntry = remember(entry) { navController.getBackStackEntry(Route.Acquire.path) }
+    val acquire: AcquireViewModel = viewModel(acquireEntry)
     // The coach step follows the WebView's page once the platform layer provides it; the shell shows
     // the variant-picking step, the one people get stuck on.
     val step = COACH_VARIANT_STEP
@@ -300,6 +325,30 @@ private fun GuidedBrowserDestination(entry: NavBackStackEntry, navController: Na
             }
         },
     )
+}
+
+/** The screen a self-test fix button opens. */
+internal fun SelfTestFix.route(): Route = when (this) {
+    SelfTestFix.InstallPhone -> Route.InstallPhone
+    SelfTestFix.InstallWatch -> Route.WatchInstall
+    SelfTestFix.WatchPair -> Route.WatchPair
+    SelfTestFix.Build -> Route.Customize
+    SelfTestFix.DisableStock -> Route.DisableStock
+    SelfTestFix.DevMode -> Route.DevMode
+    SelfTestFix.WearablePairing -> Route.WearablePairing
+}
+
+/** Offers the self-test report (plain text) to any app that takes it. */
+private fun shareReport(context: Context, text: String) {
+    val send = Intent(Intent.ACTION_SEND)
+        .setType("text/plain")
+        .putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.selftest_share_subject))
+        .putExtra(Intent.EXTRA_TEXT, text)
+    try {
+        context.startActivity(Intent.createChooser(send, context.getString(R.string.action_share_report)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+    } catch (e: ActivityNotFoundException) {
+        // No app takes text: nothing to do.
+    }
 }
 
 private const val PKCS12_MIME = "application/x-pkcs12"

@@ -31,9 +31,11 @@ import io.openshm.patcher.ui.screens.install.SelfAdbPhase
 import io.openshm.patcher.ui.screens.install.InstallUiState
 import io.openshm.patcher.ui.screens.profile.ProfileUiState
 import io.openshm.patcher.ui.screens.selftest.AllSetUiState
-import io.openshm.patcher.ui.screens.selftest.HumanCheck
+import io.openshm.patcher.ui.screens.selftest.SelfTestFix
+import io.openshm.patcher.ui.screens.selftest.SelfTestRow
+import io.openshm.patcher.ui.screens.selftest.SelfTestSection
+import io.openshm.patcher.ui.screens.selftest.SelfTestText
 import io.openshm.patcher.ui.screens.selftest.SelfTestUiState
-import io.openshm.patcher.ui.screens.selftest.selfTestSections
 import io.openshm.patcher.ui.screens.watchpair.WatchPairUiState
 import io.openshm.patcher.ui.screens.wearable.WearablePairingUiState
 import io.openshm.patcher.ui.screens.wearable.initialWearableChecks
@@ -161,14 +163,134 @@ internal object PreviewData {
         AppCatalogue.current.stockAppsToDisable.filter { it.device == Device.Watch }.map { StockAppChoice(it, selected = true) },
     )
 
-    fun selfTest(): SelfTestUiState {
-        val sections = selfTestSections(CheckStatus.Passed).mapIndexed { si, section ->
-            if (si != 0) section
-            else section.copy(
-                rows = section.rows.mapIndexed { ri, row -> if (ri == 1) row.copy(status = CheckStatus.Failed) else row },
+    private fun t(res: Int, vararg args: String) = SelfTestText(res, args.toList())
+
+    private fun app(id: String) = AppCatalogue.current.output(id).label
+
+    private val humanQuestions = listOf(
+        Triple("human-platform", R.string.selftest_watch_platform, R.string.selftest_platform_question),
+        Triple("human-watch-connected", R.string.selftest_gms_title, R.string.selftest_gms_question),
+        Triple("human-shm", R.string.selftest_shm_title, R.string.selftest_shm_question),
+        Triple("human-ecg", R.string.selftest_ecg_title, R.string.selftest_ecg_question),
+    )
+
+    private fun human(answered: Int, failedAt: Int? = null) = SelfTestSection(
+        R.string.selftest_section_human,
+        humanQuestions.mapIndexed { i, (id, title, question) ->
+            val status = when {
+                i == failedAt -> CheckStatus.Failed
+                i < answered -> CheckStatus.Passed
+                else -> CheckStatus.Pending
+            }
+            SelfTestRow(
+                id, t(title), status,
+                detail = if (i == failedAt) t(R.string.selftest_detail_answered_no) else null,
+                fix = if (i == failedAt) SelfTestFix.DevMode else null,
+                question = question,
             )
+        },
+    )
+
+    private fun checkedRow(id: String, title: SelfTestText, detail: SelfTestText, status: CheckStatus = CheckStatus.Passed, fix: SelfTestFix? = null) =
+        SelfTestRow(id, title, status, detail, fix)
+
+    /** Every automated check passed and the questions are being answered. */
+    fun selfTest(): SelfTestUiState = SelfTestUiState(
+        listOf(
+            SelfTestSection(
+                R.string.selftest_section_phone,
+                listOf(
+                    checkedRow("phone-pkg-shm-phone", t(R.string.selftest_package_title, app("shm-phone")), t(R.string.selftest_detail_package_ok, "1.5.2.004")),
+                    checkedRow("phone-pkg-bridge-phone", t(R.string.selftest_package_title, app("bridge-phone")), t(R.string.selftest_detail_package_ok_no_version)),
+                    checkedRow("phone-grants-bridge-phone", t(R.string.selftest_grants_title, app("bridge-phone")), t(R.string.selftest_detail_grants_ok)),
+                ),
+            ),
+            SelfTestSection(
+                R.string.selftest_section_watch,
+                listOf(
+                    checkedRow("watch-pkg-shm-watch", t(R.string.selftest_package_title, app("shm-watch")), t(R.string.selftest_detail_watch_ok)),
+                    checkedRow("watch-pkg-bridge-watch", t(R.string.selftest_package_title, app("bridge-watch")), t(R.string.selftest_detail_watch_ok)),
+                    checkedRow("watch-grants-bridge-watch", t(R.string.selftest_grants_title, app("bridge-watch")), t(R.string.selftest_detail_grants_ok)),
+                    checkedRow("watch-stock", t(R.string.selftest_stock_title, "Samsung Health Monitor"), t(R.string.selftest_detail_stock_off)),
+                ),
+            ),
+            SelfTestSection(
+                R.string.selftest_section_link,
+                listOf(checkedRow("link-bridge", t(R.string.selftest_bridge_link_title), t(R.string.selftest_detail_bridge_ok))),
+            ),
+            human(answered = 1),
+        ),
+    )
+
+    /** A run with failures that have a fix, a warning and a link that is down. */
+    fun selfTestFailures(): SelfTestUiState = SelfTestUiState(
+        listOf(
+            SelfTestSection(
+                R.string.selftest_section_phone,
+                listOf(
+                    checkedRow(
+                        "phone-pkg-shm-phone", t(R.string.selftest_package_title, app("shm-phone")),
+                        t(R.string.selftest_detail_hash_mismatch), CheckStatus.Failed, SelfTestFix.InstallPhone,
+                    ),
+                    checkedRow("phone-pkg-bridge-phone", t(R.string.selftest_package_title, app("bridge-phone")), t(R.string.selftest_detail_package_ok, "0.3.0")),
+                    checkedRow(
+                        "phone-grants-bridge-phone", t(R.string.selftest_grants_title, app("bridge-phone")),
+                        t(R.string.selftest_detail_grants_missing, "BridgeNotificationListener, BLUETOOTH_CONNECT"), CheckStatus.Failed, SelfTestFix.InstallPhone,
+                    ),
+                ),
+            ),
+            SelfTestSection(
+                R.string.selftest_section_watch,
+                listOf(
+                    checkedRow("watch-pkg-shm-watch", t(R.string.selftest_package_title, app("shm-watch")), t(R.string.selftest_detail_watch_ok)),
+                    checkedRow(
+                        "watch-grants-shm-watch", t(R.string.selftest_grants_title, app("shm-watch")),
+                        t(R.string.selftest_detail_grants_optional, "doze_always_on"), CheckStatus.Warning, SelfTestFix.InstallWatch,
+                    ),
+                    checkedRow(
+                        "watch-stock", t(R.string.selftest_stock_title, "Samsung Health Monitor"),
+                        t(R.string.selftest_detail_stock_still_on), CheckStatus.Warning, SelfTestFix.DisableStock,
+                    ),
+                ),
+            ),
+            SelfTestSection(
+                R.string.selftest_section_link,
+                listOf(
+                    checkedRow(
+                        "link-bridge", t(R.string.selftest_bridge_link_title),
+                        t(R.string.selftest_detail_bridge_link_down), CheckStatus.Failed,
+                    ),
+                ),
+            ),
+            human(answered = 1, failedAt = 1),
+        ),
+    )
+
+    /** The watch cannot be reached: every watch row is skipped and points to pairing; one row is still running. */
+    fun selfTestWatchOff(): SelfTestUiState {
+        val skipped = { id: String, title: SelfTestText ->
+            checkedRow(id, title, t(R.string.selftest_detail_watch_skipped), CheckStatus.Warning, SelfTestFix.WatchPair)
         }
-        return SelfTestUiState(sections, HumanCheck(1, 2, R.string.selftest_human_buzz))
+        return SelfTestUiState(
+            listOf(
+                SelfTestSection(
+                    R.string.selftest_section_phone,
+                    listOf(
+                        checkedRow("phone-pkg-shm-phone", t(R.string.selftest_package_title, app("shm-phone")), t(R.string.selftest_detail_package_ok, "1.5.2.004")),
+                        SelfTestRow("phone-grants-bridge-phone", t(R.string.selftest_grants_title, app("bridge-phone")), CheckStatus.Running),
+                    ),
+                ),
+                SelfTestSection(
+                    R.string.selftest_section_watch,
+                    listOf(
+                        skipped("watch-pkg-shm-watch", t(R.string.selftest_package_title, app("shm-watch"))),
+                        skipped("watch-pkg-bridge-watch", t(R.string.selftest_package_title, app("bridge-watch"))),
+                        skipped("watch-stock", t(R.string.selftest_stock_title, "Samsung Health Monitor")),
+                    ),
+                ),
+                human(answered = 0),
+            ),
+        )
     }
 
     fun allSet() = AllSetUiState(passed = 8, total = 8)

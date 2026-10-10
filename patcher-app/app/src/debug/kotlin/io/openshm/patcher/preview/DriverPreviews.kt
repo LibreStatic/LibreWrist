@@ -69,6 +69,12 @@ fun DisableStockDriver() = PreviewHost(ColorMode.Fallback) { DisableStockSample(
 fun SelfTestDriver() = PreviewHost(ColorMode.Fallback) { SelfTestSample() }
 
 @Composable
+fun SelfTestFailuresDriver() = PreviewHost(ColorMode.Fallback) { SelfTestSample(SelfTestVariant.Failures) }
+
+@Composable
+fun SelfTestWatchOffDriver() = PreviewHost(ColorMode.Fallback) { SelfTestSample(SelfTestVariant.WatchOff) }
+
+@Composable
 fun AllSetDriver() = PreviewHost(ColorMode.Fallback) { AllSetSample() }
 
 @Composable

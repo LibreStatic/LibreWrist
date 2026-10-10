@@ -58,7 +58,7 @@ class GrantCommandBuilder(private val target: GrantTarget) {
         if (!ok) throw UnsafeGrantValueException("Unsafe $what: ${value.take(60)}")
     }
 
-    private companion object {
+    internal companion object {
         val PERMISSION = Regex("[A-Za-z][A-Za-z0-9_.]*")
         val APPOP = Regex("[A-Z][A-Z0-9_]*")
         val COMPONENT = Regex("(\\.[A-Za-z][A-Za-z0-9_]*)+|[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z][A-Za-z0-9_]*)+")

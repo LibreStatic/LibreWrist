@@ -69,7 +69,16 @@ internal fun DevModeSample() = DevModeScreen(PreviewData.devMode(), {}, {}, {})
 internal fun DisableStockSample() = DisableStockScreen(PreviewData.disableStock(), {}, {}, {})
 
 @Composable
-internal fun SelfTestSample() = SelfTestScreen(PreviewData.selfTest(), {}, {}, {})
+internal fun SelfTestSample(variant: SelfTestVariant = SelfTestVariant.Passed) = SelfTestScreen(
+    when (variant) {
+        SelfTestVariant.Passed -> PreviewData.selfTest()
+        SelfTestVariant.Failures -> PreviewData.selfTestFailures()
+        SelfTestVariant.WatchOff -> PreviewData.selfTestWatchOff()
+    },
+    {}, {}, {},
+)
+
+internal enum class SelfTestVariant { Passed, Failures, WatchOff }
 
 @Composable
 internal fun AllSetSample() = AllSetScreen(PreviewData.allSet(), {}, {})

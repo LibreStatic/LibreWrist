@@ -94,6 +94,16 @@ private fun SelfTestPreview(@PreviewParameter(ColorModeProvider::class) mode: Co
 
 @ScreenPreviews
 @Composable
+private fun SelfTestFailuresPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { SelfTestSample(SelfTestVariant.Failures) }
+
+@ScreenPreviews
+@Composable
+private fun SelfTestWatchOffPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { SelfTestSample(SelfTestVariant.WatchOff) }
+
+@ScreenPreviews
+@Composable
 private fun AllSetPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
     PreviewHost(mode) { AllSetSample() }
 

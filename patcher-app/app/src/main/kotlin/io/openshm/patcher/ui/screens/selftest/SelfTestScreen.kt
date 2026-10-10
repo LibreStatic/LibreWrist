@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -27,39 +28,71 @@ import io.openshm.patcher.ui.components.CheckStatus
 import io.openshm.patcher.ui.components.GroupedItem
 import io.openshm.patcher.ui.components.GroupedSpacing
 import io.openshm.patcher.ui.components.IconAction
+import io.openshm.patcher.ui.components.OutlinedAction
 import io.openshm.patcher.ui.components.PrimaryAction
 import io.openshm.patcher.ui.components.SectionTitle
 import io.openshm.patcher.ui.components.SetupStep
 import io.openshm.patcher.ui.components.StatusShape
 import io.openshm.patcher.ui.components.StepScreenScaffold
 
+/** A line of text built from a string resource and its arguments, so rows can name packages and grants. */
+data class SelfTestText(@StringRes val res: Int, val args: List<String> = emptyList())
+
+@Composable
+internal fun SelfTestText.asString(): String = stringResource(res, *args.toTypedArray())
+
+/** The existing screen a failed row can send the user to. */
+enum class SelfTestFix { InstallPhone, InstallWatch, WatchPair, Build, DisableStock, DevMode, WearablePairing }
+
 data class SelfTestRow(
     val id: String,
-    @StringRes val title: Int,
+    val title: SelfTestText,
     val status: CheckStatus,
-    /** Shown on a failed row when the app knows a way to repair it. */
-    val fixable: Boolean = false,
-)
+    /** Why the row is not green (or a short fact when it is). */
+    val detail: SelfTestText? = null,
+    /** Shown on a failed or skipped row when the app knows a way to repair it. */
+    val fix: SelfTestFix? = null,
+    /** Set on rows only the person holding the devices can answer; the text is the yes/no question. */
+    @StringRes val question: Int? = null,
+) {
+    val isHuman: Boolean get() = question != null
+}
 
 data class SelfTestSection(@StringRes val title: Int, val rows: List<SelfTestRow>)
 
 /** A check only the person holding the devices can answer ("Did the watch buzz?"). */
 data class HumanCheck(val index: Int, val total: Int, @StringRes val question: Int)
 
-data class SelfTestUiState(
-    val sections: List<SelfTestSection> = emptyList(),
-    val humanCheck: HumanCheck? = null,
-) {
+data class SelfTestUiState(val sections: List<SelfTestSection> = emptyList()) {
     private val allRows get() = sections.flatMap { it.rows }
     val passedCount: Int get() = allRows.count { it.status == CheckStatus.Passed }
+    val warningCount: Int get() = allRows.count { it.status == CheckStatus.Warning }
+    val failedCount: Int get() = allRows.count { it.status == CheckStatus.Failed }
     val totalCount: Int get() = allRows.size
-    val finished: Boolean get() = humanCheck == null && allRows.none { it.status == CheckStatus.Pending || it.status == CheckStatus.Running }
+
+    /** The first question still unanswered, with its place among all of them. */
+    val humanCheck: HumanCheck?
+        get() {
+            val questions = allRows.filter { it.isHuman }
+            val next = questions.indexOfFirst { it.status == CheckStatus.Pending }
+            return if (next < 0) null else HumanCheck(next + 1, questions.size, questions[next].question!!)
+        }
+
+    /** True while an automated row is waiting or running (a question left open does not count). */
+    val running: Boolean
+        get() = allRows.any { it.status == CheckStatus.Running || (it.status == CheckStatus.Pending && !it.isHuman) }
+
+    val finished: Boolean get() = allRows.isNotEmpty() && allRows.none { it.status == CheckStatus.Pending || it.status == CheckStatus.Running }
     val allPassed: Boolean get() = finished && allRows.all { it.status == CheckStatus.Passed }
+
+    /** Warnings (skipped or unreadable checks) do not stop the setup; a failure does. */
+    val canContinue: Boolean get() = finished && failedCount == 0
 }
 
 sealed interface SelfTestEvent {
     data class Fix(val rowId: String) : SelfTestEvent
     data object Share : SelfTestEvent
+    data object Rerun : SelfTestEvent
     data class Answer(val yes: Boolean) : SelfTestEvent
 }
 
@@ -79,7 +112,7 @@ fun SelfTestScreen(
         topTrailing = {
             IconAction(Icons.Rounded.Share, stringResource(R.string.action_share_report), { onEvent(SelfTestEvent.Share) })
         },
-        footer = { PrimaryAction(stringResource(R.string.action_continue), onContinue, enabled = state.allPassed) },
+        footer = { PrimaryAction(stringResource(R.string.action_continue), onContinue, enabled = state.canContinue) },
     ) {
         state.sections.forEach { section ->
             Column {
@@ -90,6 +123,12 @@ fun SelfTestScreen(
             }
         }
         state.humanCheck?.let { HumanCheckCard(it, onEvent) }
+        OutlinedAction(
+            stringResource(R.string.selftest_rerun),
+            { onEvent(SelfTestEvent.Rerun) },
+            Icons.Rounded.Refresh,
+            enabled = !state.running,
+        )
     }
 }
 
@@ -107,8 +146,11 @@ private fun CheckRow(index: Int, count: Int, row: SelfTestRow, onEvent: (SelfTes
             verticalAlignment = Alignment.CenterVertically,
         ) {
             StatusShape(row.status)
-            Text(stringResource(row.title), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
-            if (failed && row.fixable) {
+            Column(Modifier.weight(1f)) {
+                Text(row.title.asString(), style = MaterialTheme.typography.bodyLarge)
+                row.detail?.let { Text(it.asString(), style = MaterialTheme.typography.bodySmall) }
+            }
+            if (row.fix != null && (row.status == CheckStatus.Failed || row.status == CheckStatus.Warning)) {
                 TextButton(onClick = { onEvent(SelfTestEvent.Fix(row.id)) }) { Text(stringResource(R.string.action_fix)) }
             }
         }

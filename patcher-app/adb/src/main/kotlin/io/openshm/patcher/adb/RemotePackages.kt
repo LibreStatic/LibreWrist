@@ -4,7 +4,7 @@ package io.openshm.patcher.adb
 data class PackageVersion(val versionCode: Long, val versionName: String?)
 
 /** Parsers for `pm` and `dumpsys` output. Pure functions, tested without a device. */
-internal object PmParsers {
+object PmParsers {
     /**
      * Parses `pm list packages [-f]` output. Accepts `package:name` and `package:/path.apk=name`.
      */
@@ -37,7 +37,7 @@ internal object PmParsers {
     }
 }
 
-internal object Names {
+object Names {
     private val PACKAGE = Regex("[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z][A-Za-z0-9_]*)+")
 
     fun isPackage(value: String) = PACKAGE.matches(value)
