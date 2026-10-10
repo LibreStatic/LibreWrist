@@ -2,7 +2,7 @@ package io.openshm.patcher.ui.screens.install
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.openshm.patcher.data.BundledCatalogue
+import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.Device
 import io.openshm.patcher.data.SetupSession
 import io.openshm.patcher.ui.components.CheckStatus
@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
  */
 internal fun installItemsFor(device: Device): List<InstallItem> {
     val session = SetupSession.state.value
-    return BundledCatalogue.outputs
+    return AppCatalogue.current.outputs
         .filter { it.device == device && it.id in session.watchProfile.outputIds }
         .map { out ->
             InstallItem(
@@ -27,7 +27,7 @@ internal fun installItemsFor(device: Device): List<InstallItem> {
                 label = out.label,
                 packageName = out.packageName(session.packagePrefix),
                 status = CheckStatus.Pending,
-                grants = BundledCatalogue.grants[out.id].orEmpty().map { GrantRow(it, CheckStatus.Pending) },
+                grants = AppCatalogue.current.grants[out.id].orEmpty().map { GrantRow(it, CheckStatus.Pending) },
             )
         }
 }

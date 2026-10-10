@@ -2,8 +2,10 @@ package io.openshm.patcher.preview
 
 import android.content.res.Configuration
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.ui.theme.PatcherTheme
 
 /** The two palettes every screen is checked with: wallpaper-derived and the canvas fallback. */
@@ -27,5 +29,7 @@ internal const val PHONE = "spec:width=412dp,height=915dp,dpi=420"
 
 @Composable
 internal fun PreviewHost(mode: ColorMode, content: @Composable () -> Unit) {
+    // IDE previews have no PatcherApplication; under Robolectric / the device it is already installed.
+    AppCatalogue.ensure(LocalContext.current)
     PatcherTheme(dynamicColor = mode == ColorMode.Dynamic, content = content)
 }

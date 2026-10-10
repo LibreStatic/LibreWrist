@@ -104,6 +104,10 @@
     <string name="acquire_use_file">Use a file I already have</string>
     <string name="acquire_downloading">Downloading…  %1$d%% · %2$d of %3$d MB</string>
     <string name="acquire_verified">Matches the expected file · %1$d MB</string>
+    <string name="acquire_rejected_wrong_app">That file is a different app. Pick the one named above.</string>
+    <string name="acquire_rejected_wrong_version">That file is a different version of the app than the expected one.</string>
+    <string name="acquire_rejected_not_expected">That file does not match the expected build (another variant, or damaged). Download it again.</string>
+    <string name="acquire_rejected_unreadable">That file could not be read.</string>
     <string name="acquire_verify_note">Each file is checked against a known checksum before it is used.</string>
     <plurals name="acquire_waiting">
         <item quantity="one">Waiting on %1$d app</item>
@@ -193,6 +197,12 @@
     <string name="patch_alarm_hide_launcher">Hides the extra launcher icon.</string>
     <string name="patch_alarm_relabel">Names the fork \"Phone alarms\".</string>
     <string name="patch_alarm_fork">Adds the module that links alarms to the phone.</string>
+    <string name="output_shm_phone">Samsung Health Monitor (patched)</string>
+    <string name="output_shm_watch">Samsung Health Monitor for Wear OS (patched)</string>
+    <string name="output_bridge_watch">Bridge for the watch</string>
+    <string name="output_alarm_fork">Phone alarms on the watch</string>
+    <string name="output_bridge_phone">Bridge for the phone</string>
+    <string name="stock_label_shm">Samsung Health Monitor (stock)</string>
     <string name="stock_reason_shm">Two copies of the app would compete for the same sensor.</string>
 
     <!-- Build -->

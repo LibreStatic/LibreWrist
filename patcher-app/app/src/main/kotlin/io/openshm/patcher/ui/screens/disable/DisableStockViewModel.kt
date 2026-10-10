@@ -1,7 +1,7 @@
 package io.openshm.patcher.ui.screens.disable
 
 import androidx.lifecycle.ViewModel
-import io.openshm.patcher.data.BundledCatalogue
+import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.Device
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,7 +19,7 @@ internal fun DisableStockUiState.reduce(event: DisableStockEvent): DisableStockU
 class DisableStockViewModel : ViewModel() {
     private val _state = MutableStateFlow(
         DisableStockUiState(
-            choices = BundledCatalogue.stockAppsToDisable
+            choices = AppCatalogue.current.stockAppsToDisable
                 .filter { it.device == Device.Watch }
                 .map { StockAppChoice(it, selected = !it.optional) },
         ),

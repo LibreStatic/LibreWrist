@@ -1,7 +1,7 @@
 package io.openshm.patcher.ui.screens.customize
 
 import androidx.lifecycle.ViewModel
-import io.openshm.patcher.data.BundledCatalogue
+import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.PackagePrefix
 import io.openshm.patcher.data.SessionState
 import io.openshm.patcher.data.SetupSession
@@ -12,12 +12,12 @@ import kotlinx.coroutines.flow.asStateFlow
 /** Builds the screen state from the profile and prefix chosen earlier. Every catalogue patch is required today. */
 internal fun customizeStateFor(session: SessionState): CustomizeUiState = CustomizeUiState(
     groups = session.watchProfile.inputIds.map { inputId ->
-        val input = BundledCatalogue.input(inputId)
+        val input = AppCatalogue.current.input(inputId)
         CustomizeGroup(
             inputId = inputId,
             label = input.label,
             device = input.device,
-            patches = BundledCatalogue.patches(inputId).map { CustomizePatch(it) },
+            patches = AppCatalogue.current.patches(inputId).map { CustomizePatch(it) },
         )
     },
     packagePrefix = session.packagePrefix,

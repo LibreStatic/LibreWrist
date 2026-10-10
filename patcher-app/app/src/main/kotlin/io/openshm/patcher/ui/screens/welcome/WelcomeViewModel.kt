@@ -1,7 +1,7 @@
 package io.openshm.patcher.ui.screens.welcome
 
 import androidx.lifecycle.ViewModel
-import io.openshm.patcher.data.BundledCatalogue
+import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.Device
 import io.openshm.patcher.data.SetupSession
 import io.openshm.patcher.data.WatchProfile
@@ -12,16 +12,16 @@ import kotlinx.coroutines.flow.update
 
 /** What the build installs, grants and turns off on each device, from the catalogue and the chosen prefix. */
 internal fun buildChanges(prefix: String, profile: WatchProfile): List<DeviceChanges> {
-    val outputs = BundledCatalogue.outputs.filter { it.id in profile.outputIds }
+    val outputs = AppCatalogue.current.outputs.filter { it.id in profile.outputIds }
     return Device.entries.map { device ->
         val onDevice = outputs.filter { it.device == device }
         DeviceChanges(
             device = device,
             installs = onDevice.map { ChangeLine(it.label, it.packageName(prefix)) },
             grants = onDevice.flatMap { out ->
-                BundledCatalogue.grants[out.id].orEmpty().map { ChangeLine(it.name, out.packageName(prefix)) }
+                AppCatalogue.current.grants[out.id].orEmpty().map { ChangeLine(it.name, out.packageName(prefix)) }
             },
-            disables = BundledCatalogue.stockAppsToDisable
+            disables = AppCatalogue.current.stockAppsToDisable
                 .filter { it.device == device }
                 .map { ChangeLine(it.label, it.packageName) },
         )

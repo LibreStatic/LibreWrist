@@ -1,7 +1,7 @@
 package io.openshm.patcher.ui.screens.home
 
 import androidx.lifecycle.ViewModel
-import io.openshm.patcher.data.BundledCatalogue
+import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.SetupSession
 import io.openshm.patcher.ui.components.CheckStatus
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,7 +31,7 @@ class HomeViewModel : ViewModel() {
         val session = SetupSession.state.value
         return HomeUiState(
             status = HomeStatus(CheckStatus.Passed, daysAgo = 0),
-            builds = BundledCatalogue.outputs
+            builds = AppCatalogue.current.outputs
                 .filter { it.id in session.watchProfile.outputIds }
                 .map { InstalledBuild(it.id, it.label, it.packageName(session.packagePrefix), it.device) },
         )

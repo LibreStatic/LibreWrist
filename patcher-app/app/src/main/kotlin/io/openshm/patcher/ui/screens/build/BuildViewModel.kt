@@ -2,7 +2,7 @@ package io.openshm.patcher.ui.screens.build
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.openshm.patcher.data.BundledCatalogue
+import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.SetupSession
 import io.openshm.patcher.ui.components.CheckStatus
 import kotlinx.coroutines.delay
@@ -29,10 +29,10 @@ internal fun builtOutputs(): BuildDoneUiState {
     val session = SetupSession.state.value
     val profile = session.watchProfile
     return BuildDoneUiState(
-        outputs = BundledCatalogue.outputs.filter { it.id in profile.outputIds }.map {
+        outputs = AppCatalogue.current.outputs.filter { it.id in profile.outputIds }.map {
             BuiltOutput(it.id, it.label, it.device, it.packageName(session.packagePrefix), sizeBytes = 0L)
         },
-        patchCount = BundledCatalogue.patternCount(profile.inputIds),
+        patchCount = AppCatalogue.current.patternCount(profile.inputIds),
     )
 }
 
@@ -41,7 +41,7 @@ internal fun builtOutputs(): BuildDoneUiState {
  * patch, rename, rebuild, sign, self-check) replaces [run] and reports the same [BuildStage]s.
  */
 class BuildViewModel : ViewModel() {
-    private val patchCount = BundledCatalogue.patternCount(SetupSession.state.value.watchProfile.inputIds)
+    private val patchCount = AppCatalogue.current.patternCount(SetupSession.state.value.watchProfile.inputIds)
     private val _state = MutableStateFlow(BuildUiState(patchCount = patchCount))
     val state: StateFlow<BuildUiState> = _state.asStateFlow()
 

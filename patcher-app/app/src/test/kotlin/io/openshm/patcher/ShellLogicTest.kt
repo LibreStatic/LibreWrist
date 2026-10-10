@@ -1,6 +1,6 @@
 package io.openshm.patcher
 
-import io.openshm.patcher.data.BundledCatalogue
+import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.PackagePrefix
 import io.openshm.patcher.data.SessionState
 import io.openshm.patcher.data.WatchProfile
@@ -10,13 +10,13 @@ import io.openshm.patcher.ui.screens.customize.CustomizeEvent
 import io.openshm.patcher.ui.screens.customize.customizeStateFor
 import io.openshm.patcher.ui.screens.customize.reduce
 import io.openshm.patcher.ui.theme.isReducedMotion
-import java.io.File
 import java.util.Random
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 
 class PackagePrefixTest {
@@ -65,6 +65,8 @@ class SetupFlowTest {
 }
 
 class CustomizeStateTest {
+    @Before fun catalogue() = TestCatalogue.install()
+
     private val session = SessionState(watchProfile = WatchProfile.WearOs5, packagePrefix = "io.openshm.u3fa91c")
 
     @Test
@@ -73,7 +75,7 @@ class CustomizeStateTest {
         assertEquals(3, s.appCount)
         assertEquals(0, s.optionalCount)
         assertFalse(s.showPresets)
-        val expected = BundledCatalogue.patchSets
+        val expected = AppCatalogue.current.patchSets
             .filter { it.inputId in session.watchProfile.inputIds }
             .sumOf { it.patches.size }
         assertEquals(expected, s.enabledPatchCount)
@@ -112,22 +114,5 @@ class CustomizeStateTest {
         val s = customizeStateFor(session).reduce(CustomizeEvent.RegeneratePrefix) { "io.openshm.uabcdef" }
         assertEquals("io.openshm.uabcdef", s.packagePrefix)
         assertNull(s.prefixProblem)
-    }
-}
-
-/** Keeps the bundled catalogue constants honest against the repository catalogue. */
-class CatalogueDriftTest {
-    private val json: String? = listOf("../../catalogue/catalogue.json", "../catalogue/catalogue.json")
-        .map(::File).firstOrNull { it.isFile }?.readText()
-
-    @Test
-    fun inputsMatchTheRepositoryCatalogue() {
-        val text = json ?: return // building outside the repository checkout
-        assertTrue(text.contains("\"serial\": ${BundledCatalogue.SERIAL}"))
-        BundledCatalogue.inputs.forEach { input ->
-            assertTrue("sha256 of ${input.id}", text.contains("\"sha256\": \"${input.sha256}\""))
-            assertTrue("version of ${input.id}", text.contains("\"versionName\": \"${input.versionName}\""))
-            assertTrue("package of ${input.id}", text.contains("\"package\": \"${input.packageName}\""))
-        }
     }
 }

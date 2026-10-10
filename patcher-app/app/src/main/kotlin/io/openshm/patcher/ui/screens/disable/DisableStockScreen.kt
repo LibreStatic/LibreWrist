@@ -102,7 +102,7 @@ fun DisableStockScreen(
                             Text(choice.app.label, style = MaterialTheme.typography.titleSmall)
                             PackageId(choice.app.packageName)
                             Text(
-                                stringResource(choice.app.reason),
+                                choice.app.reason,
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )

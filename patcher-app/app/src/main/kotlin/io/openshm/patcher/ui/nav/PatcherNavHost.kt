@@ -1,5 +1,7 @@
 package io.openshm.patcher.ui.nav
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -16,7 +18,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import io.openshm.patcher.R
-import io.openshm.patcher.data.BundledCatalogue
+import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.ui.screens.acquire.AcquireEvent
 import io.openshm.patcher.ui.screens.acquire.AcquireScreen
 import io.openshm.patcher.ui.screens.acquire.AcquireViewModel
@@ -97,6 +99,10 @@ fun PatcherNavHost(
         composable(Route.Acquire.path) {
             val vm: AcquireViewModel = viewModel()
             val state by vm.state.collectAsStateWithLifecycle()
+            val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument(), vm::onFilePicked)
+            LaunchedEffect(vm) {
+                vm.pickRequests.collect { picker.launch(arrayOf(APK_MIME, "application/octet-stream")) }
+            }
             AcquireScreen(
                 state,
                 onEvent = { event ->
@@ -186,7 +192,7 @@ fun PatcherNavHost(
 @Composable
 private fun GuidedBrowserDestination(entry: NavBackStackEntry, navController: NavHostController) {
     val inputId = requireNotNull(entry.arguments?.getString(Route.INPUT_ID_ARG))
-    val input = BundledCatalogue.input(inputId)
+    val input = AppCatalogue.current.input(inputId)
     val acquire: AcquireViewModel = viewModel(navController.getBackStackEntry(Route.Acquire.path))
     // The coach step follows the WebView's page once the platform layer provides it; the shell shows
     // the variant-picking step, the one people get stuck on.
@@ -215,6 +221,8 @@ private fun GuidedBrowserDestination(entry: NavBackStackEntry, navController: Na
         },
     )
 }
+
+private const val APK_MIME = "application/vnd.android.package-archive"
 
 private fun coachTitle(step: Int) = when (step) {
     1 -> R.string.browser_coach_1_title

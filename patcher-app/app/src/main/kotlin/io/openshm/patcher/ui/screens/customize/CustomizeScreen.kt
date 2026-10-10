@@ -186,7 +186,7 @@ private fun PatchRow(index: Int, count: Int, patch: CustomizePatch, onToggle: ()
             Column(Modifier.weight(1f)) {
                 Text(patch.info.title, style = MaterialTheme.typography.titleSmall)
                 Text(
-                    stringResource(patch.info.description),
+                    patch.info.description,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

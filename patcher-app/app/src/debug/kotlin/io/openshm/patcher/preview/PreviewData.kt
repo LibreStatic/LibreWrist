@@ -1,6 +1,6 @@
 package io.openshm.patcher.preview
 
-import io.openshm.patcher.data.BundledCatalogue
+import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.Device
 import io.openshm.patcher.data.SessionState
 import io.openshm.patcher.data.WatchProfile
@@ -72,19 +72,19 @@ internal object PreviewData {
 
     fun acquire() = AcquireUiState(
         listOf(
-            AcquireCard(BundledCatalogue.input("shm-phone"), AcquireProgress.Verified(91 * MB)),
-            AcquireCard(BundledCatalogue.input("shm-watch"), AcquireProgress.Downloading(58 * MB, 91 * MB)),
-            AcquireCard(BundledCatalogue.input("alarm-watch")),
+            AcquireCard(AppCatalogue.current.input("shm-phone"), AcquireProgress.Verified(91 * MB)),
+            AcquireCard(AppCatalogue.current.input("shm-watch"), AcquireProgress.Downloading(58 * MB, 91 * MB)),
+            AcquireCard(AppCatalogue.current.input("alarm-watch")),
         ),
     )
 
     fun acquireAllVerified() = AcquireUiState(
-        BundledCatalogue.inputs.map { AcquireCard(it, AcquireProgress.Verified(40 * MB)) },
+        AppCatalogue.current.inputs.map { AcquireCard(it, AcquireProgress.Verified(40 * MB)) },
     )
 
     fun guidedBrowser() = GuidedBrowserUiState(
         host = "www.apkmirror.com",
-        appLabel = BundledCatalogue.input("shm-watch").label,
+        appLabel = AppCatalogue.current.input("shm-watch").label,
         coachStep = 2,
         coachTotal = 3,
         coachTitle = "Pick the variant",
@@ -94,26 +94,26 @@ internal object PreviewData {
     fun customize(): CustomizeUiState = customizeStateFor(session)
 
     fun build(stage: BuildStage = BuildStage.Apply) =
-        BuildUiState(patchCount = BundledCatalogue.patternCount(WatchProfile.WearOs5.inputIds)).startStage(stage)
+        BuildUiState(patchCount = AppCatalogue.current.patternCount(WatchProfile.WearOs5.inputIds)).startStage(stage)
 
     fun buildFinished() =
-        BuildUiState(patchCount = BundledCatalogue.patternCount(WatchProfile.WearOs5.inputIds)).finish()
+        BuildUiState(patchCount = AppCatalogue.current.patternCount(WatchProfile.WearOs5.inputIds)).finish()
 
     fun buildDone() = BuildDoneUiState(
-        outputs = BundledCatalogue.outputs.map {
+        outputs = AppCatalogue.current.outputs.map {
             BuiltOutput(it.id, it.label, it.device, it.packageName(PREFIX), sizeBytes = (30 + it.id.length * 3) * MB)
         },
-        patchCount = BundledCatalogue.patternCount(WatchProfile.WearOs5.inputIds),
+        patchCount = AppCatalogue.current.patternCount(WatchProfile.WearOs5.inputIds),
     )
 
     private fun installItems(device: Device, grantStatus: (Int) -> CheckStatus, itemStatus: (Int) -> CheckStatus) =
-        BundledCatalogue.outputs.filter { it.device == device }.mapIndexed { index, out ->
+        AppCatalogue.current.outputs.filter { it.device == device }.mapIndexed { index, out ->
             InstallItem(
                 outputId = out.id,
                 label = out.label,
                 packageName = out.packageName(PREFIX),
                 status = itemStatus(index),
-                grants = BundledCatalogue.grants[out.id].orEmpty().map { GrantRow(it, grantStatus(index)) },
+                grants = AppCatalogue.current.grants[out.id].orEmpty().map { GrantRow(it, grantStatus(index)) },
             )
         }
 
@@ -138,7 +138,7 @@ internal object PreviewData {
     fun devMode() = DevModeUiState()
 
     fun disableStock() = DisableStockUiState(
-        BundledCatalogue.stockAppsToDisable.filter { it.device == Device.Watch }.map { StockAppChoice(it, selected = true) },
+        AppCatalogue.current.stockAppsToDisable.filter { it.device == Device.Watch }.map { StockAppChoice(it, selected = true) },
     )
 
     fun selfTest(): SelfTestUiState {
@@ -155,8 +155,8 @@ internal object PreviewData {
 
     fun home(update: Boolean = true, restoreSheet: Boolean = false, menu: Boolean = false) = HomeUiState(
         status = HomeStatus(CheckStatus.Passed, daysAgo = 2),
-        update = if (update) UpdateOffer(BundledCatalogue.input("shm-watch").label, "1.5.1.022", "1.5.2.004") else null,
-        builds = BundledCatalogue.outputs.map { InstalledBuild(it.id, it.label, it.packageName(PREFIX), it.device) },
+        update = if (update) UpdateOffer(AppCatalogue.current.input("shm-watch").label, "1.5.1.022", "1.5.2.004") else null,
+        builds = AppCatalogue.current.outputs.map { InstalledBuild(it.id, it.label, it.packageName(PREFIX), it.device) },
         menuOpen = menu,
         restoreSheetVisible = restoreSheet,
     )

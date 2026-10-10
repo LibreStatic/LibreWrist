@@ -1,13 +1,21 @@
 package io.openshm.patcher.ui.screens.acquire
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import android.net.Uri
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import io.openshm.patcher.data.BundledCatalogue
+import io.openshm.patcher.R
+import io.openshm.patcher.data.AppCatalogue
+import io.openshm.patcher.data.ImportResult
+import io.openshm.patcher.data.InputStore
+import io.openshm.patcher.data.RejectReason
 import io.openshm.patcher.data.SetupSession
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -20,44 +28,68 @@ internal fun AcquireUiState.reduce(event: AcquireEvent): AcquireUiState = when (
     is AcquireEvent.OpenMirror -> this
 }
 
+internal fun RejectReason.messageRes(): Int = when (this) {
+    RejectReason.WrongApp -> R.string.acquire_rejected_wrong_app
+    RejectReason.WrongVersion -> R.string.acquire_rejected_wrong_version
+    RejectReason.NotExpectedFile -> R.string.acquire_rejected_not_expected
+    RejectReason.Unreadable -> R.string.acquire_rejected_unreadable
+}
+
 /**
- * Shell-stage view model. Choosing a file runs a simulated transfer so the
- * flow can be walked end to end; the real file picker and SHA-256 check replace
- * [simulateTransfer] when the platform layer lands (the screen state does not change).
+ * Cards for the inputs the chosen watch needs. "Use a file I already have" asks the screen to open the
+ * document picker ([pickRequests]); the chosen file is streamed, hashed and checked against the
+ * catalogue by [InputStore].
  */
-class AcquireViewModel : ViewModel() {
-    private val _state = MutableStateFlow(
-        AcquireUiState(
-            SetupSession.state.value.watchProfile.inputIds.map { AcquireCard(BundledCatalogue.input(it)) },
-        ),
-    )
+class AcquireViewModel(application: Application) : AndroidViewModel(application) {
+    private val store = InputStore(application)
+    private val _state = MutableStateFlow(AcquireUiState(emptyList()))
     val state: StateFlow<AcquireUiState> = _state.asStateFlow()
+
+    private val picks = Channel<String>(Channel.BUFFERED)
+
+    /** Input ids for which the screen should open the document picker. */
+    val pickRequests: Flow<String> = picks.receiveAsFlow()
+
+    private var pendingPick: String? = null
+
+    init {
+        _state.value = AcquireUiState(
+            SetupSession.state.value.watchProfile.inputIds.map { id ->
+                val input = AppCatalogue.current.input(id)
+                AcquireCard(input, store.verifiedSize(input)?.let { AcquireProgress.Verified(it) } ?: AcquireProgress.Missing)
+            },
+        )
+    }
 
     fun onEvent(event: AcquireEvent) {
         _state.update { it.reduce(event) }
-        when (event) {
-            is AcquireEvent.UseFile -> simulateTransfer(event.inputId)
-            else -> Unit
+        if (event is AcquireEvent.UseFile) {
+            pendingPick = event.inputId
+            picks.trySend(event.inputId)
         }
     }
 
-    private fun simulateTransfer(inputId: String) {
+    /** The picker's result; null when the user backed out. */
+    fun onFilePicked(uri: Uri?) {
+        val inputId = pendingPick ?: return
+        pendingPick = null
+        if (uri == null) return
+        val input = AppCatalogue.current.input(inputId)
         viewModelScope.launch {
-            for (step in 0..STEPS) {
-                _state.update { s ->
-                    s.updateCard(inputId) {
-                        it.copy(progress = AcquireProgress.Downloading(step * STUB_TOTAL_BYTES / STEPS, STUB_TOTAL_BYTES))
-                    }
-                }
-                delay(STEP_DELAY_MS)
+            _state.update { s -> s.updateCard(inputId) { it.copy(progress = AcquireProgress.Downloading(0, 0)) } }
+            val result = store.import(input, uri) { done, total ->
+                _state.update { s -> s.updateCard(inputId) { it.copy(progress = AcquireProgress.Downloading(done, total)) } }
             }
-            _state.update { s -> s.updateCard(inputId) { it.copy(progress = AcquireProgress.Verified(STUB_TOTAL_BYTES)) } }
+            _state.update { s ->
+                s.updateCard(inputId) {
+                    it.copy(
+                        progress = when (result) {
+                            is ImportResult.Verified -> AcquireProgress.Verified(result.sizeBytes)
+                            is ImportResult.Rejected -> AcquireProgress.Rejected(result.reason.messageRes())
+                        },
+                    )
+                }
+            }
         }
-    }
-
-    private companion object {
-        const val STEPS = 10
-        const val STEP_DELAY_MS = 150L
-        const val STUB_TOTAL_BYTES = 64L * 1024 * 1024
     }
 }

@@ -1,9 +1,10 @@
 package io.openshm.patcher.data
 
+import android.content.Context
+import android.content.SharedPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 
 /** The choice made on the Profile screen: which watch the user has decides which inputs are needed. */
 enum class WatchProfile(val inputIds: List<String>) {
@@ -15,7 +16,7 @@ enum class WatchProfile(val inputIds: List<String>) {
     ;
 
     val outputIds: List<String>
-        get() = BundledCatalogue.outputs
+        get() = AppCatalogue.current.outputs
             .filter { out -> out.inputId == null || out.inputId in inputIds }
             .map { it.id }
 }
@@ -28,12 +29,51 @@ data class SessionState(
 )
 
 /**
- * In-memory selections that later screens read (profile, prefix). Shell-stage holder: it is
- * replaced by the persisted setup store when the engine and ADB layers are wired in.
+ * The selections that later screens read (profile, prefix). Persisted in SharedPreferences once
+ * [init] has run (the app does it in `PatcherApplication`); purely in-memory before that, which is
+ * what unit tests see.
  */
 object SetupSession {
+    private const val PREFS = "setup"
+    private const val KEY_PROFILE = "watchProfile"
+    private const val KEY_PREFIX = "packagePrefix"
+    private const val KEY_LOCKED = "prefixLocked"
+
     private val _state = MutableStateFlow(SessionState())
     val state: StateFlow<SessionState> = _state.asStateFlow()
 
-    fun update(transform: (SessionState) -> SessionState) = _state.update(transform)
+    private var prefs: SharedPreferences? = null
+
+    /** Loads the stored setup; a first run stores the freshly generated prefix so it stays stable. */
+    @Synchronized
+    fun init(context: Context) {
+        val p = context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        val locked = p.getBoolean(KEY_LOCKED, false)
+        // A locked prefix is kept even if the validation rules changed: installed apps depend on it.
+        val stored = p.getString(KEY_PREFIX, null)?.takeIf { locked || PackagePrefix.validate(it) == null }
+        val loaded = SessionState(
+            watchProfile = WatchProfile.entries.firstOrNull { it.name == p.getString(KEY_PROFILE, null) }
+                ?: SessionState().watchProfile,
+            packagePrefix = stored ?: PackagePrefix.generate(),
+            prefixLocked = locked && stored != null,
+        )
+        prefs = p
+        _state.value = loaded
+        persist(p, loaded)
+    }
+
+    @Synchronized
+    fun update(transform: (SessionState) -> SessionState) {
+        val next = transform(_state.value)
+        _state.value = next
+        prefs?.let { persist(it, next) }
+    }
+
+    private fun persist(p: SharedPreferences, s: SessionState) {
+        p.edit()
+            .putString(KEY_PROFILE, s.watchProfile.name)
+            .putString(KEY_PREFIX, s.packagePrefix)
+            .putBoolean(KEY_LOCKED, s.prefixLocked)
+            .apply()
+    }
 }
