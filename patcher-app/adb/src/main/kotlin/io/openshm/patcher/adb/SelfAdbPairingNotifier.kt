@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
  */
 data class SelfAdbTexts(
     val channelName: String = "Pairing with this phone",
+    val codeChannelName: String = "Pairing code",
     val waitingForService: String = "Open Developer options, Wireless debugging, Pair device with pairing code",
     val enterCodeTitle: String = "Enter the pairing code",
     val enterCodeBody: String = "Type the six-digit code shown on the pairing screen.",
@@ -38,6 +39,11 @@ data class SelfAdbTexts(
  * Self-ADB (Shizuku-style): lets the user pair the phone with its own Wireless debugging by typing
  * the code into a notification, because the system pairing dialog disappears when the app's
  * activity is shown. Hooks: [session] for state, [SelfAdbPairingReceiver] for the typed code.
+ *
+ * Progress goes to a quiet notification. The moment discovery sees the pairing service (that is,
+ * the user opened "Pair device with pairing code"), a separate high-importance notification pops
+ * up as a heads-up over the pairing dialog with an inline reply, so the code can be typed without
+ * leaving it. A wrong code pops it up again.
  *
  * Needs the `POST_NOTIFICATIONS` runtime permission on Android 13+ (the app requests it). The
  * session is only as long-lived as the process: run it from a foreground service while pairing.
@@ -68,8 +74,13 @@ class SelfAdbPairingNotifier(
         ) {
             throw AdbException.Notifications("The notification permission is not granted")
         }
-        manager.createNotificationChannel(
-            NotificationChannel(CHANNEL_ID, texts.channelName, NotificationManager.IMPORTANCE_HIGH),
+        // Channel importance is fixed once created: the old single channel is replaced.
+        manager.deleteNotificationChannel(LEGACY_CHANNEL_ID)
+        manager.createNotificationChannels(
+            listOf(
+                NotificationChannel(CHANNEL_ID, texts.channelName, NotificationManager.IMPORTANCE_LOW),
+                NotificationChannel(CODE_CHANNEL_ID, texts.codeChannelName, NotificationManager.IMPORTANCE_HIGH),
+            ),
         )
         current = this
         session.start()
@@ -81,6 +92,7 @@ class SelfAdbPairingNotifier(
         renderJob?.cancel()
         session.stop()
         manager.cancel(NOTIFICATION_ID)
+        manager.cancel(CODE_NOTIFICATION_ID)
         if (current === this) current = null
     }
 
@@ -91,6 +103,21 @@ class SelfAdbPairingNotifier(
     }
 
     private fun render(state: SelfAdbState) {
+        if (state is SelfAdbState.WaitingForCode) {
+            // Not "only alert once": every prompt, including the retry after a wrong code, must
+            // show as a heads-up over the pairing dialog.
+            val prompt = Notification.Builder(appContext, CODE_CHANNEL_ID)
+                .setSmallIcon(smallIconRes)
+                .setCategory(Notification.CATEGORY_MESSAGE)
+                .setContentTitle(texts.enterCodeTitle)
+                .setContentText(if (state.lastFailure == null) texts.enterCodeBody else texts.wrongCode)
+                .setOngoing(true)
+                .addAction(replyAction())
+            manager.cancel(NOTIFICATION_ID)
+            manager.notify(CODE_NOTIFICATION_ID, prompt.build())
+            return
+        }
+        manager.cancel(CODE_NOTIFICATION_ID)
         val builder = Notification.Builder(appContext, CHANNEL_ID)
             .setSmallIcon(smallIconRes)
             .setOnlyAlertOnce(true)
@@ -101,12 +128,7 @@ class SelfAdbPairingNotifier(
             }
             SelfAdbState.WaitingForPairingService ->
                 builder.setContentTitle(texts.enterCodeTitle).setContentText(texts.waitingForService).setOngoing(true)
-            is SelfAdbState.WaitingForCode -> {
-                builder.setContentTitle(texts.enterCodeTitle)
-                    .setContentText(if (state.lastFailure == null) texts.enterCodeBody else texts.wrongCode)
-                    .setOngoing(true)
-                    .addAction(replyAction())
-            }
+            is SelfAdbState.WaitingForCode -> return // posted above on its own channel
             SelfAdbState.AmbiguousService ->
                 builder.setContentTitle(texts.failed).setContentText(texts.ambiguous).setOngoing(true)
             SelfAdbState.Pairing -> builder.setContentTitle(texts.pairing).setOngoing(true)
@@ -136,8 +158,11 @@ class SelfAdbPairingNotifier(
     companion object {
         const val ACTION_PAIR = "io.openshm.patcher.adb.action.SELF_ADB_PAIR"
         const val KEY_CODE = "io.openshm.patcher.adb.extra.PAIRING_CODE"
-        const val CHANNEL_ID = "openshm_self_adb"
+        const val CHANNEL_ID = "openshm_self_adb_status"
+        const val CODE_CHANNEL_ID = "openshm_self_adb_code"
+        private const val LEGACY_CHANNEL_ID = "openshm_self_adb"
         private const val NOTIFICATION_ID = 0x5e1f
+        private const val CODE_NOTIFICATION_ID = 0x5e20
 
         /** The active notifier, so the manifest-registered receiver can reach it. */
         @Volatile

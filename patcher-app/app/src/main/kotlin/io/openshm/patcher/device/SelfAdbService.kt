@@ -105,6 +105,7 @@ class SelfAdbService : Service() {
 
     private fun texts() = SelfAdbTexts(
         channelName = getString(R.string.selfadb_channel),
+        codeChannelName = getString(R.string.selfadb_code_channel),
         waitingForService = getString(R.string.selfadb_waiting_service),
         enterCodeTitle = getString(R.string.selfadb_enter_code_title),
         enterCodeBody = getString(R.string.selfadb_enter_code_body),

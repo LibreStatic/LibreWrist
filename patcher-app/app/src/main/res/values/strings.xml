@@ -270,7 +270,7 @@
     <string name="phone_adb_title">Grant everything at once</string>
     <string name="phone_adb_intro">If the switches are in the way, this phone can grant them to itself over Wireless debugging. You need to be on Wi-Fi.</string>
     <string name="phone_adb_action">Grant everything with Wireless debugging</string>
-    <string name="phone_adb_waiting_service">Open Developer options, Wireless debugging, then Pair device with pairing code.</string>
+    <string name="phone_adb_waiting_service">In Wireless debugging, turn it on and tap Pair device with pairing code. A notification will pop up where you can type the code without leaving that screen.</string>
     <string name="phone_adb_waiting_code">Type the six-digit code shown on the pairing screen, here or in the notification.</string>
     <string name="phone_adb_wrong_code">That code did not work. Check the pairing screen and try again.</string>
     <string name="phone_adb_ambiguous">More than one Wireless debugging service was found on this phone. Turn Wireless debugging off and on, then try again.</string>
@@ -280,7 +280,8 @@
     <string name="phone_adb_code_label">Pairing code</string>
     <string name="phone_adb_submit">Pair</string>
     <string name="selfadb_channel">Pairing with this phone</string>
-    <string name="selfadb_waiting_service">Open Developer options, Wireless debugging, Pair device with pairing code</string>
+    <string name="selfadb_code_channel">Pairing code</string>
+    <string name="selfadb_waiting_service">In Wireless debugging, tap Pair device with pairing code</string>
     <string name="selfadb_enter_code_title">Enter the pairing code</string>
     <string name="selfadb_enter_code_body">Type the six-digit code shown on the pairing screen.</string>
     <string name="selfadb_reply_label">Pairing code</string>

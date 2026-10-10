@@ -119,6 +119,7 @@ class InstallPhoneViewModel(application: Application) : AndroidViewModel(applica
         if (_state.value.running || !SelfAdbController.begin()) return
         _state.update { it.copy(errorRes = null, errorDetail = null) }
         SelfAdbService.start(getApplication())
+        outgoing.trySend(PhoneSettings.wirelessDebugging())
     }
 
     /**

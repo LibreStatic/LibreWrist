@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Bundle
 import android.provider.Settings
 import io.openshm.patcher.data.Grant
 import io.openshm.patcher.data.GrantKind
@@ -127,6 +128,23 @@ class AndroidPhoneProbe(context: Context) : PhoneProbe {
 data class LaunchRequest(val intent: Intent, val fallback: Intent? = null)
 
 object PhoneSettings {
+    /**
+     * Developer options scrolled to (and on most builds highlighting) the Wireless debugging entry,
+     * the same deep link Shizuku uses; plain Developer options where the extras are ignored.
+     */
+    fun wirelessDebugging(): LaunchRequest {
+        val target = Bundle().apply { putString(FRAGMENT_ARGS_KEY, WIRELESS_DEBUGGING_KEY) }
+        val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
+            .putExtra(FRAGMENT_ARGS_KEY, WIRELESS_DEBUGGING_KEY)
+            .putExtra(SHOW_FRAGMENT_ARGS, target)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        return LaunchRequest(intent, Intent(Settings.ACTION_SETTINGS))
+    }
+
+    private const val FRAGMENT_ARGS_KEY = ":settings:fragment_args_key"
+    private const val SHOW_FRAGMENT_ARGS = ":settings:show_fragment_args"
+    private const val WIRELESS_DEBUGGING_KEY = "toggle_adb_wireless"
+
     fun intentFor(target: SettingsTarget, pkg: String, listenerClass: String?): LaunchRequest {
         val details = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$pkg"))
         return when (target) {
