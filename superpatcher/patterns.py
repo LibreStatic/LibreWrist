@@ -338,11 +338,21 @@ def validate_catalogue(cat):
     return problems
 
 
+def no_duplicate_keys(pairs):
+    """json object_pairs_hook: reject duplicate keys, as the app's parser does."""
+    obj = {}
+    for k, v in pairs:
+        if k in obj:
+            raise CatalogueError([f'duplicate key {k!r}'])
+        obj[k] = v
+    return obj
+
+
 def load_catalogue(path=None):
     """Load and validate the catalogue (default catalogue/catalogue.json). Raises
     CatalogueError listing every problem."""
     with open(path or DEFAULT_CATALOGUE, encoding='utf-8') as f:
-        cat = json.load(f)
+        cat = json.load(f, object_pairs_hook=no_duplicate_keys)
     problems = validate_catalogue(cat)
     if problems:
         raise CatalogueError(problems)

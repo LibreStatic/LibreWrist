@@ -213,6 +213,10 @@ class InstallSection(unittest.TestCase):
             del self.cat[k]
             self.assertRejected(f"missing top-level key '{k}'")
 
+    def test_duplicate_json_keys_are_rejected(self):
+        with self.assertRaises(P.CatalogueError):
+            json.loads('{"schema": 1, "schema": 2}', object_pairs_hook=P.no_duplicate_keys)
+
 
 @unittest.skipUnless(shutil.which('openssl'), 'openssl not installed')
 class SignRoundTrip(unittest.TestCase):

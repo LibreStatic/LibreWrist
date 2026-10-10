@@ -44,7 +44,7 @@ def render(cat):
 
 def load_raw(path=CATALOGUE):
     with open(path, encoding='utf-8') as f:
-        return json.load(f)
+        return json.load(f, object_pairs_hook=P.no_duplicate_keys)
 
 
 def write_catalogue(cat, path=CATALOGUE):
