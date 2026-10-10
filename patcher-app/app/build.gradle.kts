@@ -1,3 +1,5 @@
+import java.io.File
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -13,6 +15,28 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "0.1.0"
+    }
+    // The patcher's own fixed key, shared by every checkout (OPENSHM_KEYS_DIR, default
+    // ~/.local/share/openshm/keys, see config.env). Without it builds fall back to the SDK debug key.
+    val keysDir = System.getenv("OPENSHM_KEYS_DIR")?.takeIf { it.isNotBlank() }?.let(::File)
+        ?: File(System.getProperty("user.home"), ".local/share/openshm/keys")
+    val patcherStore = File(keysDir, "patcher.p12")
+    val patcherPass = File(keysDir, "patcher.pass")
+    val patcherSigning = if (patcherStore.isFile && patcherPass.isFile) {
+        signingConfigs.create("openshm") {
+            val password = patcherPass.readText().trim()
+            storeFile = patcherStore
+            storeType = "PKCS12"
+            storePassword = password
+            keyAlias = "patcher"
+            keyPassword = password
+        }
+    } else {
+        null
+    }
+    buildTypes {
+        getByName("debug") { patcherSigning?.let { signingConfig = it } }
+        getByName("release") { patcherSigning?.let { signingConfig = it } }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

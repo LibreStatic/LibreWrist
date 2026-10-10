@@ -7,7 +7,7 @@ import subprocess
 
 SHM_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 _KEYS = ('PKG_PREFIX', 'ANDROID_HOME', 'BUILD_TOOLS_VERSION', 'PLATFORM_API', 'APKTOOL_JAR',
-         'APKTOOL_HEAP', 'APKS_DIR', 'KEYSTORE', 'KEY_ALIAS', 'KS_PASS',
+         'APKTOOL_HEAP', 'APKS_DIR', 'KEYSTORE', 'KEY_ALIAS', 'KS_PASS_FILE',
          'WORK_DIR', 'DIST_DIR', 'CATALOGUE_KEY', 'PATCHER_CERT_SHA256')
 
 

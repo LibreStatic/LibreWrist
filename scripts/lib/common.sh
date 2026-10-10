@@ -7,7 +7,7 @@ export SHM_ROOT
 # shellcheck source=../../config.env
 source "$SHM_ROOT/config.env"
 export PKG_PREFIX ANDROID_HOME BUILD_TOOLS_VERSION PLATFORM_API APKTOOL_JAR APKTOOL_HEAP \
-       APKS_DIR KEYSTORE KEY_ALIAS KS_PASS WORK_DIR DIST_DIR PATCHER_CERT_SHA256
+       APKS_DIR KEYSTORE KEY_ALIAS KS_PASS_FILE WORK_DIR DIST_DIR PATCHER_CERT_SHA256
 
 BT="$ANDROID_HOME/build-tools/$BUILD_TOOLS_VERSION"
 PLATFORM_JAR="$ANDROID_HOME/platforms/android-$PLATFORM_API/android.jar"
@@ -33,13 +33,19 @@ apktool() {
   flock "$APKTOOL_LOCK" java "$APKTOOL_HEAP" -jar "$APKTOOL_JAR" "$@"
 }
 
-# Generate the local keystore if it does not exist (own key; never versioned).
+# Generate the signing keystore and its password file if the keystore does not exist (own key;
+# never versioned, kept outside the repo in OPENSHM_KEYS_DIR).
 ensure_keystore() {
-  [ -f "$KEYSTORE" ] && return 0
-  mkdir -p "$(dirname "$KEYSTORE")"
-  keytool -genkeypair -keystore "$KEYSTORE" -alias "$KEY_ALIAS" -keyalg RSA -keysize 2048 \
-    -validity 10000 -storepass "$KS_PASS" -keypass "$KS_PASS" \
-    -dname "CN=shm-interop local" >/dev/null 2>&1
+  if [ -f "$KEYSTORE" ]; then
+    [ -s "$KS_PASS_FILE" ] || die "missing keystore password file $KS_PASS_FILE"
+    return 0
+  fi
+  [ -e "$KS_PASS_FILE" ] && die "$KS_PASS_FILE exists without $KEYSTORE; refusing to overwrite it"
+  (umask 077 && mkdir -p "$(dirname "$KEYSTORE")" "$(dirname "$KS_PASS_FILE")" \
+    && openssl rand -base64 32 | tr -d '\n' > "$KS_PASS_FILE" \
+    && keytool -genkeypair -storetype PKCS12 -keystore "$KEYSTORE" -alias "$KEY_ALIAS" -keyalg RSA \
+      -keysize 3072 -sigalg SHA256withRSA -validity 10950 -storepass:file "$KS_PASS_FILE" \
+      -dname "CN=OpenSHM apps" >/dev/null 2>&1) || die "could not create $KEYSTORE"
   echo ">> new keystore: $KEYSTORE (alias $KEY_ALIAS)"
 }
 
@@ -50,7 +56,7 @@ sign_apk() {
   aligned="$(mktemp -p "$WORK_DIR" aligned-XXXXXX.apk)"
   "$BT/zipalign" -f 4 "$in" "$aligned"
   "$BT/apksigner" sign --ks "$KEYSTORE" --ks-key-alias "$KEY_ALIAS" \
-    --ks-pass "pass:$KS_PASS" --key-pass "pass:$KS_PASS" --out "$out" "$aligned"
+    --ks-pass "file:$KS_PASS_FILE" --out "$out" "$aligned"
   rm -f "$aligned"
 }
 

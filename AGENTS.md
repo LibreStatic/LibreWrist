@@ -23,7 +23,8 @@ on top of Health Tracking, alarm bridge over direct RFCOMM). See `README.md` and
   paths.
 - Build data and temporary files go in `WORK_DIR` (default `~/.cache/shm-interop`), never in `/tmp`,
   `/dev/shm` or the repo. apktool needs a lot of RAM: the scripts serialize it with a lock.
-- Never commit keystores, keys or tokens (`keys/` is ignored).
+- Never commit keystores, keys or tokens. Keys live outside the repo in `OPENSHM_KEYS_DIR`
+  (default `~/.local/share/openshm/keys`, see `config.env`); `keys/` stays ignored.
 - Patches: each one is a pattern anchored to the official APK, written as DATA in
   `catalogue/catalogue.json` (the engine, `superpatcher/engine.py` + `patterns.py`, interprets named
   ops; the catalogue never contains code) and the order lives in its `profiles`. Adding a patch =

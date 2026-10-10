@@ -242,7 +242,7 @@ are the three APKs only.
   - store it in a PKCS#12 file in app-private storage, wrapped by an Android Keystore AES key;
   - offer "Export signing key" (password-protected file via SAF) and "Import key", and nudge the
     user to export after the first successful build;
-  - allow importing the PC build's keystore (`keys/local.keystore`) so existing installs keep
+  - allow importing the PC build's keystore (`$OPENSHM_KEYS_DIR/apk-signing.p12`) so existing installs keep
     upgrading.
 - Never log key material. Never send it anywhere.
 

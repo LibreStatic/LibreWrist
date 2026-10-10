@@ -46,7 +46,7 @@ and can be overridden through environment variables. Our source code uses the pa
 `shminterop`; builds rewrite it to the chosen `PKG_PREFIX`.
 
 To upgrade already installed apps without losing data, sign with the **same** key and the **same**
-prefix as the previous install (`KEYSTORE`, `KEY_ALIAS`, `KS_PASS`, `PKG_PREFIX`).
+prefix as the previous install (`KEYSTORE`, `KEY_ALIAS`, `KS_PASS_FILE`, `PKG_PREFIX`).
 
 Step-by-step installation, pairing and known gotchas are in
 [docs/installation.md](docs/installation.md).
