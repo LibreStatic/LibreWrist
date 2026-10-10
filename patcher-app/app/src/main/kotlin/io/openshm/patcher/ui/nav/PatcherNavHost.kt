@@ -42,7 +42,6 @@ import io.openshm.patcher.ui.screens.customize.CustomizeScreen
 import io.openshm.patcher.ui.screens.customize.CustomizeViewModel
 import io.openshm.patcher.ui.screens.devmode.DevModeScreen
 import io.openshm.patcher.ui.screens.devmode.DevModeViewModel
-import io.openshm.patcher.ui.screens.disable.DisableStockEvent
 import io.openshm.patcher.ui.screens.disable.DisableStockScreen
 import io.openshm.patcher.ui.screens.disable.DisableStockViewModel
 import io.openshm.patcher.ui.screens.home.HomeEvent
@@ -102,7 +101,12 @@ fun PatcherNavHost(
         composable(Route.WatchPair.path) {
             val vm: WatchPairViewModel = viewModel()
             val state by vm.state.collectAsStateWithLifecycle()
-            LaunchedEffect(state.paired) { if (state.paired) next(Route.WatchPair) }
+            LaunchedEffect(state.paired) {
+                if (state.paired) {
+                    vm.onNavigated()
+                    next(Route.WatchPair)
+                }
+            }
             WatchPairScreen(state, vm::onEvent, onBack = back)
         }
         composable(Route.Acquire.path) {
@@ -170,12 +174,15 @@ fun PatcherNavHost(
         composable(Route.DisableStock.path) {
             val vm: DisableStockViewModel = viewModel()
             val state by vm.state.collectAsStateWithLifecycle()
+            LaunchedEffect(state.done) {
+                if (state.done) {
+                    vm.onNavigated()
+                    next(Route.DisableStock)
+                }
+            }
             DisableStockScreen(
                 state,
-                onEvent = { event ->
-                    vm.onEvent(event)
-                    if (event is DisableStockEvent.Disable) next(Route.DisableStock)
-                },
+                onEvent = vm::onEvent,
                 onSkip = { next(Route.DisableStock) },
                 onBack = back,
             )

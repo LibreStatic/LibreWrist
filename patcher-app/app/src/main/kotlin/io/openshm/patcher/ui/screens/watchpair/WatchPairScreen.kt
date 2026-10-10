@@ -52,7 +52,8 @@ data class WatchPairUiState(
     val prerequisitesDone: List<Boolean> = listOf(false, false, false, false),
 ) {
     val codeComplete: Boolean get() = code.length == PAIRING_CODE_LENGTH
-    val canPair: Boolean get() = codeComplete && !foundAddress.isNullOrBlank() && !pairing
+    val canPair: Boolean get() = codeComplete && !foundAddress.isNullOrBlank() && !pairing &&
+        parseAddress(foundAddress) != null
 }
 
 sealed interface WatchPairEvent {

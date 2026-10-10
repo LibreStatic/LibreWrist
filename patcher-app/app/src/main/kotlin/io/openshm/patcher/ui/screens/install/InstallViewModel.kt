@@ -1,11 +1,17 @@
 package io.openshm.patcher.ui.screens.install
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.openshm.patcher.build.BuildStorage
 import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.Device
 import io.openshm.patcher.data.SetupSession
+import io.openshm.patcher.device.AdbWatchDevice
+import io.openshm.patcher.device.WatchLink
 import io.openshm.patcher.ui.components.CheckStatus
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -43,8 +49,8 @@ internal fun InstallUiState.setItem(index: Int, status: CheckStatus, grantStatus
 )
 
 /**
- * Shell-stage view model shared by the phone and watch install screens: walks the list on a timer.
- * Package installs and grants through the platform installer and ADB replace [run].
+ * Shell-stage view model for the phone install screen: walks the list on a timer. Installs through
+ * the platform installer replace [run].
  */
 open class InstallViewModel(device: Device) : ViewModel() {
     private val _state = MutableStateFlow(InstallUiState(installItemsFor(device)))
@@ -77,4 +83,28 @@ open class InstallViewModel(device: Device) : ViewModel() {
 
 class InstallPhoneViewModel : InstallViewModel(Device.Phone)
 
-class InstallWatchViewModel : InstallViewModel(Device.Watch)
+/** Installs the built watch outputs over ADB and applies their grants; the work is in [WatchInstallRunner]. */
+class InstallWatchViewModel(application: Application) : AndroidViewModel(application) {
+    private val _state = MutableStateFlow(InstallUiState(installItemsFor(Device.Watch)))
+    val state: StateFlow<InstallUiState> = _state.asStateFlow()
+
+    private val runner = WatchInstallRunner(
+        device = AdbWatchDevice(WatchLink.get(application)),
+        build = { BuildStorage(application).record.read() },
+        prefix = { SetupSession.state.value.packagePrefix },
+        lockPrefix = { SetupSession.update { it.copy(prefixLocked = true) } },
+    )
+
+    fun onEvent(event: InstallEvent) {
+        when (event) {
+            InstallEvent.Start -> start()
+            is InstallEvent.OpenGrantSettings -> Unit
+        }
+    }
+
+    private fun start() {
+        if (_state.value.running) return
+        _state.update { it.copy(running = true) }
+        viewModelScope.launch(Dispatchers.IO) { runner.run(_state) }
+    }
+}

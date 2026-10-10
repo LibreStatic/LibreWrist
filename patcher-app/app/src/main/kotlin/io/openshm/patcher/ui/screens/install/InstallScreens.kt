@@ -4,9 +4,11 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -44,15 +46,21 @@ data class InstallItem(
     val packageName: String,
     val status: CheckStatus,
     val grants: List<GrantRow> = emptyList(),
+    /** 0..1 while the package is being sent to the device; null otherwise. */
+    val progress: Float? = null,
 )
 
 data class InstallUiState(
     val items: List<InstallItem> = emptyList(),
     val running: Boolean = false,
     @StringRes val errorRes: Int? = null,
+    /** Extra detail for [errorRes], such as the package manager's refusal code; shown as is. */
+    val errorDetail: String? = null,
 ) {
     val done: Boolean get() = items.isNotEmpty() && items.all { item ->
-        item.status == CheckStatus.Passed && item.grants.all { it.status != CheckStatus.Pending && it.status != CheckStatus.Running }
+        item.status == CheckStatus.Passed && item.grants.all {
+            it.status != CheckStatus.Pending && it.status != CheckStatus.Running && it.status != CheckStatus.Failed
+        }
     }
 }
 
@@ -136,7 +144,10 @@ private fun InstallStep(
         state.errorRes?.let {
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
                 StatusShape(CheckStatus.Failed, size = 24.dp)
-                Text(stringResource(it), style = MaterialTheme.typography.bodyMedium)
+                Column {
+                    Text(stringResource(it), style = MaterialTheme.typography.bodyMedium)
+                    state.errorDetail?.let { detail -> PackageId(detail, maxLines = 3) }
+                }
             }
         }
         state.items.forEach { item ->
@@ -146,7 +157,10 @@ private fun InstallStep(
                     GroupedItem(0, 1 + item.grants.size) {
                         Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
                             StatusShape(item.status)
-                            PackageId(item.packageName, maxLines = 2)
+                            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                PackageId(item.packageName, maxLines = 2)
+                                item.progress?.let { LinearProgressIndicator(progress = { it }, modifier = Modifier.fillMaxWidth()) }
+                            }
                         }
                     }
                     item.grants.forEachIndexed { i, row ->

@@ -1,5 +1,6 @@
 package io.openshm.patcher.ui.screens.disable
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import io.openshm.patcher.R
 import io.openshm.patcher.data.StockApp
 import io.openshm.patcher.ui.components.Accent
+import io.openshm.patcher.ui.components.CheckStatus
 import io.openshm.patcher.ui.components.GroupedItem
 import io.openshm.patcher.ui.components.GroupedSpacing
 import io.openshm.patcher.ui.components.InfoChip
@@ -29,13 +31,19 @@ import io.openshm.patcher.ui.components.PhoneWatchIllustration
 import io.openshm.patcher.ui.components.PrimaryAction
 import io.openshm.patcher.ui.components.QuietAction
 import io.openshm.patcher.ui.components.SetupStep
+import io.openshm.patcher.ui.components.StatusShape
 import io.openshm.patcher.ui.components.StepScreenScaffold
 
-data class StockAppChoice(val app: StockApp, val selected: Boolean)
+enum class StockOutcome { None, Running, Disabled, NotInstalled, Failed }
+
+data class StockAppChoice(val app: StockApp, val selected: Boolean, val outcome: StockOutcome = StockOutcome.None)
 
 data class DisableStockUiState(
     val choices: List<StockAppChoice> = emptyList(),
     val running: Boolean = false,
+    /** Every selected app is off or was not installed; the host moves on. */
+    val done: Boolean = false,
+    @StringRes val errorRes: Int? = null,
 ) {
     val selectedCount: Int get() = choices.count { it.selected }
 }
@@ -86,6 +94,12 @@ fun DisableStockScreen(
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+        state.errorRes?.let {
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
+                StatusShape(CheckStatus.Failed, size = 24.dp)
+                Text(stringResource(it), style = MaterialTheme.typography.bodyMedium)
+            }
+        }
         Column(verticalArrangement = GroupedSpacing) {
             state.choices.forEachIndexed { index, choice ->
                 GroupedItem(
@@ -107,7 +121,13 @@ fun DisableStockScreen(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
-                        if (choice.app.optional) InfoChip(stringResource(R.string.chip_optional))
+                        when (choice.outcome) {
+                            StockOutcome.Running -> StatusShape(CheckStatus.Running, size = 22.dp)
+                            StockOutcome.Disabled -> StatusShape(CheckStatus.Passed, size = 22.dp)
+                            StockOutcome.Failed -> StatusShape(CheckStatus.Failed, size = 22.dp)
+                            StockOutcome.NotInstalled -> InfoChip(stringResource(R.string.disable_chip_not_installed))
+                            StockOutcome.None -> if (choice.app.optional) InfoChip(stringResource(R.string.chip_optional))
+                        }
                     }
                 }
             }

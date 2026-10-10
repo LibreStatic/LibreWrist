@@ -95,6 +95,11 @@
     <string name="watchpair_ready">Ready to pair</string>
     <string name="watchpair_pair">Pair</string>
     <string name="watchpair_error_wrong_code">That code was not accepted. Check the watch and try again.</string>
+    <string name="watchpair_error_bad_address">Enter the address as host:port, for example 192.168.1.20:37115.</string>
+    <string name="watchpair_error_timeout">The watch did not answer in time. Keep the pairing code screen open and try again.</string>
+    <string name="watchpair_error_network">Could not reach the watch. Check that both devices are on the same Wi-Fi.</string>
+    <string name="watchpair_error_restart">The pairing key was reset. Close and reopen this app, then pair again.</string>
+    <string name="watchpair_error_other">Pairing failed. Open the pairing code screen on the watch again and retry.</string>
 
     <!-- Acquire -->
     <string name="acquire_title">Bring the official apps</string>
@@ -251,6 +256,12 @@
     <string name="install_watch_intro">Installed over Wi-Fi in this order: Health Monitor, the bridge, then phone alarms.</string>
     <string name="install_watch_note">The watch stays on and connected while this runs.</string>
     <string name="install_start">Start installing</string>
+    <string name="install_error_build_missing">The build is missing or does not match this setup. Build again, then install.</string>
+    <string name="install_error_failed">The watch refused the install.</string>
+    <string name="install_error_signature">A copy signed with a different key is already on the watch. Nothing was removed. Uninstall that copy yourself, then try again.</string>
+    <string name="install_error_grant">An access setting could not be applied.</string>
+    <string name="watch_error_unreachable">The watch is not reachable. Check that Wireless debugging is on and both devices share the same Wi-Fi.</string>
+    <string name="watch_error_pairing">The watch no longer trusts this phone. Go back and pair again.</string>
     <string name="grant_permission">Permission</string>
     <string name="grant_appop">App operation</string>
     <string name="grant_setting">System setting</string>
@@ -275,6 +286,8 @@
     <string name="disable_intro">Turning an app off hides it and stops it. You can turn it back on any time. Nothing is uninstalled.</string>
     <string name="disable_chip_installed">Watch app installed</string>
     <string name="disable_chip_wear">Wear OS</string>
+    <string name="disable_chip_not_installed">Not installed</string>
+    <string name="disable_error_some">Some apps could not be turned off. Try again, or skip this step.</string>
     <plurals name="disable_action">
         <item quantity="one">Turn off %1$d app</item>
         <item quantity="other">Turn off %1$d apps</item>
