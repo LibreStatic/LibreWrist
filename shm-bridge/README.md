@@ -130,8 +130,11 @@ r shell am broadcast --user 0 -n $P/.CommsDebugReceiver -a shminterop.shmbridge.
 ## Status provider (phone)
 
 `<prefix>.shmbridge.phone.status` (`StatusProvider`, exported) gives a read-only, single-row view of
-the bridge state for the patcher app. Reading requires the signature permission
-`<prefix>.shmbridge.permission.STATUS` (declared by the phone bridge); insert/update/delete throw
+the bridge state for the patcher app. `query` checks the caller itself: it must hold the signature
+permission `<prefix>.shmbridge.permission.STATUS` (declared by the phone bridge) or be signed with a
+certificate listed in that permission's `knownCerts` (see below). There is no
+`android:readPermission`, because the patcher app cannot request a permission whose name carries the
+per-user prefix. Other callers get a `SecurityException`; insert/update/delete throw
 `UnsupportedOperationException`. It never creates the hub nor starts the service or the link:
 without a hub it reports zeros and empty strings.
 
@@ -152,9 +155,14 @@ adb shell content query --uri content://shminterop.shmbridge.phone.status   # as
 **Patcher app signer.** The patcher app is signed with a different key than the bridge, so a plain
 `signature` permission would not match it. Set `PATCHER_CERT_SHA256` (64 hex characters, colons
 optional; `config.env`) when building: `build-bridge.sh` then declares the permission as
-`signature|knownSigner` with `android:knownCerts="<digest>"`. Empty (default) keeps plain
-`signature`. `knownSigner` only exists since API 31 and is ignored below it (the phone `minSdk` is
-29); there only apps signed with the bridge key qualify.
+`signature|knownSigner` with `android:knownCerts="<digest>"` and also writes the digest to the
+`<meta-data android:name="<prefix>.shmbridge.PATCHER_CERT">` inside the `<provider>` (empty in the
+source manifest). `StatusProvider` reads that meta-data from its own `ProviderInfo` and lets in a caller
+when `PackageManager.hasSigningCertificate(uid, digest, CERT_INPUT_SHA256)` holds (API 28+; the
+`knownCerts` getter is a hidden API); the patcher app's on-device builds do the same two edits. Empty
+(default) keeps plain `signature` and an empty meta-data, so only the bridge's own signature and the
+STATUS permission holders get in. The meta-data check also works on API 29-30, where `knownSigner`
+is ignored (the phone `minSdk` is 29).
 
 ## Alarm Fork (`shminterop.shmbridge.alarm`)
 
@@ -178,7 +186,8 @@ Both packages (`watch` and `alarm`) are signed with the same local keystore (`KE
 
 - With the watch paired through Galaxy Wearable, mirroring notifications and calls duplicates the
   native ones: that is why only `alarm` is mirrored by default.
-- `knownSigner` (see above) is ignored on Android 10 (API 29-30).
+- The `knownSigner` flag of the STATUS permission is ignored on Android 10 (API 29-30); the provider's
+  own `PATCHER_CERT` check does not depend on it.
 
 ## Layout
 

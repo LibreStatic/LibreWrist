@@ -46,11 +46,19 @@
                 <action android:name="android.service.notification.NotificationListenerService"/>
             </intent-filter>
         </service>
-        <!-- Read-only bridge status for the patcher app (signature permission, no side effects). -->
+        <!-- Read-only bridge status for the patcher app (no side effects). Access is checked in
+             StatusProvider against the STATUS permission and the PATCHER_CERT meta-data, not with
+             android:readPermission: the patcher app cannot request a permission whose name
+             carries a per-user prefix it only learns at build time.
+             PATCHER_CERT is the SHA-256 (64 lowercase hex characters) of the patcher app's signing
+             certificate. Empty here: scripts/build-bridge.sh and the patcher engine fill it in
+             when a digest is configured. Empty means no app outside the bridge's own signature
+             is let in. -->
         <provider android:name=".StatusProvider"
             android:authorities="shminterop.shmbridge.phone.status"
-            android:exported="true"
-            android:readPermission="shminterop.shmbridge.permission.STATUS"/>
+            android:exported="true">
+            <meta-data android:name="shminterop.shmbridge.PATCHER_CERT" android:value=""/>
+        </provider>
         <receiver android:name=".CommsBootReceiver" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>

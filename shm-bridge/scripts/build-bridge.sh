@@ -28,7 +28,9 @@ build_one() { # $1 = dir (watch|phone) $2 = minSdk $3 = targetSdk $4 = out apk
   if [ "$dir" = "phone" ] && [ -n "$PATCHER_CERT" ]; then
     # StatusProvider's read permission: `signature` -> `signature|knownSigner` + knownCerts, so the
     # patcher app (signed with a different key) can read it. knownSigner is ignored below API 31
-    # (the phone minSdk is 29): there only the bridge's own signature qualifies.
+    # (the phone minSdk is 29): there only the bridge's own signature qualifies. StatusProvider
+    # does not read knownCerts (hidden API): it gets the same digest from its PATCHER_CERT
+    # meta-data, which is filled in here as well and checked with hasSigningCertificate (API 28+).
     python3 - "$b/stage/AndroidManifest.xml" "$PATCHER_CERT" <<'PYEOF'
 import re, sys
 path, cert = sys.argv[1], sys.argv[2]
@@ -38,6 +40,10 @@ pat = re.compile(r'(<permission\b[^>]*android:name="[^"]*\.shmbridge\.permission
 s, n = pat.subn(r'\1android:protectionLevel="signature|knownSigner" android:knownCerts="' + cert + '"', s)
 if n != 1:
     sys.exit('STATUS permission not found in the staged phone manifest')
+meta = re.compile(r'(<meta-data\b[^>]*android:name="[^"]*\.shmbridge\.PATCHER_CERT"[^>]*?)android:value=""')
+s, n = meta.subn(r'\1android:value="' + cert + '"', s)
+if n != 1:
+    sys.exit('PATCHER_CERT meta-data not found in the staged phone manifest')
 open(path, 'w', encoding='utf-8').write(s)
 PYEOF
   fi

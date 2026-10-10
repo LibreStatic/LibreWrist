@@ -106,7 +106,7 @@ class OwnAppTest {
 
     // ------------------------------------------------------------------ own app
 
-    private fun manifestBytes(extraPermission: Boolean = false, level: String = "signature", withStatus: Boolean = true): ByteArray {
+    private fun manifestBytes(extraPermission: Boolean = false, level: String = "signature", withStatus: Boolean = true, metas: Int = 1): ByteArray {
         val b = AndroidManifestBlock.empty()
         b.packageName = "shminterop.shmbridge.phone"
         b.minSdkVersion = 29
@@ -117,7 +117,8 @@ class OwnAppTest {
         if (extraPermission) m.root.addChild("permission", listOf("android:name" to "x.shmbridge.permission.STATUS", "android:protectionLevel" to "signature"))
         val app = m.root.children.first { it.tag == "application" }
         app.addChild("activity", listOf("android:name" to "shminterop.shmbridge.phone.Main", "android:exported" to "true"))
-        app.addChild("provider", listOf("android:name" to "shminterop.shmbridge.phone.Status", "android:authorities" to "shminterop.shmbridge.phone.status"))
+        val provider = app.addChild("provider", listOf("android:name" to "shminterop.shmbridge.phone.Status", "android:authorities" to "shminterop.shmbridge.phone.status"))
+        repeat(metas) { provider.addChild("meta-data", listOf("android:name" to "shminterop.shmbridge.PATCHER_CERT", "android:value" to "")) }
         return m.toBytes()
     }
 
@@ -180,6 +181,9 @@ class OwnAppTest {
         OwnAppRequest(apk, outputId, prefix, cert, out, key, dir)
 
     private fun outManifest(out: File) = ZipReader(out).use { BinaryManifest(it.read("AndroidManifest.xml")) { null } }
+    private fun patcherCertMeta(m: BinaryManifest) = m.root.children.single { it.tag == "application" }
+        .children.single { it.tag == "provider" }.children.single { it.tag == "meta-data" }
+
     private fun permissionOf(m: BinaryManifest) = m.root.children.single { it.tag == "permission" }
 
     private fun assertFailure(part: String, body: () -> Unit) {
@@ -258,16 +262,20 @@ class OwnAppTest {
         assertEquals("signature|knownSigner", p.attr("android:protectionLevel"))
         assertEquals(digest, p.attr("android:knownCerts"))
         assertEquals("org.test.shmbridge.permission.STATUS", p.attr("android:name"))
+        assertEquals(digest, patcherCertMeta(outManifest(out)).attr("android:value"))
+        assertEquals("org.test.shmbridge.PATCHER_CERT", patcherCertMeta(outManifest(out)).attr("android:name"))
     }
 
     @Test fun knownSignerIsNotAppliedWithoutACertificate() {
         val out = File(dir, "out.apk")
         assertTrue(OwnAppBuilder(catalogue()).build(request(placeholderApk(), out)).ok)
         assertNull(permissionOf(outManifest(out)).attr("android:knownCerts"))
+        assertEquals("", patcherCertMeta(outManifest(out)).attr("android:value"))
     }
 
     @Test fun knownSignerNeedsExactlyOnePermission() {
-        for (manifest in listOf(manifestBytes(withStatus = false), manifestBytes(extraPermission = true), manifestBytes(level = "normal"))) {
+        for (manifest in listOf(manifestBytes(withStatus = false), manifestBytes(extraPermission = true), manifestBytes(level = "normal"),
+            manifestBytes(metas = 0), manifestBytes(metas = 2))) {
             val out = File(dir, "out.apk")
             val report = OwnAppBuilder(catalogue()).build(request(placeholderApk(manifest), out, cert = digest))
             assertFalse(report.ok)

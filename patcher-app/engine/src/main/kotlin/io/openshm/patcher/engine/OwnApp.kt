@@ -57,7 +57,8 @@ class OwnAppRequest(
     /**
      * SHA-256 of a signing certificate (64 lowercase hex characters). When set, the single
      * `*.shmbridge.permission.STATUS` permission becomes `signature|knownSigner` with this digest as
-     * `knownCerts`, so an app signed with that certificate may use it. Only for the phone bridge.
+     * `knownCerts`, so an app signed with that certificate may use it; the same digest is written to the provider's
+     * `PATCHER_CERT` meta-data, which `StatusProvider` checks. Only for the phone bridge.
      */
     val knownSignerCert: String? = null,
     val outputApk: File,
@@ -156,7 +157,7 @@ class OwnAppBuilder(private val catalogue: Catalogue) {
                     d.add("$n strings renamed")
                     req.knownSignerCert?.let {
                         applyKnownSigner(manifest, it)
-                        d.add("STATUS permission is signature|knownSigner for $it")
+                        d.add("STATUS permission is signature|knownSigner and PATCHER_CERT is set for $it")
                     }
                 }
                 val arsc = ArscResourceTable(zip.read(arscEntry))
@@ -247,6 +248,7 @@ class OwnAppBuilder(private val catalogue: Catalogue) {
     companion object {
         private val DIGEST_RE = Regex("^[0-9a-f]{64}$")
         private const val STATUS_SUFFIX = ".shmbridge.permission.STATUS"
+        private const val PATCHER_CERT_SUFFIX = ".shmbridge.PATCHER_CERT"
 
         private fun requireDigest(digest: String) {
             if (!DIGEST_RE.matches(digest)) throw PatchFailure("knownSigner certificate must be 64 lowercase hex characters")
@@ -254,7 +256,9 @@ class OwnAppBuilder(private val catalogue: Catalogue) {
 
         /**
          * `signature` -> `signature|knownSigner` plus `android:knownCerts` on the single permission
-         * named `*.shmbridge.permission.STATUS`; anything but exactly one match fails.
+         * named `*.shmbridge.permission.STATUS`; anything but exactly one match fails. The same digest
+         * goes into the `android:value` of the single `*.shmbridge.PATCHER_CERT` `<meta-data>` of the
+         * provider, which is what `StatusProvider` reads (the knownCerts getter is a hidden API).
          */
         internal fun applyKnownSigner(manifest: BinaryManifest, digest: String) {
             requireDigest(digest)
@@ -263,6 +267,13 @@ class OwnAppBuilder(private val catalogue: Catalogue) {
                     it.attr("android:protectionLevel") == "signature"
             }
             if (hits.size != 1) throw PatchFailure("expected exactly one signature permission *$STATUS_SUFFIX, found ${hits.size}")
+            val metas = manifest.root.children.filter { it.tag == "application" }
+                .flatMap { it.children }.filter { it.tag == "provider" }
+                .flatMap { it.children }.filter {
+                    it.tag == "meta-data" && it.attr("android:name")?.endsWith(PATCHER_CERT_SUFFIX) == true
+                }
+            if (metas.size != 1) throw PatchFailure("expected exactly one provider <meta-data> *$PATCHER_CERT_SUFFIX, found ${metas.size}")
+            metas[0].setAttr("android:value", digest)
             hits[0].setAttr("android:protectionLevel", "signature|knownSigner")
             hits[0].setAttr("android:knownCerts", digest)
         }

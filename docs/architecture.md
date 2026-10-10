@@ -42,9 +42,11 @@ receiver (`path=config`); see `shm-bridge/README.md`.
 
 ## Status provider (phone)
 
-The phone bridge exposes a read-only `ContentProvider`, `<prefix>.shmbridge.phone.status`, protected
-by the signature permission `<prefix>.shmbridge.permission.STATUS` (optionally also granted to the
-patcher app's certificate with `PATCHER_CERT_SHA256`). One row: service running, link up, watch
+The phone bridge exposes a read-only `ContentProvider`, `<prefix>.shmbridge.phone.status`, open to
+callers that hold the signature permission `<prefix>.shmbridge.permission.STATUS` or are signed with
+the certificate whose SHA-256 is in the provider's `<prefix>.shmbridge.PATCHER_CERT` meta-data (the
+patcher app's, set with `PATCHER_CERT_SHA256` by `build-bridge.sh` and by the on-device engine); the
+provider checks this in code with `hasSigningCertificate`. One row: service running, link up, watch
 `hello` received, peer and own capabilities, ms since the last received frame and the bridge
 `versionCode`. It never creates the hub or starts the link. Columns and details:
 [shm-bridge/README.md](../shm-bridge/README.md).
