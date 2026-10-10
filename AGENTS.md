@@ -53,3 +53,4 @@ launcher `patcher-app/gradlew` is a jar-free shell script (the repo carries no j
 JDK 17 (`JAVA_HOME=<jdk17> patcher-app/gradlew :engine:test`). Every shipped library needs a row
 in `patcher-app/THIRD_PARTY.md` before it is added. The app's own code lives in `io.openshm.patcher`;
 code injected into vendor APKs still uses the `shminterop` placeholder.
+To render a screen without an emulator (Compose Driver, dev-only, needs a JDK 21+): `JAVA_HOME=<jdk21+> patcher-app/tools/compose-driver/compose-driver.sh start WelcomeDriver`, then `tree` (semantics) and `shot <name>`, then `stop`; see `patcher-app/tools/compose-driver/README.md`.

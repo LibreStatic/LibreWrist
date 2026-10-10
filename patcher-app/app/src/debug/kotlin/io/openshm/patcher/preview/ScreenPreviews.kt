@@ -1,0 +1,101 @@
+package io.openshm.patcher.preview
+
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.PreviewParameter
+
+/* One preview per screen; each expands to light/dark x font scale 1.0/2.0 x dynamic/fallback. */
+
+@ScreenPreviews
+@Composable
+private fun WelcomePreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { WelcomeSample() }
+
+@ScreenPreviews
+@Composable
+private fun WelcomeChangesPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { WelcomeSample(sheet = true) }
+
+@ScreenPreviews
+@Composable
+private fun ProfilePreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { ProfileSample() }
+
+@ScreenPreviews
+@Composable
+private fun WearablePairingPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { WearablePairingSample() }
+
+@ScreenPreviews
+@Composable
+private fun WatchPairPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { WatchPairSample() }
+
+@ScreenPreviews
+@Composable
+private fun WatchPairReadyPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { WatchPairSample(ready = true) }
+
+@ScreenPreviews
+@Composable
+private fun AcquirePreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { AcquireSample() }
+
+@ScreenPreviews
+@Composable
+private fun GuidedBrowserPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { GuidedBrowserSample() }
+
+@ScreenPreviews
+@Composable
+private fun CustomizePreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { CustomizeSample() }
+
+@ScreenPreviews
+@Composable
+private fun BuildPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { BuildSample() }
+
+@ScreenPreviews
+@Composable
+private fun BuildDonePreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { BuildDoneSample() }
+
+@ScreenPreviews
+@Composable
+private fun InstallPhonePreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { InstallPhoneSample() }
+
+@ScreenPreviews
+@Composable
+private fun WatchInstallPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { WatchInstallSample() }
+
+@ScreenPreviews
+@Composable
+private fun DevModePreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { DevModeSample() }
+
+@ScreenPreviews
+@Composable
+private fun DisableStockPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { DisableStockSample() }
+
+@ScreenPreviews
+@Composable
+private fun SelfTestPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { SelfTestSample() }
+
+@ScreenPreviews
+@Composable
+private fun AllSetPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { AllSetSample() }
+
+@ScreenPreviews
+@Composable
+private fun HomePreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { HomeSample() }
+
+@ScreenPreviews
+@Composable
+private fun HomeRestorePreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { HomeSample(restoreSheet = true) }
