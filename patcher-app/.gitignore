@@ -2,3 +2,5 @@
 .kotlin/
 build/
 local.properties
+# Source packages named "build" (e.g. ui/screens/build) are code, not output.
+!**/src/**/build/
