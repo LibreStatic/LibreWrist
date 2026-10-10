@@ -40,7 +40,7 @@ class DiscoveryAndSelfAdbTest {
     private class Env(val pairingCode: (String) -> Unit = {}) {
         val pairing = MutableStateFlow<List<AdbService>>(emptyList())
         val connect = MutableStateFlow<List<AdbService>>(emptyList())
-        val pairCalls = mutableListOf<Triple<String, Int, String>>()
+        val pairCalls: MutableList<Triple<String, Int, String>> = java.util.Collections.synchronizedList(mutableListOf())
         val connectCalls = mutableListOf<Pair<String, Int>>()
         var failPairing: Throwable? = null
         var pairGate: java.util.concurrent.CountDownLatch? = null
@@ -172,6 +172,9 @@ class DiscoveryAndSelfAdbTest {
         assertTrue(env.session.submitCode("111111") != null)
         assertEquals(SelfAdbState.Pairing, env.session.state.value) // set synchronously
         assertNull(env.session.submitCode("222222"))
+        // Let the pairing reach the (gated) backend before restarting, so it is truly in flight.
+        val deadline = System.nanoTime() + 5_000_000_000
+        while (env.pairCalls.isEmpty() && System.nanoTime() < deadline) Thread.sleep(10)
 
         // Restarting invalidates the in-flight pairing; its late completion must change nothing.
         env.connect.value = listOf(AdbService("c", "192.168.1.5", 41040, AdbServiceType.CONNECT))
