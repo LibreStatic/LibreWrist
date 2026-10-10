@@ -32,6 +32,32 @@ class ArscResourceTable(bytes: ByteArray) : ResourceTable {
     override fun string(qualifier: String, name: String): String? =
         pkg.getEntry(qualifier, "string", name)?.valueAsString
 
+    /** Package names of the table (aapt2 sets them to the manifest package). */
+    fun packageNames(): List<String> = table.map { it.name ?: "" }
+
+    /** Global string pool values (not resource names). */
+    fun poolStrings(): List<String> = table.stringPool.map { it.get() ?: "" }
+
+    /**
+     * Renames every package and rewrites every global string pool value with [transform]; returns
+     * how many names/values changed.
+     */
+    fun mapStrings(transform: (String) -> String): Int {
+        var n = 0
+        for (p in table) {
+            val old = p.name ?: continue
+            val new = transform(old)
+            if (new != old) { p.name = new; n++ }
+        }
+        for (item in table.stringPool) {
+            val old = item.get() ?: continue
+            val new = transform(old)
+            if (new != old) { item.set(new); n++ }
+        }
+        if (n > 0) modified = true
+        return n
+    }
+
     fun toBytes(): ByteArray {
         table.refresh()
         return table.bytes

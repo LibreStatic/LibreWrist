@@ -58,3 +58,4 @@ text when a version changes. No jar is committed to this repository.
 | Compose UI Test manifest (debug builds with the driver enabled only) | `androidx.compose.ui:ui-test-manifest` | Apache-2.0 |
 | Compose tooling and tooling-preview (`@Preview`, debug builds only) | `androidx.compose.ui:ui-tooling`, `ui-tooling-preview` | Apache-2.0 |
 | JUnit 4, kotlinx-coroutines-test | `junit:junit`, `org.jetbrains.kotlinx:kotlinx-coroutines-test` | EPL-1.0, Apache-2.0 |
+| Android SDK build-tools (`d8`, `aapt2`) and platform `android.jar` (build the own-code assets in `app/own-code.gradle.kts`; run at build time only, never shipped; `PLATFORM_API` / `BUILD_TOOLS_VERSION`, default 36 / 36.0.0) | Android SDK `build-tools;36.0.0`, `platforms;android-36` | Apache-2.0 (build-tools, `d8`); Android SDK licence terms (platform) |

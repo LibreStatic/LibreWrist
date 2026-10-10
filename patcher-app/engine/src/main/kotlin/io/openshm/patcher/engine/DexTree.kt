@@ -45,18 +45,7 @@ class DexTree(dexFiles: List<Pair<String, ByteArray>>, private val apiLevel: Int
     private val entries = TreeMap<String, Entry>()
     private val edited = HashMap<String, String>()
     private val removed = HashSet<String>()
-    private val options = BaksmaliOptions().apply {
-        parameterRegisters = true
-        localsDirective = true
-        sequentialLabels = true
-        debugInfo = true
-        codeOffsets = false
-        accessorComments = false
-        implicitReferences = false
-        deodex = false
-        registerInfo = 0
-        apiLevel = this@DexTree.apiLevel
-    }
+    private val options = baksmaliOptions(apiLevel)
 
     // Bounded cache of disassembled, unmodified classes.
     private val cache = object : LinkedHashMap<String, String>(256, 0.75f, true) {
@@ -164,12 +153,7 @@ class DexTree(dexFiles: List<Pair<String, ByteArray>>, private val apiLevel: Int
     fun touchedPaths(): Set<String> = edited.keys + removed
 
     private fun disassemble(def: ClassDef): String {
-        val sw = StringWriter(4096)
-        // No class context: apktool's smali spells out the defining class in field/method references.
-        val writer = BaksmaliWriter(sw)
-        ClassDefinition(options, def).writeTo(writer)
-        writer.flush()
-        return sw.toString()
+        return disassembleClass(options, def)
     }
 
     // ------------------------------------------------------------------ trigram index
@@ -266,6 +250,30 @@ class DexTree(dexFiles: List<Pair<String, ByteArray>>, private val apiLevel: Int
     class RebuildResult(val changed: List<DexOutput>, val injected: DexOutput?, val injectedClassCount: Int)
 
     companion object {
+        /** The baksmali options apktool uses; every disassembly of the engine goes through them. */
+        fun baksmaliOptions(apiLevel: Int) = BaksmaliOptions().apply {
+            parameterRegisters = true
+            localsDirective = true
+            sequentialLabels = true
+            debugInfo = true
+            codeOffsets = false
+            accessorComments = false
+            implicitReferences = false
+            deodex = false
+            registerInfo = 0
+            this.apiLevel = apiLevel
+        }
+
+        /** Smali text of one class, as [DexTree] reads it. */
+        fun disassembleClass(options: BaksmaliOptions, def: ClassDef): String {
+            val sw = StringWriter(4096)
+            // No class context: apktool's smali spells out the defining class in field/method references.
+            val writer = BaksmaliWriter(sw)
+            ClassDefinition(options, def).writeTo(writer)
+            writer.flush()
+            return sw.toString()
+        }
+
         fun assembleClass(builder: DexBuilder, path: String, text: String, apiLevel: Int): ClassDef {
             val lexer = smaliFlexLexer(StringReader(text), apiLevel)
             lexer.setSourceFile(java.io.File(path))

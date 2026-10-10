@@ -355,6 +355,19 @@ Independent slices can run in parallel. Arrows show dependencies.
 3. **Asset pipeline** (Gradle): build the bridge apps, `watch-mod` and `alarm-fork` with the
    placeholder; generate the patch catalogue and `SHA256SUMS` assets from `profiles/` and
    `apks/SHA256SUMS`.
+   Implemented so far (`patcher-app/app/own-code.gradle.kts`, task `:app:ownCodeAssets`, run by every
+   variant's asset merge): `assets/owncode/injections/{watch-mod,alarm-fork}.dex` and
+   `assets/owncode/apps/bridge-{watch,phone}.apk` (unsigned), all in **placeholder form** (package
+   `shminterop`; the engine applies the real prefix on the phone), plus the signed catalogue under
+   `assets/catalogue/`. The tasks mirror `watch-mod/build-watch-mod.sh`, `java_to_smali` and
+   `build-bridge.sh` (same platform jar, build-tools and javac/d8/aapt2 flags; `ANDROID_HOME`,
+   `BUILD_TOOLS_VERSION`, `PLATFORM_API` from the environment). Output is byte-identical to the
+   scripts' when both use the same javac version (the app build uses the Gradle JDK, 17). The engine
+   (`OwnAppBuilder`, `DexInjection`) stages them on the phone: smali rename (including d8 lambda
+   names and the `hashCode` keys of `switch` over renamed strings; staging fails if a key would stay
+   stale), manifest and `resources.arsc` string pools, optional `knownSigner` for the phone bridge's
+   status permission, then v2+v3 signing and a self-check. `OracleTest` compares all five staged
+   outputs with `build_all.sh` (`SHM_ORACLE_OWNCODE`, `SHM_ORACLE_PREFIX`).
 4. **ADB client** (Android library): pairing, connect, shell, streamed install. Test against an
    emulator, then the watch.
 5. **App shell + design system**: theme (dynamic color + fallback tokens), expressive shapes,

@@ -234,21 +234,7 @@ class Patcher(private val catalogue: Catalogue) {
                         val out = req.outputApk!!
                         out.absoluteFile.parentFile.mkdirs()
                         out.delete()
-                        val signer = ApkSigner.SignerConfig.Builder("CERT", key.privateKey, key.certificates).build()
-                        try {
-                            ApkSigner.Builder(listOf(signer))
-                                .setInputApk(unsigned)
-                                .setOutputApk(out)
-                                .setMinSdkVersion(minSdk)
-                                .setV1SigningEnabled(minSdk < 24)
-                                .setV2SigningEnabled(true)
-                                .setV3SigningEnabled(true)
-                                .build()
-                                .sign()
-                        } catch (e: Exception) {
-                            out.delete() // no half-written output
-                            throw e
-                        }
+                        signApk(unsigned, out, key, minSdk)
                         report.outputSha256 = sha256(out)
                         d.add("signed ${out.name}: v1=${minSdk < 24} v2 v3, sha256 ${report.outputSha256}")
                     }
@@ -287,15 +273,8 @@ class Patcher(private val catalogue: Catalogue) {
     ) {
         val out = req.outputApk!!
         phase("verify-signature") { d ->
-            val result = ApkVerifier.Builder(out).build().verify()
-            if (!result.isVerified) {
-                throw PatchFailure("the signature does not verify: " + (result.errors + result.v1SchemeSigners.flatMap { it.errors } +
-                    result.v2SchemeSigners.flatMap { it.errors } + result.v3SchemeSigners.flatMap { it.errors })
-                    .joinToString("; ") { it.toString() })
-            }
-            if (!result.isVerifiedUsingV2Scheme && !result.isVerifiedUsingV3Scheme) throw PatchFailure("the APK is not signed with v2 or v3")
-            val signer = result.signerCertificates.firstOrNull()
-            if (signer == null || signer != req.signingKey!!.certificates[0]) throw PatchFailure("the APK is signed with another certificate")
+            val result = verifySignature(out, req.signingKey!!)
+            val signer = result.signerCertificates.first()
             d.add("v2=${result.isVerifiedUsingV2Scheme} v3=${result.isVerifiedUsingV3Scheme}, certificate ${signer.subjectX500Principal.name}")
         }
         ZipReader(out).use { zip ->
@@ -342,40 +321,76 @@ class Patcher(private val catalogue: Catalogue) {
         }
     }
 
-    private fun writeApk(
-        zip: ZipReader,
-        dest: File,
-        manifest: ByteArray?,
-        arsc: ByteArray?,
-        changedDex: Map<String, DexOutput>,
-        injected: DexOutput?,
-    ) {
-        val lastDex = zip.entries.filter { DEX_RE.matches(it.name) }.maxByOrNull { dexNumber(it.name) }
-        ZipWriter(BufferedOutputStream(FileOutputStream(dest), 256 * 1024)).use { w ->
-            for (e in zip.entries) {
-                if (isSignatureFile(e.name)) continue
-                val replacement: ByteArray? = when {
-                    e.name == "AndroidManifest.xml" -> manifest
-                    e.name == "resources.arsc" -> arsc
-                    else -> changedDex[e.name]?.bytes
-                }
-                val align = if (e.isStored) (if (e.name.endsWith(".so")) SO_ALIGN else 4) else 1
-                if (replacement != null) w.addBytes(e.name, replacement, e.isStored, align, e) else w.addRaw(zip, e, align)
-                if (e === lastDex && injected != null) w.addBytes(injected.entryName, injected.bytes, stored = false)
-            }
-            if (injected != null && lastDex == null) w.addBytes(injected.entryName, injected.bytes, stored = false)
-            w.finish()
-        }
-    }
-
     companion object {
-        private val DEX_RE = Regex("^classes(\\d*)\\.dex$")
+        internal fun writeApk(
+            zip: ZipReader,
+            dest: File,
+            manifest: ByteArray?,
+            arsc: ByteArray?,
+            changedDex: Map<String, DexOutput>,
+            injected: DexOutput?,
+            storeArsc: Boolean = false,
+        ) {
+            val lastDex = zip.entries.filter { DEX_RE.matches(it.name) }.maxByOrNull { dexNumber(it.name) }
+            ZipWriter(BufferedOutputStream(FileOutputStream(dest), 256 * 1024)).use { w ->
+                for (e in zip.entries) {
+                    if (isSignatureFile(e.name)) continue
+                    val replacement: ByteArray? = when {
+                        e.name == "AndroidManifest.xml" -> manifest
+                        e.name == "resources.arsc" -> arsc
+                        else -> changedDex[e.name]?.bytes
+                    }
+                    val stored = e.isStored || (storeArsc && e.name == "resources.arsc" && replacement != null)
+                    val align = if (stored) (if (e.name.endsWith(".so")) SO_ALIGN else 4) else 1
+                    if (replacement != null) w.addBytes(e.name, replacement, stored, align, e) else w.addRaw(zip, e, align)
+                    if (e === lastDex && injected != null) w.addBytes(injected.entryName, injected.bytes, stored = false)
+                }
+                if (injected != null && lastDex == null) w.addBytes(injected.entryName, injected.bytes, stored = false)
+                w.finish()
+            }
+        }
+
+        /** Signs [unsigned] into [out] (v2 and v3, v1 below API 24); deletes [out] if signing fails. */
+        internal fun signApk(unsigned: File, out: File, key: SigningKey, minSdk: Int) {
+            val signer = ApkSigner.SignerConfig.Builder("CERT", key.privateKey, key.certificates).build()
+            try {
+                ApkSigner.Builder(listOf(signer))
+                    .setInputApk(unsigned)
+                    .setOutputApk(out)
+                    .setMinSdkVersion(minSdk)
+                    .setV1SigningEnabled(minSdk < 24)
+                    .setV2SigningEnabled(true)
+                    .setV3SigningEnabled(true)
+                    .build()
+                    .sign()
+            } catch (e: Exception) {
+                out.delete() // no half-written output
+                throw e
+            }
+        }
+
+        /** Verifies the signature of [out] and that [key]'s certificate made it; returns the verdict. */
+        internal fun verifySignature(out: File, key: SigningKey): ApkVerifier.Result {
+            val result = ApkVerifier.Builder(out).build().verify()
+            if (!result.isVerified) {
+                throw PatchFailure("the signature does not verify: " + (result.errors + result.v1SchemeSigners.flatMap { it.errors } +
+                    result.v2SchemeSigners.flatMap { it.errors } + result.v3SchemeSigners.flatMap { it.errors })
+                    .joinToString("; ") { it.toString() })
+            }
+            if (!result.isVerifiedUsingV2Scheme && !result.isVerifiedUsingV3Scheme) throw PatchFailure("the APK is not signed with v2 or v3")
+            val signer = result.signerCertificates.firstOrNull()
+            if (signer == null || signer != key.certificates[0]) throw PatchFailure("the APK is signed with another certificate")
+            return result
+        }
+
+
+        internal val DEX_RE = Regex("^classes(\\d*)\\.dex$")
         private const val SO_ALIGN = 16384
 
-        private fun dexNumber(name: String): Int =
+        internal fun dexNumber(name: String): Int =
             DEX_RE.matchEntire(name)!!.groupValues[1].let { if (it.isEmpty()) 1 else it.toInt() }
 
-        private fun isSignatureFile(name: String): Boolean {
+        internal fun isSignatureFile(name: String): Boolean {
             if (!name.startsWith("META-INF/") || name.indexOf('/', 9) >= 0) return false
             val n = name.substring(9).uppercase()
             return n == "MANIFEST.MF" || n.endsWith(".SF") || n.endsWith(".RSA") || n.endsWith(".DSA") || n.endsWith(".EC")

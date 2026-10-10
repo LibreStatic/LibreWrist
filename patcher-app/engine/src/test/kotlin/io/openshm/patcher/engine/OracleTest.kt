@@ -19,7 +19,17 @@ import org.w3c.dom.Node
  *
  *   SHM_ORACLE_APKS   directory with the official APKs (also gives APKS_DIR to the scripts)
  *   SHM_ORACLE_WORK   scratch directory (default ~/.cache/shm-interop/oracle-kotlin)
- *   SHM_ORACLE_ONLY   comma separated subset of: alarm, watch, phone
+ *   SHM_ORACLE_ONLY   comma separated subset of: alarm, watch, phone, bridge-watch, bridge-phone
+ *   SHM_ORACLE_OWNCODE  opt-in Phase 2: the output directory of the app's `ownCodeAssets` Gradle task
+ *                     (contains `owncode/` or is that directory: the `injections` and `apps` directories).
+ *                     The alarm and watch comparisons then inject `DexInjection(<asset dex>)` on the
+ *                     Kotlin side instead of the scripts' smali (the Python side keeps the scripts'
+ *                     smali), and the subsets bridge-watch / bridge-phone run: `build-bridge.sh` against
+ *                     `OwnAppBuilder` on the placeholder APK (phone with a fixed test knownSigner digest),
+ *                     decoded trees compared like the others (dex bytes are never compared, only their
+ *                     decoded smali, and for these two subsets smali is compared loosely, see [looseSmali]). The scripts run with JDK 17 first on PATH (SHM_ORACLE_JDK, default
+ *                     /usr/lib/jvm/java-17-openjdk) because the assets are built with it. Without this
+ *                     variable the bridge subsets are skipped.
  *   SHM_ORACLE_KEEP   keep the scratch directory
  *   APKTOOL_JAR       apktool jar (default: third_party/apktool_3.0.3.jar of the repo or of the
  *                     directory above SHM_ORACLE_APKS)
@@ -39,7 +49,11 @@ import org.w3c.dom.Node
 class OracleTest {
     private val apksDir: String? = System.getenv("SHM_ORACLE_APKS")
     private val repo = File(System.getProperty("shm.repoRoot"))
-    private val prefix = "com.example"
+    private val prefix = System.getenv("SHM_ORACLE_PREFIX") ?: "com.example"
+    private val ownCode: File? = System.getenv("SHM_ORACLE_OWNCODE")?.let { d ->
+        File(d).let { if (File(it, "owncode").isDirectory) File(it, "owncode") else it }
+    }
+    private val testDigest = "0123456789abcdef".repeat(4)
 
     private class Target(val name: String, val apk: String, val inputId: String, val profile: String, val inject: String?)
 
@@ -47,6 +61,8 @@ class OracleTest {
         Target("alarm", "alarm-watch-1.3.05.9.apk", "alarm-watch", "alarm", "alarm-fork"),
         Target("watch", "shm-watch-1.5.1.022.apk", "shm-watch", "gms", "watch-mod"),
         Target("phone", "shm-phone-1.4.6.001.apk", "shm-phone", "gms", null),
+        Target("bridge-watch", "", "bridge-watch", "", null),
+        Target("bridge-phone", "", "bridge-phone", "", null),
     )
 
     private fun sh(dir: File, env: Map<String, String>, log: File, vararg cmd: String) {
@@ -72,7 +88,9 @@ class OracleTest {
             ?: listOf(File(repo, "third_party/apktool_3.0.3.jar"), File(File(apksDir!!).absoluteFile.parentFile, "third_party/apktool_3.0.3.jar"))
                 .firstOrNull { it.exists() }?.path
             ?: throw AssertionError("apktool jar not found; set APKTOOL_JAR")
+        val jdk = System.getenv("SHM_ORACLE_JDK") ?: "/usr/lib/jvm/java-17-openjdk"
         val env = mapOf(
+            "PATH" to "$jdk/bin:" + System.getenv("PATH"),
             "PKG_PREFIX" to prefix,
             "APKS_DIR" to apksDir!!,
             "APKTOOL_JAR" to apktoolJar,
@@ -90,8 +108,10 @@ class OracleTest {
         try {
             for (t in targets) {
                 if (only != null && t.name !in only) continue
+                if (t.name.startsWith("bridge-") && ownCode == null) continue
                 val dir = File(work, t.name).also { it.mkdirs() }
-                val summary = runTarget(t, dir, env, key, catalogue, failures)
+                val summary = if (t.name.startsWith("bridge-")) runBridge(t, dir, env, key, catalogue, failures)
+                else runTarget(t, dir, env, key, catalogue, failures)
                 report.append(summary).append('\n')
                 println(summary)
             }
@@ -113,7 +133,8 @@ class OracleTest {
             "watch-mod" -> sh(repo, env, File(dir, "inject.log"), "bash", File(repo, "watch-mod/build-watch-mod.sh").path, injectDir.path)
         }
         if (t.inject != null) {
-            injections[t.inject] = DirectoryInjection(injectDir)
+            injections[t.inject] = ownCode?.let { DexInjection(File(it, "injections/${t.inject}.dex").readBytes(), prefix) }
+                ?: DirectoryInjection(injectDir)
             pyArgs += listOf("--inject", "${t.inject}=${injectDir.path}")
         }
 
@@ -134,31 +155,67 @@ class OracleTest {
             return "${t.name}: Kotlin engine FAILED after $ms ms: ${report.error}"
         }
 
-        // decode both
+        return compareApks(t.name, pyApk, ktApk, dir, env, failures, ms)
+    }
+
+    /** Phase 2: the scripts' bridge build against [OwnAppBuilder] on the placeholder asset. */
+    private fun runBridge(t: Target, dir: File, env: Map<String, String>, key: SigningKey, catalogue: Catalogue, failures: MutableList<String>): String {
+        val which = t.name.removePrefix("bridge-")
+        val dist = File(dir, "dist").also { it.mkdirs() }
+        val bridgeEnv = HashMap(env)
+        bridgeEnv["BRIDGE_ONLY"] = which
+        bridgeEnv["DIST_DIR"] = dist.path
+        if (which == "phone") bridgeEnv["PATCHER_CERT_SHA256"] = testDigest
+        sh(repo, bridgeEnv, File(dir, "bridge-script.log"), "bash", File(repo, "shm-bridge/scripts/build-bridge.sh").path)
+        val pyApk = File(dist, "shm-bridge-$which.apk")
+
+        val ktApk = File(dir, "kotlin-${t.name}.apk")
+        val t0 = System.nanoTime()
+        val placeholder = File(dir, "placeholder.apk")
+        File(ownCode!!, "apps/${t.name}.apk").copyTo(placeholder, overwrite = true)
+        val report = OwnAppBuilder(catalogue).build(OwnAppRequest(placeholder, t.name, prefix,
+            if (which == "phone") testDigest else null, ktApk, key, dir))
+        val ms = (System.nanoTime() - t0) / 1_000_000
+        File(dir, "kotlin-report.txt").writeText(report.text())
+        if (!report.ok) {
+            failures.add("${t.name}: OwnAppBuilder failed: ${report.error}")
+            return "${t.name}: OwnAppBuilder FAILED after $ms ms: ${report.error}"
+        }
+        return compareApks(t.name, pyApk, ktApk, dir, env, failures, ms)
+    }
+
+    private fun compareApks(name: String, pyApk: File, ktApk: File, dir: File, env: Map<String, String>, failures: MutableList<String>, ms: Long): String {
         val pyDec = File(dir, "dec-py")
         val ktDec = File(dir, "dec-kotlin")
         for ((a, d) in listOf(pyApk to pyDec, ktApk to ktDec)) {
             sh(repo, env, File(dir, "apktool-${d.name}.log"), "bash", "-c",
                 "source \"\$0/scripts/lib/common.sh\"; apktool d -f \"\$1\" -o \"\$2\"", repo.path, a.path, d.path)
         }
-        val diffs = compareTrees(pyDec, ktDec)
+        val diffs = compareTrees(pyDec, ktDec, loose = name.startsWith("bridge-"))
         File(dir, "diffs.txt").writeText(diffs.joinToString("\n"))
-        diffs.forEach { failures.add("${t.name}: $it") }
-        return "${t.name}: Kotlin ${ms} ms, ${diffs.size} difference(s)"
+        diffs.forEach { failures.add("$name: $it") }
+        return "$name: Kotlin ${ms} ms, ${diffs.size} difference(s)"
     }
 
     // ------------------------------------------------------------------ tree comparison
 
-    private fun compareTrees(py: File, kt: File): List<String> {
+    private fun compareTrees(py: File, kt: File, loose: Boolean = false): List<String> {
         val a = files(py)
         val b = files(kt)
         val diffs = ArrayList<String>()
+        if (loose) {
+            val (la, lb) = looseSmali(a) to looseSmali(b)
+            for (p in la.keys - lb.keys) diffs.add("only in Python output (loose smali): $p")
+            for (p in lb.keys - la.keys) diffs.add("only in Kotlin output (loose smali): $p")
+            for (p in (la.keys intersect lb.keys).sorted()) compareLines(la.getValue(p), lb.getValue(p))?.let { diffs.add("$p (loose): $it") }
+        }
         for (p in a.keys - b.keys) diffs.add("only in Python output: $p")
         for (p in b.keys - a.keys) diffs.add("only in Kotlin output: $p")
         for (p in (a.keys intersect b.keys).sorted()) {
             val fa = a.getValue(p)
             val fb = b.getValue(p)
             val d = when {
+                loose && p.endsWith(".smali") -> null
                 p.endsWith(".xml") -> compareXml(p, fa, fb)
                 p == "apktool.yml" -> compareLines(yml(fa), yml(fb))
                 p.endsWith(".smali") || p.endsWith(".txt") || p.endsWith(".json") || p.endsWith(".properties") -> compareLines(fa.readLines(), fb.readLines())
@@ -167,6 +224,36 @@ class OracleTest {
             if (d != null) diffs.add("$p: $d")
         }
         return diffs
+    }
+
+    /**
+     * Smali of a bridge APK, compared as bags of instructions per class. The Python side is d8 on
+     * Java sources with the real prefix; the Kotlin side is d8 on the placeholder, renamed and
+     * reassembled through smali. What differs for that reason alone is dropped: labels and `.line` /
+     * `.catch` (the assembler merges adjacent try ranges and renumbers labels), the order of
+     * instructions, `goto` widths and `nop` padding (assembler), the content hashes of `$r8$lambda$...` and the numbering of
+     * `ExternalSyntheticLambdaN` (d8 derives both from the class names; the lambda classes of one
+     * package are pooled). String-switch keys stay in (sorted), so a stale hash is still a difference.
+     */
+    private fun looseSmali(files: Map<String, File>): Map<String, List<String>> {
+        val out = HashMap<String, MutableList<String>>()
+        for ((p, f) in files) {
+            if (!p.endsWith(".smali")) continue
+            val key = p.replace(Regex("ExternalSyntheticLambda\\d+"), "ExternalSyntheticLambda*")
+            val lines = out.getOrPut(key) { ArrayList() }
+            for (l in f.readLines()) {
+                val t = l.trim()
+                if (t.isEmpty() || t.startsWith(":") || t.startsWith(".line") || t.startsWith(".catch") || t == "nop" || t.startsWith("#")) continue
+                lines.add(
+                    t.replace(Regex("^goto/(16|32) "), "goto ")
+                        .replace(Regex(":(goto|cond|try_start|try_end|catch|pswitch|sswitch|array)\\w*"), ":L")
+                        .replace(Regex("\\\$r8\\\$lambda\\\$[\\w-]+"), "\\\$r8\\\$lambda\\\$H")
+                        .replace(Regex("ExternalSyntheticLambda\\d+"), "ExternalSyntheticLambdaN"),
+                )
+            }
+        }
+        out.values.forEach { it.sort() }
+        return out
     }
 
     /** Relative path -> file, `original/` (the packaged binaries and signatures) excluded. */

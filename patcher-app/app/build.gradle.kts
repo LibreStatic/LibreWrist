@@ -84,3 +84,17 @@ rootProject.findProject(":tools:compose-driver")?.let { driver ->
         fontScale.orNull?.let { systemProperty("compose.driver.fontScale", it) }
     }
 }
+
+// Our own code (watch-mod, alarm-fork, shm-bridge apps) and the signed catalogue as placeholder-form
+// assets; see own-code.gradle.kts.
+extra["ownCode.sdkDirectory"] = androidComponents.sdkComponents.sdkDirectory.map { it.asFile.path }
+apply(from = "own-code.gradle.kts")
+@Suppress("UNCHECKED_CAST")
+val ownCodeAssets = extra["ownCode.assetsTask"] as TaskProvider<Task>
+androidComponents.onVariants { variant ->
+    variant.sources.assets?.addGeneratedSourceDirectory(ownCodeAssets, { task: Task ->
+        // The task's `assets` property (DirectoryProperty), read reflectively: its class lives in the script.
+        @Suppress("UNCHECKED_CAST")
+        task.javaClass.getMethod("getAssets").invoke(task) as org.gradle.api.file.DirectoryProperty
+    })
+}

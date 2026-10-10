@@ -34,6 +34,24 @@ class BinaryManifest(bytes: ByteArray, private val table: () -> TableBlock?) : M
     var modified = false
         private set
 
+    /** Every string of the document's string pool (names, values, namespaces). */
+    fun poolStrings(): List<String> = block.stringPool.map { it.get() ?: "" }
+
+    /**
+     * Replaces every string of the pool by [transform] of it; returns how many changed. Resource
+     * references are ids, not strings, and are untouched.
+     */
+    fun mapStrings(transform: (String) -> String): Int {
+        var n = 0
+        for (item in block.stringPool) {
+            val old = item.get() ?: continue
+            val new = transform(old)
+            if (new != old) { item.set(new); n++ }
+        }
+        if (n > 0) modified = true
+        return n
+    }
+
     fun toBytes(): ByteArray {
         block.refresh()
         return block.bytes
@@ -233,21 +251,21 @@ class BinaryManifest(bytes: ByteArray, private val table: () -> TableBlock?) : M
             "android:name", "android:value", "android:authorities", "android:permission",
             "android:readPermission", "android:writePermission", "android:label", "android:process",
             "android:taskAffinity", "android:targetActivity", "android:host", "android:scheme",
-            "android:mimeType", "android:path", "android:pathPrefix",
+            "android:mimeType", "android:path", "android:pathPrefix", "android:knownCerts",
         )
 
         val BASE_LEVELS = listOf("normal", "dangerous", "signature", "signatureOrSystem")
         val FLAG_LEVELS = listOf(
             "privileged" to 0x10, "development" to 0x20, "appop" to 0x40, "pre23" to 0x80, "installer" to 0x100,
             "verifier" to 0x200, "preinstalled" to 0x400, "setup" to 0x800, "instant" to 0x1000, "runtime" to 0x2000,
-            "oem" to 0x4000,
+            "oem" to 0x4000, "knownSigner" to 0x8000000,
         )
 
         val PROTECTION = mapOf(
             "normal" to 0, "dangerous" to 1, "signature" to 2, "signatureOrSystem" to 3,
             "privileged" to 0x10, "system" to 0x10, "development" to 0x20, "appop" to 0x40,
             "pre23" to 0x80, "installer" to 0x100, "verifier" to 0x200, "preinstalled" to 0x400,
-            "setup" to 0x800, "instant" to 0x1000, "runtime" to 0x2000, "oem" to 0x4000,
+            "setup" to 0x800, "instant" to 0x1000, "runtime" to 0x2000, "oem" to 0x4000, "knownSigner" to 0x8000000,
         )
     }
 }

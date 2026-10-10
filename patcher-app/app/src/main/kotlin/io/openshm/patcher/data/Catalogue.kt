@@ -65,7 +65,7 @@ enum class GrantKind { Permission, AppOp, SecureSetting, NotificationListener, B
 data class Grant(val kind: GrantKind, val name: String, val optional: Boolean = false)
 
 object BundledCatalogue {
-    const val SERIAL = 3
+    const val SERIAL = 4
     const val PREFIX_PLACEHOLDER = "\${PKG_PREFIX}"
 
     val inputs: List<InputApp> = listOf(
