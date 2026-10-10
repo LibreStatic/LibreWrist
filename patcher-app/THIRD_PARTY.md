@@ -54,7 +54,7 @@ text when a version changes. No jar is committed to this repository.
 |---|---|---|
 | Compose Driver (headless Compose renderer with an HTTP API; `tools/compose-driver`, test classpath only) | `io.github.jdemeulenaere:compose-driver` 0.5.0 | Apache-2.0 (from the artifact POM) |
 | Robolectric (runs the Compose Driver server and any Android unit test) | `org.robolectric:robolectric` | MIT (from the artifact POM) |
-| AndroidX Test JUnit ext | `androidx.test.ext:junit` | Apache-2.0 |
+| AndroidX Test JUnit ext and runner (on-device tests of `:adb`) | `androidx.test.ext:junit`, `androidx.test:runner` | Apache-2.0 |
 | Compose UI Test manifest (debug builds with the driver enabled only) | `androidx.compose.ui:ui-test-manifest` | Apache-2.0 |
 | Compose tooling and tooling-preview (`@Preview`, debug builds only) | `androidx.compose.ui:ui-tooling`, `ui-tooling-preview` | Apache-2.0 |
 | JUnit 4, kotlinx-coroutines-test | `junit:junit`, `org.jetbrains.kotlinx:kotlinx-coroutines-test` | EPL-1.0, Apache-2.0 |

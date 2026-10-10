@@ -9,6 +9,8 @@ android {
     defaultConfig {
         minSdk = 31
         consumerProguardFiles("consumer-rules.pro")
+        // On-device tests (src/androidTest) against real devices; see DeviceAdbTest.
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -31,4 +33,8 @@ dependencies {
 
     testImplementation(libs.junit4)
     testImplementation(libs.kotlinx.coroutines.test)
+
+    androidTestImplementation(libs.junit4)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.ext)
 }

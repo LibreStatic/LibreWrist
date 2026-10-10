@@ -67,9 +67,8 @@ class AdbDiscovery(context: Context) {
      */
     fun discover(type: AdbServiceType): Flow<List<AdbService>> = callbackFlow {
         val registry = ServiceRegistry()
-        val executor: Executor = Executors.newSingleThreadExecutor()
         val resolver: Resolver = if (Build.VERSION.SDK_INT >= 34) {
-            CallbackResolver(nsd, executor)
+            CallbackResolver(nsd, CALLBACK_EXECUTOR)
         } else {
             QueueResolver(nsd)
         }
@@ -111,9 +110,20 @@ class AdbDiscovery(context: Context) {
         awaitClose {
             runCatching { nsd.stopServiceDiscovery(listener) }
             resolver.close()
-            (executor as java.util.concurrent.ExecutorService).shutdown()
         }
     }.distinctUntilChanged()
+
+    private companion object {
+        /**
+         * Shared and never shut down: NsdManager still delivers callbacks (such as
+         * onServiceInfoCallbackUnregistered) after they are unregistered, and a task rejected by a
+         * terminated executor crashes the process on NsdManager's handler thread. A late callback
+         * here only reaches a closed channel.
+         */
+        val CALLBACK_EXECUTOR: Executor by lazy {
+            Executors.newSingleThreadExecutor { r -> Thread(r, "adb-nsd-callbacks").apply { isDaemon = true } }
+        }
+    }
 
     private interface Resolver {
         fun resolve(info: NsdServiceInfo, onResolved: (host: String, port: Int) -> Unit)
