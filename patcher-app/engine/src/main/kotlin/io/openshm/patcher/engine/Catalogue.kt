@@ -104,7 +104,7 @@ class Catalogue private constructor(
             "secureSetting" to mapOf("key" to SETTING_KEY_RE, "value" to SETTING_VALUE_RE),
         )
 
-        private val PLACEHOLDER = Regex("\\$\\{([^}]*)}")
+        private val PLACEHOLDER = Regex("\\$\\{([^\\}]*)\\}")
 
         /** Package prefix substitutions for `${PKG_PREFIX}` / `${PKG_PATH}`. */
         fun placeholders(prefix: String): Map<String, String> =

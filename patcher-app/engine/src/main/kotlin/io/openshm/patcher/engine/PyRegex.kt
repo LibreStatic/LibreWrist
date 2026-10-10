@@ -5,8 +5,8 @@ import java.util.regex.Pattern
 /**
  * The catalogue's regexes are written in Python `re` syntax restricted to the portable subset
  * (see superpatcher/engine.py). This translates that subset to `java.util.regex`:
- * `(?P<n>...)` / `(?P=n)` become Java named groups, a literal `{` that is not a quantifier is
- * escaped, and `.` / `$` only consider `\n` (UNIX_LINES), like Python.
+ * `(?P<n>...)` / `(?P=n)` become Java named groups, a literal `{` or `}` that is not part of a
+ * quantifier is escaped (Android's ICU regex engine requires it), and `.` / `$` only consider `\n` (UNIX_LINES), like Python.
  */
 internal object PyRegex {
     private val cache = object : LinkedHashMap<String, Pattern>(64, 0.75f, true) {
@@ -30,7 +30,7 @@ internal object PyRegex {
     }
 
     private const val SPECIAL = "()[]{}?*+-|^$\\.&~# \t\n\r\u000b\u000c"
-    private val QUANTIFIER = Regex("""\{\d+(,\d*)?}""")
+    private val QUANTIFIER = Regex("""\{\d+(,\d*)?\}""")
 
     fun compile(pattern: String, dotAll: Boolean = false): Pattern {
         val key = (if (dotAll) "S:" else "N:") + pattern
@@ -59,8 +59,10 @@ internal object PyRegex {
                 }
                 inClass -> {
                     if (c == ']') inClass = false
-                    // a literal '[' (or '&&') inside a class has a special meaning in Java only
-                    if (c == '[') out.append('\\') else if (c == '&' && py.startsWith("&&", i)) out.append('\\')
+                    // A literal '[' (or '&&') inside a class has a special meaning in Java only; Android's
+                    // ICU engine also rejects bare braces there, and an escaped brace is valid everywhere.
+                    if (c == '[' || c == '{' || c == '}') out.append('\\')
+                    else if (c == '&' && py.startsWith("&&", i)) out.append('\\')
                     out.append(c)
                 }
                 c == '[' -> {
@@ -85,7 +87,18 @@ internal object PyRegex {
                     i = end + 1
                     continue
                 }
-                c == '{' && !QUANTIFIER.matchesAt(py, i) -> out.append("\\{")
+                c == '{' -> {
+                    // A quantifier is copied whole; any other brace is literal. Android's ICU engine
+                    // rejects an unescaped literal '}' (the JDK accepts it), so both braces are escaped.
+                    val quantifier = QUANTIFIER.matchAt(py, i)
+                    if (quantifier != null) {
+                        out.append(quantifier.value)
+                        i += quantifier.value.length
+                        continue
+                    }
+                    out.append("\\{")
+                }
+                c == '}' -> out.append("\\}")
                 else -> out.append(c)
             }
             i++

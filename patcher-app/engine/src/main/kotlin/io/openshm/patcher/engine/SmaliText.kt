@@ -8,7 +8,7 @@ class OpArgError(message: String) : IllegalArgumentException(message)
 
 /** Text helpers over baksmali output; ports of the helpers of superpatcher/engine.py. */
 internal object SmaliText {
-    private val LABEL = Regex("(?<=[\\s{]):[a-z]\\w*")
+    private val LABEL = Regex("(?<=[\\s\\{]):[a-z]\\w*")
 
     /** [s] without its blank lines (disassembly puts one between instructions, hand-written bodies don't). */
     fun dropBlankLines(s: String): String = s.lines().filter { it.isNotBlank() }.joinToString("\n")
