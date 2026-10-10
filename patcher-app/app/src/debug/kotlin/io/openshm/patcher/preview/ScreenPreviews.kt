@@ -67,6 +67,11 @@ private fun InstallPhonePreview(@PreviewParameter(ColorModeProvider::class) mode
 
 @ScreenPreviews
 @Composable
+private fun InstallPhoneGrantsPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { InstallPhoneSample(grants = true) }
+
+@ScreenPreviews
+@Composable
 private fun WatchInstallPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
     PreviewHost(mode) { WatchInstallSample() }
 

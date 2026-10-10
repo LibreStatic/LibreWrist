@@ -49,6 +49,9 @@ fun BuildDoneDriver() = PreviewHost(ColorMode.Fallback) { BuildDoneSample() }
 fun InstallPhoneDriver() = PreviewHost(ColorMode.Fallback) { InstallPhoneSample() }
 
 @Composable
+fun InstallPhoneGrantsDriver() = PreviewHost(ColorMode.Fallback) { InstallPhoneSample(grants = true) }
+
+@Composable
 fun WatchInstallDriver() = PreviewHost(ColorMode.Fallback) { WatchInstallSample() }
 
 @Composable

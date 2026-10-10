@@ -4,6 +4,18 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
+    <!--
+      Launcher apps are visible, so the Samsung Health Monitor copy this app installs can be opened
+      after its install. The bridge app is visible because this app is its installer.
+    -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+    </queries>
 
     <application
         android:name=".PatcherApplication"
@@ -22,6 +34,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- Receives the platform installer's result for the phone install. -->
+        <receiver
+            android:name=".device.PhoneInstallReceiver"
+            android:exported="false" />
+        <!-- Keeps the phone's own Wireless debugging session alive while the user pairs it in Developer options. -->
+        <service
+            android:name=".device.SelfAdbService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="pairing this phone with its own Wireless debugging so the user's own apps can be granted their access" />
+        </service>
         <!-- Builds the patched APKs on the device; no other foreground service type fits. -->
         <service
             android:name=".build.BuildService"

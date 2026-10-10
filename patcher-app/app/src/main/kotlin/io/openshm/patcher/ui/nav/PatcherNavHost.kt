@@ -1,7 +1,11 @@
 package io.openshm.patcher.ui.nav
 
 import android.Manifest
+import android.content.ActivityNotFoundException
 import android.content.pm.PackageManager
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
+import io.openshm.patcher.ui.screens.install.InstallEvent
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.runtime.mutableStateOf
@@ -159,6 +163,18 @@ fun PatcherNavHost(
         composable(Route.InstallPhone.path) {
             val vm: InstallPhoneViewModel = viewModel()
             val state by vm.state.collectAsStateWithLifecycle()
+            val activity = LocalContext.current
+            LaunchedEffect(vm) {
+                vm.launches.collect { request ->
+                    try {
+                        activity.startActivity(request.intent)
+                    } catch (e: ActivityNotFoundException) {
+                        request.fallback?.let { runCatching { activity.startActivity(it) } }
+                    }
+                }
+            }
+            // Settings are changed outside the app: read them again when the screen is back.
+            LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { vm.onEvent(InstallEvent.Refresh) }
             InstallPhoneScreen(state, vm::onEvent, onContinue = { next(Route.InstallPhone) }, onBack = back)
         }
         composable(Route.WatchInstall.path) {

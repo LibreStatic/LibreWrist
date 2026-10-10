@@ -54,7 +54,8 @@ internal fun BuildSample(logSheet: Boolean = false) =
 internal fun BuildDoneSample() = BuildDoneScreen(PreviewData.buildDone(), {}, {})
 
 @Composable
-internal fun InstallPhoneSample() = InstallPhoneScreen(PreviewData.installPhone(), {}, {}, {})
+internal fun InstallPhoneSample(grants: Boolean = false) =
+    InstallPhoneScreen(if (grants) PreviewData.installPhoneGrants() else PreviewData.installPhone(), {}, {}, {})
 
 @Composable
 internal fun WatchInstallSample() = WatchInstallScreen(PreviewData.installWatch(), {}, {}, {})

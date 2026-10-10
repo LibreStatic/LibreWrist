@@ -25,7 +25,9 @@ import io.openshm.patcher.ui.screens.home.HomeUiState
 import io.openshm.patcher.ui.screens.home.InstalledBuild
 import io.openshm.patcher.ui.screens.home.UpdateOffer
 import io.openshm.patcher.ui.screens.install.GrantRow
+import io.openshm.patcher.data.GrantKind
 import io.openshm.patcher.ui.screens.install.InstallItem
+import io.openshm.patcher.ui.screens.install.SelfAdbPhase
 import io.openshm.patcher.ui.screens.install.InstallUiState
 import io.openshm.patcher.ui.screens.profile.ProfileUiState
 import io.openshm.patcher.ui.screens.selftest.AllSetUiState
@@ -113,15 +115,29 @@ internal object PreviewData {
                 label = out.label,
                 packageName = out.packageName(PREFIX),
                 status = itemStatus(index),
-                grants = AppCatalogue.current.grants[out.id].orEmpty().map { GrantRow(it, grantStatus(index)) },
+                grants = AppCatalogue.current.grants[out.id].orEmpty().map {
+                    GrantRow(it, grantStatus(index), manual = device == Device.Phone && it.kind in PHONE_USER_KINDS)
+                },
+                onboarding = out.userOnboarding,
             )
         }
 
+    private val PHONE_USER_KINDS = setOf(GrantKind.Permission, GrantKind.AppOp)
+
+    /** Health Monitor installed, the bridge being sent. */
     fun installPhone() = InstallUiState(
-        installItems(Device.Phone, { i -> if (i == 0) CheckStatus.Passed else CheckStatus.Pending }) { i ->
+        installItems(Device.Phone, { CheckStatus.Pending }) { i ->
             if (i == 0) CheckStatus.Passed else CheckStatus.Running
         },
         running = true,
+    )
+
+    /** Everything installed; some access granted, the rest waiting for the user, and the Wireless debugging fallback at the code step. */
+    fun installPhoneGrants() = InstallUiState(
+        installItems(Device.Phone, { CheckStatus.Pending }) { CheckStatus.Passed }.map { item ->
+            item.copy(grants = item.grants.mapIndexed { n, row -> if (n < 3) row.copy(status = CheckStatus.Passed) else row })
+        },
+        selfAdb = SelfAdbPhase.WaitingForCode,
     )
 
     fun installWatch() = InstallUiState(

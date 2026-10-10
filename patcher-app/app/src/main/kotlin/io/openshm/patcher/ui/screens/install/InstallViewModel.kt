@@ -2,9 +2,20 @@ package io.openshm.patcher.ui.screens.install
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.openshm.patcher.R
+import io.openshm.patcher.adb.GrantApplier
+import io.openshm.patcher.adb.GrantTarget
 import io.openshm.patcher.build.BuildStorage
+import io.openshm.patcher.data.GrantKind
+import io.openshm.patcher.device.AndroidPhoneProbe
+import io.openshm.patcher.device.LaunchRequest
+import io.openshm.patcher.device.PhoneGrants
+import io.openshm.patcher.device.PhoneSettings
+import io.openshm.patcher.device.SelfAdbController
+import io.openshm.patcher.device.SelfAdbService
+import io.openshm.patcher.device.SelfAdbSnapshot
+import io.openshm.patcher.device.SessionPhoneInstaller
 import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.Device
 import io.openshm.patcher.data.SetupSession
@@ -12,12 +23,16 @@ import io.openshm.patcher.device.AdbWatchDevice
 import io.openshm.patcher.device.WatchLink
 import io.openshm.patcher.ui.components.CheckStatus
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+
+private val USER_ONLY_ON_PHONE = setOf(GrantKind.Permission, GrantKind.AppOp)
 
 /**
  * The install list for one device, in the catalogue `installOrder` (shm-watch, bridge-watch, alarm
@@ -33,55 +48,102 @@ internal fun installItemsFor(device: Device): List<InstallItem> {
                 label = out.label,
                 packageName = out.packageName(session.packagePrefix),
                 status = CheckStatus.Pending,
-                grants = AppCatalogue.current.grants[out.id].orEmpty().map { GrantRow(it, CheckStatus.Pending) },
+                grants = AppCatalogue.current.grants[out.id].orEmpty().map {
+                    // On the phone the app cannot apply permissions and app ops; only the user (or self-ADB) can.
+                    GrantRow(it, CheckStatus.Pending, manual = device == Device.Phone && it.kind in USER_ONLY_ON_PHONE)
+                },
+                onboarding = out.userOnboarding,
             )
         }
 }
 
-internal fun InstallUiState.setItem(index: Int, status: CheckStatus, grantStatus: CheckStatus? = null) = copy(
-    items = items.mapIndexed { i, item ->
-        if (i != index) item
-        else item.copy(
-            status = status,
-            grants = if (grantStatus == null) item.grants else item.grants.map { it.copy(status = grantStatus) },
-        )
-    },
-)
-
 /**
- * Shell-stage view model for the phone install screen: walks the list on a timer. Installs through
- * the platform installer replace [run].
+ * Installs the built phone outputs with the platform installer and tracks the access they need; the
+ * work is in [PhoneInstallRunner]. Intents for the system screens go out through [launches], which
+ * the nav host starts from the activity (the installer's confirmation must come from there).
  */
-open class InstallViewModel(device: Device) : ViewModel() {
-    private val _state = MutableStateFlow(InstallUiState(installItemsFor(device)))
+class InstallPhoneViewModel(application: Application) : AndroidViewModel(application) {
+    private val _state = MutableStateFlow(InstallUiState(installItemsFor(Device.Phone)))
     val state: StateFlow<InstallUiState> = _state.asStateFlow()
+
+    private val outgoing = Channel<LaunchRequest>(Channel.BUFFERED)
+
+    /** Screens to start: Settings pages, the app's own setup, the installer's confirmation. */
+    val launches: Flow<LaunchRequest> = outgoing.receiveAsFlow()
+
+    private val runner = PhoneInstallRunner(
+        installer = SessionPhoneInstaller(application) { outgoing.trySend(LaunchRequest(it)) },
+        grants = PhoneGrants(AndroidPhoneProbe(application)),
+        build = { BuildStorage(application).record.read() },
+        prefix = { SetupSession.state.value.packagePrefix },
+        lockPrefix = { SetupSession.update { it.copy(prefixLocked = true) } },
+    )
+
+    init {
+        viewModelScope.launch { SelfAdbController.state.collect(::onAdb) }
+    }
 
     fun onEvent(event: InstallEvent) {
         when (event) {
-            InstallEvent.Start -> run()
-            is InstallEvent.OpenGrantSettings -> Unit
+            InstallEvent.Start -> start()
+            InstallEvent.Refresh -> runner.refresh(_state)
+            is InstallEvent.OpenGrantSettings -> openSettings(event)
+            InstallEvent.OpenUnknownSources -> outgoing.trySend(PhoneSettings.unknownSources(getApplication()))
+            is InstallEvent.OpenApp -> openApp(event.outputId)
+            InstallEvent.GrantWithAdb -> startAdb()
+            is InstallEvent.SubmitPairingCode -> SelfAdbController.submitCode(event.code)
+            InstallEvent.CancelAdb -> SelfAdbController.finish()
         }
     }
 
-    private fun run() {
+    private fun start() {
         if (_state.value.running) return
-        viewModelScope.launch {
-            _state.update { it.copy(running = true, errorRes = null) }
-            for (index in _state.value.items.indices) {
-                _state.update { it.setItem(index, CheckStatus.Running, CheckStatus.Pending) }
-                delay(STEP_DELAY_MS)
-                _state.update { it.setItem(index, CheckStatus.Passed, CheckStatus.Passed) }
-            }
-            _state.update { it.copy(running = false) }
-        }
+        _state.update { it.copy(running = true) }
+        viewModelScope.launch(Dispatchers.IO) { runner.run(_state) }
     }
 
-    private companion object {
-        const val STEP_DELAY_MS = 600L
+    private fun openSettings(event: InstallEvent.OpenGrantSettings) {
+        val item = _state.value.items.firstOrNull { it.outputId == event.outputId } ?: return
+        val grant = item.grants.firstOrNull { it.grant.name == event.grantName }?.grant ?: return
+        val target = PhoneGrants.targetFor(grant)
+        outgoing.trySend(PhoneSettings.intentFor(target, item.packageName, PhoneGrants.componentOf(item.packageName, grant)))
+    }
+
+    private fun openApp(outputId: String) {
+        val item = _state.value.items.firstOrNull { it.outputId == outputId } ?: return
+        getApplication<Application>().packageManager.getLaunchIntentForPackage(item.packageName)
+            ?.let { outgoing.trySend(LaunchRequest(it)) }
+    }
+
+    private fun startAdb() {
+        if (_state.value.running || !SelfAdbController.begin()) return
+        _state.update { it.copy(errorRes = null, errorDetail = null) }
+        SelfAdbService.start(getApplication())
+    }
+
+    /**
+     * Follows [SelfAdbController], which outlives this view model. Once connected, one view model
+     * takes the connection and applies the grants; the attempt then ends (and the service stops),
+     * also when that work is cancelled.
+     */
+    private fun onAdb(snapshot: SelfAdbSnapshot) {
+        _state.update { it.copy(selfAdb = snapshot.phase) }
+        if (snapshot.phase == SelfAdbPhase.Failed) {
+            if (snapshot.needsNotifications) fail(_state, R.string.install_error_notifications, snapshot.error)
+            else fail(_state, R.string.phone_adb_failed, snapshot.error)
+        }
+        if (snapshot.phase == SelfAdbPhase.Granting) {
+            val client = SelfAdbController.takeClient() ?: return
+            viewModelScope.launch(Dispatchers.IO) {
+                try {
+                    runner.grantWithAdb(_state) { pkg, grants -> GrantApplier(client, GrantTarget.PHONE).apply(pkg, grants) }
+                } finally {
+                    SelfAdbController.finish()
+                }
+            }
+        }
     }
 }
-
-class InstallPhoneViewModel : InstallViewModel(Device.Phone)
 
 /** Installs the built watch outputs over ADB and applies their grants; the work is in [WatchInstallRunner]. */
 class InstallWatchViewModel(application: Application) : AndroidViewModel(application) {
@@ -98,7 +160,7 @@ class InstallWatchViewModel(application: Application) : AndroidViewModel(applica
     fun onEvent(event: InstallEvent) {
         when (event) {
             InstallEvent.Start -> start()
-            is InstallEvent.OpenGrantSettings -> Unit
+            else -> Unit
         }
     }
 

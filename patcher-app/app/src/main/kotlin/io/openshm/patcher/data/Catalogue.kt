@@ -48,6 +48,8 @@ data class OutputApp(
     /** Package name; `${PKG_PREFIX}` is replaced by the chosen prefix. */
     val packageTemplate: String,
     val inputId: String?,
+    /** The install list asks the user to finish this app's own setup after it is installed (`then: userOnboarding`). */
+    val userOnboarding: Boolean = false,
 ) {
     fun packageName(prefix: String): String = packageTemplate.replace("\${PKG_PREFIX}", prefix)
 }

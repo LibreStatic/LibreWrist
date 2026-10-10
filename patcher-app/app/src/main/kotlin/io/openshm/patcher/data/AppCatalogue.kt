@@ -26,7 +26,7 @@ class LoadedCatalogue(val engine: Catalogue, private val resolve: (Int) -> Strin
 
     /** The outputs, in the catalogue `installOrder` order. */
     val outputs: List<OutputApp> = engine.installOrder.map { step ->
-        mapOutput(engine.outputs.first { it.id == step.output })
+        mapOutput(engine.outputs.first { it.id == step.output }).copy(userOnboarding = step.then == "userOnboarding")
     }
 
     fun output(id: String): OutputApp = outputs.first { it.id == id }
