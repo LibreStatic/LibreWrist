@@ -2,6 +2,8 @@
 <resources>
     <!-- Compose draws everything; this theme only supplies the window background and system bars. -->
     <style name="Theme.OpenSHMPatcher" parent="@android:style/Theme.DeviceDefault.DayNight">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
         <item name="android:windowBackground">@color/window_background</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>

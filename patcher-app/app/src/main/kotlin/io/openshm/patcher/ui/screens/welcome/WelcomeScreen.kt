@@ -88,23 +88,26 @@ fun WelcomeScreen(
                 .padding(start = 16.dp, end = 16.dp, top = 8.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                IconAction(Icons.Rounded.Settings, stringResource(R.string.action_settings), onSettings)
-            }
-            WelcomeHero(Modifier.fillMaxWidth().height(300.dp))
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            // The app's own header instead of a system title bar: the name set large, settings at the end.
+            Row(
+                Modifier.fillMaxWidth().padding(start = 8.dp, top = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 Text(
                     stringResource(R.string.app_name),
-                    style = MaterialTheme.typography.labelLarge,
+                    style = MaterialTheme.typography.headlineMediumEmphasized,
                     color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.weight(1f).semantics { heading() },
                 )
-                Text(
-                    stringResource(R.string.welcome_title),
-                    style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
-                    modifier = Modifier.semantics { heading() },
-                )
+                IconAction(Icons.Rounded.Settings, stringResource(R.string.action_settings), onSettings)
             }
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            WelcomeHero(Modifier.fillMaxWidth().height(220.dp))
+            Text(
+                stringResource(R.string.welcome_title),
+                style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+                modifier = Modifier.padding(horizontal = 8.dp).semantics { heading() },
+            )
+            Column(Modifier.padding(horizontal = 8.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Promise(Icons.Rounded.Download, R.string.welcome_promise_download,
                     MaterialTheme.colorScheme.primaryContainer, MaterialTheme.colorScheme.onPrimaryContainer)
                 Promise(Icons.Rounded.Tune, R.string.welcome_promise_patch,

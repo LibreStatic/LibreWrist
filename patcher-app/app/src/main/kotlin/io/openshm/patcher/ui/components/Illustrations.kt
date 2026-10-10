@@ -2,15 +2,18 @@ package io.openshm.patcher.ui.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
@@ -75,60 +78,92 @@ fun PhoneWatchIllustration(modifier: Modifier = Modifier, scale: Float = 1f, lin
     }
 }
 
-/** Welcome hero: phone, watch and the link on a large rounded panel (canvas Welcome artboard). */
+/**
+ * Welcome hero: phone, watch and the link between them, drawn as one fixed-size composition that is
+ * centered on a rounded panel of any width (canvas Welcome artboard, restyled with expressive shapes).
+ */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun WelcomeHero(modifier: Modifier = Modifier) {
     val colors = MaterialTheme.colorScheme
-    val accentBar = androidx.compose.ui.graphics.lerp(colors.tertiaryContainer, colors.tertiary, 0.35f)
+    val strap = androidx.compose.ui.graphics.lerp(colors.tertiaryContainer, colors.tertiary, 0.35f)
     Box(
         modifier
             .clearAndSetSemantics { }
             .clip(RoundedCornerShape(48.dp))
             .background(colors.surfaceContainerHigh),
+        contentAlignment = Alignment.Center,
     ) {
-        Box(
-            Modifier
-                .offset((-40).dp, (-50).dp)
-                .size(220.dp)
-                .clip(PolygonShape(MaterialShapes.Cookie12Sided))
-                .background(colors.primaryContainer.copy(alpha = 0.55f)),
-        )
-        Column(
-            Modifier
-                .offset(62.dp, 58.dp)
-                .size(width = 118.dp, height = 204.dp)
-                .clip(RoundedCornerShape(28.dp))
-                .background(colors.primary),
-            verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Box(Modifier.size(width = 62.dp, height = 10.dp).clip(RoundedCornerShape(5.dp)).background(colors.primaryContainer))
-            Box(Modifier.size(width = 62.dp, height = 10.dp).clip(RoundedCornerShape(5.dp)).background(colors.inversePrimary))
-            Box(Modifier.size(width = 40.dp, height = 10.dp).clip(RoundedCornerShape(5.dp)).background(colors.inversePrimary))
+        Box(Modifier.size(width = 300.dp, height = 196.dp)) {
+            // Soft expressive shapes behind each device.
+            Box(
+                Modifier.offset((-14).dp, (-6).dp).size(196.dp).rotate(12f)
+                    .clip(PolygonShape(MaterialShapes.Cookie12Sided))
+                    .background(colors.primaryContainer.copy(alpha = 0.6f)),
+            )
+            Box(
+                Modifier.offset(196.dp, 42.dp).size(124.dp)
+                    .clip(PolygonShape(MaterialShapes.Sunny))
+                    .background(colors.tertiaryContainer.copy(alpha = 0.7f)),
+            )
+            // Phone: rounded body, speaker pill, a heart on screen and two content bars.
+            Column(
+                Modifier
+                    .offset(40.dp, 6.dp)
+                    .size(width = 104.dp, height = 184.dp)
+                    .clip(RoundedCornerShape(28.dp))
+                    .background(colors.primary),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Box(
+                    Modifier.padding(top = 12.dp).size(width = 30.dp, height = 6.dp)
+                        .clip(RoundedCornerShape(3.dp)).background(colors.onPrimary.copy(alpha = 0.35f)),
+                )
+                Box(
+                    Modifier.padding(top = 26.dp).size(52.dp)
+                        .clip(PolygonShape(MaterialShapes.Cookie9Sided))
+                        .background(colors.primaryContainer),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    androidx.compose.material3.Icon(
+                        androidx.compose.material.icons.Icons.Rounded.Favorite,
+                        contentDescription = null,
+                        tint = colors.onPrimaryContainer,
+                        modifier = Modifier.size(26.dp),
+                    )
+                }
+                Box(
+                    Modifier.padding(top = 18.dp).size(width = 64.dp, height = 9.dp)
+                        .clip(RoundedCornerShape(5.dp)).background(colors.inversePrimary),
+                )
+                Box(
+                    Modifier.padding(top = 8.dp).size(width = 42.dp, height = 9.dp)
+                        .clip(RoundedCornerShape(5.dp)).background(colors.inversePrimary.copy(alpha = 0.7f)),
+                )
+            }
+            LinkWave(colors.tertiary, Modifier.offset(150.dp, 88.dp).size(width = 52.dp, height = 20.dp), strokeWidth = 3.5.dp, cycles = 3)
+            // Watch: strap behind a round face with a bezel ring and the time.
+            Box(
+                Modifier.offset(239.dp, 26.dp).size(width = 30.dp, height = 144.dp)
+                    .clip(RoundedCornerShape(15.dp)).background(strap),
+            )
+            Box(
+                Modifier.offset(208.dp, 52.dp).size(92.dp)
+                    .clip(androidx.compose.foundation.shape.CircleShape)
+                    .background(colors.tertiary),
+                contentAlignment = Alignment.Center,
+            ) {
+                Box(
+                    Modifier.size(76.dp)
+                        .border(2.dp, colors.onTertiary.copy(alpha = 0.3f), androidx.compose.foundation.shape.CircleShape),
+                )
+                androidx.compose.material3.Text(
+                    "10:08",
+                    style = MaterialTheme.typography.titleMediumEmphasized,
+                    color = colors.onTertiary,
+                )
+            }
         }
-        LinkWave(colors.tertiary, Modifier.offset(172.dp, 140.dp).size(width = 64.dp, height = 20.dp), strokeWidth = 3.5.dp, cycles = 4)
-        Box(
-            Modifier
-                .offset(262.dp, 76.dp)
-                .size(width = 22.dp, height = 168.dp)
-                .clip(RoundedCornerShape(11.dp))
-                .background(accentBar),
-        )
-        Box(
-            Modifier
-                .offset(226.dp, 104.dp)
-                .size(94.dp)
-                .clip(PolygonShape(MaterialShapes.Clover4Leaf))
-                .background(colors.tertiary),
-        )
-        androidx.compose.material3.Text(
-            "10:08",
-            style = MaterialTheme.typography.titleMedium,
-            color = colors.onTertiary,
-            modifier = Modifier.offset(252.dp, 140.dp).width(42.dp),
-            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-        )
     }
 }
 
