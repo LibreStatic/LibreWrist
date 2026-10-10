@@ -10,6 +10,9 @@ core = "1.19.0"
 coroutines = "1.9.0"
 junit4 = "4.13.2"
 robolectric = "4.17"
+smali = "3.0.10"
+arsclib = "1.4.0"
+apksig = "9.3.1"
 # Development-only Compose Driver harness; never on the app's runtime classpath.
 compose-driver = "0.5.0"
 
@@ -25,6 +28,11 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 junit4 = { module = "junit:junit", version.ref = "junit4" }
+smali-smali = { module = "com.android.tools.smali:smali", version.ref = "smali" }
+smali-baksmali = { module = "com.android.tools.smali:smali-baksmali", version.ref = "smali" }
+smali-dexlib2 = { module = "com.android.tools.smali:smali-dexlib2", version.ref = "smali" }
+arsclib = { module = "io.github.reandroid:ARSCLib", version.ref = "arsclib" }
+apksig = { module = "com.android.tools.build:apksig", version.ref = "apksig" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 compose-driver = { module = "io.github.jdemeulenaere:compose-driver", version.ref = "compose-driver" }
 
