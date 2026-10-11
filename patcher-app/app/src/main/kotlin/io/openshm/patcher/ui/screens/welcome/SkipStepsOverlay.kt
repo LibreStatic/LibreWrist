@@ -85,11 +85,16 @@ internal fun SkipStepsOverlay(dialog: SkipDialog?, onConfirm: () -> Unit, onCanc
     val pane = stringResource(R.string.skip_title)
     // The app centers a width-capped column; the scrim reaches past it to cover the whole window.
     val windowWidth = with(LocalDensity.current) { LocalWindowInfo.current.containerSize.width.toDp() }
-    AnimatedVisibility(dialog != null, enter = fadeIn(), exit = fadeOut()) {
+    // The width goes on the animated container: its fade is an offscreen layer clipped to its own bounds.
+    AnimatedVisibility(
+        dialog != null,
+        modifier = Modifier.fillMaxHeight().requiredWidth(windowWidth),
+        enter = fadeIn(),
+        exit = fadeOut(),
+    ) {
         Box(
             Modifier
-                .fillMaxHeight()
-                .requiredWidth(windowWidth)
+                .fillMaxSize()
                 .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.32f))
                 // Swallows taps so the screen underneath stays still.
                 .pointerInput(Unit) { detectTapGestures { } }
