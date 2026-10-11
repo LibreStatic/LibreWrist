@@ -109,7 +109,8 @@ internal fun InstallPhoneConflictSample(confirming: Boolean = false) =
     InstallPhoneScreen(PreviewData.installPhoneConflict(confirming), {}, {}, {})
 
 @Composable
-internal fun WatchInstallSample() = WatchInstallScreen(PreviewData.installWatch(), {}, {}, {})
+internal fun WatchInstallSample(unreachable: Boolean = false) =
+    WatchInstallScreen(if (unreachable) PreviewData.installWatchUnreachable() else PreviewData.installWatch(), {}, {}, {})
 
 @Composable
 internal fun DevModeSample() = DevModeScreen(PreviewData.devMode(), {}, {}, {})

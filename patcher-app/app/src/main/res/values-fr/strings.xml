@@ -385,6 +385,8 @@
     <string name="phone_adb_interrupted">L\'association a été interrompue.</string>
     <string name="watch_error_unreachable">La montre est injoignable. Vérifiez que le débogage sans fil est activé et que les deux appareils sont sur le même Wi-Fi.</string>
     <string name="watch_error_pairing">La montre ne fait plus confiance à ce téléphone. Revenez en arrière et associez à nouveau.</string>
+    <string name="watch_unreachable_title">Montre introuvable</string>
+    <string name="watch_unreachable_body">Réveille la montre, vérifie qu\'elle est sur le même Wi-Fi que ce téléphone et réactive le débogage sans fil (Paramètres › Options pour les développeurs › Débogage sans fil). Réessaie ensuite.</string>
     <string name="grant_permission">Autorisation</string>
     <string name="grant_appop">Opération d\'app</string>
     <string name="grant_setting">Paramètre système</string>

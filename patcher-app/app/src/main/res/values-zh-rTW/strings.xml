@@ -373,6 +373,8 @@
     <string name="phone_adb_interrupted">配對已中斷。</string>
     <string name="watch_error_unreachable">無法連線到手錶。請確認無線偵錯已開啟，並且兩台裝置連線的是同一個 Wi-Fi。</string>
     <string name="watch_error_pairing">手錶不再信任這支手機。請返回並重新配對。</string>
+    <string name="watch_unreachable_title">找不到手錶</string>
+    <string name="watch_unreachable_body">請喚醒手錶，確認它與這支手機連接同一個 Wi-Fi，並重新開啟無線偵錯（設定 › 開發人員選項 › 無線偵錯），然後再試一次。</string>
     <string name="grant_permission">權限</string>
     <string name="grant_appop">應用程式操作</string>
     <string name="grant_setting">系統設定</string>

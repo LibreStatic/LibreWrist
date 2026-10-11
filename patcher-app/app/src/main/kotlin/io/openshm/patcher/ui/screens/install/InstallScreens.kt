@@ -29,6 +29,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.TextButton
@@ -174,6 +175,29 @@ fun WatchInstallScreen(
     accent = Accent.Tertiary,
 )
 
+/** The watch could not be reached: what to check, with the raw error as a detail line. Retry is the footer action. */
+@Composable
+private fun WatchUnreachableCard(detail: String?) {
+    Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.errorContainer, modifier = Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
+                StatusShape(CheckStatus.Failed, size = 24.dp)
+                Text(
+                    stringResource(R.string.watch_unreachable_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onErrorContainer,
+                )
+            }
+            Text(
+                stringResource(R.string.watch_unreachable_body),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onErrorContainer,
+            )
+            detail?.let { PackageId(it, maxLines = 3) }
+        }
+    }
+}
+
 @Composable
 private fun InstallStep(
     step: SetupStep,
@@ -216,7 +240,9 @@ private fun InstallStep(
         },
     ) {
         if (!LocalTwoPane.current) IntroText(intro)
-        state.errorRes?.let {
+        if (state.errorRes == R.string.watch_error_unreachable) {
+            WatchUnreachableCard(state.errorDetail)
+        } else state.errorRes?.let {
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
                 StatusShape(CheckStatus.Failed, size = 24.dp)
                 Column {

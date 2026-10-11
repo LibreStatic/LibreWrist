@@ -262,6 +262,9 @@ fun InstallPhoneConflictDialogDriver() = PreviewHost(ColorMode.Fallback) { Insta
 fun WatchInstallDriver() = PreviewHost(ColorMode.Fallback) { WatchInstallSample() }
 
 @Composable
+fun WatchInstallUnreachableDriver() = PreviewHost(ColorMode.Fallback) { WatchInstallSample(unreachable = true) }
+
+@Composable
 fun DevModeDriver() = PreviewHost(ColorMode.Fallback) { DevModeSample() }
 
 @Composable

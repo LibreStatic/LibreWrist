@@ -486,6 +486,8 @@
     <string name="phone_adb_interrupted">Pairing was interrupted.</string>
     <string name="watch_error_unreachable">The watch is not reachable. Check that Wireless debugging is on and both devices share the same Wi-Fi.</string>
     <string name="watch_error_pairing">The watch no longer trusts this phone. Go back and pair again.</string>
+    <string name="watch_unreachable_title">Can\'t find the watch</string>
+    <string name="watch_unreachable_body">Wake the watch, make sure it is on the same Wi-Fi as this phone, and turn Wireless debugging back on (Settings › Developer options › Wireless debugging). Then try again.</string>
     <string name="grant_permission">Permission</string>
     <string name="grant_appop">App operation</string>
     <string name="grant_setting">System setting</string>

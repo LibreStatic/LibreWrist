@@ -391,6 +391,8 @@
     <string name="phone_adb_interrupted">З\'єднання перервано.</string>
     <string name="watch_error_unreachable">Годинник недоступний. Переконайтеся, що Бездротове налагодження ввімкнено й обидва пристрої в одній мережі Wi-Fi.</string>
     <string name="watch_error_pairing">Годинник більше не довіряє цьому телефону. Поверніться й з\'єднайте знову.</string>
+    <string name="watch_unreachable_title">Годинник не знайдено</string>
+    <string name="watch_unreachable_body">Розбуди годинник, переконайся, що він у тій самій мережі Wi-Fi, що й цей телефон, і знову ввімкни налагодження через Wi-Fi (Налаштування › Параметри розробника › Бездротове налагодження). Потім спробуй ще раз.</string>
     <string name="grant_permission">Дозвіл</string>
     <string name="grant_appop">Операція застосунку</string>
     <string name="grant_setting">Системне налаштування</string>

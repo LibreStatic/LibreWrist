@@ -379,6 +379,8 @@
     <string name="phone_adb_interrupted">Die Kopplung wurde unterbrochen.</string>
     <string name="watch_error_unreachable">Die Uhr ist nicht erreichbar. Prüfe, ob Kabelloses Debugging aktiviert ist und beide Geräte im selben Wi-Fi sind.</string>
     <string name="watch_error_pairing">Die Uhr vertraut diesem Smartphone nicht mehr. Gehe zurück und koppele erneut.</string>
+    <string name="watch_unreachable_title">Uhr nicht gefunden</string>
+    <string name="watch_unreachable_body">Weck die Uhr auf, prüfe, ob sie im selben WLAN wie dieses Telefon ist, und schalte das kabellose Debugging wieder ein (Einstellungen › Entwickleroptionen › Kabelloses Debugging). Versuche es dann erneut.</string>
     <string name="grant_permission">Berechtigung</string>
     <string name="grant_appop">App-Operation</string>
     <string name="grant_setting">Systemeinstellung</string>

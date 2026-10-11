@@ -403,6 +403,8 @@
     <string name="phone_adb_interrupted">تمت مقاطعة الاقتران.</string>
     <string name="watch_error_unreachable">تعذّر الوصول إلى الساعة. تأكد من تفعيل تصحيح الأخطاء اللاسلكي ومن أن الجهازين على شبكة Wi-Fi نفسها.</string>
     <string name="watch_error_pairing">لم تعد الساعة تثق بهذا الهاتف. ارجع وأعد الاقتران.</string>
+    <string name="watch_unreachable_title">تعذّر العثور على الساعة</string>
+    <string name="watch_unreachable_body">أيقظ الساعة، وتأكد من أنها على شبكة Wi-Fi نفسها المتصل بها هذا الهاتف، ثم شغّل التصحيح اللاسلكي من جديد (الإعدادات › خيارات المطورين › التصحيح اللاسلكي). ثم حاول مرة أخرى.</string>
     <string name="grant_permission">إذن</string>
     <string name="grant_appop">عملية التطبيق</string>
     <string name="grant_setting">إعداد النظام</string>

@@ -49,7 +49,7 @@ private class FakeWatchTransport : AdbTransport {
     }
 }
 
-private class MemoryHostStore(override var host: String? = null) : WatchHostStore
+private class MemoryHostStore(override var host: String? = null, override var serialPrefix: String? = null) : WatchHostStore
 
 private fun connectService(host: String, port: Int, name: String = "adb-$port") =
     AdbService(name, host, port, AdbServiceType.CONNECT)
@@ -157,5 +157,41 @@ class WatchLinkTest {
         val l = link(FakeWatchBackend(), store, emptyList(), timeoutMillis = 100)
         l.pair("192.0.2.9", 37115, "123456")
         assertEquals("192.0.2.9", store.host)
+    }
+
+    @Test
+    fun serialPrefixIsTheInstanceNameWithoutTheRandomSuffix() {
+        assertEquals("adb-R5CT123-", WatchLink.serialPrefixOf("adb-R5CT123-aBc9Xz"))
+        assertNull(WatchLink.serialPrefixOf("adb-9999"))
+        assertNull(WatchLink.serialPrefixOf("something-else-abc"))
+        assertNull(WatchLink.serialPrefixOf(""))
+    }
+
+    @Test
+    fun candidatesPreferTheRememberedHostAndFallBackToTheSerialPrefix() {
+        val sameIp = connectService("192.0.2.9", 40001, "adb-R5CT123-aaa")
+        val moved = connectService("192.0.2.50", 40002, "adb-R5CT123-bbb")
+        val other = connectService("192.0.2.60", 40003, "adb-OTHER99-ccc")
+        assertEquals(listOf(sameIp), WatchLink.candidates(listOf(moved, sameIp, other), "192.0.2.9", "adb-R5CT123-"))
+        assertEquals(listOf(moved), WatchLink.candidates(listOf(moved, other), "192.0.2.9", "adb-R5CT123-"))
+        assertTrue(WatchLink.candidates(listOf(moved, other), "192.0.2.9", null).isEmpty())
+        assertTrue(WatchLink.candidates(listOf(other), "192.0.2.9", "adb-R5CT123-").isEmpty())
+    }
+
+    @Test
+    fun watchWithANewAddressIsFoundBySerialAndTheStoreIsUpdated() = runBlocking {
+        val backend = FakeWatchBackend()
+        val store = MemoryHostStore("192.0.2.9", "adb-R5CT123-")
+        val l = link(backend, store, listOf(connectService("192.0.2.50", 40002, "adb-R5CT123-zzz")))
+        assertTrue(l.client().isConnected)
+        assertEquals(listOf("192.0.2.50" to 40002), backend.connects)
+        assertEquals("192.0.2.50", store.host)
+    }
+
+    @Test
+    fun connectingRecordsTheSerialPrefix() = runBlocking {
+        val store = MemoryHostStore("192.0.2.9")
+        link(FakeWatchBackend(), store, listOf(connectService("192.0.2.9", 40001, "adb-R5CT123-aaa"))).client()
+        assertEquals("adb-R5CT123-", store.serialPrefix)
     }
 }

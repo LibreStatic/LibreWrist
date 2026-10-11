@@ -379,6 +379,8 @@
     <string name="phone_adb_interrupted">Koppelen is onderbroken.</string>
     <string name="watch_error_unreachable">Het horloge is niet bereikbaar. Controleer of Draadloze foutopsporing aanstaat en of beide apparaten hetzelfde Wi-Fi delen.</string>
     <string name="watch_error_pairing">Het horloge vertrouwt deze telefoon niet meer. Ga terug en koppel opnieuw.</string>
+    <string name="watch_unreachable_title">Horloge niet gevonden</string>
+    <string name="watch_unreachable_body">Maak het horloge wakker, controleer of het op hetzelfde wifi-netwerk zit als deze telefoon en zet draadloos foutopsporen weer aan (Instellingen › Ontwikkelaarsopties › Draadloze foutopsporing). Probeer het daarna opnieuw.</string>
     <string name="grant_permission">Recht</string>
     <string name="grant_appop">App-bewerking</string>
     <string name="grant_setting">Systeeminstelling</string>

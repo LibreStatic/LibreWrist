@@ -379,6 +379,8 @@
     <string name="phone_adb_interrupted">Eşleme yarıda kesildi.</string>
     <string name="watch_error_unreachable">Saate ulaşılamıyor. Kablosuz hata ayıklamanın açık olduğunu ve iki cihazın aynı Wi-Fi ağında bulunduğunu kontrol edin.</string>
     <string name="watch_error_pairing">Saat artık bu telefona güvenmiyor. Geri dönüp yeniden eşleyin.</string>
+    <string name="watch_unreachable_title">Saat bulunamadı</string>
+    <string name="watch_unreachable_body">Saati uyandır, bu telefonla aynı Wi-Fi ağında olduğundan emin ol ve kablosuz hata ayıklamayı yeniden aç (Ayarlar › Geliştirici seçenekleri › Kablosuz hata ayıklama). Sonra tekrar dene.</string>
     <string name="grant_permission">İzin</string>
     <string name="grant_appop">Uygulama işlemi</string>
     <string name="grant_setting">Sistem ayarı</string>

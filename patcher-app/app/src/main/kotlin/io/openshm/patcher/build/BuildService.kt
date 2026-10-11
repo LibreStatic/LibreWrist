@@ -18,6 +18,7 @@ import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.InputStore
 import io.openshm.patcher.data.SetupSession
 import io.openshm.patcher.data.signingKeyStore
+import io.openshm.patcher.device.WatchKeepAlive
 import io.openshm.patcher.ui.screens.build.BuildStage
 import io.openshm.patcher.ui.screens.build.titleRes
 import java.security.MessageDigest
@@ -34,7 +35,9 @@ import kotlinx.coroutines.launch
  * service only does the work, shows the progress notification and stops itself at the end.
  *
  * Lifecycle: a start while a build runs is a no-op. The service is not sticky: if the process dies the
- * build is gone (state Idle, no record), and the Build screen starts it again next time. Outputs are
+ * build is gone (state Idle, no record), and the Build screen starts it again next time. A [WatchKeepAlive]
+ * keeps the watch link alive during the build; after a successful build it outlives this service (the
+ * process-wide instance stops when the watch install is done or after [WatchKeepAlive.AFTER_BUILD_MS]). Outputs are
  * built one after the other on one background coroutine; a partial wake lock (with a timeout) keeps the
  * CPU awake meanwhile.
  */
@@ -59,6 +62,8 @@ class BuildService : Service() {
         val disabled = AppCatalogue.current.effectiveDisabled(session.disabledPatches)
         val key = buildKey(AppCatalogue.current.serial, session.packagePrefix, outputIds, disabled)
         if (!BuildController.tryBegin(key)) return START_NOT_STICKY
+        val keepAlive = WatchKeepAlive.get(this)
+        keepAlive.start()
         job = scope.launch {
             val lock = (getSystemService(POWER_SERVICE) as PowerManager)
                 .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "openshm:build")
@@ -74,6 +79,10 @@ class BuildService : Service() {
             } finally {
                 notifier.cancel()
                 if (lock.isHeld) lock.release()
+                // A built result is installed on the watch next, so the link stays alive a while longer
+                // (until the watch install finishes, or this limit); otherwise nothing needs it.
+                if (BuildController.state.value.phase == BuildRunPhase.Succeeded) keepAlive.stopAfter(WatchKeepAlive.AFTER_BUILD_MS)
+                else keepAlive.stop()
                 finish()
             }
         }
@@ -83,7 +92,10 @@ class BuildService : Service() {
     override fun onDestroy() {
         scope.cancel()
         wakeLock?.takeIf { it.isHeld }?.release()
-        if (BuildController.state.value.phase == BuildRunPhase.Running) BuildController.fail("The build was interrupted.")
+        if (BuildController.state.value.phase == BuildRunPhase.Running) {
+            WatchKeepAlive.get(this).stop()
+            BuildController.fail("The build was interrupted.")
+        }
         super.onDestroy()
     }
 

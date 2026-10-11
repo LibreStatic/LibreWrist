@@ -391,6 +391,8 @@
     <string name="phone_adb_interrupted">Parowanie zostało przerwane.</string>
     <string name="watch_error_unreachable">Zegarek jest niedostępny. Sprawdź, czy Debugowanie bezprzewodowe jest włączone, a oba urządzenia są w tej samej sieci Wi-Fi.</string>
     <string name="watch_error_pairing">Zegarek już nie ufa temu telefonowi. Wróć i sparuj ponownie.</string>
+    <string name="watch_unreachable_title">Nie znaleziono zegarka</string>
+    <string name="watch_unreachable_body">Wybudź zegarek, upewnij się, że jest w tej samej sieci Wi-Fi co ten telefon, i ponownie włącz debugowanie bezprzewodowe (Ustawienia › Opcje programisty › Debugowanie bezprzewodowe). Potem spróbuj ponownie.</string>
     <string name="grant_permission">Uprawnienie</string>
     <string name="grant_appop">Operacja aplikacji</string>
     <string name="grant_setting">Ustawienie systemowe</string>

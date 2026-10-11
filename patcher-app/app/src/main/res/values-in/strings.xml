@@ -373,6 +373,8 @@
     <string name="phone_adb_interrupted">Penyandingan terputus.</string>
     <string name="watch_error_unreachable">Jam tidak dapat dijangkau. Pastikan Debugging nirkabel aktif dan kedua perangkat berada di Wi-Fi yang sama.</string>
     <string name="watch_error_pairing">Jam tidak lagi memercayai ponsel ini. Kembali dan sandingkan lagi.</string>
+    <string name="watch_unreachable_title">Jam tangan tidak ditemukan</string>
+    <string name="watch_unreachable_body">Bangunkan jam tangan, pastikan terhubung ke Wi-Fi yang sama dengan ponsel ini, lalu aktifkan kembali Penelusuran bug nirkabel (Setelan › Opsi developer › Penelusuran bug nirkabel). Lalu coba lagi.</string>
     <string name="grant_permission">Izin</string>
     <string name="grant_appop">Operasi aplikasi</string>
     <string name="grant_setting">Setelan sistem</string>

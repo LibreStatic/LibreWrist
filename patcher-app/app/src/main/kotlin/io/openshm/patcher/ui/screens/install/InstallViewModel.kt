@@ -22,6 +22,7 @@ import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.Device
 import io.openshm.patcher.data.SetupSession
 import io.openshm.patcher.device.AdbWatchDevice
+import io.openshm.patcher.device.WatchKeepAlive
 import io.openshm.patcher.device.WatchLink
 import io.openshm.patcher.ui.components.CheckStatus
 import kotlinx.coroutines.Dispatchers
@@ -31,6 +32,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -175,6 +177,14 @@ class InstallWatchViewModel(application: Application) : AndroidViewModel(applica
         lockPrefix = { SetupSession.update { it.copy(prefixLocked = true) } },
         log = { Log.w("BridgeStart", it) },
     )
+
+    init {
+        // The keep-alive of the build only matters until the watch install is complete.
+        viewModelScope.launch {
+            _state.first { it.done }
+            WatchKeepAlive.get(application).stop()
+        }
+    }
 
     fun onEvent(event: InstallEvent) {
         when (event) {

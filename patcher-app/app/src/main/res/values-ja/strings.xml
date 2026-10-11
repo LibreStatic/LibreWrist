@@ -373,6 +373,8 @@
     <string name="phone_adb_interrupted">ペア設定が中断されました。</string>
     <string name="watch_error_unreachable">ウォッチに接続できません。ワイヤレスデバッグがオンで、両方のデバイスが同じWi-Fiに接続されているか確認してください。</string>
     <string name="watch_error_pairing">ウォッチがこのスマートフォンを信頼しなくなりました。戻って、もう一度ペア設定してください。</string>
+    <string name="watch_unreachable_title">ウォッチが見つかりません</string>
+    <string name="watch_unreachable_body">ウォッチの画面を点灯させ、このスマートフォンと同じ Wi-Fi に接続されていることを確認して、ワイヤレスデバッグをもう一度オンにしてください（設定 › 開発者向けオプション › ワイヤレスデバッグ）。その後、もう一度お試しください。</string>
     <string name="grant_permission">権限</string>
     <string name="grant_appop">アプリ操作</string>
     <string name="grant_setting">システム設定</string>

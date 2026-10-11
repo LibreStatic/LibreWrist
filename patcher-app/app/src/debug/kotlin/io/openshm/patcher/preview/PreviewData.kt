@@ -246,6 +246,12 @@ internal object PreviewData {
         running = true,
     )
 
+    fun installWatchUnreachable() = InstallUiState(
+        installItems(Device.Watch, { CheckStatus.Pending }) { i -> if (i == 0) CheckStatus.Failed else CheckStatus.Pending },
+        errorRes = R.string.watch_error_unreachable,
+        errorDetail = "The watch's Wireless debugging service was not found",
+    )
+
     fun devMode() = DevModeUiState()
 
     fun disableStock() = DisableStockUiState(

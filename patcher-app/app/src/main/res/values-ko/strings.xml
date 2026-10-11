@@ -373,6 +373,8 @@
     <string name="phone_adb_interrupted">페어링이 중단되었습니다.</string>
     <string name="watch_error_unreachable">워치에 연결할 수 없습니다. 무선 디버깅이 켜져 있고 두 기기가 같은 Wi-Fi에 연결되어 있는지 확인하세요.</string>
     <string name="watch_error_pairing">워치가 더 이상 이 휴대전화를 신뢰하지 않습니다. 뒤로 가서 다시 페어링하세요.</string>
+    <string name="watch_unreachable_title">워치를 찾을 수 없어요</string>
+    <string name="watch_unreachable_body">워치를 깨우고, 이 휴대전화와 같은 Wi-Fi에 연결되어 있는지 확인한 다음 무선 디버깅을 다시 켜세요(설정 › 개발자 옵션 › 무선 디버깅). 그런 다음 다시 시도하세요.</string>
     <string name="grant_permission">권한</string>
     <string name="grant_appop">앱 작업</string>
     <string name="grant_setting">시스템 설정</string>

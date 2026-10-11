@@ -391,6 +391,8 @@
     <string name="phone_adb_interrupted">Сопряжение прервано.</string>
     <string name="watch_error_unreachable">Часы недоступны. Проверьте, что Беспроводная отладка включена и оба устройства в одной сети Wi-Fi.</string>
     <string name="watch_error_pairing">Часы больше не доверяют этому телефону. Вернитесь и выполните сопряжение снова.</string>
+    <string name="watch_unreachable_title">Часы не найдены</string>
+    <string name="watch_unreachable_body">Разбуди часы, убедись, что они в той же сети Wi-Fi, что и этот телефон, и снова включи отладку по Wi-Fi (Настройки › Для разработчиков › Отладка по Wi-Fi). Затем попробуй ещё раз.</string>
     <string name="grant_permission">Разрешение</string>
     <string name="grant_appop">Операция приложения</string>
     <string name="grant_setting">Системная настройка</string>

@@ -379,6 +379,8 @@
     <string name="phone_adb_interrupted">L\'associazione è stata interrotta.</string>
     <string name="watch_error_unreachable">L\'orologio non è raggiungibile. Controlla che il debug wireless sia attivo e che entrambi i dispositivi siano sullo stesso Wi-Fi.</string>
     <string name="watch_error_pairing">L\'orologio non si fida più di questo telefono. Torna indietro e associa di nuovo.</string>
+    <string name="watch_unreachable_title">Orologio non trovato</string>
+    <string name="watch_unreachable_body">Riattiva l\'orologio, controlla che sia sulla stessa rete Wi-Fi di questo telefono e riattiva il debug wireless (Impostazioni › Opzioni sviluppatore › Debug wireless). Poi riprova.</string>
     <string name="grant_permission">Permesso</string>
     <string name="grant_appop">Operazione dell\'app</string>
     <string name="grant_setting">Impostazione di sistema</string>

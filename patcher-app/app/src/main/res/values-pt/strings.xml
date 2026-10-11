@@ -379,6 +379,8 @@
     <string name="phone_adb_interrupted">O pareamento foi interrompido.</string>
     <string name="watch_error_unreachable">Não foi possível alcançar o relógio. Verifique se a depuração sem fio está ativada e se os dois dispositivos estão no mesmo Wi-Fi.</string>
     <string name="watch_error_pairing">O relógio não confia mais neste celular. Volte e pareie novamente.</string>
+    <string name="watch_unreachable_title">Relógio não encontrado</string>
+    <string name="watch_unreachable_body">Acorde o relógio, confira se ele está no mesmo Wi-Fi que este celular e ative a depuração sem fio novamente (Configurações › Opções do desenvolvedor › Depuração sem fio). Depois tente de novo.</string>
     <string name="grant_permission">Permissão</string>
     <string name="grant_appop">Operação do app</string>
     <string name="grant_setting">Configuração do sistema</string>

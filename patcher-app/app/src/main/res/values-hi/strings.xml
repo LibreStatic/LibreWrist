@@ -379,6 +379,8 @@
     <string name="phone_adb_interrupted">पेयरिंग बीच में रुक गई।</string>
     <string name="watch_error_unreachable">घड़ी तक नहीं पहुँचा जा सका। जाँचें कि वायरलेस डीबगिंग चालू है और दोनों डिवाइस एक ही Wi-Fi पर हैं।</string>
     <string name="watch_error_pairing">घड़ी अब इस फ़ोन पर भरोसा नहीं करती। वापस जाकर फिर से पेयर करें।</string>
+    <string name="watch_unreachable_title">घड़ी नहीं मिल रही</string>
+    <string name="watch_unreachable_body">घड़ी को जगाओ, देखो कि वह इस फ़ोन के उसी Wi-Fi पर है, और वायरलेस डीबगिंग फिर से चालू करो (सेटिंग › डेवलपर विकल्प › वायरलेस डीबगिंग)। फिर दोबारा कोशिश करो।</string>
     <string name="grant_permission">अनुमति</string>
     <string name="grant_appop">ऐप ऑपरेशन</string>
     <string name="grant_setting">सिस्टम सेटिंग</string>
