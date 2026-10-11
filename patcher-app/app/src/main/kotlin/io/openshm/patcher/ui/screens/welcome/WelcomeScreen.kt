@@ -43,6 +43,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
@@ -135,46 +136,59 @@ private fun WelcomeBody(
     ) {
         val wide = maxWidth >= TwoPaneMinWidth
         Column(Modifier.widthIn(max = if (wide) WelcomeWideMaxWidth else SinglePaneMaxWidth).fillMaxSize()) {
-            Column(
-                Modifier
-                    .weight(1f)
-                    .verticalScroll(rememberScrollState())
-                    .padding(start = 16.dp, end = 16.dp, top = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp),
-            ) {
-                // The app's own header instead of a system title bar: the name set large, settings at the end.
-                Row(
-                    Modifier.fillMaxWidth().padding(start = 8.dp, top = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        stringResource(R.string.app_name),
-                        style = MaterialTheme.typography.headlineMediumEmphasized,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.weight(1f).semantics { heading() },
-                    )
-                    IconAction(Icons.Rounded.Settings, stringResource(R.string.action_settings), onSettings)
-                }
-                if (wide) {
-                    // Unfolded: hero on the left, the words and the actions together on the right.
-                    Row(horizontalArrangement = Arrangement.spacedBy(32.dp), verticalAlignment = Alignment.CenterVertically) {
+            if (wide) {
+                // Unfolded: the header stays on top; hero on the left and the words with the actions on the
+                // right, centered in the remaining height (scrolling only when they do not fit).
+                WelcomeHeader(onSettings, Modifier.padding(start = 24.dp, end = 16.dp, top = 16.dp))
+                BoxWithConstraints(Modifier.weight(1f).fillMaxWidth()) {
+                    Row(
+                        Modifier
+                            .verticalScroll(rememberScrollState())
+                            .heightIn(min = maxHeight)
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(32.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
                         WelcomeHero(Modifier.weight(1f).height(260.dp))
                         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(20.dp)) {
                             WelcomeText()
                             WelcomeActions(onEvent, onGetStarted, Modifier.padding(top = 4.dp))
                         }
                     }
-                } else {
+                }
+            } else {
+                Column(
+                    Modifier
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState())
+                        .padding(start = 16.dp, end = 16.dp, top = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(20.dp),
+                ) {
+                    WelcomeHeader(onSettings, Modifier.padding(start = 8.dp, top = 8.dp))
                     WelcomeHero(Modifier.fillMaxWidth().height(220.dp))
                     WelcomeText()
                 }
+                WelcomeActions(onEvent, onGetStarted, Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 16.dp))
             }
-            if (!wide) WelcomeActions(onEvent, onGetStarted, Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 16.dp))
         }
     }
 
     if (state.changesSheetVisible) {
         ChangesSheet(state.changes, onDismiss = { onEvent(WelcomeEvent.HideChanges) })
+    }
+}
+
+/** The app's own header instead of a system title bar: the name set large, settings at the end. */
+@Composable
+private fun WelcomeHeader(onSettings: () -> Unit, modifier: Modifier = Modifier) {
+    Row(modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            stringResource(R.string.app_name),
+            style = MaterialTheme.typography.headlineMediumEmphasized,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.weight(1f).semantics { heading() },
+        )
+        IconAction(Icons.Rounded.Settings, stringResource(R.string.action_settings), onSettings)
     }
 }
 
