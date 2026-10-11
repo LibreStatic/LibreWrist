@@ -12,18 +12,15 @@ import kotlinx.coroutines.flow.update
 
 /** What the build installs, grants and turns off on each device, from the catalogue and the chosen prefix. */
 internal fun buildChanges(prefix: String, profile: WatchProfile): List<DeviceChanges> {
-    val outputs = AppCatalogue.current.outputs.filter { it.id in profile.outputIds }
+    val catalogue = AppCatalogue.current
+    val outputs = catalogue.outputs.filter { it.id in profile.outputIds }
     return Device.entries.map { device ->
-        val onDevice = outputs.filter { it.device == device }
         DeviceChanges(
             device = device,
-            installs = onDevice.map { ChangeLine(it.label, it.packageName(prefix)) },
-            grants = onDevice.flatMap { out ->
-                AppCatalogue.current.grants[out.id].orEmpty().map { ChangeLine(it.name, out.packageName(prefix)) }
+            apps = outputs.filter { it.device == device }.map { out ->
+                AppChange(out.id, out.label, out.packageName(prefix), catalogue.grants[out.id].orEmpty())
             },
-            disables = AppCatalogue.current.stockAppsToDisable
-                .filter { it.device == device }
-                .map { ChangeLine(it.label, it.packageName) },
+            disables = catalogue.stockAppsToDisable.filter { it.device == device },
         )
     }
 }

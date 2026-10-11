@@ -13,6 +13,9 @@ import io.openshm.patcher.ui.components.WelcomeHero
 import io.openshm.patcher.ui.screens.profile.GuideStep
 import io.openshm.patcher.ui.screens.profile.WatchVersionGuide
 import io.openshm.patcher.ui.screens.signingkey.SigningKeyForm
+import io.openshm.patcher.ui.screens.welcome.ChangesContent
+import io.openshm.patcher.ui.screens.welcome.buildChanges
+import io.openshm.patcher.data.WatchProfile
 
 /*
  * Public zero-argument composables for the Compose Driver (tools/compose-driver). They use the
@@ -59,6 +62,12 @@ private fun GuideDriver(step: GuideStep) = PreviewHost(ColorMode.Fallback) {
 
 @Composable
 fun WelcomeChangesDriver() = PreviewHost(ColorMode.Fallback) { WelcomeSample(sheet = true) }
+
+/** The "what will change" content without the modal sheet, so it renders full length. */
+@Composable
+fun ChangesDriver() = PreviewHost(ColorMode.Fallback) {
+    ChangesContent(buildChanges(PreviewData.PREFIX, WatchProfile.WearOs5), Modifier.padding(top = 16.dp))
+}
 
 @Composable
 fun ProfileDriver() = PreviewHost(ColorMode.Fallback) { ProfileSample() }
