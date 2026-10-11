@@ -648,4 +648,5 @@
     <string name="skip_reason_profile">Android %1$s (%2$s) détecté sur la montre connectée.</string>
     <string name="skip_reason_wearable">Votre montre est déjà associée à Galaxy Wearable.</string>
     <string name="skip_reason_watchpair">Votre montre est déjà connectée via le débogage sans fil.</string>
+    <string name="skip_confirm">Compris</string>
 </resources>

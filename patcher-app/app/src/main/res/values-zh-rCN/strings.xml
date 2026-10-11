@@ -632,4 +632,5 @@
     <string name="skip_reason_profile">已在连接的手表上检测到 Android %1$s（%2$s）。</string>
     <string name="skip_reason_wearable">你的手表已与 Galaxy Wearable 配对。</string>
     <string name="skip_reason_watchpair">你的手表已通过无线调试连接。</string>
+    <string name="skip_confirm">知道了</string>
 </resources>

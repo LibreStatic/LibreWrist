@@ -632,4 +632,5 @@
     <string name="skip_reason_profile">接続中のウォッチで Android %1$s（%2$s）を検出しました。</string>
     <string name="skip_reason_wearable">ウォッチはすでに Galaxy Wearable とペア設定されています。</string>
     <string name="skip_reason_watchpair">ウォッチはすでにワイヤレス デバッグで接続されています。</string>
+    <string name="skip_confirm">OK</string>
 </resources>

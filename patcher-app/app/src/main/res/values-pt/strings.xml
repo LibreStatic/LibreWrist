@@ -640,4 +640,5 @@
     <string name="skip_reason_profile">Detectamos Android %1$s (%2$s) no relógio conectado.</string>
     <string name="skip_reason_wearable">Seu relógio já está pareado com o Galaxy Wearable.</string>
     <string name="skip_reason_watchpair">Seu relógio já está conectado pela depuração por Wi-Fi.</string>
+    <string name="skip_confirm">Entendi</string>
 </resources>

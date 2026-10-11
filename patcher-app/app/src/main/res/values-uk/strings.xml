@@ -656,4 +656,5 @@
     <string name="skip_reason_profile">На підключеному годиннику виявлено Android %1$s (%2$s).</string>
     <string name="skip_reason_wearable">Годинник уже з’єднано з Galaxy Wearable.</string>
     <string name="skip_reason_watchpair">Годинник уже підключено через бездротове налагодження.</string>
+    <string name="skip_confirm">Зрозуміло</string>
 </resources>

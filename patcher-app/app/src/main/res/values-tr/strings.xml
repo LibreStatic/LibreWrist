@@ -640,4 +640,5 @@
     <string name="skip_reason_profile">Bağlı saatte Android %1$s (%2$s) algılandı.</string>
     <string name="skip_reason_wearable">Saatiniz zaten Galaxy Wearable ile eşlenmiş.</string>
     <string name="skip_reason_watchpair">Saatiniz zaten kablosuz hata ayıklama ile bağlı.</string>
+    <string name="skip_confirm">Anladım</string>
 </resources>

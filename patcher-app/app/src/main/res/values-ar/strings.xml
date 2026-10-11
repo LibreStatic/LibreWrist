@@ -672,4 +672,5 @@
     <string name="skip_reason_profile">اكتشفنا Android %1$s (%2$s) على الساعة المتصلة.</string>
     <string name="skip_reason_wearable">ساعتك مقترنة بالفعل مع Galaxy Wearable.</string>
     <string name="skip_reason_watchpair">ساعتك متصلة بالفعل عبر تصحيح الأخطاء اللاسلكي.</string>
+    <string name="skip_confirm">حسنًا</string>
 </resources>

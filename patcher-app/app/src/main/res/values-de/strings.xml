@@ -640,4 +640,5 @@
     <string name="skip_reason_profile">Auf der verbundenen Uhr wurde Android %1$s (%2$s) erkannt.</string>
     <string name="skip_reason_wearable">Deine Uhr ist bereits mit Galaxy Wearable gekoppelt.</string>
     <string name="skip_reason_watchpair">Deine Uhr ist bereits über kabelloses Debugging verbunden.</string>
+    <string name="skip_confirm">Verstanden</string>
 </resources>

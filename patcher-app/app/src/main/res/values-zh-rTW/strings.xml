@@ -632,4 +632,5 @@
     <string name="skip_reason_profile">已在連線的手錶上偵測到 Android %1$s（%2$s）。</string>
     <string name="skip_reason_wearable">你的手錶已與 Galaxy Wearable 配對。</string>
     <string name="skip_reason_watchpair">你的手錶已透過無線偵錯連線。</string>
+    <string name="skip_confirm">我知道了</string>
 </resources>

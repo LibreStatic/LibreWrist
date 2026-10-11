@@ -640,4 +640,5 @@
     <string name="skip_reason_profile">Rilevato Android %1$s (%2$s) sull\'orologio collegato.</string>
     <string name="skip_reason_wearable">L\'orologio è già associato a Galaxy Wearable.</string>
     <string name="skip_reason_watchpair">L\'orologio è già connesso tramite debug wireless.</string>
+    <string name="skip_confirm">Ho capito</string>
 </resources>

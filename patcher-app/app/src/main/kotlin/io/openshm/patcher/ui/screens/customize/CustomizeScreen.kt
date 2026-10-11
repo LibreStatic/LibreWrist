@@ -122,7 +122,7 @@ fun CustomizeScreen(
         )
         if (state.showPresets) PresetRow(state.preset) { onEvent(CustomizeEvent.SelectPreset(it)) }
         state.groups.forEach { group ->
-            Column {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 GroupHeader(group)
                 Column(verticalArrangement = GroupedSpacing) {
                     group.patches.forEachIndexed { index, patch ->

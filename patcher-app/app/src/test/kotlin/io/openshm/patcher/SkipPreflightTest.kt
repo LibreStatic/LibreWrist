@@ -6,7 +6,6 @@ import io.openshm.patcher.ui.nav.Route
 import io.openshm.patcher.ui.nav.SetupFlow
 import io.openshm.patcher.ui.nav.SkippedStep
 import io.openshm.patcher.ui.nav.skippableSteps
-import io.openshm.patcher.ui.screens.welcome.SKIP_HOLD_MILLIS
 import io.openshm.patcher.ui.screens.welcome.SkipDialog
 import io.openshm.patcher.ui.screens.welcome.SkipPreflight
 import kotlinx.coroutines.CompletableDeferred
@@ -71,7 +70,7 @@ class SkipPreflightTest {
     }
 
     @Test
-    fun theDialogChecksThenHoldsThenMovesOn() = runTest {
+    fun theDialogChecksThenWaitsForGotIt() = runTest {
         val rec = Recorder()
         val answer = CompletableDeferred<DetectedWatch?>()
         val p = preflight(remembered = true, detect = { answer.await() }, wearableReady = true, rec = rec)
@@ -82,11 +81,12 @@ class SkipPreflightTest {
         runCurrent()
         assertTrue(p.dialog.value is SkipDialog.Skipping)
         assertEquals(3, (p.dialog.value as SkipDialog.Skipping).steps.size)
-        advanceTimeBy(SKIP_HOLD_MILLIS - 1)
+        advanceTimeBy(60_000)
         runCurrent()
+        assertTrue(p.dialog.value is SkipDialog.Skipping)
         assertNull(rec.applied)
         assertEquals(0, rec.went)
-        advanceTimeBy(2)
+        p.confirm()
         runCurrent()
         assertEquals(3, rec.applied!!.size)
         assertEquals(watch, rec.appliedWatch)
@@ -117,14 +117,14 @@ class SkipPreflightTest {
     }
 
     @Test
-    fun backDuringTheHoldSkipsNothing() = runTest {
+    fun backOnTheDialogSkipsNothing() = runTest {
         val rec = Recorder()
         val p = preflight(remembered = true, detect = { watch }, wearableReady = true, rec = rec)
         p.start()
         runCurrent()
         assertTrue(p.dialog.value is SkipDialog.Skipping)
         p.cancel()
-        advanceTimeBy(SKIP_HOLD_MILLIS * 2)
+        p.confirm()
         runCurrent()
         assertNull(p.dialog.value)
         assertNull(rec.applied)
@@ -138,7 +138,10 @@ class SkipPreflightTest {
         val p = preflight(remembered = true, detect = { asked++; watch }, wearableReady = false, rec = rec)
         p.start()
         p.start()
-        advanceTimeBy(SKIP_HOLD_MILLIS + 1)
+        runCurrent()
+        p.start()
+        p.confirm()
+        p.confirm()
         runCurrent()
         assertEquals(1, asked)
         assertEquals(1, rec.went)

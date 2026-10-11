@@ -656,4 +656,5 @@
     <string name="skip_reason_profile">Na połączonym zegarku wykryto Androida %1$s (%2$s).</string>
     <string name="skip_reason_wearable">Zegarek jest już sparowany z Galaxy Wearable.</string>
     <string name="skip_reason_watchpair">Zegarek jest już połączony przez debugowanie bezprzewodowe.</string>
+    <string name="skip_confirm">Rozumiem</string>
 </resources>

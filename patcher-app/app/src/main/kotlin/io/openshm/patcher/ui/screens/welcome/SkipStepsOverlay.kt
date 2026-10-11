@@ -15,7 +15,6 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
@@ -34,7 +33,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearWavyProgressIndicator
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
@@ -59,6 +57,7 @@ import androidx.compose.ui.unit.dp
 import io.openshm.patcher.R
 import io.openshm.patcher.ui.components.CheckStatus
 import io.openshm.patcher.ui.components.PolygonShape
+import io.openshm.patcher.ui.components.PrimaryAction
 import io.openshm.patcher.ui.components.SetupStep
 import io.openshm.patcher.ui.components.StatusShape
 import io.openshm.patcher.ui.nav.Route
@@ -69,11 +68,11 @@ import io.openshm.patcher.ui.theme.PatcherTheme
 
 /**
  * Dims the welcome screen while the remembered watch is asked, then shows a large check, the steps
- * passed over and why, for [SKIP_HOLD_MILLIS] before the flow moves on. Back cancels and skips nothing.
+ * passed over and why, until the user confirms. Back cancels and skips nothing.
  * Drawn in the screen's own window (a scrim and a centered card), not as a platform dialog.
  */
 @Composable
-internal fun SkipStepsOverlay(dialog: SkipDialog?, onCancel: () -> Unit) {
+internal fun SkipStepsOverlay(dialog: SkipDialog?, onConfirm: () -> Unit, onCancel: () -> Unit) {
     // Keeps the last content while the overlay fades out.
     var last by remember { mutableStateOf(dialog) }
     if (dialog != null) last = dialog
@@ -106,7 +105,7 @@ internal fun SkipStepsOverlay(dialog: SkipDialog?, onCancel: () -> Unit) {
                     transitionSpec = { fadeIn() togetherWith fadeOut() using SizeTransform() },
                     label = "skipDialog",
                 ) { shown ->
-                    if (shown is SkipDialog.Skipping) SkippingContent(shown.steps) else CheckingContent()
+                    if (shown is SkipDialog.Skipping) SkippingContent(shown.steps, onConfirm) else CheckingContent()
                 }
             }
         }
@@ -144,7 +143,7 @@ private fun CheckingContent() {
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun SkippingContent(steps: List<SkippedStep>) {
+private fun SkippingContent(steps: List<SkippedStep>, onConfirm: () -> Unit) {
     val reduced = LocalReducedMotion.current
     var shown by remember { mutableStateOf(reduced) }
     LaunchedEffect(Unit) { shown = true }
@@ -157,14 +156,6 @@ private fun SkippingContent(steps: List<SkippedStep>) {
         if (shown) 0f else -90f,
         if (reduced) snap() else spring(dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessVeryLow),
         label = "checkRotation",
-    )
-    // Counts the hold down, so it is clear the flow moves on by itself.
-    var started by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) { started = true }
-    val progress by animateFloatAsState(
-        if (started) 1f else 0f,
-        tween(SKIP_HOLD_MILLIS.toInt()),
-        label = "skipHold",
     )
     val status = PatcherTheme.status
     Column(
@@ -202,7 +193,7 @@ private fun SkippingContent(steps: List<SkippedStep>) {
         Column(Modifier.padding(top = 4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             steps.forEach { SkippedCard(it) }
         }
-        LinearWavyProgressIndicator(progress = { progress }, modifier = Modifier.fillMaxWidth().padding(top = 8.dp))
+        PrimaryAction(stringResource(R.string.skip_confirm), onConfirm, modifier = Modifier.padding(top = 8.dp))
     }
 }
 

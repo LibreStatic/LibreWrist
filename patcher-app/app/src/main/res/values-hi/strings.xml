@@ -640,4 +640,5 @@
     <string name="skip_reason_profile">कनेक्ट की गई घड़ी पर Android %1$s (%2$s) मिला।</string>
     <string name="skip_reason_wearable">आपकी घड़ी पहले से Galaxy Wearable से जुड़ी है।</string>
     <string name="skip_reason_watchpair">आपकी घड़ी पहले से वायरलेस डीबगिंग से कनेक्ट है।</string>
+    <string name="skip_confirm">समझ गया</string>
 </resources>

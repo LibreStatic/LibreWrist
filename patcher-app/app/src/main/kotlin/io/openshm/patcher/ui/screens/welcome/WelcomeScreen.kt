@@ -94,6 +94,7 @@ sealed interface WelcomeEvent {
     data object ShowChanges : WelcomeEvent
     data object HideChanges : WelcomeEvent
     data object GetStarted : WelcomeEvent
+    data object ConfirmSkip : WelcomeEvent
     data object CancelSkip : WelcomeEvent
 }
 
@@ -107,7 +108,11 @@ fun WelcomeScreen(
 ) {
     Box(modifier.fillMaxSize()) {
         WelcomeBody(state, onEvent, onGetStarted, onSettings)
-        SkipStepsOverlay(state.skip, onCancel = { onEvent(WelcomeEvent.CancelSkip) })
+        SkipStepsOverlay(
+            state.skip,
+            onConfirm = { onEvent(WelcomeEvent.ConfirmSkip) },
+            onCancel = { onEvent(WelcomeEvent.CancelSkip) },
+        )
     }
 }
 

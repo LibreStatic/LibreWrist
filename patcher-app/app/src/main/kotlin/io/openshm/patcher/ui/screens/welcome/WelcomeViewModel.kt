@@ -73,6 +73,7 @@ class WelcomeViewModel(application: Application) : AndroidViewModel(application)
             WelcomeEvent.ShowChanges -> _state.update { it.copy(changesSheetVisible = true) }
             WelcomeEvent.HideChanges -> _state.update { it.copy(changesSheetVisible = false) }
             WelcomeEvent.GetStarted -> preflight.start()
+            WelcomeEvent.ConfirmSkip -> preflight.confirm()
             WelcomeEvent.CancelSkip -> preflight.cancel()
         }
     }
