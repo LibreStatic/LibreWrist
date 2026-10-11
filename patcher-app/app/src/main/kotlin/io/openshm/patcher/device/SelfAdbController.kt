@@ -9,11 +9,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
+/** Who started the attempt, so the one that owns the connection is the only one that takes it. */
+enum class SelfAdbPurpose { PhoneGrants, Troubleshoot }
+
 /**
  * What the screens see of the phone's Wireless debugging fallback. [client] is set once connected
  * and until the grants are done; [error] and [needsNotifications] explain a [SelfAdbPhase.Failed].
  */
 data class SelfAdbSnapshot(
+    val purpose: SelfAdbPurpose? = null,
     val phase: SelfAdbPhase? = null,
     val client: AdbClient? = null,
     val granting: Boolean = false,
@@ -37,12 +41,12 @@ object SelfAdbController {
     @Volatile
     private var codeSink: ((String) -> Unit)? = null
 
-    /** Starts an attempt; false (nothing changes) when one is already under way. */
-    fun begin(): Boolean {
+    /** Starts an attempt for [purpose]; false (nothing changes) when one is already under way. */
+    fun begin(purpose: SelfAdbPurpose): Boolean {
         while (true) {
             val current = _state.value
             if (current.active) return false
-            if (_state.compareAndSet(current, SelfAdbSnapshot(phase = SelfAdbPhase.WaitingForService))) return true
+            if (_state.compareAndSet(current, SelfAdbSnapshot(purpose, SelfAdbPhase.WaitingForService))) return true
         }
     }
 
@@ -60,25 +64,30 @@ object SelfAdbController {
     }
 
     /**
-     * Hands out the connection once, to whoever applies the grants. Null when not connected or
-     * when another caller already took it.
+     * Hands out the connection once, to the owner of the attempt. Null when not connected, when
+     * the attempt belongs to another [purpose] or when it was already taken.
      */
-    fun takeClient(): AdbClient? {
+    fun takeClient(purpose: SelfAdbPurpose): AdbClient? {
         while (true) {
             val current = _state.value
             val client = current.client
-            if (!current.active || client == null || current.granting) return null
+            if (!current.active || current.purpose != purpose || client == null || current.granting) return null
             if (_state.compareAndSet(current, current.copy(granting = true))) return client
         }
     }
 
     fun fail(message: String?, needsNotifications: Boolean = false) {
-        _state.value = SelfAdbSnapshot(SelfAdbPhase.Failed, error = message, needsNotifications = needsNotifications)
+        _state.update { SelfAdbSnapshot(it.purpose, SelfAdbPhase.Failed, error = message, needsNotifications = needsNotifications) }
     }
 
     /** The attempt is over (grants done, or the user cancelled): back to idle; the service stops. */
     fun finish() {
         _state.value = SelfAdbSnapshot()
+    }
+
+    /** [finish], but only for an attempt of [purpose] that is still under way (a view model going away). */
+    fun finishIfOwned(purpose: SelfAdbPurpose) {
+        _state.update { if (it.active && it.purpose == purpose) SelfAdbSnapshot() else it }
     }
 
     fun submitCode(code: String) {

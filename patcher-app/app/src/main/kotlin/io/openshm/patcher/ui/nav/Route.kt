@@ -5,6 +5,8 @@ enum class Route(val path: String) {
     Welcome("welcome"),
     Profile("profile"),
     WearablePairing("wearable-pairing"),
+    /** Sub-screen of the WearablePairing step ("Trouble pairing?"); not part of [SetupFlow]. */
+    WearableTroubleshoot("wearable-troubleshoot"),
     WatchPair("watch-pair"),
     Acquire("acquire"),
     GuidedBrowser("guided-browser/{inputId}"),

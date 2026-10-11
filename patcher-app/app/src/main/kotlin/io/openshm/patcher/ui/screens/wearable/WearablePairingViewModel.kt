@@ -36,6 +36,8 @@ class WearablePairingViewModel(application: Application) : AndroidViewModel(appl
             WearablePairingEvent.GetGalaxyWearable -> store()
             // Needs an activity to ask; the host launches the request and calls recheck() after it.
             WearablePairingEvent.AllowBluetooth -> Unit
+            // Navigation: the nav host handles it.
+            WearablePairingEvent.Troubleshoot -> Unit
         }
     }
 

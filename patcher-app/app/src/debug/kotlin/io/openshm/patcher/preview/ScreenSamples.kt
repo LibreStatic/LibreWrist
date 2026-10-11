@@ -1,6 +1,7 @@
 package io.openshm.patcher.preview
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import io.openshm.patcher.ui.screens.acquire.AcquireScreen
 import io.openshm.patcher.ui.screens.acquire.GuidedBrowserScreen
 import io.openshm.patcher.ui.screens.build.BuildDoneScreen
@@ -16,10 +17,13 @@ import io.openshm.patcher.ui.screens.selftest.AllSetScreen
 import io.openshm.patcher.ui.screens.selftest.SelfTestScreen
 import io.openshm.patcher.ui.screens.signingkey.SigningKeyForm
 import io.openshm.patcher.ui.screens.signingkey.SigningKeyScreen
+import io.openshm.patcher.ui.screens.watchpair.LocalFrozenGuideSubStep
 import io.openshm.patcher.ui.screens.watchpair.WatchPairScreen
 import io.openshm.patcher.ui.screens.watchpair.WatchPairUiState
 import io.openshm.patcher.ui.screens.wearable.WearablePairingScreen
 import io.openshm.patcher.ui.screens.wearable.WearablePairingUiState
+import io.openshm.patcher.ui.screens.wearable.TroubleshootUiState
+import io.openshm.patcher.ui.screens.wearable.WearableTroubleshootScreen
 import io.openshm.patcher.ui.screens.welcome.WelcomeScreen
 import io.openshm.patcher.ui.screens.build.BuildStage
 
@@ -49,7 +53,12 @@ internal fun WearablePairingSample(state: WearablePairingUiState = PreviewData.w
     WearablePairingScreen(state, {}, {}, {})
 
 @Composable
-internal fun WatchPairSample(state: WatchPairUiState = PreviewData.watchPairEmpty()) = WatchPairScreen(state, {}, {})
+internal fun WearableTroubleshootSample(state: TroubleshootUiState = TroubleshootUiState()) =
+    WearableTroubleshootScreen(state, {}, {})
+
+@Composable
+internal fun WatchPairSample(state: WatchPairUiState = PreviewData.watchPairEmpty(), subStep: Int = 2) =
+    CompositionLocalProvider(LocalFrozenGuideSubStep provides subStep) { WatchPairScreen(state, {}, {}) }
 
 @Composable
 internal fun AcquireSample() = AcquireScreen(PreviewData.acquire(), {}, {}, {})

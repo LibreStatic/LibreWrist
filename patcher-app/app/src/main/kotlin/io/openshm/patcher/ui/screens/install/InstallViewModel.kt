@@ -13,6 +13,7 @@ import io.openshm.patcher.device.LaunchRequest
 import io.openshm.patcher.device.PhoneGrants
 import io.openshm.patcher.device.PhoneSettings
 import io.openshm.patcher.device.SelfAdbController
+import io.openshm.patcher.device.SelfAdbPurpose
 import io.openshm.patcher.device.SelfAdbService
 import io.openshm.patcher.device.SelfAdbSnapshot
 import io.openshm.patcher.device.SessionPhoneInstaller
@@ -116,7 +117,7 @@ class InstallPhoneViewModel(application: Application) : AndroidViewModel(applica
     }
 
     private fun startAdb() {
-        if (_state.value.running || !SelfAdbController.begin()) return
+        if (_state.value.running || !SelfAdbController.begin(SelfAdbPurpose.PhoneGrants)) return
         _state.update { it.copy(errorRes = null, errorDetail = null) }
         SelfAdbService.start(getApplication())
         outgoing.trySend(PhoneSettings.wirelessDebugging())
@@ -128,13 +129,18 @@ class InstallPhoneViewModel(application: Application) : AndroidViewModel(applica
      * also when that work is cancelled.
      */
     private fun onAdb(snapshot: SelfAdbSnapshot) {
+        // An attempt of another screen (troubleshooting) is not ours to show or to take.
+        if (snapshot.purpose != null && snapshot.purpose != SelfAdbPurpose.PhoneGrants) {
+            _state.update { it.copy(selfAdb = null) }
+            return
+        }
         _state.update { it.copy(selfAdb = snapshot.phase) }
         if (snapshot.phase == SelfAdbPhase.Failed) {
             if (snapshot.needsNotifications) fail(_state, R.string.install_error_notifications, snapshot.error)
             else fail(_state, R.string.phone_adb_failed, snapshot.error)
         }
         if (snapshot.phase == SelfAdbPhase.Granting) {
-            val client = SelfAdbController.takeClient() ?: return
+            val client = SelfAdbController.takeClient(SelfAdbPurpose.PhoneGrants) ?: return
             viewModelScope.launch(Dispatchers.IO) {
                 try {
                     runner.grantWithAdb(_state) { pkg, grants -> GrantApplier(client, GrantTarget.PHONE).apply(pkg, grants) }

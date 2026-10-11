@@ -2,6 +2,8 @@ package io.openshm.patcher.ui.components
 
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -29,10 +31,17 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Bluetooth
+import androidx.compose.material.icons.rounded.DoNotDisturbOn
+import androidx.compose.material.icons.rounded.FlashlightOn
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -53,6 +62,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -85,6 +95,7 @@ internal fun FakeWatch(
     tints: List<Color>,
     reducedMotion: Boolean,
     modifier: Modifier = Modifier,
+    size: Dp = 248.dp,
     screen: @Composable (Int) -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
@@ -109,41 +120,46 @@ internal fun FakeWatch(
     )
     val strap = lerp(colors.tertiaryContainer, colors.tertiary, 0.35f)
 
-    Box(modifier.size(248.dp).clearAndSetSemantics { }, contentAlignment = Alignment.Center) {
-        Box(
-            Modifier.fillMaxSize()
-                .graphicsLayer { rotationZ = turn }
-                .clip(MorphShape(morph) { progress.value })
-                .background(lerp(tints[from], tints[step], progress.value.coerceIn(0f, 1f))),
-        )
-        Box(Modifier.size(width = 76.dp, height = 232.dp).clip(RoundedCornerShape(30.dp)).background(strap))
-        Box(
-            Modifier.size(188.dp).clip(CircleShape).background(Color(0xFF2B2C31))
-                .border(3.dp, Color(0xFF55565E), CircleShape),
-            contentAlignment = Alignment.Center,
-        ) {
-            Box(Modifier.size(164.dp).clip(CircleShape).background(WatchScreen.background), contentAlignment = Alignment.Center) {
-                AnimatedContent(
-                    targetState = step,
-                    transitionSpec = {
-                        if (reducedMotion) {
-                            fadeIn(tween(150)) togetherWith fadeOut(tween(150))
-                        } else {
-                            // Like scrolling on the watch: forward moves the screen up, back moves it down.
-                            val sign = if (targetState > initialState) 1 else -1
-                            val slide = spring(dampingRatio = 0.9f, stiffness = Spring.StiffnessMediumLow, visibilityThreshold = IntOffset.VisibilityThreshold)
-                            (slideInVertically(slide) { sign * it / 2 } + fadeIn(tween(200, delayMillis = 60))) togetherWith
-                                (slideOutVertically(slide) { -sign * it / 2 } + fadeOut(tween(90))) using
-                                SizeTransform(clip = true)
-                        }
-                    },
-                    label = "guideScreen",
-                ) { shown ->
-                    Box(Modifier.size(164.dp), contentAlignment = Alignment.Center) { screen(shown) }
+    val scale = size / 248.dp
+    Box(modifier.size(size).clearAndSetSemantics { }, contentAlignment = Alignment.Center) {
+        Box(Modifier.requiredSize(248.dp).graphicsLayer { scaleX = scale; scaleY = scale }, contentAlignment = Alignment.Center) {
+            Box(
+                Modifier.fillMaxSize()
+                    .graphicsLayer { rotationZ = turn }
+                    .clip(MorphShape(morph) { progress.value })
+                    .background(lerp(tints[from], tints[step], progress.value.coerceIn(0f, 1f))),
+            )
+            Box(Modifier.size(width = 76.dp, height = 232.dp).clip(RoundedCornerShape(30.dp)).background(strap))
+            Box(
+                Modifier.size(188.dp).clip(CircleShape).background(Color(0xFF2B2C31))
+                    .border(3.dp, Color(0xFF55565E), CircleShape),
+                contentAlignment = Alignment.Center,
+            ) {
+                Box(Modifier.size(164.dp).clip(CircleShape).background(WatchScreen.background), contentAlignment = Alignment.Center) {
+                    AnimatedContent(
+                        targetState = step,
+                        transitionSpec = { watchSlide(reducedMotion, forward = targetState > initialState) },
+                        label = "guideScreen",
+                    ) { shown ->
+                        Box(Modifier.size(164.dp), contentAlignment = Alignment.Center) { screen(shown) }
+                    }
                 }
             }
         }
     }
+}
+
+/**
+ * The slide of a watch screen: forward moves the screen up, back moves it down, like scrolling on
+ * the watch; a crossfade with reduced motion.
+ */
+internal fun AnimatedContentTransitionScope<*>.watchSlide(reducedMotion: Boolean, forward: Boolean): ContentTransform {
+    if (reducedMotion) return fadeIn(tween(150)) togetherWith fadeOut(tween(150))
+    val sign = if (forward) 1 else -1
+    val slide = spring(dampingRatio = 0.9f, stiffness = Spring.StiffnessMediumLow, visibilityThreshold = IntOffset.VisibilityThreshold)
+    return (slideInVertically(slide) { sign * it / 2 } + fadeIn(tween(200, delayMillis = 60))) togetherWith
+        (slideOutVertically(slide) { -sign * it / 2 } + fadeOut(tween(90))) using
+        SizeTransform(clip = true)
 }
 
 /**
@@ -215,6 +231,23 @@ internal fun Tile(icon: ImageVector, highlighted: Boolean = false) {
         contentAlignment = Alignment.Center,
     ) {
         Icon(icon, contentDescription = null, tint = if (highlighted) WatchScreen.background else WatchScreen.text, modifier = Modifier.size(18.dp))
+    }
+}
+
+/** The quick panel opened by swiping down: the time on top, round tiles, the gear to tap. */
+@Composable
+internal fun QuickPanel(reducedMotion: Boolean) {
+    val tiles = listOf(Icons.Rounded.Wifi, Icons.Rounded.Bluetooth, Icons.Rounded.DoNotDisturbOn, Icons.Rounded.FlashlightOn)
+    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        WatchText(rememberWatchTime(), WatchScreen.text, 13.sp, FontWeight.SemiBold)
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            tiles.take(2).forEach { Tile(it) }
+            Box(contentAlignment = Alignment.Center) {
+                Tile(Icons.Rounded.Settings, highlighted = true)
+                TouchPoint(reducedMotion)
+            }
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) { tiles.drop(2).forEach { Tile(it) } }
     }
 }
 

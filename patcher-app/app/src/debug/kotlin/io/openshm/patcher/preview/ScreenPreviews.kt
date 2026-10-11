@@ -44,6 +44,11 @@ private fun WearablePairingPreview(@PreviewParameter(ColorModeProvider::class) m
 
 @ScreenPreviews
 @Composable
+private fun WearableTroubleshootPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { WearableTroubleshootSample() }
+
+@ScreenPreviews
+@Composable
 private fun WatchPairPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
     PreviewHost(mode) { WatchPairSample() }
 

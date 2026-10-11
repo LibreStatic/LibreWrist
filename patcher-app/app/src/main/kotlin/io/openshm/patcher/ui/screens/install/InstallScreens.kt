@@ -269,6 +269,28 @@ private fun SelfAdbSection(state: InstallUiState, onEvent: (InstallEvent) -> Uni
             }
             return@Column
         }
+        SelfAdbProgress(
+            phase,
+            onSubmitCode = { onEvent(InstallEvent.SubmitPairingCode(it)) },
+            onRetry = { onEvent(InstallEvent.GrantWithAdb) },
+            onCancel = { onEvent(InstallEvent.CancelAdb) },
+        )
+    }
+}
+
+/**
+ * Where the Wireless debugging fallback is, with the pairing code field and the retry and cancel
+ * actions; shared by the install screen and the pairing troubleshooting.
+ */
+@Composable
+internal fun SelfAdbProgress(
+    phase: SelfAdbPhase,
+    onSubmitCode: (String) -> Unit,
+    onRetry: () -> Unit,
+    onCancel: () -> Unit,
+    @StringRes retryLabel: Int = R.string.phone_adb_action,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(stringResource(phase.messageRes()), style = MaterialTheme.typography.bodyMedium)
         if (phase == SelfAdbPhase.WaitingForCode || phase == SelfAdbPhase.WrongCode) {
             var code by rememberSaveable { mutableStateOf("") }
@@ -280,21 +302,17 @@ private fun SelfAdbSection(state: InstallUiState, onEvent: (InstallEvent) -> Uni
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
             )
-            OutlinedAction(
-                stringResource(R.string.phone_adb_submit),
-                { onEvent(InstallEvent.SubmitPairingCode(code)) },
-                Icons.Rounded.Check,
-            )
+            OutlinedAction(stringResource(R.string.phone_adb_submit), { onSubmitCode(code) }, Icons.Rounded.Check)
         }
         if (phase == SelfAdbPhase.Failed || phase == SelfAdbPhase.Ambiguous) {
-            OutlinedAction(stringResource(R.string.phone_adb_action), { onEvent(InstallEvent.GrantWithAdb) }, Icons.Rounded.Refresh)
+            OutlinedAction(stringResource(retryLabel), onRetry, Icons.Rounded.Refresh)
         }
-        QuietAction(stringResource(R.string.action_cancel), { onEvent(InstallEvent.CancelAdb) })
+        QuietAction(stringResource(R.string.action_cancel), onCancel)
     }
 }
 
 @StringRes
-private fun SelfAdbPhase.messageRes(): Int = when (this) {
+internal fun SelfAdbPhase.messageRes(): Int = when (this) {
     SelfAdbPhase.WaitingForService -> R.string.phone_adb_waiting_service
     SelfAdbPhase.WaitingForCode -> R.string.phone_adb_waiting_code
     SelfAdbPhase.WrongCode -> R.string.phone_adb_wrong_code

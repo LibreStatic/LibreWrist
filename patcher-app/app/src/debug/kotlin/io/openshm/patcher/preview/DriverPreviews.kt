@@ -19,6 +19,9 @@ import io.openshm.patcher.ui.components.WelcomeHero
 import io.openshm.patcher.ui.screens.profile.GuideStep
 import io.openshm.patcher.ui.screens.profile.WatchVersionGuide
 import io.openshm.patcher.ui.screens.signingkey.SigningKeyForm
+import io.openshm.patcher.ui.screens.install.SelfAdbPhase
+import io.openshm.patcher.ui.screens.wearable.ClearOutcome
+import io.openshm.patcher.ui.screens.wearable.TroubleshootUiState
 import io.openshm.patcher.ui.screens.welcome.ChangesContent
 import io.openshm.patcher.ui.screens.welcome.buildChanges
 import io.openshm.patcher.data.WatchProfile
@@ -107,15 +110,44 @@ fun WearablePairingDeniedDriver() = PreviewHost(ColorMode.Fallback) {
     WearablePairingSample(PreviewData.wearable(bluetoothAllowed = false, bonded = emptyList()))
 }
 
+/** "Trouble pairing?": idle, waiting for the pairing code, the warning dialog, clearing, done, failed. */
+@Composable
+fun WearableTroubleshootDriver() = PreviewHost(ColorMode.Fallback) { WearableTroubleshootSample() }
+
+@Composable
+fun WearableTroubleshootCodeDriver() = PreviewHost(ColorMode.Fallback) {
+    WearableTroubleshootSample(TroubleshootUiState(adb = SelfAdbPhase.WaitingForCode, pendingClear = true))
+}
+
+@Composable
+fun WearableTroubleshootDialogDriver() = PreviewHost(ColorMode.Fallback) {
+    WearableTroubleshootSample(TroubleshootUiState(confirming = true))
+}
+
+@Composable
+fun WearableTroubleshootDoneDriver() = PreviewHost(ColorMode.Fallback) {
+    WearableTroubleshootSample(TroubleshootUiState(outcome = ClearOutcome.Success))
+}
+
+@Composable
+fun WearableTroubleshootFailedDriver() = PreviewHost(ColorMode.Fallback) {
+    WearableTroubleshootSample(
+        TroubleshootUiState(outcome = ClearOutcome.Failed, errorRes = R.string.troubleshoot_clear_failed, detail = "Failed"),
+    )
+}
+
 /** Watch pairing: the inline guide at its first and last steps, found, manual, pairing and failed. */
 @Composable
 fun WatchPairDriver() = PreviewHost(ColorMode.Fallback) { WatchPairSample() }
 
 @Composable
-fun WatchPairGuideLastDriver() = PreviewHost(ColorMode.Fallback) { WatchPairSample(PreviewData.watchPairGuide(4)) }
+fun WatchPairGuideLastDriver() = PreviewHost(ColorMode.Fallback) { WatchPairSample(PreviewData.watchPairGuide(3)) }
 
 @Composable
-fun WatchPairGuideWifiDriver() = PreviewHost(ColorMode.Fallback) { WatchPairSample(PreviewData.watchPairGuide(2)) }
+fun WatchPairGuideWifiDriver() = PreviewHost(ColorMode.Fallback) { WatchPairSample(PreviewData.watchPairGuide(1)) }
+
+@Composable
+fun WatchPairGuideWirelessDriver() = PreviewHost(ColorMode.Fallback) { WatchPairSample(PreviewData.watchPairGuide(2), subStep = 3) }
 
 @Composable
 fun WatchPairReadyDriver() = PreviewHost(ColorMode.Fallback) { WatchPairSample(PreviewData.watchPairReady()) }

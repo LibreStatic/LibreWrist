@@ -58,6 +58,9 @@ sealed interface WearablePairingEvent {
     data object AllowBluetooth : WearablePairingEvent
     data object OpenGalaxyWearable : WearablePairingEvent
     data object GetGalaxyWearable : WearablePairingEvent
+
+    /** Opens the "Trouble pairing?" guide. */
+    data object Troubleshoot : WearablePairingEvent
 }
 
 private val howToSteps = listOf(
@@ -122,22 +125,29 @@ fun WearablePairingScreen(
                 }
             }
         }
+        TextButton(onClick = { onEvent(WearablePairingEvent.Troubleshoot) }, modifier = Modifier.fillMaxWidth()) {
+            Text(stringResource(R.string.troubleshoot_open))
+        }
         NoteRow(Icons.Rounded.Watch, stringResource(R.string.wearable_note_back))
     }
 }
 
 /** The numbered walk-through of pairing a watch in Galaxy Wearable. */
 @Composable
-private fun HowToPair() {
+private fun HowToPair() = NumberedStepsCard(R.string.wearable_howto_title, howToSteps)
+
+/** A card with a heading and a numbered list of short steps. */
+@Composable
+internal fun NumberedStepsCard(@StringRes title: Int, steps: List<Int>) {
     Surface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(28.dp), color = MaterialTheme.colorScheme.tertiaryContainer) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Text(
-                stringResource(R.string.wearable_howto_title),
+                stringResource(title),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onTertiaryContainer,
                 modifier = Modifier.semantics { heading() },
             )
-            howToSteps.forEachIndexed { index, res ->
+            steps.forEachIndexed { index, res ->
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
                     androidx.compose.foundation.layout.Box(
                         Modifier.size(24.dp).background(MaterialTheme.colorScheme.tertiary, CircleShape),

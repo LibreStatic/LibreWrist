@@ -8,7 +8,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,14 +21,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.BatteryFull
-import androidx.compose.material.icons.rounded.Bluetooth
-import androidx.compose.material.icons.rounded.DoNotDisturbOn
-import androidx.compose.material.icons.rounded.FlashlightOn
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.material.icons.rounded.Notifications
-import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialShapes
@@ -49,20 +43,14 @@ import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import io.openshm.patcher.R
 import io.openshm.patcher.ui.components.FakeWatch
 import io.openshm.patcher.ui.components.Item
 import io.openshm.patcher.ui.components.ScreenList
-import io.openshm.patcher.ui.components.Tile
-import io.openshm.patcher.ui.components.TouchPoint
-import io.openshm.patcher.ui.components.WatchScreen
-import io.openshm.patcher.ui.components.WatchText
-import io.openshm.patcher.ui.components.rememberWatchTime
+import io.openshm.patcher.ui.components.QuickPanel
 import io.openshm.patcher.ui.theme.LocalReducedMotion
 
 /** The walk-through on a watch, one screen per step, from the watch face to the version numbers. */
@@ -195,22 +183,5 @@ private fun GuideWatch(step: GuideStep, reducedMotion: Boolean) {
                 reducedMotion,
             )
         }
-    }
-}
-
-/** The quick panel opened by swiping down: the time on top, round tiles, the gear to tap. */
-@Composable
-private fun QuickPanel(reducedMotion: Boolean) {
-    val tiles = listOf(Icons.Rounded.Wifi, Icons.Rounded.Bluetooth, Icons.Rounded.DoNotDisturbOn, Icons.Rounded.FlashlightOn)
-    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        WatchText(rememberWatchTime(), WatchScreen.text, 13.sp, FontWeight.SemiBold)
-        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            tiles.take(2).forEach { Tile(it) }
-            Box(contentAlignment = Alignment.Center) {
-                Tile(Icons.Rounded.Settings, highlighted = true)
-                TouchPoint(reducedMotion)
-            }
-        }
-        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) { tiles.drop(2).forEach { Tile(it) } }
     }
 }

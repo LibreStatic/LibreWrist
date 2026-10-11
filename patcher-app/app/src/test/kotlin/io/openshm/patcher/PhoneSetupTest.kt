@@ -14,6 +14,7 @@ import io.openshm.patcher.data.Grant
 import io.openshm.patcher.data.GrantKind
 import io.openshm.patcher.device.PhoneGrants
 import io.openshm.patcher.device.SelfAdbController
+import io.openshm.patcher.device.SelfAdbPurpose
 import io.openshm.patcher.device.PhoneInstaller
 import io.openshm.patcher.device.PhoneProbe
 import io.openshm.patcher.device.SettingsTarget
@@ -439,17 +440,17 @@ class SelfAdbControllerTest {
     @Test
     fun anAttemptIsActiveUntilFinishedAndOnlyOneRunsAtATime() {
         assertFalse(SelfAdbController.state.value.active)
-        assertTrue(SelfAdbController.begin())
-        assertFalse(SelfAdbController.begin())
+        assertTrue(SelfAdbController.begin(SelfAdbPurpose.PhoneGrants))
+        assertFalse(SelfAdbController.begin(SelfAdbPurpose.PhoneGrants))
         assertEquals(SelfAdbPhase.WaitingForService, SelfAdbController.state.value.phase)
         SelfAdbController.finish()
         assertFalse(SelfAdbController.state.value.active)
-        assertTrue(SelfAdbController.begin())
+        assertTrue(SelfAdbController.begin(SelfAdbPurpose.PhoneGrants))
     }
 
     @Test
     fun sessionStatesAreFollowedAndIdleIsIgnored() {
-        SelfAdbController.begin()
+        SelfAdbController.begin(SelfAdbPurpose.PhoneGrants)
         SelfAdbController.onSession(SelfAdbState.Idle)
         assertEquals(SelfAdbPhase.WaitingForService, SelfAdbController.state.value.phase)
         SelfAdbController.onSession(SelfAdbState.WaitingForCode(1))
@@ -461,16 +462,16 @@ class SelfAdbControllerTest {
 
     @Test
     fun theConnectionIsHandedOutOnceAndOnlyWhenConnected() {
-        SelfAdbController.begin()
-        assertNull(SelfAdbController.takeClient())
+        SelfAdbController.begin(SelfAdbPurpose.PhoneGrants)
+        assertNull(SelfAdbController.takeClient(SelfAdbPurpose.PhoneGrants))
         SelfAdbController.onSession(SelfAdbState.Connected(client))
-        assertTrue(SelfAdbController.takeClient() === client)
-        assertNull(SelfAdbController.takeClient())
+        assertTrue(SelfAdbController.takeClient(SelfAdbPurpose.PhoneGrants) === client)
+        assertNull(SelfAdbController.takeClient(SelfAdbPurpose.PhoneGrants))
     }
 
     @Test
     fun aFailureEndsTheAttemptAndLateStatesDoNotReviveIt() {
-        SelfAdbController.begin()
+        SelfAdbController.begin(SelfAdbPurpose.PhoneGrants)
         SelfAdbController.onSession(SelfAdbState.Failed(io.openshm.patcher.adb.AdbException.Discovery("no service")))
         val s = SelfAdbController.state.value
         assertEquals(SelfAdbPhase.Failed, s.phase)
@@ -478,12 +479,12 @@ class SelfAdbControllerTest {
         assertFalse(s.active)
         SelfAdbController.onSession(SelfAdbState.Connecting)
         assertEquals(SelfAdbPhase.Failed, SelfAdbController.state.value.phase)
-        assertTrue(SelfAdbController.begin()) // retry is allowed
+        assertTrue(SelfAdbController.begin(SelfAdbPurpose.PhoneGrants)) // retry is allowed
     }
 
     @Test
     fun missingNotificationAccessIsReportedAsSuch() {
-        SelfAdbController.begin()
+        SelfAdbController.begin(SelfAdbPurpose.PhoneGrants)
         SelfAdbController.fail("no permission", needsNotifications = true)
         assertTrue(SelfAdbController.state.value.needsNotifications)
         assertFalse(SelfAdbController.state.value.active)

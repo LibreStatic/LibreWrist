@@ -81,6 +81,8 @@ import io.openshm.patcher.ui.screens.watchpair.WatchPairViewModel
 import io.openshm.patcher.ui.screens.wearable.WearablePairingEvent
 import io.openshm.patcher.ui.screens.wearable.WearablePairingScreen
 import io.openshm.patcher.ui.screens.wearable.WearablePairingViewModel
+import io.openshm.patcher.ui.screens.wearable.WearableTroubleshootScreen
+import io.openshm.patcher.ui.screens.wearable.WearableTroubleshootViewModel
 import io.openshm.patcher.ui.screens.welcome.WelcomeScreen
 import io.openshm.patcher.ui.screens.welcome.WelcomeViewModel
 
@@ -145,11 +147,30 @@ fun PatcherNavHost(
             WearablePairingScreen(
                 state,
                 onEvent = { event ->
-                    if (event == WearablePairingEvent.AllowBluetooth) permission.launch(Manifest.permission.BLUETOOTH_CONNECT) else vm.onEvent(event)
+                    when (event) {
+                        WearablePairingEvent.AllowBluetooth -> permission.launch(Manifest.permission.BLUETOOTH_CONNECT)
+                        WearablePairingEvent.Troubleshoot -> navController.navigate(Route.WearableTroubleshoot.path)
+                        else -> vm.onEvent(event)
+                    }
                 },
                 onContinue = { next(Route.WearablePairing) },
                 onBack = back,
             )
+        }
+        composable(Route.WearableTroubleshoot.path) {
+            val vm: WearableTroubleshootViewModel = viewModel()
+            val state by vm.state.collectAsStateWithLifecycle()
+            val context = LocalContext.current
+            LaunchedEffect(vm) {
+                vm.launches.collect { request ->
+                    try {
+                        context.startActivity(request.intent)
+                    } catch (e: ActivityNotFoundException) {
+                        request.fallback?.let { runCatching { context.startActivity(it) } }
+                    }
+                }
+            }
+            WearableTroubleshootScreen(state, vm::onEvent, onBack = back)
         }
         composable(Route.WatchPair.path) {
             val vm: WatchPairViewModel = viewModel()
