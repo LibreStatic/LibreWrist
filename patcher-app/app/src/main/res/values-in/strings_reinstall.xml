@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="reinstall_action">Copot dan pasang</string>
+    <string name="reinstall_error_phone">Salinan yang ditandatangani dengan kunci berbeda sudah ada di ponsel ini, sehingga tidak bisa diperbarui.</string>
+    <string name="reinstall_error_watch">Salinan yang ditandatangani dengan kunci berbeda sudah ada di jam ini, sehingga tidak bisa diperbarui.</string>
+    <string name="reinstall_error_uninstall">Salinan yang terpasang tidak dapat dicopot, jadi tidak ada yang dipasang.</string>
+    <string name="reinstall_dialog_title">Copot %1$s?</string>
+    <string name="reinstall_dialog_body_phone">Salinan yang terpasang ditandatangani dengan kunci lain, sehingga tidak bisa diperbarui. Memasang ulang akan menghapus datanya di ponsel ini, seperti pengaturan, pemasangan perangkat, dan pengukuran yang belum disinkronkan. Tindakan ini tidak dapat dibatalkan.</string>
+    <string name="reinstall_dialog_body_watch">Salinan yang terpasang ditandatangani dengan kunci lain, sehingga tidak bisa diperbarui. Memasang ulang akan menghapus datanya di jam ini, seperti pengaturan, pemasangan perangkat, dan pengukuran yang belum disinkronkan. Tindakan ini tidak dapat dibatalkan.</string>
+</resources>

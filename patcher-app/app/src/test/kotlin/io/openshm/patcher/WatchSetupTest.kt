@@ -14,6 +14,8 @@ import io.openshm.patcher.data.Grant
 import io.openshm.patcher.data.GrantKind
 import io.openshm.patcher.data.StockApp
 import io.openshm.patcher.data.Device
+import io.openshm.patcher.device.PackageKind
+import io.openshm.patcher.device.UninstallResult
 import io.openshm.patcher.device.UnsupportedGrantException
 import io.openshm.patcher.device.WatchDevice
 import io.openshm.patcher.device.toAdbGrant
@@ -144,6 +146,10 @@ private class FakeDevice : WatchDevice {
         disableThrows(pkg)?.let { throw it }
         disabled += pkg
     }
+
+    override suspend fun packageKind(pkg: String): PackageKind = PackageKind.System // never offers a removal
+
+    override suspend fun uninstall(pkg: String): UninstallResult = error("not used here")
 }
 
 class WatchInstallRunnerTest {

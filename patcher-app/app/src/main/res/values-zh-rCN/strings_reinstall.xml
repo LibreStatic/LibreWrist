@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="reinstall_action">卸载并安装</string>
+    <string name="reinstall_error_phone">此手机上已有使用不同密钥签名的副本，因此无法更新。</string>
+    <string name="reinstall_error_watch">此手表上已有使用不同密钥签名的副本，因此无法更新。</string>
+    <string name="reinstall_error_uninstall">无法卸载已安装的副本，因此未安装任何内容。</string>
+    <string name="reinstall_dialog_title">要卸载%1$s吗？</string>
+    <string name="reinstall_dialog_body_phone">已安装的副本使用另一个密钥签名，因此无法更新。重新安装会删除它在此手机上的数据，例如设置、配对以及尚未同步的测量数据。此操作无法撤销。</string>
+    <string name="reinstall_dialog_body_watch">已安装的副本使用另一个密钥签名，因此无法更新。重新安装会删除它在此手表上的数据，例如设置、配对以及尚未同步的测量数据。此操作无法撤销。</string>
+</resources>

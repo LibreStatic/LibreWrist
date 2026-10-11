@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="reinstall_action">Uninstall and install</string>
+    <string name="reinstall_error_phone">A copy signed with a different key is already on this phone, so it cannot be updated.</string>
+    <string name="reinstall_error_watch">A copy signed with a different key is already on this watch, so it cannot be updated.</string>
+    <string name="reinstall_error_uninstall">The installed copy could not be uninstalled, so nothing was installed.</string>
+    <string name="reinstall_dialog_title">Uninstall %1$s?</string>
+    <string name="reinstall_dialog_body_phone">The installed copy was signed with another key, so it cannot be updated. Reinstalling deletes its data on this phone, such as settings, pairing and measurements not yet synced. This cannot be undone.</string>
+    <string name="reinstall_dialog_body_watch">The installed copy was signed with another key, so it cannot be updated. Reinstalling deletes its data on this watch, such as settings, pairing and measurements not yet synced. This cannot be undone.</string>
+</resources>

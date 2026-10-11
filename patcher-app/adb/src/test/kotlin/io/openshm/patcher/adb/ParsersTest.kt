@@ -81,4 +81,11 @@ class ParsersTest {
         assertNull(h.code)
         assertEquals("cmd: not found", h.message)
     }
+
+    @Test
+    fun `pm uninstall output is a success only on Success`() {
+        assertTrue(PmParsers.isSuccess(ShellResult(0, "Success\n", "")))
+        assertFalse(PmParsers.isSuccess(ShellResult(1, "Failure [DELETE_FAILED_INTERNAL_ERROR]\n", "")))
+        assertFalse(PmParsers.isSuccess(ShellResult(0, "Failure [DELETE_FAILED_DEVICE_POLICY_MANAGER]", "")))
+    }
 }

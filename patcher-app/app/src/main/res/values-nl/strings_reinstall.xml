@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="reinstall_action">Verwijderen en installeren</string>
+    <string name="reinstall_error_phone">Er staat al een exemplaar op deze telefoon dat met een andere sleutel is ondertekend, dus het kan niet worden bijgewerkt.</string>
+    <string name="reinstall_error_watch">Er staat al een exemplaar op dit horloge dat met een andere sleutel is ondertekend, dus het kan niet worden bijgewerkt.</string>
+    <string name="reinstall_error_uninstall">Het geïnstalleerde exemplaar kon niet worden verwijderd, dus er is niets geïnstalleerd.</string>
+    <string name="reinstall_dialog_title">%1$s verwijderen?</string>
+    <string name="reinstall_dialog_body_phone">Het geïnstalleerde exemplaar is met een andere sleutel ondertekend en kan daarom niet worden bijgewerkt. Opnieuw installeren verwijdert de gegevens op deze telefoon, zoals instellingen, koppeling en nog niet gesynchroniseerde metingen. Dit kan niet ongedaan worden gemaakt.</string>
+    <string name="reinstall_dialog_body_watch">Het geïnstalleerde exemplaar is met een andere sleutel ondertekend en kan daarom niet worden bijgewerkt. Opnieuw installeren verwijdert de gegevens op dit horloge, zoals instellingen, koppeling en nog niet gesynchroniseerde metingen. Dit kan niet ongedaan worden gemaakt.</string>
+</resources>

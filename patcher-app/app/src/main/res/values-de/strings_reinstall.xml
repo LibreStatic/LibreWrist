@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="reinstall_action">Deinstallieren und installieren</string>
+    <string name="reinstall_error_phone">Auf diesem Smartphone ist bereits eine mit einem anderen Schlüssel signierte Kopie installiert, daher lässt sie sich nicht aktualisieren.</string>
+    <string name="reinstall_error_watch">Auf dieser Uhr ist bereits eine mit einem anderen Schlüssel signierte Kopie installiert, daher lässt sie sich nicht aktualisieren.</string>
+    <string name="reinstall_error_uninstall">Die installierte Kopie konnte nicht deinstalliert werden, deshalb wurde nichts installiert.</string>
+    <string name="reinstall_dialog_title">%1$s deinstallieren?</string>
+    <string name="reinstall_dialog_body_phone">Die installierte Kopie wurde mit einem anderen Schlüssel signiert und lässt sich daher nicht aktualisieren. Bei der Neuinstallation werden ihre Daten auf diesem Smartphone gelöscht, etwa Einstellungen, Kopplung und noch nicht synchronisierte Messungen. Das lässt sich nicht rückgängig machen.</string>
+    <string name="reinstall_dialog_body_watch">Die installierte Kopie wurde mit einem anderen Schlüssel signiert und lässt sich daher nicht aktualisieren. Bei der Neuinstallation werden ihre Daten auf dieser Uhr gelöscht, etwa Einstellungen, Kopplung und noch nicht synchronisierte Messungen. Das lässt sich nicht rückgängig machen.</string>
+</resources>

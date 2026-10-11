@@ -5,6 +5,8 @@ import io.openshm.patcher.R
 import io.openshm.patcher.adb.AdbException
 import io.openshm.patcher.adb.InstallResult
 import io.openshm.patcher.build.BuiltBuild
+import io.openshm.patcher.data.Device
+import io.openshm.patcher.device.PackageKind
 import io.openshm.patcher.device.WatchDevice
 import io.openshm.patcher.ui.components.CheckStatus
 import java.io.File
@@ -24,7 +26,8 @@ internal fun watchErrorRes(e: IOException): Int = when (e) {
  * Installs the watch outputs of the last build, one after the other, and applies each one's grants.
  * Plain code over [WatchDevice] so it runs in JVM tests; [InstallWatchViewModel] only wraps it.
  *
- * Nothing is ever uninstalled. A run can be started again after a stop: items that are installed
+ * Nothing is uninstalled unless the user confirms [reinstall] for a package whose copy another key
+ * signed (never a system package, never a package outside the build). A run can be started again after a stop: items that are installed
  * are not sent again, and only grants that did not pass are applied again.
  */
 internal class WatchInstallRunner(
@@ -37,7 +40,7 @@ internal class WatchInstallRunner(
 
     suspend fun run(state: MutableStateFlow<InstallUiState>) {
         locked = false
-        state.update { it.copy(running = true, errorRes = null, errorDetail = null) }
+        state.update { it.copy(running = true, errorRes = null, errorDetail = null, conflict = null, confirmingReinstall = false) }
         try {
             walk(state)
         } finally {
@@ -58,6 +61,7 @@ internal class WatchInstallRunner(
 
     /** True when the package is installed. */
     private suspend fun install(state: MutableStateFlow<InstallUiState>, index: Int, file: File): Boolean {
+        val item = state.value.items[index]
         state.update { it.updateItem(index) { item -> item.copy(status = CheckStatus.Running, progress = 0f) } }
         val result = try {
             device.install(file) { fraction ->
@@ -79,10 +83,41 @@ internal class WatchInstallRunner(
             }
             is InstallResult.Failure -> {
                 state.update { it.updateItem(index) { item -> item.copy(status = CheckStatus.Failed, progress = null) } }
-                fail(state, installFailureRes(result.code), listOfNotNull(result.code, result.message).distinct().joinToString(": "))
+                val detail = listOfNotNull(result.code, result.message).distinct().joinToString(": ")
+                val offered = isSignatureConflict(result.code, result.message) && offerReinstall(
+                    state, index, Device.Watch,
+                    owned = build().owns(item, prefix()),
+                    kind = try {
+                        device.packageKind(item.packageName)
+                    } catch (e: IOException) {
+                        PackageKind.System // cannot tell: do not offer a removal
+                    },
+                    detail = detail,
+                )
+                if (!offered) fail(state, installFailureRes(result.code), detail)
                 false
             }
         }
+    }
+
+    /**
+     * The user confirmed replacing the copy that another key signed: `pm uninstall` it, then run
+     * again so the install is retried. Does nothing without an offered conflict.
+     */
+    suspend fun reinstall(state: MutableStateFlow<InstallUiState>) {
+        state.update { it.copy(running = true) }
+        val removed = try {
+            uninstallConflict(
+                state,
+                owns = { build().owns(it, prefix()) },
+                kind = device::packageKind,
+                uninstall = device::uninstall,
+                ioError = ::watchErrorRes,
+            )
+        } finally {
+            state.update { it.copy(running = false) }
+        }
+        if (removed) run(state)
     }
 
     private suspend fun grant(state: MutableStateFlow<InstallUiState>, index: Int): Boolean =

@@ -4,6 +4,7 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageInstaller
 import android.content.pm.PackageManager
@@ -13,6 +14,7 @@ import io.openshm.patcher.adb.InstallResult
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicInteger
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -33,6 +35,15 @@ interface PhoneInstaller {
      * signature). Never removes anything. [IOException] when the file cannot be sent.
      */
     suspend fun install(apk: File, packageName: String, onProgress: (Float) -> Unit): InstallResult
+
+    /** Whether [packageName] is installed, and if so whether it is a system app. */
+    fun packageKind(packageName: String): PackageKind
+
+    /**
+     * Removes [packageName] together with its data. Only called after the user confirmed it in
+     * this app; the system then asks once more (through [SessionPhoneInstaller]'s `onUserAction`).
+     */
+    suspend fun uninstall(packageName: String): UninstallResult
 }
 
 /**
@@ -69,6 +80,58 @@ class SessionPhoneInstaller(
 
     private fun sha256(bytes: ByteArray) =
         MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") { "%02x".format(it) }
+
+    override fun packageKind(packageName: String): PackageKind = try {
+        val flags = context.packageManager.getApplicationInfo(packageName, 0).flags
+        if (flags and (ApplicationInfo.FLAG_SYSTEM or ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0) PackageKind.System else PackageKind.User
+    } catch (e: PackageManager.NameNotFoundException) {
+        PackageKind.Missing
+    }
+
+    override suspend fun uninstall(packageName: String): UninstallResult = withContext(Dispatchers.IO) {
+        val key = PhoneInstallReceiver.nextUninstallKey()
+        val result = CompletableDeferred<UninstallResult>()
+        PhoneInstallReceiver.listenUninstall(key) { intent -> onUninstallBroadcast(intent, result) }
+        try {
+            val broadcast = PendingIntent.getBroadcast(
+                context,
+                key,
+                Intent(context, PhoneInstallReceiver::class.java)
+                    .setAction(PhoneInstallReceiver.ACTION_UNINSTALL)
+                    .putExtra(PhoneInstallReceiver.EXTRA_UNINSTALL_KEY, key),
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE,
+            )
+            context.packageManager.packageInstaller.uninstall(packageName, broadcast.intentSender)
+            result.await()
+        } catch (e: SecurityException) {
+            UninstallResult.Failure(e.message.orEmpty())
+        } finally {
+            PhoneInstallReceiver.forgetUninstall(key)
+        }
+    }
+
+    private fun onUninstallBroadcast(intent: Intent, result: CompletableDeferred<UninstallResult>) {
+        when (val status = intent.getIntExtra(PackageInstaller.EXTRA_STATUS, PackageInstaller.STATUS_FAILURE)) {
+            PackageInstaller.STATUS_PENDING_USER_ACTION -> {
+                @Suppress("DEPRECATION")
+                val confirm = if (Build.VERSION.SDK_INT >= 33) {
+                    intent.getParcelableExtra(Intent.EXTRA_INTENT, Intent::class.java)
+                } else {
+                    intent.getParcelableExtra<Intent>(Intent.EXTRA_INTENT)
+                }
+                if (confirm != null) onUserAction(confirm) else result.complete(UninstallResult.Failure("No confirmation screen was provided"))
+            }
+            PackageInstaller.STATUS_SUCCESS -> result.complete(UninstallResult.Success)
+            else -> result.complete(
+                UninstallResult.Failure(
+                    listOfNotNull(
+                        if (status == PackageInstaller.STATUS_FAILURE_ABORTED) "STATUS_FAILURE_ABORTED" else null,
+                        intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE)?.takeIf { it.isNotBlank() },
+                    ).joinToString(": ").ifBlank { "STATUS_FAILURE" },
+                ),
+            )
+        }
+    }
 
     override suspend fun install(apk: File, packageName: String, onProgress: (Float) -> Unit): InstallResult =
         withContext(Dispatchers.IO) {
@@ -188,6 +251,10 @@ private val LEGACY_CODES = mapOf(
 /** Receives the installer's status callbacks and hands them to the install waiting on that session. */
 class PhoneInstallReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
+        if (intent.action == ACTION_UNINSTALL) {
+            uninstallListeners[intent.getIntExtra(EXTRA_UNINSTALL_KEY, -1)]?.invoke(intent)
+            return
+        }
         if (intent.action != ACTION) return
         val id = intent.getIntExtra(PackageInstaller.EXTRA_SESSION_ID, -1)
         // No listener means the process was restarted during the install; the screen starts again.
@@ -196,7 +263,21 @@ class PhoneInstallReceiver : BroadcastReceiver() {
 
     companion object {
         const val ACTION = "io.openshm.patcher.action.PHONE_INSTALL_STATUS"
+        const val ACTION_UNINSTALL = "io.openshm.patcher.action.PHONE_UNINSTALL_STATUS"
+        const val EXTRA_UNINSTALL_KEY = "io.openshm.patcher.extra.UNINSTALL_KEY"
         private val listeners = ConcurrentHashMap<Int, (Intent) -> Unit>()
+        private val uninstallListeners = ConcurrentHashMap<Int, (Intent) -> Unit>()
+        private val uninstallKeys = AtomicInteger()
+
+        internal fun nextUninstallKey(): Int = uninstallKeys.incrementAndGet()
+
+        internal fun listenUninstall(key: Int, onStatus: (Intent) -> Unit) {
+            uninstallListeners[key] = onStatus
+        }
+
+        internal fun forgetUninstall(key: Int) {
+            uninstallListeners.remove(key)
+        }
 
         internal fun listen(sessionId: Int, onStatus: (Intent) -> Unit) {
             listeners[sessionId] = onStatus

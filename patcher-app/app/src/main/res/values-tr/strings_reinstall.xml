@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="reinstall_action">Kaldır ve yükle</string>
+    <string name="reinstall_error_phone">Bu telefonda farklı bir anahtarla imzalanmış bir kopya zaten var, bu yüzden güncellenemez.</string>
+    <string name="reinstall_error_watch">Bu saatte farklı bir anahtarla imzalanmış bir kopya zaten var, bu yüzden güncellenemez.</string>
+    <string name="reinstall_error_uninstall">Yüklü kopya kaldırılamadı, bu yüzden hiçbir şey yüklenmedi.</string>
+    <string name="reinstall_dialog_title">%1$s kaldırılsın mı?</string>
+    <string name="reinstall_dialog_body_phone">Yüklü kopya başka bir anahtarla imzalanmış, bu yüzden güncellenemez. Yeniden yüklemek, bu telefondaki verilerini siler; ayarlar, eşleştirme ve henüz eşitlenmemiş ölçümler gibi. Bu işlem geri alınamaz.</string>
+    <string name="reinstall_dialog_body_watch">Yüklü kopya başka bir anahtarla imzalanmış, bu yüzden güncellenemez. Yeniden yüklemek, bu saatteki verilerini siler; ayarlar, eşleştirme ve henüz eşitlenmemiş ölçümler gibi. Bu işlem geri alınamaz.</string>
+</resources>

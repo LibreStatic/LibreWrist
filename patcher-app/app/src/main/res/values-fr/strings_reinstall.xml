@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="reinstall_action">Désinstaller et installer</string>
+    <string name="reinstall_error_phone">Une copie signée avec une autre clé est déjà sur ce téléphone, elle ne peut donc pas être mise à jour.</string>
+    <string name="reinstall_error_watch">Une copie signée avec une autre clé est déjà sur cette montre, elle ne peut donc pas être mise à jour.</string>
+    <string name="reinstall_error_uninstall">La copie installée n\'a pas pu être désinstallée, donc rien n\'a été installé.</string>
+    <string name="reinstall_dialog_title">Désinstaller %1$s ?</string>
+    <string name="reinstall_dialog_body_phone">La copie installée a été signée avec une autre clé et ne peut donc pas être mise à jour. La réinstaller supprime ses données sur ce téléphone, comme les réglages, l\'appairage et les mesures pas encore synchronisées. Cette action est irréversible.</string>
+    <string name="reinstall_dialog_body_watch">La copie installée a été signée avec une autre clé et ne peut donc pas être mise à jour. La réinstaller supprime ses données sur cette montre, comme les réglages, l\'appairage et les mesures pas encore synchronisées. Cette action est irréversible.</string>
+</resources>

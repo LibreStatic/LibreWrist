@@ -26,6 +26,10 @@ object PmParsers {
         .filter { it.isNotEmpty() }
         .toList()
 
+    /** True when `pm uninstall` printed `Success` and exited cleanly. */
+    fun isSuccess(result: ShellResult): Boolean =
+        result.isSuccess && result.stdout.lineSequence().any { it.trim() == "Success" }
+
     private val versionCode = Regex("""\bversionCode=(\d+)""")
     private val versionName = Regex("""\bversionName=(\S+)""")
 
@@ -75,6 +79,19 @@ class RemotePackages(private val client: AdbClient) {
         val result = client.shell("dumpsys package ${Names.requirePackage(pkg)}")
         return if (result.isSuccess) PmParsers.parseVersion(result.stdout) else null
     }
+
+    /** True when [pkg] is a system package (`pm list packages -s` lists updated system apps too). */
+    suspend fun isSystem(pkg: String): Boolean {
+        val command = "pm list packages -s"
+        return Names.requirePackage(pkg) in PmParsers.parsePackageList(client.shell(command).requireSuccess(command).stdout)
+    }
+
+    /**
+     * `pm uninstall --user N pkg`: removes the package and its data (no `-k`). The result is
+     * returned as is; see [PmParsers.isSuccess].
+     */
+    suspend fun uninstall(pkg: String, userId: Int = 0): ShellResult =
+        client.shell("pm uninstall --user ${requireUser(userId)} ${Names.requirePackage(pkg)}")
 
     /** `pm disable-user --user N pkg`; reversible with [enable]. */
     suspend fun disableUser(pkg: String, userId: Int = 0): ShellResult {

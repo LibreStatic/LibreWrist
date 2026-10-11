@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="reinstall_action">アンインストールしてインストール</string>
+    <string name="reinstall_error_phone">別のキーで署名されたコピーがすでにこのスマートフォンにあるため、更新できません。</string>
+    <string name="reinstall_error_watch">別のキーで署名されたコピーがすでにこのウォッチにあるため、更新できません。</string>
+    <string name="reinstall_error_uninstall">インストール済みのコピーをアンインストールできなかったため、何もインストールしていません。</string>
+    <string name="reinstall_dialog_title">%1$sをアンインストールしますか？</string>
+    <string name="reinstall_dialog_body_phone">インストール済みのコピーは別のキーで署名されているため、更新できません。再インストールすると、このスマートフォン上のデータ（設定、ペアリング、未同期の測定値など）が削除されます。この操作は元に戻せません。</string>
+    <string name="reinstall_dialog_body_watch">インストール済みのコピーは別のキーで署名されているため、更新できません。再インストールすると、このウォッチ上のデータ（設定、ペアリング、未同期の測定値など）が削除されます。この操作は元に戻せません。</string>
+</resources>

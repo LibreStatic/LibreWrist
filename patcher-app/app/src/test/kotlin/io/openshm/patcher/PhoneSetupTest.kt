@@ -12,12 +12,14 @@ import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.Device
 import io.openshm.patcher.data.Grant
 import io.openshm.patcher.data.GrantKind
+import io.openshm.patcher.device.PackageKind
 import io.openshm.patcher.device.PhoneGrants
 import io.openshm.patcher.device.SelfAdbController
 import io.openshm.patcher.device.SelfAdbPurpose
 import io.openshm.patcher.device.PhoneInstaller
 import io.openshm.patcher.device.PhoneProbe
 import io.openshm.patcher.device.SettingsTarget
+import io.openshm.patcher.device.UninstallResult
 import io.openshm.patcher.device.installResultFor
 import io.openshm.patcher.device.isListenerEnabled
 import io.openshm.patcher.ui.components.CheckStatus
@@ -207,6 +209,8 @@ private class FakePhoneInstaller : PhoneInstaller {
         onProgress(1f)
         return result(packageName)
     }
+    override fun packageKind(packageName: String): PackageKind = PackageKind.System // never offers a removal
+    override suspend fun uninstall(packageName: String): UninstallResult = error("not used here")
 }
 
 class PhoneInstallRunnerTest {

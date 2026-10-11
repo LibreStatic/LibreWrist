@@ -21,6 +21,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.KeyboardType
 import io.openshm.patcher.ui.components.OutlinedAction
 import io.openshm.patcher.ui.components.QuietAction
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,6 +34,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.openshm.patcher.R
 import io.openshm.patcher.data.Grant
+import io.openshm.patcher.data.Device
 import io.openshm.patcher.data.GrantKind
 import io.openshm.patcher.ui.components.Accent
 import io.openshm.patcher.ui.components.CheckStatus
@@ -68,6 +71,12 @@ data class InstallItem(
     val onboarding: Boolean = false,
 )
 
+/**
+ * An installed copy of one of this build's outputs that another key signed, so it cannot be
+ * updated. The only way on is to remove it, which needs the user's explicit confirmation.
+ */
+data class SignatureConflict(val outputId: String, val packageName: String, val device: Device)
+
 /** Where the Wireless debugging fallback ("grant everything") is. */
 enum class SelfAdbPhase { WaitingForService, WaitingForCode, WrongCode, Ambiguous, Connecting, Granting, Failed }
 
@@ -81,6 +90,10 @@ data class InstallUiState(
     val needsUnknownSources: Boolean = false,
     /** The Wireless debugging fallback in progress, or null. */
     val selfAdb: SelfAdbPhase? = null,
+    /** The install was refused because another key signed the installed copy; the screen offers to replace it. */
+    val conflict: SignatureConflict? = null,
+    /** The confirmation dialog of the reinstall fallback is open (only with a [conflict]). */
+    val confirmingReinstall: Boolean = false,
 ) {
     /** Everything is installed but some access is still open: the user may go on without it. */
     val canSkipGrants: Boolean get() = !running && !done && items.isNotEmpty() && items.all { it.status == CheckStatus.Passed }
@@ -105,6 +118,13 @@ sealed interface InstallEvent {
     data object GrantWithAdb : InstallEvent
     data class SubmitPairingCode(val code: String) : InstallEvent
     data object CancelAdb : InstallEvent
+
+    /** "Uninstall and install" was tapped: opens the confirmation, removes nothing. */
+    data object RequestReinstall : InstallEvent
+    data object CancelReinstall : InstallEvent
+
+    /** The user confirmed losing the installed copy's data: uninstall it, then install again. */
+    data object ConfirmReinstall : InstallEvent
 }
 
 @Composable
@@ -207,6 +227,14 @@ private fun InstallStep(
                             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                                 PackageId(item.packageName, maxLines = 2)
                                 item.progress?.let { LinearProgressIndicator(progress = { it }, modifier = Modifier.fillMaxWidth()) }
+                                if (state.conflict?.outputId == item.outputId && !state.running) {
+                                    TextButton(
+                                        onClick = { onEvent(InstallEvent.RequestReinstall) },
+                                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
+                                    ) {
+                                        Text(stringResource(R.string.reinstall_action))
+                                    }
+                                }
                             }
                         }
                     }
@@ -249,6 +277,33 @@ private fun InstallStep(
         if (phone) SelfAdbSection(state, onEvent)
         NoteRow(Icons.Rounded.Info, note, Modifier.padding(top = 4.dp))
     }
+    val conflict = state.conflict
+    if (state.confirmingReinstall && conflict != null) {
+        ReinstallDialog(
+            label = state.items.firstOrNull { it.outputId == conflict.outputId }?.label ?: conflict.packageName,
+            device = conflict.device,
+            onConfirm = { onEvent(InstallEvent.ConfirmReinstall) },
+            onDismiss = { onEvent(InstallEvent.CancelReinstall) },
+        )
+    }
+}
+
+/** Asks before the installed copy is removed: its data is lost and this cannot be undone. */
+@Composable
+internal fun ReinstallDialog(label: String, device: Device, onConfirm: () -> Unit, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.reinstall_dialog_title, label)) },
+        text = {
+            Text(stringResource(if (device == Device.Phone) R.string.reinstall_dialog_body_phone else R.string.reinstall_dialog_body_watch))
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)) {
+                Text(stringResource(R.string.reinstall_action))
+            }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },
+    )
 }
 
 /** The Wireless debugging fallback: starts it, shows where it is, and takes the pairing code. */

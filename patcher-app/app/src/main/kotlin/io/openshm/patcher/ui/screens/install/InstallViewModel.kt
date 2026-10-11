@@ -94,7 +94,16 @@ class InstallPhoneViewModel(application: Application) : AndroidViewModel(applica
             InstallEvent.GrantWithAdb -> startAdb()
             is InstallEvent.SubmitPairingCode -> SelfAdbController.submitCode(event.code)
             InstallEvent.CancelAdb -> SelfAdbController.finish()
+            InstallEvent.RequestReinstall -> requestReinstall(_state)
+            InstallEvent.CancelReinstall -> cancelReinstall(_state)
+            InstallEvent.ConfirmReinstall -> reinstall()
         }
+    }
+
+    private fun reinstall() {
+        if (_state.value.running || _state.value.conflict == null) return
+        _state.update { it.copy(running = true, confirmingReinstall = false) }
+        viewModelScope.launch(Dispatchers.IO) { runner.reinstall(_state) }
     }
 
     private fun start() {
@@ -167,8 +176,17 @@ class InstallWatchViewModel(application: Application) : AndroidViewModel(applica
     fun onEvent(event: InstallEvent) {
         when (event) {
             InstallEvent.Start -> start()
+            InstallEvent.RequestReinstall -> requestReinstall(_state)
+            InstallEvent.CancelReinstall -> cancelReinstall(_state)
+            InstallEvent.ConfirmReinstall -> reinstall()
             else -> Unit
         }
+    }
+
+    private fun reinstall() {
+        if (_state.value.running || _state.value.conflict == null) return
+        _state.update { it.copy(running = true, confirmingReinstall = false) }
+        viewModelScope.launch(Dispatchers.IO) { runner.reinstall(_state) }
     }
 
     private fun start() {

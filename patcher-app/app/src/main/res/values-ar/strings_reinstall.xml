@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="reinstall_action">إزالة التثبيت ثم التثبيت</string>
+    <string name="reinstall_error_phone">توجد على هذا الهاتف نسخة موقّعة بمفتاح مختلف، لذا لا يمكن تحديثها.</string>
+    <string name="reinstall_error_watch">توجد على هذه الساعة نسخة موقّعة بمفتاح مختلف، لذا لا يمكن تحديثها.</string>
+    <string name="reinstall_error_uninstall">تعذّرت إزالة تثبيت النسخة المثبّتة، لذا لم يتم تثبيت أي شيء.</string>
+    <string name="reinstall_dialog_title">هل تريد إزالة تثبيت %1$s؟</string>
+    <string name="reinstall_dialog_body_phone">النسخة المثبّتة موقّعة بمفتاح آخر، لذا لا يمكن تحديثها. تؤدي إعادة التثبيت إلى حذف بياناتها على هذا الهاتف، مثل الإعدادات والاقتران والقياسات التي لم تتم مزامنتها بعد. لا يمكن التراجع عن ذلك.</string>
+    <string name="reinstall_dialog_body_watch">النسخة المثبّتة موقّعة بمفتاح آخر، لذا لا يمكن تحديثها. تؤدي إعادة التثبيت إلى حذف بياناتها على هذه الساعة، مثل الإعدادات والاقتران والقياسات التي لم تتم مزامنتها بعد. لا يمكن التراجع عن ذلك.</string>
+</resources>

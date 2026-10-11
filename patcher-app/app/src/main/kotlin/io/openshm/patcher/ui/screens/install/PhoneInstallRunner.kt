@@ -6,6 +6,7 @@ import io.openshm.patcher.adb.GrantReport
 import io.openshm.patcher.adb.InstallResult
 import io.openshm.patcher.adb.SelfAdbState
 import io.openshm.patcher.build.BuiltBuild
+import io.openshm.patcher.data.Device
 import io.openshm.patcher.device.PhoneGrants
 import io.openshm.patcher.device.PhoneInstaller
 import io.openshm.patcher.ui.components.CheckStatus
@@ -30,7 +31,8 @@ internal fun SelfAdbState.toPhase(): SelfAdbPhase? = when (this) {
  * other, and keeps the grant rows in step with what the system says. Plain code over
  * [PhoneInstaller] and [PhoneGrants] so it runs in JVM tests; [InstallPhoneViewModel] wraps it.
  *
- * Nothing is ever uninstalled. A run can be started again after a stop: installed items are not
+ * Nothing is uninstalled unless the user confirms [reinstall] for a package whose copy another key
+ * signed (never a system app, never a package outside the build). A run can be started again after a stop: installed items are not
  * sent again. Grants that only the user can change are not waited for: the run ends once every
  * package is installed, and [refresh] updates the rows when the screen is shown again.
  */
@@ -45,7 +47,9 @@ internal class PhoneInstallRunner(
 
     suspend fun run(state: MutableStateFlow<InstallUiState>) {
         locked = false
-        state.update { it.copy(running = true, errorRes = null, errorDetail = null, needsUnknownSources = false) }
+        state.update {
+            it.copy(running = true, errorRes = null, errorDetail = null, needsUnknownSources = false, conflict = null, confirmingReinstall = false)
+        }
         try {
             walk(state)
         } finally {
@@ -89,10 +93,37 @@ internal class PhoneInstallRunner(
             is InstallResult.Success -> markInstalled(state, index)
             is InstallResult.Failure -> {
                 state.update { it.updateItem(index) { i -> i.copy(status = CheckStatus.Failed, progress = null) } }
-                fail(state, installFailureRes(result.code), listOfNotNull(result.code, result.message.ifBlank { null }).distinct().joinToString(": "))
+                val detail = listOfNotNull(result.code, result.message.ifBlank { null }).distinct().joinToString(": ")
+                val offered = isSignatureConflict(result.code, result.message) && offerReinstall(
+                    state, index, Device.Phone,
+                    owned = build().owns(item, prefix()),
+                    kind = installer.packageKind(item.packageName),
+                    detail = detail,
+                )
+                if (!offered) fail(state, installFailureRes(result.code), detail)
                 false
             }
         }
+    }
+
+    /**
+     * The user confirmed replacing the copy that another key signed: uninstalls it (the system asks
+     * once more), then runs again so the install is retried. Does nothing without an offered conflict.
+     */
+    suspend fun reinstall(state: MutableStateFlow<InstallUiState>) {
+        state.update { it.copy(running = true) }
+        val removed = try {
+            uninstallConflict(
+                state,
+                owns = { build().owns(it, prefix()) },
+                kind = { installer.packageKind(it) },
+                uninstall = installer::uninstall,
+                ioError = { R.string.install_error_failed },
+            )
+        } finally {
+            state.update { it.copy(running = false) }
+        }
+        if (removed) run(state)
     }
 
     private fun markInstalled(state: MutableStateFlow<InstallUiState>, index: Int): Boolean {

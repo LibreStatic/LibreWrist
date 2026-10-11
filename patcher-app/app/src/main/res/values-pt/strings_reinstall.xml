@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="reinstall_action">Desinstalar e instalar</string>
+    <string name="reinstall_error_phone">Já existe neste telefone uma cópia assinada com outra chave, por isso ela não pode ser atualizada.</string>
+    <string name="reinstall_error_watch">Já existe neste relógio uma cópia assinada com outra chave, por isso ela não pode ser atualizada.</string>
+    <string name="reinstall_error_uninstall">Não foi possível desinstalar a cópia instalada, então nada foi instalado.</string>
+    <string name="reinstall_dialog_title">Desinstalar %1$s?</string>
+    <string name="reinstall_dialog_body_phone">A cópia instalada foi assinada com outra chave, por isso não pode ser atualizada. Reinstalar apaga os dados dela neste telefone, como configurações, pareamento e medições ainda não sincronizadas. Isso não pode ser desfeito.</string>
+    <string name="reinstall_dialog_body_watch">A cópia instalada foi assinada com outra chave, por isso não pode ser atualizada. Reinstalar apaga os dados dela neste relógio, como configurações, pareamento e medições ainda não sincronizadas. Isso não pode ser desfeito.</string>
+</resources>

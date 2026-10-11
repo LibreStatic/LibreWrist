@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="reinstall_action">Odinstaluj i zainstaluj</string>
+    <string name="reinstall_error_phone">Na tym telefonie jest już kopia podpisana innym kluczem, więc nie można jej zaktualizować.</string>
+    <string name="reinstall_error_watch">Na tym zegarku jest już kopia podpisana innym kluczem, więc nie można jej zaktualizować.</string>
+    <string name="reinstall_error_uninstall">Nie udało się odinstalować zainstalowanej kopii, więc nic nie zainstalowano.</string>
+    <string name="reinstall_dialog_title">Odinstalować %1$s?</string>
+    <string name="reinstall_dialog_body_phone">Zainstalowana kopia została podpisana innym kluczem, więc nie można jej zaktualizować. Ponowna instalacja usuwa jej dane na tym telefonie, takie jak ustawienia, parowanie i niezsynchronizowane jeszcze pomiary. Tej operacji nie można cofnąć.</string>
+    <string name="reinstall_dialog_body_watch">Zainstalowana kopia została podpisana innym kluczem, więc nie można jej zaktualizować. Ponowna instalacja usuwa jej dane na tym zegarku, takie jak ustawienia, parowanie i niezsynchronizowane jeszcze pomiary. Tej operacji nie można cofnąć.</string>
+</resources>

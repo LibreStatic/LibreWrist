@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="reinstall_action">Desinstalar e instalar</string>
+    <string name="reinstall_error_phone">Ya hay en este teléfono una copia firmada con otra clave, así que no se puede actualizar.</string>
+    <string name="reinstall_error_watch">Ya hay en este reloj una copia firmada con otra clave, así que no se puede actualizar.</string>
+    <string name="reinstall_error_uninstall">No se pudo desinstalar la copia instalada, así que no se instaló nada.</string>
+    <string name="reinstall_dialog_title">¿Desinstalar %1$s?</string>
+    <string name="reinstall_dialog_body_phone">La copia instalada se firmó con otra clave, así que no se puede actualizar. Al reinstalarla se borran sus datos en este teléfono, como los ajustes, el emparejamiento y las mediciones aún sin sincronizar. Esto no se puede deshacer.</string>
+    <string name="reinstall_dialog_body_watch">La copia instalada se firmó con otra clave, así que no se puede actualizar. Al reinstalarla se borran sus datos en este reloj, como los ajustes, el emparejamiento y las mediciones aún sin sincronizar. Esto no se puede deshacer.</string>
+</resources>
