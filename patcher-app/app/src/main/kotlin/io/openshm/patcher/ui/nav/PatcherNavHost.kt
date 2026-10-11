@@ -11,6 +11,7 @@ import io.openshm.patcher.ui.screens.install.InstallEvent
 import io.openshm.patcher.ui.screens.wearable.TroubleshootEvent
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -52,7 +53,9 @@ import io.openshm.patcher.ui.screens.acquire.AcquireScreen
 import io.openshm.patcher.ui.screens.acquire.AcquireViewModel
 import io.openshm.patcher.ui.screens.acquire.GuidedBrowserHost
 import io.openshm.patcher.ui.screens.build.BuildDoneScreen
+import io.openshm.patcher.ui.screens.build.BuildEvent
 import io.openshm.patcher.ui.screens.build.BuildScreen
+import io.openshm.patcher.ui.screens.build.LocalAppIconLoader
 import io.openshm.patcher.ui.screens.build.BuildViewModel
 import io.openshm.patcher.ui.screens.build.builtOutputs
 import io.openshm.patcher.ui.screens.customize.CustomizeScreen
@@ -239,7 +242,16 @@ fun PatcherNavHost(
                 if (needsAsk) notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS) else vm.start()
             }
             LaunchedEffect(finished) { if (finished) next(Route.Build) }
-            BuildScreen(state, vm::onEvent, onBack = back)
+            CompositionLocalProvider(LocalAppIconLoader provides vm.icons) {
+                BuildScreen(
+                    state, vm::onEvent,
+                    onBack = {
+                        // Leaving a cancelled build forgets it, so coming back starts a new one.
+                        if (state.cancelled) vm.onEvent(BuildEvent.Dismiss)
+                        back()
+                    },
+                )
+            }
         }
         composable(Route.BuildDone.path) {
             val context = LocalContext.current

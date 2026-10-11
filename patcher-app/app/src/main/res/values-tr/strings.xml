@@ -286,6 +286,22 @@
     <string name="build_stage_sign">İmzala</string>
     <string name="build_stage_selfcheck">Kendi kendine denetim</string>
     <string name="build_can_leave">Ayrılabilirsiniz. Bittiğinde size haber vereceğiz.</string>
+    <string name="build_cancelled">Derleme iptal edildi</string>
+    <string name="build_restart">Yeniden derle</string>
+    <string name="build_cancel_title">Derleme iptal edilsin mi?</string>
+    <string name="build_cancel_body">Şu ana kadar derlenen uygulamalar silinir. İstediğin zaman yeniden başlayabilirsin.</string>
+    <string name="build_cancel_keep">Derlemeye devam et</string>
+    <string name="build_app_position">Uygulama %1$d / %2$d</string>
+    <string-array name="build_almost_done">
+        <item>Neredeyse bitti, ayrılma</item>
+        <item>Son rötuşlar…</item>
+        <item>Az kaldı, biraz daha sabret</item>
+        <item>İmzalıyor ve kontrol ediyoruz, neredeyse bitti</item>
+        <item>Bir an daha</item>
+        <item>Uygulamaların şekilleniyor</item>
+        <item>Son düzlük, dayan</item>
+        <item>Her şeyi bir kez daha kontrol ediyoruz</item>
+    </string-array>
     <string name="build_channel_name">Derleme ilerlemesi</string>
     <string name="build_channel_description">Uygulamalarınız derlenip imzalanırken görünür.</string>
     <string name="build_notification_title">Uygulamalarınız derleniyor</string>

@@ -89,6 +89,16 @@ private fun BuildPreview(@PreviewParameter(ColorModeProvider::class) mode: Color
 
 @ScreenPreviews
 @Composable
+private fun BuildAlmostDonePreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { BuildSample(almostDone = true) }
+
+@ScreenPreviews
+@Composable
+private fun BuildCancelledPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { BuildSample(cancelled = true) }
+
+@ScreenPreviews
+@Composable
 private fun BuildDonePreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
     PreviewHost(mode) { BuildDoneSample() }
 

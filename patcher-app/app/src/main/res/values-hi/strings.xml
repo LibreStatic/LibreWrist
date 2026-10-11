@@ -286,6 +286,22 @@
     <string name="build_stage_sign">साइन करना</string>
     <string name="build_stage_selfcheck">स्व-जाँच</string>
     <string name="build_can_leave">आप जा सकते हैं। पूरा होने पर हम आपको सूचित करेंगे।</string>
+    <string name="build_cancelled">बिल्ड रद्द हो गया</string>
+    <string name="build_restart">फिर से बिल्ड करें</string>
+    <string name="build_cancel_title">बिल्ड रद्द करें?</string>
+    <string name="build_cancel_body">अब तक बने ऐप हटा दिए जाएँगे। तुम जब चाहो फिर से शुरू कर सकते हो।</string>
+    <string name="build_cancel_keep">बिल्ड जारी रखें</string>
+    <string name="build_app_position">ऐप %1$d / %2$d</string>
+    <string-array name="build_almost_done">
+        <item>बस होने ही वाला है, कहीं मत जाओ</item>
+        <item>आख़िरी बारीकियाँ…</item>
+        <item>लगभग तैयार, थोड़ा और रुको</item>
+        <item>साइन और जाँच हो रही है, बस अब हो गया</item>
+        <item>बस एक पल और</item>
+        <item>तुम्हारे ऐप आकार ले रहे हैं</item>
+        <item>आख़िरी पड़ाव, थोड़ा और धैर्य रखो</item>
+        <item>एक बार फिर सब कुछ जाँचा जा रहा है</item>
+    </string-array>
     <string name="build_channel_name">बिल्ड की प्रगति</string>
     <string name="build_channel_description">आपके ऐप बनने और साइन होने के दौरान दिखता है।</string>
     <string name="build_notification_title">आपके ऐप बनाए जा रहे हैं</string>

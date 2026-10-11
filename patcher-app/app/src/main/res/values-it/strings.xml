@@ -286,6 +286,22 @@
     <string name="build_stage_sign">Firma</string>
     <string name="build_stage_selfcheck">Autocontrollo</string>
     <string name="build_can_leave">Puoi uscire. Ti avviseremo al termine.</string>
+    <string name="build_cancelled">Compilazione annullata</string>
+    <string name="build_restart">Compila di nuovo</string>
+    <string name="build_cancel_title">Annullare la compilazione?</string>
+    <string name="build_cancel_body">Le app compilate finora vengono scartate. Puoi ricominciare quando vuoi.</string>
+    <string name="build_cancel_keep">Continua a compilare</string>
+    <string name="build_app_position">App %1$d di %2$d</string>
+    <string-array name="build_almost_done">
+        <item>Ci siamo quasi, non andare via</item>
+        <item>Ultimi ritocchi…</item>
+        <item>Quasi pronto, ancora un po\' di pazienza</item>
+        <item>Firma e controlli in corso, ci siamo quasi</item>
+        <item>Ancora un attimo</item>
+        <item>Le tue app stanno prendendo forma</item>
+        <item>Ultimo tratto, resisti</item>
+        <item>Controllo di nuovo ogni cosa</item>
+    </string-array>
     <string name="build_channel_name">Avanzamento della compilazione</string>
     <string name="build_channel_description">Viene mostrato mentre le tue app vengono compilate e firmate.</string>
     <string name="build_notification_title">Compilazione delle tue app</string>

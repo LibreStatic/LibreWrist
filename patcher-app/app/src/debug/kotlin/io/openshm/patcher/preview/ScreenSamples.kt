@@ -28,7 +28,9 @@ import io.openshm.patcher.ui.screens.wearable.WearablePairingUiState
 import io.openshm.patcher.ui.screens.wearable.TroubleshootUiState
 import io.openshm.patcher.ui.screens.wearable.WearableTroubleshootScreen
 import io.openshm.patcher.ui.screens.welcome.WelcomeScreen
+import io.openshm.patcher.ui.screens.build.AppIconLoader
 import io.openshm.patcher.ui.screens.build.BuildStage
+import io.openshm.patcher.ui.screens.build.LocalAppIconLoader
 
 /*
  * The real, stateless production screens fed with fake UiState and no-op callbacks. Previews and
@@ -78,8 +80,19 @@ internal fun GuidedBrowserSample(step: Int = 2, wrongVersion: Boolean = false) =
 internal fun CustomizeSample() = CustomizeScreen(PreviewData.customize(), {}, {}, {})
 
 @Composable
-internal fun BuildSample(logSheet: Boolean = false) =
-    BuildScreen(PreviewData.build(BuildStage.Apply).copy(logVisible = logSheet, log = listOf("start unpack", "start fingerprints", "start apply")), {}, {})
+internal fun BuildSample(logSheet: Boolean = false, almostDone: Boolean = false, cancelled: Boolean = false): Unit {
+    val state = when {
+        cancelled -> PreviewData.buildCancelled()
+        almostDone -> PreviewData.build(BuildStage.Sign, number = 4, total = 5)
+        else -> PreviewData.build(BuildStage.Apply)
+    }
+    CompositionLocalProvider(LocalAppIconLoader provides PreviewIcons) {
+        BuildScreen(state.copy(logVisible = logSheet), {}, {})
+    }
+}
+
+/** No real APKs in previews: the card shows its device glyph fallback. */
+private val PreviewIcons = AppIconLoader { null }
 
 @Composable
 internal fun BuildDoneSample(backupDue: Boolean = false) = BuildDoneScreen(PreviewData.buildDone(backupDue), {}, {})

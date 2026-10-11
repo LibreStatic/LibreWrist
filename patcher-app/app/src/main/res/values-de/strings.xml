@@ -286,6 +286,22 @@
     <string name="build_stage_sign">Signieren</string>
     <string name="build_stage_selfcheck">Selbstprüfung</string>
     <string name="build_can_leave">Du kannst die App verlassen. Wir benachrichtigen dich, wenn es fertig ist.</string>
+    <string name="build_cancelled">Build abgebrochen</string>
+    <string name="build_restart">Erneut bauen</string>
+    <string name="build_cancel_title">Build abbrechen?</string>
+    <string name="build_cancel_body">Die bisher erstellten Apps werden verworfen. Du kannst jederzeit neu starten.</string>
+    <string name="build_cancel_keep">Weiter bauen</string>
+    <string name="build_app_position">App %1$d von %2$d</string>
+    <string-array name="build_almost_done">
+        <item>Gleich geschafft, bleib dran</item>
+        <item>Letzte Feinheiten…</item>
+        <item>Fast fertig, noch ein wenig Geduld</item>
+        <item>Wird signiert und geprüft, gleich ist es so weit</item>
+        <item>Nur noch einen Moment</item>
+        <item>Deine Apps nehmen Gestalt an</item>
+        <item>Auf der Zielgeraden, halte durch</item>
+        <item>Alles wird noch einmal geprüft</item>
+    </string-array>
     <string name="build_channel_name">Build-Fortschritt</string>
     <string name="build_channel_description">Wird angezeigt, während deine Apps erstellt und signiert werden.</string>
     <string name="build_notification_title">Deine Apps werden erstellt</string>

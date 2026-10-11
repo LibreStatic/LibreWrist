@@ -103,7 +103,14 @@ class PatchRequest(
 )
 
 fun interface PatchListener {
+    /** A phase is starting (`apply`, `sign`, ...) or a pattern finished (`pattern <id>`). */
     fun onEvent(event: String)
+
+    /** A phase finished (ok or failed) with its detail lines and duration. */
+    fun onPhase(report: PhaseReport) {}
+
+    /** A pattern finished: [PatternResult.log] holds one entry per patched site. */
+    fun onPattern(result: PatternResult) {}
 
     companion object {
         val NONE = PatchListener { }
@@ -137,19 +144,23 @@ class Patcher(private val catalogue: Catalogue) {
             listener.onEvent(name)
             val details = ArrayList<String>()
             val t0 = System.nanoTime()
-            try {
-                val r = body(details)
-                report.phases.add(PhaseReport(name, true, (System.nanoTime() - t0) / 1_000_000, details))
-                return r
+            val r = try {
+                body(details)
             } catch (e: Exception) {
                 val handled = e is PatchFailure || e is PatternRequiredException || e is CatalogueException ||
                     e is Stop || e is IOException || e is NoSuchElementException
                 if (!handled) throw e
                 details.add(e.message ?: e.javaClass.simpleName)
-                report.phases.add(PhaseReport(name, false, (System.nanoTime() - t0) / 1_000_000, details))
+                val failed = PhaseReport(name, false, (System.nanoTime() - t0) / 1_000_000, details)
+                report.phases.add(failed)
                 report.error = "$name: ${e.message}"
+                listener.onPhase(failed)
                 throw Stop(report.error!!)
             }
+            val done = PhaseReport(name, true, (System.nanoTime() - t0) / 1_000_000, details)
+            report.phases.add(done)
+            listener.onPhase(done)
+            return r
         }
         try {
             val (profile, input) = phase("check-request") {
@@ -206,7 +217,10 @@ class Patcher(private val catalogue: Catalogue) {
                 val ctx = PatchContext(tree, { manifest }, { tableProvider() })
                 phase("apply") { d ->
                     try {
-                        report.patterns = runner.run(ctx, ids) { listener.onEvent("pattern ${it.id}") }
+                        report.patterns = runner.run(ctx, ids) {
+                            listener.onEvent("pattern ${it.id}")
+                            listener.onPattern(it)
+                        }
                     } catch (e: PatternRequiredException) {
                         report.patterns = e.report
                         throw e

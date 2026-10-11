@@ -206,6 +206,12 @@ fun CustomizeDriver() = PreviewHost(ColorMode.Fallback) { CustomizeSample() }
 fun BuildDriver() = PreviewHost(ColorMode.Fallback) { BuildSample() }
 
 @Composable
+fun BuildAlmostDoneDriver() = PreviewHost(ColorMode.Fallback) { BuildSample(almostDone = true) }
+
+@Composable
+fun BuildCancelledDriver() = PreviewHost(ColorMode.Fallback) { BuildSample(cancelled = true) }
+
+@Composable
 fun BuildLogDriver() = PreviewHost(ColorMode.Fallback) { BuildSample(logSheet = true) }
 
 @Composable

@@ -286,6 +286,22 @@
     <string name="build_stage_sign">Ondertekenen</string>
     <string name="build_stage_selfcheck">Zelfcontrole</string>
     <string name="build_can_leave">Je kunt weggaan. We melden het als het klaar is.</string>
+    <string name="build_cancelled">Build geannuleerd</string>
+    <string name="build_restart">Opnieuw bouwen</string>
+    <string name="build_cancel_title">Build annuleren?</string>
+    <string name="build_cancel_body">De tot nu toe gebouwde apps worden verwijderd. Je kunt op elk moment opnieuw beginnen.</string>
+    <string name="build_cancel_keep">Doorgaan met bouwen</string>
+    <string name="build_app_position">App %1$d van %2$d</string>
+    <string-array name="build_almost_done">
+        <item>Bijna klaar, ga nog niet weg</item>
+        <item>Laatste details…</item>
+        <item>Bijna klaar, nog heel even geduld</item>
+        <item>Ondertekenen en controleren, bijna zover</item>
+        <item>Nog heel even</item>
+        <item>Je apps nemen vorm aan</item>
+        <item>Laatste stukje, hou vol</item>
+        <item>Alles nog één keer controleren</item>
+    </string-array>
     <string name="build_channel_name">Voortgang van de build</string>
     <string name="build_channel_description">Wordt getoond terwijl je apps worden gebouwd en ondertekend.</string>
     <string name="build_notification_title">Je apps worden gebouwd</string>

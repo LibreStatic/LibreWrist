@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
+import android.graphics.drawable.Icon
 import android.os.IBinder
 import android.os.PowerManager
 import io.openshm.patcher.MainActivity
@@ -45,6 +46,11 @@ class BuildService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action == ACTION_CANCEL) {
+            // From the notification's Cancel action: stop cooperatively; a stale tap with nothing running just stops the service.
+            if (!BuildController.requestCancel() && job?.isActive != true) stopSelf()
+            return START_NOT_STICKY
+        }
         createChannel()
         startForeground(NOTIFICATION_ID, progressNotification(BuildController.state.value), ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
         if (job?.isActive == true || BuildController.state.value.phase == BuildRunPhase.Running) return START_NOT_STICKY
@@ -102,6 +108,7 @@ class BuildService : Service() {
             openAsset = assets::open,
             outputsDir = storage.outputsDir,
             workDir = storage.workDir,
+            cancelled = BuildController::isCancelRequested,
         )
         val sink = object : BuildSink {
             override fun onStage(outputId: String, index: Int, count: Int, stage: BuildStage) =
@@ -110,7 +117,10 @@ class BuildService : Service() {
             override fun onLog(line: String) = BuildController.onLog(line)
         }
         val outcome = runner.run(BuildRequest(outputIds, prefix, signingKey, ownCertificateSha256(), disabled), sink)
-        if (outcome.ok) {
+        if (outcome.cancelled) {
+            BuildController.onLog("build cancelled; partial outputs deleted")
+            BuildController.cancelled()
+        } else if (outcome.ok) {
             storage.record.write(
                 BuiltBuild(
                     key, prefix, catalogue.serial, System.currentTimeMillis(),
@@ -139,8 +149,13 @@ class BuildService : Service() {
 
     private fun finish() {
         val state = BuildController.state.value
-        stopForeground(STOP_FOREGROUND_DETACH)
-        notify(finalNotification(state.phase == BuildRunPhase.Succeeded))
+        if (state.phase == BuildRunPhase.Cancelled) {
+            // The user knows: no "done" notification, just take the progress one away.
+            stopForeground(STOP_FOREGROUND_REMOVE)
+        } else {
+            stopForeground(STOP_FOREGROUND_DETACH)
+            notify(finalNotification(state.phase == BuildRunPhase.Succeeded))
+        }
         stopSelf()
     }
 
@@ -165,7 +180,7 @@ class BuildService : Service() {
         )
 
     private fun progressNotification(state: BuildRunState): Notification {
-        val b = builder().setOngoing(true).setOnlyAlertOnce(true)
+        val b = builder().setOngoing(true).setOnlyAlertOnce(true).addAction(cancelAction())
         val stage = state.stage
         val outputId = state.outputId
         if (stage != null && outputId != null) {
@@ -177,6 +192,15 @@ class BuildService : Service() {
         return b.build()
     }
 
+    /** An explicit, immutable intent to this (non-exported) service; no receiver is involved. */
+    private fun cancelAction(): Notification.Action {
+        val intent = Intent(this, BuildService::class.java).setAction(ACTION_CANCEL)
+        val pending = PendingIntent.getService(this, 1, intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+        return Notification.Action.Builder(
+            Icon.createWithResource(this, android.R.drawable.ic_menu_close_clear_cancel), getString(R.string.action_cancel), pending,
+        ).build()
+    }
+
     private fun finalNotification(ok: Boolean): Notification = builder()
         .setOngoing(false)
         .setAutoCancel(true)
@@ -184,6 +208,7 @@ class BuildService : Service() {
         .build()
 
     companion object {
+        private const val ACTION_CANCEL = "io.openshm.patcher.action.CANCEL_BUILD"
         private const val CHANNEL_ID = "build"
         private const val NOTIFICATION_ID = 1
         private const val PROGRESS_MAX = 1000

@@ -12,6 +12,7 @@ import io.openshm.patcher.ui.screens.acquire.GuidedBrowserUiState
 import io.openshm.patcher.ui.screens.build.BuildDoneUiState
 import io.openshm.patcher.ui.screens.build.BuildStage
 import io.openshm.patcher.ui.screens.build.BuildUiState
+import io.openshm.patcher.ui.screens.build.CurrentApp
 import io.openshm.patcher.ui.screens.build.BuiltOutput
 import io.openshm.patcher.ui.screens.build.finish
 import io.openshm.patcher.ui.screens.build.startStage
@@ -148,8 +149,27 @@ internal object PreviewData {
 
     fun customize(): CustomizeUiState = customizeStateFor(session)
 
-    fun build(stage: BuildStage = BuildStage.Apply) =
-        BuildUiState(patchCount = AppCatalogue.current.patternCount(WatchProfile.WearOs5.inputIds)).startStage(stage)
+    /** A running build at output [number] (1-based) of [total]; the log has a few live lines. */
+    fun build(stage: BuildStage = BuildStage.Apply, number: Int = 2, total: Int = 5) =
+        BuildUiState(
+            patchCount = AppCatalogue.current.patternCount(WatchProfile.WearOs5.inputIds),
+            running = true,
+            overall = ((number - 1) + stage.ordinal / BuildStage.entries.size.toFloat()) / total,
+            currentApp = AppCatalogue.current.outputs[(number - 1).coerceIn(0, AppCatalogue.current.outputs.lastIndex)].let {
+                CurrentApp(it.id, it.label, it.packageName(PREFIX), it.device, number, total)
+            },
+            log = listOf(
+                "00:41 == ${AppCatalogue.current.outputs[1].id} (2/5) ==",
+                "00:41 ok   check-request (0 ms)",
+                "00:42 ok   unpack (118 ms)",
+                "00:43 ok   detect-family (240 ms)",
+                "00:44   + shm-main-gates: 3 patched sites",
+                "00:44   + shm-setup-network-gate: 1 patched site",
+            ),
+        ).startStage(stage)
+
+    /** The same build after the user cancelled it. */
+    fun buildCancelled() = build().copy(running = false, cancelled = true)
 
     fun buildFinished() =
         BuildUiState(patchCount = AppCatalogue.current.patternCount(WatchProfile.WearOs5.inputIds)).finish()

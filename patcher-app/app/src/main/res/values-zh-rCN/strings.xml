@@ -282,6 +282,22 @@
     <string name="build_stage_sign">签名</string>
     <string name="build_stage_selfcheck">自检</string>
     <string name="build_can_leave">你可以先离开，完成后我们会通知你。</string>
+    <string name="build_cancelled">编译已取消</string>
+    <string name="build_restart">重新编译</string>
+    <string name="build_cancel_title">要取消编译吗？</string>
+    <string name="build_cancel_body">目前已编译的应用将被丢弃。你可以随时重新开始。</string>
+    <string name="build_cancel_keep">继续编译</string>
+    <string name="build_app_position">应用 %1$d/%2$d</string>
+    <string-array name="build_almost_done">
+        <item>马上就好，请不要离开</item>
+        <item>正在收尾…</item>
+        <item>快完成了，再稍等一下</item>
+        <item>正在签名和检查，马上就好</item>
+        <item>再等一会儿</item>
+        <item>你的应用正在成形</item>
+        <item>最后冲刺，坚持一下</item>
+        <item>正在最后检查一遍</item>
+    </string-array>
     <string name="build_channel_name">构建进度</string>
     <string name="build_channel_description">在构建和签名应用期间显示。</string>
     <string name="build_notification_title">正在构建你的应用</string>

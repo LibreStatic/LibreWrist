@@ -294,6 +294,22 @@
     <string name="build_stage_sign">Podpisanie</string>
     <string name="build_stage_selfcheck">Autokontrola</string>
     <string name="build_can_leave">Możesz wyjść. Powiadomimy Cię po zakończeniu.</string>
+    <string name="build_cancelled">Kompilacja anulowana</string>
+    <string name="build_restart">Skompiluj ponownie</string>
+    <string name="build_cancel_title">Anulować kompilację?</string>
+    <string name="build_cancel_body">Dotychczas skompilowane aplikacje zostaną odrzucone. Możesz zacząć od nowa, kiedy chcesz.</string>
+    <string name="build_cancel_keep">Kontynuuj kompilację</string>
+    <string name="build_app_position">Aplikacja %1$d z %2$d</string>
+    <string-array name="build_almost_done">
+        <item>Już prawie gotowe, nie odchodź</item>
+        <item>Ostatnie szlify…</item>
+        <item>Prawie gotowe, jeszcze chwilkę</item>
+        <item>Podpisujemy i sprawdzamy, już prawie</item>
+        <item>Jeszcze moment</item>
+        <item>Twoje aplikacje nabierają kształtu</item>
+        <item>Ostatnia prosta, wytrzymaj</item>
+        <item>Sprawdzamy wszystko jeszcze raz</item>
+    </string-array>
     <string name="build_channel_name">Postęp budowania</string>
     <string name="build_channel_description">Wyświetlane, gdy aplikacje są budowane i podpisywane.</string>
     <string name="build_notification_title">Budowanie aplikacji</string>

@@ -1,11 +1,5 @@
 package io.openshm.patcher.ui.components
 
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -18,13 +12,13 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.PriorityHigh
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -51,7 +45,7 @@ fun CheckStatus.description(): String = stringResource(
 
 /**
  * Status as shape, color and icon (canvas "Status is shape, color and icon"): a pending ring, a
- * spinning cookie while running, a green cookie with a check when passed, a triangle for a warning
+ * Material 3 Expressive loading indicator while running (a still cookie with reduced motion), a green cookie with a check when passed, a triangle for a warning
  * and a red burst with a cross when failed. The status is announced through [description].
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -73,25 +67,15 @@ fun StatusShape(
                 .padding(size / 13)
                 .border(2.dp, colors.outline, CircleShape),
         )
-        CheckStatus.Running -> {
-            val reduced = LocalReducedMotion.current
-            val rotation = if (reduced) {
-                0f
-            } else {
-                val transition = rememberInfiniteTransition(label = "running")
-                transition.animateFloat(
-                    initialValue = 0f,
-                    targetValue = 360f,
-                    animationSpec = infiniteRepeatable(tween(3200, easing = LinearEasing), RepeatMode.Restart),
-                    label = "rotation",
-                ).value
-            }
+        CheckStatus.Running -> if (LocalReducedMotion.current) {
+            // Animations are off: keep a still cookie instead of the morphing indicator.
             Box(
                 semanticsModifier
-                    .rotate(rotation)
                     .clip(PolygonShape(MaterialShapes.Cookie9Sided))
                     .background(colors.primary),
             )
+        } else {
+            LoadingIndicator(modifier = semanticsModifier, color = colors.primary)
         }
         CheckStatus.Passed -> StatusGlyph(
             semanticsModifier, PolygonShape(MaterialShapes.Cookie12Sided),

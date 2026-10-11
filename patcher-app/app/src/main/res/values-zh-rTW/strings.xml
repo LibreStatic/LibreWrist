@@ -282,6 +282,22 @@
     <string name="build_stage_sign">簽署</string>
     <string name="build_stage_selfcheck">自我檢查</string>
     <string name="build_can_leave">你可以先離開，完成後我們會通知你。</string>
+    <string name="build_cancelled">編譯已取消</string>
+    <string name="build_restart">重新編譯</string>
+    <string name="build_cancel_title">要取消編譯嗎？</string>
+    <string name="build_cancel_body">目前已編譯的應用程式將被捨棄。你可以隨時重新開始。</string>
+    <string name="build_cancel_keep">繼續編譯</string>
+    <string name="build_app_position">應用程式 %1$d/%2$d</string>
+    <string-array name="build_almost_done">
+        <item>馬上就好，請不要離開</item>
+        <item>正在收尾…</item>
+        <item>快完成了，再稍等一下</item>
+        <item>正在簽署與檢查，馬上就好</item>
+        <item>再等一下</item>
+        <item>你的應用程式正在成形</item>
+        <item>最後衝刺，再撐一下</item>
+        <item>正在最後檢查一遍</item>
+    </string-array>
     <string name="build_channel_name">建置進度</string>
     <string name="build_channel_description">在建置和簽署應用程式期間顯示。</string>
     <string name="build_notification_title">正在建置你的應用程式</string>

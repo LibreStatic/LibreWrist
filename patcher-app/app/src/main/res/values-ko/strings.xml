@@ -282,6 +282,22 @@
     <string name="build_stage_sign">서명</string>
     <string name="build_stage_selfcheck">자체 점검</string>
     <string name="build_can_leave">자리를 비우셔도 됩니다. 완료되면 알려 드릴게요.</string>
+    <string name="build_cancelled">빌드가 취소되었습니다</string>
+    <string name="build_restart">다시 빌드</string>
+    <string name="build_cancel_title">빌드를 취소할까요?</string>
+    <string name="build_cancel_body">지금까지 빌드한 앱은 삭제됩니다. 언제든 다시 시작할 수 있어요.</string>
+    <string name="build_cancel_keep">계속 빌드</string>
+    <string name="build_app_position">앱 %1$d/%2$d</string>
+    <string-array name="build_almost_done">
+        <item>거의 다 됐어요, 자리를 떠나지 마세요</item>
+        <item>마무리 중…</item>
+        <item>거의 완료됐어요, 조금만 더 기다려 주세요</item>
+        <item>서명하고 확인하는 중이에요, 거의 끝났어요</item>
+        <item>잠시만 더 기다려 주세요</item>
+        <item>앱이 모양을 갖춰 가고 있어요</item>
+        <item>마지막 구간이에요, 조금만 더요</item>
+        <item>마지막으로 모든 것을 다시 확인하고 있어요</item>
+    </string-array>
     <string name="build_channel_name">빌드 진행률</string>
     <string name="build_channel_description">앱을 빌드하고 서명하는 동안 표시됩니다.</string>
     <string name="build_notification_title">앱 빌드 중</string>

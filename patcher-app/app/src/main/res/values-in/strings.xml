@@ -282,6 +282,22 @@
     <string name="build_stage_sign">Tanda tangani</string>
     <string name="build_stage_selfcheck">Pemeriksaan mandiri</string>
     <string name="build_can_leave">Kamu boleh pergi. Kami akan memberi tahu saat selesai.</string>
+    <string name="build_cancelled">Build dibatalkan</string>
+    <string name="build_restart">Build lagi</string>
+    <string name="build_cancel_title">Batalkan build?</string>
+    <string name="build_cancel_body">Aplikasi yang sudah dibuat sejauh ini akan dibuang. Kamu bisa mulai lagi kapan saja.</string>
+    <string name="build_cancel_keep">Lanjutkan build</string>
+    <string name="build_app_position">Aplikasi %1$d dari %2$d</string>
+    <string-array name="build_almost_done">
+        <item>Hampir selesai, jangan pergi dulu</item>
+        <item>Sentuhan terakhir…</item>
+        <item>Hampir siap, tunggu sebentar lagi</item>
+        <item>Menandatangani dan memeriksa, hampir selesai</item>
+        <item>Sebentar lagi</item>
+        <item>Aplikasimu mulai terbentuk</item>
+        <item>Tahap akhir, bertahanlah</item>
+        <item>Memeriksa semuanya sekali lagi</item>
+    </string-array>
     <string name="build_channel_name">Progres build</string>
     <string name="build_channel_description">Ditampilkan saat aplikasimu dibangun dan ditandatangani.</string>
     <string name="build_notification_title">Membangun aplikasimu</string>

@@ -294,6 +294,22 @@
     <string name="build_stage_sign">Подпись</string>
     <string name="build_stage_selfcheck">Самопроверка</string>
     <string name="build_can_leave">Можно выйти. Мы уведомим вас о завершении.</string>
+    <string name="build_cancelled">Сборка отменена</string>
+    <string name="build_restart">Собрать снова</string>
+    <string name="build_cancel_title">Отменить сборку?</string>
+    <string name="build_cancel_body">Уже собранные приложения будут удалены. Ты можешь начать заново в любой момент.</string>
+    <string name="build_cancel_keep">Продолжить сборку</string>
+    <string name="build_app_position">Приложение %1$d из %2$d</string>
+    <string-array name="build_almost_done">
+        <item>Уже почти готово, не уходи</item>
+        <item>Последние штрихи…</item>
+        <item>Почти готово, потерпи ещё немного</item>
+        <item>Подписываем и проверяем, осталось совсем чуть-чуть</item>
+        <item>Ещё мгновение</item>
+        <item>Твои приложения обретают форму</item>
+        <item>Финишная прямая, держись</item>
+        <item>Ещё раз всё проверяем</item>
+    </string-array>
     <string name="build_channel_name">Ход сборки</string>
     <string name="build_channel_description">Показывается, пока приложения собираются и подписываются.</string>
     <string name="build_notification_title">Сборка приложений</string>

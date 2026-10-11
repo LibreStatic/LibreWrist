@@ -33,9 +33,22 @@ internal fun BuildUiState.startStage(stage: BuildStage): BuildUiState = copy(
 internal fun BuildUiState.finish(): BuildUiState = copy(stages = stages.map { it.copy(status = CheckStatus.Passed) })
 
 /** The screen's view of the controller state; [logVisible] is the only state the screen owns. */
-internal fun BuildRunState.toUiState(patchCount: Int, logVisible: Boolean): BuildUiState {
-    val base = BuildUiState(patchCount = patchCount, log = log, logVisible = logVisible, overall = progress)
+internal fun BuildRunState.toUiState(patchCount: Int, logVisible: Boolean, currentApp: CurrentApp? = null): BuildUiState {
+    val base = BuildUiState(
+        patchCount = patchCount, log = log, logVisible = logVisible, overall = progress,
+        running = phase == BuildRunPhase.Running, cancelRequested = cancelRequested, currentApp = currentApp,
+    )
     return when (phase) {
+        BuildRunPhase.Cancelled -> base.copy(
+            cancelled = true,
+            stages = base.stages.map { row ->
+                when {
+                    stage == null -> row
+                    row.stage.ordinal < stage.ordinal -> row.copy(status = CheckStatus.Passed)
+                    else -> row
+                }
+            },
+        )
         BuildRunPhase.Succeeded -> base.finish()
         BuildRunPhase.Failed -> base.copy(
             failed = true,
@@ -78,14 +91,24 @@ class BuildViewModel(application: Application) : AndroidViewModel(application) {
         buildKey(AppCatalogue.current.serial, it.packagePrefix, it.watchProfile.outputIds, AppCatalogue.current.effectiveDisabled(it.disabledPatches))
     }
     private val logVisible = MutableStateFlow(false)
+
+    /** Loads the app icons for the "current app" card; swapped for a fake in tests and previews. */
+    val icons: AppIconLoader = ApkIconLoader(application)
+
+    private fun currentApp(run: BuildRunState): CurrentApp? {
+        val id = run.outputId ?: return null
+        if (run.phase != BuildRunPhase.Running && run.phase != BuildRunPhase.Cancelled) return null
+        val output = AppCatalogue.current.output(id)
+        return CurrentApp(id, output.label, output.packageName(SetupSession.state.value.packagePrefix), output.device, run.outputIndex + 1, run.outputCount)
+    }
     private val recordedFinished = MutableStateFlow(false)
 
     val state: StateFlow<BuildUiState> = combine(BuildController.state, logVisible) { run, visible ->
-        run.toUiState(patchCount, visible)
+        run.toUiState(patchCount, visible, currentApp(run))
     }.stateIn(viewModelScope, SharingStarted.Eagerly, BuildUiState(patchCount = patchCount))
 
     val finished: StateFlow<Boolean> = combine(BuildController.state, recordedFinished) { run, recorded ->
-        if (run.phase == BuildRunPhase.Running) false else (run.phase == BuildRunPhase.Succeeded && run.key == key) || recorded
+        if (run.phase == BuildRunPhase.Running || run.phase == BuildRunPhase.Cancelled) false else (run.phase == BuildRunPhase.Succeeded && run.key == key) || recorded
     }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     fun onEvent(event: BuildEvent) {
@@ -93,6 +116,8 @@ class BuildViewModel(application: Application) : AndroidViewModel(application) {
             BuildEvent.ShowLog -> logVisible.update { true }
             BuildEvent.HideLog -> logVisible.update { false }
             BuildEvent.Retry -> BuildService.start(getApplication())
+            BuildEvent.Cancel -> BuildController.requestCancel()
+            BuildEvent.Dismiss -> BuildController.clearCancelled()
         }
     }
 

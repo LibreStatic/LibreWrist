@@ -8,6 +8,8 @@ import io.openshm.patcher.engine.OutputSource
 import io.openshm.patcher.engine.OwnAppBuilder
 import io.openshm.patcher.engine.OwnAppRequest
 import io.openshm.patcher.engine.PatchListener
+import io.openshm.patcher.engine.PatternResult
+import io.openshm.patcher.engine.PhaseReport
 import io.openshm.patcher.engine.PatchRequest
 import io.openshm.patcher.engine.Patcher
 import io.openshm.patcher.engine.SigningKey
@@ -68,7 +70,11 @@ class BuildRequest(
 /** One finished output. */
 class BuiltFile(val outputId: String, val file: File, val sizeBytes: Long, val sha256: String)
 
-class BuildOutcome(val ok: Boolean, val error: String?, val files: List<BuiltFile>)
+/** [cancelled] means the user stopped the build: [files] is empty (what was built is deleted) and there is no [error]. */
+class BuildOutcome(val ok: Boolean, val error: String?, val files: List<BuiltFile>, val cancelled: Boolean = false)
+
+/** Thrown from the listener handed to the engine to stop a blocking engine call at its next event. */
+class BuildCancelledException : RuntimeException("build cancelled")
 
 /** Progress and log sink; called on the building thread. */
 interface BuildSink {
@@ -79,7 +85,9 @@ interface BuildSink {
 
 /**
  * Builds the outputs of a request one after the other, in the catalogue `installOrder`, and stops at the
- * first failure. Each output goes to `<outputs>/<id>.apk.part` and is renamed to `<id>.apk` only when
+ * first failure or when [cancelled] turns true (checked before each output and, through the engine
+ * listener, at the next engine event). A cancel deletes the partial output and every output already
+ * built by this run. Each output goes to `<outputs>/<id>.apk.part` and is renamed to `<id>.apk` only when
  * its report is ok; a failure deletes the partial file. Plain JVM code.
  *
  * Stage mapping (engine phase event -> [BuildStage]); the stages list shows the output being built and
@@ -101,6 +109,8 @@ class BuildRunner(
     private val openAsset: (path: String) -> InputStream,
     private val outputsDir: File,
     private val workDir: File,
+    /** Polled before each output and on every engine event; true once the user asked to stop. */
+    private val cancelled: () -> Boolean = { false },
 ) {
     fun run(request: BuildRequest, sink: BuildSink): BuildOutcome {
         val outputs = catalogue.installOrder.map { step -> catalogue.outputs.first { it.id == step.output } }
@@ -119,23 +129,29 @@ class BuildRunner(
         val built = ArrayList<BuiltFile>()
         try {
             outputs.forEachIndexed { index, out ->
+                if (cancelled()) return cancel(sink, built)
                 val part = File(outputsDir, "${out.id}.apk.part")
                 val final = File(outputsDir, "${out.id}.apk")
                 part.delete()
                 sink.onLog("== ${out.id} (${index + 1}/${outputs.size}) ==")
                 val result = try {
                     buildOne(out, request, part, listener(out.id, index, outputs.size, sink))
+                } catch (e: BuildCancelledException) {
+                    part.delete()
+                    return cancel(sink, built)
                 } catch (e: Exception) {
                     part.delete()
                     return fail(sink, "${out.id}: ${e.message ?: e.javaClass.simpleName}", built)
                 }
-                result.text.lineSequence().filter { it.isNotBlank() }.forEach(sink::onLog)
                 if (!result.ok || !part.isFile) {
+                    // the live lines already told the story; the full report helps to diagnose a failure
+                    result.text.lineSequence().filter { it.isNotBlank() }.forEach(sink::onLog)
                     part.delete()
                     return fail(sink, result.error ?: "${out.id}: no output was produced", built)
                 }
                 Files.move(part.toPath(), final.toPath(), StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING)
                 built += BuiltFile(out.id, final, final.length(), sha256(final))
+                sink.onLog("built ${out.id}: ${final.length() / 1024} KiB")
             }
         } finally {
             workDir.deleteRecursively()
@@ -176,13 +192,38 @@ class BuildRunner(
 
     private fun listener(outputId: String, index: Int, count: Int, sink: BuildSink): PatchListener {
         var current: BuildStage? = null
-        return PatchListener { event ->
-            val stage = stageOf(event) ?: return@PatchListener
-            if (current == null || stage.ordinal > current!!.ordinal) {
-                current = stage
-                sink.onStage(outputId, index, count, stage)
+        return object : PatchListener {
+            override fun onEvent(event: String) {
+                if (cancelled()) throw BuildCancelledException()
+                val stage = stageOf(event) ?: return
+                if (current == null || stage.ordinal > current!!.ordinal) {
+                    current = stage
+                    sink.onStage(outputId, index, count, stage)
+                }
+            }
+
+            override fun onPhase(report: PhaseReport) {
+                sink.onLog("${if (report.ok) "ok  " else "FAIL"} ${report.name} (${report.millis} ms)")
+                report.details.forEach { sink.onLog("       $it") }
+                if (cancelled()) throw BuildCancelledException()
+            }
+
+            override fun onPattern(result: PatternResult) {
+                val line = when {
+                    result.error != null -> "  ! ${result.id}: ${result.error}"
+                    result.log.isEmpty() -> "  . ${result.id}: nothing to patch"
+                    else -> "  + ${result.id}: ${result.log.size} patched site${if (result.log.size == 1) "" else "s"}"
+                }
+                sink.onLog(line)
             }
         }
+    }
+
+    private fun cancel(sink: BuildSink, built: List<BuiltFile>): BuildOutcome {
+        built.forEach { it.file.delete() }
+        outputsDir.listFiles { f -> f.name.endsWith(".apk.part") }?.forEach { it.delete() }
+        sink.onLog("CANCELLED by the user")
+        return BuildOutcome(false, null, emptyList(), cancelled = true)
     }
 
     private fun readAsset(path: String): ByteArray = openAssetOrFail(path).use { it.readBytes() }

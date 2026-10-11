@@ -290,6 +290,22 @@
     <string name="build_stage_sign">Signer</string>
     <string name="build_stage_selfcheck">Autocontrôle</string>
     <string name="build_can_leave">Vous pouvez quitter. Nous vous préviendrons quand ce sera terminé.</string>
+    <string name="build_cancelled">Compilation annulée</string>
+    <string name="build_restart">Recompiler</string>
+    <string name="build_cancel_title">Annuler la compilation ?</string>
+    <string name="build_cancel_body">Les applis compilées jusqu\'ici sont supprimées. Tu peux recommencer quand tu veux.</string>
+    <string name="build_cancel_keep">Continuer la compilation</string>
+    <string name="build_app_position">Appli %1$d sur %2$d</string>
+    <string-array name="build_almost_done">
+        <item>Presque fini, ne pars pas</item>
+        <item>Derniers détails…</item>
+        <item>Bientôt prêt, encore un peu de patience</item>
+        <item>Signature et vérifications en cours, presque terminé</item>
+        <item>Encore un instant</item>
+        <item>Tes applis prennent forme</item>
+        <item>Dernière ligne droite, courage</item>
+        <item>Dernière vérification de tout</item>
+    </string-array>
     <string name="build_channel_name">Progression de la compilation</string>
     <string name="build_channel_description">S\'affiche pendant la compilation et la signature de vos apps.</string>
     <string name="build_notification_title">Compilation de vos apps</string>
