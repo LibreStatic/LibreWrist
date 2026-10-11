@@ -176,7 +176,7 @@ private fun ChangesSheet(changes: List<DeviceChanges>, onDismiss: () -> Unit) {
 /** The sheet's content: per device, each new app with what it is for and what it is allowed to do. */
 @Composable
 internal fun ChangesContent(changes: List<DeviceChanges>, modifier: Modifier = Modifier) {
-    var technical by rememberSaveable { mutableStateOf(false) }
+    var technical by rememberSaveable { mutableStateOf(true) }
     Column(
         modifier.verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, bottom = 24.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -192,7 +192,6 @@ internal fun ChangesContent(changes: List<DeviceChanges>, modifier: Modifier = M
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(horizontal = 8.dp),
         )
-        changes.filter { it.apps.isNotEmpty() || it.disables.isNotEmpty() }.forEach { DeviceSection(it, technical) }
         Row(
             Modifier
                 .fillMaxWidth()
@@ -204,6 +203,7 @@ internal fun ChangesContent(changes: List<DeviceChanges>, modifier: Modifier = M
             Text(stringResource(R.string.changes_technical), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
             Switch(technical, onCheckedChange = null)
         }
+        changes.filter { it.apps.isNotEmpty() || it.disables.isNotEmpty() }.forEach { DeviceSection(it, technical) }
     }
 }
 
