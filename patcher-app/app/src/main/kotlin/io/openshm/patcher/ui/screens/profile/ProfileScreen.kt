@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -70,12 +71,18 @@ fun ProfileScreen(
                     else MaterialTheme.colorScheme.onSurface,
                     contentPadding = PaddingValues(14.dp),
                 ) {
+                    val onContainer = if (selected) MaterialTheme.colorScheme.onPrimaryContainer
+                    else MaterialTheme.colorScheme.onSurfaceVariant
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                        RadioButton(selected, onClick = null)
+                        RadioButton(
+                            selected,
+                            onClick = null,
+                            colors = RadioButtonDefaults.colors(selectedColor = onContainer, unselectedColor = onContainer),
+                        )
                         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                             Text(stringResource(option.titleRes()), style = MaterialTheme.typography.titleMedium)
                             Text(stringResource(option.summaryRes()), style = MaterialTheme.typography.bodyMedium)
-                            Row(Modifier.padding(top = 4.dp)) { InfoChip(stringResource(option.appsRes())) }
+                            Row(Modifier.padding(top = 4.dp)) { InfoChip(stringResource(option.appsRes()), contentColor = onContainer) }
                         }
                     }
                 }

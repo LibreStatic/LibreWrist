@@ -168,7 +168,8 @@ fun InfoChip(
         shape = RoundedCornerShape(8.dp),
         color = containerColor,
         contentColor = contentColor,
-        border = if (bordered) BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant) else null,
+        // The border follows the content color, so it stays visible on a tinted (e.g. selected) container.
+        border = if (bordered) BorderStroke(1.dp, contentColor.copy(alpha = 0.5f)) else null,
     ) {
         Row(
             modifier = Modifier.heightIn(min = 28.dp).padding(horizontal = 10.dp),

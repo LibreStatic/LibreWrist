@@ -4,13 +4,25 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Bluetooth
+import androidx.compose.material.icons.rounded.Build
+import androidx.compose.material.icons.rounded.Checklist
+import androidx.compose.material.icons.rounded.Download
+import androidx.compose.material.icons.rounded.InstallMobile
+import androidx.compose.material.icons.rounded.Link
+import androidx.compose.material.icons.rounded.Tune
+import androidx.compose.material.icons.rounded.Watch
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MotionScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,12 +35,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import androidx.compose.material3.MotionScheme
 import androidx.graphics.shapes.Morph
 import androidx.graphics.shapes.RoundedPolygon
 import io.openshm.patcher.R
@@ -74,6 +86,23 @@ internal object StepShapeMemory {
     var last: SetupStep? = null
 }
 
+/** Icon drawn on the step shape. */
+internal fun SetupStep.icon(): ImageVector = when (this) {
+    SetupStep.Profile -> Icons.Rounded.Watch
+    SetupStep.WearablePairing -> Icons.Rounded.Bluetooth
+    SetupStep.WatchPair -> Icons.Rounded.Link
+    SetupStep.Acquire -> Icons.Rounded.Download
+    SetupStep.Customize -> Icons.Rounded.Tune
+    SetupStep.Build -> Icons.Rounded.Build
+    SetupStep.InstallPhone -> Icons.Rounded.InstallMobile
+    SetupStep.WatchInstall -> Icons.Rounded.Watch
+    SetupStep.SelfTest -> Icons.Rounded.Checklist
+}
+
+@Composable
+private fun SetupStep.contentColor(): Color =
+    if (onWatch) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onPrimaryContainer
+
 @Composable
 private fun SetupStep.containerColor(): Color =
     if (onWatch) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.primaryContainer
@@ -85,6 +114,15 @@ private fun SetupStep.containerColor(): Color =
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun StepShape(step: SetupStep, modifier: Modifier = Modifier) {
+    Box(modifier, contentAlignment = Alignment.Center) {
+        StepShapeBackground(step)
+        Icon(step.icon(), contentDescription = null, tint = step.contentColor(), modifier = Modifier.size(22.dp))
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun StepShapeBackground(step: SetupStep, modifier: Modifier = Modifier) {
     val reducedMotion = LocalReducedMotion.current
     val from = remember { StepShapeMemory.last ?: step }
     val toColor = step.containerColor()
