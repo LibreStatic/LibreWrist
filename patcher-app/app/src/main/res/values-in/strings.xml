@@ -649,6 +649,7 @@
     <string name="skip_checking">Memeriksa perangkat Anda…</string>
     <string name="skip_card_step">Langkah %1$d · %2$s</string>
     <string name="skip_reason_profile">Kami mendeteksi Android %1$s (%2$s) di jam yang terhubung.</string>
+    <string name="skip_reason_profile_network">Jam tangan Anda (%1$s) mengumumkan Android API %2$s melalui Wi-Fi (%3$s).</string>
     <string name="skip_reason_wearable">Jam Anda sudah disambungkan dengan Galaxy Wearable.</string>
     <string name="skip_reason_watchpair">Jam Anda sudah terhubung lewat proses debug nirkabel.</string>
     <string name="skip_confirm">Mengerti</string>

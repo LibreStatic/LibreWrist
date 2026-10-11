@@ -657,6 +657,7 @@
     <string name="skip_checking">Cihazlarınız kontrol ediliyor…</string>
     <string name="skip_card_step">Adım %1$d · %2$s</string>
     <string name="skip_reason_profile">Bağlı saatte Android %1$s (%2$s) algılandı.</string>
+    <string name="skip_reason_profile_network">Saatiniz (%1$s) Wi-Fi üzerinden Android API %2$s olarak bildirdi (%3$s).</string>
     <string name="skip_reason_wearable">Saatiniz zaten Galaxy Wearable ile eşlenmiş.</string>
     <string name="skip_reason_watchpair">Saatiniz zaten kablosuz hata ayıklama ile bağlı.</string>
     <string name="skip_confirm">Anladım</string>

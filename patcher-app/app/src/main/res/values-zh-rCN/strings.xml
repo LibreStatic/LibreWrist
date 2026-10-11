@@ -649,6 +649,7 @@
     <string name="skip_checking">正在检查你的设备…</string>
     <string name="skip_card_step">第 %1$d 步 · %2$s</string>
     <string name="skip_reason_profile">已在连接的手表上检测到 Android %1$s（%2$s）。</string>
+    <string name="skip_reason_profile_network">你的手表（%1$s）已通过 Wi-Fi 通报 Android API %2$s（%3$s）。</string>
     <string name="skip_reason_wearable">你的手表已与 Galaxy Wearable 配对。</string>
     <string name="skip_reason_watchpair">你的手表已通过无线调试连接。</string>
     <string name="skip_confirm">知道了</string>

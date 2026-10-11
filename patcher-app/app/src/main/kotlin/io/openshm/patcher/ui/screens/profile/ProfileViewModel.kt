@@ -4,31 +4,57 @@ import android.app.Application
 import android.bluetooth.BluetoothManager
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import io.openshm.patcher.adb.AdbDiscovery
-import io.openshm.patcher.adb.AdbServiceType
 import io.openshm.patcher.data.SetupSession
 import io.openshm.patcher.data.WatchProfile
 import io.openshm.patcher.device.DetectedWatch
-import io.openshm.patcher.device.WatchAnnouncement
+import io.openshm.patcher.device.WatchAnnouncements
 import io.openshm.patcher.device.WatchDetection
 import io.openshm.patcher.device.WatchLink
+import io.openshm.patcher.ui.nav.StepSkips
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlin.coroutines.coroutineContext
+
+/**
+ * Decides whether the Profile step moves on by itself: once, when the watch's version arrives while
+ * the screen is open, unless the user chose manual setup or already picked an option here. A
+ * detection that was there when the screen opened never advances (the user came back to it).
+ */
+internal class AutoAdvance(initiallyDetected: Boolean, private val manual: () -> Boolean) {
+    private var armed = !initiallyDetected
+
+    /** The user touched the selection: never advance. */
+    fun touched() {
+        armed = false
+    }
+
+    /** True the first time a detection [arrived] with nothing else holding the screen back. */
+    fun detectionArrived(arrived: Boolean): Boolean {
+        if (!arrived || !armed) return false
+        armed = false
+        return !manual()
+    }
+}
 
 class ProfileViewModel(application: Application) : AndroidViewModel(application) {
     private val _state = MutableStateFlow(ProfileUiState(selected = SetupSession.state.value.watchProfile))
     val state: StateFlow<ProfileUiState> = _state.asStateFlow()
+
+    private val autoAdvance = AutoAdvance(
+        initiallyDetected = WatchDetection.state.value.watch != null || WatchAnnouncements.state.value != null,
+    ) { StepSkips.manual }
+    private val _advance = Channel<Unit>(Channel.CONFLATED)
+    private var pendingAdvance: Job? = null
+
+    /** Fires once when the screen should move on by itself after showing the detected watch. */
+    val advance: Flow<Unit> = _advance.receiveAsFlow()
 
     init {
         // A remembered watch answers authoritatively; any failure is silent (the user just picks).
@@ -41,54 +67,43 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
                 setDetected(detected)
             }
         }
+        viewModelScope.launch {
+            WatchAnnouncements.state.collect { announced ->
+                if (announced == null || _state.value.detected != null) return@collect
+                setDetected(announced)
+            }
+        }
+        viewModelScope.launch {
+            WatchAnnouncements.running.collect { running -> _state.update { it.copy(scanning = running) } }
+        }
     }
 
-    private var scan: Job? = null
+    /** The screen leaves the foreground: a pending automatic advance is dropped. */
+    fun cancelAdvance() {
+        pendingAdvance?.cancel()
+        pendingAdvance = null
+    }
 
-    /**
-     * Listens for the watch's Wireless debugging announcement (it carries the Android API level
-     * before any pairing) until one names a watch. Silent on any failure. Runs only while the screen
-     * is shown: the view model outlives it on the back stack.
-     */
-    fun startScan() {
-        if (_state.value.detected != null || scan?.isActive == true) return
-        val application = getApplication<Application>()
-        _state.update { it.copy(scanning = true) }
-        scan = viewModelScope.launch {
-            try {
-                val discovery = AdbDiscovery(application)
-                val found = merge(announced(discovery, AdbServiceType.CONNECT), announced(discovery, AdbServiceType.PAIRING))
-                    .filterNotNull()
-                    .first()
-                // ADB detection may have answered meanwhile and stays authoritative.
-                if (_state.value.detected == null) setDetected(found)
-            } catch (e: kotlinx.coroutines.CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                // Silent: the user simply picks.
-            } finally {
-                // A scan restarted meanwhile owns the flag.
-                if (scan == null || scan === coroutineContext[Job]) _state.update { it.copy(scanning = false) }
+    private fun setDetected(detected: DetectedWatch) {
+        val first = _state.value.detected == null
+        select(detected.profile)
+        _state.update { it.copy(detected = detected) }
+        if (autoAdvance.detectionArrived(first)) {
+            // Long enough to read the detected card before the screen moves on.
+            pendingAdvance = viewModelScope.launch {
+                delay(ADVANCE_DELAY_MILLIS)
+                _advance.trySend(Unit)
             }
         }
     }
 
-    fun stopScan() {
-        scan?.cancel()
-        scan = null
-    }
-
-    private fun announced(discovery: AdbDiscovery, type: AdbServiceType): Flow<DetectedWatch?> =
-        discovery.discover(type).map(WatchAnnouncement::best).catch { }
-
-    private fun setDetected(detected: DetectedWatch) {
-        select(detected.profile)
-        _state.update { it.copy(detected = detected) }
-    }
-
     fun onEvent(event: ProfileEvent) {
         when (event) {
-            is ProfileEvent.Select -> select(event.profile)
+            is ProfileEvent.Select -> {
+                autoAdvance.touched()
+                cancelAdvance()
+                select(event.profile)
+            }
             // The host asks for the Bluetooth permission and reports back through onBluetoothPermission.
             ProfileEvent.CheckPairedWatches, ProfileEvent.AllowBluetooth -> Unit
         }
@@ -117,5 +132,9 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
         adapter?.bondedDevices.orEmpty().mapNotNull { it.name }
     } catch (e: SecurityException) {
         emptyList()
+    }
+
+    private companion object {
+        const val ADVANCE_DELAY_MILLIS = 1_200L
     }
 }

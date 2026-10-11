@@ -8,13 +8,18 @@ import io.openshm.patcher.device.DetectedWatch
 data class SkippedStep(val route: Route, @StringRes val reason: Int, val watch: DetectedWatch? = null)
 
 /**
- * The steps after the welcome that need nothing from the user: the profile and the watch pairing once
- * the remembered watch answered over ADB, the Galaxy Wearable step once all its checks pass.
+ * The steps after the welcome that need nothing from the user: the profile once the watch told its
+ * version (over ADB or in its Wi-Fi announcement), the watch pairing once the remembered watch answered
+ * over ADB, the Galaxy Wearable step once all its checks pass.
  */
 internal fun skippableSteps(watch: DetectedWatch?, wearableReady: Boolean): List<SkippedStep> = buildList {
-    if (watch != null) add(SkippedStep(Route.Profile, R.string.skip_reason_profile, watch))
+    if (watch != null) {
+        val reason = if (watch.source == DetectedWatch.Source.Network) R.string.skip_reason_profile_network else R.string.skip_reason_profile
+        add(SkippedStep(Route.Profile, reason, watch))
+    }
     if (wearableReady) add(SkippedStep(Route.WearablePairing, R.string.skip_reason_wearable))
-    if (watch != null) add(SkippedStep(Route.WatchPair, R.string.skip_reason_watchpair))
+    // An announcement says nothing about the pairing: only an ADB answer proves the link.
+    if (watch?.source == DetectedWatch.Source.Adb) add(SkippedStep(Route.WatchPair, R.string.skip_reason_watchpair))
 }
 
 /**
@@ -34,6 +39,10 @@ internal fun skippedRunAfter(route: Route, skipped: List<SkippedStep>): List<Ski
 object StepSkips {
     @Volatile
     var current: List<SkippedStep> = emptyList()
+
+    /** The user chose to walk the steps by hand: nothing is passed over or advanced automatically. */
+    @Volatile
+    var manual: Boolean = false
 
     val routes: Set<Route> get() = current.mapTo(mutableSetOf()) { it.route }
 }

@@ -657,6 +657,7 @@
     <string name="skip_checking">Controllo dei dispositivi…</string>
     <string name="skip_card_step">Passaggio %1$d · %2$s</string>
     <string name="skip_reason_profile">Rilevato Android %1$s (%2$s) sull\'orologio collegato.</string>
+    <string name="skip_reason_profile_network">Il tuo orologio (%1$s) ha annunciato Android API %2$s tramite Wi-Fi (%3$s).</string>
     <string name="skip_reason_wearable">L\'orologio è già associato a Galaxy Wearable.</string>
     <string name="skip_reason_watchpair">L\'orologio è già connesso tramite debug wireless.</string>
     <string name="skip_confirm">Ho capito</string>

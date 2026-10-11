@@ -7,6 +7,7 @@ import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.Device
 import io.openshm.patcher.data.SetupSession
 import io.openshm.patcher.data.WatchProfile
+import io.openshm.patcher.device.WatchAnnouncements
 import io.openshm.patcher.device.WatchDetection
 import io.openshm.patcher.device.WatchLink
 import io.openshm.patcher.ui.nav.StepSkips
@@ -57,6 +58,8 @@ class WelcomeViewModel(application: Application) : AndroidViewModel(application)
             StepSkips.current = steps
             if (watch != null) SetupSession.update { it.copy(watchProfile = watch.profile) }
         },
+        announced = { WatchAnnouncements.state.value },
+        setManual = { StepSkips.manual = it },
     )
 
     /** Open the next step that still needs the user; the nav host follows it. */

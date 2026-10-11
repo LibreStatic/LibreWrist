@@ -649,6 +649,7 @@
     <string name="skip_checking">기기를 확인하는 중…</string>
     <string name="skip_card_step">%1$d단계 · %2$s</string>
     <string name="skip_reason_profile">연결된 시계에서 Android %1$s(%2$s)을(를) 감지했습니다.</string>
+    <string name="skip_reason_profile_network">사용 중인 워치(%1$s)가 Wi-Fi로 Android API %2$s을(를) 알려 왔습니다(%3$s).</string>
     <string name="skip_reason_wearable">시계가 이미 Galaxy Wearable과 페어링되어 있습니다.</string>
     <string name="skip_reason_watchpair">시계가 이미 무선 디버깅으로 연결되어 있습니다.</string>
     <string name="skip_confirm">확인</string>

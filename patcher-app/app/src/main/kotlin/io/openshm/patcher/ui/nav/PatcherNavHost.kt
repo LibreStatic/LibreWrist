@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import io.openshm.patcher.ui.theme.LocalReducedMotion
 import androidx.core.content.ContextCompat
 import io.openshm.patcher.build.BuildStorage
+import io.openshm.patcher.device.WatchAnnouncements
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -153,6 +154,10 @@ fun PatcherNavHost(
                 val vm: WelcomeViewModel = viewModel()
                 val state by vm.state.collectAsStateWithLifecycle()
                 LaunchedEffect(vm) { vm.go.collect { next(Route.Welcome) } }
+                // Listen for the watch's Wi-Fi announcement while shown, so the steps it settles can be passed over.
+                val welcomeContext = LocalContext.current
+                LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { WatchAnnouncements.start(welcomeContext, "welcome") }
+                LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { WatchAnnouncements.stop("welcome") }
                 WelcomeScreen(state, vm::onEvent, onGetStarted = { vm.onEvent(WelcomeEvent.GetStarted) }, onSettings = { navController.navigate(Route.SigningKey.path) })
             }
             composable(Route.Profile.path) {
@@ -183,9 +188,14 @@ fun PatcherNavHost(
                 // Silent check on entering and when coming back from the permission dialog or the settings.
                 LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
                     if (granted()) vm.onBluetoothPermission(true)
-                    vm.startScan()
+                    WatchAnnouncements.start(context, "profile")
                 }
-                LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { vm.stopScan() }
+                LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
+                    WatchAnnouncements.stop("profile")
+                    vm.cancelAdvance()
+                }
+                // The watch told its version while this screen was open: move on once it was readable.
+                LaunchedEffect(vm) { vm.advance.collect { next(Route.Profile) } }
                 // Asked on its own once ever, and only while the watch has not already told its version.
                 LaunchedEffect(vm) {
                     if (!granted() && !asks.hasAsked(bluetooth) && vm.state.value.detected == null) request()
@@ -467,6 +477,7 @@ fun PatcherNavHost(
                 val (from, run) = announcing ?: return@SkipStepsOverlay
                 announcing = null
                 val manual = run.mapTo(mutableSetOf()) { it.route }
+                if (Route.Profile in manual) StepSkips.manual = true
                 StepSkips.current = StepSkips.current.filter { it.route !in manual }
                 SetupFlow.next(from)?.let(::go)
             },

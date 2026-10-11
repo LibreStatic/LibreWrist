@@ -61,6 +61,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.openshm.patcher.R
+import io.openshm.patcher.device.DetectedWatch
 import io.openshm.patcher.ui.components.CheckStatus
 import io.openshm.patcher.ui.components.PolygonShape
 import io.openshm.patcher.ui.components.PrimaryAction
@@ -224,8 +225,13 @@ private fun SkippingContent(steps: List<SkippedStep>, onConfirm: () -> Unit, onM
 @Composable
 private fun SkippedCard(step: SkippedStep) {
     val (setupStep, titleRes) = step.route.stepInfo() ?: return
-    val reason = step.watch?.let { stringResource(step.reason, it.versionLabel, stringResource(it.profile.titleRes())) }
-        ?: stringResource(step.reason)
+    val reason = step.watch?.let {
+        val profile = stringResource(it.profile.titleRes())
+        when (it.source) {
+            DetectedWatch.Source.Adb -> stringResource(step.reason, it.versionLabel, profile)
+            DetectedWatch.Source.Network -> stringResource(step.reason, it.model.orEmpty(), it.sdk.toString(), profile)
+        }
+    } ?: stringResource(step.reason)
     Surface(
         shape = MaterialTheme.shapes.large,
         color = MaterialTheme.colorScheme.surfaceContainerLowest,

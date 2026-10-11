@@ -657,6 +657,7 @@
     <string name="skip_checking">Verificando seus dispositivos…</string>
     <string name="skip_card_step">Etapa %1$d · %2$s</string>
     <string name="skip_reason_profile">Detectamos Android %1$s (%2$s) no relógio conectado.</string>
+    <string name="skip_reason_profile_network">O seu relógio (%1$s) anunciou Android API %2$s por Wi-Fi (%3$s).</string>
     <string name="skip_reason_wearable">Seu relógio já está pareado com o Galaxy Wearable.</string>
     <string name="skip_reason_watchpair">Seu relógio já está conectado pela depuração por Wi-Fi.</string>
     <string name="skip_confirm">Entendi</string>

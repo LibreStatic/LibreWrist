@@ -657,6 +657,7 @@
     <string name="skip_checking">Je apparaten worden gecontroleerd…</string>
     <string name="skip_card_step">Stap %1$d · %2$s</string>
     <string name="skip_reason_profile">Android %1$s (%2$s) gevonden op het verbonden horloge.</string>
+    <string name="skip_reason_profile_network">Je horloge (%1$s) meldde Android API %2$s via wifi (%3$s).</string>
     <string name="skip_reason_wearable">Je horloge is al gekoppeld met Galaxy Wearable.</string>
     <string name="skip_reason_watchpair">Je horloge is al verbonden via draadloze foutopsporing.</string>
     <string name="skip_confirm">Begrepen</string>

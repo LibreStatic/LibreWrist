@@ -689,6 +689,7 @@
     <string name="skip_checking">جارٍ التحقق من أجهزتك…</string>
     <string name="skip_card_step">الخطوة %1$d · %2$s</string>
     <string name="skip_reason_profile">اكتشفنا Android %1$s (%2$s) على الساعة المتصلة.</string>
+    <string name="skip_reason_profile_network">أعلنت ساعتك (%1$s) عبر Wi-Fi عن Android API %2$s (%3$s).</string>
     <string name="skip_reason_wearable">ساعتك مقترنة بالفعل مع Galaxy Wearable.</string>
     <string name="skip_reason_watchpair">ساعتك متصلة بالفعل عبر تصحيح الأخطاء اللاسلكي.</string>
     <string name="skip_confirm">حسنًا</string>

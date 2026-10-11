@@ -657,6 +657,7 @@
     <string name="skip_checking">Deine Geräte werden geprüft …</string>
     <string name="skip_card_step">Schritt %1$d · %2$s</string>
     <string name="skip_reason_profile">Auf der verbundenen Uhr wurde Android %1$s (%2$s) erkannt.</string>
+    <string name="skip_reason_profile_network">Deine Uhr (%1$s) hat Android API %2$s über WLAN gemeldet (%3$s).</string>
     <string name="skip_reason_wearable">Deine Uhr ist bereits mit Galaxy Wearable gekoppelt.</string>
     <string name="skip_reason_watchpair">Deine Uhr ist bereits über kabelloses Debugging verbunden.</string>
     <string name="skip_confirm">Verstanden</string>

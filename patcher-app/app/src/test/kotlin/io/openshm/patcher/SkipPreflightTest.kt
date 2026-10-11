@@ -33,6 +33,7 @@ class SkipPreflightTest {
         var applied: List<SkippedStep>? = null
         var appliedWatch: DetectedWatch? = null
         var went = 0
+        var manual: Boolean? = null
     }
 
     private fun TestScope.preflight(
@@ -40,6 +41,7 @@ class SkipPreflightTest {
         detect: suspend () -> DetectedWatch?,
         wearableReady: Boolean,
         rec: Recorder,
+        announced: DetectedWatch? = null,
     ): SkipPreflight {
         val p = SkipPreflight(
             backgroundScope,
@@ -47,6 +49,8 @@ class SkipPreflightTest {
             detect = detect,
             wearableReady = { wearableReady },
             apply = { steps, w -> rec.applied = steps; rec.appliedWatch = w },
+            announced = { announced },
+            setManual = { rec.manual = it },
         )
         backgroundScope.launch { p.go.collect { rec.went++ } }
         return p
@@ -219,5 +223,68 @@ class SkipPreflightTest {
         } finally {
             WatchDetection.reset()
         }
+    }
+
+    private val announcedWatch = DetectedWatch(36, null, DetectedWatch.Source.Network, "SM-R920")
+
+    @Test
+    fun anAnnouncedWatchSkipsOnlyTheProfile() {
+        val steps = skippableSteps(announcedWatch, wearableReady = false)
+        assertEquals(listOf(Route.Profile), steps.map { it.route })
+        assertEquals(io.openshm.patcher.R.string.skip_reason_profile_network, steps.single().reason)
+        assertEquals(Route.WearablePairing, SetupFlow.next(Route.Welcome, steps.map { it.route }.toSet()))
+        val withWearable = skippableSteps(announcedWatch, wearableReady = true)
+        assertEquals(listOf(Route.Profile, Route.WearablePairing), withWearable.map { it.route })
+    }
+
+    @Test
+    fun anAdbWatchStillSkipsTheWatchPairWithTheAdbReason() {
+        val steps = skippableSteps(watch, wearableReady = false)
+        assertEquals(listOf(Route.Profile, Route.WatchPair), steps.map { it.route })
+        assertEquals(io.openshm.patcher.R.string.skip_reason_profile, steps.first().reason)
+    }
+
+    @Test
+    fun theAnnouncementIsUsedWhenNoWatchIsRemembered() = runTest {
+        val rec = Recorder()
+        val p = preflight(remembered = false, detect = { error("not asked") }, wearableReady = false, rec = rec, announced = announcedWatch)
+        p.start()
+        runCurrent()
+        assertEquals(listOf(Route.Profile), (p.dialog.value as SkipDialog.Skipping).steps.map { it.route })
+        p.confirm()
+        runCurrent()
+        assertEquals(announcedWatch, rec.appliedWatch)
+        assertEquals(false, rec.manual)
+    }
+
+    @Test
+    fun theAdbAnswerBeatsTheAnnouncementAndTheAnnouncementCoversASilentWatch() = runTest {
+        val rec = Recorder()
+        val adb = DetectedWatch(33, "13")
+        val p = preflight(remembered = true, detect = { adb }, wearableReady = false, rec = rec, announced = announcedWatch)
+        p.start()
+        runCurrent()
+        p.confirm()
+        runCurrent()
+        assertEquals(adb, rec.appliedWatch)
+
+        val rec2 = Recorder()
+        val p2 = preflight(remembered = true, detect = { null }, wearableReady = false, rec = rec2, announced = announcedWatch)
+        p2.start()
+        runCurrent()
+        p2.confirm()
+        runCurrent()
+        assertEquals(announcedWatch, rec2.appliedWatch)
+    }
+
+    @Test
+    fun manualSetupRecordsTheManualFlagAndConfirmClearsIt() = runTest {
+        val rec = Recorder()
+        val p = preflight(remembered = true, detect = { watch }, wearableReady = false, rec = rec)
+        p.start()
+        runCurrent()
+        p.manual()
+        runCurrent()
+        assertEquals(true, rec.manual)
     }
 }

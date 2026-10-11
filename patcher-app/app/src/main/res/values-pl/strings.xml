@@ -673,6 +673,7 @@
     <string name="skip_checking">Sprawdzanie urządzeń…</string>
     <string name="skip_card_step">Krok %1$d · %2$s</string>
     <string name="skip_reason_profile">Na połączonym zegarku wykryto Androida %1$s (%2$s).</string>
+    <string name="skip_reason_profile_network">Twój zegarek (%1$s) zgłosił Android API %2$s przez Wi-Fi (%3$s).</string>
     <string name="skip_reason_wearable">Zegarek jest już sparowany z Galaxy Wearable.</string>
     <string name="skip_reason_watchpair">Zegarek jest już połączony przez debugowanie bezprzewodowe.</string>
     <string name="skip_confirm">Rozumiem</string>

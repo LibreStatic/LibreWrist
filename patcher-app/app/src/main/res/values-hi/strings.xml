@@ -657,6 +657,7 @@
     <string name="skip_checking">आपके डिवाइस जाँचे जा रहे हैं…</string>
     <string name="skip_card_step">चरण %1$d · %2$s</string>
     <string name="skip_reason_profile">कनेक्ट की गई घड़ी पर Android %1$s (%2$s) मिला।</string>
+    <string name="skip_reason_profile_network">आपकी घड़ी (%1$s) ने Wi-Fi पर Android API %2$s बताया (%3$s)।</string>
     <string name="skip_reason_wearable">आपकी घड़ी पहले से Galaxy Wearable से जुड़ी है।</string>
     <string name="skip_reason_watchpair">आपकी घड़ी पहले से वायरलेस डीबगिंग से कनेक्ट है।</string>
     <string name="skip_confirm">समझ गया</string>

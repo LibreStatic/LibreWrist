@@ -36,6 +36,10 @@ internal class SkipPreflight(
     private val detect: suspend () -> DetectedWatch?,
     private val wearableReady: suspend () -> Boolean,
     private val apply: (steps: List<SkippedStep>, watch: DetectedWatch?) -> Unit,
+    /** What the watch announced over Wi-Fi so far; used when the ADB check gave no answer. */
+    private val announced: () -> DetectedWatch? = { null },
+    /** Records whether the user chose to walk the steps by hand. */
+    private val setManual: (Boolean) -> Unit = {},
 ) {
     private val _dialog = MutableStateFlow<SkipDialog?>(null)
     val dialog: StateFlow<SkipDialog?> = _dialog.asStateFlow()
@@ -50,18 +54,19 @@ internal class SkipPreflight(
     fun start() {
         if (job?.isActive == true || _dialog.value != null) return
         job = scope.launch {
-            val watch = if (watchRemembered()) {
+            // The ADB answer is authoritative; the announcement fills in when it gave none.
+            val watch = (if (watchRemembered()) {
                 _dialog.value = SkipDialog.Checking
                 detect()
             } else {
                 null
-            }
+            }) ?: announced()
             val steps = skippableSteps(watch, wearableReady())
             // Only the steps right after the welcome are announced here; a later one is announced
             // by the nav host when the user reaches it.
             val now = skippedRunAfter(Route.Welcome, steps)
             if (now.isEmpty()) {
-                finish(steps, watch)
+                finish(steps, watch, manual = false)
             } else {
                 pendingWatch = watch
                 pendingSteps = steps
@@ -73,16 +78,17 @@ internal class SkipPreflight(
     /** "Got it" on the dialog: skip the listed steps and move on. */
     fun confirm() {
         if (_dialog.value !is SkipDialog.Skipping) return
-        finish(pendingSteps, pendingWatch)
+        finish(pendingSteps, pendingWatch, manual = false)
     }
 
     /** "Set up manually" on the dialog: skip nothing and walk every step, keeping what was detected. */
     fun manual() {
         if (_dialog.value !is SkipDialog.Skipping) return
-        finish(emptyList(), pendingWatch)
+        finish(emptyList(), pendingWatch, manual = true)
     }
 
-    private fun finish(steps: List<SkippedStep>, watch: DetectedWatch?) {
+    private fun finish(steps: List<SkippedStep>, watch: DetectedWatch?, manual: Boolean) {
+        setManual(manual)
         apply(steps, watch)
         _go.trySend(Unit)
         _dialog.value = null
