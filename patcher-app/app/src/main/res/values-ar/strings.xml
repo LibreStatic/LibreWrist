@@ -107,8 +107,12 @@
     <string name="profile_wear3_apps">تطبيقان رسميان</string>
     <string name="profile_detected">تم الفحص على ساعتك: Android %1$s (%2$s)</string>
     <string name="profile_check_paired">فحص الساعات المقترنة</string>
-    <string name="profile_hint_certain">تم العثور على %1$s. تعمل دائمًا بنظام Wear OS 5 أو أحدث، لذا تم تحديد الخيار الأول.</string>
-    <string name="profile_hint_depends">قد تعمل %1$s بأيٍّ منهما. تحقق من معلومات البرنامج على الساعة، أو دع التطبيق يفحص في الخطوة 3.</string>
+    <string name="profile_detected_network">أعلنت ساعتك (%1$s) عبر Wi-Fi عن Android API %2$s (%3$s)</string>
+    <string name="profile_paired_certain">تعمل دائمًا بنظام Wear OS 5 أو أحدث، لذا تم تحديد هذا الخيار.</string>
+    <string name="profile_paired_depends">قد تعمل بأي من الإصدارين حسب تحديثاتها.</string>
+    <string name="profile_tip_wireless">للتأكد، شغّل تصحيح الأخطاء اللاسلكي على الساعة: تقرأ هذه الشاشة الإصدار عبر Wi-Fi.</string>
+    <string name="profile_scanning">جارٍ البحث عن ساعتك على Wi-Fi…</string>
+    <string name="profile_allow">السماح</string>
     <string name="profile_check_none">لم يُعثر على ساعة Galaxy Watch مقترنة. اختر خيارًا أو دع التطبيق يفحص في الخطوة 3.</string>
     <string name="profile_check_denied">لم يُسمح بالوصول إلى Bluetooth، لذا لا يمكن فحص الساعات المقترنة. اختر خيارًا أو دع التطبيق يفحص في الخطوة 3.</string>
     <string name="profile_howto_button">كيف أعرف أي إصدار لدي</string>

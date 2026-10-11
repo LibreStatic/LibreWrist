@@ -107,8 +107,12 @@
     <string name="profile_wear3_apps">2 officiële apps</string>
     <string name="profile_detected">Gecontroleerd op je horloge: Android %1$s (%2$s)</string>
     <string name="profile_check_paired">Gekoppelde horloges controleren</string>
-    <string name="profile_hint_certain">%1$s gevonden. Dit draait altijd Wear OS 5 of nieuwer, dus de eerste optie is geselecteerd.</string>
-    <string name="profile_hint_depends">Je %1$s kan beide draaien. Controleer Software-informatie op het horloge, of laat de app het controleren in stap 3.</string>
+    <string name="profile_detected_network">Je horloge (%1$s) meldde Android API %2$s via wifi (%3$s)</string>
+    <string name="profile_paired_certain">Draait altijd Wear OS 5 of nieuwer, dus die optie is geselecteerd.</string>
+    <string name="profile_paired_depends">Kan beide versies draaien, afhankelijk van de updates.</string>
+    <string name="profile_tip_wireless">Zet voor zekerheid draadloos foutopsporen aan op het horloge: dit scherm leest de versie via wifi.</string>
+    <string name="profile_scanning">Je horloge zoeken op wifi…</string>
+    <string name="profile_allow">Toestaan</string>
     <string name="profile_check_none">Geen gekoppelde Galaxy Watch gevonden. Kies een optie of laat de app het controleren in stap 3.</string>
     <string name="profile_check_denied">Bluetooth-toegang is niet toegestaan, dus gekoppelde horloges kunnen niet worden gecontroleerd. Kies een optie of laat de app het controleren in stap 3.</string>
     <string name="profile_howto_button">Hoe zie ik welke versie ik heb</string>

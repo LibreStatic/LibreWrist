@@ -4,8 +4,18 @@ import io.openshm.patcher.data.WatchProfile
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withTimeoutOrNull
 
-/** What the watch reported about its Android version. */
-data class DetectedWatch(val sdk: Int, val release: String?) {
+/**
+ * What the watch reported about its Android version: [Source.Adb] over the ADB link, or
+ * [Source.Network] in its mDNS announcement ([model] is then the announced model name).
+ */
+data class DetectedWatch(
+    val sdk: Int,
+    val release: String?,
+    val source: Source = Source.Adb,
+    val model: String? = null,
+) {
+    enum class Source { Adb, Network }
+
     /** The alarm fork needs Android 14 (API 34), which is Wear OS 5. */
     val profile: WatchProfile get() = if (sdk >= MIN_SDK_WEAR_OS_5) WatchProfile.WearOs5 else WatchProfile.WearOs3Or4
 

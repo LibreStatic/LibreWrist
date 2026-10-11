@@ -107,8 +107,12 @@
     <string name="profile_wear3_apps">2 个官方应用</string>
     <string name="profile_detected">已在手表上检查：Android %1$s（%2$s）</string>
     <string name="profile_check_paired">检查已配对的手表</string>
-    <string name="profile_hint_certain">已找到 %1$s。它始终运行 Wear OS 5 或更高版本，因此已选中第一个选项。</string>
-    <string name="profile_hint_depends">你的 %1$s 可能是其中任意一种。请在手表上查看软件信息，或在第 3 步让应用检查。</string>
+    <string name="profile_detected_network">你的手表（%1$s）已通过 Wi-Fi 通报 Android API %2$s（%3$s）</string>
+    <string name="profile_paired_certain">始终运行 Wear OS 5 或更高版本，因此已选中该选项。</string>
+    <string name="profile_paired_depends">根据更新情况，可能运行任一版本。</string>
+    <string name="profile_tip_wireless">要确切知道版本，请在手表上开启无线调试：此屏幕会通过 Wi-Fi 读取版本。</string>
+    <string name="profile_scanning">正在 Wi-Fi 上查找你的手表…</string>
+    <string name="profile_allow">允许</string>
     <string name="profile_check_none">未找到已配对的 Galaxy Watch。请选择一个选项，或在第 3 步让应用检查。</string>
     <string name="profile_check_denied">未获得 Bluetooth 访问权限，无法检查已配对的手表。请选择一个选项，或在第 3 步让应用检查。</string>
     <string name="profile_howto_button">如何确认我的版本</string>

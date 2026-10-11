@@ -107,8 +107,12 @@
     <string name="profile_wear3_apps">2 oficjalne aplikacje</string>
     <string name="profile_detected">Sprawdzono na zegarku: Android %1$s (%2$s)</string>
     <string name="profile_check_paired">Sprawdź sparowane zegarki</string>
-    <string name="profile_hint_certain">Znaleziono: %1$s. Zawsze ma Wear OS 5 lub nowszy, więc wybrano pierwszą opcję.</string>
-    <string name="profile_hint_depends">Twój %1$s może mieć dowolną wersję. Sprawdź Informacje o oprogramowaniu na zegarku lub pozwól aplikacji sprawdzić w kroku 3.</string>
+    <string name="profile_detected_network">Twój zegarek (%1$s) zgłosił Android API %2$s przez Wi-Fi (%3$s)</string>
+    <string name="profile_paired_certain">Zawsze działa na Wear OS 5 lub nowszym, więc ta opcja jest zaznaczona.</string>
+    <string name="profile_paired_depends">Może działać na obu wersjach, w zależności od aktualizacji.</string>
+    <string name="profile_tip_wireless">Aby mieć pewność, włącz na zegarku debugowanie bezprzewodowe: ten ekran odczytuje wersję przez Wi-Fi.</string>
+    <string name="profile_scanning">Szukam Twojego zegarka w sieci Wi-Fi…</string>
+    <string name="profile_allow">Zezwól</string>
     <string name="profile_check_none">Nie znaleziono sparowanego Galaxy Watch. Wybierz opcję lub pozwól aplikacji sprawdzić w kroku 3.</string>
     <string name="profile_check_denied">Nie zezwolono na dostęp do Bluetooth, więc nie można sprawdzić sparowanych zegarków. Wybierz opcję lub pozwól aplikacji sprawdzić w kroku 3.</string>
     <string name="profile_howto_button">Jak sprawdzić, jaką mam wersję</string>

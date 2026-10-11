@@ -52,11 +52,13 @@ internal fun ProfileSample(variant: ProfileVariant = ProfileVariant.Plain) = Pro
         ProfileVariant.CertainHint -> PreviewData.profileCertainHint()
         ProfileVariant.DependsHint -> PreviewData.profileDependsHint()
         ProfileVariant.Detected -> PreviewData.profileDetected()
+        ProfileVariant.NetworkDetected -> PreviewData.profileNetworkDetected()
+        ProfileVariant.Denied -> PreviewData.profileDenied()
     },
     {}, {}, {},
 )
 
-internal enum class ProfileVariant { Plain, CertainHint, DependsHint, Detected }
+internal enum class ProfileVariant { Plain, CertainHint, DependsHint, Detected, NetworkDetected, Denied }
 
 @Composable
 internal fun WearablePairingSample(state: WearablePairingUiState = PreviewData.wearable()) =

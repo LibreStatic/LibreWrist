@@ -107,8 +107,12 @@
     <string name="profile_wear3_apps">2 официальных приложения</string>
     <string name="profile_detected">Проверено на часах: Android %1$s (%2$s)</string>
     <string name="profile_check_paired">Проверить сопряжённые часы</string>
-    <string name="profile_hint_certain">Найдены %1$s. На них всегда Wear OS 5 или новее, поэтому выбран первый вариант.</string>
-    <string name="profile_hint_depends">На %1$s может быть любая версия. Откройте «Сведения о ПО» на часах или позвольте приложению проверить на шаге 3.</string>
+    <string name="profile_detected_network">Ваши часы (%1$s) сообщили по Wi-Fi: Android API %2$s (%3$s)</string>
+    <string name="profile_paired_certain">Всегда работают на Wear OS 5 или новее, поэтому выбран этот вариант.</string>
+    <string name="profile_paired_depends">Могут работать на любой из версий в зависимости от обновлений.</string>
+    <string name="profile_tip_wireless">Чтобы узнать точно, включите на часах отладку по беспроводной сети: этот экран считывает версию по Wi-Fi.</string>
+    <string name="profile_scanning">Ищем ваши часы в сети Wi-Fi…</string>
+    <string name="profile_allow">Разрешить</string>
     <string name="profile_check_none">Сопряжённых Galaxy Watch не найдено. Выберите вариант или позвольте приложению проверить на шаге 3.</string>
     <string name="profile_check_denied">Доступ к Bluetooth не разрешён, поэтому сопряжённые часы проверить нельзя. Выберите вариант или позвольте приложению проверить на шаге 3.</string>
     <string name="profile_howto_button">Как узнать, какая у меня версия</string>

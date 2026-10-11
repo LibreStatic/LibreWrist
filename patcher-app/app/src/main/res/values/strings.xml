@@ -109,8 +109,12 @@
     <string name="profile_wear3_apps">2 official apps</string>
     <string name="profile_detected">Checked on your watch: Android %1$s (%2$s)</string>
     <string name="profile_check_paired">Check paired watches</string>
-    <string name="profile_hint_certain">Found %1$s. It always runs Wear OS 5 or newer, so the first option is selected.</string>
-    <string name="profile_hint_depends">Your %1$s may run either. Check Software information on the watch, or let the app check in step 3.</string>
+    <string name="profile_detected_network">Your watch (%1$s) announced Android API %2$s over Wi-Fi (%3$s)</string>
+    <string name="profile_paired_certain">Always runs Wear OS 5 or newer, so that option is selected.</string>
+    <string name="profile_paired_depends">Can run either version, depending on its updates.</string>
+    <string name="profile_tip_wireless">To know for sure, turn on Wireless debugging on the watch: this screen reads the version over Wi-Fi.</string>
+    <string name="profile_scanning">Looking for your watch on Wi-Fi…</string>
+    <string name="profile_allow">Allow</string>
     <string name="profile_check_none">No paired Galaxy Watch found. Pick an option or let the app check in step 3.</string>
     <string name="profile_check_denied">Bluetooth access was not allowed, so paired watches cannot be checked. Pick an option or let the app check in step 3.</string>
     <string name="profile_howto_button">How to tell which version I have</string>

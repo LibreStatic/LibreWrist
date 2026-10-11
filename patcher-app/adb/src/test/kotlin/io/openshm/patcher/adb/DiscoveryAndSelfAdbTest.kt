@@ -37,6 +37,16 @@ class DiscoveryAndSelfAdbTest {
         assertEquals(listOf("b"), r.snapshot().map { it.name })
     }
 
+    @Test
+    fun `TXT records decode as UTF-8 and empty or missing values become empty strings`() {
+        val decoded = TxtRecords.decode(
+            mapOf("api" to "36".toByteArray(), "name" to "SM-R920".toByteArray(), "flag" to null, "empty" to ByteArray(0)),
+        )
+        assertEquals(mapOf("api" to "36", "name" to "SM-R920", "flag" to "", "empty" to ""), decoded)
+        assertEquals(emptyMap<String, String>(), TxtRecords.decode(null))
+        assertEquals(emptyMap<String, String>(), AdbService("a", "1.1.1.1", 1, AdbServiceType.CONNECT).attributes)
+    }
+
     private class Env(val pairingCode: (String) -> Unit = {}) {
         val pairing = MutableStateFlow<List<AdbService>>(emptyList())
         val connect = MutableStateFlow<List<AdbService>>(emptyList())

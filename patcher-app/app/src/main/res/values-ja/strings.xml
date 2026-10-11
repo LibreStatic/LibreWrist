@@ -107,8 +107,12 @@
     <string name="profile_wear3_apps">公式アプリ2つ</string>
     <string name="profile_detected">ウォッチで確認済み：Android %1$s（%2$s）</string>
     <string name="profile_check_paired">ペア設定済みのウォッチを確認</string>
-    <string name="profile_hint_certain">%1$s が見つかりました。常にWear OS 5以降で動作するため、最初の選択肢が選ばれています。</string>
-    <string name="profile_hint_depends">お使いの %1$s はどちらの場合もあります。ウォッチのソフトウェア情報を確認するか、ステップ3でアプリに確認させてください。</string>
+    <string name="profile_detected_network">お使いのウォッチ（%1$s）が Wi-Fi 経由で Android API %2$s を通知しました（%3$s）</string>
+    <string name="profile_paired_certain">常に Wear OS 5 以降で動作するため、このオプションを選択しました。</string>
+    <string name="profile_paired_depends">アップデート状況により、どちらのバージョンの場合もあります。</string>
+    <string name="profile_tip_wireless">確実に知るには、ウォッチでワイヤレス デバッグをオンにしてください。この画面が Wi-Fi 経由でバージョンを読み取ります。</string>
+    <string name="profile_scanning">Wi-Fi でウォッチを探しています…</string>
+    <string name="profile_allow">許可</string>
     <string name="profile_check_none">ペア設定済みのGalaxy Watchが見つかりません。選択肢を選ぶか、ステップ3でアプリに確認させてください。</string>
     <string name="profile_check_denied">Bluetoothへのアクセスが許可されなかったため、ペア設定済みのウォッチを確認できません。選択肢を選ぶか、ステップ3でアプリに確認させてください。</string>
     <string name="profile_howto_button">バージョンの確認方法</string>

@@ -107,8 +107,12 @@
     <string name="profile_wear3_apps">2 आधिकारिक ऐप</string>
     <string name="profile_detected">आपकी घड़ी पर जाँचा गया: Android %1$s (%2$s)</string>
     <string name="profile_check_paired">पेयर की गई घड़ियाँ जाँचें</string>
-    <string name="profile_hint_certain">%1$s मिली। यह हमेशा Wear OS 5 या नया चलाती है, इसलिए पहला विकल्प चुना गया है।</string>
-    <string name="profile_hint_depends">आपकी %1$s दोनों में से कोई भी चला सकती है। घड़ी पर सॉफ़्टवेयर जानकारी देखें, या ऐप को चरण 3 में जाँचने दें।</string>
+    <string name="profile_detected_network">आपकी घड़ी (%1$s) ने Wi-Fi पर Android API %2$s बताया (%3$s)</string>
+    <string name="profile_paired_certain">हमेशा Wear OS 5 या नए पर चलती है, इसलिए वह विकल्प चुना गया है।</string>
+    <string name="profile_paired_depends">अपडेट के आधार पर दोनों में से कोई भी वर्शन हो सकता है।</string>
+    <string name="profile_tip_wireless">पक्का जानने के लिए घड़ी पर वायरलेस डीबगिंग चालू करें: यह स्क्रीन Wi-Fi पर वर्शन पढ़ती है।</string>
+    <string name="profile_scanning">Wi-Fi पर आपकी घड़ी खोजी जा रही है…</string>
+    <string name="profile_allow">अनुमति दें</string>
     <string name="profile_check_none">कोई पेयर की हुई Galaxy Watch नहीं मिली। कोई विकल्प चुनें या ऐप को चरण 3 में जाँचने दें।</string>
     <string name="profile_check_denied">Bluetooth की अनुमति नहीं दी गई, इसलिए पेयर की गई घड़ियाँ नहीं जाँची जा सकतीं। कोई विकल्प चुनें या ऐप को चरण 3 में जाँचने दें।</string>
     <string name="profile_howto_button">कैसे जानें कि मेरे पास कौन सा संस्करण है</string>

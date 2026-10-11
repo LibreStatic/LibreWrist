@@ -107,8 +107,12 @@
     <string name="profile_wear3_apps">2 aplikasi resmi</string>
     <string name="profile_detected">Diperiksa di jammu: Android %1$s (%2$s)</string>
     <string name="profile_check_paired">Periksa jam yang terhubung</string>
-    <string name="profile_hint_certain">%1$s ditemukan. Jam ini selalu menjalankan Wear OS 5 atau lebih baru, jadi opsi pertama dipilih.</string>
-    <string name="profile_hint_depends">%1$s kamu bisa menjalankan keduanya. Periksa Informasi perangkat lunak di jam, atau biarkan aplikasi memeriksanya di langkah 3.</string>
+    <string name="profile_detected_network">Jam tangan Anda (%1$s) mengumumkan Android API %2$s melalui Wi-Fi (%3$s)</string>
+    <string name="profile_paired_certain">Selalu menjalankan Wear OS 5 atau lebih baru, jadi opsi itu dipilih.</string>
+    <string name="profile_paired_depends">Bisa menjalankan kedua versi, tergantung pembaruannya.</string>
+    <string name="profile_tip_wireless">Untuk memastikan, aktifkan Proses debug nirkabel di jam tangan: layar ini membaca versinya melalui Wi-Fi.</string>
+    <string name="profile_scanning">Mencari jam tangan Anda di Wi-Fi…</string>
+    <string name="profile_allow">Izinkan</string>
     <string name="profile_check_none">Tidak ada Galaxy Watch yang terhubung. Pilih salah satu opsi atau biarkan aplikasi memeriksanya di langkah 3.</string>
     <string name="profile_check_denied">Akses Bluetooth tidak diizinkan, jadi jam yang terhubung tidak bisa diperiksa. Pilih salah satu opsi atau biarkan aplikasi memeriksanya di langkah 3.</string>
     <string name="profile_howto_button">Cara mengetahui versi yang saya punya</string>

@@ -21,7 +21,24 @@ enum class AdbServiceType(val nsdType: String) {
     CONNECT("_adb-tls-connect._tcp"),
 }
 
-data class AdbService(val name: String, val host: String, val port: Int, val type: AdbServiceType)
+/**
+ * A resolved Wireless debugging service. [attributes] are the mDNS TXT records (for example `api`
+ * and `name` on recent adbd, announced before any pairing); an older adbd sends none that matter.
+ */
+data class AdbService(
+    val name: String,
+    val host: String,
+    val port: Int,
+    val type: AdbServiceType,
+    val attributes: Map<String, String> = emptyMap(),
+)
+
+/** Decodes mDNS TXT records. */
+internal object TxtRecords {
+    /** Values as UTF-8; a record without a value (null or empty) becomes the empty string. */
+    fun decode(raw: Map<String, ByteArray?>?): Map<String, String> =
+        raw.orEmpty().mapValues { (_, value) -> value?.toString(Charsets.UTF_8).orEmpty() }
+}
 
 /** Name-keyed set of resolved services; emits stable, sorted snapshots. */
 internal class ServiceRegistry {
@@ -87,8 +104,8 @@ class AdbDiscovery(context: Context) {
             override fun onDiscoveryStopped(serviceType: String?) = Unit
 
             override fun onServiceFound(info: NsdServiceInfo) {
-                resolver.resolve(info) { host, port ->
-                    synchronized(registry) { registry.put(AdbService(info.serviceName, host, port, type)) }
+                resolver.resolve(info) { host, port, attributes ->
+                    synchronized(registry) { registry.put(AdbService(info.serviceName, host, port, type, attributes)) }
                     publish()
                 }
             }
@@ -126,7 +143,7 @@ class AdbDiscovery(context: Context) {
     }
 
     private interface Resolver {
-        fun resolve(info: NsdServiceInfo, onResolved: (host: String, port: Int) -> Unit)
+        fun resolve(info: NsdServiceInfo, onResolved: (host: String, port: Int, attributes: Map<String, String>) -> Unit)
         fun forget(info: NsdServiceInfo)
         fun close()
     }
@@ -137,7 +154,7 @@ class AdbDiscovery(context: Context) {
         private val callbacks = HashMap<String, NsdManager.ServiceInfoCallback>()
 
         @Synchronized
-        override fun resolve(info: NsdServiceInfo, onResolved: (String, Int) -> Unit) {
+        override fun resolve(info: NsdServiceInfo, onResolved: (String, Int, Map<String, String>) -> Unit) {
             if (callbacks.containsKey(info.serviceName)) return
             val callback = object : NsdManager.ServiceInfoCallback {
                 override fun onServiceInfoCallbackRegistrationFailed(errorCode: Int) {
@@ -146,7 +163,7 @@ class AdbDiscovery(context: Context) {
 
                 override fun onServiceUpdated(serviceInfo: NsdServiceInfo) {
                     val host = HostPicker.pick(serviceInfo.hostAddresses) ?: return
-                    if (serviceInfo.port > 0) onResolved(host, serviceInfo.port)
+                    if (serviceInfo.port > 0) onResolved(host, serviceInfo.port, TxtRecords.decode(serviceInfo.attributes))
                 }
 
                 override fun onServiceLost() = Unit
@@ -171,14 +188,14 @@ class AdbDiscovery(context: Context) {
     /** API 31-33: one `resolveService` at a time. */
     @Suppress("DEPRECATION")
     private class QueueResolver(private val nsd: NsdManager) : Resolver {
-        private class Pending(val info: NsdServiceInfo, val onResolved: (String, Int) -> Unit)
+        private class Pending(val info: NsdServiceInfo, val onResolved: (String, Int, Map<String, String>) -> Unit)
 
         private val queue = ArrayDeque<Pending>()
         private var active = false
         private var closed = false
 
         @Synchronized
-        override fun resolve(info: NsdServiceInfo, onResolved: (String, Int) -> Unit) {
+        override fun resolve(info: NsdServiceInfo, onResolved: (String, Int, Map<String, String>) -> Unit) {
             if (closed) return
             queue.addLast(Pending(info, onResolved))
             pump()
@@ -206,7 +223,9 @@ class AdbDiscovery(context: Context) {
 
                     override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
                         val host = serviceInfo.host?.let { HostPicker.pick(listOf(it)) }
-                        if (host != null && serviceInfo.port > 0) next.onResolved(host, serviceInfo.port)
+                        if (host != null && serviceInfo.port > 0) {
+                            next.onResolved(host, serviceInfo.port, TxtRecords.decode(serviceInfo.attributes))
+                        }
                         finished()
                     }
                 })

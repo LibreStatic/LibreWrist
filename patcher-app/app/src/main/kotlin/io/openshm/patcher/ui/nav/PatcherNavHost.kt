@@ -4,6 +4,10 @@ import android.Manifest
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
+import androidx.core.app.ActivityCompat
+import io.openshm.patcher.data.PermissionAsks
 import android.content.pm.PackageManager
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -155,18 +159,44 @@ fun PatcherNavHost(
                 val vm: ProfileViewModel = viewModel()
                 val state by vm.state.collectAsStateWithLifecycle()
                 val context = LocalContext.current
+                val activity = LocalActivity.current
+                val asks = remember { PermissionAsks(context) }
+                val bluetooth = Manifest.permission.BLUETOOTH_CONNECT
+                fun granted() = ContextCompat.checkSelfPermission(context, bluetooth) == PackageManager.PERMISSION_GRANTED
                 val permission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission(), vm::onBluetoothPermission)
+                fun request() {
+                    asks.markAsked(bluetooth)
+                    permission.launch(bluetooth)
+                }
+                // Denied for good (the system shows no dialog any more): only the app settings can undo it.
+                fun allow() {
+                    val permanentlyDenied = asks.hasAsked(bluetooth) && activity != null &&
+                        !ActivityCompat.shouldShowRequestPermissionRationale(activity, bluetooth)
+                    if (!permanentlyDenied) return request()
+                    val settings = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null))
+                    try {
+                        context.startActivity(settings)
+                    } catch (e: ActivityNotFoundException) {
+                        request()
+                    }
+                }
+                // Silent check on entering and when coming back from the permission dialog or the settings.
+                LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+                    if (granted()) vm.onBluetoothPermission(true)
+                    vm.startScan()
+                }
+                LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { vm.stopScan() }
+                // Asked on its own once ever, and only while the watch has not already told its version.
+                LaunchedEffect(vm) {
+                    if (!granted() && !asks.hasAsked(bluetooth) && vm.state.value.detected == null) request()
+                }
                 ProfileScreen(
                     state,
                     onEvent = { event ->
-                        if (event is ProfileEvent.CheckPairedWatches) {
-                            if (ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
-                                vm.onBluetoothPermission(true)
-                            } else {
-                                permission.launch(Manifest.permission.BLUETOOTH_CONNECT)
-                            }
-                        } else {
-                            vm.onEvent(event)
+                        when (event) {
+                            ProfileEvent.CheckPairedWatches, ProfileEvent.AllowBluetooth ->
+                                if (granted()) vm.onBluetoothPermission(true) else allow()
+                            else -> vm.onEvent(event)
                         }
                     },
                     onContinue = { next(Route.Profile) }, onBack = back)

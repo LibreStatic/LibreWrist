@@ -107,8 +107,12 @@
     <string name="profile_wear3_apps">2 офіційні застосунки</string>
     <string name="profile_detected">Перевірено на годиннику: Android %1$s (%2$s)</string>
     <string name="profile_check_paired">Перевірити пов\'язані годинники</string>
-    <string name="profile_hint_certain">Знайдено %1$s. На ньому завжди Wear OS 5 або новіша, тому вибрано перший варіант.</string>
-    <string name="profile_hint_depends">На вашому %1$s може бути будь-яка версія. Перегляньте «Інформація про ПЗ» на годиннику або дозвольте застосунку перевірити на кроці 3.</string>
+    <string name="profile_detected_network">Ваш годинник (%1$s) повідомив через Wi-Fi: Android API %2$s (%3$s)</string>
+    <string name="profile_paired_certain">Завжди працює на Wear OS 5 або новішій, тому цей варіант вибрано.</string>
+    <string name="profile_paired_depends">Може працювати на будь-якій із версій залежно від оновлень.</string>
+    <string name="profile_tip_wireless">Щоб дізнатися напевно, увімкніть на годиннику бездротове налагодження: цей екран зчитує версію через Wi-Fi.</string>
+    <string name="profile_scanning">Шукаємо ваш годинник у мережі Wi-Fi…</string>
+    <string name="profile_allow">Дозволити</string>
     <string name="profile_check_none">Пов\'язаних Galaxy Watch не знайдено. Виберіть варіант або дозвольте застосунку перевірити на кроці 3.</string>
     <string name="profile_check_denied">Доступ до Bluetooth не надано, тому пов\'язані годинники перевірити не можна. Виберіть варіант або дозвольте застосунку перевірити на кроці 3.</string>
     <string name="profile_howto_button">Як дізнатися, яка в мене версія</string>

@@ -100,6 +100,12 @@ fun ProfileDependsHintDriver() = PreviewHost(ColorMode.Fallback) { ProfileSample
 fun ProfileDetectedDriver() = PreviewHost(ColorMode.Fallback) { ProfileSample(ProfileVariant.Detected) }
 
 @Composable
+fun ProfileNetworkDetectedDriver() = PreviewHost(ColorMode.Fallback) { ProfileSample(ProfileVariant.NetworkDetected) }
+
+@Composable
+fun ProfileDeniedDriver() = PreviewHost(ColorMode.Fallback) { ProfileSample(ProfileVariant.Denied) }
+
+@Composable
 fun WatchPairCorrectionDriver() = PreviewHost(ColorMode.Fallback) { WatchPairSample(PreviewData.watchPairCorrection()) }
 
 /** "Is your watch paired?": everything found; then each failing check; then the Bluetooth permission denied. */

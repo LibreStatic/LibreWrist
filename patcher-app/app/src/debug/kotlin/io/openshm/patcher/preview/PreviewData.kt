@@ -93,6 +93,12 @@ internal object PreviewData {
         detected = DetectedWatch(33, "13"),
     )
 
+    fun profileNetworkDetected() = ProfileUiState(
+        detected = DetectedWatch(36, null, DetectedWatch.Source.Network, "SM-R920"),
+    )
+
+    fun profileDenied() = ProfileUiState(pairedCheck = PairedCheck.Denied)
+
     fun wearable(
         packages: Set<String> = setOf(GALAXY_WEARABLE_PACKAGE, WATCH_PLUGIN_PACKAGE),
         bluetoothAllowed: Boolean = true,

@@ -107,8 +107,12 @@
     <string name="profile_wear3_apps">2 resmi uygulama</string>
     <string name="profile_detected">Saatinizde denetlendi: Android %1$s (%2$s)</string>
     <string name="profile_check_paired">Eşlenmiş saatleri denetle</string>
-    <string name="profile_hint_certain">%1$s bulundu. Her zaman Wear OS 5 veya üzerini çalıştırır, bu yüzden ilk seçenek seçildi.</string>
-    <string name="profile_hint_depends">%1$s cihazınız ikisinden birini çalıştırıyor olabilir. Saatte Yazılım bilgileri\'ne bakın veya uygulamanın 3. adımda denetlemesine izin verin.</string>
+    <string name="profile_detected_network">Saatiniz (%1$s) Wi-Fi üzerinden Android API %2$s olarak bildirdi (%3$s)</string>
+    <string name="profile_paired_certain">Her zaman Wear OS 5 veya daha yenisini çalıştırır, bu yüzden bu seçenek seçildi.</string>
+    <string name="profile_paired_depends">Güncellemelerine bağlı olarak iki sürümden birini çalıştırabilir.</string>
+    <string name="profile_tip_wireless">Emin olmak için saatte Kablosuz hata ayıklamayı açın: bu ekran sürümü Wi-Fi üzerinden okur.</string>
+    <string name="profile_scanning">Saatiniz Wi-Fi üzerinde aranıyor…</string>
+    <string name="profile_allow">İzin ver</string>
     <string name="profile_check_none">Eşlenmiş Galaxy Watch bulunamadı. Bir seçenek seçin veya uygulamanın 3. adımda denetlemesine izin verin.</string>
     <string name="profile_check_denied">Bluetooth erişimine izin verilmedi, bu yüzden eşlenmiş saatler denetlenemiyor. Bir seçenek seçin veya uygulamanın 3. adımda denetlemesine izin verin.</string>
     <string name="profile_howto_button">Hangi sürüme sahip olduğumu nasıl anlarım</string>
