@@ -3,6 +3,8 @@
     <!-- Shared actions -->
     <string name="action_back">Назад</string>
     <string name="action_help">Справка</string>
+    <string name="action_next">Далее</string>
+    <string name="action_previous">Назад</string>
     <string name="action_close">Закрыть</string>
     <string name="action_settings">Настройки</string>
     <string name="action_more_options">Ещё</string>
@@ -69,8 +71,24 @@
     <string name="profile_hint_depends">На %1$s может быть любая версия. Откройте «Сведения о ПО» на часах или позвольте приложению проверить на шаге 3.</string>
     <string name="profile_check_none">Сопряжённых Galaxy Watch не найдено. Выберите вариант или позвольте приложению проверить на шаге 3.</string>
     <string name="profile_check_denied">Доступ к Bluetooth не разрешён, поэтому сопряжённые часы проверить нельзя. Выберите вариант или позвольте приложению проверить на шаге 3.</string>
-    <string name="profile_howto_title">Как определить</string>
-    <string name="profile_howto_watch">На часах: Настройки › О часах › Сведения о ПО. «Wear OS 5» или новее, «One UI 6 Watch» или новее, либо Android 14 или новее означает первый вариант.</string>
+    <string name="profile_howto_button">Как узнать, какая у меня версия</string>
+    <string name="howto_title">Какая версия на моих часах?</string>
+    <string name="howto_progress">%1$d из %2$d</string>
+    <string name="howto_step_panel">На часах проведите вниз от верхнего края циферблата и нажмите шестерёнку, чтобы открыть «Настройки».</string>
+    <string name="howto_step_settings">Прокрутите «Настройки» вниз и нажмите «О часах».</string>
+    <string name="howto_step_about">Нажмите «Сведения о ПО».</string>
+    <string name="howto_step_software">Найдите «Версия Wear OS» или «Версия Android». Wear OS 5 и новее, One UI 6 Watch и новее или Android 14 и новее — это первый вариант; всё старше — второй.</string>
+    <string name="watch_ui_settings">Настройки</string>
+    <string name="watch_ui_notifications">Уведомления</string>
+    <string name="watch_ui_display">Экран</string>
+    <string name="watch_ui_battery">Батарея</string>
+    <string name="watch_ui_about">О часах</string>
+    <string name="watch_ui_model">Номер модели</string>
+    <string name="watch_ui_status">Состояние</string>
+    <string name="watch_ui_software">Сведения о ПО</string>
+    <string name="watch_ui_oneui">Версия One UI Watch</string>
+    <string name="watch_ui_wearos">Версия Wear OS</string>
+    <string name="watch_ui_android">Версия Android</string>
     <string name="profile_howto_phone">Тот же экран есть в приложении Galaxy Wearable на телефоне: Настройки часов › О часах › Сведения о ПО.</string>
     <string name="profile_howto_models">Galaxy Watch7, Watch Ultra и новее подходят всегда. Watch4, Watch5, Watch6 и Watch FE подходят только после обновления до One UI 6 Watch.</string>
     <string name="profile_howto_unsure">Не уверены? Выберите любой: приложение само проверит часы после подключения (шаг 3) и исправит выбор до начала загрузки.</string>

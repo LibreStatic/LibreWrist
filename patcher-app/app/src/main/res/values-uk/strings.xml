@@ -3,6 +3,8 @@
     <!-- Shared actions -->
     <string name="action_back">Назад</string>
     <string name="action_help">Довідка</string>
+    <string name="action_next">Далі</string>
+    <string name="action_previous">Назад</string>
     <string name="action_close">Закрити</string>
     <string name="action_settings">Налаштування</string>
     <string name="action_more_options">Більше опцій</string>
@@ -69,8 +71,24 @@
     <string name="profile_hint_depends">На вашому %1$s може бути будь-яка версія. Перегляньте «Інформація про ПЗ» на годиннику або дозвольте застосунку перевірити на кроці 3.</string>
     <string name="profile_check_none">Пов\'язаних Galaxy Watch не знайдено. Виберіть варіант або дозвольте застосунку перевірити на кроці 3.</string>
     <string name="profile_check_denied">Доступ до Bluetooth не надано, тому пов\'язані годинники перевірити не можна. Виберіть варіант або дозвольте застосунку перевірити на кроці 3.</string>
-    <string name="profile_howto_title">Як визначити</string>
-    <string name="profile_howto_watch">На годиннику: Налаштування › Про годинник › Інформація про ПЗ. «Wear OS 5» або новіша, «One UI 6 Watch» або новіша, чи Android 14 або новіший означає перший варіант.</string>
+    <string name="profile_howto_button">Як дізнатися, яка в мене версія</string>
+    <string name="howto_title">Яка версія на моєму годиннику?</string>
+    <string name="howto_progress">%1$d з %2$d</string>
+    <string name="howto_step_panel">На годиннику проведіть вниз від верхнього краю циферблата й торкніться шестерні, щоб відкрити «Налаштування».</string>
+    <string name="howto_step_settings">Прокрутіть «Налаштування» донизу й торкніться «Про годинник».</string>
+    <string name="howto_step_about">Торкніться «Інформація про ПЗ».</string>
+    <string name="howto_step_software">Знайдіть «Версія Wear OS» або «Версія Android». Wear OS 5 і новіша, One UI 6 Watch і новіша або Android 14 і новіша — це перший варіант; усе старіше — другий.</string>
+    <string name="watch_ui_settings">Налаштування</string>
+    <string name="watch_ui_notifications">Сповіщення</string>
+    <string name="watch_ui_display">Екран</string>
+    <string name="watch_ui_battery">Акумулятор</string>
+    <string name="watch_ui_about">Про годинник</string>
+    <string name="watch_ui_model">Номер моделі</string>
+    <string name="watch_ui_status">Стан</string>
+    <string name="watch_ui_software">Інформація про ПЗ</string>
+    <string name="watch_ui_oneui">Версія One UI Watch</string>
+    <string name="watch_ui_wearos">Версія Wear OS</string>
+    <string name="watch_ui_android">Версія Android</string>
     <string name="profile_howto_phone">Той самий екран є в застосунку Galaxy Wearable на телефоні: Налаштування годинника › Про годинник › Інформація про ПЗ.</string>
     <string name="profile_howto_models">Galaxy Watch7, Watch Ultra і новіші підходять завжди. Watch4, Watch5, Watch6 і Watch FE підходять лише після оновлення до One UI 6 Watch.</string>
     <string name="profile_howto_unsure">Не впевнені? Виберіть будь-який: застосунок сам перевірить годинник після підключення (крок 3) і виправить вибір до початку завантаження.</string>

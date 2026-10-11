@@ -3,6 +3,8 @@
     <!-- Shared actions -->
     <string name="action_back">戻る</string>
     <string name="action_help">ヘルプ</string>
+    <string name="action_next">次へ</string>
+    <string name="action_previous">前へ</string>
     <string name="action_close">閉じる</string>
     <string name="action_settings">設定</string>
     <string name="action_more_options">その他のオプション</string>
@@ -69,8 +71,24 @@
     <string name="profile_hint_depends">お使いの %1$s はどちらの場合もあります。ウォッチのソフトウェア情報を確認するか、ステップ3でアプリに確認させてください。</string>
     <string name="profile_check_none">ペア設定済みのGalaxy Watchが見つかりません。選択肢を選ぶか、ステップ3でアプリに確認させてください。</string>
     <string name="profile_check_denied">Bluetoothへのアクセスが許可されなかったため、ペア設定済みのウォッチを確認できません。選択肢を選ぶか、ステップ3でアプリに確認させてください。</string>
-    <string name="profile_howto_title">見分け方</string>
-    <string name="profile_howto_watch">ウォッチで：設定 › ウォッチ情報 › ソフトウェア情報。「Wear OS 5」以降、「One UI 6 Watch」以降、またはAndroid 14以降なら最初の選択肢です。</string>
+    <string name="profile_howto_button">バージョンの確認方法</string>
+    <string name="howto_title">ウォッチのバージョンを確認する</string>
+    <string name="howto_progress">%1$d / %2$d</string>
+    <string name="howto_step_panel">ウォッチで、文字盤の上から下にスワイプし、歯車アイコンをタップして設定を開きます。</string>
+    <string name="howto_step_settings">設定の一番下までスクロールし、「ウォッチ情報」をタップします。</string>
+    <string name="howto_step_about">「ソフトウェア情報」をタップします。</string>
+    <string name="howto_step_software">「Wear OSバージョン」または「Androidバージョン」を確認します。Wear OS 5以降、One UI 6 Watch以降、またはAndroid 14以降なら最初の選択肢、それより古い場合は2番目です。</string>
+    <string name="watch_ui_settings">設定</string>
+    <string name="watch_ui_notifications">通知</string>
+    <string name="watch_ui_display">ディスプレイ</string>
+    <string name="watch_ui_battery">バッテリー</string>
+    <string name="watch_ui_about">ウォッチ情報</string>
+    <string name="watch_ui_model">モデル番号</string>
+    <string name="watch_ui_status">ステータス</string>
+    <string name="watch_ui_software">ソフトウェア情報</string>
+    <string name="watch_ui_oneui">One UI Watchバージョン</string>
+    <string name="watch_ui_wearos">Wear OSバージョン</string>
+    <string name="watch_ui_android">Androidバージョン</string>
     <string name="profile_howto_phone">同じ画面はスマートフォンのGalaxy Wearableアプリにもあります：ウォッチの設定 › ウォッチ情報 › ソフトウェア情報。</string>
     <string name="profile_howto_models">Galaxy Watch7、Watch Ultra以降は常に対象です。Watch4、Watch5、Watch6、Watch FEは、One UI 6 Watchにアップデートした場合のみ対象です。</string>
     <string name="profile_howto_unsure">わからない場合はどちらかを選んでください。ウォッチが接続されると（ステップ3）アプリが自動で確認し、ダウンロード前に選択を修正します。</string>

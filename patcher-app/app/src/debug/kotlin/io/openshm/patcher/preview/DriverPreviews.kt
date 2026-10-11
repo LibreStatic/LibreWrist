@@ -3,12 +3,15 @@ package io.openshm.patcher.preview
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.openshm.patcher.R
 import io.openshm.patcher.ui.components.TimeBackdrop
 import io.openshm.patcher.ui.components.WelcomeHero
+import io.openshm.patcher.ui.screens.profile.GuideStep
+import io.openshm.patcher.ui.screens.profile.WatchVersionGuide
 import io.openshm.patcher.ui.screens.signingkey.SigningKeyForm
 
 /*
@@ -34,6 +37,24 @@ fun WelcomeBackdropDriver() = PreviewHost(ColorMode.Fallback) {
 @Composable
 fun WelcomeHeroEcgDriver() = PreviewHost(ColorMode.Fallback) {
     WelcomeHero(Modifier.fillMaxWidth().height(220.dp), frozenAt = 4.488f)
+}
+
+/** The watch-version guide's content (outside its dialog window) at each step. */
+@Composable
+fun GuidePanelDriver() = GuideDriver(GuideStep.Panel)
+
+@Composable
+fun GuideSettingsDriver() = GuideDriver(GuideStep.Settings)
+
+@Composable
+fun GuideAboutDriver() = GuideDriver(GuideStep.About)
+
+@Composable
+fun GuideSoftwareDriver() = GuideDriver(GuideStep.Software)
+
+@Composable
+private fun GuideDriver(step: GuideStep) = PreviewHost(ColorMode.Fallback) {
+    WatchVersionGuide(step = step, onStep = {}, onDone = {}, modifier = Modifier.padding(16.dp))
 }
 
 @Composable

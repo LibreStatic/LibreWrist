@@ -3,6 +3,8 @@
     <!-- Shared actions -->
     <string name="action_back">Geri</string>
     <string name="action_help">Yardım</string>
+    <string name="action_next">İleri</string>
+    <string name="action_previous">Geri</string>
     <string name="action_close">Kapat</string>
     <string name="action_settings">Ayarlar</string>
     <string name="action_more_options">Diğer seçenekler</string>
@@ -69,8 +71,24 @@
     <string name="profile_hint_depends">%1$s cihazınız ikisinden birini çalıştırıyor olabilir. Saatte Yazılım bilgileri\'ne bakın veya uygulamanın 3. adımda denetlemesine izin verin.</string>
     <string name="profile_check_none">Eşlenmiş Galaxy Watch bulunamadı. Bir seçenek seçin veya uygulamanın 3. adımda denetlemesine izin verin.</string>
     <string name="profile_check_denied">Bluetooth erişimine izin verilmedi, bu yüzden eşlenmiş saatler denetlenemiyor. Bir seçenek seçin veya uygulamanın 3. adımda denetlemesine izin verin.</string>
-    <string name="profile_howto_title">Nasıl anlaşılır</string>
-    <string name="profile_howto_watch">Saatte: Ayarlar › Saat hakkında › Yazılım bilgileri. \"Wear OS 5\" veya üzeri, \"One UI 6 Watch\" veya üzeri ya da Android 14 veya üzeri ilk seçenek demektir.</string>
+    <string name="profile_howto_button">Hangi sürüme sahip olduğumu nasıl anlarım</string>
+    <string name="howto_title">Saatimde hangi sürüm var?</string>
+    <string name="howto_progress">%1$d / %2$d</string>
+    <string name="howto_step_panel">Saatte, kadranın üstünden aşağı kaydırın ve Ayarlar\'ı açmak için dişliye dokunun.</string>
+    <string name="howto_step_settings">Ayarlar\'ın en altına inin ve Saat hakkında\'ya dokunun.</string>
+    <string name="howto_step_about">Yazılım bilgileri\'ne dokunun.</string>
+    <string name="howto_step_software">Wear OS sürümü veya Android sürümü satırına bakın. Wear OS 5 veya üstü, One UI 6 Watch veya üstü ya da Android 14 veya üstü ilk seçenek anlamına gelir; daha eskisi ikinci seçenek demektir.</string>
+    <string name="watch_ui_settings">Ayarlar</string>
+    <string name="watch_ui_notifications">Bildirimler</string>
+    <string name="watch_ui_display">Ekran</string>
+    <string name="watch_ui_battery">Pil</string>
+    <string name="watch_ui_about">Saat hakkında</string>
+    <string name="watch_ui_model">Model numarası</string>
+    <string name="watch_ui_status">Durum</string>
+    <string name="watch_ui_software">Yazılım bilgileri</string>
+    <string name="watch_ui_oneui">One UI Watch sürümü</string>
+    <string name="watch_ui_wearos">Wear OS sürümü</string>
+    <string name="watch_ui_android">Android sürümü</string>
     <string name="profile_howto_phone">Aynı ekran telefondaki Galaxy Wearable uygulamasında da var: Saat ayarları › Saat hakkında › Yazılım bilgileri.</string>
     <string name="profile_howto_models">Galaxy Watch7, Watch Ultra ve daha yenileri her zaman uygundur. Watch4, Watch5, Watch6 ve Watch FE ancak One UI 6 Watch\'a güncellendikten sonra uygundur.</string>
     <string name="profile_howto_unsure">Emin değil misiniz? Birini seçin: uygulama saat bağlandıktan sonra (3. adım) saati kendisi denetler ve hiçbir şey indirilmeden önce seçimi düzeltir.</string>

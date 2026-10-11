@@ -8,11 +8,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Bluetooth
+import androidx.compose.material.icons.rounded.HelpOutline
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -26,7 +31,6 @@ import io.openshm.patcher.ui.components.GroupedSpacing
 import io.openshm.patcher.ui.components.InfoChip
 import io.openshm.patcher.ui.components.OutlinedAction
 import io.openshm.patcher.ui.components.PrimaryAction
-import io.openshm.patcher.ui.components.SectionTitle
 import io.openshm.patcher.ui.components.SetupStep
 import io.openshm.patcher.ui.components.StepScreenScaffold
 
@@ -143,21 +147,12 @@ private fun PairedWatchesSection(state: ProfileUiState, onEvent: (ProfileEvent) 
     }
 }
 
+/** Opens the illustrated walk-through to the watch's software version. */
 @Composable
 private fun HowToTell() {
-    Column {
-        SectionTitle(stringResource(R.string.profile_howto_title))
-        GroupedItem(0, 1, contentPadding = PaddingValues(14.dp)) {
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                listOf(
-                    R.string.profile_howto_watch,
-                    R.string.profile_howto_phone,
-                    R.string.profile_howto_models,
-                    R.string.profile_howto_unsure,
-                ).forEach { Text(stringResource(it), style = MaterialTheme.typography.bodyMedium) }
-            }
-        }
-    }
+    var open by rememberSaveable { mutableStateOf(false) }
+    OutlinedAction(stringResource(R.string.profile_howto_button), { open = true }, Icons.Rounded.HelpOutline)
+    if (open) WatchVersionGuideDialog(onDismiss = { open = false })
 }
 
 private fun WatchProfile.titleRes() = when (this) {

@@ -3,6 +3,8 @@
     <!-- Shared actions -->
     <string name="action_back">Retour</string>
     <string name="action_help">Aide</string>
+    <string name="action_next">Suivant</string>
+    <string name="action_previous">Précédent</string>
     <string name="action_close">Fermer</string>
     <string name="action_settings">Paramètres</string>
     <string name="action_more_options">Plus d\'options</string>
@@ -69,8 +71,24 @@
     <string name="profile_hint_depends">Votre %1$s peut avoir l\'une ou l\'autre. Consultez les informations sur le logiciel de la montre, ou laissez l\'app vérifier à l\'étape 3.</string>
     <string name="profile_check_none">Aucune Galaxy Watch associée trouvée. Choisissez une option ou laissez l\'app vérifier à l\'étape 3.</string>
     <string name="profile_check_denied">L\'accès au Bluetooth n\'a pas été autorisé, les montres associées ne peuvent donc pas être vérifiées. Choisissez une option ou laissez l\'app vérifier à l\'étape 3.</string>
-    <string name="profile_howto_title">Comment le savoir</string>
-    <string name="profile_howto_watch">Sur la montre : Paramètres › À propos de la montre › Informations sur le logiciel. \"Wear OS 5\" ou plus récent, \"One UI 6 Watch\" ou plus récent, ou Android 14 ou plus récent correspond à la première option.</string>
+    <string name="profile_howto_button">Comment savoir quelle version j\'ai</string>
+    <string name="howto_title">Quelle version a ma montre ?</string>
+    <string name="howto_progress">%1$d sur %2$d</string>
+    <string name="howto_step_panel">Sur la montre, faites glisser le doigt vers le bas depuis le haut du cadran et touchez l\'engrenage pour ouvrir les Paramètres.</string>
+    <string name="howto_step_settings">Faites défiler jusqu\'en bas des Paramètres et touchez À propos de la montre.</string>
+    <string name="howto_step_about">Touchez Informations sur le logiciel.</string>
+    <string name="howto_step_software">Regardez Version de Wear OS ou Version d\'Android. Wear OS 5 ou plus récent, One UI 6 Watch ou plus récent, ou Android 14 ou plus récent correspond à la première option ; toute version plus ancienne, à la seconde.</string>
+    <string name="watch_ui_settings">Paramètres</string>
+    <string name="watch_ui_notifications">Notifications</string>
+    <string name="watch_ui_display">Affichage</string>
+    <string name="watch_ui_battery">Batterie</string>
+    <string name="watch_ui_about">À propos de la montre</string>
+    <string name="watch_ui_model">Numéro de modèle</string>
+    <string name="watch_ui_status">État</string>
+    <string name="watch_ui_software">Informations sur le logiciel</string>
+    <string name="watch_ui_oneui">Version de One UI Watch</string>
+    <string name="watch_ui_wearos">Version de Wear OS</string>
+    <string name="watch_ui_android">Version d\'Android</string>
     <string name="profile_howto_phone">Le même écran se trouve dans l\'app Galaxy Wearable sur le téléphone : Paramètres de la montre › À propos de la montre › Informations sur le logiciel.</string>
     <string name="profile_howto_models">Les Galaxy Watch7, Watch Ultra et plus récentes sont toujours compatibles. Les Watch4, Watch5, Watch6 et Watch FE ne le sont qu\'après la mise à jour vers One UI 6 Watch.</string>
     <string name="profile_howto_unsure">Un doute ? Choisissez l\'une ou l\'autre : l\'app vérifie elle-même votre montre une fois connectée (étape 3) et corrige le choix avant tout téléchargement.</string>

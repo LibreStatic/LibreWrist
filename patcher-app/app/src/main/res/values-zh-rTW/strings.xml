@@ -3,6 +3,8 @@
     <!-- Shared actions -->
     <string name="action_back">返回</string>
     <string name="action_help">說明</string>
+    <string name="action_next">下一步</string>
+    <string name="action_previous">上一步</string>
     <string name="action_close">關閉</string>
     <string name="action_settings">設定</string>
     <string name="action_more_options">更多選項</string>
@@ -69,8 +71,24 @@
     <string name="profile_hint_depends">你的 %1$s 可能是其中任一種。請在手錶上查看軟體資訊，或在第 3 步讓應用程式檢查。</string>
     <string name="profile_check_none">找不到已配對的 Galaxy Watch。請選擇一個選項，或在第 3 步讓應用程式檢查。</string>
     <string name="profile_check_denied">未取得 Bluetooth 存取權限，因此無法檢查已配對的手錶。請選擇一個選項，或在第 3 步讓應用程式檢查。</string>
-    <string name="profile_howto_title">如何判斷</string>
-    <string name="profile_howto_watch">在手錶上：設定 › 關於手錶 › 軟體資訊。如果是「Wear OS 5」或更新、「One UI 6 Watch」或更新，或 Android 14 或更新，請選第一個選項。</string>
+    <string name="profile_howto_button">如何確認我的版本</string>
+    <string name="howto_title">我的手錶是哪個版本？</string>
+    <string name="howto_progress">第 %1$d 步，共 %2$d 步</string>
+    <string name="howto_step_panel">在手錶上，從錶面頂端向下滑動，然後點選齒輪圖示開啟設定。</string>
+    <string name="howto_step_settings">捲動到設定底部，然後點選「關於手錶」。</string>
+    <string name="howto_step_about">點選「軟體資訊」。</string>
+    <string name="howto_step_software">查看「Wear OS 版本」或「Android 版本」。Wear OS 5 或更新、One UI 6 Watch 或更新、或 Android 14 或更新，請選第一個選項；更舊的版本請選第二個。</string>
+    <string name="watch_ui_settings">設定</string>
+    <string name="watch_ui_notifications">通知</string>
+    <string name="watch_ui_display">顯示</string>
+    <string name="watch_ui_battery">電池</string>
+    <string name="watch_ui_about">關於手錶</string>
+    <string name="watch_ui_model">型號</string>
+    <string name="watch_ui_status">狀態</string>
+    <string name="watch_ui_software">軟體資訊</string>
+    <string name="watch_ui_oneui">One UI Watch 版本</string>
+    <string name="watch_ui_wearos">Wear OS 版本</string>
+    <string name="watch_ui_android">Android 版本</string>
     <string name="profile_howto_phone">手機上的 Galaxy Wearable 應用程式中也有相同的畫面：手錶設定 › 關於手錶 › 軟體資訊。</string>
     <string name="profile_howto_models">Galaxy Watch7、Watch Ultra 及更新機型一律符合條件。Watch4、Watch5、Watch6 和 Watch FE 必須更新至 One UI 6 Watch 後才符合條件。</string>
     <string name="profile_howto_unsure">不確定嗎？任選其一即可：手錶連線後（第 3 步），應用程式會自行檢查，並在下載任何內容之前修正你的選擇。</string>

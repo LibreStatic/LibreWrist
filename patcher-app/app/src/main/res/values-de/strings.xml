@@ -3,6 +3,8 @@
     <!-- Shared actions -->
     <string name="action_back">Zurück</string>
     <string name="action_help">Hilfe</string>
+    <string name="action_next">Weiter</string>
+    <string name="action_previous">Zurück</string>
     <string name="action_close">Schließen</string>
     <string name="action_settings">Einstellungen</string>
     <string name="action_more_options">Weitere Optionen</string>
@@ -69,8 +71,24 @@
     <string name="profile_hint_depends">Deine %1$s kann beides haben. Prüfe die Softwareinformationen auf der Uhr oder lass die App in Schritt 3 prüfen.</string>
     <string name="profile_check_none">Keine gekoppelte Galaxy Watch gefunden. Wähle eine Option oder lass die App in Schritt 3 prüfen.</string>
     <string name="profile_check_denied">Der Bluetooth-Zugriff wurde nicht erlaubt, daher können gekoppelte Uhren nicht geprüft werden. Wähle eine Option oder lass die App in Schritt 3 prüfen.</string>
-    <string name="profile_howto_title">So erkennst du es</string>
-    <string name="profile_howto_watch">Auf der Uhr: Einstellungen › Über die Uhr › Softwareinformationen. \"Wear OS 5\" oder neuer, \"One UI 6 Watch\" oder neuer oder Android 14 oder neuer bedeutet die erste Option.</string>
+    <string name="profile_howto_button">So erkenne ich meine Version</string>
+    <string name="howto_title">Welche Version hat meine Uhr?</string>
+    <string name="howto_progress">%1$d von %2$d</string>
+    <string name="howto_step_panel">Wische auf der Uhr vom oberen Rand des Zifferblatts nach unten und tippe auf das Zahnrad, um die Einstellungen zu öffnen.</string>
+    <string name="howto_step_settings">Scrolle in den Einstellungen ganz nach unten und tippe auf Über die Uhr.</string>
+    <string name="howto_step_about">Tippe auf Softwareinformationen.</string>
+    <string name="howto_step_software">Sieh dir Wear OS-Version oder Android-Version an. Wear OS 5 oder neuer, One UI 6 Watch oder neuer bzw. Android 14 oder neuer bedeutet die erste Option, alles Ältere die zweite.</string>
+    <string name="watch_ui_settings">Einstellungen</string>
+    <string name="watch_ui_notifications">Benachrichtigungen</string>
+    <string name="watch_ui_display">Anzeige</string>
+    <string name="watch_ui_battery">Akku</string>
+    <string name="watch_ui_about">Über die Uhr</string>
+    <string name="watch_ui_model">Modellnummer</string>
+    <string name="watch_ui_status">Status</string>
+    <string name="watch_ui_software">Softwareinformationen</string>
+    <string name="watch_ui_oneui">One UI Watch-Version</string>
+    <string name="watch_ui_wearos">Wear OS-Version</string>
+    <string name="watch_ui_android">Android-Version</string>
     <string name="profile_howto_phone">Derselbe Bildschirm findet sich in der Galaxy Wearable App auf dem Smartphone: Uhreneinstellungen › Über die Uhr › Softwareinformationen.</string>
     <string name="profile_howto_models">Galaxy Watch7, Watch Ultra und neuer erfüllen die Voraussetzung immer. Watch4, Watch5, Watch6 und Watch FE erst nach dem Update auf One UI 6 Watch.</string>
     <string name="profile_howto_unsure">Unsicher? Wähle irgendeine: Die App prüft deine Uhr selbst, sobald sie verbunden ist (Schritt 3), und korrigiert die Auswahl, bevor etwas heruntergeladen wird.</string>

@@ -3,6 +3,8 @@
     <!-- Shared actions -->
     <string name="action_back">رجوع</string>
     <string name="action_help">مساعدة</string>
+    <string name="action_next">التالي</string>
+    <string name="action_previous">السابق</string>
     <string name="action_close">إغلاق</string>
     <string name="action_settings">الإعدادات</string>
     <string name="action_more_options">خيارات إضافية</string>
@@ -69,8 +71,24 @@
     <string name="profile_hint_depends">قد تعمل %1$s بأيٍّ منهما. تحقق من معلومات البرنامج على الساعة، أو دع التطبيق يفحص في الخطوة 3.</string>
     <string name="profile_check_none">لم يُعثر على ساعة Galaxy Watch مقترنة. اختر خيارًا أو دع التطبيق يفحص في الخطوة 3.</string>
     <string name="profile_check_denied">لم يُسمح بالوصول إلى Bluetooth، لذا لا يمكن فحص الساعات المقترنة. اختر خيارًا أو دع التطبيق يفحص في الخطوة 3.</string>
-    <string name="profile_howto_title">كيف تعرف</string>
-    <string name="profile_howto_watch">على الساعة: الإعدادات › حول الساعة › معلومات البرنامج. إذا ظهر \"Wear OS 5\" أو أحدث، أو \"One UI 6 Watch\" أو أحدث، أو Android 14 أو أحدث فهذا يعني الخيار الأول.</string>
+    <string name="profile_howto_button">كيف أعرف أي إصدار لدي</string>
+    <string name="howto_title">أي إصدار تعمل به ساعتي؟</string>
+    <string name="howto_progress">%1$d من %2$d</string>
+    <string name="howto_step_panel">على الساعة، اسحب لأسفل من أعلى واجهة الساعة ثم اضغط على علامة الترس لفتح الإعدادات.</string>
+    <string name="howto_step_settings">مرّر إلى أسفل الإعدادات واضغط على حول الساعة.</string>
+    <string name="howto_step_about">اضغط على معلومات البرنامج.</string>
+    <string name="howto_step_software">انظر إلى إصدار Wear OS أو إصدار Android. إذا كان Wear OS 5 أو أحدث، أو One UI 6 Watch أو أحدث، أو Android 14 أو أحدث فهذا يعني الخيار الأول؛ وأي إصدار أقدم يعني الخيار الثاني.</string>
+    <string name="watch_ui_settings">الإعدادات</string>
+    <string name="watch_ui_notifications">الإشعارات</string>
+    <string name="watch_ui_display">العرض</string>
+    <string name="watch_ui_battery">البطارية</string>
+    <string name="watch_ui_about">حول الساعة</string>
+    <string name="watch_ui_model">رقم الطراز</string>
+    <string name="watch_ui_status">الحالة</string>
+    <string name="watch_ui_software">معلومات البرنامج</string>
+    <string name="watch_ui_oneui">إصدار One UI Watch</string>
+    <string name="watch_ui_wearos">إصدار Wear OS</string>
+    <string name="watch_ui_android">إصدار Android</string>
     <string name="profile_howto_phone">الشاشة نفسها موجودة في تطبيق Galaxy Wearable على الهاتف: إعدادات الساعة › حول الساعة › معلومات البرنامج.</string>
     <string name="profile_howto_models">ساعات Galaxy Watch7 وWatch Ultra والأحدث مؤهلة دائمًا. أما Watch4 وWatch5 وWatch6 وWatch FE فلا تتأهل إلا بعد التحديث إلى One UI 6 Watch.</string>
     <string name="profile_howto_unsure">لست متأكدًا؟ اختر أيًّا منهما: يفحص التطبيق ساعتك بنفسه بعد الاتصال (الخطوة 3) ويصحح الاختيار قبل تنزيل أي شيء.</string>

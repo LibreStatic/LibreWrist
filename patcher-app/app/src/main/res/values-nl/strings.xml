@@ -3,6 +3,8 @@
     <!-- Shared actions -->
     <string name="action_back">Terug</string>
     <string name="action_help">Help</string>
+    <string name="action_next">Volgende</string>
+    <string name="action_previous">Vorige</string>
     <string name="action_close">Sluiten</string>
     <string name="action_settings">Instellingen</string>
     <string name="action_more_options">Meer opties</string>
@@ -69,8 +71,24 @@
     <string name="profile_hint_depends">Je %1$s kan beide draaien. Controleer Software-informatie op het horloge, of laat de app het controleren in stap 3.</string>
     <string name="profile_check_none">Geen gekoppelde Galaxy Watch gevonden. Kies een optie of laat de app het controleren in stap 3.</string>
     <string name="profile_check_denied">Bluetooth-toegang is niet toegestaan, dus gekoppelde horloges kunnen niet worden gecontroleerd. Kies een optie of laat de app het controleren in stap 3.</string>
-    <string name="profile_howto_title">Zo kom je erachter</string>
-    <string name="profile_howto_watch">Op het horloge: Instellingen › Over horloge › Software-informatie. \"Wear OS 5\" of nieuwer, \"One UI 6 Watch\" of nieuwer, of Android 14 of nieuwer betekent de eerste optie.</string>
+    <string name="profile_howto_button">Hoe zie ik welke versie ik heb</string>
+    <string name="howto_title">Welke versie heeft mijn horloge?</string>
+    <string name="howto_progress">%1$d van %2$d</string>
+    <string name="howto_step_panel">Veeg op het horloge vanaf de bovenkant van de wijzerplaat omlaag en tik op het tandwiel om Instellingen te openen.</string>
+    <string name="howto_step_settings">Scroll naar de onderkant van Instellingen en tik op Over horloge.</string>
+    <string name="howto_step_about">Tik op Software-informatie.</string>
+    <string name="howto_step_software">Kijk bij Wear OS-versie of Android-versie. Wear OS 5 of nieuwer, One UI 6 Watch of nieuwer, of Android 14 of nieuwer betekent de eerste optie; alles ouder, de tweede.</string>
+    <string name="watch_ui_settings">Instellingen</string>
+    <string name="watch_ui_notifications">Meldingen</string>
+    <string name="watch_ui_display">Weergave</string>
+    <string name="watch_ui_battery">Batterij</string>
+    <string name="watch_ui_about">Over horloge</string>
+    <string name="watch_ui_model">Modelnummer</string>
+    <string name="watch_ui_status">Status</string>
+    <string name="watch_ui_software">Software-informatie</string>
+    <string name="watch_ui_oneui">One UI Watch-versie</string>
+    <string name="watch_ui_wearos">Wear OS-versie</string>
+    <string name="watch_ui_android">Android-versie</string>
     <string name="profile_howto_phone">Hetzelfde scherm staat in de Galaxy Wearable-app op de telefoon: Horlogeinstellingen › Over horloge › Software-informatie.</string>
     <string name="profile_howto_models">Galaxy Watch7, Watch Ultra en nieuwer voldoen altijd. Watch4, Watch5, Watch6 en Watch FE voldoen pas na een update naar One UI 6 Watch.</string>
     <string name="profile_howto_unsure">Weet je het niet zeker? Kies maar een optie: de app controleert je horloge zelf zodra het verbonden is (stap 3) en corrigeert de keuze voordat er iets wordt gedownload.</string>

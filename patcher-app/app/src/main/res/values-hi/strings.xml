@@ -3,6 +3,8 @@
     <!-- Shared actions -->
     <string name="action_back">वापस</string>
     <string name="action_help">मदद</string>
+    <string name="action_next">आगे</string>
+    <string name="action_previous">पिछला</string>
     <string name="action_close">बंद करें</string>
     <string name="action_settings">सेटिंग</string>
     <string name="action_more_options">और विकल्प</string>
@@ -69,8 +71,24 @@
     <string name="profile_hint_depends">आपकी %1$s दोनों में से कोई भी चला सकती है। घड़ी पर सॉफ़्टवेयर जानकारी देखें, या ऐप को चरण 3 में जाँचने दें।</string>
     <string name="profile_check_none">कोई पेयर की हुई Galaxy Watch नहीं मिली। कोई विकल्प चुनें या ऐप को चरण 3 में जाँचने दें।</string>
     <string name="profile_check_denied">Bluetooth की अनुमति नहीं दी गई, इसलिए पेयर की गई घड़ियाँ नहीं जाँची जा सकतीं। कोई विकल्प चुनें या ऐप को चरण 3 में जाँचने दें।</string>
-    <string name="profile_howto_title">कैसे पता करें</string>
-    <string name="profile_howto_watch">घड़ी पर: सेटिंग › घड़ी के बारे में › सॉफ़्टवेयर जानकारी। \"Wear OS 5\" या नया, \"One UI 6 Watch\" या नया, या Android 14 या नया होने का मतलब पहला विकल्प है।</string>
+    <string name="profile_howto_button">कैसे जानें कि मेरे पास कौन सा संस्करण है</string>
+    <string name="howto_title">मेरी घड़ी में कौन सा संस्करण है?</string>
+    <string name="howto_progress">%2$d में से %1$d</string>
+    <string name="howto_step_panel">घड़ी पर, वॉच फ़ेस के ऊपर से नीचे की ओर स्वाइप करें और सेटिंग खोलने के लिए गियर पर टैप करें।</string>
+    <string name="howto_step_settings">सेटिंग में सबसे नीचे स्क्रोल करें और घड़ी के बारे में पर टैप करें।</string>
+    <string name="howto_step_about">सॉफ़्टवेयर जानकारी पर टैप करें।</string>
+    <string name="howto_step_software">Wear OS संस्करण या Android संस्करण देखें। Wear OS 5 या नया, One UI 6 Watch या नया, या Android 14 या नया होने का मतलब पहला विकल्प है; इससे पुराना हो तो दूसरा।</string>
+    <string name="watch_ui_settings">सेटिंग</string>
+    <string name="watch_ui_notifications">सूचनाएँ</string>
+    <string name="watch_ui_display">डिस्प्ले</string>
+    <string name="watch_ui_battery">बैटरी</string>
+    <string name="watch_ui_about">घड़ी के बारे में</string>
+    <string name="watch_ui_model">मॉडल नंबर</string>
+    <string name="watch_ui_status">स्थिति</string>
+    <string name="watch_ui_software">सॉफ़्टवेयर जानकारी</string>
+    <string name="watch_ui_oneui">One UI Watch संस्करण</string>
+    <string name="watch_ui_wearos">Wear OS संस्करण</string>
+    <string name="watch_ui_android">Android संस्करण</string>
     <string name="profile_howto_phone">यही स्क्रीन फ़ोन के Galaxy Wearable ऐप में भी है: घड़ी की सेटिंग › घड़ी के बारे में › सॉफ़्टवेयर जानकारी।</string>
     <string name="profile_howto_models">Galaxy Watch7, Watch Ultra और नई घड़ियाँ हमेशा योग्य हैं। Watch4, Watch5, Watch6 और Watch FE तभी योग्य हैं जब वे One UI 6 Watch पर अपडेट हो चुकी हों।</string>
     <string name="profile_howto_unsure">पक्का नहीं है? कोई भी चुन लें: घड़ी जुड़ने के बाद (चरण 3) ऐप खुद जाँचता है और कुछ भी डाउनलोड होने से पहले चुनाव सुधार देता है।</string>
