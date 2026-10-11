@@ -20,12 +20,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.openshm.patcher.R
 import io.openshm.patcher.ui.components.ContainerTextAction
 import io.openshm.patcher.ui.components.CheckStatus
 import io.openshm.patcher.ui.components.GroupedItem
+import io.openshm.patcher.ui.components.HapticWhen
 import io.openshm.patcher.ui.components.GroupedSpacing
 import io.openshm.patcher.ui.components.IconAction
 import io.openshm.patcher.ui.components.OutlinedAction
@@ -105,6 +107,8 @@ fun SelfTestScreen(
     modifier: Modifier = Modifier,
 ) {
     val split = state.splitIndex()
+    HapticWhen(state.allPassed, HapticFeedbackType.Confirm)
+    HapticWhen(state.finished && state.failedCount > 0, HapticFeedbackType.Reject)
     StepScreenScaffold(
         step = SetupStep.SelfTest,
         title = stringResource(R.string.selftest_title),

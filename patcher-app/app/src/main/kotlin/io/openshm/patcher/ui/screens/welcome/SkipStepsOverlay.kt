@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -52,6 +53,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
@@ -157,6 +159,7 @@ private fun CheckingContent() {
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun SkippingContent(steps: List<SkippedStep>, onConfirm: () -> Unit, onManual: () -> Unit) {
+    val haptic = LocalHapticFeedback.current
     val reduced = LocalReducedMotion.current
     var shown by remember { mutableStateOf(reduced) }
     LaunchedEffect(Unit) { shown = true }
@@ -206,7 +209,14 @@ private fun SkippingContent(steps: List<SkippedStep>, onConfirm: () -> Unit, onM
         Column(Modifier.padding(top = 4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             steps.forEach { SkippedCard(it) }
         }
-        PrimaryAction(stringResource(R.string.skip_confirm), onConfirm, modifier = Modifier.padding(top = 8.dp))
+        PrimaryAction(
+            stringResource(R.string.skip_confirm),
+            {
+                haptic.performHapticFeedback(HapticFeedbackType.Confirm)
+                onConfirm()
+            },
+            modifier = Modifier.padding(top = 8.dp),
+        )
         QuietAction(stringResource(R.string.skip_manual), onManual)
     }
 }

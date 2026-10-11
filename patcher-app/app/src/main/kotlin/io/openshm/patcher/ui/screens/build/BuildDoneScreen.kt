@@ -39,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
@@ -48,6 +49,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.openshm.patcher.R
 import io.openshm.patcher.data.Device
+import io.openshm.patcher.ui.components.HapticOnce
 import io.openshm.patcher.ui.components.CenteredPane
 import io.openshm.patcher.ui.components.CheckBlob
 import io.openshm.patcher.ui.components.DecorShape
@@ -102,6 +104,7 @@ fun BuildDoneScreen(
     onSaveBackup: () -> Unit = {},
     onSaveWithPassword: suspend (CharArray, CharArray) -> Boolean = { _, _ -> false },
 ) {
+    HapticOnce(HapticFeedbackType.Confirm)
     val colors = MaterialTheme.colorScheme
     // Caps itself (it is not in a ContentColumn): 640 dp single column, 1200 dp with two columns.
     BoxWithConstraints(

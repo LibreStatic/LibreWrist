@@ -22,7 +22,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Wifi
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -30,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -39,18 +39,20 @@ import io.openshm.patcher.ui.components.Accent
 import io.openshm.patcher.ui.components.CheckStatus
 import io.openshm.patcher.ui.components.ContainerTextAction
 import io.openshm.patcher.ui.components.FooterHint
+import io.openshm.patcher.ui.components.HapticWhen
 import io.openshm.patcher.ui.components.InstructionText
 import io.openshm.patcher.ui.components.LocalTwoPane
+import io.openshm.patcher.ui.components.PAIRING_CODE_LENGTH
 import io.openshm.patcher.ui.components.PackageId
+import io.openshm.patcher.ui.components.PairingCodeField
 import io.openshm.patcher.ui.components.PhoneWatchIllustration
 import io.openshm.patcher.ui.components.PrimaryAction
 import io.openshm.patcher.ui.components.SetupStep
 import io.openshm.patcher.ui.components.StatusShape
 import io.openshm.patcher.ui.components.StepScreenScaffold
+import io.openshm.patcher.ui.components.containerFieldColors
 import io.openshm.patcher.ui.theme.LocalReducedMotion
 import io.openshm.patcher.ui.theme.PatcherTheme
-
-const val PAIRING_CODE_LENGTH = 6
 
 data class WatchPairUiState(
     /** `host:port` of the Wireless debugging pairing service found by discovery, null while none was found. */
@@ -70,6 +72,8 @@ data class WatchPairUiState(
     val errorRes: Int? = null,
     /** The watch disagrees with the chosen profile: shown for confirmation before moving on. */
     val correction: WatchProfileCorrection? = null,
+    /** Failed pairing attempts so far; each one shakes the code field. */
+    val failures: Int = 0,
 ) {
     val codeComplete: Boolean get() = code.length == PAIRING_CODE_LENGTH
 
@@ -82,11 +86,11 @@ data class WatchPairUiState(
     val hostInvalid: Boolean get() = host.isNotBlank() && parseAddress("${host.trim()}:1") == null
     val portInvalid: Boolean get() = port.isNotBlank() && port.trim().toIntOrNull()?.let { it in 1..65535 } != true
 
-    /** The code entry (and the host and port fields in manual mode) shows once there is somewhere to pair with. */
     /** The step-by-step guide shows: automatic mode, not dismissed, not pairing. */
     val guideVisible: Boolean get() = !manual && guideOpen && !pairing
 
-    val entryVisible: Boolean get() = !pairing && (manual || foundAddress != null)
+    /** The code entry (and the host and port fields in manual mode) shows once there is somewhere to pair with; it stays, read-only, while pairing. */
+    val entryVisible: Boolean get() = manual || foundAddress != null
 
     val canPair: Boolean get() = codeComplete && !pairing && address?.let { parseAddress(it) } != null
 }
@@ -123,6 +127,7 @@ fun WatchPairScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    HapticWhen(state.paired || state.correction != null, HapticFeedbackType.Confirm)
     StepScreenScaffold(
         step = SetupStep.WatchPair,
         title = stringResource(R.string.watchpair_title),
@@ -193,6 +198,7 @@ private fun PairPanel(
     modifier: Modifier = Modifier,
 ) {
     val guideInline = !LocalTwoPane.current
+    val fieldColors = containerFieldColors(MaterialTheme.colorScheme.onTertiaryContainer, MaterialTheme.colorScheme.tertiaryContainer)
     Surface(modifier.fillMaxWidth(), shape = RoundedCornerShape(28.dp), color = MaterialTheme.colorScheme.tertiaryContainer) {
         val reduced = LocalReducedMotion.current
         Column(
@@ -225,8 +231,10 @@ private fun PairPanel(
                                 value = state.host,
                                 onValueChange = { onEvent(WatchPairEvent.HostChanged(it)) },
                                 modifier = Modifier.weight(2f),
+                                readOnly = state.pairing,
                                 label = { Text(stringResource(R.string.watchpair_host_label)) },
                                 singleLine = true,
+                                colors = fieldColors,
                                 textStyle = PatcherTheme.text.mono,
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
                                 isError = state.hostInvalid,
@@ -240,8 +248,10 @@ private fun PairPanel(
                                 value = state.port,
                                 onValueChange = { onEvent(WatchPairEvent.PortChanged(it)) },
                                 modifier = Modifier.weight(1f),
+                                readOnly = state.pairing,
                                 label = { Text(stringResource(R.string.watchpair_port_label)) },
                                 singleLine = true,
+                                colors = fieldColors,
                                 textStyle = PatcherTheme.text.mono,
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 isError = state.portInvalid,
@@ -253,27 +263,16 @@ private fun PairPanel(
                             )
                         }
                     }
-                    OutlinedTextField(
-                        value = state.code,
-                        onValueChange = { onEvent(WatchPairEvent.CodeChanged(it.filter(Char::isDigit).take(PAIRING_CODE_LENGTH))) },
+                    PairingCodeField(
+                        code = state.code,
+                        onCodeChange = { onEvent(WatchPairEvent.CodeChanged(it)) },
+                        label = stringResource(R.string.watchpair_code_label),
                         modifier = Modifier.fillMaxWidth(),
-                        enabled = !state.pairing,
-                        label = { Text(stringResource(R.string.watchpair_code_label)) },
-                        singleLine = true,
-                        textStyle = PatcherTheme.text.mono,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
-                        isError = state.errorRes != null,
-                        supportingText = state.errorRes?.let { res -> { Text(stringResource(res)) } },
-                    )
-                }
-            }
-            AnimatedVisibility(state.pairing, enter = enterTransition(), exit = exitTransition()) {
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                    CircularProgressIndicator(Modifier.size(24.dp), strokeWidth = 3.dp, color = MaterialTheme.colorScheme.tertiary)
-                    Text(
-                        stringResource(R.string.watchpair_pairing),
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.onTertiaryContainer,
+                        error = state.errorRes?.let { stringResource(it) },
+                        shakeKey = state.failures,
+                        busy = state.pairing,
+                        onColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                     )
                 }
             }

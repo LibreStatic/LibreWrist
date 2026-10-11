@@ -446,12 +446,13 @@ class WatchPairLogicTest {
     }
 
     @Test
-    fun startingToPairHidesTheCodeEntryAtOnceAndFreezesTheForm() {
+    fun startingToPairKeepsTheCodeEntryButFreezesTheForm() {
         val ready = found.copy(code = "123456")
         assertTrue(ready.entryVisible)
         val pairing = ready.reduce(WatchPairEvent.Pair)
         assertTrue(pairing.pairing)
-        assertFalse(pairing.entryVisible)
+        // The field stays (read-only) so the focus and the keyboard are not lost.
+        assertTrue(pairing.entryVisible)
         // Neither edits nor a second Pair nor discovery change anything while pairing.
         assertEquals(pairing, pairing.reduce(WatchPairEvent.CodeChanged("000000")))
         assertEquals(pairing, pairing.reduce(WatchPairEvent.Pair))

@@ -20,6 +20,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
@@ -77,6 +79,7 @@ fun ProfileScreen(
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+        val haptic = LocalHapticFeedback.current
         Column(verticalArrangement = GroupedSpacing) {
             state.options.forEachIndexed { index, option ->
                 val selected = option == state.selected
@@ -86,7 +89,10 @@ fun ProfileScreen(
                     modifier = Modifier.selectable(
                         selected = selected,
                         role = Role.RadioButton,
-                        onClick = { onEvent(ProfileEvent.Select(option)) },
+                        onClick = {
+                            if (!selected) haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)
+                            onEvent(ProfileEvent.Select(option))
+                        },
                     ),
                     containerColor = if (selected) MaterialTheme.colorScheme.primaryContainer
                     else MaterialTheme.colorScheme.surfaceContainerLow,

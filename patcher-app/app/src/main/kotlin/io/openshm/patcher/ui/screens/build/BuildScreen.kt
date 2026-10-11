@@ -52,6 +52,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
@@ -62,6 +63,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.openshm.patcher.R
 import io.openshm.patcher.data.Device
+import io.openshm.patcher.ui.components.HapticWhen
 import io.openshm.patcher.ui.components.BuildProgressRing
 import io.openshm.patcher.ui.components.CheckStatus
 import io.openshm.patcher.ui.components.FooterHint
@@ -153,6 +155,7 @@ fun BuildScreen(
     modifier: Modifier = Modifier,
 ) {
     var confirmCancel by rememberSaveable { mutableStateOf(false) }
+    HapticWhen(state.failed, HapticFeedbackType.Reject)
     StepScreenScaffold(
         step = SetupStep.Build,
         title = stringResource(R.string.build_title),

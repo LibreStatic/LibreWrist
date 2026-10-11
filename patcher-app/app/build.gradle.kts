@@ -98,6 +98,12 @@ dependencies {
 
     testImplementation(libs.junit4)
     testImplementation(libs.kotlinx.coroutines.test)
+    // Robolectric Compose tests (test-only; ui-test-manifest only adds the test activity to the debug manifest).
+    testImplementation(platform(libs.compose.bom))
+    testImplementation("androidx.compose.ui:ui-test-junit4")
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.test.ext)
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
 
 // Development-only Compose Driver: present only when settings.gradle.kts included
@@ -107,11 +113,7 @@ dependencies {
 rootProject.findProject(":tools:compose-driver")?.let { driver ->
     android.sourceSets.getByName("test").kotlin.directories.add(driver.projectDir.resolve("src/test/kotlin").path)
     dependencies {
-        testImplementation(platform(libs.compose.bom))
         testImplementation(libs.compose.driver)
-        testImplementation(libs.robolectric)
-        testImplementation(libs.androidx.test.ext)
-        debugImplementation("androidx.compose.ui:ui-test-manifest")
     }
     val composable = providers.gradleProperty("composeDriver.composable")
     val port = providers.gradleProperty("composeDriver.port").orElse("8137")

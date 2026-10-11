@@ -1,6 +1,7 @@
 package io.openshm.patcher.ui.screens.watchpair
 
 import android.app.Application
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,6 +15,7 @@ import io.openshm.patcher.adb.SelfAdbSession
 import io.openshm.patcher.data.SetupSession
 import io.openshm.patcher.device.WatchDetector
 import io.openshm.patcher.device.WatchLink
+import io.openshm.patcher.ui.components.PAIRING_CODE_LENGTH
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +26,13 @@ import kotlinx.coroutines.launch
 
 /** Pure reducer so it can be unit tested without a ViewModel. */
 internal fun WatchPairUiState.reduce(event: WatchPairEvent): WatchPairUiState = when (event) {
-    is WatchPairEvent.CodeChanged -> if (pairing) this else copy(code = event.code.filter(Char::isDigit).take(PAIRING_CODE_LENGTH), errorRes = null)
+    is WatchPairEvent.CodeChanged -> if (pairing) {
+        this
+    } else {
+        val next = copy(code = event.code.filter(Char::isDigit).take(PAIRING_CODE_LENGTH), errorRes = null)
+        // Only the edit that completes the code starts pairing; a repeated or longer value does not.
+        if (!codeComplete && next.canPair) next.copy(pairing = true) else next
+    }
     is WatchPairEvent.HostChanged -> copy(host = event.host.trim(), errorRes = null)
     is WatchPairEvent.PortChanged -> copy(port = event.port.filter(Char::isDigit).take(5), errorRes = null)
     // The first time the watch shows up the guide has done its job and closes by itself.
@@ -37,7 +45,7 @@ internal fun WatchPairUiState.reduce(event: WatchPairEvent): WatchPairUiState = 
     WatchPairEvent.HideGuide -> copy(guideOpen = false)
     WatchPairEvent.ToggleManual -> copy(manual = !manual, errorRes = null)
     WatchPairEvent.ConfirmCorrection -> copy(correction = null, paired = true)
-    // The code field is disabled and hidden from this very state on, not after the first answer.
+    // The code field is read-only from this very state on, not after the first answer.
     WatchPairEvent.Pair -> if (canPair) copy(pairing = true, errorRes = null) else this
 }
 
@@ -106,6 +114,7 @@ class WatchPairViewModel(application: Application) : AndroidViewModel(applicatio
             _state.update { it.copy(pairing = false, errorRes = R.string.watchpair_error_bad_address) }
             return
         }
+        Log.d("WatchPair", "pairing attempt")
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 link.pair(host, port, snapshot.code)
@@ -123,7 +132,16 @@ class WatchPairViewModel(application: Application) : AndroidViewModel(applicatio
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                _state.update { it.copy(pairing = false, errorRes = pairErrorRes(e)) }
+                val error = pairErrorRes(e)
+                // A wrong code is cleared for a new one; after a network or timeout failure the same code may be retried.
+                _state.update {
+                    it.copy(
+                        pairing = false,
+                        errorRes = error,
+                        code = if (error == R.string.watchpair_error_wrong_code) "" else it.code,
+                        failures = it.failures + 1,
+                    )
+                }
             }
         }
     }

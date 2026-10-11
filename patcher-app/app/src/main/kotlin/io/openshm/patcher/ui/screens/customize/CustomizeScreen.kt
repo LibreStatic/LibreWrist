@@ -29,6 +29,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -223,13 +225,17 @@ private fun GroupHeader(group: CustomizeGroup) {
 private fun PatchRow(index: Int, count: Int, patch: CustomizePatch, onToggle: () -> Unit) {
     val on = patch.required || patch.enabled
     val requiredText = stringResource(R.string.customize_required)
+    val haptic = LocalHapticFeedback.current
     GroupedItem(
         index, count,
         modifier = Modifier.toggleable(
             value = on,
             enabled = !patch.required,
             role = Role.Switch,
-            onValueChange = { onToggle() },
+            onValueChange = {
+                haptic.performHapticFeedback(if (on) HapticFeedbackType.ToggleOff else HapticFeedbackType.ToggleOn)
+                onToggle()
+            },
         ),
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {

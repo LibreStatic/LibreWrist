@@ -13,14 +13,16 @@ import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Wifi
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.getValue
+import kotlinx.coroutines.delay
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.text.input.KeyboardType
 import io.openshm.patcher.ui.components.OutlinedAction
+import io.openshm.patcher.ui.components.PAIRING_CODE_LENGTH
+import io.openshm.patcher.ui.components.PairingCodeField
 import io.openshm.patcher.ui.components.QuietAction
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
@@ -343,6 +345,8 @@ private fun SelfAdbSection(state: InstallUiState, onEvent: (InstallEvent) -> Uni
     }
 }
 
+private const val SUBMIT_GUARD_MS = 5_000L
+
 /**
  * Where the Wireless debugging fallback is, with the pairing code field and the retry and cancel
  * actions; shared by the install screen and the pairing troubleshooting.
@@ -355,19 +359,59 @@ internal fun SelfAdbProgress(
     onCancel: () -> Unit,
     @StringRes retryLabel: Int = R.string.phone_adb_action,
 ) {
+    var code by rememberSaveable { mutableStateOf("") }
+    var failures by rememberSaveable { mutableIntStateOf(0) }
+    var wrongCounted by rememberSaveable { mutableStateOf(false) }
+    // A code went out and the controller has not moved on yet: no second submission in that gap.
+    var submitted by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(phase) {
+        submitted = false
+        if (phase == SelfAdbPhase.WrongCode) {
+            if (!wrongCounted) {
+                wrongCounted = true
+                failures++
+                code = ""
+            }
+        } else {
+            wrongCounted = false
+        }
+    }
+    LaunchedEffect(submitted) {
+        // Safety net: never leave the field read-only if the controller answers with nothing new.
+        if (submitted) {
+            delay(SUBMIT_GUARD_MS)
+            submitted = false
+        }
+    }
+    val busy = submitted || phase == SelfAdbPhase.Connecting
+    fun submit(value: String) {
+        if (busy || value.length != PAIRING_CODE_LENGTH) return
+        submitted = true
+        onSubmitCode(value)
+    }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         InstructionText(stringResource(phase.messageRes()), style = MaterialTheme.typography.bodyMedium)
-        if (phase == SelfAdbPhase.WaitingForCode || phase == SelfAdbPhase.WrongCode) {
-            var code by rememberSaveable { mutableStateOf("") }
-            OutlinedTextField(
-                value = code,
-                onValueChange = { code = it.filter(Char::isDigit).take(6) },
+        if (phase == SelfAdbPhase.WaitingForCode || phase == SelfAdbPhase.WrongCode || phase == SelfAdbPhase.Connecting) {
+            PairingCodeField(
+                code = code,
+                onCodeChange = { typed ->
+                    val completes = code.length != PAIRING_CODE_LENGTH && typed.length == PAIRING_CODE_LENGTH
+                    code = typed
+                    // Only the edit that completes the code submits; a repeated value does not.
+                    if (completes) submit(typed)
+                },
+                label = stringResource(R.string.phone_adb_code_label),
                 modifier = Modifier.fillMaxWidth(),
-                label = { Text(stringResource(R.string.phone_adb_code_label)) },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+                error = if (phase == SelfAdbPhase.WrongCode && code.isEmpty()) stringResource(R.string.phone_adb_wrong_code) else null,
+                shakeKey = failures,
+                busy = busy,
             )
-            OutlinedAction(stringResource(R.string.phone_adb_submit), { onSubmitCode(code) }, Icons.Rounded.Check)
+            OutlinedAction(
+                stringResource(R.string.phone_adb_submit),
+                { submit(code) },
+                Icons.Rounded.Check,
+                enabled = !busy && code.length == PAIRING_CODE_LENGTH,
+            )
         }
         if (phase == SelfAdbPhase.Failed || phase == SelfAdbPhase.Ambiguous) {
             OutlinedAction(stringResource(retryLabel), onRetry, Icons.Rounded.Refresh)
