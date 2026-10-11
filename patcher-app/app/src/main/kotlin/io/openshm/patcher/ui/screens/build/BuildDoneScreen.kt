@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -49,6 +48,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.openshm.patcher.R
 import io.openshm.patcher.data.Device
+import io.openshm.patcher.ui.components.CenteredPane
 import io.openshm.patcher.ui.components.CheckBlob
 import io.openshm.patcher.ui.components.DecorShape
 import io.openshm.patcher.ui.components.GroupedItem
@@ -116,15 +116,10 @@ fun BuildDoneScreen(
                     Modifier.weight(1f).fillMaxWidth().padding(horizontal = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(24.dp),
                 ) {
-                    Column(
-                        Modifier.weight(1f).fillMaxHeight().verticalScroll(rememberScrollState()),
-                        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) { Hero(state, compact = true) }
-                    Column(
-                        Modifier.weight(1f).fillMaxHeight().verticalScroll(rememberScrollState()),
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                    ) { Details(state, onBackUpKey, onSaveBackup, onSaveWithPassword) }
+                    CenteredPane(Modifier.weight(1f), spacing = 16.dp, horizontalAlignment = Alignment.CenterHorizontally) {
+                        Hero(state, compact = true)
+                    }
+                    CenteredPane(Modifier.weight(1f), spacing = 16.dp) { Details(state, onBackUpKey, onSaveBackup, onSaveWithPassword) }
                 }
             } else {
                 Column(

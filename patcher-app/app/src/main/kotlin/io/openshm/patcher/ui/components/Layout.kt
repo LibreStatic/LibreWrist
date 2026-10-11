@@ -43,6 +43,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.openshm.patcher.R
 import io.openshm.patcher.ui.theme.PatcherTheme
@@ -142,24 +143,8 @@ fun StepScreenScaffold(
                         modifier = Modifier.weight(1f).fillMaxWidth().padding(horizontal = 16.dp),
                         horizontalArrangement = Arrangement.spacedBy(24.dp),
                     ) {
-                        Column(
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxHeight()
-                                .verticalScroll(rememberScrollState())
-                                .padding(vertical = 8.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp),
-                            content = content,
-                        )
-                        Column(
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxHeight()
-                                .verticalScroll(rememberScrollState())
-                                .padding(vertical = 8.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp),
-                            content = secondary!!,
-                        )
+                        CenteredPane(Modifier.weight(1f), content = content)
+                        CenteredPane(Modifier.weight(1f), content = secondary!!)
                     }
                 } else {
                     Column(
@@ -177,6 +162,31 @@ fun StepScreenScaffold(
                 ScaffoldFooter(footer)
             }
         }
+    }
+}
+
+/**
+ * One pane of the two-pane layout: centered in the height below the header when it fits, scrolling from
+ * the top when it does not.
+ */
+@Composable
+fun CenteredPane(
+    modifier: Modifier,
+    spacing: Dp = 12.dp,
+    horizontalAlignment: Alignment.Horizontal = Alignment.Start,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    BoxWithConstraints(modifier.fillMaxHeight()) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .heightIn(min = maxHeight)
+                .padding(vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(spacing, Alignment.CenterVertically),
+            horizontalAlignment = horizontalAlignment,
+            content = content,
+        )
     }
 }
 
