@@ -5,6 +5,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import io.openshm.patcher.ui.screens.acquire.AcquireScreen
 import io.openshm.patcher.ui.screens.acquire.GuidedBrowserScreen
 import io.openshm.patcher.ui.screens.build.BuildDoneScreen
+import io.openshm.patcher.ui.screens.build.KeyBackupStatus
 import io.openshm.patcher.ui.screens.build.BuildScreen
 import io.openshm.patcher.ui.screens.customize.CustomizeScreen
 import io.openshm.patcher.ui.screens.devmode.DevModeScreen
@@ -95,11 +96,15 @@ internal fun BuildSample(logSheet: Boolean = false, almostDone: Boolean = false,
 private val PreviewIcons = AppIconLoader { null }
 
 @Composable
-internal fun BuildDoneSample(backupDue: Boolean = false) = BuildDoneScreen(PreviewData.buildDone(backupDue), {}, {})
+internal fun BuildDoneSample(backup: KeyBackupStatus = KeyBackupStatus.Hidden) = BuildDoneScreen(PreviewData.buildDone(backup), {}, {})
 
 @Composable
 internal fun InstallPhoneSample(grants: Boolean = false) =
     InstallPhoneScreen(if (grants) PreviewData.installPhoneGrants() else PreviewData.installPhone(), {}, {}, {})
+
+@Composable
+internal fun InstallPhoneConflictSample(confirming: Boolean = false) =
+    InstallPhoneScreen(PreviewData.installPhoneConflict(confirming), {}, {}, {})
 
 @Composable
 internal fun WatchInstallSample() = WatchInstallScreen(PreviewData.installWatch(), {}, {}, {})

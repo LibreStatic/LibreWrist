@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="key_backup_saving">Збереження ключа підпису…</string>
+    <string name="key_backup_saved">Ключ збережено в Documents/OpenSHM · пароль у вашому менеджері паролів</string>
+    <string name="key_backup_failed">Не вдалося зберегти ключ автоматично</string>
+    <string name="key_backup_use_saved">Використати збережений пароль</string>
+    <string name="key_backup_use_saved_none">Збережений пароль не знайдено.</string>
+    <string name="key_backup_auto_present">Автоматична копія: Documents/OpenSHM/%1$s · пароль у вашому менеджері паролів</string>
+    <string name="key_backup_auto_missing">Автоматичну копію в Documents/OpenSHM не знайдено. Вона створюється після завершення збірки.</string>
+    <string name="key_backup_manual_heading">Додатково: ручне резервне копіювання</string>
+    <string name="key_backup_consent">Ключ буде збережено в зашифрованому вигляді в Documents/OpenSHM, а його пароль залишиться у вашому менеджері паролів.</string>
+    <string name="key_backup_declined">Резервну копію не збережено</string>
+    <string name="key_backup_save_action">Зберегти копію</string>
+    <string name="key_backup_wrong_key">Цей збережений пароль належить іншому ключу</string>
+    <string name="key_backup_private_title">Збережено лише у сховищі застосунку</string>
+    <string name="key_backup_private_hint">Очищення даних застосунку видалить цю копію. Збережіть копію, щоб вона була і в менеджері паролів, і в Documents.</string>
+    <string name="local_backup_title">Локальна копія</string>
+    <string name="local_backup_show_password">Показати пароль</string>
+    <string name="local_backup_export">Експортувати файл</string>
+</resources>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="key_backup_saving">Signaturschlüssel wird gespeichert…</string>
+    <string name="key_backup_saved">Schlüssel in Dokumente/OpenSHM gespeichert · Passwort in deinem Passwortmanager</string>
+    <string name="key_backup_failed">Der Schlüssel konnte nicht automatisch gespeichert werden</string>
+    <string name="key_backup_use_saved">Gespeichertes Passwort verwenden</string>
+    <string name="key_backup_use_saved_none">Es wurde kein gespeichertes Passwort gefunden.</string>
+    <string name="key_backup_auto_present">Automatische Sicherung: Dokumente/OpenSHM/%1$s · Passwort in deinem Passwortmanager</string>
+    <string name="key_backup_auto_missing">Keine automatische Sicherung in Dokumente/OpenSHM gefunden. Sie wird erstellt, wenn ein Build fertig ist.</string>
+    <string name="key_backup_manual_heading">Erweitert: manuelle Sicherung</string>
+    <string name="key_backup_consent">Der Schlüssel wird verschlüsselt in Documents/OpenSHM gespeichert, sein Passwort bleibt in deinem Passwortmanager.</string>
+    <string name="key_backup_declined">Sicherung nicht gespeichert</string>
+    <string name="key_backup_save_action">Sicherung speichern</string>
+    <string name="key_backup_wrong_key">Dieses gespeicherte Passwort gehört zu einem anderen Schlüssel</string>
+    <string name="key_backup_private_title">Nur im App-Speicher gesichert</string>
+    <string name="key_backup_private_hint">Wenn du die App-Daten löschst, geht diese Kopie verloren. Speichere eine Sicherung, um sie auch im Passwortmanager und in Documents zu behalten.</string>
+    <string name="local_backup_title">Lokale Sicherung</string>
+    <string name="local_backup_show_password">Passwort anzeigen</string>
+    <string name="local_backup_export">Datei exportieren</string>
+</resources>

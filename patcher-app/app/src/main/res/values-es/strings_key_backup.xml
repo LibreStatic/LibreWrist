@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="key_backup_saving">Guardando tu clave de firma…</string>
+    <string name="key_backup_saved">Clave guardada en Documentos/OpenSHM · contraseña en tu gestor de contraseñas</string>
+    <string name="key_backup_failed">No se pudo guardar la clave automáticamente</string>
+    <string name="key_backup_use_saved">Usar contraseña guardada</string>
+    <string name="key_backup_use_saved_none">No se encontró ninguna contraseña guardada.</string>
+    <string name="key_backup_auto_present">Copia automática: Documentos/OpenSHM/%1$s · contraseña en tu gestor de contraseñas</string>
+    <string name="key_backup_auto_missing">No hay copia automática en Documentos/OpenSHM. Se crea cuando termina una compilación.</string>
+    <string name="key_backup_manual_heading">Avanzado: copia manual</string>
+    <string name="key_backup_consent">La clave se guardará cifrada en Documents/OpenSHM y su contraseña quedará en tu gestor de contraseñas.</string>
+    <string name="key_backup_declined">Copia no guardada</string>
+    <string name="key_backup_save_action">Guardar copia</string>
+    <string name="key_backup_wrong_key">Esta contraseña guardada pertenece a otra clave</string>
+    <string name="key_backup_private_title">Guardada solo en el almacenamiento de la app</string>
+    <string name="key_backup_private_hint">Borrar los datos de la app elimina esta copia. Guarda una copia para conservarla también en tu gestor de contraseñas y en Documents.</string>
+    <string name="local_backup_title">Copia local</string>
+    <string name="local_backup_show_password">Mostrar contraseña</string>
+    <string name="local_backup_export">Exportar archivo</string>
+</resources>

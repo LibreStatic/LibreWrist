@@ -10,6 +10,7 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import io.openshm.patcher.ui.screens.install.InstallEvent
 import io.openshm.patcher.ui.screens.wearable.TroubleshootEvent
 import android.os.Build
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
@@ -26,6 +27,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -39,12 +42,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import io.openshm.patcher.R
 import io.openshm.patcher.data.AppCatalogue
-import io.openshm.patcher.data.PrefsExportedCertRecord
-import io.openshm.patcher.data.signingKeyBackupDue
-import io.openshm.patcher.data.signingKeyStore
-import androidx.compose.runtime.produceState
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import io.openshm.patcher.ui.screens.signingkey.SigningKeyRequest
 import io.openshm.patcher.ui.screens.signingkey.SigningKeyScreen
 import io.openshm.patcher.ui.screens.signingkey.SigningKeyViewModel
@@ -52,7 +49,9 @@ import io.openshm.patcher.ui.screens.acquire.AcquireEvent
 import io.openshm.patcher.ui.screens.acquire.AcquireScreen
 import io.openshm.patcher.ui.screens.acquire.AcquireViewModel
 import io.openshm.patcher.ui.screens.acquire.GuidedBrowserHost
+import io.openshm.patcher.data.CredentialManagerPasswords
 import io.openshm.patcher.ui.screens.build.BuildDoneScreen
+import io.openshm.patcher.ui.screens.build.KeyBackupViewModel
 import io.openshm.patcher.ui.screens.build.BuildEvent
 import io.openshm.patcher.ui.screens.build.BuildScreen
 import io.openshm.patcher.ui.screens.build.LocalAppIconLoader
@@ -271,15 +270,18 @@ fun PatcherNavHost(
             composable(Route.BuildDone.path) {
                 val context = LocalContext.current
                 val base = remember { builtOutputs(BuildStorage(context)) }
-                // Decrypting the key is real work, so the nudge appears once it is known.
-                val backupDue by produceState(false) {
-                    value = withContext(Dispatchers.IO) { signingKeyBackupDue(signingKeyStore(context), PrefsExportedCertRecord(context)) }
-                }
+                // The automatic key backup needs the Activity for the password manager prompt.
+                val backupVm: KeyBackupViewModel = viewModel()
+                val scope = rememberCoroutineScope()
+                val backup by backupVm.status.collectAsStateWithLifecycle()
+                val activity = LocalActivity.current
+                LaunchedEffect(backupVm) { activity?.let { backupVm.run(it) } }
                 BuildDoneScreen(
-                    base.copy(backupDue = backupDue),
+                    base.copy(backup = backup),
                     onInstall = { next(Route.BuildDone) },
                     onBack = back,
                     onBackUpKey = { navController.navigate(Route.SigningKey.path) },
+                    onSaveBackup = { activity?.let { a -> scope.launch { backupVm.run(a, force = true) } } },
                 )
             }
             composable(Route.InstallPhone.path) {
@@ -369,16 +371,25 @@ fun PatcherNavHost(
                 val createBackup = rememberLauncherForActivityResult(
                     ActivityResultContracts.CreateDocument(PKCS12_MIME), vm::onBackupFileCreated,
                 )
+                val createLocal = rememberLauncherForActivityResult(
+                    ActivityResultContracts.CreateDocument(PKCS12_MIME), vm::onLocalBackupFileCreated,
+                )
                 val pickKey = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument(), vm::onKeyFilePicked)
                 LaunchedEffect(vm) {
                     vm.requests.collect { request ->
                         when (request) {
                             SigningKeyRequest.CreateBackupFile -> createBackup.launch(BACKUP_FILE_NAME)
+                            SigningKeyRequest.CreateLocalBackupFile -> createLocal.launch(vm.state.value.localBackup ?: BACKUP_FILE_NAME)
                             SigningKeyRequest.PickKeyFile -> pickKey.launch(arrayOf(PKCS12_MIME, "application/octet-stream"))
                         }
                     }
                 }
-                SigningKeyScreen(state, vm::onEvent, onBack = back)
+                val activity = LocalActivity.current
+                SigningKeyScreen(
+                    state, vm::onEvent, onBack = back,
+                    onPickSavedPassword = { activity?.let { CredentialManagerPasswords(it).pick() } },
+                    onRevealLocalPassword = vm::localPassword,
+                )
             }
             composable(Route.Home.path) {
                 val vm: HomeViewModel = viewModel()

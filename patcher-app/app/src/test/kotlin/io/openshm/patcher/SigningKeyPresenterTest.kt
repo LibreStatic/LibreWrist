@@ -1,6 +1,6 @@
 package io.openshm.patcher
 
-import io.openshm.patcher.data.ExportedCertRecord
+import io.openshm.patcher.data.KeyBackupRecord
 import io.openshm.patcher.data.SigningKeyStore
 import io.openshm.patcher.ui.screens.signingkey.ExportPasswordPolicy
 import io.openshm.patcher.ui.screens.signingkey.SigningKeyEvent
@@ -28,7 +28,13 @@ import org.junit.Before
 import org.junit.Test
 
 class SigningKeyPresenterTest {
-    private class FakeRecord(override var sha256: String? = null) : ExportedCertRecord
+    private class FakeRecord(
+        override var sha256: String? = null,
+        override var backupFile: String? = null,
+        override var declinedSha256: String? = null,
+        override var backupPrivate: Boolean = false,
+        override var privateBackupFile: String? = null,
+    ) : KeyBackupRecord
 
     private lateinit var dir: File
     private lateinit var other: File
@@ -140,6 +146,28 @@ class SigningKeyPresenterTest {
         var wrote = false
         p.exportTo { wrote = true }
         assertFalse(wrote)
+    }
+
+    private suspend fun importWith(credentialId: String?, fileName: String?): Boolean {
+        val s = store().also { it.load() }
+        val (backup, _) = otherBackup()
+        val p = presenter(s)
+        p.refresh()
+        p.onEvent(SigningKeyEvent.OpenImport)
+        p.onEvent(SigningKeyEvent.SubmitImport(chars("a-long-password"), credentialId))
+        p.inspectFile(fileName) { backup }
+        return p.state.value.savedPasswordMismatch
+    }
+
+    @Test fun savedPasswordOfAnotherKeyWarns() = runBlocking {
+        assertTrue(importWith("OpenSHM signing key aaaaaaaa \u00B7 20240102-030405", "openshm-signing-key-bbbbbbbb-20240102-030405.p12"))
+    }
+
+    @Test fun matchingOrUnknownDigestsDoNotWarn() = runBlocking {
+        assertFalse(importWith("OpenSHM signing key aaaaaaaa \u00B7 20240102-030405", "openshm-signing-key-aaaaaaaa-20240101-000000.p12"))
+        assertFalse(importWith("OpenSHM signing key aaaaaaaa", "my-key.p12"))
+        assertFalse(importWith("some other credential", "openshm-signing-key-bbbbbbbb.p12"))
+        assertFalse(importWith(null, "openshm-signing-key-bbbbbbbb.p12"))
     }
 
     @Test fun importAsksForConfirmationAndChangesNothingUntilConfirmed() = runBlocking {

@@ -88,6 +88,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
+    // Saves the exported key's random password in the system password manager (Google Password Manager below Android 14).
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
 
     // Previews and their fake UiState live in src/debug only (never compiled into release builds).
     debugImplementation(libs.androidx.compose.ui.tooling)

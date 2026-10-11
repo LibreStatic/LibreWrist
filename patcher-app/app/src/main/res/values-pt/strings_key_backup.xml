@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="key_backup_saving">Salvando sua chave de assinatura…</string>
+    <string name="key_backup_saved">Chave salva em Documentos/OpenSHM · senha no seu gerenciador de senhas</string>
+    <string name="key_backup_failed">Não foi possível salvar a chave automaticamente</string>
+    <string name="key_backup_use_saved">Usar senha salva</string>
+    <string name="key_backup_use_saved_none">Nenhuma senha salva foi encontrada.</string>
+    <string name="key_backup_auto_present">Backup automático: Documentos/OpenSHM/%1$s · senha no seu gerenciador de senhas</string>
+    <string name="key_backup_auto_missing">Nenhum backup automático encontrado em Documentos/OpenSHM. Ele é criado quando uma compilação termina.</string>
+    <string name="key_backup_manual_heading">Avançado: backup manual</string>
+    <string name="key_backup_consent">A chave será guardada, cifrada, em Documents/OpenSHM e a sua senha ficará no seu gerenciador de senhas.</string>
+    <string name="key_backup_declined">Backup não salvo</string>
+    <string name="key_backup_save_action">Salvar backup</string>
+    <string name="key_backup_wrong_key">Esta senha salva pertence a outra chave</string>
+    <string name="key_backup_private_title">Salva apenas no armazenamento do app</string>
+    <string name="key_backup_private_hint">Limpar os dados do app apaga esta cópia. Salve um backup para guardá-la também no seu gerenciador de senhas e em Documents.</string>
+    <string name="local_backup_title">Backup local</string>
+    <string name="local_backup_show_password">Mostrar senha</string>
+    <string name="local_backup_export">Exportar arquivo</string>
+</resources>

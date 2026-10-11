@@ -384,6 +384,10 @@ class KeyImportException(val reason: Reason) : IOException(reason.name) {
 fun signingKeyStore(context: Context): SigningKeyStore =
     SigningKeyStore(File(context.applicationContext.noBackupFilesDir, "signing"), ::androidWrapKey)
 
+/** The private copies of automatic backups: `noBackupFilesDir`, so Auto Backup never copies them; password wrapped like the signing key's. */
+fun privateBackups(context: Context): PrivateBackups =
+    FilePrivateBackups(File(context.applicationContext.noBackupFilesDir, "key-backups"), ::androidWrapKey)
+
 private fun androidWrapKey(): SecretKey {
     val ks = KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
     (ks.getKey(SigningKeyStore.WRAP_KEY_ALIAS, null) as? SecretKey)?.let { return it }

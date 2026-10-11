@@ -1,5 +1,6 @@
 package io.openshm.patcher.preview
 
+import io.openshm.patcher.ui.screens.build.KeyBackupStatus
 import io.openshm.patcher.ui.screens.welcome.SkipDialog
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -218,13 +219,31 @@ fun BuildLogDriver() = PreviewHost(ColorMode.Fallback) { BuildSample(logSheet = 
 fun BuildDoneDriver() = PreviewHost(ColorMode.Fallback) { BuildDoneSample() }
 
 @Composable
-fun BuildDoneBackupDriver() = PreviewHost(ColorMode.Fallback) { BuildDoneSample(backupDue = true) }
+fun BuildDoneBackupDriver() = PreviewHost(ColorMode.Fallback) { BuildDoneSample(KeyBackupStatus.Failed) }
+
+@Composable
+fun BuildDoneBackupSavedDriver() = PreviewHost(ColorMode.Fallback) { BuildDoneSample(KeyBackupStatus.Saved) }
+
+@Composable
+fun BuildDoneBackupDeclinedDriver() = PreviewHost(ColorMode.Fallback) { BuildDoneSample(KeyBackupStatus.Declined) }
+
+@Composable
+fun BuildDoneBackupPrivateDriver() = PreviewHost(ColorMode.Fallback) { BuildDoneSample(KeyBackupStatus.PrivateOnly) }
+
+@Composable
+fun BuildDoneBackupSavingDriver() = PreviewHost(ColorMode.Fallback) { BuildDoneSample(KeyBackupStatus.Saving) }
 
 @Composable
 fun InstallPhoneDriver() = PreviewHost(ColorMode.Fallback) { InstallPhoneSample() }
 
 @Composable
 fun InstallPhoneGrantsDriver() = PreviewHost(ColorMode.Fallback) { InstallPhoneSample(grants = true) }
+
+@Composable
+fun InstallPhoneConflictDriver() = PreviewHost(ColorMode.Fallback) { InstallPhoneConflictSample() }
+
+@Composable
+fun InstallPhoneConflictDialogDriver() = PreviewHost(ColorMode.Fallback) { InstallPhoneConflictSample(confirming = true) }
 
 @Composable
 fun WatchInstallDriver() = PreviewHost(ColorMode.Fallback) { WatchInstallSample() }

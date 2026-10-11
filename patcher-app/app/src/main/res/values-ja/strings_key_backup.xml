@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="key_backup_saving">署名キーを保存しています…</string>
+    <string name="key_backup_saved">キーを Documents/OpenSHM に保存しました · パスワードはパスワード マネージャーに保存されています</string>
+    <string name="key_backup_failed">キーを自動で保存できませんでした</string>
+    <string name="key_backup_use_saved">保存済みのパスワードを使う</string>
+    <string name="key_backup_use_saved_none">保存されたパスワードが見つかりませんでした。</string>
+    <string name="key_backup_auto_present">自動バックアップ: Documents/OpenSHM/%1$s · パスワードはパスワード マネージャーに保存されています</string>
+    <string name="key_backup_auto_missing">Documents/OpenSHM に自動バックアップが見つかりません。ビルドが完了すると作成されます。</string>
+    <string name="key_backup_manual_heading">詳細設定: 手動バックアップ</string>
+    <string name="key_backup_consent">キーは暗号化されて Documents/OpenSHM に保存され、そのパスワードはパスワードマネージャーに保管されます。</string>
+    <string name="key_backup_declined">バックアップは保存されていません</string>
+    <string name="key_backup_save_action">バックアップを保存</string>
+    <string name="key_backup_wrong_key">この保存済みパスワードは別のキーのものです</string>
+    <string name="key_backup_private_title">アプリのストレージにのみ保存</string>
+    <string name="key_backup_private_hint">アプリのデータを消去すると、このコピーも削除されます。バックアップを保存すると、パスワードマネージャーと Documents にも保管されます。</string>
+    <string name="local_backup_title">ローカルバックアップ</string>
+    <string name="local_backup_show_password">パスワードを表示</string>
+    <string name="local_backup_export">ファイルをエクスポート</string>
+</resources>

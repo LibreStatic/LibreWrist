@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="key_backup_saving">Saving your signing key…</string>
+    <string name="key_backup_saved">Key saved in Documents/OpenSHM · password in your password manager</string>
+    <string name="key_backup_failed">The key could not be saved automatically</string>
+    <string name="key_backup_use_saved">Use saved password</string>
+    <string name="key_backup_use_saved_none">No saved password was found.</string>
+    <string name="key_backup_auto_present">Automatic backup: Documents/OpenSHM/%1$s · password in your password manager</string>
+    <string name="key_backup_auto_missing">No automatic backup found in Documents/OpenSHM. It is made when a build finishes.</string>
+    <string name="key_backup_manual_heading">Advanced: manual backup</string>
+    <string name="key_backup_consent">The key will be saved, encrypted, to Documents/OpenSHM, and its password kept in your password manager.</string>
+    <string name="key_backup_declined">Backup not saved</string>
+    <string name="key_backup_save_action">Save backup</string>
+    <string name="key_backup_wrong_key">This saved password belongs to a different key</string>
+    <string name="key_backup_private_title">Saved in app storage only</string>
+    <string name="key_backup_private_hint">Clearing the app\'s data deletes this copy. Save a backup to also keep it in your password manager and Documents.</string>
+    <string name="local_backup_title">Local backup</string>
+    <string name="local_backup_show_password">Show password</string>
+    <string name="local_backup_export">Export file</string>
+</resources>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="key_backup_saving">서명 키를 저장하는 중…</string>
+    <string name="key_backup_saved">키를 Documents/OpenSHM에 저장했습니다 · 비밀번호는 비밀번호 관리자에 저장됨</string>
+    <string name="key_backup_failed">키를 자동으로 저장하지 못했습니다</string>
+    <string name="key_backup_use_saved">저장된 비밀번호 사용</string>
+    <string name="key_backup_use_saved_none">저장된 비밀번호를 찾을 수 없습니다.</string>
+    <string name="key_backup_auto_present">자동 백업: Documents/OpenSHM/%1$s · 비밀번호는 비밀번호 관리자에 저장됨</string>
+    <string name="key_backup_auto_missing">Documents/OpenSHM에서 자동 백업을 찾을 수 없습니다. 빌드가 끝나면 만들어집니다.</string>
+    <string name="key_backup_manual_heading">고급: 수동 백업</string>
+    <string name="key_backup_consent">키는 암호화되어 Documents/OpenSHM에 저장되고, 비밀번호는 비밀번호 관리자에 보관됩니다.</string>
+    <string name="key_backup_declined">백업이 저장되지 않았습니다</string>
+    <string name="key_backup_save_action">백업 저장</string>
+    <string name="key_backup_wrong_key">저장된 이 비밀번호는 다른 키의 것입니다</string>
+    <string name="key_backup_private_title">앱 저장소에만 저장됨</string>
+    <string name="key_backup_private_hint">앱 데이터를 삭제하면 이 사본도 삭제됩니다. 백업을 저장하면 비밀번호 관리자와 Documents에도 보관됩니다.</string>
+    <string name="local_backup_title">로컬 백업</string>
+    <string name="local_backup_show_password">비밀번호 표시</string>
+    <string name="local_backup_export">파일 내보내기</string>
+</resources>

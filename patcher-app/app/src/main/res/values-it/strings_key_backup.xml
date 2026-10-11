@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="key_backup_saving">Salvataggio della chiave di firma…</string>
+    <string name="key_backup_saved">Chiave salvata in Documenti/OpenSHM · password nel tuo gestore di password</string>
+    <string name="key_backup_failed">Non è stato possibile salvare la chiave automaticamente</string>
+    <string name="key_backup_use_saved">Usa la password salvata</string>
+    <string name="key_backup_use_saved_none">Nessuna password salvata trovata.</string>
+    <string name="key_backup_auto_present">Backup automatico: Documenti/OpenSHM/%1$s · password nel tuo gestore di password</string>
+    <string name="key_backup_auto_missing">Nessun backup automatico trovato in Documenti/OpenSHM. Viene creato al termine di una compilazione.</string>
+    <string name="key_backup_manual_heading">Avanzate: backup manuale</string>
+    <string name="key_backup_consent">La chiave verrà salvata, cifrata, in Documents/OpenSHM e la sua password resterà nel tuo gestore di password.</string>
+    <string name="key_backup_declined">Backup non salvato</string>
+    <string name="key_backup_save_action">Salva backup</string>
+    <string name="key_backup_wrong_key">Questa password salvata appartiene a un\'altra chiave</string>
+    <string name="key_backup_private_title">Salvata solo nella memoria dell\'app</string>
+    <string name="key_backup_private_hint">Cancellare i dati dell\'app elimina questa copia. Salva un backup per conservarla anche nel tuo gestore di password e in Documents.</string>
+    <string name="local_backup_title">Backup locale</string>
+    <string name="local_backup_show_password">Mostra password</string>
+    <string name="local_backup_export">Esporta file</string>
+</resources>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="key_backup_saving">正在儲存簽署金鑰…</string>
+    <string name="key_backup_saved">金鑰已儲存至 Documents/OpenSHM · 密碼存放在你的密碼管理工具中</string>
+    <string name="key_backup_failed">無法自動儲存金鑰</string>
+    <string name="key_backup_use_saved">使用已儲存的密碼</string>
+    <string name="key_backup_use_saved_none">找不到已儲存的密碼。</string>
+    <string name="key_backup_auto_present">自動備份：Documents/OpenSHM/%1$s · 密碼存放在你的密碼管理工具中</string>
+    <string name="key_backup_auto_missing">在 Documents/OpenSHM 中找不到自動備份。建置完成時會建立。</string>
+    <string name="key_backup_manual_heading">進階：手動備份</string>
+    <string name="key_backup_consent">金鑰將加密儲存至 Documents/OpenSHM，其密碼保存在你的密碼管理員中。</string>
+    <string name="key_backup_declined">備份未儲存</string>
+    <string name="key_backup_save_action">儲存備份</string>
+    <string name="key_backup_wrong_key">此已儲存的密碼屬於另一個金鑰</string>
+    <string name="key_backup_private_title">僅儲存在應用程式儲存空間</string>
+    <string name="key_backup_private_hint">清除應用程式資料會刪除此副本。儲存備份後，還會同時保存到密碼管理員和 Documents。</string>
+    <string name="local_backup_title">本機備份</string>
+    <string name="local_backup_show_password">顯示密碼</string>
+    <string name="local_backup_export">匯出檔案</string>
+</resources>

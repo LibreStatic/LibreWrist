@@ -10,6 +10,7 @@ import io.openshm.patcher.ui.screens.acquire.AcquireProgress
 import io.openshm.patcher.ui.screens.acquire.AcquireUiState
 import io.openshm.patcher.ui.screens.acquire.GuidedBrowserUiState
 import io.openshm.patcher.ui.screens.build.BuildDoneUiState
+import io.openshm.patcher.ui.screens.build.KeyBackupStatus
 import io.openshm.patcher.ui.screens.build.BuildStage
 import io.openshm.patcher.ui.screens.build.BuildUiState
 import io.openshm.patcher.ui.screens.build.CurrentApp
@@ -29,6 +30,7 @@ import io.openshm.patcher.ui.screens.install.GrantRow
 import io.openshm.patcher.data.GrantKind
 import io.openshm.patcher.ui.screens.install.InstallItem
 import io.openshm.patcher.ui.screens.install.SelfAdbPhase
+import io.openshm.patcher.ui.screens.install.SignatureConflict
 import io.openshm.patcher.ui.screens.install.InstallUiState
 import io.openshm.patcher.device.DetectedWatch
 import io.openshm.patcher.ui.screens.profile.PairedCheck
@@ -174,8 +176,8 @@ internal object PreviewData {
     fun buildFinished() =
         BuildUiState(patchCount = AppCatalogue.current.patternCount(WatchProfile.WearOs5.inputIds)).finish()
 
-    fun buildDone(backupDue: Boolean = false) = BuildDoneUiState(
-        backupDue = backupDue,
+    fun buildDone(backup: KeyBackupStatus = KeyBackupStatus.Hidden) = BuildDoneUiState(
+        backup = backup,
         outputs = AppCatalogue.current.outputs.map {
             BuiltOutput(it.id, it.label, it.device, it.packageName(PREFIX), sizeBytes = (30 + it.id.length * 3) * MB)
         },
@@ -213,6 +215,19 @@ internal object PreviewData {
         },
         selfAdb = SelfAdbPhase.WaitingForCode,
     )
+
+    /** Health Monitor refused because another key signed the installed copy; optionally with the confirmation open. */
+    fun installPhoneConflict(confirming: Boolean = false): InstallUiState {
+        val items = installItems(Device.Phone, { CheckStatus.Pending }) { CheckStatus.Pending }
+            .mapIndexed { i, item -> if (i == 0) item.copy(status = CheckStatus.Failed) else item }
+        return InstallUiState(
+            items,
+            errorRes = R.string.reinstall_error_phone,
+            errorDetail = "INSTALL_FAILED_UPDATE_INCOMPATIBLE",
+            conflict = SignatureConflict(items[0].outputId, items[0].packageName, Device.Phone),
+            confirmingReinstall = confirming,
+        )
+    }
 
     fun installWatch() = InstallUiState(
         installItems(Device.Watch, { CheckStatus.Pending }) { i ->

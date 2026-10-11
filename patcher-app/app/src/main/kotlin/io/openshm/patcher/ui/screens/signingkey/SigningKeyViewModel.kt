@@ -2,22 +2,27 @@ package io.openshm.patcher.ui.screens.signingkey
 
 import android.app.Application
 import android.net.Uri
+import android.provider.OpenableColumns
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import io.openshm.patcher.data.MediaStoreBackupFiles
 import io.openshm.patcher.data.PrefsExportedCertRecord
+import io.openshm.patcher.data.privateBackups
 import io.openshm.patcher.data.readBounded
 import io.openshm.patcher.data.signingKeyStore
 import java.io.IOException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * Wires [SigningKeyPresenter] to the system document pickers: the nav host collects [requests] into
  * the pickers and hands the chosen document back through [onBackupFileCreated] / [onKeyFilePicked].
  */
 class SigningKeyViewModel(application: Application) : AndroidViewModel(application) {
-    private val presenter = SigningKeyPresenter(signingKeyStore(application), PrefsExportedCertRecord(application))
+    private val presenter = SigningKeyPresenter(signingKeyStore(application), PrefsExportedCertRecord(application), backupFiles = MediaStoreBackupFiles(application), privateBackups = privateBackups(application))
 
     val state: StateFlow<SigningKeyUiState> = presenter.state
     val requests: Flow<SigningKeyRequest> = presenter.requests
@@ -48,6 +53,20 @@ class SigningKeyViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
+    /** The password of the private copy for the screen to reveal; the caller wipes it. */
+    suspend fun localPassword(): CharArray? = presenter.localPassword()
+
+    /** The document the private copy goes to; null when the user backed out. */
+    fun onLocalBackupFileCreated(uri: Uri?) {
+        if (uri == null) return
+        val resolver = getApplication<Application>().contentResolver
+        viewModelScope.launch {
+            presenter.exportLocalTo { bytes ->
+                (resolver.openOutputStream(uri, "wt") ?: throw IOException("the document cannot be opened")).use { it.write(bytes) }
+            }
+        }
+    }
+
     /** The chosen key file; null when the user backed out. */
     fun onKeyFilePicked(uri: Uri?) {
         if (uri == null) {
@@ -56,12 +75,19 @@ class SigningKeyViewModel(application: Application) : AndroidViewModel(applicati
         }
         val resolver = getApplication<Application>().contentResolver
         viewModelScope.launch {
-            presenter.inspectFile {
+            val fileName = withContext(Dispatchers.IO) { displayName(uri) }
+            presenter.inspectFile(fileName) {
                 (resolver.openInputStream(uri) ?: throw IOException("the document cannot be opened"))
                     .use { it.readBounded(MAX_KEY_FILE_BYTES) }
             }
         }
     }
+
+    /** The file's display name (public, may carry a key digest), or null when it cannot be read. */
+    private fun displayName(uri: Uri): String? = runCatching {
+        getApplication<Application>().contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)
+            ?.use { c -> if (c.moveToFirst()) c.getString(0) else null }
+    }.getOrNull()
 
     override fun onCleared() = presenter.wipePending()
 

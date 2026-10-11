@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="key_backup_saving">جارٍ حفظ مفتاح التوقيع…</string>
+    <string name="key_backup_saved">تم حفظ المفتاح في Documents/OpenSHM · كلمة المرور في مدير كلمات المرور لديك</string>
+    <string name="key_backup_failed">تعذّر حفظ المفتاح تلقائيًا</string>
+    <string name="key_backup_use_saved">استخدام كلمة المرور المحفوظة</string>
+    <string name="key_backup_use_saved_none">لم يتم العثور على كلمة مرور محفوظة.</string>
+    <string name="key_backup_auto_present">نسخة احتياطية تلقائية: Documents/OpenSHM/%1$s · كلمة المرور في مدير كلمات المرور لديك</string>
+    <string name="key_backup_auto_missing">لم يتم العثور على نسخة احتياطية تلقائية في Documents/OpenSHM. تُنشأ عند انتهاء البناء.</string>
+    <string name="key_backup_manual_heading">متقدم: نسخ احتياطي يدوي</string>
+    <string name="key_backup_consent">سيتم حفظ المفتاح مشفرًا في Documents/OpenSHM، وستبقى كلمة مروره في مدير كلمات المرور لديك.</string>
+    <string name="key_backup_declined">لم يتم حفظ النسخة الاحتياطية</string>
+    <string name="key_backup_save_action">حفظ النسخة الاحتياطية</string>
+    <string name="key_backup_wrong_key">كلمة المرور المحفوظة هذه تخص مفتاحًا مختلفًا</string>
+    <string name="key_backup_private_title">محفوظة في مساحة تخزين التطبيق فقط</string>
+    <string name="key_backup_private_hint">مسح بيانات التطبيق يحذف هذه النسخة. احفظ نسخة احتياطية لتبقى أيضًا في مدير كلمات المرور وفي Documents.</string>
+    <string name="local_backup_title">نسخة احتياطية محلية</string>
+    <string name="local_backup_show_password">إظهار كلمة المرور</string>
+    <string name="local_backup_export">تصدير الملف</string>
+</resources>

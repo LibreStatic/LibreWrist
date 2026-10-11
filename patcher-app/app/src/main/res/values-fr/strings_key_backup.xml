@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="key_backup_saving">Enregistrement de votre clé de signature…</string>
+    <string name="key_backup_saved">Clé enregistrée dans Documents/OpenSHM · mot de passe dans votre gestionnaire de mots de passe</string>
+    <string name="key_backup_failed">La clé n\'a pas pu être enregistrée automatiquement</string>
+    <string name="key_backup_use_saved">Utiliser le mot de passe enregistré</string>
+    <string name="key_backup_use_saved_none">Aucun mot de passe enregistré n\'a été trouvé.</string>
+    <string name="key_backup_auto_present">Sauvegarde automatique : Documents/OpenSHM/%1$s · mot de passe dans votre gestionnaire de mots de passe</string>
+    <string name="key_backup_auto_missing">Aucune sauvegarde automatique dans Documents/OpenSHM. Elle est créée à la fin d\'une compilation.</string>
+    <string name="key_backup_manual_heading">Avancé : sauvegarde manuelle</string>
+    <string name="key_backup_consent">La clé sera enregistrée, chiffrée, dans Documents/OpenSHM, et son mot de passe restera dans votre gestionnaire de mots de passe.</string>
+    <string name="key_backup_declined">Sauvegarde non enregistrée</string>
+    <string name="key_backup_save_action">Enregistrer la sauvegarde</string>
+    <string name="key_backup_wrong_key">Ce mot de passe enregistré appartient à une autre clé</string>
+    <string name="key_backup_private_title">Enregistrée uniquement dans le stockage de l\'app</string>
+    <string name="key_backup_private_hint">Effacer les données de l\'app supprime cette copie. Enregistrez une sauvegarde pour la conserver aussi dans votre gestionnaire de mots de passe et dans Documents.</string>
+    <string name="local_backup_title">Sauvegarde locale</string>
+    <string name="local_backup_show_password">Afficher le mot de passe</string>
+    <string name="local_backup_export">Exporter le fichier</string>
+</resources>

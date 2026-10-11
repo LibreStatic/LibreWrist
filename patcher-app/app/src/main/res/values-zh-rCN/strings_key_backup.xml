@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="key_backup_saving">正在保存签名密钥…</string>
+    <string name="key_backup_saved">密钥已保存到 Documents/OpenSHM · 密码保存在你的密码管理器中</string>
+    <string name="key_backup_failed">无法自动保存密钥</string>
+    <string name="key_backup_use_saved">使用已保存的密码</string>
+    <string name="key_backup_use_saved_none">未找到已保存的密码。</string>
+    <string name="key_backup_auto_present">自动备份：Documents/OpenSHM/%1$s · 密码保存在你的密码管理器中</string>
+    <string name="key_backup_auto_missing">在 Documents/OpenSHM 中未找到自动备份。构建完成时会创建。</string>
+    <string name="key_backup_manual_heading">高级：手动备份</string>
+    <string name="key_backup_consent">密钥将加密保存到 Documents/OpenSHM，其密码保存在你的密码管理器中。</string>
+    <string name="key_backup_declined">备份未保存</string>
+    <string name="key_backup_save_action">保存备份</string>
+    <string name="key_backup_wrong_key">此已保存的密码属于另一个密钥</string>
+    <string name="key_backup_private_title">仅保存在应用存储中</string>
+    <string name="key_backup_private_hint">清除应用数据会删除此副本。保存备份后，还会同时保存到密码管理器和 Documents。</string>
+    <string name="local_backup_title">本地备份</string>
+    <string name="local_backup_show_password">显示密码</string>
+    <string name="local_backup_export">导出文件</string>
+</resources>

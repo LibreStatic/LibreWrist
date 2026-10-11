@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="key_backup_saving">İmzalama anahtarın kaydediliyor…</string>
+    <string name="key_backup_saved">Anahtar Documents/OpenSHM klasörüne kaydedildi · parola, parola yöneticinde</string>
+    <string name="key_backup_failed">Anahtar otomatik olarak kaydedilemedi</string>
+    <string name="key_backup_use_saved">Kayıtlı parolayı kullan</string>
+    <string name="key_backup_use_saved_none">Kayıtlı parola bulunamadı.</string>
+    <string name="key_backup_auto_present">Otomatik yedek: Documents/OpenSHM/%1$s · parola, parola yöneticinde</string>
+    <string name="key_backup_auto_missing">Documents/OpenSHM içinde otomatik yedek bulunamadı. Bir derleme bittiğinde oluşturulur.</string>
+    <string name="key_backup_manual_heading">Gelişmiş: elle yedekleme</string>
+    <string name="key_backup_consent">Anahtar şifrelenmiş olarak Documents/OpenSHM klasörüne kaydedilecek, parolası ise parola yöneticinde saklanacak.</string>
+    <string name="key_backup_declined">Yedek kaydedilmedi</string>
+    <string name="key_backup_save_action">Yedeği kaydet</string>
+    <string name="key_backup_wrong_key">Kayıtlı bu parola farklı bir anahtara ait</string>
+    <string name="key_backup_private_title">Yalnızca uygulama depolamasına kaydedildi</string>
+    <string name="key_backup_private_hint">Uygulama verilerini silmek bu kopyayı da siler. Parola yöneticinde ve Documents içinde de saklamak için yedeği kaydet.</string>
+    <string name="local_backup_title">Yerel yedek</string>
+    <string name="local_backup_show_password">Parolayı göster</string>
+    <string name="local_backup_export">Dosyayı dışa aktar</string>
+</resources>

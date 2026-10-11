@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="key_backup_saving">Menyimpan kunci penandatanganan Anda…</string>
+    <string name="key_backup_saved">Kunci disimpan di Documents/OpenSHM · kata sandi ada di pengelola kata sandi Anda</string>
+    <string name="key_backup_failed">Kunci tidak dapat disimpan secara otomatis</string>
+    <string name="key_backup_use_saved">Gunakan kata sandi tersimpan</string>
+    <string name="key_backup_use_saved_none">Tidak ada kata sandi tersimpan yang ditemukan.</string>
+    <string name="key_backup_auto_present">Cadangan otomatis: Documents/OpenSHM/%1$s · kata sandi ada di pengelola kata sandi Anda</string>
+    <string name="key_backup_auto_missing">Cadangan otomatis tidak ditemukan di Documents/OpenSHM. Cadangan dibuat saat build selesai.</string>
+    <string name="key_backup_manual_heading">Lanjutan: cadangan manual</string>
+    <string name="key_backup_consent">Kunci akan disimpan terenkripsi di Documents/OpenSHM, dan sandinya disimpan di pengelola sandi Anda.</string>
+    <string name="key_backup_declined">Cadangan belum disimpan</string>
+    <string name="key_backup_save_action">Simpan cadangan</string>
+    <string name="key_backup_wrong_key">Sandi tersimpan ini milik kunci yang berbeda</string>
+    <string name="key_backup_private_title">Hanya disimpan di penyimpanan aplikasi</string>
+    <string name="key_backup_private_hint">Menghapus data aplikasi akan menghapus salinan ini. Simpan cadangan agar juga tersimpan di pengelola sandi dan Documents Anda.</string>
+    <string name="local_backup_title">Cadangan lokal</string>
+    <string name="local_backup_show_password">Tampilkan sandi</string>
+    <string name="local_backup_export">Ekspor file</string>
+</resources>

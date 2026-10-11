@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="key_backup_saving">Zapisywanie klucza podpisu…</string>
+    <string name="key_backup_saved">Klucz zapisany w Documents/OpenSHM · hasło w Twoim menedżerze haseł</string>
+    <string name="key_backup_failed">Nie udało się automatycznie zapisać klucza</string>
+    <string name="key_backup_use_saved">Użyj zapisanego hasła</string>
+    <string name="key_backup_use_saved_none">Nie znaleziono zapisanego hasła.</string>
+    <string name="key_backup_auto_present">Kopia automatyczna: Documents/OpenSHM/%1$s · hasło w Twoim menedżerze haseł</string>
+    <string name="key_backup_auto_missing">Nie znaleziono kopii automatycznej w Documents/OpenSHM. Powstaje po zakończeniu kompilacji.</string>
+    <string name="key_backup_manual_heading">Zaawansowane: kopia ręczna</string>
+    <string name="key_backup_consent">Klucz zostanie zapisany w postaci zaszyfrowanej w Documents/OpenSHM, a jego hasło pozostanie w Twoim menedżerze haseł.</string>
+    <string name="key_backup_declined">Kopia zapasowa nie została zapisana</string>
+    <string name="key_backup_save_action">Zapisz kopię</string>
+    <string name="key_backup_wrong_key">To zapisane hasło należy do innego klucza</string>
+    <string name="key_backup_private_title">Zapisano tylko w pamięci aplikacji</string>
+    <string name="key_backup_private_hint">Wyczyszczenie danych aplikacji usuwa tę kopię. Zapisz kopię, aby zachować ją także w menedżerze haseł i w Documents.</string>
+    <string name="local_backup_title">Kopia lokalna</string>
+    <string name="local_backup_show_password">Pokaż hasło</string>
+    <string name="local_backup_export">Eksportuj plik</string>
+</resources>

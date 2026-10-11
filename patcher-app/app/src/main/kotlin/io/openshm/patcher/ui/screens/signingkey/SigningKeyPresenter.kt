@@ -2,9 +2,13 @@ package io.openshm.patcher.ui.screens.signingkey
 
 import androidx.annotation.StringRes
 import io.openshm.patcher.R
-import io.openshm.patcher.data.ExportedCertRecord
+import io.openshm.patcher.data.BackupFiles
+import io.openshm.patcher.data.KeyBackupRecord
+import io.openshm.patcher.data.PrivateBackups
 import io.openshm.patcher.data.KeyImportException
 import io.openshm.patcher.data.SigningKeyStore
+import io.openshm.patcher.data.keyBackupDigestOf
+import io.openshm.patcher.data.keyBackupShortDigest
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import kotlin.coroutines.cancellation.CancellationException
@@ -39,23 +43,31 @@ data class SigningKeyUiState(
     val certificateSha256: String? = null,
     /** The current certificate is the one last exported or imported. */
     val backedUp: Boolean = false,
+    /** The file name of the automatic backup of the current key, when it is in the public folder. */
+    val autoBackupFile: String? = null,
+    /** The file name of the private copy of the current key in app storage, when there is one. */
+    val localBackup: String? = null,
     val form: SigningKeyForm = SigningKeyForm.None,
     @StringRes val formError: Int? = null,
     val busy: Boolean = false,
     val message: SigningKeyMessage? = null,
     val confirmation: ImportConfirmation? = null,
+    /** The saved password picked for an import belongs to a different key than the chosen file. */
+    val savedPasswordMismatch: Boolean = false,
 )
 
 /** What the nav host asks the system document picker for. */
-enum class SigningKeyRequest { CreateBackupFile, PickKeyFile }
+enum class SigningKeyRequest { CreateBackupFile, PickKeyFile, CreateLocalBackupFile }
 
 /** Raw passwords come in as char arrays that the receiver wipes. */
 sealed interface SigningKeyEvent {
     data object OpenExport : SigningKeyEvent
+    data object ExportLocalBackup : SigningKeyEvent
     data object OpenImport : SigningKeyEvent
     data object CloseForm : SigningKeyEvent
     class SubmitExport(val password: CharArray, val confirm: CharArray) : SigningKeyEvent
-    class SubmitImport(val password: CharArray) : SigningKeyEvent
+    /** [savedCredentialId] is the id of the saved password the user picked, if any (public text). */
+    class SubmitImport(val password: CharArray, val savedCredentialId: String? = null) : SigningKeyEvent
     data object ConfirmImport : SigningKeyEvent
     data object DismissConfirmation : SigningKeyEvent
     data object DismissMessage : SigningKeyEvent
@@ -88,8 +100,12 @@ fun formatDigest(hex: String): String = hex.uppercase().chunked(4).joinToString(
  */
 class SigningKeyPresenter(
     private val store: SigningKeyStore,
-    private val record: ExportedCertRecord,
+    private val record: KeyBackupRecord,
     private val io: CoroutineDispatcher = Dispatchers.IO,
+    /** Where the automatic backup lives; null skips looking for it. */
+    private val backupFiles: BackupFiles? = null,
+    /** The private copies of automatic backups; null skips looking for them. */
+    private val privateBackups: PrivateBackups? = null,
 ) {
     private val _state = MutableStateFlow(SigningKeyUiState())
     val state: StateFlow<SigningKeyUiState> = _state.asStateFlow()
@@ -100,17 +116,23 @@ class SigningKeyPresenter(
     private var pendingExportPassword: CharArray? = null
     private var pendingImportPassword: CharArray? = null
     private var pendingImportBytes: ByteArray? = null
+    private var pendingSavedDigest: String? = null
 
     suspend fun refresh() {
         val snapshot = withContext(io) {
             val exists = store.exists()
-            if (!exists) return@withContext Snapshot(false, false, null)
+            if (!exists) return@withContext Snapshot(false, false, null, null, null)
             try {
-                Snapshot(true, false, store.certificateSha256())
+                val sha = store.certificateSha256()
+                val local = record.privateBackupFile
+                    ?.takeIf { keyBackupDigestOf(it) == keyBackupShortDigest(sha) && privateBackups?.let { p -> runCatching { p.exists(it) }.getOrDefault(false) } == true }
+                val file = record.backupFile?.takeIf { !record.backupPrivate && keyBackupDigestOf(it) == keyBackupShortDigest(sha) }
+                val present = file != null && backupFiles?.let { runCatching { it.exists(file) }.getOrDefault(false) } == true
+                Snapshot(true, false, sha, file.takeIf { present }, local)
             } catch (e: IOException) {
-                Snapshot(true, true, null)
+                Snapshot(true, true, null, null, null)
             } catch (e: java.security.GeneralSecurityException) {
-                Snapshot(true, true, null)
+                Snapshot(true, true, null, null, null)
             }
         }
         val exported = record.sha256
@@ -121,6 +143,8 @@ class SigningKeyPresenter(
                 unreadable = snapshot.unreadable,
                 certificateSha256 = snapshot.sha256,
                 backedUp = snapshot.sha256 != null && snapshot.sha256 == exported,
+                autoBackupFile = snapshot.autoBackupFile,
+                localBackup = snapshot.localBackup,
             )
         }
     }
@@ -129,9 +153,10 @@ class SigningKeyPresenter(
         when (event) {
             SigningKeyEvent.OpenExport -> openForm(SigningKeyForm.Export)
             SigningKeyEvent.OpenImport -> openForm(SigningKeyForm.Import)
+            SigningKeyEvent.ExportLocalBackup -> if (_state.value.localBackup != null) requestChannel.trySend(SigningKeyRequest.CreateLocalBackupFile)
             SigningKeyEvent.CloseForm -> closeForm()
             is SigningKeyEvent.SubmitExport -> submitExport(event.password, event.confirm)
-            is SigningKeyEvent.SubmitImport -> submitImport(event.password)
+            is SigningKeyEvent.SubmitImport -> submitImport(event.password, event.savedCredentialId)
             SigningKeyEvent.DismissConfirmation -> dismissConfirmation()
             SigningKeyEvent.DismissMessage -> _state.update { it.copy(message = null) }
             // Confirmation does work and is a suspend call, see confirmImport.
@@ -141,12 +166,12 @@ class SigningKeyPresenter(
 
     private fun openForm(form: SigningKeyForm) {
         wipePending()
-        _state.update { if (it.busy || (form == SigningKeyForm.Export && !it.keyExists)) it else it.copy(form = form, formError = null, message = null) }
+        _state.update { if (it.busy || (form == SigningKeyForm.Export && !it.keyExists)) it else it.copy(form = form, formError = null, message = null, savedPasswordMismatch = false) }
     }
 
     private fun closeForm() {
         wipePending()
-        _state.update { it.copy(form = SigningKeyForm.None, formError = null) }
+        _state.update { it.copy(form = SigningKeyForm.None, formError = null, savedPasswordMismatch = false) }
     }
 
     private fun submitExport(password: CharArray, confirm: CharArray) {
@@ -166,7 +191,7 @@ class SigningKeyPresenter(
         }
     }
 
-    private fun submitImport(password: CharArray) {
+    private fun submitImport(password: CharArray, savedCredentialId: String?) {
         try {
             if (password.isEmpty()) {
                 _state.update { it.copy(formError = R.string.signing_key_error_empty) }
@@ -174,11 +199,45 @@ class SigningKeyPresenter(
             }
             wipePending()
             pendingImportPassword = password.copyOf()
-            _state.update { it.copy(formError = null) }
+            pendingSavedDigest = savedCredentialId?.let(::keyBackupDigestOf)
+            _state.update { it.copy(formError = null, savedPasswordMismatch = false) }
             requestChannel.trySend(SigningKeyRequest.PickKeyFile)
         } finally {
             password.fill('\u0000')
         }
+    }
+
+    /** The generated password of the private copy, as a char array the caller wipes; null when there is none. */
+    suspend fun localPassword(): CharArray? {
+        val name = _state.value.localBackup ?: return null
+        return try {
+            withContext(io) { privateBackups?.readPassword(name) }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /** Hands the private copy's PKCS#12 to [write], which saves it to the chosen document. */
+    suspend fun exportLocalTo(write: (ByteArray) -> Unit) {
+        val name = _state.value.localBackup ?: return
+        _state.update { it.copy(busy = true, message = null) }
+        var bytes: ByteArray? = null
+        val ok = try {
+            withContext(io) {
+                bytes = privateBackups?.readFile(name) ?: throw IOException("the private backup is missing")
+                write(bytes!!)
+                true
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            false
+        } finally {
+            bytes?.fill(0)
+        }
+        _state.update { it.copy(busy = false, message = SigningKeyMessage(if (ok) R.string.signing_key_export_done else R.string.signing_key_export_failed, !ok)) }
     }
 
     /** The user closed a picker without choosing a file. */
@@ -219,9 +278,12 @@ class SigningKeyPresenter(
     }
 
     /** Reads the chosen file with [read], checks it with the password from the form and asks for confirmation. */
-    suspend fun inspectFile(read: () -> ByteArray) {
+    suspend fun inspectFile(fileName: String? = null, read: () -> ByteArray) {
         val password = pendingImportPassword ?: return
-        _state.update { it.copy(busy = true, message = null) }
+        // Both digests must be known to call a saved password foreign; they are public names, not secrets.
+        val fileDigest = fileName?.let(::keyBackupDigestOf)
+        val mismatch = pendingSavedDigest != null && fileDigest != null && pendingSavedDigest != fileDigest
+        _state.update { it.copy(busy = true, message = null, savedPasswordMismatch = mismatch) }
         var failure: Int?
         var imported: String? = null
         var bytes: ByteArray? = null
@@ -300,9 +362,10 @@ class SigningKeyPresenter(
         pendingExportPassword = null
         pendingImportPassword = null
         pendingImportBytes = null
+        pendingSavedDigest = null
     }
 
-    private class Snapshot(val exists: Boolean, val unreadable: Boolean, val sha256: String?)
+    private class Snapshot(val exists: Boolean, val unreadable: Boolean, val sha256: String?, val autoBackupFile: String?, val localBackup: String?)
 }
 
 @StringRes

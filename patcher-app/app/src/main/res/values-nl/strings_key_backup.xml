@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="key_backup_saving">Je ondertekeningssleutel wordt opgeslagen…</string>
+    <string name="key_backup_saved">Sleutel opgeslagen in Documenten/OpenSHM · wachtwoord in je wachtwoordbeheerder</string>
+    <string name="key_backup_failed">De sleutel kon niet automatisch worden opgeslagen</string>
+    <string name="key_backup_use_saved">Opgeslagen wachtwoord gebruiken</string>
+    <string name="key_backup_use_saved_none">Geen opgeslagen wachtwoord gevonden.</string>
+    <string name="key_backup_auto_present">Automatische back-up: Documenten/OpenSHM/%1$s · wachtwoord in je wachtwoordbeheerder</string>
+    <string name="key_backup_auto_missing">Geen automatische back-up gevonden in Documenten/OpenSHM. Die wordt gemaakt als een build klaar is.</string>
+    <string name="key_backup_manual_heading">Geavanceerd: handmatige back-up</string>
+    <string name="key_backup_consent">De sleutel wordt versleuteld opgeslagen in Documents/OpenSHM en het wachtwoord blijft in je wachtwoordmanager.</string>
+    <string name="key_backup_declined">Back-up niet opgeslagen</string>
+    <string name="key_backup_save_action">Back-up opslaan</string>
+    <string name="key_backup_wrong_key">Dit opgeslagen wachtwoord hoort bij een andere sleutel</string>
+    <string name="key_backup_private_title">Alleen opgeslagen in de opslag van de app</string>
+    <string name="key_backup_private_hint">Als je de appgegevens wist, verdwijnt deze kopie. Sla een back-up op om hem ook in je wachtwoordmanager en in Documents te bewaren.</string>
+    <string name="local_backup_title">Lokale back-up</string>
+    <string name="local_backup_show_password">Wachtwoord tonen</string>
+    <string name="local_backup_export">Bestand exporteren</string>
+</resources>

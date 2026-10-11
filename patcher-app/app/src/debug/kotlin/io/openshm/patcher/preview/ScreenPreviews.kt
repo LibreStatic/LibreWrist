@@ -1,5 +1,6 @@
 package io.openshm.patcher.preview
 
+import io.openshm.patcher.ui.screens.build.KeyBackupStatus
 import androidx.compose.runtime.Composable
 import io.openshm.patcher.R
 import io.openshm.patcher.ui.screens.signingkey.SigningKeyForm
@@ -114,6 +115,11 @@ private fun InstallPhoneGrantsPreview(@PreviewParameter(ColorModeProvider::class
 
 @ScreenPreviews
 @Composable
+private fun InstallPhoneConflictPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { InstallPhoneConflictSample(confirming = true) }
+
+@ScreenPreviews
+@Composable
 private fun WatchInstallPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
     PreviewHost(mode) { WatchInstallSample() }
 
@@ -165,7 +171,17 @@ private fun HomeRestorePreview(@PreviewParameter(ColorModeProvider::class) mode:
 @ScreenPreviews
 @Composable
 private fun BuildDoneBackupPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
-    PreviewHost(mode) { BuildDoneSample(backupDue = true) }
+    PreviewHost(mode) { BuildDoneSample(KeyBackupStatus.Failed) }
+
+@ScreenPreviews
+@Composable
+private fun BuildDoneBackupDeclinedPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { BuildDoneSample(KeyBackupStatus.Declined) }
+
+@ScreenPreviews
+@Composable
+private fun BuildDoneBackupSavedPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { BuildDoneSample(KeyBackupStatus.Saved) }
 
 @ScreenPreviews
 @Composable
