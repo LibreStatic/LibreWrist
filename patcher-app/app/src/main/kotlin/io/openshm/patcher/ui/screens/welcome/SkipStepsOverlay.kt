@@ -27,6 +27,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -79,10 +83,13 @@ internal fun SkipStepsOverlay(dialog: SkipDialog?, onConfirm: () -> Unit, onCanc
     if (dialog != null) last = dialog
     BackHandler(enabled = dialog != null, onBack = onCancel)
     val pane = stringResource(R.string.skip_title)
+    // The app centers a width-capped column; the scrim reaches past it to cover the whole window.
+    val windowWidth = with(LocalDensity.current) { LocalWindowInfo.current.containerSize.width.toDp() }
     AnimatedVisibility(dialog != null, enter = fadeIn(), exit = fadeOut()) {
         Box(
             Modifier
-                .fillMaxSize()
+                .fillMaxHeight()
+                .requiredWidth(windowWidth)
                 .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.32f))
                 // Swallows taps so the screen underneath stays still.
                 .pointerInput(Unit) { detectTapGestures { } }
