@@ -201,7 +201,7 @@
 
     <!-- Customize -->
     <string name="customize_title">اختر تصحيحاتك</string>
-    <string name="customize_intro">هذه التصحيحات لازمة لعمل التطبيقات على أجهزتك، لذا فهي مفعّلة دائمًا.</string>
+    <string name="customize_intro">التصحيحات التي عليها قفل ضرورية لعمل التطبيقات على أجهزتك. أما البقية فاختيارية ويمكنك إيقافها.</string>
     <string name="customize_required">مطلوب، مفعّل دائمًا</string>
     <string name="customize_advanced">متقدم</string>
     <string name="customize_prefix_label">بادئة الحزمة للتطبيقات المساعدة</string>
@@ -212,7 +212,6 @@
     <string name="customize_build">بناء</string>
     <string name="preset_recommended">موصى به</string>
     <string name="preset_minimal">الحد الأدنى</string>
-    <string name="preset_everything">كل شيء</string>
     <string name="prefix_problem_empty">أدخل بادئة.</string>
     <string name="prefix_problem_short">استخدم جزأين على الأقل، مثل io.example.</string>
     <string name="prefix_problem_long">هذه البادئة طويلة جدًا.</string>
@@ -673,4 +672,5 @@
     <string name="skip_reason_wearable">ساعتك مقترنة بالفعل مع Galaxy Wearable.</string>
     <string name="skip_reason_watchpair">ساعتك متصلة بالفعل عبر تصحيح الأخطاء اللاسلكي.</string>
     <string name="skip_confirm">حسنًا</string>
+    <string name="skip_manual">الإعداد يدويًا</string>
 </resources>

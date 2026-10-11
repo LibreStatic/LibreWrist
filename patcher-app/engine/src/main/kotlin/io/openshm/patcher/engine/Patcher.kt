@@ -95,6 +95,11 @@ class PatchRequest(
     val signingKey: SigningKey? = null,
     /** A directory for the unsigned intermediate APK. */
     val workDir: File? = null,
+    /**
+     * Ids of `optional` catalogue patterns to leave out. An unknown or required id, or part of an
+     * `optionGroup`, fails the request; every other pattern still has to match.
+     */
+    val disabledPatterns: Set<String> = emptySet(),
 )
 
 fun interface PatchListener {
@@ -149,6 +154,7 @@ class Patcher(private val catalogue: Catalogue) {
         try {
             val (profile, input) = phase("check-request") {
                 PrefixStager.requireValidPrefix(req.prefix)
+                catalogue.requireDisablable(req.disabledPatterns)
                 catalogue.profile(req.profile) to (catalogue.inputs.firstOrNull { it.id == req.inputId }
                     ?: throw PatchFailure("the catalogue has no input '${req.inputId}'"))
             }
@@ -178,7 +184,7 @@ class Patcher(private val catalogue: Catalogue) {
                 val dexBytes = state.dexEntries.map { it.name to zip.read(it) }
                 val tree = DexTree(dexBytes, minSdk)
 
-                val ids = phase("detect-family") { d ->
+                val allIds = phase("detect-family") { d ->
                     val pkg = manifest.packageName ?: throw PatchFailure("the manifest has no package")
                     val family = catalogue.detectFamily(pkg, tree)
                     report.family = family
@@ -187,6 +193,8 @@ class Patcher(private val catalogue: Catalogue) {
                         ?: throw PatchFailure("profile '${profile.name}' has no patch list for family '$family'")
                 }
                 val family = report.family!!
+                val ids = allIds.filter { it !in req.disabledPatterns }
+                val skipped = allIds.filter { it in req.disabledPatterns }
                 val wanted = profile.inject[family] ?: emptyList()
                 phase("check-injections") { d ->
                     if (wanted.toSet() != req.injections.keys) {
@@ -204,6 +212,7 @@ class Patcher(private val catalogue: Catalogue) {
                         throw e
                     }
                     d.add("${report.patterns.size} patterns, ${report.patterns.sumOf { it.log.size }} patched sites")
+                    if (skipped.isNotEmpty()) d.add("disabled by the user, not applied: ${skipped.joinToString(", ")}")
                 }
                 if (dryRun) {
                     report.ok = true

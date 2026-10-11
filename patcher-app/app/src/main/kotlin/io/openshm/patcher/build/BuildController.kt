@@ -61,6 +61,6 @@ object BuildController {
         ((index + stage.ordinal.toFloat() / BuildStage.entries.size) / count.coerceAtLeast(1)).coerceIn(0f, 1f)
 }
 
-/** Identifies what a build is for: the same key means the same inputs, prefix and outputs, so a finished build is still good. */
-fun buildKey(catalogueSerial: Long, prefix: String, outputIds: Collection<String>): String =
-    "$catalogueSerial|$prefix|${outputIds.sorted().joinToString(",")}"
+/** Identifies what a build is for: the same key means the same inputs, prefix, outputs and skipped patches, so a finished build is still good. */
+fun buildKey(catalogueSerial: Long, prefix: String, outputIds: Collection<String>, disabledPatches: Collection<String> = emptySet()): String =
+    "$catalogueSerial|$prefix|${outputIds.sorted().joinToString(",")}|${disabledPatches.sorted().joinToString(",")}"

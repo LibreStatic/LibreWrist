@@ -53,15 +53,31 @@ class LoadedCatalogue(val engine: Catalogue, private val resolve: (Int) -> Strin
         )
     }
 
-    /** Patch patterns only (injections excluded), the number the summary line reports. */
-    fun patternCount(inputIds: Collection<String>): Int =
-        patchSets.filter { it.inputId in inputIds }.sumOf { set -> set.patches.count { !it.injection } }
+    /**
+     * The patterns a build skips for the user's choice [disabled]: only known optional patterns count
+     * (an id a catalogue update removed or made required is dropped, so it can never fail a build), and
+     * an option group is skipped as a whole.
+     */
+    fun effectiveDisabled(disabled: Set<String>): Set<String> {
+        val chosen = disabled.filter { engine.patterns[it]?.optional == true }.toSet()
+        val groups = chosen.mapNotNull { engine.patterns.getValue(it).optionGroup }.toSet()
+        return chosen + engine.patterns.values.filter { it.optionGroup in groups }.map { it.id }
+    }
+
+    /** Patch patterns that will be applied (injections excluded, [disabled] ones left out), the number the summary line reports. */
+    fun patternCount(inputIds: Collection<String>, disabled: Set<String> = emptySet()): Int {
+        val skipped = effectiveDisabled(disabled)
+        return patchSets.filter { it.inputId in inputIds }.sumOf { set -> set.patches.count { !it.injection && it.id !in skipped } }
+    }
 
     private fun patchesOf(from: OutputSource.Patched): List<PatchInfo> {
         val profile = engine.profile(from.profile)
         val patterns = profile.families[from.input].orEmpty().map { id ->
             val pattern = engine.patterns.getValue(id)
-            PatchInfo(id, pattern.title, PATCH_DESCRIPTIONS[id]?.let(resolve) ?: pattern.description)
+            PatchInfo(
+                id, pattern.title, PATCH_DESCRIPTIONS[id]?.let(resolve) ?: pattern.description,
+                optional = pattern.optional, optionGroup = pattern.optionGroup,
+            )
         }
         val injections = profile.inject[from.input].orEmpty().map { id ->
             val known = INJECTIONS[id]

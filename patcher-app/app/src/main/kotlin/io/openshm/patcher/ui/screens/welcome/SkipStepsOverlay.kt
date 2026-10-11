@@ -58,6 +58,7 @@ import io.openshm.patcher.R
 import io.openshm.patcher.ui.components.CheckStatus
 import io.openshm.patcher.ui.components.PolygonShape
 import io.openshm.patcher.ui.components.PrimaryAction
+import io.openshm.patcher.ui.components.QuietAction
 import io.openshm.patcher.ui.components.SetupStep
 import io.openshm.patcher.ui.components.StatusShape
 import io.openshm.patcher.ui.nav.Route
@@ -72,7 +73,7 @@ import io.openshm.patcher.ui.theme.PatcherTheme
  * Drawn in the screen's own window (a scrim and a centered card), not as a platform dialog.
  */
 @Composable
-internal fun SkipStepsOverlay(dialog: SkipDialog?, onConfirm: () -> Unit, onCancel: () -> Unit) {
+internal fun SkipStepsOverlay(dialog: SkipDialog?, onConfirm: () -> Unit, onCancel: () -> Unit, onManual: () -> Unit) {
     // Keeps the last content while the overlay fades out.
     var last by remember { mutableStateOf(dialog) }
     if (dialog != null) last = dialog
@@ -105,7 +106,7 @@ internal fun SkipStepsOverlay(dialog: SkipDialog?, onConfirm: () -> Unit, onCanc
                     transitionSpec = { fadeIn() togetherWith fadeOut() using SizeTransform() },
                     label = "skipDialog",
                 ) { shown ->
-                    if (shown is SkipDialog.Skipping) SkippingContent(shown.steps, onConfirm) else CheckingContent()
+                    if (shown is SkipDialog.Skipping) SkippingContent(shown.steps, onConfirm, onManual) else CheckingContent()
                 }
             }
         }
@@ -143,7 +144,7 @@ private fun CheckingContent() {
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun SkippingContent(steps: List<SkippedStep>, onConfirm: () -> Unit) {
+private fun SkippingContent(steps: List<SkippedStep>, onConfirm: () -> Unit, onManual: () -> Unit) {
     val reduced = LocalReducedMotion.current
     var shown by remember { mutableStateOf(reduced) }
     LaunchedEffect(Unit) { shown = true }
@@ -194,6 +195,7 @@ private fun SkippingContent(steps: List<SkippedStep>, onConfirm: () -> Unit) {
             steps.forEach { SkippedCard(it) }
         }
         PrimaryAction(stringResource(R.string.skip_confirm), onConfirm, modifier = Modifier.padding(top = 8.dp))
+        QuietAction(stringResource(R.string.skip_manual), onManual)
     }
 }
 

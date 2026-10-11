@@ -61,6 +61,8 @@ class BuildRequest(
     val signingKey: SigningKey,
     /** SHA-256 of this patcher's own signing certificate, for the phone bridge's STATUS permission. */
     val knownSignerCert: String?,
+    /** Optional patterns to leave out (see [PatchRequest.disabledPatterns]); the engine refuses required or unknown ids. */
+    val disabledPatterns: Set<String> = emptySet(),
 )
 
 /** One finished output. */
@@ -153,6 +155,7 @@ class BuildRunner(
                         inputApk = inputFile(from.input), inputId = from.input, profile = from.profile,
                         prefix = request.prefix, injections = injections, outputApk = target,
                         signingKey = request.signingKey, workDir = workDir,
+                        disabledPatterns = request.disabledPatterns,
                     ),
                     listener,
                 )

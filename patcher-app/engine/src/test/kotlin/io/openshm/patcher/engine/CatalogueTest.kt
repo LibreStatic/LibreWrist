@@ -91,6 +91,41 @@ class CatalogueTest {
         }
     }
 
+    @Test fun committedCatalogueOptionalPatterns() {
+        val c = Catalogue.parse(String(catalogueBytes, Charsets.UTF_8))
+        assertEquals(
+            setOf(
+                "shm-min-age-22-to-16", "shm-setup-network-gate", "shm-sleep-apnea-support", "watch-apnea-country",
+                "watch-apnea-reeval-not-supported", "alarm-force-sound-vibrate", "alarm-hide-launcher", "alarm-relabel",
+            ),
+            c.patterns.values.filter { it.optional }.map { it.id }.toSet(),
+        )
+        assertEquals(
+            setOf("shm-sleep-apnea-support", "watch-apnea-country", "watch-apnea-reeval-not-supported"),
+            c.patterns.values.filter { it.optionGroup == "sleep-apnea" }.map { it.id }.toSet(),
+        )
+        c.requireDisablable(c.patterns.values.filter { it.optional }.map { it.id }.toSet())
+    }
+
+    @Test fun optionGroupFieldIsTypeChecked() {
+        val anchor = "\"optionGroup\": \"sleep-apnea\""
+        assertTrue(mutated { it }.contains(anchor))
+        for ((bad, expected) in listOf(
+            "\"optionGroup\": 5" to "kebab-case",
+            "\"optionGroup\": \"Sleep Apnea\"" to "kebab-case",
+            "\"optionGroup\": \"lonely\"" to "at least two",
+        )) {
+            // only the first member changes, so for "lonely" the group of the other two stays valid
+            val mutatedText = mutated { it.replaceFirst(anchor, bad) }
+            try {
+                Catalogue.parse(mutatedText)
+                fail(bad)
+            } catch (e: CatalogueException) {
+                assertTrue(e.problems.toString(), e.problems.any { expected in it })
+            }
+        }
+    }
+
     @Test fun parseSignedVerifiesBeforeParsing() {
         val key = CatalogueVerifier.parsePublicKey(pem)
         assertEquals(38, Catalogue.parseSigned(catalogueBytes, signature, key).patterns.size)

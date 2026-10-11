@@ -26,6 +26,8 @@ data class SessionState(
     val packagePrefix: String = PackagePrefix.generate(),
     /** Once anything is installed the prefix is locked: an upgrade needs the same prefix and key. */
     val prefixLocked: Boolean = false,
+    /** Ids of the optional patches the user switched off on the Customize screen; empty means every patch is applied. */
+    val disabledPatches: Set<String> = emptySet(),
 )
 
 /**
@@ -38,6 +40,7 @@ object SetupSession {
     private const val KEY_PROFILE = "watchProfile"
     private const val KEY_PREFIX = "packagePrefix"
     private const val KEY_LOCKED = "prefixLocked"
+    private const val KEY_DISABLED = "disabledPatches"
 
     private val _state = MutableStateFlow(SessionState())
     val state: StateFlow<SessionState> = _state.asStateFlow()
@@ -56,6 +59,7 @@ object SetupSession {
                 ?: SessionState().watchProfile,
             packagePrefix = stored ?: PackagePrefix.generate(),
             prefixLocked = locked && stored != null,
+            disabledPatches = p.getStringSet(KEY_DISABLED, null)?.toSet().orEmpty(),
         )
         prefs = p
         _state.value = loaded
@@ -74,6 +78,7 @@ object SetupSession {
             .putString(KEY_PROFILE, s.watchProfile.name)
             .putString(KEY_PREFIX, s.packagePrefix)
             .putBoolean(KEY_LOCKED, s.prefixLocked)
+            .putStringSet(KEY_DISABLED, s.disabledPatches.toSet())
             .apply()
     }
 }

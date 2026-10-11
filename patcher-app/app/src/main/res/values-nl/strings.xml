@@ -197,7 +197,7 @@
 
     <!-- Customize -->
     <string name="customize_title">Kies je patches</string>
-    <string name="customize_intro">Deze patches zijn nodig om de apps op je apparaten te laten werken, dus ze staan altijd aan.</string>
+    <string name="customize_intro">Patches met een slotje zijn nodig om de apps op je apparaten te laten werken. De andere zijn optioneel en kun je uitzetten.</string>
     <string name="customize_required">Vereist, altijd aan</string>
     <string name="customize_advanced">Geavanceerd</string>
     <string name="customize_prefix_label">Pakketvoorvoegsel voor hulp-apps</string>
@@ -208,7 +208,6 @@
     <string name="customize_build">Bouwen</string>
     <string name="preset_recommended">Aanbevolen</string>
     <string name="preset_minimal">Minimaal</string>
-    <string name="preset_everything">Alles</string>
     <string name="prefix_problem_empty">Voer een voorvoegsel in.</string>
     <string name="prefix_problem_short">Gebruik minstens twee delen, zoals io.example.</string>
     <string name="prefix_problem_long">Dat voorvoegsel is te lang.</string>
@@ -641,4 +640,5 @@
     <string name="skip_reason_wearable">Je horloge is al gekoppeld met Galaxy Wearable.</string>
     <string name="skip_reason_watchpair">Je horloge is al verbonden via draadloze foutopsporing.</string>
     <string name="skip_confirm">Begrepen</string>
+    <string name="skip_manual">Handmatig instellen</string>
 </resources>

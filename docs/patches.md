@@ -31,6 +31,7 @@ scripts/build_shm_watch.sh        # -> $DIST_DIR/shm-watch-1.5.1.022-gms.apk
   "profiles": { "<name>": {"description", "families": {"<family>": ["<pattern id>", ...]},
                            "inject": {"<family>": ["<injection name>", ...]}} },
   "patterns": { "<id>": {"families": [...] | "*", "title", "description", "optional": false,
+                         "optionGroup"?: "<kebab-case group>",
                          "ops": [ {"op": "<name>", ...args}, ... ]} },
   "outputs", "installOrder", "grants", "stockAppsToDisable": install section, see below }
 ```
@@ -78,6 +79,18 @@ scripts/build_shm_watch.sh        # -> $DIST_DIR/shm-watch-1.5.1.022-gms.apk
   smali sets the build merges in (ids only: that code ships separately, never in the catalogue).
 - **Pattern**: `ops` run in order; the logs of all steps are concatenated. A pattern whose
   combined log is empty fails the build (unless `optional`), and so does any step that raises.
+- **Optional patterns** (`"optional": true`): the patcher app lets the user switch these off in
+  its Customize step; all of them are enabled by default and every other pattern is required. A
+  disabled pattern is simply not run (`PatchRequest.disabledPatterns` in the Kotlin engine,
+  `--skip <id>` in `scripts/superpatcher.py`); asking to skip a required or unknown id is an error,
+  and the patterns that do run keep the "anchor must match, otherwise abort" rule. The optional
+  patterns are `shm-min-age-22-to-16`, `shm-setup-network-gate`, the sleep-apnea group below, and
+  `alarm-force-sound-vibrate`, `alarm-hide-launcher`, `alarm-relabel`.
+- **Option groups** (`"optionGroup": "<name>"`, optional patterns only, at least two members):
+  the members are always on or off together, across inputs, so a partial skip is an error. The
+  only group is `sleep-apnea`: `shm-sleep-apnea-support` (phone SHM) with `watch-apnea-country` and
+  `watch-apnea-reeval-not-supported` (watch SHM). Both validators (`superpatcher/patterns.py` and
+  `Catalogue.kt`) accept and type-check the field.
 - **Ops are named and documented** in `superpatcher/engine.py` (`OPS` registry; the docstring of
   each `op_*` function is its semantics contract, also for the Kotlin port). An unknown op, an
   unknown or missing argument, or a wrong argument type is a hard error. JSON argument names are

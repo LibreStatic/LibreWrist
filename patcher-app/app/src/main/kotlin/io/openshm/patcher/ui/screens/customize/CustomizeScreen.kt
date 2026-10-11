@@ -53,7 +53,7 @@ import io.openshm.patcher.ui.components.SetupStep
 import io.openshm.patcher.ui.components.StepScreenScaffold
 import io.openshm.patcher.ui.theme.PatcherTheme
 
-/** One patch row. Every patch in the catalogue is required today; optional ones will set [required] false. */
+/** One patch row. A required patch (the default) is locked on; an optional one can be switched off. */
 data class CustomizePatch(val info: PatchInfo, val required: Boolean = true, val enabled: Boolean = true)
 
 /** The patches of one input app, shown as a group with the app and the device it goes to. */
@@ -64,17 +64,32 @@ data class CustomizeGroup(
     val patches: List<CustomizePatch>,
 )
 
-enum class Preset { Recommended, Minimal, Everything }
+/** Recommended switches every optional patch on, Minimal leaves only the required ones. */
+enum class Preset { Recommended, Minimal }
 
 data class CustomizeUiState(
     val groups: List<CustomizeGroup> = emptyList(),
-    val preset: Preset = Preset.Recommended,
     val packagePrefix: String = "",
     val prefixLocked: Boolean = false,
     val prefixProblem: PackagePrefix.Problem? = null,
     val advancedExpanded: Boolean = false,
 ) {
     val optionalCount: Int get() = groups.sumOf { g -> g.patches.count { !it.required } }
+
+    /** The preset the current switches amount to, or null after a mixed manual choice. */
+    val preset: Preset?
+        get() {
+            val optional = groups.flatMap { g -> g.patches.filter { !it.required } }
+            return when {
+                optional.all { it.enabled } -> Preset.Recommended
+                optional.none { it.enabled } -> Preset.Minimal
+                else -> null
+            }
+        }
+
+    /** Ids of the optional patches that are switched off (what the session stores and the build skips). */
+    val disabledIds: Set<String>
+        get() = groups.flatMap { g -> g.patches.filter { !it.required && !it.enabled }.map { it.info.id } }.toSet()
 
     /** Presets only make sense when the user can actually switch something. */
     val showPresets: Boolean get() = optionalCount > 0
@@ -136,7 +151,7 @@ fun CustomizeScreen(
 }
 
 @Composable
-private fun PresetRow(selected: Preset, onSelect: (Preset) -> Unit) {
+private fun PresetRow(selected: Preset?, onSelect: (Preset) -> Unit) {
     SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
         Preset.entries.forEachIndexed { index, preset ->
             SegmentedButton(
@@ -149,7 +164,6 @@ private fun PresetRow(selected: Preset, onSelect: (Preset) -> Unit) {
                         when (preset) {
                             Preset.Recommended -> R.string.preset_recommended
                             Preset.Minimal -> R.string.preset_minimal
-                            Preset.Everything -> R.string.preset_everything
                         },
                     ),
                 )

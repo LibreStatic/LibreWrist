@@ -62,7 +62,7 @@ internal fun builtOutputs(storage: BuildStorage): BuildDoneUiState {
         outputs = AppCatalogue.current.outputs.filter { it.id in profile.outputIds }.map {
             BuiltOutput(it.id, it.label, it.device, it.packageName(session.packagePrefix), sizeBytes = sizes[it.id] ?: 0L)
         },
-        patchCount = AppCatalogue.current.patternCount(profile.inputIds),
+        patchCount = AppCatalogue.current.patternCount(profile.inputIds, session.disabledPatches),
     )
 }
 
@@ -73,8 +73,10 @@ internal fun builtOutputs(storage: BuildStorage): BuildDoneUiState {
  */
 class BuildViewModel(application: Application) : AndroidViewModel(application) {
     private val storage = BuildStorage(application)
-    private val patchCount = AppCatalogue.current.patternCount(SetupSession.state.value.watchProfile.inputIds)
-    private val key = SetupSession.state.value.let { buildKey(AppCatalogue.current.serial, it.packagePrefix, it.watchProfile.outputIds) }
+    private val patchCount = SetupSession.state.value.let { AppCatalogue.current.patternCount(it.watchProfile.inputIds, it.disabledPatches) }
+    private val key = SetupSession.state.value.let {
+        buildKey(AppCatalogue.current.serial, it.packagePrefix, it.watchProfile.outputIds, AppCatalogue.current.effectiveDisabled(it.disabledPatches))
+    }
     private val logVisible = MutableStateFlow(false)
     private val recordedFinished = MutableStateFlow(false)
 

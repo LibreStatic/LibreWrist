@@ -28,6 +28,7 @@ _PLACEHOLDER = re.compile(r'\$\{([^}]*)\}')
 _SAMPLE_PREFIX = 'com.example'     # ${PKG_PREFIX} stand-in used only to validate package names
 _DEVICES = ('phone', 'watch')
 _ID_RE = re.compile(r'^[a-z][a-z0-9-]*$', re.ASCII)
+OPTION_GROUP_RE = re.compile(r'^[a-z][a-z0-9]*(-[a-z0-9]+)*$', re.ASCII)
 _PACKAGE_RE = re.compile(r'^[a-zA-Z][\w]*(\.[a-zA-Z][\w]*)+$', re.ASCII)
 _OWN_APP_RE = re.compile(r'^[a-z][a-z0-9-]*(/[a-z][a-z0-9-]*)*$', re.ASCII)
 _PERMISSION_RE = re.compile(r'^[a-zA-Z][\w.]*$', re.ASCII)
@@ -277,11 +278,13 @@ def validate_catalogue(cat):
     patterns = cat['patterns'] if isinstance(cat['patterns'], dict) else {}
     if not isinstance(cat['patterns'], dict):
         problems.append('patterns must be an object')
+    groups = {}
     for pid, p in patterns.items():
         where = f'pattern {pid}'
         keys = {'families', 'title', 'description', 'optional', 'ops'}
-        if not isinstance(p, dict) or set(p) != keys:
-            problems.append(f'{where}: must have exactly the keys {sorted(keys)}')
+        if not isinstance(p, dict) or not keys <= set(p) or set(p) - keys - {'optionGroup'}:
+            problems.append(f'{where}: must have exactly the keys {sorted(keys)} '
+                            '(plus optionally "optionGroup")')
             continue
         fams = p['families']
         if fams != '*' and not (isinstance(fams, list) and fams and
@@ -292,6 +295,13 @@ def validate_catalogue(cat):
                 problems.append(f'{where}: {k} must be a non-empty string')
         if not isinstance(p['optional'], bool):
             problems.append(f'{where}: optional must be a boolean')
+        if 'optionGroup' in p:
+            if not isinstance(p['optionGroup'], str) or not OPTION_GROUP_RE.match(p['optionGroup']):
+                problems.append(f'{where}: optionGroup must be a lowercase kebab-case string')
+            elif p['optional'] is not True:
+                problems.append(f'{where}: optionGroup is only allowed on optional patterns')
+            else:
+                groups.setdefault(p['optionGroup'], []).append(pid)
         if not isinstance(p['ops'], list) or not p['ops']:
             problems.append(f'{where}: ops must be a non-empty list')
             continue
@@ -300,6 +310,9 @@ def validate_catalogue(cat):
                 _check_step(step)
             except (E.OpArgError, KeyError, TypeError) as e:
                 problems.append(f'{where} step {i + 1}: {e}')
+    for group, members in groups.items():
+        if len(members) < 2:
+            problems.append(f'optionGroup {group!r}: needs at least two patterns, has {members}')
 
     used = set()
     profiles = cat['profiles'] if isinstance(cat['profiles'], dict) else {}
@@ -405,11 +418,31 @@ class PatternRequiredError(RuntimeError):
         self.report = report or []
 
 
-def run_profile(tree, ids, dry=False, catalogue=None):
+def check_skip(patterns, skip):
+    """Reject a skip set that names an unknown or a required pattern, or only part of an
+    `optionGroup` (the members of a group are always on or off together)."""
+    skip = set(skip)
+    unknown = sorted(skip - set(patterns))
+    if unknown:
+        raise PatternRequiredError('cannot skip unknown pattern ids: ' + ', '.join(unknown))
+    required = sorted(i for i in skip if not patterns[i]['optional'])
+    if required:
+        raise PatternRequiredError('cannot skip required patterns: ' + ', '.join(required))
+    for group in {patterns[i].get('optionGroup') for i in skip} - {None}:
+        members = {i for i, p in patterns.items() if p.get('optionGroup') == group}
+        if not members <= skip:
+            raise PatternRequiredError(
+                f"option group '{group}' must be skipped as a whole: {', '.join(sorted(members))}")
+
+
+def run_profile(tree, ids, dry=False, catalogue=None, skip=()):
     """Run the listed patterns IN ORDER. Returns [(id, description, log)]. Every listed pattern
     is required: an exception or an empty result aborts with PatternRequiredError (an
-    `optional` pattern may log nothing, but still must not raise)."""
+    `optional` pattern may log nothing, but still must not raise). `skip` names optional
+    patterns to leave out (see check_skip); the ones that still run keep the same rules."""
     patterns = (catalogue or load_catalogue())['patterns']
+    check_skip(patterns, skip)
+    ids = [i for i in ids if i not in set(skip)]
     unknown = [i for i in ids if i not in patterns]
     if unknown:
         raise PatternRequiredError('unknown pattern ids in profile: ' + ', '.join(unknown))

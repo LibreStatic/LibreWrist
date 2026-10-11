@@ -75,6 +75,7 @@ class WelcomeViewModel(application: Application) : AndroidViewModel(application)
             WelcomeEvent.GetStarted -> preflight.start()
             WelcomeEvent.ConfirmSkip -> preflight.confirm()
             WelcomeEvent.CancelSkip -> preflight.cancel()
+            WelcomeEvent.ManualSetup -> preflight.manual()
         }
     }
 

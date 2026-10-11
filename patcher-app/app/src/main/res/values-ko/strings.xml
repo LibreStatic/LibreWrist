@@ -196,7 +196,7 @@
 
     <!-- Customize -->
     <string name="customize_title">패치 선택</string>
-    <string name="customize_intro">이 패치들은 앱이 내 기기에서 작동하는 데 필요하므로 항상 켜져 있습니다.</string>
+    <string name="customize_intro">자물쇠가 있는 패치는 기기에서 앱이 작동하는 데 필요합니다. 나머지는 선택 사항이며 끌 수 있습니다.</string>
     <string name="customize_required">필수, 항상 켜짐</string>
     <string name="customize_advanced">고급</string>
     <string name="customize_prefix_label">도우미 앱의 패키지 접두사</string>
@@ -207,7 +207,6 @@
     <string name="customize_build">빌드</string>
     <string name="preset_recommended">권장</string>
     <string name="preset_minimal">최소</string>
-    <string name="preset_everything">전체</string>
     <string name="prefix_problem_empty">접두사를 입력하세요.</string>
     <string name="prefix_problem_short">io.example처럼 두 부분 이상으로 입력하세요.</string>
     <string name="prefix_problem_long">접두사가 너무 깁니다.</string>
@@ -633,4 +632,5 @@
     <string name="skip_reason_wearable">시계가 이미 Galaxy Wearable과 페어링되어 있습니다.</string>
     <string name="skip_reason_watchpair">시계가 이미 무선 디버깅으로 연결되어 있습니다.</string>
     <string name="skip_confirm">확인</string>
+    <string name="skip_manual">직접 설정</string>
 </resources>

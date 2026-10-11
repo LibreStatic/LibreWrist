@@ -197,7 +197,7 @@
 
     <!-- Customize -->
     <string name="customize_title">अपने पैच चुनें</string>
-    <string name="customize_intro">ऐप को आपके डिवाइस पर चलाने के लिए ये पैच ज़रूरी हैं, इसलिए ये हमेशा चालू रहते हैं।</string>
+    <string name="customize_intro">ताले वाले पैच आपके डिवाइस पर ऐप्स चलाने के लिए ज़रूरी हैं। बाकी वैकल्पिक हैं और आप उन्हें बंद कर सकते हैं।</string>
     <string name="customize_required">ज़रूरी, हमेशा चालू</string>
     <string name="customize_advanced">उन्नत</string>
     <string name="customize_prefix_label">सहायक ऐप के लिए पैकेज प्रीफ़िक्स</string>
@@ -208,7 +208,6 @@
     <string name="customize_build">बिल्ड करें</string>
     <string name="preset_recommended">सुझाया गया</string>
     <string name="preset_minimal">न्यूनतम</string>
-    <string name="preset_everything">सब कुछ</string>
     <string name="prefix_problem_empty">प्रीफ़िक्स डालें।</string>
     <string name="prefix_problem_short">कम से कम दो हिस्से रखें, जैसे io.example।</string>
     <string name="prefix_problem_long">वह प्रीफ़िक्स बहुत लंबा है।</string>
@@ -641,4 +640,5 @@
     <string name="skip_reason_wearable">आपकी घड़ी पहले से Galaxy Wearable से जुड़ी है।</string>
     <string name="skip_reason_watchpair">आपकी घड़ी पहले से वायरलेस डीबगिंग से कनेक्ट है।</string>
     <string name="skip_confirm">समझ गया</string>
+    <string name="skip_manual">मैन्युअल रूप से सेट अप करें</string>
 </resources>

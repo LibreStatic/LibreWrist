@@ -304,7 +304,7 @@
 
     <!-- Customize -->
     <string name="customize_title">Choose your patches</string>
-    <string name="customize_intro">These patches are needed for the apps to work on your devices, so they are always on.</string>
+    <string name="customize_intro">Patches with a lock are needed for the apps to work on your devices. The others are optional: you can switch them off.</string>
     <string name="customize_required">Required, always on</string>
     <string name="customize_advanced">Advanced</string>
     <string name="customize_prefix_label">Package prefix for helper apps</string>
@@ -315,7 +315,6 @@
     <string name="customize_build">Build</string>
     <string name="preset_recommended">Recommended</string>
     <string name="preset_minimal">Minimal</string>
-    <string name="preset_everything">Everything</string>
     <string name="prefix_problem_empty">Enter a prefix.</string>
     <string name="prefix_problem_short">Use at least two parts, like io.example.</string>
     <string name="prefix_problem_long">That prefix is too long.</string>
@@ -643,4 +642,5 @@
     <string name="skip_reason_wearable">Your watch is already paired with Galaxy Wearable.</string>
     <string name="skip_reason_watchpair">Your watch is already connected over Wireless debugging.</string>
     <string name="skip_confirm">Got it</string>
+    <string name="skip_manual">Set up manually</string>
 </resources>

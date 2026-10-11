@@ -132,6 +132,22 @@ class SkipPreflightTest {
     }
 
     @Test
+    fun setUpManuallySkipsNothingButKeepsTheDetectedWatch() = runTest {
+        val rec = Recorder()
+        val p = preflight(remembered = true, detect = { watch }, wearableReady = true, rec = rec)
+        p.start()
+        runCurrent()
+        assertTrue(p.dialog.value is SkipDialog.Skipping)
+        p.manual()
+        p.confirm()
+        runCurrent()
+        assertEquals(emptyList<SkippedStep>(), rec.applied)
+        assertEquals(watch, rec.appliedWatch)
+        assertEquals(1, rec.went)
+        assertNull(p.dialog.value)
+    }
+
+    @Test
     fun aSecondTapWhileRunningIsIgnored() = runTest {
         val rec = Recorder()
         var asked = 0

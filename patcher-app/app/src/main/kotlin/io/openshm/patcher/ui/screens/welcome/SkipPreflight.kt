@@ -68,6 +68,12 @@ internal class SkipPreflight(
         finish(shown.steps, pendingWatch)
     }
 
+    /** "Set up manually" on the dialog: skip nothing and walk every step, keeping what was detected. */
+    fun manual() {
+        if (_dialog.value !is SkipDialog.Skipping) return
+        finish(emptyList(), pendingWatch)
+    }
+
     private fun finish(steps: List<SkippedStep>, watch: DetectedWatch?) {
         apply(steps, watch)
         _go.trySend(Unit)

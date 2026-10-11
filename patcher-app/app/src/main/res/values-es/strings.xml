@@ -197,7 +197,7 @@
 
     <!-- Customize -->
     <string name="customize_title">Elige tus parches</string>
-    <string name="customize_intro">Estos parches son necesarios para que las apps funcionen en tus dispositivos, por eso siempre están activados.</string>
+    <string name="customize_intro">Los parches con candado son necesarios para que las apps funcionen en tus dispositivos. Los demás son opcionales y puedes desactivarlos.</string>
     <string name="customize_required">Obligatorio, siempre activado</string>
     <string name="customize_advanced">Avanzado</string>
     <string name="customize_prefix_label">Prefijo de paquete para las apps auxiliares</string>
@@ -208,7 +208,6 @@
     <string name="customize_build">Compilar</string>
     <string name="preset_recommended">Recomendado</string>
     <string name="preset_minimal">Mínimo</string>
-    <string name="preset_everything">Todo</string>
     <string name="prefix_problem_empty">Ingresa un prefijo.</string>
     <string name="prefix_problem_short">Usa al menos dos partes, como io.example.</string>
     <string name="prefix_problem_long">Ese prefijo es demasiado largo.</string>
@@ -641,4 +640,5 @@
     <string name="skip_reason_wearable">El reloj ya está vinculado con Galaxy Wearable.</string>
     <string name="skip_reason_watchpair">El reloj ya está emparejado por depuración inalámbrica.</string>
     <string name="skip_confirm">Entendido</string>
+    <string name="skip_manual">Configurar manualmente</string>
 </resources>

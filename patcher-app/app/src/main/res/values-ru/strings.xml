@@ -199,7 +199,7 @@
 
     <!-- Customize -->
     <string name="customize_title">Выберите патчи</string>
-    <string name="customize_intro">Эти патчи нужны для работы приложений на ваших устройствах, поэтому они всегда включены.</string>
+    <string name="customize_intro">Патчи с замком нужны, чтобы приложения работали на ваших устройствах. Остальные необязательны, их можно отключить.</string>
     <string name="customize_required">Обязательно, всегда включено</string>
     <string name="customize_advanced">Дополнительно</string>
     <string name="customize_prefix_label">Префикс пакета для вспомогательных приложений</string>
@@ -210,7 +210,6 @@
     <string name="customize_build">Собрать</string>
     <string name="preset_recommended">Рекомендуется</string>
     <string name="preset_minimal">Минимум</string>
-    <string name="preset_everything">Всё</string>
     <string name="prefix_problem_empty">Введите префикс.</string>
     <string name="prefix_problem_short">Используйте минимум две части, например io.example.</string>
     <string name="prefix_problem_long">Префикс слишком длинный.</string>
@@ -657,4 +656,5 @@
     <string name="skip_reason_wearable">Часы уже сопряжены с Galaxy Wearable.</string>
     <string name="skip_reason_watchpair">Часы уже подключены по беспроводной отладке.</string>
     <string name="skip_confirm">Понятно</string>
+    <string name="skip_manual">Настроить вручную</string>
 </resources>

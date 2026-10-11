@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "serial": 6,
+  "serial": 7,
   "minAppVersion": 1,
   "inputs": [
     {
@@ -194,7 +194,7 @@
       ],
       "title": "Minimum age 16",
       "description": "MIN_AGE 0x16 (22) -> 0x10 (16) in util/c",
-      "optional": false,
+      "optional": true,
       "ops": [
         {
           "op": "swapConst",
@@ -446,7 +446,7 @@
       ],
       "title": "Setup network gate",
       "description": "checkNoNetworkError -> void (no SIM/region gate in setup)",
-      "optional": false,
+      "optional": true,
       "ops": [
         {
           "op": "insertAtMethodStart",
@@ -467,7 +467,8 @@
       ],
       "title": "Sleep apnea support",
       "description": "isPhoneSupportSleepApnea -> true (const after move-result)",
-      "optional": false,
+      "optional": true,
+      "optionGroup": "sleep-apnea",
       "ops": [
         {
           "op": "forceConstAfterMove",
@@ -761,7 +762,8 @@
       ],
       "title": "Apnea country check",
       "description": "Watch: apnea country check -> true (regional check disabled)",
-      "optional": false,
+      "optional": true,
+      "optionGroup": "sleep-apnea",
       "ops": [
         {
           "op": "insertAtMethodStart",
@@ -794,7 +796,8 @@
       ],
       "title": "Apnea support re-evaluation",
       "description": "Watch: persisted NOT_SUPPORTED apnea version is re-evaluated",
-      "optional": false,
+      "optional": true,
+      "optionGroup": "sleep-apnea",
       "ops": [
         {
           "op": "insertInMethodAtMatch",
@@ -1451,7 +1454,7 @@
       ],
       "title": "Sound and vibration",
       "description": "CAlarmService.r(): play mode always 0x11 (sound+vibrate), ignoring the ringer mode",
-      "optional": false,
+      "optional": true,
       "ops": [
         {
           "op": "replaceClassMethod",
@@ -1508,7 +1511,7 @@
       ],
       "title": "Hide launcher icon",
       "description": "AlarmMainActivity: MAIN/LAUNCHER intent-filter removed (no launcher icon; activity kept)",
-      "optional": false,
+      "optional": true,
       "ops": [
         {
           "op": "manifestExpect",
@@ -1552,7 +1555,7 @@
       ],
       "title": "App label",
       "description": "Application and launcher activity label -> \"Phone alarms\" (es: \"Alarmas del teléfono\")",
-      "optional": false,
+      "optional": true,
       "ops": [
         {
           "op": "addStringResources",

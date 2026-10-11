@@ -196,7 +196,7 @@
 
     <!-- Customize -->
     <string name="customize_title">Pilih patch kamu</string>
-    <string name="customize_intro">Patch ini diperlukan agar aplikasi berfungsi di perangkatmu, jadi selalu aktif.</string>
+    <string name="customize_intro">Patch dengan gembok diperlukan agar aplikasi berfungsi di perangkat Anda. Lainnya opsional dan dapat dinonaktifkan.</string>
     <string name="customize_required">Wajib, selalu aktif</string>
     <string name="customize_advanced">Lanjutan</string>
     <string name="customize_prefix_label">Prefiks paket untuk aplikasi pembantu</string>
@@ -207,7 +207,6 @@
     <string name="customize_build">Build</string>
     <string name="preset_recommended">Disarankan</string>
     <string name="preset_minimal">Minimal</string>
-    <string name="preset_everything">Semua</string>
     <string name="prefix_problem_empty">Masukkan prefiks.</string>
     <string name="prefix_problem_short">Gunakan minimal dua bagian, seperti io.example.</string>
     <string name="prefix_problem_long">Prefiks itu terlalu panjang.</string>
@@ -633,4 +632,5 @@
     <string name="skip_reason_wearable">Jam Anda sudah disambungkan dengan Galaxy Wearable.</string>
     <string name="skip_reason_watchpair">Jam Anda sudah terhubung lewat proses debug nirkabel.</string>
     <string name="skip_confirm">Mengerti</string>
+    <string name="skip_manual">Siapkan secara manual</string>
 </resources>

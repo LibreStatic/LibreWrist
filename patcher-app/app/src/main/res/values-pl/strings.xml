@@ -199,7 +199,7 @@
 
     <!-- Customize -->
     <string name="customize_title">Wybierz łatki</string>
-    <string name="customize_intro">Te łatki są potrzebne, aby aplikacje działały na Twoich urządzeniach, więc są zawsze włączone.</string>
+    <string name="customize_intro">Poprawki z kłódką są potrzebne, by aplikacje działały na Twoich urządzeniach. Pozostałe są opcjonalne i można je wyłączyć.</string>
     <string name="customize_required">Wymagane, zawsze włączone</string>
     <string name="customize_advanced">Zaawansowane</string>
     <string name="customize_prefix_label">Prefiks pakietu aplikacji pomocniczych</string>
@@ -210,7 +210,6 @@
     <string name="customize_build">Zbuduj</string>
     <string name="preset_recommended">Zalecane</string>
     <string name="preset_minimal">Minimalne</string>
-    <string name="preset_everything">Wszystko</string>
     <string name="prefix_problem_empty">Wpisz prefiks.</string>
     <string name="prefix_problem_short">Użyj co najmniej dwóch części, np. io.example.</string>
     <string name="prefix_problem_long">Ten prefiks jest za długi.</string>
@@ -657,4 +656,5 @@
     <string name="skip_reason_wearable">Zegarek jest już sparowany z Galaxy Wearable.</string>
     <string name="skip_reason_watchpair">Zegarek jest już połączony przez debugowanie bezprzewodowe.</string>
     <string name="skip_confirm">Rozumiem</string>
+    <string name="skip_manual">Skonfiguruj ręcznie</string>
 </resources>

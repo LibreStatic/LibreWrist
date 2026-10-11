@@ -10,6 +10,7 @@ import io.openshm.patcher.build.BuildSink
 import io.openshm.patcher.build.BuiltBuild
 import io.openshm.patcher.build.BuiltOutputs
 import io.openshm.patcher.build.BuiltRecord
+import io.openshm.patcher.build.buildKey
 import io.openshm.patcher.build.StepResult
 import io.openshm.patcher.data.SigningKeyStore
 import io.openshm.patcher.engine.OwnAppRequest
@@ -117,6 +118,26 @@ class BuildRunnerTest {
         val profile = engineCatalogue.profile(phone.profile)
         assertEquals(profile.inject["shm-phone"].orEmpty().toSet(), phone.injections.keys)
         assertTrue(phone.outputApk!!.name.endsWith(".apk.part"))
+    }
+
+    @Test fun disabledPatternsReachEveryPatchedOutput() {
+        val engine = FakeEngine()
+        val disabled = setOf("shm-sleep-apnea-support", "watch-apnea-country", "watch-apnea-reeval-not-supported", "alarm-relabel")
+        runner(engine).run(BuildRequest(allIds, "com.example", key, null, disabled), Sink())
+        assertEquals(setOf("shm-phone", "shm-watch", "alarm-watch"), engine.patches.map { it.inputId }.toSet())
+        for (req in engine.patches) assertEquals(disabled, req.disabledPatterns)
+    }
+
+    @Test fun nothingIsDisabledByDefault() {
+        val engine = FakeEngine()
+        runner(engine).run(request(allIds), Sink())
+        assertTrue(engine.patches.all { it.disabledPatterns.isEmpty() })
+    }
+
+    @Test fun buildKeyChangesWithTheSkippedPatches() {
+        assertEquals(buildKey(1, "a.b", listOf("x")), buildKey(1, "a.b", listOf("x"), emptySet()))
+        assertTrue(buildKey(1, "a.b", listOf("x")) != buildKey(1, "a.b", listOf("x"), setOf("alarm-relabel")))
+        assertEquals(buildKey(1, "a.b", listOf("x"), listOf("p", "q")), buildKey(1, "a.b", listOf("x"), listOf("q", "p")))
     }
 
     @Test fun onlyThePhoneBridgeGetsTheKnownSigner() {

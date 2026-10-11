@@ -41,6 +41,10 @@ data class PatchInfo(
     val description: String,
     /** Injected code (`watch-mod`, `alarm-fork`) rather than a smali pattern. */
     val injection: Boolean = false,
+    /** The user may switch this pattern off (`optional` in the catalogue). Injections are always required. */
+    val optional: Boolean = false,
+    /** Patterns sharing a group are switched on or off together, across apps. */
+    val optionGroup: String? = null,
 )
 
 /** The patches that apply to one input, in profile order. */

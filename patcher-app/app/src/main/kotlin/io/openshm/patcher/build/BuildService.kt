@@ -50,7 +50,8 @@ class BuildService : Service() {
         if (job?.isActive == true || BuildController.state.value.phase == BuildRunPhase.Running) return START_NOT_STICKY
         val session = SetupSession.state.value
         val outputIds = session.watchProfile.outputIds
-        val key = buildKey(AppCatalogue.current.serial, session.packagePrefix, outputIds)
+        val disabled = AppCatalogue.current.effectiveDisabled(session.disabledPatches)
+        val key = buildKey(AppCatalogue.current.serial, session.packagePrefix, outputIds, disabled)
         if (!BuildController.tryBegin(key)) return START_NOT_STICKY
         job = scope.launch {
             val lock = (getSystemService(POWER_SERVICE) as PowerManager)
@@ -59,7 +60,7 @@ class BuildService : Service() {
             wakeLock = lock
             val notifier = launch { BuildController.state.collect { notify(progressNotification(it)) } }
             try {
-                execute(key, session.packagePrefix, outputIds)
+                execute(key, session.packagePrefix, outputIds, disabled)
             } catch (e: Throwable) {
                 // The message of an engine or platform error; key material is never part of one.
                 BuildController.onLog("FAILED: ${e.javaClass.simpleName}: ${e.message}")
@@ -80,7 +81,7 @@ class BuildService : Service() {
         super.onDestroy()
     }
 
-    private fun execute(key: String, prefix: String, outputIds: List<String>) {
+    private fun execute(key: String, prefix: String, outputIds: List<String>, disabled: Set<String>) {
         val catalogue = AppCatalogue.current
         val inputs = InputStore(this)
         for (id in outputIds.mapNotNull { catalogue.output(it).inputId }.distinct()) {
@@ -108,7 +109,7 @@ class BuildService : Service() {
 
             override fun onLog(line: String) = BuildController.onLog(line)
         }
-        val outcome = runner.run(BuildRequest(outputIds, prefix, signingKey, ownCertificateSha256()), sink)
+        val outcome = runner.run(BuildRequest(outputIds, prefix, signingKey, ownCertificateSha256(), disabled), sink)
         if (outcome.ok) {
             storage.record.write(
                 BuiltBuild(

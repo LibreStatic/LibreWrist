@@ -196,7 +196,7 @@
 
     <!-- Customize -->
     <string name="customize_title">选择补丁</string>
-    <string name="customize_intro">这些补丁是应用在你的设备上正常运行所必需的，因此始终开启。</string>
+    <string name="customize_intro">带锁的补丁是应用在你的设备上运行所必需的。其他补丁为可选，可以关闭。</string>
     <string name="customize_required">必需，始终开启</string>
     <string name="customize_advanced">高级</string>
     <string name="customize_prefix_label">辅助应用的包名前缀</string>
@@ -207,7 +207,6 @@
     <string name="customize_build">构建</string>
     <string name="preset_recommended">推荐</string>
     <string name="preset_minimal">精简</string>
-    <string name="preset_everything">全部</string>
     <string name="prefix_problem_empty">请输入前缀。</string>
     <string name="prefix_problem_short">请至少使用两段，例如 io.example。</string>
     <string name="prefix_problem_long">该前缀太长。</string>
@@ -633,4 +632,5 @@
     <string name="skip_reason_wearable">你的手表已与 Galaxy Wearable 配对。</string>
     <string name="skip_reason_watchpair">你的手表已通过无线调试连接。</string>
     <string name="skip_confirm">知道了</string>
+    <string name="skip_manual">手动设置</string>
 </resources>

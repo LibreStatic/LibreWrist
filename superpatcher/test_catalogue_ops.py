@@ -221,6 +221,65 @@ class Interpreter(Tree):
             P.run_profile(self.tree, ['nope'], catalogue=self.catalogue(
                 [{'op': 'removeSmaliDir', 'rel': 'x'}]))
 
+    def multi_catalogue(self):
+        cat = self.catalogue([{'op': 'removeSmaliDir', 'rel': 'x'}])
+        op = [{'op': 'swapConst', 'fileRegex': 'B', 'old': 'AAA', 'new': 'BBB'}]
+        base = {'families': '*', 'title': 't', 'description': 'd', 'ops': op}
+        cat['patterns'] = {
+            'req': dict(base, optional=False),
+            'opt': dict(base, optional=True),
+            'ga': dict(base, optional=True, optionGroup='grp'),
+            'gb': dict(base, optional=True, optionGroup='grp'),
+        }
+        cat['profiles']['p']['families']['shm-phone'] = ['req', 'opt', 'ga', 'gb']
+        self.assertEqual(P.validate_catalogue(cat), [])
+        return cat
+
+    def test_skip_leaves_optional_patterns_out(self):
+        self.put('smali/a/B.smali', '.class LB;\nAAA\n')
+        cat = self.multi_catalogue()
+        report = P.run_profile(self.tree, ['req', 'opt', 'ga', 'gb'], catalogue=cat,
+                               skip=['opt', 'ga', 'gb'])
+        self.assertEqual([r[0] for r in report], ['req'])
+
+    def test_skip_refuses_required_unknown_and_partial_group(self):
+        cat = self.multi_catalogue()
+        for skip, text in ((['req'], 'required'), (['nope'], 'unknown'), (['ga'], 'as a whole')):
+            with self.assertRaisesRegex(P.PatternRequiredError, text):
+                P.run_profile(self.tree, ['req', 'opt', 'ga', 'gb'], catalogue=cat, skip=skip)
+
+    def test_skip_does_not_weaken_anchors_of_the_rest(self):
+        self.put('smali/a/B.smali', '.class LB;\n')
+        with self.assertRaisesRegex(P.PatternRequiredError, 'req.*raised|matched nothing'):
+            P.run_profile(self.tree, ['req', 'opt'], catalogue=self.multi_catalogue(), skip=['opt'])
+
+    def test_option_group_validation(self):
+        cat = self.multi_catalogue()
+        cat['patterns']['req']['optionGroup'] = 'grp'
+        self.assertTrue(any('only allowed on optional' in p for p in P.validate_catalogue(cat)))
+        cat = self.multi_catalogue()
+        cat['patterns']['ga']['optionGroup'] = 'Bad Group'
+        self.assertTrue(any('kebab-case' in p for p in P.validate_catalogue(cat)))
+        cat = self.multi_catalogue()
+        cat['patterns']['ga']['optionGroup'] = 7
+        self.assertTrue(any('kebab-case' in p for p in P.validate_catalogue(cat)))
+        cat = self.multi_catalogue()
+        cat['patterns']['gb']['optionGroup'] = 'other'
+        self.assertTrue(any('at least two' in p for p in P.validate_catalogue(cat)))
+        cat = self.multi_catalogue()
+        cat['patterns']['ga']['extra'] = 1
+        self.assertTrue(any('exactly the keys' in p for p in P.validate_catalogue(cat)))
+
+    def test_real_catalogue_optional_set(self):
+        pats = P.load_catalogue()['patterns']
+        self.assertEqual({i for i, p in pats.items() if p['optional']}, {
+            'shm-min-age-22-to-16', 'shm-setup-network-gate', 'shm-sleep-apnea-support',
+            'watch-apnea-country', 'watch-apnea-reeval-not-supported',
+            'alarm-force-sound-vibrate', 'alarm-hide-launcher', 'alarm-relabel'})
+        self.assertEqual({i for i, p in pats.items() if p.get('optionGroup') == 'sleep-apnea'},
+                         {'shm-sleep-apnea-support', 'watch-apnea-country',
+                          'watch-apnea-reeval-not-supported'})
+
     def test_validate_reports_bad_ops_and_references(self):
         cat = copy.deepcopy(P.load_catalogue())
         cat['patterns']['alarm-relabel']['ops'][0]['bogus'] = 1

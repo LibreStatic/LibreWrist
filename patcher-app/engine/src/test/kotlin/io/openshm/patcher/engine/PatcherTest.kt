@@ -41,6 +41,30 @@ class PatcherTest {
 
     return-object v0
 .end method
+
+.method public static farewell()Ljava/lang/String;
+    .locals 1
+
+    const-string v0, "bye"
+
+    return-object v0
+.end method
+
+.method public static italian()Ljava/lang/String;
+    .locals 1
+
+    const-string v0, "ciao"
+
+    return-object v0
+.end method
+
+.method public static spanish()Ljava/lang/String;
+    .locals 1
+
+    const-string v0, "adios"
+
+    return-object v0
+.end method
 """
 
     private fun syntheticApk(file: File, pkg: String = "com.example.syn", withDex: Boolean = true) {
@@ -59,7 +83,23 @@ class PatcherTest {
         }
     }
 
-    private fun catalogue(apk: File, patchNew: String = "\\\"patched\\\"", old: String = "\\\"hello\\\""): Catalogue {
+    /** An optional pattern on the string constant [word]; [group] puts it in an option group. */
+    private fun optionalPattern(word: String, group: String? = null) =
+        """{"families": ["syn"], "title": "t", "description": "d", "optional": true,
+    ${if (group != null) "\"optionGroup\": \"$group\"," else ""}
+    "ops": [{"op": "replaceInClass", "className": "com/example/syn/Main", "old": "\"$word\"", "new": "\"$word!\""}]}"""
+
+    private fun catalogue(
+        apk: File,
+        patchNew: String = "\\\"patched\\\"",
+        old: String = "\\\"hello\\\"",
+        withOptional: Boolean = false,
+        groupOfSpanish: String? = "g",
+    ): Catalogue {
+        val extraIds = if (withOptional) ", \"wave\", \"ga\", \"gb\"" else ""
+        val extraPatterns = if (withOptional) {
+            ", \"wave\": ${optionalPattern("bye")}, \"ga\": ${optionalPattern("ciao", "g")}, \"gb\": ${optionalPattern("adios", groupOfSpanish)}"
+        } else ""
         val text = """
 {
   "schema": 1, "serial": 1, "minAppVersion": 1,
@@ -67,14 +107,86 @@ class PatcherTest {
     "versionName": "1", "versionCode": 1, "minSdk": 21, "targetSdk": 21, "abis": [], "dpi": "nodpi", "format": "apk",
     "target": "phone", "role": "patched"}],
   "families": [{"id": "syn", "package": "com.example.syn"}],
-  "profiles": {"p": {"description": "synthetic", "families": {"syn": ["greet"]},
+  "profiles": {"p": {"description": "synthetic", "families": {"syn": ["greet"$extraIds]},
     "inject": {"syn": ["extra"]}}},
   "patterns": {"greet": {"families": ["syn"], "title": "Greeting", "description": "changes the greeting", "optional": false,
-    "ops": [{"op": "replaceInClass", "className": "com/example/syn/Main", "old": "$old", "new": "$patchNew"}]}},
+    "ops": [{"op": "replaceInClass", "className": "com/example/syn/Main", "old": "$old", "new": "$patchNew"}]}$extraPatterns},
   "outputs": [{"id": "syn-out", "device": "phone", "package": "com.example.syn", "from": {"input": "syn", "profile": "p"}}],
   "installOrder": [{"output": "syn-out"}], "grants": {"syn-out": []}, "stockAppsToDisable": []
 }"""
         return Catalogue.parse(text)
+    }
+
+    private fun request(apk: File, disabled: Set<String>) = PatchRequest(
+        apk, "syn", "p", "org.test", mapOf("extra" to StagedInjection(extra, "org.test")), null, null, dir,
+        disabledPatterns = disabled,
+    )
+
+    private fun applied(report: PatchReport) = report.patterns.map { it.id }
+
+    @Test fun disabledOptionalPatternsAreNotApplied() {
+        val apk = File(dir, "syn.apk").also { syntheticApk(it) }
+        val all = Patcher(catalogue(apk, withOptional = true)).analyze(request(apk, emptySet()))
+        assertTrue(all.text(), all.ok)
+        assertEquals(listOf("greet", "wave", "ga", "gb"), applied(all))
+
+        val some = Patcher(catalogue(apk, withOptional = true)).analyze(request(apk, setOf("wave", "ga", "gb")))
+        assertTrue(some.text(), some.ok)
+        assertEquals(listOf("greet"), applied(some))
+
+        val one = Patcher(catalogue(apk, withOptional = true)).analyze(request(apk, setOf("wave")))
+        assertEquals(listOf("greet", "ga", "gb"), applied(one))
+    }
+
+    @Test fun disabledPatternsAreAbsentFromTheFinishedApk() {
+        val apk = File(dir, "syn.apk").also { syntheticApk(it) }
+        val out = File(dir, "out.apk")
+        val req = PatchRequest(apk, "syn", "p", "org.test", mapOf("extra" to StagedInjection(extra, "org.test")), out, key(), dir,
+            disabledPatterns = setOf("wave"))
+        val report = Patcher(catalogue(apk, withOptional = true)).patch(req)
+        assertTrue(report.text(), report.ok)
+        assertEquals(listOf("greet", "ga", "gb"), report.verification.map { it.id })
+        ZipReader(out).use { z ->
+            val tree = DexTree(listOf("classes.dex" to z.read("classes.dex"), "classes2.dex" to z.read("classes2.dex")), api)
+            val main = tree.read(tree.classPath("com/example/syn/Main")!!)
+            assertTrue(main.contains("\"bye\""))
+            assertTrue(main.contains("\"ciao!\""))
+        }
+    }
+
+    @Test fun skippingKeepsTheAnchorRuleForTheRest() {
+        val apk = File(dir, "syn.apk").also { syntheticApk(it) }
+        val report = Patcher(catalogue(apk, old = "\\\"absent\\\"", withOptional = true)).analyze(request(apk, setOf("wave")))
+        assertFalse(report.ok)
+        assertTrue(report.error, report.error!!.startsWith("apply"))
+    }
+
+    @Test fun requiredUnknownAndPartialGroupSkipsAreRejectedBeforeReadingTheApk() {
+        val apk = File(dir, "syn.apk").also { syntheticApk(it) }
+        val cases = mapOf(
+            setOf("greet") to "required",
+            setOf("nope") to "unknown",
+            setOf("ga") to "as a whole",
+            setOf("wave", "greet") to "required",
+        )
+        for ((disabled, text) in cases) {
+            val report = Patcher(catalogue(apk, withOptional = true)).analyze(request(apk, disabled))
+            assertFalse("$disabled", report.ok)
+            assertTrue(report.error, report.error!!.contains(text))
+            assertEquals(listOf("check-request"), report.phases.map { it.name })
+        }
+    }
+
+    @Test fun optionGroupMustHaveTwoOptionalMembers() {
+        val apk = File(dir, "syn.apk").also { syntheticApk(it) }
+        for (group in listOf("Bad Group", "other")) {
+            try {
+                catalogue(apk, withOptional = true, groupOfSpanish = group)
+                fail(group)
+            } catch (e: CatalogueException) {
+                assertTrue(e.problems.toString(), e.problems.any { "optionGroup" in it })
+            }
+        }
     }
 
     private fun key(): SigningKey {

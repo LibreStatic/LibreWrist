@@ -196,7 +196,7 @@
 
     <!-- Customize -->
     <string name="customize_title">選擇修補程式</string>
-    <string name="customize_intro">這些修補程式是應用程式在你的裝置上正常運作所必需的，因此一律開啟。</string>
+    <string name="customize_intro">有鎖頭的修補程式是應用程式在你的裝置上運作所必需的。其他為選用，可以關閉。</string>
     <string name="customize_required">必要，一律開啟</string>
     <string name="customize_advanced">進階</string>
     <string name="customize_prefix_label">輔助應用程式的套件名稱前置詞</string>
@@ -207,7 +207,6 @@
     <string name="customize_build">建置</string>
     <string name="preset_recommended">建議</string>
     <string name="preset_minimal">精簡</string>
-    <string name="preset_everything">全部</string>
     <string name="prefix_problem_empty">請輸入前置詞。</string>
     <string name="prefix_problem_short">請至少使用兩段，例如 io.example。</string>
     <string name="prefix_problem_long">該前置詞太長。</string>
@@ -633,4 +632,5 @@
     <string name="skip_reason_wearable">你的手錶已與 Galaxy Wearable 配對。</string>
     <string name="skip_reason_watchpair">你的手錶已透過無線偵錯連線。</string>
     <string name="skip_confirm">我知道了</string>
+    <string name="skip_manual">手動設定</string>
 </resources>

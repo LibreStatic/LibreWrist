@@ -196,7 +196,7 @@
 
     <!-- Customize -->
     <string name="customize_title">パッチを選ぶ</string>
-    <string name="customize_intro">これらのパッチは、お使いのデバイスでアプリを動作させるために必要なため、常にオンです。</string>
+    <string name="customize_intro">鍵マークのパッチは、デバイスでアプリを動かすために必要です。その他は任意で、オフにできます。</string>
     <string name="customize_required">必須、常にオン</string>
     <string name="customize_advanced">詳細設定</string>
     <string name="customize_prefix_label">ヘルパーアプリのパッケージプレフィックス</string>
@@ -207,7 +207,6 @@
     <string name="customize_build">ビルド</string>
     <string name="preset_recommended">推奨</string>
     <string name="preset_minimal">最小</string>
-    <string name="preset_everything">すべて</string>
     <string name="prefix_problem_empty">プレフィックスを入力してください。</string>
     <string name="prefix_problem_short">io.example のように、2つ以上の部分で指定してください。</string>
     <string name="prefix_problem_long">プレフィックスが長すぎます。</string>
@@ -633,4 +632,5 @@
     <string name="skip_reason_wearable">ウォッチはすでに Galaxy Wearable とペア設定されています。</string>
     <string name="skip_reason_watchpair">ウォッチはすでにワイヤレス デバッグで接続されています。</string>
     <string name="skip_confirm">OK</string>
+    <string name="skip_manual">手動で設定</string>
 </resources>

@@ -197,7 +197,7 @@
 
     <!-- Customize -->
     <string name="customize_title">Patches auswählen</string>
-    <string name="customize_intro">Diese Patches werden benötigt, damit die Apps auf deinen Geräten funktionieren, daher sind sie immer aktiv.</string>
+    <string name="customize_intro">Patches mit Schloss sind nötig, damit die Apps auf deinen Geräten funktionieren. Die anderen sind optional und lassen sich ausschalten.</string>
     <string name="customize_required">Erforderlich, immer aktiv</string>
     <string name="customize_advanced">Erweitert</string>
     <string name="customize_prefix_label">Paketpräfix für Hilfs-Apps</string>
@@ -208,7 +208,6 @@
     <string name="customize_build">Erstellen</string>
     <string name="preset_recommended">Empfohlen</string>
     <string name="preset_minimal">Minimal</string>
-    <string name="preset_everything">Alles</string>
     <string name="prefix_problem_empty">Gib einen Präfix ein.</string>
     <string name="prefix_problem_short">Verwende mindestens zwei Teile, wie io.example.</string>
     <string name="prefix_problem_long">Dieser Präfix ist zu lang.</string>
@@ -641,4 +640,5 @@
     <string name="skip_reason_wearable">Deine Uhr ist bereits mit Galaxy Wearable gekoppelt.</string>
     <string name="skip_reason_watchpair">Deine Uhr ist bereits über kabelloses Debugging verbunden.</string>
     <string name="skip_confirm">Verstanden</string>
+    <string name="skip_manual">Manuell einrichten</string>
 </resources>

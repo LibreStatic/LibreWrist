@@ -90,7 +90,7 @@ def report(family, results):
     print(f'\nTotal patched sites: {total}')
 
 
-def decode_and_patch(apk, cat, profile, work):
+def decode_and_patch(apk, cat, profile, work, skip=()):
     print(f'>> decoding {os.path.basename(apk)}')
     apktool('d', apk, '-o', work, '-f')
     family = P.detect_family(work, cat)
@@ -99,7 +99,7 @@ def decode_and_patch(apk, cat, profile, work):
     if ids is None:
         raise SystemExit(f'profile {profile["name"]!r} has no patch list for family {family!r}')
     try:
-        results = P.run_profile(work, ids, catalogue=cat)
+        results = P.run_profile(work, ids, catalogue=cat, skip=skip)
     except P.PatternRequiredError as e:
         report(family, e.report)
         raise SystemExit(str(e))
@@ -118,7 +118,7 @@ def cmd_analyze(args):
     work = fresh_work('analyze')
     try:
         cat = load_catalogue(args.catalogue)
-        decode_and_patch(os.path.abspath(args.apk), cat, load_profile(cat, args.profile), work)
+        decode_and_patch(os.path.abspath(args.apk), cat, load_profile(cat, args.profile), work, args.skip)
     finally:
         shutil.rmtree(work, ignore_errors=True)
 
@@ -131,7 +131,7 @@ def cmd_patch(args):
     os.makedirs(out_dir, exist_ok=True)
     work = fresh_work('patch')
     try:
-        family = decode_and_patch(apk, cat, profile, work)
+        family = decode_and_patch(apk, cat, profile, work, args.skip)
         wanted = profile.get('inject', {}).get(family, [])
         given = dict(i.split('=', 1) for i in args.inject)
         if set(wanted) != set(given):
@@ -161,6 +161,8 @@ def main():
     for a in (a1, a2):
         a.add_argument('apk')
         a.add_argument('--profile', default='gms')
+        a.add_argument('--skip', action='append', default=[], metavar='ID',
+                       help='optional pattern id to leave out (repeatable; required ones are refused)')
         a.add_argument('--catalogue', default=None,
                        help='catalogue file (default: catalogue/catalogue.json)')
     args = ap.parse_args()

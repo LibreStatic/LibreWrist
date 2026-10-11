@@ -21,6 +21,8 @@ data class CataloguePattern(
     val description: String,
     val optional: Boolean,
     val steps: List<Map<String, Any?>>,
+    /** Optional patterns sharing a group are always enabled or disabled together; null when ungrouped. */
+    val optionGroup: String? = null,
 )
 
 data class CatalogueProfile(
@@ -75,7 +77,26 @@ class Catalogue private constructor(
         return "unknown:$manifestPackage"
     }
 
+    /**
+     * Checks a set of patterns the user switched off: every id must exist and be `optional`, and an
+     * `optionGroup` is switched off as a whole or not at all. Throws [PatchFailure] otherwise.
+     */
+    fun requireDisablable(disabled: Set<String>) {
+        val unknown = disabled.filter { it !in patterns }.sorted()
+        if (unknown.isNotEmpty()) throw PatchFailure("cannot disable unknown patterns: ${unknown.joinToString(", ")}")
+        val required = disabled.filter { !patterns.getValue(it).optional }.sorted()
+        if (required.isNotEmpty()) throw PatchFailure("cannot disable required patterns: ${required.joinToString(", ")}")
+        for (group in disabled.mapNotNull { patterns.getValue(it).optionGroup }.toSet()) {
+            val members = patterns.values.filter { it.optionGroup == group }.map { it.id }
+            if (!disabled.containsAll(members)) {
+                throw PatchFailure("option group '$group' must be disabled as a whole: ${members.joinToString(", ")}")
+            }
+        }
+    }
+
     companion object {
+        private val OPTION_GROUP_RE = Regex("^[a-z][a-z0-9]*(-[a-z0-9]+)*$")
+
         const val SCHEMA = 1
         const val SAMPLE_PREFIX = "com.example"
 
@@ -396,11 +417,12 @@ class Catalogue private constructor(
             val patternsRaw = cat["patterns"]
             val patterns: Map<*, *> = patternsRaw as? Map<*, *> ?: emptyMap<Any?, Any?>()
             if (patternsRaw !is Map<*, *>) problems.add("patterns must be an object")
+            val optionGroups = LinkedHashMap<String, MutableList<Any?>>()
             for ((pid, p) in patterns) {
                 val where = "pattern $pid"
                 val keys = setOf("families", "title", "description", "optional", "ops")
-                if (p !is Map<*, *> || p.keys != keys) {
-                    problems.add("$where: must have exactly the keys ${keys.sorted()}")
+                if (p !is Map<*, *> || !p.keys.containsAll(keys) || (p.keys - keys - "optionGroup").isNotEmpty()) {
+                    problems.add("$where: must have exactly the keys ${keys.sorted()} (plus optionally \"optionGroup\")")
                     continue
                 }
                 val pf = p["families"]
@@ -412,6 +434,16 @@ class Catalogue private constructor(
                     if (v !is String || v.isEmpty()) problems.add("$where: $k must be a non-empty string")
                 }
                 if (p["optional"] !is Boolean) problems.add("$where: optional must be a boolean")
+                if ("optionGroup" in p) {
+                    val group = p["optionGroup"]
+                    if (group !is String || !OPTION_GROUP_RE.matches(group)) {
+                        problems.add("$where: optionGroup must be a lowercase kebab-case string")
+                    } else if (p["optional"] != true) {
+                        problems.add("$where: optionGroup is only allowed on optional patterns")
+                    } else {
+                        optionGroups.getOrPut(group) { ArrayList() }.add(pid)
+                    }
+                }
                 val ops = p["ops"]
                 if (ops !is List<*> || ops.isEmpty()) {
                     problems.add("$where: ops must be a non-empty list")
@@ -426,6 +458,10 @@ class Catalogue private constructor(
                         problems.add("$where step ${i + 1}: ${e.message ?: e.javaClass.simpleName}")
                     }
                 }
+            }
+
+            for ((group, members) in optionGroups) {
+                if (members.size < 2) problems.add("optionGroup '$group': needs at least two patterns, has $members")
             }
 
             val used = HashSet<Any?>()
@@ -490,7 +526,7 @@ class Catalogue private constructor(
                 CataloguePattern(
                     id = id, families = (p["families"] as? List<String>), title = p["title"] as String,
                     description = p["description"] as String, optional = p["optional"] as Boolean,
-                    steps = p["ops"] as List<Map<String, Any?>>,
+                    steps = p["ops"] as List<Map<String, Any?>>, optionGroup = p["optionGroup"] as String?,
                 )
             }
             val profiles = (cat["profiles"] as Map<String, Map<String, Any?>>).mapValues { (name, p) ->

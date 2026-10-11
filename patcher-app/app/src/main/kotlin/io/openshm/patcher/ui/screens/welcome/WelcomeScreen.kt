@@ -96,6 +96,7 @@ sealed interface WelcomeEvent {
     data object GetStarted : WelcomeEvent
     data object ConfirmSkip : WelcomeEvent
     data object CancelSkip : WelcomeEvent
+    data object ManualSetup : WelcomeEvent
 }
 
 @Composable
@@ -112,6 +113,7 @@ fun WelcomeScreen(
             state.skip,
             onConfirm = { onEvent(WelcomeEvent.ConfirmSkip) },
             onCancel = { onEvent(WelcomeEvent.CancelSkip) },
+            onManual = { onEvent(WelcomeEvent.ManualSetup) },
         )
     }
 }

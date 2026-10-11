@@ -197,7 +197,7 @@
 
     <!-- Customize -->
     <string name="customize_title">Escolha seus patches</string>
-    <string name="customize_intro">Estes patches são necessários para os apps funcionarem nos seus dispositivos, por isso estão sempre ativados.</string>
+    <string name="customize_intro">Os patches com cadeado são necessários para que os apps funcionem nos seus dispositivos. Os outros são opcionais e você pode desativá-los.</string>
     <string name="customize_required">Obrigatório, sempre ativado</string>
     <string name="customize_advanced">Avançado</string>
     <string name="customize_prefix_label">Prefixo de pacote para os apps auxiliares</string>
@@ -208,7 +208,6 @@
     <string name="customize_build">Compilar</string>
     <string name="preset_recommended">Recomendado</string>
     <string name="preset_minimal">Mínimo</string>
-    <string name="preset_everything">Tudo</string>
     <string name="prefix_problem_empty">Digite um prefixo.</string>
     <string name="prefix_problem_short">Use pelo menos duas partes, como io.example.</string>
     <string name="prefix_problem_long">Esse prefixo é muito longo.</string>
@@ -641,4 +640,5 @@
     <string name="skip_reason_wearable">Seu relógio já está pareado com o Galaxy Wearable.</string>
     <string name="skip_reason_watchpair">Seu relógio já está conectado pela depuração por Wi-Fi.</string>
     <string name="skip_confirm">Entendi</string>
+    <string name="skip_manual">Configurar manualmente</string>
 </resources>

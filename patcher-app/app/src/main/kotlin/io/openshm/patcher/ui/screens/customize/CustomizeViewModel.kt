@@ -9,36 +9,49 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-/** Builds the screen state from the profile and prefix chosen earlier. Every catalogue patch is required today. */
-internal fun customizeStateFor(session: SessionState): CustomizeUiState = CustomizeUiState(
-    groups = session.watchProfile.inputIds.map { inputId ->
-        val input = AppCatalogue.current.input(inputId)
-        CustomizeGroup(
-            inputId = inputId,
-            label = input.label,
-            device = input.device,
-            patches = AppCatalogue.current.patches(inputId).map { CustomizePatch(it) },
-        )
-    },
-    packagePrefix = session.packagePrefix,
-    prefixLocked = session.prefixLocked,
-    prefixProblem = PackagePrefix.validate(session.packagePrefix),
-)
+/** Builds the screen state from the profile, prefix and switched-off patches chosen earlier. */
+internal fun customizeStateFor(session: SessionState): CustomizeUiState {
+    val catalogue = AppCatalogue.current
+    val disabled = catalogue.effectiveDisabled(session.disabledPatches)
+    return CustomizeUiState(
+        groups = session.watchProfile.inputIds.map { inputId ->
+            val input = catalogue.input(inputId)
+            CustomizeGroup(
+                inputId = inputId,
+                label = input.label,
+                device = input.device,
+                patches = catalogue.patches(inputId).map {
+                    CustomizePatch(it, required = !it.optional, enabled = it.id !in disabled)
+                },
+            )
+        },
+        packagePrefix = session.packagePrefix,
+        prefixLocked = session.prefixLocked,
+        prefixProblem = PackagePrefix.validate(session.packagePrefix),
+    )
+}
 
 internal fun CustomizeUiState.reduce(event: CustomizeEvent, regenerate: () -> String = PackagePrefix::generate): CustomizeUiState =
     when (event) {
-        is CustomizeEvent.TogglePatch -> copy(
-            groups = groups.map { group ->
-                if (group.inputId != event.inputId) group
-                else group.copy(
-                    patches = group.patches.map { p ->
-                        if (p.info.id == event.patchId && !p.required) p.copy(enabled = !p.enabled) else p
+        is CustomizeEvent.TogglePatch -> {
+            val target = groups.firstOrNull { it.inputId == event.inputId }?.patches
+                ?.firstOrNull { it.info.id == event.patchId && !it.required }
+            if (target == null) this else {
+                val enable = !target.enabled
+                // an option group (e.g. sleep apnea) switches as a whole, in every app that has a member
+                copy(
+                    groups = groups.map { group ->
+                        group.copy(
+                            patches = group.patches.map { p ->
+                                val sameGroup = target.info.optionGroup != null && p.info.optionGroup == target.info.optionGroup
+                                if (!p.required && (p.info.id == target.info.id || sameGroup)) p.copy(enabled = enable) else p
+                            },
+                        )
                     },
                 )
-            },
-        )
+            }
+        }
         is CustomizeEvent.SelectPreset -> copy(
-            preset = event.preset,
             groups = groups.map { group ->
                 group.copy(
                     patches = group.patches.map { p ->
@@ -61,6 +74,9 @@ class CustomizeViewModel : ViewModel() {
     fun onEvent(event: CustomizeEvent) {
         val next = _state.value.reduce(event)
         _state.value = next
+        if (event is CustomizeEvent.TogglePatch || event is CustomizeEvent.SelectPreset) {
+            SetupSession.update { it.copy(disabledPatches = next.disabledIds) }
+        }
         if (event is CustomizeEvent.PrefixChanged || event is CustomizeEvent.RegeneratePrefix) {
             if (next.prefixProblem == null) SetupSession.update { it.copy(packagePrefix = next.packagePrefix) }
         }

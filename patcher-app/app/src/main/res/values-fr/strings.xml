@@ -198,7 +198,7 @@
 
     <!-- Customize -->
     <string name="customize_title">Choisissez vos correctifs</string>
-    <string name="customize_intro">Ces correctifs sont nécessaires au fonctionnement des apps sur vos appareils, ils sont donc toujours activés.</string>
+    <string name="customize_intro">Les correctifs avec un cadenas sont nécessaires au fonctionnement des apps sur vos appareils. Les autres sont facultatifs : vous pouvez les désactiver.</string>
     <string name="customize_required">Obligatoire, toujours activé</string>
     <string name="customize_advanced">Avancé</string>
     <string name="customize_prefix_label">Préfixe de paquet pour les apps auxiliaires</string>
@@ -209,7 +209,6 @@
     <string name="customize_build">Compiler</string>
     <string name="preset_recommended">Recommandé</string>
     <string name="preset_minimal">Minimal</string>
-    <string name="preset_everything">Tout</string>
     <string name="prefix_problem_empty">Saisissez un préfixe.</string>
     <string name="prefix_problem_short">Utilisez au moins deux parties, comme io.example.</string>
     <string name="prefix_problem_long">Ce préfixe est trop long.</string>
@@ -649,4 +648,5 @@
     <string name="skip_reason_wearable">Votre montre est déjà associée à Galaxy Wearable.</string>
     <string name="skip_reason_watchpair">Votre montre est déjà connectée via le débogage sans fil.</string>
     <string name="skip_confirm">Compris</string>
+    <string name="skip_manual">Configurer manuellement</string>
 </resources>

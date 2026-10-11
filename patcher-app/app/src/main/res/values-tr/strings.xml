@@ -197,7 +197,7 @@
 
     <!-- Customize -->
     <string name="customize_title">Yamalarınızı seçin</string>
-    <string name="customize_intro">Bu yamalar uygulamaların cihazlarınızda çalışması için gereklidir, bu yüzden her zaman açıktır.</string>
+    <string name="customize_intro">Kilitli yamalar, uygulamaların cihazlarınızda çalışması için gereklidir. Diğerleri isteğe bağlıdır ve kapatılabilir.</string>
     <string name="customize_required">Gerekli, her zaman açık</string>
     <string name="customize_advanced">Gelişmiş</string>
     <string name="customize_prefix_label">Yardımcı uygulamalar için paket öneki</string>
@@ -208,7 +208,6 @@
     <string name="customize_build">Derle</string>
     <string name="preset_recommended">Önerilen</string>
     <string name="preset_minimal">Asgari</string>
-    <string name="preset_everything">Hepsi</string>
     <string name="prefix_problem_empty">Bir önek girin.</string>
     <string name="prefix_problem_short">En az iki bölüm kullanın, örneğin io.example.</string>
     <string name="prefix_problem_long">Bu önek çok uzun.</string>
@@ -641,4 +640,5 @@
     <string name="skip_reason_wearable">Saatiniz zaten Galaxy Wearable ile eşlenmiş.</string>
     <string name="skip_reason_watchpair">Saatiniz zaten kablosuz hata ayıklama ile bağlı.</string>
     <string name="skip_confirm">Anladım</string>
+    <string name="skip_manual">Elle ayarla</string>
 </resources>
