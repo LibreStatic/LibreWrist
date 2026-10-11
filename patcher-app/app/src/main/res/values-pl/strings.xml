@@ -365,7 +365,7 @@
     <string name="install_error_unknown_sources">Ta aplikacja nie ma jeszcze zezwolenia na instalowanie aplikacji. Zezwól i zacznij od nowa.</string>
     <string name="install_error_notifications">Najpierw zezwól tej aplikacji na powiadomienia: kod parowania wpisuje się w powiadomieniu.</string>
     <string name="phone_adb_title">Przyznaj wszystko naraz</string>
-    <string name="phone_adb_intro">Jeśli przełączniki przeszkadzają, ten telefon może sam je sobie przyznać przez **Debugowanie bezprzewodowe**. Musisz być w sieci Wi-Fi.</string>
+    <string name="phone_adb_intro">Jeśli przełączniki przeszkadzają, ten telefon może sam je sobie przyznać przez **Debugowanie bezprzewodowe**. Musisz być w sieci Wi-Fi. Powiadomienie poprosi Cię o kod parowania.</string>
     <string name="phone_adb_action">Przyznaj wszystko przez Debugowanie bezprzewodowe</string>
     <string name="phone_adb_waiting_service">1. W **Debugowaniu bezprzewodowym** włącz je.\n2. Dotknij **Sparuj urządzenie za pomocą kodu parowania**.\n3. Pojawi się powiadomienie, w którym wpiszesz kod bez opuszczania tego ekranu.</string>
     <string name="phone_adb_waiting_code">Wpisz sześciocyfrowy kod z ekranu parowania tutaj lub w powiadomieniu.</string>
@@ -685,4 +685,13 @@
     <string name="skip_reason_watchpair">Zegarek jest już połączony przez debugowanie bezprzewodowe.</string>
     <string name="skip_confirm">Rozumiem</string>
     <string name="skip_manual">Skonfiguruj ręcznie</string>
+    <string name="selfadb_guide_title">Jak działa parowanie z tym telefonem</string>
+    <string name="selfadb_guide_sub_1">Dotknij przycisku poniżej</string>
+    <string name="selfadb_guide_sub_2">W Opcjach programisty włącz debugowanie bezprzewodowe</string>
+    <string name="selfadb_guide_sub_3">Dotknij Sparuj urządzenie z kodem parowania</string>
+    <string name="selfadb_guide_sub_4">Wpisz sześć cyfr w powiadomieniu OpenSHM albo tutaj, na tym ekranie</string>
+    <string name="selfadb_guide_already">Jeśli sparowano już wcześniej, połączy się samo.</string>
+    <string name="selfadb_guide_ui_pair_code">Sparuj urządzenie z kodem parowania</string>
+    <string name="selfadb_guide_ui_paired">Sparowane urządzenia</string>
+    <string name="selfadb_open_wireless">Otwórz debugowanie bezprzewodowe</string>
 </resources>

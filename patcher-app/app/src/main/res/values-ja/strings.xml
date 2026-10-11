@@ -110,7 +110,7 @@
     <string name="profile_detected_network">お使いのウォッチ（%1$s）が Wi-Fi 経由で Android API %2$s を通知しました（%3$s）</string>
     <string name="profile_paired_certain">常に Wear OS 5 以降で動作するため、このオプションを選択しました。</string>
     <string name="profile_paired_depends">アップデート状況により、どちらのバージョンの場合もあります。</string>
-    <string name="profile_tip_wireless">確実に知るには、ウォッチでワイヤレス デバッグをオンにしてください。この画面が Wi-Fi 経由でバージョンを読み取ります。</string>
+    <string name="profile_tip_wireless">確実に知るには、ウォッチでワイヤレスデバッグをオンにしてください。この画面が Wi-Fi 経由でバージョンを読み取ります。</string>
     <string name="profile_scanning">Wi-Fi でウォッチを探しています…</string>
     <string name="profile_allow">許可</string>
     <string name="profile_check_none">ペア設定済みのGalaxy Watchが見つかりません。選択肢を選ぶか、ステップ3でアプリに確認させてください。</string>
@@ -347,7 +347,7 @@
     <string name="install_error_unknown_sources">このアプリにはまだアプリのインストールが許可されていません。許可してから、もう一度開始してください。</string>
     <string name="install_error_notifications">先にこのアプリの通知を許可してください。ペア設定コードは通知内で入力します。</string>
     <string name="phone_adb_title">まとめて許可する</string>
-    <string name="phone_adb_intro">スイッチが邪魔な場合は、このスマートフォンが**ワイヤレスデバッグ**経由で自分自身に許可を与えることができます。Wi-Fiに接続している必要があります。</string>
+    <string name="phone_adb_intro">スイッチが邪魔な場合は、このスマートフォンが**ワイヤレスデバッグ**経由で自分自身に許可を与えることができます。Wi-Fiに接続している必要があります。 通知でペア設定コードの入力を求められます。</string>
     <string name="phone_adb_action">ワイヤレスデバッグですべて許可</string>
     <string name="phone_adb_waiting_service">1. **ワイヤレスデバッグ**をオンにします。\n2. **ペア設定コードによるデバイスのペア設定**をタップします。\n3. 通知が表示され、その画面を離れずにコードを入力できます。</string>
     <string name="phone_adb_waiting_code">ペア設定画面に表示されている6桁のコードを、ここまたは通知で入力してください。</string>
@@ -658,7 +658,16 @@
     <string name="skip_reason_profile">接続中のウォッチで Android %1$s（%2$s）を検出しました。</string>
     <string name="skip_reason_profile_network">お使いのウォッチ（%1$s）が Wi-Fi 経由で Android API %2$s を通知しました（%3$s）。</string>
     <string name="skip_reason_wearable">ウォッチはすでに Galaxy Wearable とペア設定されています。</string>
-    <string name="skip_reason_watchpair">ウォッチはすでにワイヤレス デバッグで接続されています。</string>
+    <string name="skip_reason_watchpair">ウォッチはすでにワイヤレスデバッグで接続されています。</string>
     <string name="skip_confirm">OK</string>
     <string name="skip_manual">手動で設定</string>
+    <string name="selfadb_guide_title">このスマートフォンとのペア設定のしくみ</string>
+    <string name="selfadb_guide_sub_1">下のボタンをタップします</string>
+    <string name="selfadb_guide_sub_2">開発者向けオプションでワイヤレスデバッグをオンにします</string>
+    <string name="selfadb_guide_sub_3">「ペア設定コードによるデバイスのペア設定」をタップします</string>
+    <string name="selfadb_guide_sub_4">6桁の数字を OpenSHM の通知、またはこの画面に入力します</string>
+    <string name="selfadb_guide_already">以前にペア設定済みの場合は、自動的に接続されます。</string>
+    <string name="selfadb_guide_ui_pair_code">ペア設定コードによるデバイスのペア設定</string>
+    <string name="selfadb_guide_ui_paired">ペア設定済みのデバイス</string>
+    <string name="selfadb_open_wireless">ワイヤレスデバッグを開く</string>
 </resources>

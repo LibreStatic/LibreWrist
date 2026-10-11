@@ -347,7 +347,7 @@
     <string name="install_error_unknown_sources">此应用尚未获准安装应用。请先允许，然后重新开始。</string>
     <string name="install_error_notifications">请先允许此应用发送通知：配对码需要在通知中输入。</string>
     <string name="phone_adb_title">一次性授予全部权限</string>
-    <string name="phone_adb_intro">如果开关操作不便，这部手机可以通过**无线调试**自行授予这些权限。你需要连接 Wi-Fi。</string>
+    <string name="phone_adb_intro">如果开关操作不便，这部手机可以通过**无线调试**自行授予这些权限。你需要连接 Wi-Fi。 通知会向你索取配对码。</string>
     <string name="phone_adb_action">通过无线调试授予全部权限</string>
     <string name="phone_adb_waiting_service">1. 在**无线调试**中开启该功能。\n2. 点按**使用配对码配对设备**。\n3. 会弹出一条通知，你可以在不离开该界面的情况下输入配对码。</string>
     <string name="phone_adb_waiting_code">请在此处或通知中输入配对界面上显示的 6 位配对码。</string>
@@ -661,4 +661,13 @@
     <string name="skip_reason_watchpair">你的手表已通过无线调试连接。</string>
     <string name="skip_confirm">知道了</string>
     <string name="skip_manual">手动设置</string>
+    <string name="selfadb_guide_title">与此手机配对的方式</string>
+    <string name="selfadb_guide_sub_1">点按下方的按钮</string>
+    <string name="selfadb_guide_sub_2">在开发者选项中开启无线调试</string>
+    <string name="selfadb_guide_sub_3">点按“使用配对码配对设备”</string>
+    <string name="selfadb_guide_sub_4">在 OpenSHM 通知或此屏幕中输入六位数字</string>
+    <string name="selfadb_guide_already">如果你之前已经配对过，它会自动连接。</string>
+    <string name="selfadb_guide_ui_pair_code">使用配对码配对设备</string>
+    <string name="selfadb_guide_ui_paired">已配对的设备</string>
+    <string name="selfadb_open_wireless">打开无线调试</string>
 </resources>

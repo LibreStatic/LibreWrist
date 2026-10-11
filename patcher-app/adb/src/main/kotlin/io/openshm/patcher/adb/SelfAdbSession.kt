@@ -59,9 +59,19 @@ class SelfAdbSession(
     private val connectServiceTimeoutMillis: Long = 15_000,
     private val reconnectTimeoutMillis: Long = 5_000,
     private val isLocalHost: (String) -> Boolean = ::isOwnAddress,
+    /** Diagnostic lines (state names, counts, exception class names); never codes or keys. */
+    private val log: (String) -> Unit = {},
 ) {
     private val mutableState = MutableStateFlow<SelfAdbState>(SelfAdbState.Idle)
     val state: StateFlow<SelfAdbState> = mutableState
+
+    private fun set(next: SelfAdbState) {
+        if (mutableState.value != next) {
+            val detail = (next as? SelfAdbState.Failed)?.error?.let { " (${it.javaClass.simpleName}: cause ${it.cause?.javaClass?.simpleName})" }.orEmpty()
+            log("state ${next.javaClass.simpleName}$detail")
+        }
+        mutableState.value = next
+    }
 
     private var discoveryJob: Job? = null
     private var submitJob: Job? = null
@@ -71,6 +81,9 @@ class SelfAdbSession(
 
     @Volatile
     private var pairingPort: Int? = null
+
+    @Volatile
+    private var pairingHost: String = localHost
 
     /**
      * Tries to connect with the already-paired key first ([SelfAdbState.Reconnecting]); when that
@@ -83,14 +96,18 @@ class SelfAdbSession(
         submitJob?.cancel()
         val gen = ++generation
         pairingPort = null
-        mutableState.value = SelfAdbState.Reconnecting
+        set(SelfAdbState.Reconnecting)
         discoveryJob = scope.launch {
             val client = try {
                 reconnect()
             } catch (e: CancellationException) {
                 throw e
             } catch (e: AdbException) {
+                log("reconnect failed: ${e.javaClass.simpleName}")
                 null // not paired (the key was rejected): fall back to the pairing flow
+            } catch (e: Exception) {
+                log("reconnect crashed: ${e.javaClass.simpleName}")
+                null
             }
             if (client != null) {
                 // A late result must never replace a newer state, and must not leak the connection.
@@ -99,11 +116,19 @@ class SelfAdbSession(
             }
             if (!transition(gen, SelfAdbState.WaitingForPairingService)) return@launch
             try {
-                pairingServices.collect { services -> onPairingServices(services.filter { isLocalHost(it.host) }) }
+                pairingServices.collect { services ->
+                    val local = services.filter { isLocalHost(it.host) }
+                    log("pairing services: ${services.size} found, ${local.size} on this device")
+                    onPairingServices(local)
+                }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: AdbException) {
-                mutableState.value = SelfAdbState.Failed(e)
+                transition(gen, SelfAdbState.Failed(e))
+            } catch (e: Exception) {
+                // For example a SecurityException from NsdManager: end visibly instead of crashing.
+                log("pairing discovery crashed: ${e.javaClass.simpleName}")
+                transition(gen, SelfAdbState.Failed(AdbException.Discovery("Discovery failed: ${e.javaClass.simpleName}")))
             }
         }
     }
@@ -118,19 +143,38 @@ class SelfAdbSession(
         var client: AdbClient? = null
         withTimeoutOrNull(reconnectTimeoutMillis) {
             connectServices.first { list ->
-                for (port in list.filter { isLocalHost(it.host) }.map { it.port }.distinct()) {
-                    if (!tried.add(port)) continue
+                val local = list.filter { isLocalHost(it.host) }
+                log("reconnect: ${list.size} connect services found, ${local.size} on this device")
+                for (service in local.distinctBy { it.port }) {
+                    if (!tried.add(service.port)) continue
                     try {
-                        client = AdbClient.connect(backend, localHost, port)
+                        client = dial(service)
                         return@first true
                     } catch (e: AdbException.ConnectionFailed) {
                         if (!AdbErrors.isRefused(e)) throw e
+                        log("reconnect: a connect port refused the connection (stale announcement)")
                     }
                 }
                 false
             }
         }
+        if (client == null) log("reconnect: no usable connect service within ${reconnectTimeoutMillis} ms")
         return client
+    }
+
+    /**
+     * Connects to [service]'s port over [localHost]. adbd's TLS port may listen on the Wi-Fi
+     * address only, so a refusal on [localHost] is retried on the announced address (this
+     * device's own, [isLocalHost] was checked). A refusal on both means a stale announcement.
+     */
+    private suspend fun dial(service: AdbService): AdbClient {
+        try {
+            return AdbClient.connect(backend, localHost, service.port)
+        } catch (e: AdbException.ConnectionFailed) {
+            if (!AdbErrors.isRefused(e) || service.host == localHost) throw e
+            log("connect: $localHost refused, trying the announced address")
+        }
+        return AdbClient.connect(backend, service.host, service.port)
     }
 
     @Synchronized
@@ -142,17 +186,17 @@ class SelfAdbSession(
         when {
             local.size > 1 -> {
                 pairingPort = null
-                mutableState.value = SelfAdbState.AmbiguousService
+                set(SelfAdbState.AmbiguousService)
             }
             local.isEmpty() -> {
                 pairingPort = null
-                mutableState.value = SelfAdbState.WaitingForPairingService
+                set(SelfAdbState.WaitingForPairingService)
             }
             else -> {
                 val port = local.single().port
                 pairingPort = port
-                mutableState.value =
-                    if (current is SelfAdbState.WaitingForCode) current.copy(port = port) else SelfAdbState.WaitingForCode(port)
+                pairingHost = local.single().host
+                set(if (current is SelfAdbState.WaitingForCode) current.copy(port = port) else SelfAdbState.WaitingForCode(port))
             }
         }
     }
@@ -164,8 +208,8 @@ class SelfAdbSession(
         val port = pairingPort ?: return null
         submitJob?.cancel()
         val gen = ++generation
-        mutableState.value = SelfAdbState.Pairing // synchronously: a second submit is ignored
-        val job = scope.launch { pairAndConnect(gen, port, code.trim()) }
+        set(SelfAdbState.Pairing) // synchronously: a second submit is ignored
+        val job = scope.launch { pairAndConnect(gen, pairingHost, port, code.trim()) }
         submitJob = job
         return job
     }
@@ -176,21 +220,28 @@ class SelfAdbSession(
         discoveryJob?.cancel()
         submitJob?.cancel()
         (mutableState.value as? SelfAdbState.Connected)?.let { runCatching { it.client.close() } }
-        mutableState.value = SelfAdbState.Idle
+        set(SelfAdbState.Idle)
     }
 
     /** Sets [next] only if [gen] is still current. */
     @Synchronized
     private fun transition(gen: Int, next: SelfAdbState): Boolean {
         if (gen != generation) return false
-        mutableState.value = next
+        set(next)
         return true
     }
 
-    private suspend fun pairAndConnect(gen: Int, port: Int, code: String) {
+    private suspend fun pairAndConnect(gen: Int, announcedHost: String, port: Int, code: String) {
         try {
-            AdbPairing(backend).pair(localHost, port, code)
+            try {
+                AdbPairing(backend).pair(localHost, port, code)
+            } catch (e: AdbException.Pairing) {
+                if (e.reason != PairingFailure.NETWORK || announcedHost == localHost) throw e
+                log("pairing: $localHost unreachable, trying the announced address")
+                AdbPairing(backend).pair(announcedHost, port, code)
+            }
         } catch (e: AdbException.Pairing) {
+            log("pairing failed: ${e.reason}")
             transition(
                 gen,
                 when (e.reason) {
@@ -209,6 +260,10 @@ class SelfAdbSession(
             connectToLocalService(gen)
         } catch (e: AdbException) {
             transition(gen, SelfAdbState.Failed(e))
+            return
+        } catch (e: Exception) {
+            log("connect crashed: ${e.javaClass.simpleName}")
+            transition(gen, SelfAdbState.Failed(AdbException.Discovery("Connect failed: ${e.javaClass.simpleName}")))
             return
         } ?: return
         // A late result must never replace a newer state, and must not leak the connection.
@@ -229,14 +284,16 @@ class SelfAdbSession(
         var superseded = false
         val done = withTimeoutOrNull(connectServiceTimeoutMillis) {
             connectServices.first { list ->
-                for (port in list.filter { isLocalHost(it.host) }.map { it.port }.distinct()) {
-                    if (!tried.add(port)) continue
+                val local = list.filter { isLocalHost(it.host) }
+                log("connect: ${list.size} connect services found, ${local.size} on this device")
+                for (service in local.distinctBy { it.port }) {
+                    if (!tried.add(service.port)) continue
                     if (!transition(gen, SelfAdbState.Connecting)) {
                         superseded = true
                         return@first true
                     }
                     try {
-                        client = AdbClient.connect(backend, localHost, port)
+                        client = dial(service)
                         return@first true
                     } catch (e: AdbException.ConnectionFailed) {
                         if (!AdbErrors.isRefused(e)) throw e

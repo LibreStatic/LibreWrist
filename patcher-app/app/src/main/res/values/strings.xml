@@ -460,7 +460,7 @@
     <string name="install_error_unknown_sources">This app is not allowed to install apps yet. Allow it, then start again.</string>
     <string name="install_error_notifications">Allow notifications for this app first: the pairing code is typed into a notification.</string>
     <string name="phone_adb_title">Grant everything at once</string>
-    <string name="phone_adb_intro">If the switches are in the way, this phone can grant them to itself over **Wireless debugging**. You need to be on Wi-Fi.</string>
+    <string name="phone_adb_intro">If the switches are in the way, this phone can grant them to itself over **Wireless debugging**. You need to be on Wi-Fi. A notification will ask you for the pairing code.</string>
     <string name="phone_adb_action">Grant everything with Wireless debugging</string>
     <string name="phone_adb_waiting_service">1. In **Wireless debugging**, turn it on.\n2. Tap **Pair device with pairing code**.\n3. A notification will pop up where you can type the code without leaving that screen.</string>
     <string name="phone_adb_waiting_code">Type the six-digit code shown on the pairing screen, here or in the notification.</string>
@@ -671,4 +671,13 @@
     <string name="skip_reason_watchpair">Your watch is already connected over Wireless debugging.</string>
     <string name="skip_confirm">Got it</string>
     <string name="skip_manual">Set up manually</string>
+    <string name="selfadb_guide_title">How pairing with this phone works</string>
+    <string name="selfadb_guide_sub_1">Tap the button below</string>
+    <string name="selfadb_guide_sub_2">In Developer options, turn on Wireless debugging</string>
+    <string name="selfadb_guide_sub_3">Tap Pair device with pairing code</string>
+    <string name="selfadb_guide_sub_4">Type the six digits in the OpenSHM notification, or here on this screen</string>
+    <string name="selfadb_guide_already">If you already paired before, it connects by itself.</string>
+    <string name="selfadb_guide_ui_pair_code">Pair device with pairing code</string>
+    <string name="selfadb_guide_ui_paired">Paired devices</string>
+    <string name="selfadb_open_wireless">Open Wireless debugging</string>
 </resources>

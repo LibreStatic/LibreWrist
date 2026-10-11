@@ -365,7 +365,7 @@
     <string name="install_error_unknown_sources">Цьому застосунку ще не дозволено встановлювати застосунки. Дозвольте й почніть знову.</string>
     <string name="install_error_notifications">Спершу дозвольте сповіщення для цього застосунку: код з\'єднання вводиться в сповіщенні.</string>
     <string name="phone_adb_title">Надати все одразу</string>
-    <string name="phone_adb_intro">Якщо заважають перемикачі, телефон може надати їх собі сам через **Бездротове налагодження**. Потрібно бути в мережі Wi-Fi.</string>
+    <string name="phone_adb_intro">Якщо заважають перемикачі, телефон може надати їх собі сам через **Бездротове налагодження**. Потрібно бути в мережі Wi-Fi. Сповіщення попросить код підключення.</string>
     <string name="phone_adb_action">Надати все через Бездротове налагодження</string>
     <string name="phone_adb_waiting_service">1. У розділі **Бездротове налагодження** увімкніть його.\n2. Торкніться **З\'єднати пристрій за кодом з\'єднання**.\n3. З\'явиться сповіщення, де можна ввести код, не залишаючи того екрана.</string>
     <string name="phone_adb_waiting_code">Введіть шестизначний код з екрана з\'єднання тут або в сповіщенні.</string>
@@ -685,4 +685,13 @@
     <string name="skip_reason_watchpair">Годинник уже підключено через бездротове налагодження.</string>
     <string name="skip_confirm">Зрозуміло</string>
     <string name="skip_manual">Налаштувати вручну</string>
+    <string name="selfadb_guide_title">Як працює з\'єднання з цим телефоном</string>
+    <string name="selfadb_guide_sub_1">Натисніть кнопку нижче</string>
+    <string name="selfadb_guide_sub_2">У параметрах розробника ввімкніть бездротове налагодження</string>
+    <string name="selfadb_guide_sub_3">Натисніть «Підключити пристрій за кодом підключення»</string>
+    <string name="selfadb_guide_sub_4">Введіть шість цифр у сповіщенні OpenSHM або тут, на цьому екрані</string>
+    <string name="selfadb_guide_already">Якщо ви вже підключали раніше, з\'єднання станеться саме.</string>
+    <string name="selfadb_guide_ui_pair_code">Підключити пристрій за кодом підключення</string>
+    <string name="selfadb_guide_ui_paired">Підключені пристрої</string>
+    <string name="selfadb_open_wireless">Відкрити бездротове налагодження</string>
 </resources>

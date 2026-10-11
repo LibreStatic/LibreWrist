@@ -347,7 +347,7 @@
     <string name="install_error_unknown_sources">이 앱은 아직 앱을 설치할 수 없습니다. 허용한 다음 다시 시작하세요.</string>
     <string name="install_error_notifications">먼저 이 앱의 알림을 허용하세요. 페어링 코드는 알림에서 입력합니다.</string>
     <string name="phone_adb_title">한 번에 모두 허용</string>
-    <string name="phone_adb_intro">스위치를 켜기 번거롭다면, 이 휴대전화가 **무선 디버깅**으로 스스로 권한을 허용할 수 있습니다. Wi-Fi에 연결되어 있어야 합니다.</string>
+    <string name="phone_adb_intro">스위치를 켜기 번거롭다면, 이 휴대전화가 **무선 디버깅**으로 스스로 권한을 허용할 수 있습니다. Wi-Fi에 연결되어 있어야 합니다. 알림에서 페어링 코드를 요청합니다.</string>
     <string name="phone_adb_action">무선 디버깅으로 모두 허용</string>
     <string name="phone_adb_waiting_service">1. **무선 디버깅**을 켜세요.\n2. **페어링 코드로 기기 페어링**을 탭하세요.\n3. 그 화면에서 벗어나지 않고 코드를 입력할 수 있는 알림이 표시됩니다.</string>
     <string name="phone_adb_waiting_code">페어링 화면에 표시된 6자리 코드를 여기 또는 알림에 입력하세요.</string>
@@ -661,4 +661,13 @@
     <string name="skip_reason_watchpair">시계가 이미 무선 디버깅으로 연결되어 있습니다.</string>
     <string name="skip_confirm">확인</string>
     <string name="skip_manual">직접 설정</string>
+    <string name="selfadb_guide_title">이 휴대전화와 페어링하는 방법</string>
+    <string name="selfadb_guide_sub_1">아래 버튼을 탭하세요</string>
+    <string name="selfadb_guide_sub_2">개발자 옵션에서 무선 디버깅을 켜세요</string>
+    <string name="selfadb_guide_sub_3">페어링 코드로 기기 페어링을 탭하세요</string>
+    <string name="selfadb_guide_sub_4">OpenSHM 알림 또는 이 화면에 여섯 자리 숫자를 입력하세요</string>
+    <string name="selfadb_guide_already">이전에 페어링했다면 자동으로 연결됩니다.</string>
+    <string name="selfadb_guide_ui_pair_code">페어링 코드로 기기 페어링</string>
+    <string name="selfadb_guide_ui_paired">페어링된 기기</string>
+    <string name="selfadb_open_wireless">무선 디버깅 열기</string>
 </resources>

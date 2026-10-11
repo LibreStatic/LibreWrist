@@ -353,7 +353,7 @@
     <string name="install_error_unknown_sources">इस ऐप को अभी ऐप इंस्टॉल करने की अनुमति नहीं है। अनुमति दें, फिर दोबारा शुरू करें।</string>
     <string name="install_error_notifications">पहले इस ऐप के लिए सूचनाओं की अनुमति दें: पेयरिंग कोड सूचना में टाइप किया जाता है।</string>
     <string name="phone_adb_title">सब कुछ एक साथ दें</string>
-    <string name="phone_adb_intro">अगर स्विच रास्ते में आएँ, तो यह फ़ोन **वायरलेस डीबगिंग** के ज़रिए खुद उन्हें दे सकता है। आपका Wi-Fi पर होना ज़रूरी है।</string>
+    <string name="phone_adb_intro">अगर स्विच रास्ते में आएँ, तो यह फ़ोन **वायरलेस डीबगिंग** के ज़रिए खुद उन्हें दे सकता है। आपका Wi-Fi पर होना ज़रूरी है। एक सूचना आपसे पेयरिंग कोड माँगेगी।</string>
     <string name="phone_adb_action">वायरलेस डीबगिंग से सब कुछ दें</string>
     <string name="phone_adb_waiting_service">1. **वायरलेस डीबगिंग** में उसे चालू करें।\n2. **पेयरिंग कोड से डिवाइस पेयर करें** पर टैप करें।\n3. एक सूचना आएगी जिसमें आप उस स्क्रीन को छोड़े बिना कोड टाइप कर सकते हैं।</string>
     <string name="phone_adb_waiting_code">पेयरिंग स्क्रीन पर दिखा छह अंकों का कोड यहाँ या सूचना में टाइप करें।</string>
@@ -669,4 +669,13 @@
     <string name="skip_reason_watchpair">आपकी घड़ी पहले से वायरलेस डीबगिंग से कनेक्ट है।</string>
     <string name="skip_confirm">समझ गया</string>
     <string name="skip_manual">मैन्युअल रूप से सेट अप करें</string>
+    <string name="selfadb_guide_title">इस फ़ोन के साथ पेयरिंग कैसे काम करती है</string>
+    <string name="selfadb_guide_sub_1">नीचे दिए गए बटन पर टैप करें</string>
+    <string name="selfadb_guide_sub_2">डेवलपर विकल्प में वायरलेस डीबगिंग चालू करें</string>
+    <string name="selfadb_guide_sub_3">पेयरिंग कोड से डिवाइस पेयर करें पर टैप करें</string>
+    <string name="selfadb_guide_sub_4">छह अंक OpenSHM की सूचना में या यहीं इस स्क्रीन पर लिखें</string>
+    <string name="selfadb_guide_already">अगर आप पहले पेयर कर चुके हैं, तो यह अपने आप कनेक्ट हो जाएगा।</string>
+    <string name="selfadb_guide_ui_pair_code">पेयरिंग कोड से डिवाइस पेयर करें</string>
+    <string name="selfadb_guide_ui_paired">पेयर किए गए डिवाइस</string>
+    <string name="selfadb_open_wireless">वायरलेस डीबगिंग खोलें</string>
 </resources>

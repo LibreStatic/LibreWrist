@@ -110,7 +110,7 @@
     <string name="profile_detected_network">Jam tangan Anda (%1$s) mengumumkan Android API %2$s melalui Wi-Fi (%3$s)</string>
     <string name="profile_paired_certain">Selalu menjalankan Wear OS 5 atau lebih baru, jadi opsi itu dipilih.</string>
     <string name="profile_paired_depends">Bisa menjalankan kedua versi, tergantung pembaruannya.</string>
-    <string name="profile_tip_wireless">Untuk memastikan, aktifkan Proses debug nirkabel di jam tangan: layar ini membaca versinya melalui Wi-Fi.</string>
+    <string name="profile_tip_wireless">Untuk memastikan, aktifkan Debugging nirkabel di jam tangan: layar ini membaca versinya melalui Wi-Fi.</string>
     <string name="profile_scanning">Mencari jam tangan Anda di Wi-Fi…</string>
     <string name="profile_allow">Izinkan</string>
     <string name="profile_check_none">Tidak ada Galaxy Watch yang terhubung. Pilih salah satu opsi atau biarkan aplikasi memeriksanya di langkah 3.</string>
@@ -151,7 +151,7 @@
     <string name="watchpair_reconnecting">Menyambungkan ulang ke jam tanganmu…</string>
     <string name="watchpair_reconnected">Tersambung kembali ke jam tanganmu</string>
     <string name="watchpair_reconnected_model">Tersambung kembali ke jam tanganmu (%1$s)</string>
-    <string name="watchpair_remembered_hint">Jika kamu sudah memasangkan jam tangan ini, aktifkan Proses debug nirkabel di jam tangan dan akan tersambung kembali sendiri.</string>
+    <string name="watchpair_remembered_hint">Jika kamu sudah memasangkan jam tangan ini, aktifkan Debugging nirkabel di jam tangan dan akan tersambung kembali sendiri.</string>
     <string name="watchpair_searching">Mencari jammu…</string>
     <string name="watchpair_code_label">Kode penyandingan</string>
     <string name="watchpair_hint">Masukkan semua 6 digit untuk menyandingkan</string>
@@ -347,7 +347,7 @@
     <string name="install_error_unknown_sources">Aplikasi ini belum diizinkan memasang aplikasi. Izinkan, lalu mulai lagi.</string>
     <string name="install_error_notifications">Izinkan notifikasi untuk aplikasi ini dulu: kode penyandingan diketik di notifikasi.</string>
     <string name="phone_adb_title">Berikan semuanya sekaligus</string>
-    <string name="phone_adb_intro">Jika sakelar menghalangi, ponsel ini bisa memberikannya sendiri lewat **Debugging nirkabel**. Kamu harus terhubung ke Wi-Fi.</string>
+    <string name="phone_adb_intro">Jika sakelar menghalangi, ponsel ini bisa memberikannya sendiri lewat **Debugging nirkabel**. Kamu harus terhubung ke Wi-Fi. Sebuah notifikasi akan meminta kode penyandingan.</string>
     <string name="phone_adb_action">Berikan semuanya dengan Debugging nirkabel</string>
     <string name="phone_adb_waiting_service">1. Di **Debugging nirkabel**, aktifkan.\n2. Ketuk **Sambungkan perangkat dengan kode penyandingan**.\n3. Notifikasi akan muncul tempat kamu bisa mengetik kode tanpa meninggalkan layar itu.</string>
     <string name="phone_adb_waiting_code">Ketik kode enam digit yang ditampilkan di layar penyandingan, di sini atau di notifikasi.</string>
@@ -379,7 +379,7 @@
     <string name="watch_error_unreachable">Jam tidak dapat dijangkau. Pastikan Debugging nirkabel aktif dan kedua perangkat berada di Wi-Fi yang sama.</string>
     <string name="watch_error_pairing">Jam tidak lagi memercayai ponsel ini. Kembali dan sandingkan lagi.</string>
     <string name="watch_unreachable_title">Jam tangan tidak ditemukan</string>
-    <string name="watch_unreachable_body">Bangunkan jam tangan, pastikan terhubung ke Wi-Fi yang sama dengan ponsel ini, lalu aktifkan kembali Penelusuran bug nirkabel (Setelan › Opsi developer › Penelusuran bug nirkabel). Lalu coba lagi.</string>
+    <string name="watch_unreachable_body">Bangunkan jam tangan, pastikan terhubung ke Wi-Fi yang sama dengan ponsel ini, lalu aktifkan kembali Penelusuran bug nirkabel (Setelan › Opsi pengembang › Penelusuran bug nirkabel). Lalu coba lagi.</string>
     <string name="grant_permission">Izin</string>
     <string name="grant_appop">Operasi aplikasi</string>
     <string name="grant_setting">Setelan sistem</string>
@@ -661,4 +661,13 @@
     <string name="skip_reason_watchpair">Jam Anda sudah terhubung lewat proses debug nirkabel.</string>
     <string name="skip_confirm">Mengerti</string>
     <string name="skip_manual">Siapkan secara manual</string>
+    <string name="selfadb_guide_title">Cara kerja penyandingan dengan ponsel ini</string>
+    <string name="selfadb_guide_sub_1">Ketuk tombol di bawah</string>
+    <string name="selfadb_guide_sub_2">Di Opsi pengembang, aktifkan Debugging nirkabel</string>
+    <string name="selfadb_guide_sub_3">Ketuk Sandingkan perangkat dengan kode penyandingan</string>
+    <string name="selfadb_guide_sub_4">Ketik enam digit di notifikasi OpenSHM, atau di sini pada layar ini</string>
+    <string name="selfadb_guide_already">Jika kamu sudah menyandingkan sebelumnya, ponsel akan terhubung sendiri.</string>
+    <string name="selfadb_guide_ui_pair_code">Sandingkan perangkat dengan kode penyandingan</string>
+    <string name="selfadb_guide_ui_paired">Perangkat yang disandingkan</string>
+    <string name="selfadb_open_wireless">Buka Debugging nirkabel</string>
 </resources>

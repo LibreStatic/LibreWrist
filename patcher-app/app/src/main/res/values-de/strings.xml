@@ -353,7 +353,7 @@
     <string name="install_error_unknown_sources">Diese App darf noch keine Apps installieren. Erlaube es und starte dann erneut.</string>
     <string name="install_error_notifications">Erlaube zuerst Benachrichtigungen für diese App: Der Kopplungscode wird in einer Benachrichtigung eingegeben.</string>
     <string name="phone_adb_title">Alles auf einmal erlauben</string>
-    <string name="phone_adb_intro">Wenn die Schalter im Weg sind, kann dieses Smartphone sie sich über **Kabelloses Debugging** selbst erteilen. Du musst dafür im Wi-Fi sein.</string>
+    <string name="phone_adb_intro">Wenn die Schalter im Weg sind, kann dieses Smartphone sie sich über **Kabelloses Debugging** selbst erteilen. Du musst dafür im Wi-Fi sein. Eine Benachrichtigung fragt dich nach dem Kopplungscode.</string>
     <string name="phone_adb_action">Alles mit Kabellosem Debugging erlauben</string>
     <string name="phone_adb_waiting_service">1. Aktiviere **Kabelloses Debugging**.\n2. Tippe auf **Gerät mit Kopplungscode koppeln**.\n3. Eine Benachrichtigung erscheint, in der du den Code eingeben kannst, ohne diesen Bildschirm zu verlassen.</string>
     <string name="phone_adb_waiting_code">Gib den sechsstelligen Code vom Kopplungsbildschirm hier oder in der Benachrichtigung ein.</string>
@@ -669,4 +669,13 @@
     <string name="skip_reason_watchpair">Deine Uhr ist bereits über kabelloses Debugging verbunden.</string>
     <string name="skip_confirm">Verstanden</string>
     <string name="skip_manual">Manuell einrichten</string>
+    <string name="selfadb_guide_title">So funktioniert die Kopplung mit diesem Smartphone</string>
+    <string name="selfadb_guide_sub_1">Tippe auf die Schaltfläche unten</string>
+    <string name="selfadb_guide_sub_2">Aktiviere in den Entwickleroptionen das Kabellose Debugging</string>
+    <string name="selfadb_guide_sub_3">Tippe auf Gerät mit Kopplungscode koppeln</string>
+    <string name="selfadb_guide_sub_4">Gib die sechs Ziffern in der OpenSHM-Benachrichtigung ein oder hier auf diesem Bildschirm</string>
+    <string name="selfadb_guide_already">Wenn du schon einmal gekoppelt hast, verbindet es sich von selbst.</string>
+    <string name="selfadb_guide_ui_pair_code">Gerät mit Kopplungscode koppeln</string>
+    <string name="selfadb_guide_ui_paired">Gekoppelte Geräte</string>
+    <string name="selfadb_open_wireless">Kabelloses Debugging öffnen</string>
 </resources>

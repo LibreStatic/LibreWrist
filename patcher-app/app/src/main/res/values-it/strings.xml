@@ -353,7 +353,7 @@
     <string name="install_error_unknown_sources">Questa app non è ancora autorizzata a installare app. Consentilo, poi ricomincia.</string>
     <string name="install_error_notifications">Consenti prima le notifiche per questa app: il codice di associazione si digita in una notifica.</string>
     <string name="phone_adb_title">Concedi tutto in una volta</string>
-    <string name="phone_adb_intro">Se gli interruttori ti sono d\'intralcio, questo telefono può concederseli da solo tramite il **debug wireless**. Devi essere connesso al Wi-Fi.</string>
+    <string name="phone_adb_intro">Se gli interruttori ti sono d\'intralcio, questo telefono può concederseli da solo tramite il **debug wireless**. Devi essere connesso al Wi-Fi. Una notifica ti chiederà il codice di associazione.</string>
     <string name="phone_adb_action">Concedi tutto con il debug wireless</string>
     <string name="phone_adb_waiting_service">1. In **Debug wireless**, attivalo.\n2. Tocca **Associa dispositivo con codice di associazione**.\n3. Comparirà una notifica in cui digitare il codice senza lasciare quella schermata.</string>
     <string name="phone_adb_waiting_code">Digita il codice di sei cifre mostrato nella schermata di associazione, qui o nella notifica.</string>
@@ -669,4 +669,13 @@
     <string name="skip_reason_watchpair">L\'orologio è già connesso tramite debug wireless.</string>
     <string name="skip_confirm">Ho capito</string>
     <string name="skip_manual">Configura manualmente</string>
+    <string name="selfadb_guide_title">Come funziona l\'associazione con questo telefono</string>
+    <string name="selfadb_guide_sub_1">Tocca il pulsante qui sotto</string>
+    <string name="selfadb_guide_sub_2">In Opzioni sviluppatore, attiva il debug wireless</string>
+    <string name="selfadb_guide_sub_3">Tocca Associa dispositivo con codice di associazione</string>
+    <string name="selfadb_guide_sub_4">Digita le sei cifre nella notifica di OpenSHM, oppure qui in questa schermata</string>
+    <string name="selfadb_guide_already">Se lo hai già associato prima, si collega da solo.</string>
+    <string name="selfadb_guide_ui_pair_code">Associa dispositivo con codice di associazione</string>
+    <string name="selfadb_guide_ui_paired">Dispositivi associati</string>
+    <string name="selfadb_open_wireless">Apri il debug wireless</string>
 </resources>

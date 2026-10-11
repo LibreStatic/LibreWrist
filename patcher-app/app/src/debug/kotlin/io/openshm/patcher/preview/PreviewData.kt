@@ -221,11 +221,11 @@ internal object PreviewData {
     )
 
     /** Everything installed; some access granted, the rest waiting for the user, and the Wireless debugging fallback at the code step. */
-    fun installPhoneGrants() = InstallUiState(
+    fun installPhoneGrants(adb: SelfAdbPhase? = SelfAdbPhase.WaitingForCode) = InstallUiState(
         installItems(Device.Phone, { CheckStatus.Pending }) { CheckStatus.Passed }.map { item ->
             item.copy(grants = item.grants.mapIndexed { n, row -> if (n < 3) row.copy(status = CheckStatus.Passed) else row })
         },
-        selfAdb = SelfAdbPhase.WaitingForCode,
+        selfAdb = adb,
     )
 
     /** Health Monitor refused because another key signed the installed copy; optionally with the confirmation open. */

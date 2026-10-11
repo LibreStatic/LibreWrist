@@ -231,7 +231,7 @@ fun WatchPairGuide(
 
 /** The numbers beside the watch: which sub-step of the first step is shown; tap one to jump to it. */
 @Composable
-private fun SubStepChips(selected: Int, count: Int, onSelect: (Int) -> Unit) {
+internal fun SubStepChips(selected: Int, count: Int, onSelect: (Int) -> Unit) {
     val colors = MaterialTheme.colorScheme
     Column(Modifier.selectableGroup(), horizontalAlignment = Alignment.CenterHorizontally) {
         repeat(count) { index ->

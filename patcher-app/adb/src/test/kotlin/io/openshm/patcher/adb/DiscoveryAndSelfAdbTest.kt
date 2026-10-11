@@ -55,6 +55,10 @@ class DiscoveryAndSelfAdbTest {
         var failPairing: Throwable? = null
         var failConnect: Throwable? = null
         val refusedPorts: MutableSet<Int> = java.util.Collections.synchronizedSet(mutableSetOf())
+
+        /** Ports that refuse only the loopback address (adbd listening on the Wi-Fi address only). */
+        val refusedOnLoopback: MutableSet<Int> = java.util.Collections.synchronizedSet(mutableSetOf())
+        val logLines: MutableList<String> = java.util.Collections.synchronizedList(mutableListOf())
         var pairGate: java.util.concurrent.CountDownLatch? = null
         val backend = object : AdbBackend {
             override fun pair(host: String, port: Int, code: String, abort: AbortScope) {
@@ -66,7 +70,7 @@ class DiscoveryAndSelfAdbTest {
             override fun connect(host: String, port: Int, timeoutMillis: Long, abort: AbortScope): AdbTransport {
                 connectCalls += host to port
                 failConnect?.let { throw it }
-                if (port in refusedPorts) throw java.net.ConnectException("ECONNREFUSED")
+                if (port in refusedPorts || (host == "127.0.0.1" && port in refusedOnLoopback)) throw java.net.ConnectException("ECONNREFUSED")
                 return FakeTransport { FakeChannel() }
             }
         }
@@ -74,6 +78,7 @@ class DiscoveryAndSelfAdbTest {
         val session = SelfAdbSession(
             backend, pairing, connect, scope, connectServiceTimeoutMillis = 300, reconnectTimeoutMillis = 150,
             isLocalHost = { it.startsWith("192.168.1.5") || it.startsWith("10.0.0.") },
+            log = { logLines += it },
         )
     }
 
@@ -178,7 +183,7 @@ class DiscoveryAndSelfAdbTest {
             AdbService("watch", "192.168.1.77", 45555, AdbServiceType.CONNECT),
         )
         env.session.await { it is SelfAdbState.Connected }
-        assertEquals(listOf("127.0.0.1" to 41001, "127.0.0.1" to 41002), env.connectCalls)
+        assertEquals(listOf("127.0.0.1" to 41001, "192.168.1.5" to 41001, "127.0.0.1" to 41002), env.connectCalls)
         env.scope.cancel()
     }
 
@@ -196,7 +201,10 @@ class DiscoveryAndSelfAdbTest {
         env.session.submitCode("123456")
         val failed = env.session.await { it is SelfAdbState.Failed } as SelfAdbState.Failed
         assertTrue(failed.error is AdbException.ConnectionFailed)
-        assertEquals(listOf("127.0.0.1" to 41003, "127.0.0.1" to 41004), env.connectCalls)
+        assertEquals(
+            listOf("127.0.0.1" to 41003, "192.168.1.5" to 41003, "127.0.0.1" to 41004, "10.0.0.2" to 41004),
+            env.connectCalls,
+        )
         env.scope.cancel()
     }
 
@@ -269,7 +277,7 @@ class DiscoveryAndSelfAdbTest {
         )
         env.session.start()
         env.session.await { it is SelfAdbState.Connected }
-        assertEquals(listOf("127.0.0.1" to 41101, "127.0.0.1" to 41102), env.connectCalls)
+        assertEquals(listOf("127.0.0.1" to 41101, "192.168.1.5" to 41101, "127.0.0.1" to 41102), env.connectCalls)
         env.scope.cancel()
     }
 
@@ -307,6 +315,57 @@ class DiscoveryAndSelfAdbTest {
         env.session.stop()
         Thread.sleep(300)
         assertEquals(SelfAdbState.Idle, env.session.state.value)
+        env.scope.cancel()
+    }
+
+    @Test
+    fun `a connect port that refuses loopback is dialled on the announced address`() = runBlocking {
+        val env = Env()
+        env.refusedOnLoopback += 41200
+        env.connect.value = listOf(AdbService("me", "192.168.1.5", 41200, AdbServiceType.CONNECT))
+        env.session.start()
+        env.session.await { it is SelfAdbState.Connected }
+        assertEquals(listOf("127.0.0.1" to 41200, "192.168.1.5" to 41200), env.connectCalls)
+        env.scope.cancel()
+    }
+
+    @Test
+    fun `an unexpected discovery error ends the session as failed instead of crashing`() = runBlocking {
+        val env = Env()
+        val broken = SelfAdbSession(
+            env.backend,
+            kotlinx.coroutines.flow.flow { throw SecurityException("no permission") },
+            env.connect,
+            env.scope,
+            reconnectTimeoutMillis = 50,
+            isLocalHost = { true },
+            log = { env.logLines += it },
+        )
+        broken.start()
+        val failed = broken.await { it is SelfAdbState.Failed } as SelfAdbState.Failed
+        assertTrue(failed.error is AdbException.Discovery)
+        assertTrue(env.logLines.any { it.contains("SecurityException") })
+        env.scope.cancel()
+    }
+
+    @Test
+    fun `diagnostic lines name the states and counts but never carry the code`() = runBlocking {
+        val env = Env()
+        env.session.start()
+        env.session.await { it == SelfAdbState.WaitingForPairingService }
+        env.pairing.value = listOf(
+            AdbService("me", "192.168.1.5", 40300, AdbServiceType.PAIRING),
+            AdbService("watch", "192.168.1.77", 40301, AdbServiceType.PAIRING),
+        )
+        env.session.await { it is SelfAdbState.WaitingForCode }
+        env.connect.value = listOf(AdbService("me", "192.168.1.5", 41300, AdbServiceType.CONNECT))
+        env.session.submitCode("987654")
+        env.session.await { it is SelfAdbState.Connected }
+        val lines = env.logLines.toList()
+        assertTrue(lines.toString(), lines.contains("state Reconnecting"))
+        assertTrue(lines.toString(), lines.contains("state WaitingForCode"))
+        assertTrue(lines.toString(), lines.contains("pairing services: 2 found, 1 on this device"))
+        assertTrue(lines.none { it.contains("987654") })
         env.scope.cancel()
     }
 }

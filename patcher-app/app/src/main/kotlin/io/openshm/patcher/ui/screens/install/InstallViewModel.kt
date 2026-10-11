@@ -98,6 +98,7 @@ class InstallPhoneViewModel(application: Application) : AndroidViewModel(applica
             InstallEvent.GrantWithAdb -> startAdb()
             is InstallEvent.SubmitPairingCode -> SelfAdbController.submitCode(event.code)
             InstallEvent.CancelAdb -> SelfAdbController.finish()
+            InstallEvent.OpenWirelessDebugging -> outgoing.trySend(PhoneSettings.wirelessDebugging())
             InstallEvent.RequestReinstall -> requestReinstall(_state)
             InstallEvent.CancelReinstall -> cancelReinstall(_state)
             InstallEvent.ConfirmReinstall -> reinstall()

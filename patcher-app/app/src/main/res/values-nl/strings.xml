@@ -353,7 +353,7 @@
     <string name="install_error_unknown_sources">Deze app mag nog geen apps installeren. Sta het toe en begin opnieuw.</string>
     <string name="install_error_notifications">Sta eerst meldingen voor deze app toe: de koppelcode wordt in een melding getypt.</string>
     <string name="phone_adb_title">Alles in één keer toestaan</string>
-    <string name="phone_adb_intro">Als de schakelaars in de weg zitten, kan deze telefoon ze zichzelf geven via **Draadloze foutopsporing**. Je moet op Wi-Fi zitten.</string>
+    <string name="phone_adb_intro">Als de schakelaars in de weg zitten, kan deze telefoon ze zichzelf geven via **Draadloze foutopsporing**. Je moet op Wi-Fi zitten. Een melding vraagt je om de koppelcode.</string>
     <string name="phone_adb_action">Alles toestaan met Draadloze foutopsporing</string>
     <string name="phone_adb_waiting_service">1. Zet **Draadloze foutopsporing** aan.\n2. Tik op **Apparaat koppelen met koppelcode**.\n3. Er verschijnt een melding waarin je de code kunt typen zonder dat scherm te verlaten.</string>
     <string name="phone_adb_waiting_code">Typ de code van zes cijfers die op het koppelscherm staat, hier of in de melding.</string>
@@ -669,4 +669,13 @@
     <string name="skip_reason_watchpair">Je horloge is al verbonden via draadloze foutopsporing.</string>
     <string name="skip_confirm">Begrepen</string>
     <string name="skip_manual">Handmatig instellen</string>
+    <string name="selfadb_guide_title">Hoe het koppelen met deze telefoon werkt</string>
+    <string name="selfadb_guide_sub_1">Tik op de knop hieronder</string>
+    <string name="selfadb_guide_sub_2">Zet in Ontwikkelaarsopties draadloze foutopsporing aan</string>
+    <string name="selfadb_guide_sub_3">Tik op Apparaat koppelen met koppelcode</string>
+    <string name="selfadb_guide_sub_4">Typ de zes cijfers in de melding van OpenSHM, of hier op dit scherm</string>
+    <string name="selfadb_guide_already">Als je al eerder hebt gekoppeld, maakt hij vanzelf verbinding.</string>
+    <string name="selfadb_guide_ui_pair_code">Apparaat koppelen met koppelcode</string>
+    <string name="selfadb_guide_ui_paired">Gekoppelde apparaten</string>
+    <string name="selfadb_open_wireless">Draadloze foutopsporing openen</string>
 </resources>

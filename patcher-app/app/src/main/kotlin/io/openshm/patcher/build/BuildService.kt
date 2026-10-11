@@ -25,9 +25,12 @@ import java.security.MessageDigest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * Runs the build in a foreground service (type `specialUse`, see the manifest) so it survives the
@@ -77,7 +80,12 @@ class BuildService : Service() {
                 BuildController.onLog("FAILED: ${e.javaClass.simpleName}: ${e.message}")
                 BuildController.fail("${e.javaClass.simpleName}: ${e.message}")
             } finally {
-                notifier.cancel()
+                withContext(NonCancellable) {
+                    // Wait for the collector: a progress update still in flight would otherwise post
+                    // an ongoing notification after the final one (or after the service is gone),
+                    // and nothing would ever remove it.
+                    notifier.cancelAndJoin()
+                }
                 if (lock.isHeld) lock.release()
                 // A built result is installed on the watch next, so the link stays alive a while longer
                 // (until the watch install finishes, or this limit); otherwise nothing needs it.
@@ -93,6 +101,8 @@ class BuildService : Service() {
         scope.cancel()
         wakeLock?.takeIf { it.isHeld }?.release()
         if (BuildController.state.value.phase == BuildRunPhase.Running) {
+            // Interrupted: the progress notification must not outlive the service.
+            getSystemService(NotificationManager::class.java).cancel(NOTIFICATION_ID)
             WatchKeepAlive.get(this).stop()
             BuildController.fail("The build was interrupted.")
         }
@@ -225,6 +235,20 @@ class BuildService : Service() {
         private const val NOTIFICATION_ID = 1
         private const val PROGRESS_MAX = 1000
         private const val WAKE_LOCK_TIMEOUT_MS = 30L * 60 * 1000
+
+        /**
+         * Removes a progress notification left by an earlier process (killed mid-build, or a late
+         * update that outlived the service). Call it when the process starts: no build can be
+         * running then. The "done" and "failed" notifications are not ongoing and stay.
+         */
+        fun clearStaleProgress(context: Context) {
+            if (BuildController.state.value.phase == BuildRunPhase.Running) return
+            val manager = context.getSystemService(NotificationManager::class.java)
+            val stale = manager.activeNotifications.any {
+                it.id == NOTIFICATION_ID && it.notification.flags and Notification.FLAG_ONGOING_EVENT != 0
+            }
+            if (stale) manager.cancel(NOTIFICATION_ID)
+        }
 
         /** Starts the service; does nothing if a build is already running. */
         fun start(context: Context) {

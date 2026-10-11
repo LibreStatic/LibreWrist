@@ -353,7 +353,7 @@
     <string name="install_error_unknown_sources">Esta app aún no tiene permiso para instalar apps. Permítelo y empieza de nuevo.</string>
     <string name="install_error_notifications">Permite primero las notificaciones para esta app: el código de vinculación se escribe en una notificación.</string>
     <string name="phone_adb_title">Conceder todo de una vez</string>
-    <string name="phone_adb_intro">Si los interruptores estorban, este teléfono puede concedérselos a sí mismo mediante la **depuración inalámbrica**. Debes estar conectado a Wi-Fi.</string>
+    <string name="phone_adb_intro">Si los interruptores estorban, este teléfono puede concedérselos a sí mismo mediante la **depuración inalámbrica**. Debes estar conectado a Wi-Fi. Una notificación te pedirá el código de vinculación.</string>
     <string name="phone_adb_action">Conceder todo con la depuración inalámbrica</string>
     <string name="phone_adb_waiting_service">1. En **Depuración inalámbrica**, actívala.\n2. Toca **Vincular dispositivo con código de vinculación**.\n3. Aparecerá una notificación donde podrás escribir el código sin salir de esa pantalla.</string>
     <string name="phone_adb_waiting_code">Escribe el código de seis dígitos que aparece en la pantalla de vinculación, aquí o en la notificación.</string>
@@ -669,4 +669,13 @@
     <string name="skip_reason_watchpair">El reloj ya está emparejado por depuración inalámbrica.</string>
     <string name="skip_confirm">Entendido</string>
     <string name="skip_manual">Configurar manualmente</string>
+    <string name="selfadb_guide_title">Cómo funciona la vinculación con este teléfono</string>
+    <string name="selfadb_guide_sub_1">Toca el botón de abajo</string>
+    <string name="selfadb_guide_sub_2">En Opciones de desarrollador, activa la depuración inalámbrica</string>
+    <string name="selfadb_guide_sub_3">Toca Vincular dispositivo con código de vinculación</string>
+    <string name="selfadb_guide_sub_4">Escribe los seis dígitos en la notificación de OpenSHM, o aquí en esta pantalla</string>
+    <string name="selfadb_guide_already">Si ya lo vinculaste antes, se conecta solo.</string>
+    <string name="selfadb_guide_ui_pair_code">Vincular dispositivo con código de vinculación</string>
+    <string name="selfadb_guide_ui_paired">Dispositivos vinculados</string>
+    <string name="selfadb_open_wireless">Abrir depuración inalámbrica</string>
 </resources>

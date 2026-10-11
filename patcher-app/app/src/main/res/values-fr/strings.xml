@@ -359,7 +359,7 @@
     <string name="install_error_unknown_sources">Cette app n\'est pas encore autorisée à installer des apps. Autorisez-la, puis recommencez.</string>
     <string name="install_error_notifications">Autorisez d\'abord les notifications pour cette app : le code d\'association se saisit dans une notification.</string>
     <string name="phone_adb_title">Tout accorder en une fois</string>
-    <string name="phone_adb_intro">Si les interrupteurs vous gênent, ce téléphone peut se les accorder lui-même via le **débogage sans fil**. Vous devez être connecté au Wi-Fi.</string>
+    <string name="phone_adb_intro">Si les interrupteurs vous gênent, ce téléphone peut se les accorder lui-même via le **débogage sans fil**. Vous devez être connecté au Wi-Fi. Une notification vous demandera le code d\'association.</string>
     <string name="phone_adb_action">Tout accorder avec le débogage sans fil</string>
     <string name="phone_adb_waiting_service">1. Dans **Débogage sans fil**, activez-le.\n2. Touchez **Associer l\'appareil avec un code d\'association**.\n3. Une notification apparaîtra pour saisir le code sans quitter cet écran.</string>
     <string name="phone_adb_waiting_code">Saisissez le code à six chiffres affiché sur l\'écran d\'association, ici ou dans la notification.</string>
@@ -677,4 +677,13 @@
     <string name="skip_reason_watchpair">Votre montre est déjà connectée via le débogage sans fil.</string>
     <string name="skip_confirm">Compris</string>
     <string name="skip_manual">Configurer manuellement</string>
+    <string name="selfadb_guide_title">Comment fonctionne l\'association avec ce téléphone</string>
+    <string name="selfadb_guide_sub_1">Appuyez sur le bouton ci-dessous</string>
+    <string name="selfadb_guide_sub_2">Dans les Options pour les développeurs, activez le débogage sans fil</string>
+    <string name="selfadb_guide_sub_3">Appuyez sur Associer l\'appareil avec un code d\'association</string>
+    <string name="selfadb_guide_sub_4">Saisissez les six chiffres dans la notification d\'OpenSHM, ou ici sur cet écran</string>
+    <string name="selfadb_guide_already">Si vous l\'avez déjà associé, la connexion se fait toute seule.</string>
+    <string name="selfadb_guide_ui_pair_code">Associer l\'appareil avec un code d\'association</string>
+    <string name="selfadb_guide_ui_paired">Appareils associés</string>
+    <string name="selfadb_open_wireless">Ouvrir le débogage sans fil</string>
 </resources>

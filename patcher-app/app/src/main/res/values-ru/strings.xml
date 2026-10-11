@@ -365,7 +365,7 @@
     <string name="install_error_unknown_sources">Этому приложению ещё не разрешено устанавливать приложения. Разрешите и начните снова.</string>
     <string name="install_error_notifications">Сначала разрешите уведомления для этого приложения: код сопряжения вводится в уведомлении.</string>
     <string name="phone_adb_title">Выдать всё сразу</string>
-    <string name="phone_adb_intro">Если мешают переключатели, телефон может выдать их себе сам через **Беспроводную отладку**. Нужно быть в сети Wi-Fi.</string>
+    <string name="phone_adb_intro">Если мешают переключатели, телефон может выдать их себе сам через **Беспроводную отладку**. Нужно быть в сети Wi-Fi. Уведомление запросит код подключения.</string>
     <string name="phone_adb_action">Выдать всё через Беспроводную отладку</string>
     <string name="phone_adb_waiting_service">1. В разделе **Беспроводная отладка** включите её.\n2. Нажмите **Подключить устройство с помощью кода подключения**.\n3. Появится уведомление, где можно ввести код, не покидая этот экран.</string>
     <string name="phone_adb_waiting_code">Введите шестизначный код с экрана сопряжения здесь или в уведомлении.</string>
@@ -397,7 +397,7 @@
     <string name="watch_error_unreachable">Часы недоступны. Проверьте, что Беспроводная отладка включена и оба устройства в одной сети Wi-Fi.</string>
     <string name="watch_error_pairing">Часы больше не доверяют этому телефону. Вернитесь и выполните сопряжение снова.</string>
     <string name="watch_unreachable_title">Часы не найдены</string>
-    <string name="watch_unreachable_body">Разбуди часы, убедись, что они в той же сети Wi-Fi, что и этот телефон, и снова включи отладку по Wi-Fi (Настройки › Для разработчиков › Отладка по Wi-Fi). Затем попробуй ещё раз.</string>
+    <string name="watch_unreachable_body">Разбуди часы, убедись, что они в той же сети Wi-Fi, что и этот телефон, и снова включи беспроводную отладку (Настройки › Для разработчиков › Отладка по Wi-Fi). Затем попробуй ещё раз.</string>
     <string name="grant_permission">Разрешение</string>
     <string name="grant_appop">Операция приложения</string>
     <string name="grant_setting">Системная настройка</string>
@@ -685,4 +685,13 @@
     <string name="skip_reason_watchpair">Часы уже подключены по беспроводной отладке.</string>
     <string name="skip_confirm">Понятно</string>
     <string name="skip_manual">Настроить вручную</string>
+    <string name="selfadb_guide_title">Как работает сопряжение с этим телефоном</string>
+    <string name="selfadb_guide_sub_1">Нажмите кнопку ниже</string>
+    <string name="selfadb_guide_sub_2">В параметрах разработчика включите беспроводную отладку</string>
+    <string name="selfadb_guide_sub_3">Нажмите «Подключить устройство по коду подключения»</string>
+    <string name="selfadb_guide_sub_4">Введите шесть цифр в уведомлении OpenSHM или здесь, на этом экране</string>
+    <string name="selfadb_guide_already">Если вы уже подключали ранее, соединение произойдёт само.</string>
+    <string name="selfadb_guide_ui_pair_code">Подключить устройство по коду подключения</string>
+    <string name="selfadb_guide_ui_paired">Подключённые устройства</string>
+    <string name="selfadb_open_wireless">Открыть беспроводную отладку</string>
 </resources>

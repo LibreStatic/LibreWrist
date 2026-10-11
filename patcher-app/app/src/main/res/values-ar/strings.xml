@@ -377,7 +377,7 @@
     <string name="install_error_unknown_sources">لا يُسمح لهذا التطبيق بتثبيت التطبيقات بعد. اسمح له ثم ابدأ من جديد.</string>
     <string name="install_error_notifications">اسمح بالإشعارات لهذا التطبيق أولًا: يُكتب رمز الاقتران داخل إشعار.</string>
     <string name="phone_adb_title">امنح كل شيء دفعة واحدة</string>
-    <string name="phone_adb_intro">إذا أعاقتك المفاتيح، يمكن لهذا الهاتف منحها لنفسه عبر **تصحيح الأخطاء اللاسلكي**. يجب أن تكون على Wi-Fi.</string>
+    <string name="phone_adb_intro">إذا أعاقتك المفاتيح، يمكن لهذا الهاتف منحها لنفسه عبر **تصحيح الأخطاء اللاسلكي**. يجب أن تكون على Wi-Fi. سيطلب منك إشعار رمز الإقران.</string>
     <string name="phone_adb_action">منح كل شيء عبر تصحيح الأخطاء اللاسلكي</string>
     <string name="phone_adb_waiting_service">1. في **تصحيح الأخطاء اللاسلكي**، فعّله.\n2. اضغط على **اقتران الجهاز برمز الاقتران**.\n3. سيظهر إشعار يمكنك فيه كتابة الرمز دون مغادرة تلك الشاشة.</string>
     <string name="phone_adb_waiting_code">اكتب الرمز المكوّن من ستة أرقام الظاهر في شاشة الاقتران، هنا أو في الإشعار.</string>
@@ -701,4 +701,13 @@
     <string name="skip_reason_watchpair">ساعتك متصلة بالفعل عبر تصحيح الأخطاء اللاسلكي.</string>
     <string name="skip_confirm">حسنًا</string>
     <string name="skip_manual">الإعداد يدويًا</string>
+    <string name="selfadb_guide_title">كيف يعمل الاقتران بهذا الهاتف</string>
+    <string name="selfadb_guide_sub_1">انقر على الزر أدناه</string>
+    <string name="selfadb_guide_sub_2">في خيارات المطوّر، فعّل تصحيح الأخطاء اللاسلكي</string>
+    <string name="selfadb_guide_sub_3">انقر على إقران الجهاز باستخدام رمز الإقران</string>
+    <string name="selfadb_guide_sub_4">اكتب الأرقام الستة في إشعار OpenSHM أو هنا في هذه الشاشة</string>
+    <string name="selfadb_guide_already">إذا سبق أن أجريت الإقران، فسيتصل تلقائيًا.</string>
+    <string name="selfadb_guide_ui_pair_code">إقران الجهاز باستخدام رمز الإقران</string>
+    <string name="selfadb_guide_ui_paired">الأجهزة المقترنة</string>
+    <string name="selfadb_open_wireless">فتح تصحيح الأخطاء اللاسلكي</string>
 </resources>

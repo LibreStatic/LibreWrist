@@ -126,6 +126,9 @@ sealed interface InstallEvent {
     data class SubmitPairingCode(val code: String) : InstallEvent
     data object CancelAdb : InstallEvent
 
+    /** Open the phone's Developer options, at Wireless debugging where the system allows it. */
+    data object OpenWirelessDebugging : InstallEvent
+
     /** "Uninstall and install" was tapped: opens the confirmation, removes nothing. */
     data object RequestReinstall : InstallEvent
     data object CancelReinstall : InstallEvent
@@ -354,7 +357,8 @@ private fun SelfAdbSection(state: InstallUiState, onEvent: (InstallEvent) -> Uni
     val installed = state.items.isNotEmpty() && state.items.all { it.status == CheckStatus.Passed }
     val phase = state.selfAdb
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        SectionTitle(stringResource(R.string.phone_adb_title))
+        // A plain header, not primary-coloured: the primary colour reads as something to tap.
+        SectionTitle(stringResource(R.string.phone_adb_title), color = MaterialTheme.colorScheme.onSurfaceVariant)
         if (phase == null) {
             InstructionText(
                 stringResource(R.string.phone_adb_intro),
@@ -362,17 +366,32 @@ private fun SelfAdbSection(state: InstallUiState, onEvent: (InstallEvent) -> Uni
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             if (installed && !state.done && !state.running) {
+                SelfAdbGuide()
                 OutlinedAction(stringResource(R.string.phone_adb_action), { onEvent(InstallEvent.GrantWithAdb) }, Icons.Rounded.Wifi)
+                OpenWirelessDebuggingAction(onEvent)
             }
             return@Column
         }
+        // While the code is asked for, the field comes first and the guide stays below it.
+        val askingForCode = phase == SelfAdbPhase.WaitingForCode || phase == SelfAdbPhase.WrongCode
+        val guided = askingForCode || phase == SelfAdbPhase.Reconnecting || phase == SelfAdbPhase.WaitingForService
+        if (guided && !askingForCode) SelfAdbGuide()
         SelfAdbProgress(
             phase,
             onSubmitCode = { onEvent(InstallEvent.SubmitPairingCode(it)) },
             onRetry = { onEvent(InstallEvent.GrantWithAdb) },
             onCancel = { onEvent(InstallEvent.CancelAdb) },
         )
+        if (guided) {
+            if (askingForCode) SelfAdbGuide()
+            OpenWirelessDebuggingAction(onEvent)
+        }
     }
+}
+
+@Composable
+private fun OpenWirelessDebuggingAction(onEvent: (InstallEvent) -> Unit) {
+    QuietAction(stringResource(R.string.selfadb_open_wireless), { onEvent(InstallEvent.OpenWirelessDebugging) })
 }
 
 private const val SUBMIT_GUARD_MS = 5_000L

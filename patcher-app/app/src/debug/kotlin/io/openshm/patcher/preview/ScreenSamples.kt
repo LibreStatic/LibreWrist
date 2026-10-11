@@ -1,7 +1,10 @@
 package io.openshm.patcher.preview
 
 import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import io.openshm.patcher.ui.screens.acquire.AcquireScreen
 import io.openshm.patcher.ui.screens.acquire.GuidedBrowserScreen
 import io.openshm.patcher.ui.screens.build.BuildDoneScreen
@@ -12,6 +15,8 @@ import io.openshm.patcher.ui.screens.devmode.DevModeScreen
 import io.openshm.patcher.ui.screens.disable.DisableStockScreen
 import io.openshm.patcher.ui.screens.home.HomeScreen
 import io.openshm.patcher.ui.screens.install.InstallPhoneScreen
+import io.openshm.patcher.ui.screens.install.SelfAdbGuide
+import io.openshm.patcher.ui.screens.install.SelfAdbPhase
 import io.openshm.patcher.ui.screens.install.WatchInstallScreen
 import io.openshm.patcher.device.DetectedWatch
 import io.openshm.patcher.ui.nav.skippableSteps
@@ -101,8 +106,13 @@ private val PreviewIcons = AppIconLoader { null }
 internal fun BuildDoneSample(backup: KeyBackupStatus = KeyBackupStatus.Hidden) = BuildDoneScreen(PreviewData.buildDone(backup), {}, {})
 
 @Composable
-internal fun InstallPhoneSample(grants: Boolean = false) =
-    InstallPhoneScreen(if (grants) PreviewData.installPhoneGrants() else PreviewData.installPhone(), {}, {}, {})
+internal fun InstallPhoneSample(grants: Boolean = false, adb: SelfAdbPhase? = SelfAdbPhase.WaitingForCode) =
+    InstallPhoneScreen(if (grants) PreviewData.installPhoneGrants(adb) else PreviewData.installPhone(), {}, {}, {})
+
+/** The pairing guide on its own, holding one frame of the loop. */
+@Composable
+internal fun SelfAdbGuideSample(subStep: Int = 0) =
+    CompositionLocalProvider(LocalFrozenGuideSubStep provides subStep) { SelfAdbGuide(Modifier.padding(16.dp)) }
 
 @Composable
 internal fun InstallPhoneConflictSample(confirming: Boolean = false) =

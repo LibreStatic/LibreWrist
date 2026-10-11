@@ -262,6 +262,18 @@ fun InstallPhoneDriver() = PreviewHost(ColorMode.Fallback) { InstallPhoneSample(
 fun InstallPhoneGrantsDriver() = PreviewHost(ColorMode.Fallback) { InstallPhoneSample(grants = true) }
 
 @Composable
+fun InstallPhoneAdbReadyDriver() = PreviewHost(ColorMode.Fallback) { InstallPhoneSample(grants = true, adb = null) }
+
+@Composable
+fun InstallPhoneAdbWaitingDriver() = PreviewHost(ColorMode.Fallback) { InstallPhoneSample(grants = true, adb = SelfAdbPhase.WaitingForService) }
+
+@Composable
+fun SelfAdbGuideDriver() = PreviewHost(ColorMode.Fallback) { SelfAdbGuideSample(subStep = 3) }
+
+@Composable
+fun SelfAdbGuideStartDriver() = PreviewHost(ColorMode.Fallback) { SelfAdbGuideSample(subStep = 0) }
+
+@Composable
 fun InstallPhoneConflictDriver() = PreviewHost(ColorMode.Fallback) { InstallPhoneConflictSample() }
 
 @Composable

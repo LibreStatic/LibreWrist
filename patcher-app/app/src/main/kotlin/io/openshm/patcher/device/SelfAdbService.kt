@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.IBinder
+import android.util.Log
 import io.openshm.patcher.MainActivity
 import io.openshm.patcher.R
 import io.openshm.patcher.adb.AdbException
@@ -40,10 +41,12 @@ class SelfAdbService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Log.i(LOG_TAG, "service start, attempt phase=${SelfAdbController.state.value.phase}")
         createChannel()
         startForeground(NOTIFICATION_ID, notification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
         if (job?.isActive == true) return START_NOT_STICKY
         if (!SelfAdbController.state.value.active) {
+            Log.i(LOG_TAG, "service stops: no attempt is active")
             stopSelf()
             return START_NOT_STICKY
         }
@@ -51,6 +54,7 @@ class SelfAdbService : Service() {
         try {
             fresh.start()
         } catch (e: AdbException.Notifications) {
+            Log.i(LOG_TAG, "service stops: notifications not allowed")
             SelfAdbController.fail(e.message, needsNotifications = true)
             stopSelf()
             return START_NOT_STICKY
@@ -58,20 +62,28 @@ class SelfAdbService : Service() {
         notifier = fresh
         SelfAdbController.setCodeSink { fresh.session.submitCode(it) }
         job = scope.launch {
-            val follow = launch { fresh.session.state.collect(SelfAdbController::onSession) }
+            val follow = launch {
+                fresh.session.state.collect {
+                    SelfAdbController.onSession(it)
+                    Log.i(LOG_TAG, "attempt phase=${SelfAdbController.state.value.phase}")
+                }
+            }
             val timeout = launch {
                 delay(TIMEOUT_MS)
+                Log.i(LOG_TAG, "attempt timed out")
                 SelfAdbController.fail(getString(R.string.phone_adb_timeout))
             }
             SelfAdbController.state.first { !it.active }
             follow.cancel()
             timeout.cancel()
+            Log.i(LOG_TAG, "service ends: attempt over")
             end()
         }
         return START_NOT_STICKY
     }
 
     override fun onDestroy() {
+        Log.i(LOG_TAG, "service destroyed, attempt active=${SelfAdbController.state.value.active}")
         if (SelfAdbController.state.value.active) SelfAdbController.fail(getString(R.string.phone_adb_interrupted))
         scope.cancel()
         releaseNotifier()
@@ -120,9 +132,16 @@ class SelfAdbService : Service() {
     )
 
     companion object {
+        private const val LOG_TAG = "SelfAdb"
         private const val CHANNEL_ID = "selfadb_service"
         private const val NOTIFICATION_ID = 2
         const val TIMEOUT_MS = 10L * 60 * 1000
+
+        /** Removes notifications left by an earlier process; call it when the process starts. */
+        fun clearStale(context: Context) {
+            context.getSystemService(NotificationManager::class.java).cancel(NOTIFICATION_ID)
+            SelfAdbPairingNotifier.clearStale(context)
+        }
 
         /** Starts the service for an attempt that [SelfAdbController.begin] accepted. */
         fun start(context: Context) {

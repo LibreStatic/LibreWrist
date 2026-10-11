@@ -11,6 +11,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.Icon
+import android.net.ConnectivityManager
+import android.util.Log
+import java.net.InetAddress
+import java.net.NetworkInterface
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -64,6 +68,8 @@ class SelfAdbPairingNotifier(
         pairingServices = discovery.discover(AdbServiceType.PAIRING),
         connectServices = discovery.discover(AdbServiceType.CONNECT),
         scope = scope,
+        isLocalHost = AndroidOwnAddresses(appContext)::contains,
+        log = { Log.i(LOG_TAG, it) },
     )
     private var renderJob: Job? = null
 
@@ -83,12 +89,14 @@ class SelfAdbPairingNotifier(
             ),
         )
         current = this
+        Log.i(LOG_TAG, "notifier start")
         session.start()
         renderJob?.cancel()
         renderJob = scope.launch { session.state.collect { render(it) } }
     }
 
     fun stop() {
+        Log.i(LOG_TAG, "notifier stop")
         renderJob?.cancel()
         session.stop()
         manager.cancel(NOTIFICATION_ID)
@@ -103,6 +111,7 @@ class SelfAdbPairingNotifier(
     }
 
     private fun render(state: SelfAdbState) {
+        Log.i(LOG_TAG, "render ${state.javaClass.simpleName}")
         if (state is SelfAdbState.WaitingForCode) {
             // Not "only alert once": every prompt, including the retry after a wrong code, must
             // show as a heads-up over the pairing dialog.
@@ -160,9 +169,17 @@ class SelfAdbPairingNotifier(
         const val KEY_CODE = "io.openshm.patcher.adb.extra.PAIRING_CODE"
         const val CHANNEL_ID = "openshm_self_adb_status"
         const val CODE_CHANNEL_ID = "openshm_self_adb_code"
+        private const val LOG_TAG = "SelfAdb"
         private const val LEGACY_CHANNEL_ID = "openshm_self_adb"
         private const val NOTIFICATION_ID = 0x5e1f
         private const val CODE_NOTIFICATION_ID = 0x5e20
+
+        /** Removes notifications an earlier process left behind; call it when the process starts. */
+        fun clearStale(context: Context) {
+            val manager = context.getSystemService(NotificationManager::class.java)
+            manager.cancel(NOTIFICATION_ID)
+            manager.cancel(CODE_NOTIFICATION_ID)
+        }
 
         /** The active notifier, so the manifest-registered receiver can reach it. */
         @Volatile
@@ -179,5 +196,41 @@ class SelfAdbPairingReceiver : BroadcastReceiver() {
             ?: return
         // No active notifier means the process was restarted: the user starts pairing again.
         SelfAdbPairingNotifier.current?.onCodeSubmitted(code)
+    }
+}
+
+/**
+ * Whether a host from mDNS is one of this device's own addresses. `NetworkInterface` alone is not
+ * trusted: on recent Android versions apps cannot always enumerate their own interfaces, which
+ * would hide the device's own services and leave pairing silently waiting. The addresses the
+ * system reports for every network ([ConnectivityManager]) count too.
+ */
+internal class AndroidOwnAddresses(context: Context) {
+    private val connectivity = context.getSystemService(ConnectivityManager::class.java)
+
+    fun contains(host: String): Boolean {
+        if (SelfAdbSession.isOwnAddress(host)) return true
+        val address = try {
+            InetAddress.getByName(host)
+        } catch (e: Exception) {
+            return false
+        }
+        return fromNetworks(address) || fromInterfaces(address)
+    }
+
+    @Suppress("DEPRECATION")
+    private fun fromNetworks(address: InetAddress): Boolean = try {
+        connectivity?.allNetworks.orEmpty().any { network ->
+            connectivity?.getLinkProperties(network)?.linkAddresses.orEmpty().any { it.address == address }
+        }
+    } catch (e: Exception) {
+        false
+    }
+
+    private fun fromInterfaces(address: InetAddress): Boolean = try {
+        NetworkInterface.getNetworkInterfaces()?.toList().orEmpty()
+            .any { nif -> nif.inetAddresses.toList().any { it == address } }
+    } catch (e: Exception) {
+        false
     }
 }

@@ -353,7 +353,7 @@
     <string name="install_error_unknown_sources">Este app ainda não tem permissão para instalar apps. Permita e comece de novo.</string>
     <string name="install_error_notifications">Permita primeiro as notificações deste app: o código de pareamento é digitado em uma notificação.</string>
     <string name="phone_adb_title">Conceder tudo de uma vez</string>
-    <string name="phone_adb_intro">Se os botões atrapalharem, este celular pode concedê-los a si mesmo pela **depuração sem fio**. Você precisa estar no Wi-Fi.</string>
+    <string name="phone_adb_intro">Se os botões atrapalharem, este celular pode concedê-los a si mesmo pela **depuração sem fio**. Você precisa estar no Wi-Fi. Uma notificação vai pedir o código de pareamento.</string>
     <string name="phone_adb_action">Conceder tudo com a depuração sem fio</string>
     <string name="phone_adb_waiting_service">1. Em **Depuração sem fio**, ative-a.\n2. Toque em **Parear dispositivo com código de pareamento**.\n3. Uma notificação vai aparecer para você digitar o código sem sair dessa tela.</string>
     <string name="phone_adb_waiting_code">Digite o código de seis dígitos mostrado na tela de pareamento, aqui ou na notificação.</string>
@@ -669,4 +669,13 @@
     <string name="skip_reason_watchpair">Seu relógio já está conectado pela depuração por Wi-Fi.</string>
     <string name="skip_confirm">Entendi</string>
     <string name="skip_manual">Configurar manualmente</string>
+    <string name="selfadb_guide_title">Como funciona o pareamento com este telefone</string>
+    <string name="selfadb_guide_sub_1">Toque no botão abaixo</string>
+    <string name="selfadb_guide_sub_2">Em Opções do desenvolvedor, ative a depuração sem fio</string>
+    <string name="selfadb_guide_sub_3">Toque em Parear dispositivo com código de pareamento</string>
+    <string name="selfadb_guide_sub_4">Digite os seis dígitos na notificação do OpenSHM, ou aqui nesta tela</string>
+    <string name="selfadb_guide_already">Se você já pareou antes, ele se conecta sozinho.</string>
+    <string name="selfadb_guide_ui_pair_code">Parear dispositivo com código de pareamento</string>
+    <string name="selfadb_guide_ui_paired">Dispositivos pareados</string>
+    <string name="selfadb_open_wireless">Abrir depuração sem fio</string>
 </resources>

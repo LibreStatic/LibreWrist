@@ -353,7 +353,7 @@
     <string name="install_error_unknown_sources">Bu uygulamanın henüz uygulama kurma izni yok. İzin verip yeniden başlayın.</string>
     <string name="install_error_notifications">Önce bu uygulamaya bildirim izni verin: eşleme kodu bildirime yazılır.</string>
     <string name="phone_adb_title">Hepsine tek seferde izin ver</string>
-    <string name="phone_adb_intro">Anahtarlar işinize engel oluyorsa bu telefon, **Kablosuz hata ayıklama** üzerinden bunları kendine verebilir. Wi-Fi\'de olmanız gerekir.</string>
+    <string name="phone_adb_intro">Anahtarlar işinize engel oluyorsa bu telefon, **Kablosuz hata ayıklama** üzerinden bunları kendine verebilir. Wi-Fi\'de olmanız gerekir. Bir bildirim sizden eşleştirme kodunu isteyecek.</string>
     <string name="phone_adb_action">Kablosuz hata ayıklamayla hepsine izin ver</string>
     <string name="phone_adb_waiting_service">1. **Kablosuz hata ayıklama**\'yı açın.\n2. **Cihazı eşleme koduyla eşle**\'ye dokunun.\n3. Kodu o ekrandan çıkmadan yazabileceğiniz bir bildirim görünecek.</string>
     <string name="phone_adb_waiting_code">Eşleme ekranındaki altı haneli kodu burada veya bildirimde yazın.</string>
@@ -669,4 +669,13 @@
     <string name="skip_reason_watchpair">Saatiniz zaten kablosuz hata ayıklama ile bağlı.</string>
     <string name="skip_confirm">Anladım</string>
     <string name="skip_manual">Elle ayarla</string>
+    <string name="selfadb_guide_title">Bu telefonla eşleştirme nasıl çalışır</string>
+    <string name="selfadb_guide_sub_1">Aşağıdaki düğmeye dokunun</string>
+    <string name="selfadb_guide_sub_2">Geliştirici seçenekleri bölümünde Kablosuz hata ayıklamayı açın</string>
+    <string name="selfadb_guide_sub_3">Eşleştirme koduyla cihaz eşleştir seçeneğine dokunun</string>
+    <string name="selfadb_guide_sub_4">Altı haneyi OpenSHM bildiriminde veya burada, bu ekranda yazın</string>
+    <string name="selfadb_guide_already">Daha önce eşleştirdiyseniz kendiliğinden bağlanır.</string>
+    <string name="selfadb_guide_ui_pair_code">Eşleştirme koduyla cihaz eşleştir</string>
+    <string name="selfadb_guide_ui_paired">Eşleştirilmiş cihazlar</string>
+    <string name="selfadb_open_wireless">Kablosuz hata ayıklamayı açın</string>
 </resources>
