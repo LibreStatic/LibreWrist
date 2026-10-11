@@ -166,7 +166,7 @@ is ignored (the phone `minSdk` is 29).
 
 ## Alarm Fork (`shminterop.shmbridge.alarm`)
 
-A fork of the Samsung Alarm app (AlarmWatch 1.3.05.9) packaged as
+A fork of the Samsung Alarm app (AlarmWatch 1.3.05.5) packaged as
 `shminterop.shmbridge.alarm`; it coexists with the system app. It replaces the Wear data
 layer (GMS Wearable) with local intents to the bridge, using Samsung's native UI
 (CAlarmAlertActivity) when a phone alarm rings. The fork is produced by the patch pipeline

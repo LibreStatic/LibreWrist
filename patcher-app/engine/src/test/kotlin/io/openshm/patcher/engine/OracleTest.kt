@@ -13,7 +13,7 @@ import org.w3c.dom.Node
  * Equivalence oracle: the Kotlin engine against the Python pipeline (apktool + superpatcher.py).
  *
  * Opt-in: runs only when SHM_ORACLE_APKS points at a directory with the official APKs
- * (`alarm-watch-1.3.05.9.apk`, `shm-watch-1.5.1.022.apk`, `shm-phone-1.4.6.001.apk`). It needs
+ * (`alarm-watch-1.3.05.5.apk`, `shm-watch-1.5.1.022.apk`, `shm-phone-1.4.6.001.apk`). It needs
  * the tools of the scripts (python3, bash, apktool, Android build tools, javac), takes minutes and
  * several GB of memory (apktool runs one at a time, 4 GB heap). Variables:
  *
@@ -58,7 +58,7 @@ class OracleTest {
     private class Target(val name: String, val apk: String, val inputId: String, val profile: String, val inject: String?)
 
     private val targets = listOf(
-        Target("alarm", "alarm-watch-1.3.05.9.apk", "alarm-watch", "alarm", "alarm-fork"),
+        Target("alarm", "alarm-watch-1.3.05.5.apk", "alarm-watch", "alarm", "alarm-fork"),
         Target("watch", "shm-watch-1.5.1.022.apk", "shm-watch", "gms", "watch-mod"),
         Target("phone", "shm-phone-1.4.6.001.apk", "shm-phone", "gms", null),
         Target("bridge-watch", "", "bridge-watch", "", null),

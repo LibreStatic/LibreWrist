@@ -15,7 +15,7 @@ class AppCatalogueTest {
 
     @Test
     fun serialAndInputs() {
-        assertEquals(5L, c.serial)
+        assertEquals(6L, c.serial)
         assertEquals(
             listOf(
                 listOf("shm-phone", "Samsung Health Monitor (phone)", "1.4.6.001", "Phone",
@@ -24,8 +24,8 @@ class AppCatalogueTest {
                 listOf("shm-watch", "Samsung Health Monitor (Wear OS)", "1.5.1.022", "Watch",
                     "a714e9a5950f456b8da4843bd6cdb19948a0c6fd9101b473e24beb3384a2c620", "com.samsung.android.shealthmonitor",
                     "samsung-electronics-co-ltd/samsung-health-monitor-wear-os", "[ApkNotBundle, NoDpi]"),
-                listOf("alarm-watch", "Alarm (Wear OS)", "1.3.05.9", "Watch",
-                    "141832f22d7fb8bb7a6bb5e11695829015da6a33c5e19671a8695ecea276e8bd", "com.samsung.android.watch.alarm",
+                listOf("alarm-watch", "Alarm (Wear OS)", "1.3.05.5", "Watch",
+                    "fdbb5942a3b2a6c5b9c7c1c333a0e5e669732b1dc5a27f8b63e3b9c62c621151", "com.samsung.android.watch.alarm",
                     "samsung-electronics-co-ltd/alarm-wear-os", "[ApkNotBundle, NoDpi, MinAndroid14]"),
             ),
             c.inputs.map {
@@ -41,11 +41,11 @@ class AppCatalogueTest {
             listOf(
                 "https://www.apkmirror.com/apk/samsung-electronics-co-ltd/samsung-health-monitor-2/samsung-health-monitor-1-4-6-001-release/",
                 "https://www.apkmirror.com/apk/samsung-electronics-co-ltd/samsung-health-monitor-wear-os/samsung-health-monitor-wear-os-1-5-1-022-release/",
-                "https://www.apkmirror.com/apk/samsung-electronics-co-ltd/alarm-wear-os/",
+                "https://www.apkmirror.com/apk/samsung-electronics-co-ltd/alarm-wear-os/alarm-wear-os-1-3-05-5-release/",
             ),
             c.inputs.map { io.openshm.patcher.data.ApkMirrorGuide.startUrl(it) },
         )
-        assertEquals(listOf(true, true, false), c.inputs.map { it.onApkMirror })
+        assertEquals(listOf(true, true, true), c.inputs.map { it.onApkMirror })
         assertEquals(listOf("arm64-v8a", "armeabi-v7a"), c.input("shm-phone").abis)
     }
 

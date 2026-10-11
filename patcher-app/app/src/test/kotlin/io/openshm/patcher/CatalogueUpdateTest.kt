@@ -55,7 +55,7 @@ class CatalogueUpdateTest {
 
     private fun text(serial: Long = 5, minApp: Long = 1, edit: (String) -> String = { it }): ByteArray {
         val base = String(TestCatalogue.bytes, Charsets.UTF_8)
-        val withSerial = base.replace("\"serial\": 5,", "\"serial\": $serial,").replace("\"minAppVersion\": 1,", "\"minAppVersion\": $minApp,")
+        val withSerial = base.replace(Regex("\"serial\": \\d+,"), "\"serial\": $serial,").replace("\"minAppVersion\": 1,", "\"minAppVersion\": $minApp,")
         assertTrue(withSerial.contains("\"serial\": $serial,"))
         return edit(withSerial).toByteArray(Charsets.UTF_8)
     }
@@ -258,7 +258,7 @@ class CatalogueUpdateTest {
         val new = load(text(6) { it.replace("\"title\": \"Manufacturer check\"", "\"title\": \"Manufacturer check\"") })
         assertNull(updateOfferFor(new, builtWith(old), ids))
         // A newer serial that only changes an input outside the user's outputs.
-        val alarmOnly = load(text(7) { it.replace("141832f22d7fb8bb7a6bb5e11695829015da6a33c5e19671a8695ecea276e8bd", "c".repeat(64)) })
+        val alarmOnly = load(text(7) { it.replace("fdbb5942a3b2a6c5b9c7c1c333a0e5e669732b1dc5a27f8b63e3b9c62c621151", "c".repeat(64)) })
         assertNull(updateOfferFor(alarmOnly, builtWith(old), listOf("shm-phone", "shm-watch", "bridge-watch", "bridge-phone")))
     }
 

@@ -203,14 +203,14 @@ manifest, all patched stock smali and the imported SDK are equivalent. Accepted 
   closure members, missed by its rename regex because of `$`) are now renamed and included.
 - Method order inside SDK smali files differs (dex sorts by type name).
 
-## Alarm fork (AlarmWatch 1.3.05.9)
+## Alarm fork (AlarmWatch 1.3.05.5)
 
-Official input `alarm-watch-1.3.05.9.apk` (`com.samsung.android.watch.alarm`), profile
-`alarm` of the catalogue, build `scripts/build_alarm_fork.sh` -> `$DIST_DIR/alarm-fork-1.3.05.9.apk`.
+Official input `alarm-watch-1.3.05.5.apk` (`com.samsung.android.watch.alarm`), profile
+`alarm` of the catalogue, build `scripts/build_alarm_fork.sh` -> `$DIST_DIR/alarm-fork-1.3.05.5.apk`.
 The fork receives the phone's alarms from the SHM bridge (direct intents to `LinkActivity` /
 `LinkReceiver`, signature permission `<prefix>.shmbridge.permission.ALARM_LINK`) instead of the
 GMS Data Layer. Unlike the SHM families, this input is one exact build, so the patterns name
-the obfuscated classes of 1.3.05.9 directly and every edit asserts what it found (counts
+the obfuscated classes of 1.3.05.5 directly and every edit asserts what it found (counts
 included): another build aborts instead of being patched by a heuristic. `<prefix>` is
 `PKG_PREFIX`.
 

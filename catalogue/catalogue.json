@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "serial": 5,
+  "serial": 6,
   "minAppVersion": 1,
   "inputs": [
     {
@@ -50,12 +50,12 @@
     },
     {
       "id": "alarm-watch",
-      "file": "alarm-watch-1.3.05.9.apk",
-      "sha256": "141832f22d7fb8bb7a6bb5e11695829015da6a33c5e19671a8695ecea276e8bd",
+      "file": "alarm-watch-1.3.05.5.apk",
+      "sha256": "fdbb5942a3b2a6c5b9c7c1c333a0e5e669732b1dc5a27f8b63e3b9c62c621151",
       "label": "Alarm (Wear OS)",
       "package": "com.samsung.android.watch.alarm",
-      "versionName": "1.3.05.9",
-      "versionCode": 130509000,
+      "versionName": "1.3.05.5",
+      "versionCode": 130505000,
       "minSdk": 34,
       "targetSdk": 36,
       "abis": [],
@@ -65,7 +65,7 @@
       "role": "patched",
       "obtain": {
         "apkmirror": "samsung-electronics-co-ltd/alarm-wear-os",
-        "onApkMirror": false
+        "apkmirrorRelease": "alarm-wear-os-1-3-05-5-release"
       }
     }
   ],
@@ -123,7 +123,7 @@
       }
     },
     "alarm": {
-      "description": "Fork of the watch Alarm app (AlarmWatch 1.3.05.9) that receives phone alarms from the SHM bridge over direct intents instead of the GMS Data Layer. No launcher icon, own label.",
+      "description": "Fork of the watch Alarm app (AlarmWatch 1.3.05.5) that receives phone alarms from the SHM bridge over direct intents instead of the GMS Data Layer. No launcher icon, own label.",
       "families": {
         "alarm-watch": [
           "alarm-verify-symbols",

@@ -22,7 +22,7 @@ import java.lang.reflect.Field;
  * ...) goes out as a broadcast to the bridge.</p>
  *
  * <p>The app's internal classes are obfuscated; the names below correspond to
- * AlarmWatch 1.3.05.9 and the build script verifies that they still exist.</p>
+ * AlarmWatch 1.3.05.5 and the build script verifies that they still exist.</p>
  */
 public final class Link {
 
@@ -33,7 +33,7 @@ public final class Link {
     static final String EXTRA_PATH = "path";
     static final String EXTRA_DATA = "data";
 
-    // AlarmWatch 1.3.05.9 (obfuscated)
+    // AlarmWatch 1.3.05.5 (obfuscated)
     private static final String JSON_MODEL = "o2.b";          // a(String) -> o2.c (alarmItem)
     private static final String LOCAL_BCAST = "k0.b";         // a(Context) -> k0.b; c(Intent)
     private static final String SYNC_SERVICE = "com.samsung.android.watch.alarm.service.AlarmSyncService"; // m: start of the last "started"
