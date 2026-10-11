@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -101,6 +102,8 @@ fun WelcomeHero(modifier: Modifier = Modifier, frozenAt: Float? = null) {
     val colors = MaterialTheme.colorScheme
     val strap = androidx.compose.ui.graphics.lerp(colors.tertiaryContainer, colors.tertiary, 0.35f)
     val clock = rememberHeroClock(frozenAt)
+    // Easter egg: the watch tells the phone's real time. Previews keep the classic 10:08.
+    val faceTime = rememberWatchTime(fixed = if (frozenAt != null || LocalInspectionMode.current) "10:08" else null)
     Box(
         modifier
             .clearAndSetSemantics { }
@@ -184,7 +187,7 @@ fun WelcomeHero(modifier: Modifier = Modifier, frozenAt: Float? = null) {
                 )
                 // The face keeps switching between the time and a live-looking ECG trace.
                 androidx.compose.material3.Text(
-                    "10:08",
+                    faceTime,
                     style = MaterialTheme.typography.titleMediumEmphasized,
                     color = colors.onTertiary,
                     modifier = Modifier.graphicsLayer { alpha = 1f - ecgShown(clock.value) },

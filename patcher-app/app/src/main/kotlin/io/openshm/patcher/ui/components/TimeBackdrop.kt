@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -47,6 +48,7 @@ import kotlin.math.cos
 import kotlin.math.hypot
 import kotlin.math.sin
 import kotlin.random.Random
+import kotlinx.coroutines.delay
 
 /** What one floating motif depicts; every kind is about watches or time. */
 private enum class Motif { Clock, Watch, Hourglass, Heart, Alarm, Stopwatch, Pulse, Calendar, Moon, Timer }
@@ -96,6 +98,15 @@ fun TimeBackdrop(dispersed: Boolean, modifier: Modifier = Modifier) {
         if (reducedMotion || dispersed) return@LaunchedEffect
         val start = withFrameNanos { it } - (time * 1_000_000_000f).toLong()
         while (true) withFrameNanos { time = (it - start) / 1_000_000_000f }
+    }
+    // Without the frame loop nothing redraws the field, so the clocks' hands get a minute tick instead.
+    var minuteTick by remember { mutableIntStateOf(0) }
+    LaunchedEffect(reducedMotion, dispersed) {
+        if (!reducedMotion || dispersed) return@LaunchedEffect
+        while (true) {
+            delay(60_000L - System.currentTimeMillis() % 60_000L)
+            minuteTick++
+        }
     }
     val exit = remember { Animatable(if (dispersed) 1f else 0f, visibilityThreshold = 0.0005f) }
     LaunchedEffect(dispersed, reducedMotion) {
@@ -147,6 +158,10 @@ fun TimeBackdrop(dispersed: Boolean, modifier: Modifier = Modifier) {
             val center = Offset(size.width / 2f, size.height / 2f)
             val diagonal = hypot(size.width, size.height)
             val e = FastOutSlowInEasing.transform(exit.value)
+            // Easter egg: every clock and watch in the field tells the real time.
+            // Reading the tick makes this draw run again on each minute while the field is static.
+            @Suppress("UNUSED_VARIABLE") val redrawEachMinute = minuteTick
+            val wall = minutesOfDay()
             floaters.forEach { f ->
                 val side = f.sizeDp.dp.toPx()
                 val wobble = f.wobble.dp.toPx()
@@ -165,7 +180,7 @@ fun TimeBackdrop(dispersed: Boolean, modifier: Modifier = Modifier) {
                     val pivot = Offset(side / 2f, side / 2f)
                     scale(1f + 0.4f * e, pivot) {
                         rotate(angle, pivot) {
-                            drawMotif(f, side, fills[f.role], marks[f.role], alpha, triangle, heart, bell, time)
+                            drawMotif(f, side, fills[f.role], marks[f.role], alpha, triangle, heart, bell, time, wall, angle)
                         }
                     }
                 }
@@ -184,6 +199,10 @@ private fun DrawScope.drawMotif(
     heart: Shape,
     bell: Shape,
     time: Float,
+    /** Wall-clock minutes since midnight, for the hands. */
+    wall: Float,
+    /** Degrees the motif is turned; the hands undo it so they still read the right time. */
+    turned: Float,
 ) {
     fun shape(shape: Shape, s: Float, at: Offset, color: Color = fill) =
         translate(at.x, at.y) { drawOutline(f.outline(shape, s, layoutDirection, this), color, alpha = alpha) }
@@ -191,7 +210,7 @@ private fun DrawScope.drawMotif(
     when (f.motif) {
         Motif.Clock -> {
             shape(f.face, side, Offset.Zero)
-            drawHands(Offset(side / 2f, side / 2f), side * 0.36f, mark, alpha, time, f.phase)
+            drawHands(Offset(side / 2f, side / 2f), side * 0.36f, mark, alpha, wall, turned)
         }
         Motif.Watch -> {
             // A strap running behind a smaller face.
@@ -206,7 +225,7 @@ private fun DrawScope.drawMotif(
             )
             val corner = (side - face) / 2f
             shape(f.face, face, Offset(corner, corner))
-            drawHands(Offset(side / 2f, side / 2f), face * 0.34f, mark, alpha, time, f.phase)
+            drawHands(Offset(side / 2f, side / 2f), face * 0.34f, mark, alpha, wall, turned)
         }
         Motif.Hourglass -> {
             // Two triangles tip to tip; the whole glass turns over slowly with the motif's spin.
@@ -227,7 +246,7 @@ private fun DrawScope.drawMotif(
             val shiver = if (ring < 0.6f) sin(ring * 60f) * 6f * (1f - ring / 0.6f) else 0f
             rotate(shiver, Offset(side / 2f, side / 2f)) {
                 shape(bell, side, Offset.Zero)
-                drawHands(Offset(side / 2f, side / 2f), side * 0.28f, mark, alpha, time, f.phase)
+                drawHands(Offset(side / 2f, side / 2f), side * 0.28f, mark, alpha, wall, turned + shiver)
             }
         }
         Motif.Stopwatch -> {
@@ -306,12 +325,14 @@ private fun bump(t: Float, at: Float): Float {
     return if (d < -1f || d > 1f) 0f else cos(d * PI.toFloat() / 2f)
 }
 
-/** Hour and minute hands: the minute hand sweeps a turn a minute, the hour hand twelve times slower. */
-private fun DrawScope.drawHands(center: Offset, length: Float, color: Color, alpha: Float, time: Float, phase: Float) {
-    val minutes = phase * 10f + time / 60f
+/**
+ * Hour and minute hands showing [minutes] past midnight, drawn upright although the motif around
+ * them is turned by [turned] degrees.
+ */
+private fun DrawScope.drawHands(center: Offset, length: Float, color: Color, alpha: Float, minutes: Float, turned: Float) {
     val width = (length * 0.12f).coerceAtLeast(2f)
     fun hand(turns: Float, reach: Float) {
-        val angle = turns * 2f * PI.toFloat() - PI.toFloat() / 2f
+        val angle = (turns * 360f - 90f - turned) * PI.toFloat() / 180f
         drawLine(
             color,
             center,
@@ -321,7 +342,7 @@ private fun DrawScope.drawHands(center: Offset, length: Float, color: Color, alp
             alpha = alpha * 1.4f,
         )
     }
-    hand(minutes / 12f, length * 0.6f)
-    hand(minutes, length)
+    hand(minutes / 720f, length * 0.6f)
+    hand(minutes / 60f, length)
     drawCircle(color, width, center, alpha = alpha * 1.4f)
 }
