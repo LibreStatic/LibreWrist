@@ -1,7 +1,9 @@
 package io.openshm.patcher.ui.screens.welcome
 
 import io.openshm.patcher.device.DetectedWatch
+import io.openshm.patcher.ui.nav.Route
 import io.openshm.patcher.ui.nav.SkippedStep
+import io.openshm.patcher.ui.nav.skippedRunAfter
 import io.openshm.patcher.ui.nav.skippableSteps
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -24,8 +26,9 @@ sealed interface SkipDialog {
 
 /**
  * Runs when the user starts the setup: asks the remembered watch (if any) and the phone, works out
- * which steps are already done, shows them until [confirm] and then [go]es on. [apply] records the
- * decision just before moving on, so a cancelled dialog skips nothing.
+ * which steps are already done and, when the next step is one of them, shows that run until [confirm]
+ * before it [go]es on. [apply] records every skippable step just before moving on, so a cancelled
+ * dialog skips nothing.
  */
 internal class SkipPreflight(
     private val scope: CoroutineScope,
@@ -42,6 +45,7 @@ internal class SkipPreflight(
     val go: Flow<Unit> = _go.receiveAsFlow()
     private var job: Job? = null
     private var pendingWatch: DetectedWatch? = null
+    private var pendingSteps: List<SkippedStep> = emptyList()
 
     fun start() {
         if (job?.isActive == true || _dialog.value != null) return
@@ -53,19 +57,23 @@ internal class SkipPreflight(
                 null
             }
             val steps = skippableSteps(watch, wearableReady())
-            if (steps.isEmpty()) {
+            // Only the steps right after the welcome are announced here; a later one is announced
+            // by the nav host when the user reaches it.
+            val now = skippedRunAfter(Route.Welcome, steps)
+            if (now.isEmpty()) {
                 finish(steps, watch)
             } else {
                 pendingWatch = watch
-                _dialog.value = SkipDialog.Skipping(steps)
+                pendingSteps = steps
+                _dialog.value = SkipDialog.Skipping(now)
             }
         }
     }
 
     /** "Got it" on the dialog: skip the listed steps and move on. */
     fun confirm() {
-        val shown = _dialog.value as? SkipDialog.Skipping ?: return
-        finish(shown.steps, pendingWatch)
+        if (_dialog.value !is SkipDialog.Skipping) return
+        finish(pendingSteps, pendingWatch)
     }
 
     /** "Set up manually" on the dialog: skip nothing and walk every step, keeping what was detected. */
@@ -79,6 +87,7 @@ internal class SkipPreflight(
         _go.trySend(Unit)
         _dialog.value = null
         pendingWatch = null
+        pendingSteps = emptyList()
     }
 
     /** Back on the dialog: stay on the welcome screen and skip nothing. */
@@ -86,6 +95,7 @@ internal class SkipPreflight(
         job?.cancel()
         job = null
         pendingWatch = null
+        pendingSteps = emptyList()
         _dialog.value = null
     }
 }

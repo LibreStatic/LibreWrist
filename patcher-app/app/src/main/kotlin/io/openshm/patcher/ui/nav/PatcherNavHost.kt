@@ -90,18 +90,30 @@ import io.openshm.patcher.ui.screens.wearable.WearableTroubleshootViewModel
 import io.openshm.patcher.ui.screens.welcome.WelcomeEvent
 import io.openshm.patcher.ui.screens.welcome.WelcomeScreen
 import io.openshm.patcher.ui.screens.welcome.WelcomeViewModel
+import io.openshm.patcher.ui.screens.welcome.SkipStepsOverlay
+import io.openshm.patcher.ui.screens.welcome.SkipDialog
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Box
 
 @Composable
 fun PatcherNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
 ) {
+    fun go(target: Route) = navController.navigate(target.path) {
+        // Home is the end of the guided setup: it replaces the whole stack.
+        if (target == Route.Home) popUpTo(Route.Welcome.path) { inclusive = true }
+    }
+    // A run of skipped steps right after the current one, announced before it is passed over. The
+    // welcome screen announces its own run (together with the watch check), so it never lands here.
+    var announcing by remember { mutableStateOf<Pair<Route, List<SkippedStep>>?>(null) }
     fun next(from: Route) {
-        val target = SetupFlow.next(from, StepSkips.routes) ?: return
-        navController.navigate(target.path) {
-            // Home is the end of the guided setup: it replaces the whole stack.
-            if (target == Route.Home) popUpTo(Route.Welcome.path) { inclusive = true }
+        val run = if (from == Route.Welcome) emptyList() else skippedRunAfter(from, StepSkips.current)
+        if (run.isNotEmpty()) {
+            announcing = from to run
+            return
         }
+        go(SetupFlow.next(from, StepSkips.routes) ?: return)
     }
     val back: () -> Unit = { navController.popBackStack() }
 
@@ -109,279 +121,298 @@ fun PatcherNavHost(
         reducedMotion = LocalReducedMotion.current,
         rtl = LocalLayoutDirection.current == LayoutDirection.Rtl,
     )
-    NavHost(
-        navController,
-        startDestination = Route.Welcome.path,
-        modifier = modifier,
-        enterTransition = { pages.enter(forward = true) },
-        exitTransition = { pages.exit(forward = true) },
-        popEnterTransition = { pages.enter(forward = false) },
-        popExitTransition = { pages.exit(forward = false) },
-    ) {
-        composable(Route.Welcome.path) {
-            val vm: WelcomeViewModel = viewModel()
-            val state by vm.state.collectAsStateWithLifecycle()
-            LaunchedEffect(vm) { vm.go.collect { next(Route.Welcome) } }
-            WelcomeScreen(state, vm::onEvent, onGetStarted = { vm.onEvent(WelcomeEvent.GetStarted) }, onSettings = { navController.navigate(Route.SigningKey.path) })
-        }
-        composable(Route.Profile.path) {
-            val vm: ProfileViewModel = viewModel()
-            val state by vm.state.collectAsStateWithLifecycle()
-            val context = LocalContext.current
-            val permission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission(), vm::onBluetoothPermission)
-            ProfileScreen(
-                state,
-                onEvent = { event ->
-                    if (event is ProfileEvent.CheckPairedWatches) {
-                        if (ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
-                            vm.onBluetoothPermission(true)
+    Box(Modifier.fillMaxSize()) {
+        NavHost(
+            navController,
+            startDestination = Route.Welcome.path,
+            modifier = modifier,
+            enterTransition = { pages.enter(forward = true) },
+            exitTransition = { pages.exit(forward = true) },
+            popEnterTransition = { pages.enter(forward = false) },
+            popExitTransition = { pages.exit(forward = false) },
+        ) {
+            composable(Route.Welcome.path) {
+                val vm: WelcomeViewModel = viewModel()
+                val state by vm.state.collectAsStateWithLifecycle()
+                LaunchedEffect(vm) { vm.go.collect { next(Route.Welcome) } }
+                WelcomeScreen(state, vm::onEvent, onGetStarted = { vm.onEvent(WelcomeEvent.GetStarted) }, onSettings = { navController.navigate(Route.SigningKey.path) })
+            }
+            composable(Route.Profile.path) {
+                val vm: ProfileViewModel = viewModel()
+                val state by vm.state.collectAsStateWithLifecycle()
+                val context = LocalContext.current
+                val permission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission(), vm::onBluetoothPermission)
+                ProfileScreen(
+                    state,
+                    onEvent = { event ->
+                        if (event is ProfileEvent.CheckPairedWatches) {
+                            if (ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+                                vm.onBluetoothPermission(true)
+                            } else {
+                                permission.launch(Manifest.permission.BLUETOOTH_CONNECT)
+                            }
                         } else {
-                            permission.launch(Manifest.permission.BLUETOOTH_CONNECT)
+                            vm.onEvent(event)
                         }
-                    } else {
+                    },
+                    onContinue = { next(Route.Profile) }, onBack = back)
+            }
+            composable(Route.WearablePairing.path) {
+                val vm: WearablePairingViewModel = viewModel()
+                val state by vm.state.collectAsStateWithLifecycle()
+                val permission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { vm.recheck() }
+                // Coming back from Galaxy Wearable (or the permission dialog): look again.
+                LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { vm.recheck() }
+                WearablePairingScreen(
+                    state,
+                    onEvent = { event ->
+                        when (event) {
+                            WearablePairingEvent.AllowBluetooth -> permission.launch(Manifest.permission.BLUETOOTH_CONNECT)
+                            WearablePairingEvent.Troubleshoot -> navController.navigate(Route.WearableTroubleshoot.path)
+                            else -> vm.onEvent(event)
+                        }
+                    },
+                    onContinue = { next(Route.WearablePairing) },
+                    onBack = back,
+                )
+            }
+            composable(Route.WearableTroubleshoot.path) {
+                val vm: WearableTroubleshootViewModel = viewModel()
+                val state by vm.state.collectAsStateWithLifecycle()
+                val context = LocalContext.current
+                LaunchedEffect(vm) {
+                    vm.launches.collect { request ->
+                        try {
+                            context.startActivity(request.intent)
+                        } catch (e: ActivityNotFoundException) {
+                            request.fallback?.let { runCatching { context.startActivity(it) } }
+                        }
+                    }
+                }
+                val whenNotificationsAllowed = rememberNotificationGate()
+                WearableTroubleshootScreen(
+                    state,
+                    onEvent = { event ->
+                        when (event) {
+                            TroubleshootEvent.PairAdb, TroubleshootEvent.ClearConfirmed -> whenNotificationsAllowed { vm.onEvent(event) }
+                            else -> vm.onEvent(event)
+                        }
+                    },
+                    onBack = back,
+                )
+            }
+            composable(Route.WatchPair.path) {
+                val vm: WatchPairViewModel = viewModel()
+                val state by vm.state.collectAsStateWithLifecycle()
+                LaunchedEffect(state.paired) {
+                    if (state.paired) {
+                        vm.onNavigated()
+                        // Opened from the self-test to fix a missing link: go back there instead of walking on.
+                        if (navController.previousBackStackEntry?.destination?.route == Route.SelfTest.path) navController.popBackStack()
+                        else next(Route.WatchPair)
+                    }
+                }
+                WatchPairScreen(state, vm::onEvent, onBack = back)
+            }
+            composable(Route.Acquire.path) {
+                val vm: AcquireViewModel = viewModel()
+                val state by vm.state.collectAsStateWithLifecycle()
+                val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument(), vm::onFilePicked)
+                LaunchedEffect(vm) {
+                    vm.pickRequests.collect { picker.launch(arrayOf(APK_MIME, "application/octet-stream")) }
+                }
+                AcquireScreen(
+                    state,
+                    onEvent = { event ->
+                        if (event is AcquireEvent.OpenMirror) navController.navigate(Route.guidedBrowser(event.inputId))
+                        else vm.onEvent(event)
+                    },
+                    onContinue = { next(Route.Acquire) },
+                    onBack = back,
+                )
+            }
+            composable(
+                Route.GuidedBrowser.path,
+                arguments = listOf(navArgument(Route.INPUT_ID_ARG) { type = NavType.StringType }),
+            ) { entry -> GuidedBrowserDestination(entry, navController) }
+            composable(Route.Customize.path) {
+                val vm: CustomizeViewModel = viewModel()
+                val state by vm.state.collectAsStateWithLifecycle()
+                CustomizeScreen(state, vm::onEvent, onBuild = { next(Route.Customize) }, onBack = back)
+            }
+            composable(Route.Build.path) {
+                val vm: BuildViewModel = viewModel()
+                val state by vm.state.collectAsStateWithLifecycle()
+                val finished by vm.finished.collectAsStateWithLifecycle()
+                val context = LocalContext.current
+                var asked by rememberSaveable { mutableStateOf(false) }
+                // The build runs without the notification, so the answer only decides whether progress shows there.
+                val notificationPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { vm.start() }
+                LaunchedEffect(Unit) {
+                    val needsAsk = Build.VERSION.SDK_INT >= 33 && !asked &&
+                        ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+                    asked = true
+                    if (needsAsk) notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS) else vm.start()
+                }
+                LaunchedEffect(finished) { if (finished) next(Route.Build) }
+                CompositionLocalProvider(LocalAppIconLoader provides vm.icons) {
+                    BuildScreen(
+                        state, vm::onEvent,
+                        onBack = {
+                            // Leaving a cancelled build forgets it, so coming back starts a new one.
+                            if (state.cancelled) vm.onEvent(BuildEvent.Dismiss)
+                            back()
+                        },
+                    )
+                }
+            }
+            composable(Route.BuildDone.path) {
+                val context = LocalContext.current
+                val base = remember { builtOutputs(BuildStorage(context)) }
+                // Decrypting the key is real work, so the nudge appears once it is known.
+                val backupDue by produceState(false) {
+                    value = withContext(Dispatchers.IO) { signingKeyBackupDue(signingKeyStore(context), PrefsExportedCertRecord(context)) }
+                }
+                BuildDoneScreen(
+                    base.copy(backupDue = backupDue),
+                    onInstall = { next(Route.BuildDone) },
+                    onBack = back,
+                    onBackUpKey = { navController.navigate(Route.SigningKey.path) },
+                )
+            }
+            composable(Route.InstallPhone.path) {
+                val vm: InstallPhoneViewModel = viewModel()
+                val state by vm.state.collectAsStateWithLifecycle()
+                val activity = LocalContext.current
+                LaunchedEffect(vm) {
+                    vm.launches.collect { request ->
+                        try {
+                            activity.startActivity(request.intent)
+                        } catch (e: ActivityNotFoundException) {
+                            request.fallback?.let { runCatching { activity.startActivity(it) } }
+                        }
+                    }
+                }
+                // Settings are changed outside the app: read them again when the screen is back.
+                LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { vm.onEvent(InstallEvent.Refresh) }
+                val whenNotificationsAllowed = rememberNotificationGate()
+                InstallPhoneScreen(
+                    state,
+                    onEvent = { event ->
+                        if (event == InstallEvent.GrantWithAdb) whenNotificationsAllowed { vm.onEvent(event) } else vm.onEvent(event)
+                    },
+                    onContinue = { next(Route.InstallPhone) },
+                    onBack = back,
+                )
+            }
+            composable(Route.WatchInstall.path) {
+                val vm: InstallWatchViewModel = viewModel()
+                val state by vm.state.collectAsStateWithLifecycle()
+                WatchInstallScreen(state, vm::onEvent, onContinue = { next(Route.WatchInstall) }, onBack = back)
+            }
+            composable(Route.DevMode.path) {
+                val vm: DevModeViewModel = viewModel()
+                val state by vm.state.collectAsStateWithLifecycle()
+                DevModeScreen(state, vm::onEvent, onContinue = { next(Route.DevMode) }, onBack = back)
+            }
+            composable(Route.DisableStock.path) {
+                val vm: DisableStockViewModel = viewModel()
+                val state by vm.state.collectAsStateWithLifecycle()
+                LaunchedEffect(state.done) {
+                    if (state.done) {
+                        vm.onNavigated()
+                        next(Route.DisableStock)
+                    }
+                }
+                DisableStockScreen(
+                    state,
+                    onEvent = vm::onEvent,
+                    onSkip = { next(Route.DisableStock) },
+                    onBack = back,
+                )
+            }
+            composable(Route.SelfTest.path) {
+                val vm: SelfTestViewModel = viewModel()
+                val state by vm.state.collectAsStateWithLifecycle()
+                val context = LocalContext.current
+                // After a fix the checks run again when this screen is back in front.
+                LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { vm.onResumed() }
+                SelfTestScreen(
+                    state,
+                    onEvent = { event ->
+                        when (event) {
+                            is SelfTestEvent.Fix -> vm.fixFor(event.rowId)?.let { navController.navigate(it.route().path) }
+                            SelfTestEvent.Share -> shareReport(context, vm.reportText())
+                            else -> vm.onEvent(event)
+                        }
+                    },
+                    onContinue = { next(Route.SelfTest) },
+                    onBack = back,
+                )
+            }
+            composable(Route.AllSet.path) { entry ->
+                val selfTest = remember(entry) { navController.getBackStackEntry(Route.SelfTest.path) }
+                val vm: SelfTestViewModel = viewModel(selfTest)
+                val state by vm.state.collectAsStateWithLifecycle()
+                val context = LocalContext.current
+                AllSetScreen(
+                    AllSetUiState(state.passedCount, state.totalCount),
+                    onDone = { next(Route.AllSet) },
+                    onShare = { shareReport(context, vm.reportText()) },
+                )
+            }
+            composable(Route.SigningKey.path) {
+                val vm: SigningKeyViewModel = viewModel()
+                val state by vm.state.collectAsStateWithLifecycle()
+                val createBackup = rememberLauncherForActivityResult(
+                    ActivityResultContracts.CreateDocument(PKCS12_MIME), vm::onBackupFileCreated,
+                )
+                val pickKey = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument(), vm::onKeyFilePicked)
+                LaunchedEffect(vm) {
+                    vm.requests.collect { request ->
+                        when (request) {
+                            SigningKeyRequest.CreateBackupFile -> createBackup.launch(BACKUP_FILE_NAME)
+                            SigningKeyRequest.PickKeyFile -> pickKey.launch(arrayOf(PKCS12_MIME, "application/octet-stream"))
+                        }
+                    }
+                }
+                SigningKeyScreen(state, vm::onEvent, onBack = back)
+            }
+            composable(Route.Home.path) {
+                val vm: HomeViewModel = viewModel()
+                val state by vm.state.collectAsStateWithLifecycle()
+                // The self-test may have finished since Home was last shown.
+                LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { vm.refresh() }
+                HomeScreen(
+                    state,
+                    onEvent = { event ->
                         vm.onEvent(event)
-                    }
-                },
-                onContinue = { next(Route.Profile) }, onBack = back)
-        }
-        composable(Route.WearablePairing.path) {
-            val vm: WearablePairingViewModel = viewModel()
-            val state by vm.state.collectAsStateWithLifecycle()
-            val permission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { vm.recheck() }
-            // Coming back from Galaxy Wearable (or the permission dialog): look again.
-            LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { vm.recheck() }
-            WearablePairingScreen(
-                state,
-                onEvent = { event ->
-                    when (event) {
-                        WearablePairingEvent.AllowBluetooth -> permission.launch(Manifest.permission.BLUETOOTH_CONNECT)
-                        WearablePairingEvent.Troubleshoot -> navController.navigate(Route.WearableTroubleshoot.path)
-                        else -> vm.onEvent(event)
-                    }
-                },
-                onContinue = { next(Route.WearablePairing) },
-                onBack = back,
-            )
-        }
-        composable(Route.WearableTroubleshoot.path) {
-            val vm: WearableTroubleshootViewModel = viewModel()
-            val state by vm.state.collectAsStateWithLifecycle()
-            val context = LocalContext.current
-            LaunchedEffect(vm) {
-                vm.launches.collect { request ->
-                    try {
-                        context.startActivity(request.intent)
-                    } catch (e: ActivityNotFoundException) {
-                        request.fallback?.let { runCatching { context.startActivity(it) } }
-                    }
-                }
-            }
-            val whenNotificationsAllowed = rememberNotificationGate()
-            WearableTroubleshootScreen(
-                state,
-                onEvent = { event ->
-                    when (event) {
-                        TroubleshootEvent.PairAdb, TroubleshootEvent.ClearConfirmed -> whenNotificationsAllowed { vm.onEvent(event) }
-                        else -> vm.onEvent(event)
-                    }
-                },
-                onBack = back,
-            )
-        }
-        composable(Route.WatchPair.path) {
-            val vm: WatchPairViewModel = viewModel()
-            val state by vm.state.collectAsStateWithLifecycle()
-            LaunchedEffect(state.paired) {
-                if (state.paired) {
-                    vm.onNavigated()
-                    // Opened from the self-test to fix a missing link: go back there instead of walking on.
-                    if (navController.previousBackStackEntry?.destination?.route == Route.SelfTest.path) navController.popBackStack()
-                    else next(Route.WatchPair)
-                }
-            }
-            WatchPairScreen(state, vm::onEvent, onBack = back)
-        }
-        composable(Route.Acquire.path) {
-            val vm: AcquireViewModel = viewModel()
-            val state by vm.state.collectAsStateWithLifecycle()
-            val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument(), vm::onFilePicked)
-            LaunchedEffect(vm) {
-                vm.pickRequests.collect { picker.launch(arrayOf(APK_MIME, "application/octet-stream")) }
-            }
-            AcquireScreen(
-                state,
-                onEvent = { event ->
-                    if (event is AcquireEvent.OpenMirror) navController.navigate(Route.guidedBrowser(event.inputId))
-                    else vm.onEvent(event)
-                },
-                onContinue = { next(Route.Acquire) },
-                onBack = back,
-            )
-        }
-        composable(
-            Route.GuidedBrowser.path,
-            arguments = listOf(navArgument(Route.INPUT_ID_ARG) { type = NavType.StringType }),
-        ) { entry -> GuidedBrowserDestination(entry, navController) }
-        composable(Route.Customize.path) {
-            val vm: CustomizeViewModel = viewModel()
-            val state by vm.state.collectAsStateWithLifecycle()
-            CustomizeScreen(state, vm::onEvent, onBuild = { next(Route.Customize) }, onBack = back)
-        }
-        composable(Route.Build.path) {
-            val vm: BuildViewModel = viewModel()
-            val state by vm.state.collectAsStateWithLifecycle()
-            val finished by vm.finished.collectAsStateWithLifecycle()
-            val context = LocalContext.current
-            var asked by rememberSaveable { mutableStateOf(false) }
-            // The build runs without the notification, so the answer only decides whether progress shows there.
-            val notificationPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { vm.start() }
-            LaunchedEffect(Unit) {
-                val needsAsk = Build.VERSION.SDK_INT >= 33 && !asked &&
-                    ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
-                asked = true
-                if (needsAsk) notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS) else vm.start()
-            }
-            LaunchedEffect(finished) { if (finished) next(Route.Build) }
-            CompositionLocalProvider(LocalAppIconLoader provides vm.icons) {
-                BuildScreen(
-                    state, vm::onEvent,
-                    onBack = {
-                        // Leaving a cancelled build forgets it, so coming back starts a new one.
-                        if (state.cancelled) vm.onEvent(BuildEvent.Dismiss)
-                        back()
+                        if (event is HomeEvent.NewBuild) navController.navigate(Route.Profile.path)
+                        if (event is HomeEvent.RunSelfTest || event is HomeEvent.TestAgain) navController.navigate(Route.SelfTest.path)
+                        if (event is HomeEvent.OpenSigningKey) navController.navigate(Route.SigningKey.path)
+                        // Inputs whose verified files still match are already Verified on Acquire.
+                        if (event is HomeEvent.StartUpdate) navController.navigate(Route.Acquire.path)
                     },
                 )
             }
         }
-        composable(Route.BuildDone.path) {
-            val context = LocalContext.current
-            val base = remember { builtOutputs(BuildStorage(context)) }
-            // Decrypting the key is real work, so the nudge appears once it is known.
-            val backupDue by produceState(false) {
-                value = withContext(Dispatchers.IO) { signingKeyBackupDue(signingKeyStore(context), PrefsExportedCertRecord(context)) }
-            }
-            BuildDoneScreen(
-                base.copy(backupDue = backupDue),
-                onInstall = { next(Route.BuildDone) },
-                onBack = back,
-                onBackUpKey = { navController.navigate(Route.SigningKey.path) },
-            )
-        }
-        composable(Route.InstallPhone.path) {
-            val vm: InstallPhoneViewModel = viewModel()
-            val state by vm.state.collectAsStateWithLifecycle()
-            val activity = LocalContext.current
-            LaunchedEffect(vm) {
-                vm.launches.collect { request ->
-                    try {
-                        activity.startActivity(request.intent)
-                    } catch (e: ActivityNotFoundException) {
-                        request.fallback?.let { runCatching { activity.startActivity(it) } }
-                    }
-                }
-            }
-            // Settings are changed outside the app: read them again when the screen is back.
-            LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { vm.onEvent(InstallEvent.Refresh) }
-            val whenNotificationsAllowed = rememberNotificationGate()
-            InstallPhoneScreen(
-                state,
-                onEvent = { event ->
-                    if (event == InstallEvent.GrantWithAdb) whenNotificationsAllowed { vm.onEvent(event) } else vm.onEvent(event)
-                },
-                onContinue = { next(Route.InstallPhone) },
-                onBack = back,
-            )
-        }
-        composable(Route.WatchInstall.path) {
-            val vm: InstallWatchViewModel = viewModel()
-            val state by vm.state.collectAsStateWithLifecycle()
-            WatchInstallScreen(state, vm::onEvent, onContinue = { next(Route.WatchInstall) }, onBack = back)
-        }
-        composable(Route.DevMode.path) {
-            val vm: DevModeViewModel = viewModel()
-            val state by vm.state.collectAsStateWithLifecycle()
-            DevModeScreen(state, vm::onEvent, onContinue = { next(Route.DevMode) }, onBack = back)
-        }
-        composable(Route.DisableStock.path) {
-            val vm: DisableStockViewModel = viewModel()
-            val state by vm.state.collectAsStateWithLifecycle()
-            LaunchedEffect(state.done) {
-                if (state.done) {
-                    vm.onNavigated()
-                    next(Route.DisableStock)
-                }
-            }
-            DisableStockScreen(
-                state,
-                onEvent = vm::onEvent,
-                onSkip = { next(Route.DisableStock) },
-                onBack = back,
-            )
-        }
-        composable(Route.SelfTest.path) {
-            val vm: SelfTestViewModel = viewModel()
-            val state by vm.state.collectAsStateWithLifecycle()
-            val context = LocalContext.current
-            // After a fix the checks run again when this screen is back in front.
-            LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { vm.onResumed() }
-            SelfTestScreen(
-                state,
-                onEvent = { event ->
-                    when (event) {
-                        is SelfTestEvent.Fix -> vm.fixFor(event.rowId)?.let { navController.navigate(it.route().path) }
-                        SelfTestEvent.Share -> shareReport(context, vm.reportText())
-                        else -> vm.onEvent(event)
-                    }
-                },
-                onContinue = { next(Route.SelfTest) },
-                onBack = back,
-            )
-        }
-        composable(Route.AllSet.path) { entry ->
-            val selfTest = remember(entry) { navController.getBackStackEntry(Route.SelfTest.path) }
-            val vm: SelfTestViewModel = viewModel(selfTest)
-            val state by vm.state.collectAsStateWithLifecycle()
-            val context = LocalContext.current
-            AllSetScreen(
-                AllSetUiState(state.passedCount, state.totalCount),
-                onDone = { next(Route.AllSet) },
-                onShare = { shareReport(context, vm.reportText()) },
-            )
-        }
-        composable(Route.SigningKey.path) {
-            val vm: SigningKeyViewModel = viewModel()
-            val state by vm.state.collectAsStateWithLifecycle()
-            val createBackup = rememberLauncherForActivityResult(
-                ActivityResultContracts.CreateDocument(PKCS12_MIME), vm::onBackupFileCreated,
-            )
-            val pickKey = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument(), vm::onKeyFilePicked)
-            LaunchedEffect(vm) {
-                vm.requests.collect { request ->
-                    when (request) {
-                        SigningKeyRequest.CreateBackupFile -> createBackup.launch(BACKUP_FILE_NAME)
-                        SigningKeyRequest.PickKeyFile -> pickKey.launch(arrayOf(PKCS12_MIME, "application/octet-stream"))
-                    }
-                }
-            }
-            SigningKeyScreen(state, vm::onEvent, onBack = back)
-        }
-        composable(Route.Home.path) {
-            val vm: HomeViewModel = viewModel()
-            val state by vm.state.collectAsStateWithLifecycle()
-            // The self-test may have finished since Home was last shown.
-            LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { vm.refresh() }
-            HomeScreen(
-                state,
-                onEvent = { event ->
-                    vm.onEvent(event)
-                    if (event is HomeEvent.NewBuild) navController.navigate(Route.Profile.path)
-                    if (event is HomeEvent.RunSelfTest || event is HomeEvent.TestAgain) navController.navigate(Route.SelfTest.path)
-                    if (event is HomeEvent.OpenSigningKey) navController.navigate(Route.SigningKey.path)
-                    // Inputs whose verified files still match are already Verified on Acquire.
-                    if (event is HomeEvent.StartUpdate) navController.navigate(Route.Acquire.path)
-                },
-            )
-        }
+        SkipStepsOverlay(
+            announcing?.let { SkipDialog.Skipping(it.second) },
+            onConfirm = {
+                val from = announcing?.first
+                announcing = null
+                if (from != null) SetupFlow.next(from, StepSkips.routes)?.let(::go)
+            },
+            onCancel = { announcing = null },
+            onManual = {
+                // Walk the announced steps after all; later skips still apply.
+                val (from, run) = announcing ?: return@SkipStepsOverlay
+                announcing = null
+                val manual = run.mapTo(mutableSetOf()) { it.route }
+                StepSkips.current = StepSkips.current.filter { it.route !in manual }
+                SetupFlow.next(from)?.let(::go)
+            },
+        )
     }
 }
 

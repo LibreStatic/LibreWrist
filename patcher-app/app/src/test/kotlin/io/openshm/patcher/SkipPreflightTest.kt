@@ -6,6 +6,7 @@ import io.openshm.patcher.ui.nav.Route
 import io.openshm.patcher.ui.nav.SetupFlow
 import io.openshm.patcher.ui.nav.SkippedStep
 import io.openshm.patcher.ui.nav.skippableSteps
+import io.openshm.patcher.ui.nav.skippedRunAfter
 import io.openshm.patcher.ui.screens.welcome.SkipDialog
 import io.openshm.patcher.ui.screens.welcome.SkipPreflight
 import kotlinx.coroutines.CompletableDeferred
@@ -129,6 +130,27 @@ class SkipPreflightTest {
         assertNull(p.dialog.value)
         assertNull(rec.applied)
         assertEquals(0, rec.went)
+    }
+
+    @Test
+    fun onlyTheRunRightAfterAStepIsAnnounced() {
+        val wearableOnly = skippableSteps(null, wearableReady = true)
+        assertTrue(skippedRunAfter(Route.Welcome, wearableOnly).isEmpty())
+        assertEquals(listOf(Route.WearablePairing), skippedRunAfter(Route.Profile, wearableOnly).map { it.route })
+        val all = skippableSteps(watch, wearableReady = true)
+        assertEquals(3, skippedRunAfter(Route.Welcome, all).size)
+        assertTrue(skippedRunAfter(Route.WatchPair, all).isEmpty())
+    }
+
+    @Test
+    fun aLaterSkipIsRecordedWithoutADialogOnTheWelcome() = runTest {
+        val rec = Recorder()
+        val p = preflight(remembered = false, detect = { error("not asked") }, wearableReady = true, rec = rec)
+        p.start()
+        runCurrent()
+        assertNull(p.dialog.value)
+        assertEquals(listOf(Route.WearablePairing), rec.applied!!.map { it.route })
+        assertEquals(1, rec.went)
     }
 
     @Test

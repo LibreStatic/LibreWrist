@@ -17,6 +17,19 @@ internal fun skippableSteps(watch: DetectedWatch?, wearableReady: Boolean): List
     if (watch != null) add(SkippedStep(Route.WatchPair, R.string.skip_reason_watchpair))
 }
 
+/**
+ * The skipped steps that come right after [route], in order: the run [SetupFlow.next] passes over when
+ * leaving [route]. Empty when the next step needs the user.
+ */
+internal fun skippedRunAfter(route: Route, skipped: List<SkippedStep>): List<SkippedStep> = buildList {
+    var target = SetupFlow.next(route)
+    while (target != null) {
+        val step = skipped.firstOrNull { it.route == target } ?: break
+        add(step)
+        target = SetupFlow.next(target)
+    }
+}
+
 /** The steps skipped in this run of the setup; the nav host's `next` passes over them. */
 object StepSkips {
     @Volatile
