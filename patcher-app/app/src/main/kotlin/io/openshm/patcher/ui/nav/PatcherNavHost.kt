@@ -93,7 +93,20 @@ import io.openshm.patcher.ui.screens.welcome.SkipStepsOverlay
 import io.openshm.patcher.ui.screens.welcome.SkipDialog
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.Box
+import io.openshm.patcher.ui.components.ContentColumn
+import androidx.navigation.NamedNavArgument
+import androidx.navigation.NavGraphBuilder
 import androidx.compose.ui.Alignment
+
+/**
+ * A destination for a screen without [io.openshm.patcher.ui.components.StepScreenScaffold]: its
+ * content is capped and centered ([ContentColumn]). Scaffold screens cap themselves.
+ */
+private fun NavGraphBuilder.columnComposable(
+    route: String,
+    arguments: List<NamedNavArgument> = emptyList(),
+    content: @Composable (NavBackStackEntry) -> Unit,
+) = composable(route, arguments) { entry -> ContentColumn { content(entry) } }
 
 @Composable
 fun PatcherNavHost(
@@ -121,7 +134,7 @@ fun PatcherNavHost(
         reducedMotion = LocalReducedMotion.current,
         rtl = LocalLayoutDirection.current == LayoutDirection.Rtl,
     )
-    // Centered like the column it holds; the skip overlay still covers the whole window.
+    // Screens cap and center their own column; the skip overlay covers the whole window.
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
         NavHost(
             navController,
@@ -132,7 +145,7 @@ fun PatcherNavHost(
             popEnterTransition = { pages.enter(forward = false) },
             popExitTransition = { pages.exit(forward = false) },
         ) {
-            composable(Route.Welcome.path) {
+            columnComposable(Route.Welcome.path) {
                 val vm: WelcomeViewModel = viewModel()
                 val state by vm.state.collectAsStateWithLifecycle()
                 LaunchedEffect(vm) { vm.go.collect { next(Route.Welcome) } }
@@ -232,7 +245,7 @@ fun PatcherNavHost(
                     onBack = back,
                 )
             }
-            composable(
+            columnComposable(
                 Route.GuidedBrowser.path,
                 arguments = listOf(navArgument(Route.INPUT_ID_ARG) { type = NavType.StringType }),
             ) { entry -> GuidedBrowserDestination(entry, navController) }
@@ -267,7 +280,7 @@ fun PatcherNavHost(
                     )
                 }
             }
-            composable(Route.BuildDone.path) {
+            columnComposable(Route.BuildDone.path) {
                 val context = LocalContext.current
                 val base = remember { builtOutputs(BuildStorage(context)) }
                 // The automatic key backup needs the Activity for the password manager prompt.
@@ -355,7 +368,7 @@ fun PatcherNavHost(
                     onBack = back,
                 )
             }
-            composable(Route.AllSet.path) { entry ->
+            columnComposable(Route.AllSet.path) { entry ->
                 val selfTest = remember(entry) { navController.getBackStackEntry(Route.SelfTest.path) }
                 val vm: SelfTestViewModel = viewModel(selfTest)
                 val state by vm.state.collectAsStateWithLifecycle()
@@ -366,7 +379,7 @@ fun PatcherNavHost(
                     onShare = { shareReport(context, vm.reportText()) },
                 )
             }
-            composable(Route.SigningKey.path) {
+            columnComposable(Route.SigningKey.path) {
                 val vm: SigningKeyViewModel = viewModel()
                 val state by vm.state.collectAsStateWithLifecycle()
                 val createBackup = rememberLauncherForActivityResult(
@@ -393,7 +406,7 @@ fun PatcherNavHost(
                     onSaveWithPassword = vm::saveWithPassword,
                 )
             }
-            composable(Route.Home.path) {
+            columnComposable(Route.Home.path) {
                 val vm: HomeViewModel = viewModel()
                 val state by vm.state.collectAsStateWithLifecycle()
                 // The self-test may have finished since Home was last shown.

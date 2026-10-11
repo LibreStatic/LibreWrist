@@ -78,6 +78,9 @@ fun PrimaryAction(
         colors = ButtonDefaults.buttonColors(
             containerColor = accent.container(),
             contentColor = accent.content(),
+            // Opaque: the Material defaults are translucent and let the backdrop motifs show through.
+            disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+            disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         ),
     ) {
         if (icon != null) {
@@ -101,6 +104,26 @@ fun QuietAction(
         modifier = modifier.fillMaxWidth().heightIn(min = 48.dp),
         shape = RoundedCornerShape(24.dp),
         colors = ButtonDefaults.textButtonColors(contentColor = accent.container()),
+    ) {
+        Text(text, style = MaterialTheme.typography.labelLarge)
+    }
+}
+
+/**
+ * Text action on a tinted container (primary, secondary or tertiary container): [onColor] is that
+ * container's on-colour, so the label keeps its contrast where the default primary would not.
+ */
+@Composable
+fun ContainerTextAction(
+    text: String,
+    onClick: () -> Unit,
+    onColor: Color,
+    modifier: Modifier = Modifier,
+) {
+    TextButton(
+        onClick = onClick,
+        modifier = modifier,
+        colors = ButtonDefaults.textButtonColors(contentColor = onColor),
     ) {
         Text(text, style = MaterialTheme.typography.labelLarge)
     }

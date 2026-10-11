@@ -4,16 +4,21 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,8 +31,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -67,9 +75,40 @@ fun TopActions(
 fun HelpAction(onHelp: () -> Unit) =
     IconAction(Icons.Rounded.Help, stringResource(R.string.action_help), onHelp)
 
+/** Widest a single-pane screen gets; on tablets and unfolded foldables the rest is side margin. */
+val SinglePaneMaxWidth = 640.dp
+
+/** Widest a two-pane step screen gets. */
+val TwoPaneMaxWidth = 1200.dp
+
+/** From this available width on, [StepScreenScaffold] lays out its `secondary` content beside the primary one. */
+val TwoPaneMinWidth = 720.dp
+
+/** True inside [StepScreenScaffold] content while the two panes are side by side; screens use it to shrink illustrations. */
+val LocalTwoPane = staticCompositionLocalOf { false }
+
+/**
+ * Centers [content] in a column capped at [SinglePaneMaxWidth]. For screens that do not use
+ * [StepScreenScaffold] (the scaffold applies its own cap).
+ */
+@Composable
+fun ContentColumn(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    Box(modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+        Box(Modifier.widthIn(max = SinglePaneMaxWidth).fillMaxSize()) { content() }
+    }
+}
+
 /**
  * Standard step screen: back/help row, step header, scrolling content, pinned footer. Insets are
  * handled here so content never sits under the system bars, and the content scrolls at font scale 2.
+ *
+ * With a [secondary] slot and at least [TwoPaneMinWidth] available, the header spans the top, the
+ * primary and secondary content sit side by side (each scrolling on its own, both top-aligned) and
+ * the footer spans below both; [LocalTwoPane] is true inside them. Narrower, the secondary content
+ * is appended after the primary one in the same scroll. The column is capped at
+ * [SinglePaneMaxWidth], or [TwoPaneMaxWidth] when two-pane, and centered.
+ *
+ * The footer sits on an opaque surface band, so its text and buttons never lie over the backdrop.
  */
 @Composable
 fun StepScreenScaffold(
@@ -80,29 +119,79 @@ fun StepScreenScaffold(
     onHelp: (() -> Unit)? = null,
     topTrailing: @Composable () -> Unit = {},
     footer: @Composable ColumnScope.() -> Unit = {},
+    secondary: (@Composable ColumnScope.() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    Column(
+    BoxWithConstraints(
         modifier = modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing),
+        contentAlignment = Alignment.TopCenter,
     ) {
-        TopActions(onBack = onBack, modifier = Modifier.padding(top = 8.dp)) {
-            topTrailing()
-            if (onHelp != null) HelpAction(onHelp)
+        val twoPane = secondary != null && maxWidth >= TwoPaneMinWidth
+        val contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp)
+        CompositionLocalProvider(LocalTwoPane provides twoPane) {
+            Column(Modifier.widthIn(max = if (twoPane) TwoPaneMaxWidth else SinglePaneMaxWidth).fillMaxSize()) {
+                TopActions(onBack = onBack, modifier = Modifier.padding(top = 8.dp)) {
+                    topTrailing()
+                    if (onHelp != null) HelpAction(onHelp)
+                }
+                StepHeader(step, title, Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
+                if (twoPane) {
+                    Row(
+                        modifier = Modifier.weight(1f).fillMaxWidth().padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(24.dp),
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight()
+                                .verticalScroll(rememberScrollState())
+                                .padding(vertical = 8.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                            content = content,
+                        )
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight()
+                                .verticalScroll(rememberScrollState())
+                                .padding(vertical = 8.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                            content = secondary!!,
+                        )
+                    }
+                } else {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .verticalScroll(rememberScrollState())
+                            .padding(contentPadding),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        content()
+                        secondary?.invoke(this)
+                    }
+                }
+                ScaffoldFooter(footer)
+            }
         }
-        StepHeader(step, title, Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
-                .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            content = content,
+    }
+}
+
+/** Opaque band under the content, with a short fade above it so scrolled content does not end in a hard edge. */
+@Composable
+private fun ScaffoldFooter(footer: @Composable ColumnScope.() -> Unit) {
+    val surface = MaterialTheme.colorScheme.surface
+    Column(Modifier.fillMaxWidth()) {
+        Box(
+            Modifier.fillMaxWidth().height(12.dp)
+                .background(Brush.verticalGradient(listOf(surface.copy(alpha = 0f), surface))),
         )
         Column(
-            modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp),
+            modifier = Modifier.fillMaxWidth().background(surface)
+                .padding(start = 16.dp, end = 16.dp, top = 0.dp, bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             content = footer,
         )

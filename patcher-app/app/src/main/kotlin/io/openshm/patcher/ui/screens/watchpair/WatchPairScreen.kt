@@ -12,7 +12,6 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,7 +27,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,7 +37,9 @@ import io.openshm.patcher.R
 import io.openshm.patcher.data.WatchProfile
 import io.openshm.patcher.ui.components.Accent
 import io.openshm.patcher.ui.components.CheckStatus
+import io.openshm.patcher.ui.components.ContainerTextAction
 import io.openshm.patcher.ui.components.FooterHint
+import io.openshm.patcher.ui.components.LocalTwoPane
 import io.openshm.patcher.ui.components.PackageId
 import io.openshm.patcher.ui.components.PhoneWatchIllustration
 import io.openshm.patcher.ui.components.PrimaryAction
@@ -127,6 +127,11 @@ fun WatchPairScreen(
         title = stringResource(R.string.watchpair_title),
         onBack = onBack,
         modifier = modifier,
+        secondary = if (state.guideVisible && state.correction == null) {
+            { Guide(state, onEvent) }
+        } else {
+            null
+        },
         footer = {
             if (state.correction != null) {
                 PrimaryAction(stringResource(R.string.action_continue), { onEvent(WatchPairEvent.ConfirmCorrection) })
@@ -160,42 +165,33 @@ fun WatchPairScreen(
             CorrectionCard(state.correction)
             return@StepScreenScaffold
         }
-        BoxWithConstraints(Modifier.fillMaxWidth()) {
-            if (maxWidth < SPLIT_MIN_WIDTH) {
-                PairPanel(state, onEvent, guideInline = true)
-            } else {
-                // Wide screens (tablets, open foldables): the guide beside the status and the code, not above them.
-                Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.Top) {
-                    PairPanel(state, onEvent, guideInline = false, modifier = Modifier.weight(1f))
-                    AnimatedVisibility(state.guideVisible, modifier = Modifier.weight(1f), enter = fadeIn(), exit = fadeOut()) {
-                        Guide(state, onEvent)
-                    }
-                }
-            }
-        }
+        PairPanel(state, onEvent)
     }
 }
 
-/** Below this width the guide sits inside the pairing card; from it on, beside the card. */
-private val SPLIT_MIN_WIDTH = 600.dp
-
+/**
+ * The guide for the scaffold's secondary pane. Narrow, it renders nothing: the guide then sits
+ * inside the pairing card ([PairPanel] reads [LocalTwoPane]).
+ */
 @Composable
 private fun Guide(state: WatchPairUiState, onEvent: (WatchPairEvent) -> Unit) {
+    if (!LocalTwoPane.current) return
     WatchPairGuide(
         step = state.guideStep,
         onStep = { onEvent(WatchPairEvent.GuideStep(it)) },
         onDone = { onEvent(WatchPairEvent.HideGuide) },
+        compact = true,
     )
 }
 
-/** Discovery status, the guide when [guideInline], the address and code entry, and the manual switch. */
+/** Discovery status, the guide when it is not in the second pane, the address and code entry, and the manual switch. */
 @Composable
 private fun PairPanel(
     state: WatchPairUiState,
     onEvent: (WatchPairEvent) -> Unit,
-    guideInline: Boolean,
     modifier: Modifier = Modifier,
 ) {
+    val guideInline = !LocalTwoPane.current
     Surface(modifier.fillMaxWidth(), shape = RoundedCornerShape(28.dp), color = MaterialTheme.colorScheme.tertiaryContainer) {
         val reduced = LocalReducedMotion.current
         Column(
@@ -203,7 +199,7 @@ private fun PairPanel(
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
-                PhoneWatchIllustration(scale = 0.8f, linkColor = MaterialTheme.colorScheme.tertiary)
+                PhoneWatchIllustration(scale = if (LocalTwoPane.current) 0.65f else 0.8f, linkColor = MaterialTheme.colorScheme.tertiary)
             }
             if (state.manual) {
                 Text(
@@ -281,9 +277,11 @@ private fun PairPanel(
                 }
             }
             AnimatedVisibility(!state.pairing && (state.manual || state.foundAddress == null), enter = enterTransition(), exit = exitTransition()) {
-                TextButton(onClick = { onEvent(WatchPairEvent.ToggleManual) }) {
-                    Text(stringResource(if (state.manual) R.string.watchpair_automatic else R.string.watchpair_manual))
-                }
+                ContainerTextAction(
+                    stringResource(if (state.manual) R.string.watchpair_automatic else R.string.watchpair_manual),
+                    { onEvent(WatchPairEvent.ToggleManual) },
+                    onColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                )
             }
         }
     }
@@ -349,9 +347,11 @@ private fun FoundRow(state: WatchPairUiState, onEvent: (WatchPairEvent) -> Unit)
             state.foundAddress?.let { PackageId(it, color = MaterialTheme.colorScheme.onTertiaryContainer) }
         }
         if (!state.guideOpen && !state.pairing) {
-            TextButton(onClick = { onEvent(WatchPairEvent.ShowGuide) }) {
-                Text(stringResource(R.string.watchpair_guide_again))
-            }
+            ContainerTextAction(
+                stringResource(R.string.watchpair_guide_again),
+                { onEvent(WatchPairEvent.ShowGuide) },
+                onColor = MaterialTheme.colorScheme.onTertiaryContainer,
+            )
         }
     }
 }

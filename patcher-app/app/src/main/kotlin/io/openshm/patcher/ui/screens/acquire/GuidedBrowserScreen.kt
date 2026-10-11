@@ -27,7 +27,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +40,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.openshm.patcher.R
+import io.openshm.patcher.ui.components.ContainerTextAction
 import io.openshm.patcher.ui.components.IconAction
 
 /**
@@ -159,11 +159,17 @@ private fun NoticeCard(notice: BrowserNotice, onEvent: (GuidedBrowserEvent) -> U
             Text(notice.text, style = MaterialTheme.typography.bodyMedium)
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                 if (notice.canOpenExternally) {
-                    TextButton({ onEvent(GuidedBrowserEvent.OpenNoticeExternally) }) {
-                        Text(stringResource(R.string.browser_notice_open))
-                    }
+                    ContainerTextAction(
+                        stringResource(R.string.browser_notice_open),
+                        { onEvent(GuidedBrowserEvent.OpenNoticeExternally) },
+                        onColor = MaterialTheme.colorScheme.onErrorContainer,
+                    )
                 }
-                TextButton({ onEvent(GuidedBrowserEvent.DismissNotice) }) { Text(stringResource(R.string.browser_notice_dismiss)) }
+                ContainerTextAction(
+                    stringResource(R.string.browser_notice_dismiss),
+                    { onEvent(GuidedBrowserEvent.DismissNotice) },
+                    onColor = MaterialTheme.colorScheme.onErrorContainer,
+                )
             }
         }
     }

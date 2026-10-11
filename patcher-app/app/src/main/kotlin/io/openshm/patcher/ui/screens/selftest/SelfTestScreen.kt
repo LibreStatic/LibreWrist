@@ -17,13 +17,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.openshm.patcher.R
+import io.openshm.patcher.ui.components.ContainerTextAction
 import io.openshm.patcher.ui.components.CheckStatus
 import io.openshm.patcher.ui.components.GroupedItem
 import io.openshm.patcher.ui.components.GroupedSpacing
@@ -151,7 +151,11 @@ private fun CheckRow(index: Int, count: Int, row: SelfTestRow, onEvent: (SelfTes
                 row.detail?.let { Text(it.asString(), style = MaterialTheme.typography.bodySmall) }
             }
             if (row.fix != null && (row.status == CheckStatus.Failed || row.status == CheckStatus.Warning)) {
-                TextButton(onClick = { onEvent(SelfTestEvent.Fix(row.id)) }) { Text(stringResource(R.string.action_fix)) }
+                ContainerTextAction(
+                    stringResource(R.string.action_fix),
+                    { onEvent(SelfTestEvent.Fix(row.id)) },
+                    onColor = if (failed) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.primary,
+                )
             }
         }
     }

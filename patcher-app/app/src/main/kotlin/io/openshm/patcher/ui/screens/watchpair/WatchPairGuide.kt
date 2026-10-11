@@ -134,6 +134,8 @@ fun WatchPairGuide(
     onDone: () -> Unit,
     modifier: Modifier = Modifier,
     frozenSubStep: Int? = LocalFrozenGuideSubStep.current,
+    /** A smaller watch, for when the guide shares the screen with the pairing card and must fit without scrolling. */
+    compact: Boolean = false,
 ) {
     val reducedMotion = LocalReducedMotion.current
     val colors = MaterialTheme.colorScheme
@@ -169,7 +171,11 @@ fun WatchPairGuide(
                     shapes = listOf(MaterialShapes.Cookie12Sided, MaterialShapes.Clover8Leaf, MaterialShapes.Sunny, MaterialShapes.Cookie9Sided),
                     tints = listOf(colors.primaryContainer, colors.secondaryContainer, colors.tertiaryContainer, colors.primaryContainer),
                     reducedMotion = reducedMotion,
-                    size = if (captions.isEmpty()) 248.dp else 208.dp,
+                    size = when {
+                        compact -> 176.dp
+                        captions.isEmpty() -> 248.dp
+                        else -> 208.dp
+                    },
                 ) { shown -> GuideScreen(shown, sub, captions.size, reducedMotion, animate = frozenSubStep == null) }
                 if (captions.isNotEmpty()) {
                     SubStepChips(sub, captions.size, onSelect = { userSub = it })
