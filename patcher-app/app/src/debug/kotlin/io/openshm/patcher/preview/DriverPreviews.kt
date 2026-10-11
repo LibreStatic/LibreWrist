@@ -1,7 +1,11 @@
 package io.openshm.patcher.preview
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import io.openshm.patcher.R
+import io.openshm.patcher.ui.components.TimeBackdrop
+import io.openshm.patcher.ui.theme.LocalReducedMotion
 import io.openshm.patcher.ui.screens.signingkey.SigningKeyForm
 
 /*
@@ -13,6 +17,20 @@ import io.openshm.patcher.ui.screens.signingkey.SigningKeyForm
 
 @Composable
 fun WelcomeDriver() = PreviewHost(ColorMode.Fallback) { WelcomeSample() }
+
+/**
+ * Welcome over the floating backdrop, as PatcherApp layers them. Reduced motion keeps the field
+ * still: its endless frame loop would otherwise never let the test clock go idle.
+ */
+@Composable
+fun WelcomeBackdropDriver() = PreviewHost(ColorMode.Fallback) {
+    CompositionLocalProvider(LocalReducedMotion provides true) {
+        Box {
+            TimeBackdrop(dispersed = false)
+            WelcomeSample()
+        }
+    }
+}
 
 @Composable
 fun WelcomeChangesDriver() = PreviewHost(ColorMode.Fallback) { WelcomeSample(sheet = true) }

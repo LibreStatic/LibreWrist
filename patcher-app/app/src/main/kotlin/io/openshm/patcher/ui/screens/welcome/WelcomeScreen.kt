@@ -78,7 +78,6 @@ fun WelcomeScreen(
     Column(
         modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
             .windowInsetsPadding(WindowInsets.safeDrawing),
     ) {
         Column(

@@ -85,7 +85,6 @@ fun StepScreenScaffold(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
             .windowInsetsPadding(WindowInsets.safeDrawing),
     ) {
         TopActions(onBack = onBack, modifier = Modifier.padding(top = 8.dp)) {
