@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -190,7 +191,7 @@ fun WelcomeHero(modifier: Modifier = Modifier, frozenAt: Float? = null) {
                 )
                 EcgTrace(
                     colors.onTertiary,
-                    Modifier.size(width = 64.dp, height = 34.dp).graphicsLayer { alpha = ecgShown(clock.value) },
+                    Modifier.size(width = 54.dp, height = 30.dp).graphicsLayer { alpha = ecgShown(clock.value) },
                     time = { clock.value },
                 )
             }
@@ -253,7 +254,7 @@ private val EcgBeat = listOf(
 
 /**
  * A scrolling ECG zigzag, like a monitor sweep: it moves right to left at one beat per [BEAT]
- * seconds and fades out towards its oldest end. [time] is read while drawing.
+ * seconds and fades out at both ends, so it stays inside the bezel. [time] is read while drawing.
  */
 @Composable
 private fun EcgTrace(color: Color, modifier: Modifier, time: () -> Float) {
@@ -274,13 +275,16 @@ private fun EcgTrace(color: Color, modifier: Modifier, time: () -> Float) {
             }
             beat++
         }
-        drawPath(
-            path,
-            brush = androidx.compose.ui.graphics.Brush.horizontalGradient(
-                0f to color.copy(alpha = 0f), 0.35f to color, 1f to color,
-            ),
-            style = Stroke(2.5.dp.toPx(), cap = StrokeCap.Round, join = androidx.compose.ui.graphics.StrokeJoin.Round),
-        )
+        // The path runs past both edges while it scrolls; clip it to the trace's own box.
+        clipRect {
+            drawPath(
+                path,
+                brush = androidx.compose.ui.graphics.Brush.horizontalGradient(
+                    0f to color.copy(alpha = 0f), 0.3f to color, 0.8f to color, 1f to color.copy(alpha = 0f),
+                ),
+                style = Stroke(2.5.dp.toPx(), cap = StrokeCap.Round, join = androidx.compose.ui.graphics.StrokeJoin.Round),
+            )
+        }
     }
 }
 

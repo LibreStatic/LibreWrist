@@ -19,14 +19,20 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathOperation
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
@@ -43,7 +49,7 @@ import kotlin.math.sin
 import kotlin.random.Random
 
 /** What one floating motif depicts; every kind is about watches or time. */
-private enum class Motif { Clock, Watch, Hourglass, Heart, Alarm }
+private enum class Motif { Clock, Watch, Hourglass, Heart, Alarm, Stopwatch, Pulse, Calendar, Moon, Timer }
 
 /** One floating motif. Positions are fractions of the backdrop; [depth] drives size, alpha and drift. */
 private class Floater(
@@ -67,7 +73,8 @@ private class Floater(
 
 /**
  * Decorative field of Material expressive shapes behind the guided setup: clock faces whose hands
- * turn, watches, hourglasses, hearts and ringing alarms, drifting and turning slowly. Mostly fills
+ * turn, watches, stopwatches, timer rings, hourglasses, calendars, moons, hearts, heartbeat traces
+ * and ringing alarms, drifting and turning slowly. Mostly fills
  * the side margins of large screens; on a phone it sits faintly behind the content.
  *
  * When [dispersed] becomes true the motifs fly out from the centre and fade; clearing it brings them
@@ -106,28 +113,28 @@ fun TimeBackdrop(dispersed: Boolean, modifier: Modifier = Modifier) {
         }
         val faces = listOf(
             MaterialShapes.Cookie12Sided, MaterialShapes.Circle, MaterialShapes.Cookie9Sided,
-            MaterialShapes.Clover8Leaf, MaterialShapes.Cookie6Sided,
+            MaterialShapes.Clover8Leaf, MaterialShapes.Cookie6Sided, MaterialShapes.Cookie4Sided,
+            MaterialShapes.Cookie7Sided, MaterialShapes.SoftBurst, MaterialShapes.PuffyDiamond,
+            MaterialShapes.Square, MaterialShapes.Pentagon, MaterialShapes.Flower,
         ).map { it.toShape() }
-        val strap = MaterialShapes.Pill.toShape()
         val triangle = MaterialShapes.Triangle.toShape()
         val heart = MaterialShapes.Heart.toShape()
         val bell = MaterialShapes.Sunny.toShape()
         // Keyed on density too: each motif caches outlines built at its pixel size.
         val floaters = remember(seed, count, LocalDensity.current) {
             val random = Random(seed)
-            val motifs = Motif.entries
+            // Dealt from a shuffled deck: no motif repeats before every other one has appeared.
+            val deck = List((count + Motif.entries.size - 1) / Motif.entries.size) { Motif.entries.shuffled(random) }.flatten()
             List(count) { index ->
                 val depth = 0.4f + random.nextFloat() * 0.6f
-                // Clocks and watches lead; the rest season the field.
-                val motif = if (index % 2 == 0) motifs[index / 2 % 2] else motifs[random.nextInt(motifs.size)]
                 Floater(
-                    motif = motif,
+                    motif = deck[index],
                     face = faces[random.nextInt(faces.size)],
                     role = random.nextInt(3),
                     // Spread over a jittered grid so the motifs do not pile up.
                     x = (index + 0.2f + random.nextFloat() * 0.6f) / count,
                     y = random.nextFloat(),
-                    sizeDp = 44f + 100f * depth,
+                    sizeDp = 36f + 104f * depth,
                     depth = depth,
                     spin = (4f + random.nextFloat() * 10f) * if (random.nextBoolean()) 1f else -1f,
                     phase = random.nextFloat() * 2f * PI.toFloat(),
@@ -152,13 +159,13 @@ fun TimeBackdrop(dispersed: Boolean, modifier: Modifier = Modifier) {
                 val push = e * diagonal * (0.6f + f.depth)
                 cx += dx / distance * push
                 cy += dy / distance * push
-                val alpha = (0.14f + 0.14f * f.depth) * (1f - e)
+                val alpha = (0.06f + 0.08f * f.depth) * (1f - e)
                 val angle = f.phase * 57.3f + time * f.spin + e * f.spin * 12f
                 translate(cx - side / 2f, cy - side / 2f) {
                     val pivot = Offset(side / 2f, side / 2f)
                     scale(1f + 0.4f * e, pivot) {
                         rotate(angle, pivot) {
-                            drawMotif(f, side, fills[f.role], marks[f.role], alpha, strap, triangle, heart, bell, time)
+                            drawMotif(f, side, fills[f.role], marks[f.role], alpha, triangle, heart, bell, time)
                         }
                     }
                 }
@@ -173,7 +180,6 @@ private fun DrawScope.drawMotif(
     fill: Color,
     mark: Color,
     alpha: Float,
-    strap: Shape,
     triangle: Shape,
     heart: Shape,
     bell: Shape,
@@ -191,11 +197,13 @@ private fun DrawScope.drawMotif(
             // A strap running behind a smaller face.
             val face = side * 0.62f
             val strapWidth = side * 0.34f
-            translate((side - strapWidth) / 2f, 0f) {
-                scale(strapWidth / side, 1f, Offset.Zero) {
-                    drawOutline(f.outline(strap, side, layoutDirection, this), fill, alpha = alpha * 0.8f)
-                }
-            }
+            drawRoundRect(
+                fill,
+                Offset((side - strapWidth) / 2f, 0f),
+                Size(strapWidth, side),
+                CornerRadius(strapWidth / 2f),
+                alpha = alpha * 0.8f,
+            )
             val corner = (side - face) / 2f
             shape(f.face, face, Offset(corner, corner))
             drawHands(Offset(side / 2f, side / 2f), face * 0.34f, mark, alpha, time, f.phase)
@@ -222,8 +230,75 @@ private fun DrawScope.drawMotif(
                 drawHands(Offset(side / 2f, side / 2f), side * 0.28f, mark, alpha, time, f.phase)
             }
         }
+        Motif.Stopwatch -> {
+            // A round face with a crown on top and one hand sweeping a turn every eight seconds.
+            val face = side * 0.78f
+            val center = Offset(side / 2f, side * 0.56f)
+            drawRoundRect(fill, Offset(side * 0.42f, side * 0.04f), Size(side * 0.16f, side * 0.12f), CornerRadius(side * 0.04f), alpha = alpha)
+            drawCircle(fill, face / 2f, center, alpha = alpha)
+            val angle = ((time / 8f + f.phase) % 1f) * 2f * PI.toFloat() - PI.toFloat() / 2f
+            val reach = face * 0.36f
+            drawLine(
+                mark, center, Offset(center.x + cos(angle) * reach, center.y + sin(angle) * reach),
+                strokeWidth = (side * 0.05f).coerceAtLeast(2f), cap = StrokeCap.Round, alpha = alpha * 1.5f,
+            )
+            drawCircle(mark, (side * 0.04f).coerceAtLeast(2f), center, alpha = alpha * 1.5f)
+        }
+        Motif.Pulse -> {
+            // A heartbeat trace on its own, the line a watch draws while measuring.
+            val path = Path()
+            PulsePoints.forEachIndexed { i, (x, y) ->
+                val px = x * side
+                val py = side / 2f - y * side * 0.36f
+                if (i == 0) path.moveTo(px, py) else path.lineTo(px, py)
+            }
+            drawPath(
+                path, mark, alpha = alpha * 1.5f,
+                style = Stroke((side * 0.06f).coerceAtLeast(2f), cap = StrokeCap.Round, join = StrokeJoin.Round),
+            )
+        }
+        Motif.Calendar -> {
+            // A page with two rings on top and a few dates.
+            val top = side * 0.16f
+            drawRoundRect(fill, Offset(side * 0.1f, top), Size(side * 0.8f, side * 0.72f), CornerRadius(side * 0.14f), alpha = alpha)
+            val ring = (side * 0.05f).coerceAtLeast(2f)
+            listOf(0.32f, 0.68f).forEach { x ->
+                drawLine(mark, Offset(side * x, side * 0.08f), Offset(side * x, side * 0.26f), ring, StrokeCap.Round, alpha = alpha * 1.5f)
+            }
+            for (row in 0..1) for (col in 0..2) {
+                drawCircle(mark, side * 0.045f, Offset(side * (0.3f + col * 0.2f), side * (0.52f + row * 0.18f)), alpha = alpha * 1.3f)
+            }
+        }
+        Motif.Moon -> {
+            // A crescent: night time, the other half of the clock.
+            val moon = Path.combine(
+                PathOperation.Difference,
+                Path().apply { addOval(Rect(Offset(side / 2f, side / 2f), side * 0.42f)) },
+                Path().apply { addOval(Rect(Offset(side * 0.68f, side * 0.38f), side * 0.34f)) },
+            )
+            drawPath(moon, fill, alpha = alpha)
+            drawCircle(mark, side * 0.04f, Offset(side * 0.8f, side * 0.72f), alpha = alpha * 1.3f)
+        }
+        Motif.Timer -> {
+            // A countdown ring: the arc empties and refills slowly.
+            val stroke = side * 0.12f
+            val inset = stroke / 2f + side * 0.08f
+            val arcSize = Size(side - 2f * inset, side - 2f * inset)
+            drawArc(fill, 0f, 360f, false, Offset(inset, inset), arcSize, alpha = alpha, style = Stroke(stroke))
+            val left = 1f - (time / 20f + f.phase) % 1f
+            drawArc(
+                mark, -90f, 360f * left, false, Offset(inset, inset), arcSize, alpha = alpha * 1.3f,
+                style = Stroke(stroke * 0.6f, cap = StrokeCap.Round),
+            )
+        }
     }
 }
+
+/** One stylised heartbeat across a motif, x in 0..1 of its width and y up in -1..1. */
+private val PulsePoints = listOf(
+    0f to 0f, 0.22f to 0f, 0.3f to 0.2f, 0.36f to 0f, 0.42f to -0.25f,
+    0.5f to 1f, 0.58f to -0.6f, 0.64f to 0f, 0.74f to 0.28f, 0.82f to 0f, 1f to 0f,
+)
 
 /** A short bump centred at [at] (seconds) on a heartbeat cycle. */
 private fun bump(t: Float, at: Float): Float {
