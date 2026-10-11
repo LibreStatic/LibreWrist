@@ -53,6 +53,7 @@ import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.DisposableEffect
 import io.openshm.patcher.R
 import io.openshm.patcher.data.PickedPassword
+import io.openshm.patcher.ui.screens.build.ManualBackupDialog
 import io.openshm.patcher.ui.components.FooterHint
 import io.openshm.patcher.ui.components.IconAction
 import io.openshm.patcher.ui.components.InfoChip
@@ -73,7 +74,11 @@ fun SigningKeyScreen(
     onPickSavedPassword: suspend () -> PickedPassword? = { null },
     /** The generated password of the private copy; the caller of this lambda wipes the array. */
     onRevealLocalPassword: suspend () -> CharArray? = { null },
+    /** Saves to Documents/OpenSHM with a typed password; the dialog wipes the arrays after the call. */
+    onSaveWithPassword: suspend (CharArray, CharArray) -> Boolean = { _, _ -> false },
 ) {
+    var manualDialog by remember { mutableStateOf(false) }
+    if (manualDialog) ManualBackupDialog(onSaveWithPassword) { manualDialog = false }
     val colors = MaterialTheme.colorScheme
     Column(modifier.fillMaxSize().background(colors.surface).windowInsetsPadding(WindowInsets.safeDrawing)) {
         TopActions(onBack = onBack)
@@ -113,6 +118,12 @@ fun SigningKeyScreen(
             OutlinedAction(
                 stringResource(R.string.signing_key_export),
                 { onEvent(SigningKeyEvent.OpenExport) },
+                Icons.Rounded.SaveAlt,
+                enabled = state.keyExists && !state.unreadable && !state.busy,
+            )
+            OutlinedAction(
+                stringResource(R.string.key_backup_with_password_entry),
+                { manualDialog = true },
                 Icons.Rounded.SaveAlt,
                 enabled = state.keyExists && !state.unreadable && !state.busy,
             )

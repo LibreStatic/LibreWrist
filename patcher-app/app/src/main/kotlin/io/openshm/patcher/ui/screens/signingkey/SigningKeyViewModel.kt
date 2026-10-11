@@ -53,6 +53,9 @@ class SigningKeyViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
+    /** Saves to Documents/OpenSHM with a typed password; the caller wipes both arrays. */
+    suspend fun saveWithPassword(password: CharArray, confirm: CharArray): Boolean = presenter.saveWithPassword(password, confirm)
+
     /** The password of the private copy for the screen to reveal; the caller wipes it. */
     suspend fun localPassword(): CharArray? = presenter.localPassword()
 

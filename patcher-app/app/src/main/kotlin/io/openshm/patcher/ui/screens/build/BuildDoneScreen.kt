@@ -30,6 +30,10 @@ import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
@@ -67,8 +71,11 @@ enum class KeyBackupStatus {
     Saving,
     Saved,
 
-    /** Only the private copy in app storage exists (the password manager did not take the password); a button retries. */
+    /** The user declined the password manager and only the private copy in app storage exists; a button retries it. */
     PrivateOnly,
+
+    /** No password manager is available and only the private copy exists; a typed password saves to Documents instead. */
+    PrivateNoPasswordManager,
 
     /** The user cancelled the password manager and no copy exists: no automatic prompt again, a button saves on demand. */
     Declined,
@@ -86,6 +93,7 @@ fun BuildDoneScreen(
     modifier: Modifier = Modifier,
     onBackUpKey: () -> Unit = {},
     onSaveBackup: () -> Unit = {},
+    onSaveWithPassword: suspend (CharArray, CharArray) -> Boolean = { _, _ -> false },
 ) {
     val colors = MaterialTheme.colorScheme
     Column(
@@ -140,7 +148,7 @@ fun BuildDoneScreen(
                 }
             }
             NoteRow(Icons.Rounded.Link, stringResource(R.string.build_done_link_note))
-            KeyBackupCard(state.backup, onBackUpKey, onSaveBackup)
+            KeyBackupCard(state.backup, onBackUpKey, onSaveBackup, onSaveWithPassword)
         }
         Column(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp)) {
             PrimaryAction(stringResource(R.string.build_done_install), onInstall)
@@ -150,15 +158,23 @@ fun BuildDoneScreen(
 
 /** Status of the automatic signing key backup; when it failed, asks for the manual one (losing the key means installed apps can only be reinstalled). */
 @Composable
-private fun KeyBackupCard(status: KeyBackupStatus, onBackUp: () -> Unit, onSave: () -> Unit) {
+private fun KeyBackupCard(
+    status: KeyBackupStatus,
+    onBackUp: () -> Unit,
+    onSave: () -> Unit,
+    onSaveWithPassword: suspend (CharArray, CharArray) -> Boolean,
+) {
+    var dialog by remember { mutableStateOf(false) }
+    if (dialog) ManualBackupDialog(onSaveWithPassword) { dialog = false }
     val colors = MaterialTheme.colorScheme
     if (status == KeyBackupStatus.Hidden) return
     val failed = status == KeyBackupStatus.Failed
     val declined = status == KeyBackupStatus.Declined || status == KeyBackupStatus.PrivateOnly
+    val noManager = status == KeyBackupStatus.PrivateNoPasswordManager
     Surface(
         shape = RoundedCornerShape(28.dp),
-        color = if (failed || declined) colors.tertiaryContainer else colors.secondaryContainer,
-        contentColor = if (failed || declined) colors.onTertiaryContainer else colors.onSecondaryContainer,
+        color = if (failed || declined || noManager) colors.tertiaryContainer else colors.secondaryContainer,
+        contentColor = if (failed || declined || noManager) colors.onTertiaryContainer else colors.onSecondaryContainer,
     ) {
         Row(
             Modifier.fillMaxWidth().padding(start = 20.dp, end = 12.dp, top = 12.dp, bottom = 12.dp),
@@ -168,7 +184,7 @@ private fun KeyBackupCard(status: KeyBackupStatus, onBackUp: () -> Unit, onSave:
             if (status == KeyBackupStatus.Saving) {
                 CircularProgressIndicator(Modifier.size(24.dp), strokeWidth = 3.dp)
             } else {
-                Icon(if (failed || declined) Icons.Rounded.Key else Icons.Rounded.CheckCircle, contentDescription = null)
+                Icon(if (failed || declined || noManager) Icons.Rounded.Key else Icons.Rounded.CheckCircle, contentDescription = null)
             }
             Column(Modifier.weight(1f)) {
                 when (status) {
@@ -176,9 +192,12 @@ private fun KeyBackupCard(status: KeyBackupStatus, onBackUp: () -> Unit, onSave:
                         Text(stringResource(R.string.key_backup_saving), style = MaterialTheme.typography.titleSmall)
                         Text(stringResource(R.string.key_backup_consent), style = MaterialTheme.typography.bodySmall)
                     }
-                    KeyBackupStatus.PrivateOnly -> {
+                    KeyBackupStatus.PrivateOnly, KeyBackupStatus.PrivateNoPasswordManager -> {
                         Text(stringResource(R.string.key_backup_private_title), style = MaterialTheme.typography.titleSmall)
-                        Text(stringResource(R.string.key_backup_private_hint), style = MaterialTheme.typography.bodySmall)
+                        Text(
+                            stringResource(if (noManager) R.string.key_backup_no_manager_hint else R.string.key_backup_private_hint),
+                            style = MaterialTheme.typography.bodySmall,
+                        )
                     }
                     KeyBackupStatus.Declined -> {
                         Text(stringResource(R.string.key_backup_declined), style = MaterialTheme.typography.titleSmall)
@@ -191,7 +210,9 @@ private fun KeyBackupCard(status: KeyBackupStatus, onBackUp: () -> Unit, onSave:
                     }
                 }
             }
-            if (declined) {
+            if (noManager) {
+                Button(onClick = { dialog = true }) { Text(stringResource(R.string.key_backup_with_password_action)) }
+            } else if (declined) {
                 Button(onClick = onSave) { Text(stringResource(R.string.key_backup_save_action)) }
             } else if (failed) {
                 Button(

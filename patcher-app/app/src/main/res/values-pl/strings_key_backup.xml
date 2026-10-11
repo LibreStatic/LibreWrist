@@ -17,4 +17,8 @@
     <string name="local_backup_title">Kopia lokalna</string>
     <string name="local_backup_show_password">Pokaż hasło</string>
     <string name="local_backup_export">Eksportuj plik</string>
+    <string name="key_backup_with_password_action">Zapisz z hasłem</string>
+    <string name="key_backup_with_password_entry">Zapisz w Documents z własnym hasłem</string>
+    <string name="key_backup_with_password_hint">Klucz zostanie zapisany w Documents/OpenSHM i zabezpieczony hasłem, które wybierzesz. Aplikacja go nie zapamiętuje, więc zapisz je sobie.</string>
+    <string name="key_backup_no_manager_hint">Wyczyszczenie danych aplikacji usunie tę kopię. Menedżer haseł jest niedostępny, więc zapisz ją w Documents z wybranym przez siebie hasłem.</string>
 </resources>

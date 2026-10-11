@@ -180,6 +180,11 @@ private fun BuildDoneBackupDeclinedPreview(@PreviewParameter(ColorModeProvider::
 
 @ScreenPreviews
 @Composable
+private fun BuildDoneBackupNoManagerPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { BuildDoneSample(KeyBackupStatus.PrivateNoPasswordManager) }
+
+@ScreenPreviews
+@Composable
 private fun BuildDoneBackupSavedPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
     PreviewHost(mode) { BuildDoneSample(KeyBackupStatus.Saved) }
 

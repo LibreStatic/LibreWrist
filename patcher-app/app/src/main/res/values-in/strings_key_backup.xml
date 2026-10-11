@@ -17,4 +17,8 @@
     <string name="local_backup_title">Cadangan lokal</string>
     <string name="local_backup_show_password">Tampilkan sandi</string>
     <string name="local_backup_export">Ekspor file</string>
+    <string name="key_backup_with_password_action">Simpan dengan sandi</string>
+    <string name="key_backup_with_password_entry">Simpan ke Documents dengan sandi saya sendiri</string>
+    <string name="key_backup_with_password_hint">Kunci disimpan di Documents/OpenSHM, dilindungi sandi yang Anda pilih. Aplikasi tidak menyimpannya, jadi catat sandi tersebut.</string>
+    <string name="key_backup_no_manager_hint">Menghapus data aplikasi akan menghapus salinan ini. Pengelola sandi tidak tersedia, jadi simpan ke Documents dengan sandi pilihanmu.</string>
 </resources>

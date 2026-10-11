@@ -17,4 +17,8 @@
     <string name="local_backup_title">ローカルバックアップ</string>
     <string name="local_backup_show_password">パスワードを表示</string>
     <string name="local_backup_export">ファイルをエクスポート</string>
+    <string name="key_backup_with_password_action">パスワードを付けて保存</string>
+    <string name="key_backup_with_password_entry">独自のパスワードで Documents に保存</string>
+    <string name="key_backup_with_password_hint">キーは、ご自身で決めたパスワードで保護して Documents/OpenSHM に保存されます。アプリはパスワードを保持しないので、控えておいてください。</string>
+    <string name="key_backup_no_manager_hint">アプリのデータを消去するとこのコピーも削除されます。パスワードマネージャーが使えないため、自分で決めたパスワードで Documents に保存してください。</string>
 </resources>

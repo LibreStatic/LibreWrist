@@ -281,6 +281,7 @@ fun PatcherNavHost(
                     onInstall = { next(Route.BuildDone) },
                     onBack = back,
                     onBackUpKey = { navController.navigate(Route.SigningKey.path) },
+                    onSaveWithPassword = backupVm::saveWithPassword,
                     onSaveBackup = { activity?.let { a -> scope.launch { backupVm.run(a, force = true) } } },
                 )
             }
@@ -389,6 +390,7 @@ fun PatcherNavHost(
                     state, vm::onEvent, onBack = back,
                     onPickSavedPassword = { activity?.let { CredentialManagerPasswords(it).pick() } },
                     onRevealLocalPassword = vm::localPassword,
+                    onSaveWithPassword = vm::saveWithPassword,
                 )
             }
             composable(Route.Home.path) {

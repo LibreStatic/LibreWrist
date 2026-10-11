@@ -17,4 +17,8 @@
     <string name="local_backup_title">Local backup</string>
     <string name="local_backup_show_password">Show password</string>
     <string name="local_backup_export">Export file</string>
+    <string name="key_backup_with_password_action">Save with a password</string>
+    <string name="key_backup_with_password_entry">Save to Documents with my own password</string>
+    <string name="key_backup_with_password_hint">The key is saved to Documents/OpenSHM, protected by a password you choose. The app does not keep it, so write it down.</string>
+    <string name="key_backup_no_manager_hint">Clearing the app\'s data deletes this copy. No password manager is available, so save it to Documents with a password you choose.</string>
 </resources>

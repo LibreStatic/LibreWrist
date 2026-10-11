@@ -17,4 +17,8 @@
     <string name="local_backup_title">Yerel yedek</string>
     <string name="local_backup_show_password">Parolayı göster</string>
     <string name="local_backup_export">Dosyayı dışa aktar</string>
+    <string name="key_backup_with_password_action">Parolayla kaydet</string>
+    <string name="key_backup_with_password_entry">Documents içine kendi parolamla kaydet</string>
+    <string name="key_backup_with_password_hint">Anahtar, seçtiğin bir parolayla korunarak Documents/OpenSHM klasörüne kaydedilir. Uygulama parolayı saklamaz, o yüzden bir yere not et.</string>
+    <string name="key_backup_no_manager_hint">Uygulama verilerini temizlemek bu kopyayı siler. Parola yöneticisi kullanılamıyor; kopyayı kendi seçtiğin bir parolayla Documents klasörüne kaydet.</string>
 </resources>

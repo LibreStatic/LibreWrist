@@ -7,6 +7,7 @@ import io.openshm.patcher.data.PrivateBackups
 import io.openshm.patcher.data.KeyBackup
 import io.openshm.patcher.data.KeyBackupOutcome
 import io.openshm.patcher.data.KeyBackupRecord
+import io.openshm.patcher.data.ManualKeyBackup
 import io.openshm.patcher.data.PasswordSaveResult
 import io.openshm.patcher.data.PasswordSaver
 import io.openshm.patcher.data.SigningKeyStore
@@ -121,7 +122,7 @@ class KeyBackupTest {
 
     @Test fun cancelledPasswordManagerWritesNoFileAndRecordsNothing() {
         saver.result = PasswordSaveResult.Unavailable
-        assertEquals(KeyBackupOutcome.SavedPrivately, run())
+        assertEquals(KeyBackupOutcome.SavedPrivatelyNoPasswordManager, run())
         assertTrue(files.files.isEmpty())
         assertNull(record.sha256)
         assertTrue(lastPassword!!.all { it == '\u0000' })
@@ -180,9 +181,9 @@ class KeyBackupTest {
 
     @Test fun otherFailuresAreRetriedAutomatically() {
         saver.result = PasswordSaveResult.Unavailable
-        assertEquals(KeyBackupOutcome.SavedPrivately, run())
+        assertEquals(KeyBackupOutcome.SavedPrivatelyNoPasswordManager, run())
         assertNull(record.declinedSha256)
-        assertEquals(KeyBackupOutcome.SavedPrivately, run())
+        assertEquals(KeyBackupOutcome.SavedPrivatelyNoPasswordManager, run())
         // Asked again, without piling up private copies.
         assertEquals(2, saver.asked)
         assertEquals(1, privates.files.size)
@@ -228,6 +229,39 @@ class KeyBackupTest {
         assertNull(other.readPassword(name))
         // Names outside the feature's pattern are refused.
         assertFalse(store2.exists("../x.p12"))
+    }
+
+    @Test fun unavailableOffersTheTypedPasswordAndDeclineOffersSaveBackup() {
+        saver.result = PasswordSaveResult.Unavailable
+        assertEquals(KeyBackupStatus.PrivateNoPasswordManager, run().toStatus())
+        saver.result = PasswordSaveResult.Declined
+        // Still the private copy from before, now reached through a decline.
+        assertEquals(KeyBackupStatus.PrivateOnly, run().toStatus())
+    }
+
+    private fun manual() = ManualKeyBackup(store, record, files, Dispatchers.Unconfined, { now })
+
+    @Test fun typedPasswordWritesPublicNeverTouchesPasswordsAndSetsTheRecord() {
+        val sha = store.certificateSha256()
+        val pw = "a-long-typed-password".toCharArray()
+        assertEquals(ManualKeyBackup.Result.Saved, runBlocking { manual().save(pw, pw.copyOf()) })
+        val name = keyBackupFileName(sha, stamp())
+        assertEquals(name, record.backupFile)
+        assertFalse(record.backupPrivate)
+        assertEquals(sha, record.sha256)
+        assertTrue(saver.saved.isEmpty() && saver.asked == 0)
+        assertTrue(privates.files.isEmpty())
+        assertEquals(sha, SigningKeyStore(File(dir, "x").also { it.mkdirs() }) { wrap }.inspectPkcs12(files.files.getValue(name), pw))
+        // The auto backup is no longer due.
+        assertEquals(KeyBackupOutcome.AlreadyBackedUp, run())
+    }
+
+    @Test fun shortOrMismatchedTypedPasswordsAreRefused() {
+        val ok = "a-long-typed-password".toCharArray()
+        assertEquals(ManualKeyBackup.Result.Refused, runBlocking { manual().save("short".toCharArray(), "short".toCharArray()) })
+        assertEquals(ManualKeyBackup.Result.Refused, runBlocking { manual().save(ok, "another-long-password".toCharArray()) })
+        assertTrue(files.files.isEmpty())
+        assertNull(record.backupFile)
     }
 
     @Test fun aDeclineOfAnotherKeyDoesNotBlockThisOne() {
@@ -276,6 +310,7 @@ class KeyBackupTest {
         assertEquals(KeyBackupStatus.Saved, KeyBackupOutcome.AlreadyBackedUp.toStatus())
         assertEquals(KeyBackupStatus.Saved, KeyBackupOutcome.Saved.toStatus())
         assertEquals(KeyBackupStatus.PrivateOnly, KeyBackupOutcome.SavedPrivately.toStatus())
+        assertEquals(KeyBackupStatus.PrivateNoPasswordManager, KeyBackupOutcome.SavedPrivatelyNoPasswordManager.toStatus())
         assertEquals(KeyBackupStatus.Declined, KeyBackupOutcome.PasswordDeclined.toStatus())
         assertEquals(KeyBackupStatus.Failed, KeyBackupOutcome.PasswordNotSaved.toStatus())
         assertEquals(KeyBackupStatus.Failed, KeyBackupOutcome.Failed.toStatus())

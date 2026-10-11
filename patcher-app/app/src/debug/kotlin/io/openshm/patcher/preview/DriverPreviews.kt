@@ -1,6 +1,7 @@
 package io.openshm.patcher.preview
 
 import io.openshm.patcher.ui.screens.build.KeyBackupStatus
+import io.openshm.patcher.ui.screens.build.ManualBackupDialog
 import io.openshm.patcher.ui.screens.welcome.SkipDialog
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -229,6 +230,12 @@ fun BuildDoneBackupDeclinedDriver() = PreviewHost(ColorMode.Fallback) { BuildDon
 
 @Composable
 fun BuildDoneBackupPrivateDriver() = PreviewHost(ColorMode.Fallback) { BuildDoneSample(KeyBackupStatus.PrivateOnly) }
+
+@Composable
+fun BuildDoneBackupNoManagerDriver() = PreviewHost(ColorMode.Fallback) { BuildDoneSample(KeyBackupStatus.PrivateNoPasswordManager) }
+
+@Composable
+fun ManualBackupDialogDriver() = PreviewHost(ColorMode.Fallback) { ManualBackupDialog({ _, _ -> true }, {}) }
 
 @Composable
 fun BuildDoneBackupSavingDriver() = PreviewHost(ColorMode.Fallback) { BuildDoneSample(KeyBackupStatus.Saving) }

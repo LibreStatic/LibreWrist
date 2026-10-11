@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import io.openshm.patcher.R
 import io.openshm.patcher.data.BackupFiles
 import io.openshm.patcher.data.KeyBackupRecord
+import io.openshm.patcher.data.ManualKeyBackup
 import io.openshm.patcher.data.PrivateBackups
 import io.openshm.patcher.data.KeyImportException
 import io.openshm.patcher.data.SigningKeyStore
@@ -75,7 +76,7 @@ sealed interface SigningKeyEvent {
 
 /** The rule for the password of an exported backup. */
 object ExportPasswordPolicy {
-    const val MIN_LENGTH = 12
+    const val MIN_LENGTH = io.openshm.patcher.data.ManualKeyBackup.MIN_PASSWORD_LENGTH
 
     /** The user-facing problem with the pair, or null when it is acceptable. */
     @StringRes
@@ -205,6 +206,17 @@ class SigningKeyPresenter(
         } finally {
             password.fill('\u0000')
         }
+    }
+
+    /** Saves the backup to the public folder with the typed password; the caller wipes both arrays. Returns true when saved. */
+    suspend fun saveWithPassword(password: CharArray, confirm: CharArray): Boolean {
+        val files = backupFiles ?: return false
+        _state.update { it.copy(busy = true, message = null) }
+        val result = ManualKeyBackup(store, record, files, io).save(password, confirm)
+        val ok = result == ManualKeyBackup.Result.Saved
+        _state.update { it.copy(busy = false, message = SigningKeyMessage(if (ok) R.string.signing_key_export_done else R.string.signing_key_export_failed, !ok)) }
+        if (ok) refresh()
+        return ok
     }
 
     /** The generated password of the private copy, as a char array the caller wipes; null when there is none. */

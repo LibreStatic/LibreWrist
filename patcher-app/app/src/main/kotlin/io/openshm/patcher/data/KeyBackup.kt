@@ -151,8 +151,11 @@ enum class KeyBackupOutcome {
     /** Password saved and file written in this run. */
     Saved,
 
-    /** The password manager did not take the password, so the backup is only in the app's private storage. */
+    /** The user declined the password manager, so the backup is only in the app's private storage. */
     SavedPrivately,
+
+    /** No password manager could take the password (none, or it failed): only the private copy exists, and a typed password is the way to Documents. */
+    SavedPrivatelyNoPasswordManager,
 
     /** The user cancelled the password manager (now or on an earlier visit) and not even the private copy could be written. */
     PasswordDeclined,
@@ -258,8 +261,9 @@ class KeyBackup(
                 }
                 // Declined or unavailable: keep the backup in private storage rather than none. An earlier
                 // private copy of this key is not duplicated on a retry.
+                val savedPrivately = if (result == PasswordSaveResult.Declined) KeyBackupOutcome.SavedPrivately else KeyBackupOutcome.SavedPrivatelyNoPasswordManager
                 val notSaved = if (result == PasswordSaveResult.Declined) KeyBackupOutcome.PasswordDeclined else KeyBackupOutcome.PasswordNotSaved
-                if (privatePresent) return KeyBackupOutcome.SavedPrivately
+                if (privatePresent) return savedPrivately
                 return try {
                     withContext(io) {
                         bytes = store.exportPkcs12(password)
@@ -268,7 +272,7 @@ class KeyBackup(
                     record.privateBackupFile = name
                     record.backupFile = name
                     record.backupPrivate = true
-                    KeyBackupOutcome.SavedPrivately
+                    savedPrivately
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Exception) {
@@ -290,4 +294,47 @@ class KeyBackup(
         } catch (e: Exception) {
             false
         }
+}
+
+/**
+ * The backup with a password the user typed: the same stamped PKCS#12 goes to the public folder and the
+ * password is not kept anywhere, no credential is created. The caller owns and wipes both arrays.
+ */
+class ManualKeyBackup(
+    private val store: SigningKeyStore,
+    private val record: KeyBackupRecord,
+    private val files: BackupFiles,
+    private val io: CoroutineDispatcher = Dispatchers.IO,
+    private val clock: () -> Long = System::currentTimeMillis,
+) {
+    enum class Result { Saved, Refused, NoKey, Failed }
+
+    suspend fun save(password: CharArray, confirm: CharArray): Result {
+        if (password.size < MIN_PASSWORD_LENGTH || !password.contentEquals(confirm)) return Result.Refused
+        var bytes: ByteArray? = null
+        return try {
+            withContext(io) {
+                if (!store.exists()) return@withContext Result.NoKey
+                val sha = store.certificateSha256()
+                val name = keyBackupFileName(sha, keyBackupStamp(clock()))
+                bytes = store.exportPkcs12(password)
+                files.write(name, bytes!!)
+                record.sha256 = sha
+                record.backupFile = name
+                record.backupPrivate = false
+                Result.Saved
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Result.Failed
+        } finally {
+            bytes?.fill(0)
+        }
+    }
+
+    companion object {
+        /** The same rule as the manual export. */
+        const val MIN_PASSWORD_LENGTH = 12
+    }
 }

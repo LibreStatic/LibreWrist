@@ -17,4 +17,8 @@
     <string name="local_backup_title">लोकल बैकअप</string>
     <string name="local_backup_show_password">पासवर्ड दिखाएँ</string>
     <string name="local_backup_export">फ़ाइल एक्सपोर्ट करें</string>
+    <string name="key_backup_with_password_action">पासवर्ड के साथ सहेजें</string>
+    <string name="key_backup_with_password_entry">अपने पासवर्ड से Documents में सहेजें</string>
+    <string name="key_backup_with_password_hint">कुंजी आपके चुने पासवर्ड से सुरक्षित होकर Documents/OpenSHM में सहेजी जाती है। ऐप इसे नहीं रखता, इसलिए इसे लिख लें।</string>
+    <string name="key_backup_no_manager_hint">ऐप का डेटा साफ़ करने से यह कॉपी हट जाएगी। कोई पासवर्ड मैनेजर उपलब्ध नहीं है, इसलिए इसे अपने चुने पासवर्ड के साथ Documents में सहेजें।</string>
 </resources>

@@ -17,4 +17,8 @@
     <string name="local_backup_title">نسخة احتياطية محلية</string>
     <string name="local_backup_show_password">إظهار كلمة المرور</string>
     <string name="local_backup_export">تصدير الملف</string>
+    <string name="key_backup_with_password_action">الحفظ بكلمة مرور</string>
+    <string name="key_backup_with_password_entry">الحفظ في Documents بكلمة مرور خاصة بي</string>
+    <string name="key_backup_with_password_hint">يُحفظ المفتاح في Documents/OpenSHM محميًا بكلمة مرور تختارها. لا يحتفظ التطبيق بها، لذا دوّنها.</string>
+    <string name="key_backup_no_manager_hint">مسح بيانات التطبيق يحذف هذه النسخة. لا يتوفر مدير كلمات مرور، لذا احفظها في Documents بكلمة مرور تختارها.</string>
 </resources>

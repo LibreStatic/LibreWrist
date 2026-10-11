@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import io.openshm.patcher.data.CredentialManagerPasswords
 import io.openshm.patcher.data.KeyBackup
 import io.openshm.patcher.data.KeyBackupOutcome
+import io.openshm.patcher.data.ManualKeyBackup
 import io.openshm.patcher.data.MediaStoreBackupFiles
 import io.openshm.patcher.data.PrefsExportedCertRecord
 import io.openshm.patcher.data.privateBackups
@@ -19,6 +20,7 @@ fun KeyBackupOutcome.toStatus(): KeyBackupStatus = when (this) {
     KeyBackupOutcome.NoKey -> KeyBackupStatus.Hidden
     KeyBackupOutcome.AlreadyBackedUp, KeyBackupOutcome.Saved -> KeyBackupStatus.Saved
     KeyBackupOutcome.SavedPrivately -> KeyBackupStatus.PrivateOnly
+    KeyBackupOutcome.SavedPrivatelyNoPasswordManager -> KeyBackupStatus.PrivateNoPasswordManager
     KeyBackupOutcome.PasswordDeclined -> KeyBackupStatus.Declined
     KeyBackupOutcome.PasswordNotSaved, KeyBackupOutcome.Failed -> KeyBackupStatus.Failed
 }
@@ -54,5 +56,13 @@ class KeyBackupViewModel(application: Application) : AndroidViewModel(applicatio
             _status.value = if (force) before else KeyBackupStatus.Hidden
             throw e
         }
+    }
+
+    /** Saves with a typed password (Android 13 and below, where the password manager is not used); the caller wipes both arrays. */
+    suspend fun saveWithPassword(password: CharArray, confirm: CharArray): Boolean {
+        val app = getApplication<Application>()
+        val result = ManualKeyBackup(signingKeyStore(app), PrefsExportedCertRecord(app), MediaStoreBackupFiles(app)).save(password, confirm)
+        if (result == ManualKeyBackup.Result.Saved) _status.value = KeyBackupStatus.Saved
+        return result == ManualKeyBackup.Result.Saved
     }
 }

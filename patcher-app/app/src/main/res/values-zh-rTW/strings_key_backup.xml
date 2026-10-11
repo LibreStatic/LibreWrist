@@ -17,4 +17,8 @@
     <string name="local_backup_title">本機備份</string>
     <string name="local_backup_show_password">顯示密碼</string>
     <string name="local_backup_export">匯出檔案</string>
+    <string name="key_backup_with_password_action">使用密碼儲存</string>
+    <string name="key_backup_with_password_entry">用我自己的密碼儲存到 Documents</string>
+    <string name="key_backup_with_password_hint">金鑰將以你設定的密碼保護並儲存到 Documents/OpenSHM。應用程式不會保存該密碼，請自行記下。</string>
+    <string name="key_backup_no_manager_hint">清除應用程式資料會刪除此副本。沒有可用的密碼管理工具，請使用你自訂的密碼將其儲存到 Documents。</string>
 </resources>

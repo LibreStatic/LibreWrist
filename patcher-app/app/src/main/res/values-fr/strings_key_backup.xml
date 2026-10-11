@@ -17,4 +17,8 @@
     <string name="local_backup_title">Sauvegarde locale</string>
     <string name="local_backup_show_password">Afficher le mot de passe</string>
     <string name="local_backup_export">Exporter le fichier</string>
+    <string name="key_backup_with_password_action">Enregistrer avec un mot de passe</string>
+    <string name="key_backup_with_password_entry">Enregistrer dans Documents avec mon propre mot de passe</string>
+    <string name="key_backup_with_password_hint">La clé est enregistrée dans Documents/OpenSHM, protégée par un mot de passe de votre choix. L\'app ne le conserve pas : notez-le.</string>
+    <string name="key_backup_no_manager_hint">Effacer les données de l\'app supprime cette copie. Aucun gestionnaire de mots de passe n\'est disponible : enregistre-la dans Documents avec un mot de passe de ton choix.</string>
 </resources>

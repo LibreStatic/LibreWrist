@@ -17,4 +17,8 @@
     <string name="local_backup_title">로컬 백업</string>
     <string name="local_backup_show_password">비밀번호 표시</string>
     <string name="local_backup_export">파일 내보내기</string>
+    <string name="key_backup_with_password_action">비밀번호로 저장</string>
+    <string name="key_backup_with_password_entry">내 비밀번호로 Documents에 저장</string>
+    <string name="key_backup_with_password_hint">키는 직접 정한 비밀번호로 보호되어 Documents/OpenSHM에 저장됩니다. 앱은 비밀번호를 보관하지 않으니 따로 적어 두세요.</string>
+    <string name="key_backup_no_manager_hint">앱 데이터를 지우면 이 사본도 삭제됩니다. 비밀번호 관리자를 사용할 수 없으므로 직접 정한 비밀번호로 Documents에 저장하세요.</string>
 </resources>

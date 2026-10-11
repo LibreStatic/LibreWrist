@@ -17,4 +17,8 @@
     <string name="local_backup_title">Локальна копія</string>
     <string name="local_backup_show_password">Показати пароль</string>
     <string name="local_backup_export">Експортувати файл</string>
+    <string name="key_backup_with_password_action">Зберегти з паролем</string>
+    <string name="key_backup_with_password_entry">Зберегти в Documents із моїм паролем</string>
+    <string name="key_backup_with_password_hint">Ключ зберігається в Documents/OpenSHM під паролем, який ви оберете. Застосунок його не зберігає, тож запишіть його.</string>
+    <string name="key_backup_no_manager_hint">Очищення даних застосунку видалить цю копію. Менеджер паролів недоступний, тож збережіть її в Documents із паролем, який ви оберете.</string>
 </resources>

@@ -17,4 +17,8 @@
     <string name="local_backup_title">Lokale Sicherung</string>
     <string name="local_backup_show_password">Passwort anzeigen</string>
     <string name="local_backup_export">Datei exportieren</string>
+    <string name="key_backup_with_password_action">Mit Passwort speichern</string>
+    <string name="key_backup_with_password_entry">In Documents mit eigenem Passwort speichern</string>
+    <string name="key_backup_with_password_hint">Der Schlüssel wird, geschützt durch ein selbst gewähltes Passwort, in Documents/OpenSHM gespeichert. Die App merkt sich es nicht, also notiere es dir.</string>
+    <string name="key_backup_no_manager_hint">Wenn du die App-Daten löschst, wird diese Kopie gelöscht. Es ist kein Passwortmanager verfügbar, speichere sie daher mit einem eigenen Passwort in Documents.</string>
 </resources>

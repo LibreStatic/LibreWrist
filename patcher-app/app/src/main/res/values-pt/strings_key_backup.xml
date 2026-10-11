@@ -17,4 +17,8 @@
     <string name="local_backup_title">Backup local</string>
     <string name="local_backup_show_password">Mostrar senha</string>
     <string name="local_backup_export">Exportar arquivo</string>
+    <string name="key_backup_with_password_action">Salvar com uma senha</string>
+    <string name="key_backup_with_password_entry">Salvar em Documents com minha própria senha</string>
+    <string name="key_backup_with_password_hint">A chave é salva em Documents/OpenSHM, protegida por uma senha que você escolhe. O app não a guarda, então anote-a.</string>
+    <string name="key_backup_no_manager_hint">Limpar os dados do app apaga esta cópia. Não há gerenciador de senhas disponível, então salve-a em Documents com uma senha escolhida por você.</string>
 </resources>
