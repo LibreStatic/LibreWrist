@@ -1,5 +1,6 @@
 package io.openshm.patcher.ui.screens.wearable
 
+import io.openshm.patcher.ui.components.InstructionText
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,6 +30,7 @@ import io.openshm.patcher.R
 import io.openshm.patcher.ui.components.CheckStatus
 import io.openshm.patcher.ui.components.GroupedItem
 import io.openshm.patcher.ui.components.GroupedSpacing
+import io.openshm.patcher.ui.components.LocalTwoPane
 import io.openshm.patcher.ui.components.NoteRow
 import io.openshm.patcher.ui.components.PrimaryAction
 import io.openshm.patcher.ui.components.QuietAction
@@ -88,13 +90,15 @@ fun WearablePairingScreen(
             PrimaryAction(stringResource(R.string.action_continue), onContinue, enabled = state.allPassed)
             QuietAction(stringResource(R.string.wearable_recheck), { onEvent(WearablePairingEvent.Recheck) })
         },
+        // Wide: the walk-through sits beside the checks; narrow it stays under the intro.
+        secondary = { if (LocalTwoPane.current) HowToPair() },
     ) {
         Text(
             stringResource(R.string.wearable_intro_galaxy),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        HowToPair()
+        if (!LocalTwoPane.current) HowToPair()
         FilledTonalButton(
             onClick = {
                 onEvent(if (state.galaxyWearableInstalled) WearablePairingEvent.OpenGalaxyWearable else WearablePairingEvent.GetGalaxyWearable)
@@ -155,7 +159,7 @@ internal fun NumberedStepsCard(@StringRes title: Int, steps: List<Int>) {
                     ) {
                         Text("${index + 1}", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onTertiary, textAlign = TextAlign.Center)
                     }
-                    Text(stringResource(res), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onTertiaryContainer)
+                    InstructionText(stringResource(res), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onTertiaryContainer)
                 }
             }
         }

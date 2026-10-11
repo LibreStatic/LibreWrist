@@ -1,5 +1,6 @@
 package io.openshm.patcher.ui.screens.devmode
 
+import io.openshm.patcher.ui.components.InstructionText
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -53,6 +54,20 @@ fun DevModeScreen(
         title = stringResource(R.string.devmode_title),
         onBack = onBack,
         modifier = modifier,
+        secondary = {
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
+                StatusShape(if (state.detected) CheckStatus.Passed else if (state.checking) CheckStatus.Running else CheckStatus.Pending)
+                Text(
+                    stringResource(if (state.detected) R.string.devmode_detected else R.string.devmode_waiting),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+            QuietAction(
+                stringResource(R.string.devmode_open_settings),
+                { onEvent(DevModeEvent.OpenHealthPlatformSettings) },
+                accent = Accent.Tertiary,
+            )
+        },
         footer = {
             if (state.detected) {
                 PrimaryAction(stringResource(R.string.action_continue), onContinue, accent = Accent.Tertiary)
@@ -80,22 +95,10 @@ fun DevModeScreen(
                         ) {
                             Text("${index + 1}", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onTertiaryContainer)
                         }
-                        Text(stringResource(res), style = MaterialTheme.typography.bodyLarge)
+                        InstructionText(stringResource(res), style = MaterialTheme.typography.bodyLarge)
                     }
                 }
             }
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
-            StatusShape(if (state.detected) CheckStatus.Passed else if (state.checking) CheckStatus.Running else CheckStatus.Pending)
-            Text(
-                stringResource(if (state.detected) R.string.devmode_detected else R.string.devmode_waiting),
-                style = MaterialTheme.typography.bodyMedium,
-            )
-        }
-        QuietAction(
-            stringResource(R.string.devmode_open_settings),
-            { onEvent(DevModeEvent.OpenHealthPlatformSettings) },
-            accent = Accent.Tertiary,
-        )
     }
 }

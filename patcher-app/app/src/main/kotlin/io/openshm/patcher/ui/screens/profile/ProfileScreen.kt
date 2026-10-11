@@ -66,6 +66,11 @@ fun ProfileScreen(
         onBack = onBack,
         modifier = modifier,
         footer = { PrimaryAction(stringResource(R.string.action_continue), onContinue) },
+        secondary = {
+            state.detected?.let { DetectedCard(it) }
+            PairedWatchesSection(state, onEvent)
+            HowToTell()
+        },
     ) {
         Text(
             stringResource(R.string.profile_intro),
@@ -106,9 +111,6 @@ fun ProfileScreen(
                 }
             }
         }
-        state.detected?.let { DetectedCard(it) }
-        PairedWatchesSection(state, onEvent)
-        HowToTell()
     }
 }
 

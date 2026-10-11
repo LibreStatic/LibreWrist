@@ -43,6 +43,7 @@ import io.openshm.patcher.data.PackagePrefix
 import io.openshm.patcher.data.PatchInfo
 import io.openshm.patcher.ui.components.FooterHint
 import io.openshm.patcher.ui.components.GroupedItem
+import io.openshm.patcher.ui.components.LocalTwoPane
 import io.openshm.patcher.ui.components.GroupedSpacing
 import io.openshm.patcher.ui.components.IconAction
 import io.openshm.patcher.ui.components.InfoChip
@@ -129,6 +130,11 @@ fun CustomizeScreen(
                 icon = Icons.Rounded.Construction, enabled = state.canBuild,
             )
         },
+        secondary = {
+            // Narrow, the primary pane already shows every group whole.
+            if (LocalTwoPane.current) splitRows(state.groups).second.forEach { PatchGroup(it, onEvent) }
+            AdvancedCard(state, onEvent)
+        },
     ) {
         Text(
             stringResource(R.string.customize_intro),
@@ -136,17 +142,47 @@ fun CustomizeScreen(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         if (state.showPresets) PresetRow(state.preset) { onEvent(CustomizeEvent.SelectPreset(it)) }
-        state.groups.forEach { group ->
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                GroupHeader(group)
-                Column(verticalArrangement = GroupedSpacing) {
-                    group.patches.forEachIndexed { index, patch ->
-                        PatchRow(index, group.patches.size, patch) { onEvent(CustomizeEvent.TogglePatch(group.inputId, patch.info.id)) }
-                    }
-                }
+        val slices = if (LocalTwoPane.current) splitRows(state.groups).first else state.groups.map { PatchSlice(it, it.patches) }
+        slices.forEach { PatchGroup(it, onEvent) }
+    }
+}
+
+/**
+ * The patch rows of a pane: a group header over [patches], which may be only part of the group when
+ * two-pane splits it. Each part gets its own first and last rounded corners.
+ */
+private class PatchSlice(val group: CustomizeGroup, val patches: List<CustomizePatch>)
+
+/**
+ * Cuts the flattened patch rows around half of the total and returns the slices of each side. A group the cut falls inside shows in both, with its
+ * header repeated on the second side.
+ */
+private fun splitRows(groups: List<CustomizeGroup>): Pair<List<PatchSlice>, List<PatchSlice>> {
+    // The first pane also holds the intro and the presets (about three rows), the second one the Advanced
+    // card (about one and a half), so the cut sits one row before the middle.
+    val total = groups.sumOf { it.patches.size }
+    val cut = if (total >= 4) (total + 1) / 2 - 1 else (total + 1) / 2
+    val first = mutableListOf<PatchSlice>()
+    val second = mutableListOf<PatchSlice>()
+    var seen = 0
+    for (group in groups) {
+        val inFirst = (cut - seen).coerceIn(0, group.patches.size)
+        if (inFirst > 0) first += PatchSlice(group, group.patches.subList(0, inFirst))
+        if (inFirst < group.patches.size) second += PatchSlice(group, group.patches.subList(inFirst, group.patches.size))
+        seen += group.patches.size
+    }
+    return first to second
+}
+
+@Composable
+private fun PatchGroup(slice: PatchSlice, onEvent: (CustomizeEvent) -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        GroupHeader(slice.group)
+        Column(verticalArrangement = GroupedSpacing) {
+            slice.patches.forEachIndexed { index, patch ->
+                PatchRow(index, slice.patches.size, patch) { onEvent(CustomizeEvent.TogglePatch(slice.group.inputId, patch.info.id)) }
             }
         }
-        AdvancedCard(state, onEvent)
     }
 }
 

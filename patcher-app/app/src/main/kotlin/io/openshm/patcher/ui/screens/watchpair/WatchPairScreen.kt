@@ -39,6 +39,7 @@ import io.openshm.patcher.ui.components.Accent
 import io.openshm.patcher.ui.components.CheckStatus
 import io.openshm.patcher.ui.components.ContainerTextAction
 import io.openshm.patcher.ui.components.FooterHint
+import io.openshm.patcher.ui.components.InstructionText
 import io.openshm.patcher.ui.components.LocalTwoPane
 import io.openshm.patcher.ui.components.PackageId
 import io.openshm.patcher.ui.components.PhoneWatchIllustration
@@ -202,7 +203,7 @@ private fun PairPanel(
                 PhoneWatchIllustration(scale = if (LocalTwoPane.current) 0.65f else 0.8f, linkColor = MaterialTheme.colorScheme.tertiary)
             }
             if (state.manual) {
-                Text(
+                InstructionText(
                     stringResource(R.string.watchpair_manual_intro),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onTertiaryContainer,

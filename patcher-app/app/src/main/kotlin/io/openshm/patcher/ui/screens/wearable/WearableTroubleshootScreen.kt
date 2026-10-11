@@ -1,7 +1,7 @@
 package io.openshm.patcher.ui.screens.wearable
 
+import io.openshm.patcher.ui.components.InstructionText
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -46,8 +46,6 @@ private val fixSteps = listOf(
     R.string.troubleshoot_fix_4,
 )
 
-private val SPLIT_MIN_WIDTH = 600.dp
-
 /**
  * "Trouble pairing?": quick fixes, then the reset of Google Play services, by hand or through this
  * phone's own ADB. Clearing the data always goes through a warning dialog first.
@@ -65,25 +63,14 @@ fun WearableTroubleshootScreen(
         onBack = onBack,
         modifier = modifier,
         footer = { PrimaryAction(stringResource(R.string.troubleshoot_back_to_check), onBack) },
+        secondary = { PlayServicesSection(state, onEvent) },
     ) {
         Text(
             stringResource(R.string.troubleshoot_intro),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        BoxWithConstraints(Modifier.fillMaxWidth()) {
-            if (maxWidth < SPLIT_MIN_WIDTH) {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    NumberedStepsCard(R.string.troubleshoot_fixes_title, fixSteps)
-                    PlayServicesSection(state, onEvent)
-                }
-            } else {
-                Row(horizontalArrangement = Arrangement.spacedBy(24.dp), verticalAlignment = Alignment.Top) {
-                    Column(Modifier.weight(1f)) { NumberedStepsCard(R.string.troubleshoot_fixes_title, fixSteps) }
-                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(12.dp)) { PlayServicesSection(state, onEvent) }
-                }
-            }
-        }
+        NumberedStepsCard(R.string.troubleshoot_fixes_title, fixSteps)
     }
     if (state.confirming) ConfirmClearDialog(onCancel = { onEvent(TroubleshootEvent.ClearDismissed) }, onConfirm = { onEvent(TroubleshootEvent.ClearConfirmed) })
 }
@@ -97,7 +84,7 @@ private fun ColumnScope.PlayServicesSection(state: TroubleshootUiState, onEvent:
     GroupedItem(0, 2) {
         Column(Modifier.padding(vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(stringResource(R.string.troubleshoot_manual_title), style = MaterialTheme.typography.titleSmall)
-            Text(
+            InstructionText(
                 stringResource(R.string.troubleshoot_manual_steps),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,

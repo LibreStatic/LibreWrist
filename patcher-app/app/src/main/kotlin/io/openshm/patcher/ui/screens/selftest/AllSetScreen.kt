@@ -73,7 +73,7 @@ fun AllSetScreen(
                 decor.forEachIndexed { i, (shape, color) ->
                     val angle = 2.0 * PI * i / decor.size
                     DecorShape(
-                        shape, 36.dp, color.copy(alpha = 0.9f),
+                        shape, 36.dp, color,
                         Modifier.offset((120.0 * cos(angle)).dp, (120.0 * sin(angle)).dp),
                         rotation = i * 25f,
                     )

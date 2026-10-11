@@ -33,6 +33,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.widthIn
+import io.openshm.patcher.ui.components.SinglePaneMaxWidth
+import io.openshm.patcher.ui.components.TwoPaneMinWidth
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
@@ -125,57 +129,80 @@ private fun WelcomeBody(
     onGetStarted: () -> Unit,
     onSettings: () -> Unit,
 ) {
-    Column(
-        Modifier
-            .fillMaxSize()
-            .windowInsetsPadding(WindowInsets.safeDrawing),
+    BoxWithConstraints(
+        Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing),
+        contentAlignment = Alignment.TopCenter,
     ) {
-        Column(
-            Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
-                .padding(start = 16.dp, end = 16.dp, top = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp),
-        ) {
-            // The app's own header instead of a system title bar: the name set large, settings at the end.
-            Row(
-                Modifier.fillMaxWidth().padding(start = 8.dp, top = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
+        val wide = maxWidth >= TwoPaneMinWidth
+        Column(Modifier.widthIn(max = if (wide) WelcomeWideMaxWidth else SinglePaneMaxWidth).fillMaxSize()) {
+            Column(
+                Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+                    .padding(start = 16.dp, end = 16.dp, top = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
-                Text(
-                    stringResource(R.string.app_name),
-                    style = MaterialTheme.typography.headlineMediumEmphasized,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.weight(1f).semantics { heading() },
-                )
-                IconAction(Icons.Rounded.Settings, stringResource(R.string.action_settings), onSettings)
+                // The app's own header instead of a system title bar: the name set large, settings at the end.
+                Row(
+                    Modifier.fillMaxWidth().padding(start = 8.dp, top = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        stringResource(R.string.app_name),
+                        style = MaterialTheme.typography.headlineMediumEmphasized,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.weight(1f).semantics { heading() },
+                    )
+                    IconAction(Icons.Rounded.Settings, stringResource(R.string.action_settings), onSettings)
+                }
+                if (wide) {
+                    // Unfolded: hero on the left, the words and the actions together on the right.
+                    Row(horizontalArrangement = Arrangement.spacedBy(32.dp), verticalAlignment = Alignment.CenterVertically) {
+                        WelcomeHero(Modifier.weight(1f).height(260.dp))
+                        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(20.dp)) {
+                            WelcomeText()
+                            WelcomeActions(onEvent, onGetStarted, Modifier.padding(top = 4.dp))
+                        }
+                    }
+                } else {
+                    WelcomeHero(Modifier.fillMaxWidth().height(220.dp))
+                    WelcomeText()
+                }
             }
-            WelcomeHero(Modifier.fillMaxWidth().height(220.dp))
-            Text(
-                stringResource(R.string.welcome_title),
-                style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
-                modifier = Modifier.padding(horizontal = 8.dp).semantics { heading() },
-            )
-            Column(Modifier.padding(horizontal = 8.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Promise(Icons.Rounded.Download, R.string.welcome_promise_download,
-                    MaterialTheme.colorScheme.primaryContainer, MaterialTheme.colorScheme.onPrimaryContainer)
-                Promise(Icons.Rounded.Tune, R.string.welcome_promise_patch,
-                    MaterialTheme.colorScheme.secondaryContainer, MaterialTheme.colorScheme.onSecondaryContainer)
-                Promise(Icons.Rounded.Undo, R.string.welcome_promise_undo,
-                    MaterialTheme.colorScheme.tertiaryContainer, MaterialTheme.colorScheme.onTertiaryContainer)
-            }
-        }
-        Column(
-            Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            PrimaryAction(stringResource(R.string.welcome_get_started), onGetStarted)
-            QuietAction(stringResource(R.string.welcome_what_changes), { onEvent(WelcomeEvent.ShowChanges) })
+            if (!wide) WelcomeActions(onEvent, onGetStarted, Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 16.dp))
         }
     }
 
     if (state.changesSheetVisible) {
         ChangesSheet(state.changes, onDismiss = { onEvent(WelcomeEvent.HideChanges) })
+    }
+}
+
+/** Widest the welcome screen gets when the hero sits beside the text. */
+private val WelcomeWideMaxWidth = 1100.dp
+
+@Composable
+private fun WelcomeText() {
+    Text(
+        stringResource(R.string.welcome_title),
+        style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+        modifier = Modifier.padding(horizontal = 8.dp).semantics { heading() },
+    )
+    Column(Modifier.padding(horizontal = 8.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Promise(Icons.Rounded.Download, R.string.welcome_promise_download,
+            MaterialTheme.colorScheme.primaryContainer, MaterialTheme.colorScheme.onPrimaryContainer)
+        Promise(Icons.Rounded.Tune, R.string.welcome_promise_patch,
+            MaterialTheme.colorScheme.secondaryContainer, MaterialTheme.colorScheme.onSecondaryContainer)
+        Promise(Icons.Rounded.Undo, R.string.welcome_promise_undo,
+            MaterialTheme.colorScheme.tertiaryContainer, MaterialTheme.colorScheme.onTertiaryContainer)
+    }
+}
+
+@Composable
+private fun WelcomeActions(onEvent: (WelcomeEvent) -> Unit, onGetStarted: () -> Unit, modifier: Modifier = Modifier) {
+    Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        PrimaryAction(stringResource(R.string.welcome_get_started), onGetStarted)
+        QuietAction(stringResource(R.string.welcome_what_changes), { onEvent(WelcomeEvent.ShowChanges) })
     }
 }
 

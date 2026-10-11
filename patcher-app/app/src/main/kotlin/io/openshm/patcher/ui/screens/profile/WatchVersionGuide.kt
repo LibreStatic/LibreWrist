@@ -1,5 +1,6 @@
 package io.openshm.patcher.ui.screens.profile
 
+import io.openshm.patcher.ui.components.InstructionText
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -109,14 +110,14 @@ fun WatchVersionGuide(step: GuideStep, onStep: (GuideStep) -> Unit, onDone: () -
                 label = "guideCaption",
             ) { shown ->
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text(
+                    InstructionText(
                         stringResource(shown.caption),
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
                     )
                     if (shown == GuideStep.Software) {
                         listOf(R.string.profile_howto_phone, R.string.profile_howto_models, R.string.profile_howto_unsure).forEach {
-                            Text(stringResource(it), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            InstructionText(stringResource(it), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                 }

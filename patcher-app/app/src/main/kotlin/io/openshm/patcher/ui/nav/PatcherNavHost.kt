@@ -145,7 +145,7 @@ fun PatcherNavHost(
             popEnterTransition = { pages.enter(forward = false) },
             popExitTransition = { pages.exit(forward = false) },
         ) {
-            columnComposable(Route.Welcome.path) {
+            composable(Route.Welcome.path) {
                 val vm: WelcomeViewModel = viewModel()
                 val state by vm.state.collectAsStateWithLifecycle()
                 LaunchedEffect(vm) { vm.go.collect { next(Route.Welcome) } }
@@ -280,7 +280,7 @@ fun PatcherNavHost(
                     )
                 }
             }
-            columnComposable(Route.BuildDone.path) {
+            composable(Route.BuildDone.path) {
                 val context = LocalContext.current
                 val base = remember { builtOutputs(BuildStorage(context)) }
                 // The automatic key backup needs the Activity for the password manager prompt.

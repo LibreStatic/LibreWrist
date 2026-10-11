@@ -26,6 +26,7 @@ import io.openshm.patcher.ui.components.CheckStatus
 import io.openshm.patcher.ui.components.GroupedItem
 import io.openshm.patcher.ui.components.GroupedSpacing
 import io.openshm.patcher.ui.components.InfoChip
+import io.openshm.patcher.ui.components.LocalTwoPane
 import io.openshm.patcher.ui.components.PackageId
 import io.openshm.patcher.ui.components.PhoneWatchIllustration
 import io.openshm.patcher.ui.components.PrimaryAction
@@ -66,6 +67,7 @@ fun DisableStockScreen(
         title = stringResource(R.string.disable_title),
         onBack = onBack,
         modifier = modifier,
+        secondary = { if (LocalTwoPane.current) HeroCard() },
         footer = {
             PrimaryAction(
                 pluralStringResource(R.plurals.disable_action, state.selectedCount, state.selectedCount),
@@ -76,19 +78,7 @@ fun DisableStockScreen(
             QuietAction(stringResource(R.string.action_skip), onSkip, accent = Accent.Tertiary)
         },
     ) {
-        Surface(shape = RoundedCornerShape(28.dp), color = MaterialTheme.colorScheme.tertiaryContainer) {
-            Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                PhoneWatchIllustration(scale = 0.8f, linkColor = MaterialTheme.colorScheme.tertiary)
-                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    InfoChip(
-                        stringResource(R.string.disable_chip_installed),
-                        containerColor = MaterialTheme.colorScheme.tertiary,
-                        contentColor = MaterialTheme.colorScheme.onTertiary,
-                    )
-                    InfoChip(stringResource(R.string.disable_chip_wear))
-                }
-            }
-        }
+        if (!LocalTwoPane.current) HeroCard()
         Text(
             stringResource(R.string.disable_intro),
             style = MaterialTheme.typography.bodyLarge,
@@ -130,6 +120,23 @@ fun DisableStockScreen(
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun HeroCard() {
+    Surface(shape = RoundedCornerShape(28.dp), color = MaterialTheme.colorScheme.tertiaryContainer) {
+        Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            PhoneWatchIllustration(scale = if (LocalTwoPane.current) 0.65f else 0.8f, linkColor = MaterialTheme.colorScheme.tertiary)
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                InfoChip(
+                    stringResource(R.string.disable_chip_installed),
+                    containerColor = MaterialTheme.colorScheme.tertiary,
+                    contentColor = MaterialTheme.colorScheme.onTertiary,
+                )
+                InfoChip(stringResource(R.string.disable_chip_wear), contentColor = MaterialTheme.colorScheme.onTertiaryContainer)
             }
         }
     }

@@ -104,6 +104,7 @@ fun SelfTestScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val split = state.splitIndex()
     StepScreenScaffold(
         step = SetupStep.SelfTest,
         title = stringResource(R.string.selftest_title),
@@ -113,22 +114,38 @@ fun SelfTestScreen(
             IconAction(Icons.Rounded.Share, stringResource(R.string.action_share_report), { onEvent(SelfTestEvent.Share) })
         },
         footer = { PrimaryAction(stringResource(R.string.action_continue), onContinue, enabled = state.canContinue) },
+        secondary = {
+            state.sections.drop(split).forEach { SectionBlock(it, onEvent) }
+            state.humanCheck?.let { HumanCheckCard(it, onEvent) }
+            OutlinedAction(
+                stringResource(R.string.selftest_rerun),
+                { onEvent(SelfTestEvent.Rerun) },
+                Icons.Rounded.Refresh,
+                enabled = !state.running,
+            )
+        },
     ) {
-        state.sections.forEach { section ->
-            Column {
-                SectionTitle(stringResource(section.title))
-                Column(verticalArrangement = GroupedSpacing) {
-                    section.rows.forEachIndexed { index, row -> CheckRow(index, section.rows.size, row, onEvent) }
-                }
-            }
+        state.sections.take(split).forEach { SectionBlock(it, onEvent) }
+    }
+}
+
+/** Sections are shared between the two panes by row count; narrow, the secondary simply follows the primary. */
+private fun SelfTestUiState.splitIndex(): Int {
+    var seen = 0
+    sections.forEachIndexed { i, s ->
+        if (seen * 2 >= totalCount) return i
+        seen += s.rows.size
+    }
+    return sections.size
+}
+
+@Composable
+private fun SectionBlock(section: SelfTestSection, onEvent: (SelfTestEvent) -> Unit) {
+    Column {
+        SectionTitle(stringResource(section.title))
+        Column(verticalArrangement = GroupedSpacing) {
+            section.rows.forEachIndexed { index, row -> CheckRow(index, section.rows.size, row, onEvent) }
         }
-        state.humanCheck?.let { HumanCheckCard(it, onEvent) }
-        OutlinedAction(
-            stringResource(R.string.selftest_rerun),
-            { onEvent(SelfTestEvent.Rerun) },
-            Icons.Rounded.Refresh,
-            enabled = !state.running,
-        )
     }
 }
 

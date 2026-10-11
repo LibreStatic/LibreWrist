@@ -78,6 +78,7 @@ import kotlin.math.roundToInt
 import kotlinx.coroutines.delay
 import io.openshm.patcher.R
 import io.openshm.patcher.ui.components.FakeWatch
+import io.openshm.patcher.ui.components.InstructionText
 import io.openshm.patcher.ui.components.Item
 import io.openshm.patcher.ui.components.ScreenList
 import io.openshm.patcher.ui.components.WatchScreen
@@ -182,7 +183,7 @@ fun WatchPairGuide(
                 }
             }
             if (captions.isNotEmpty()) {
-                Text(
+                InstructionText(
                     stringResource(R.string.watchpair_dev_line, sub + 1, stringResource(captions[sub])),
                     style = MaterialTheme.typography.labelLarge,
                     color = colors.primary,
@@ -203,13 +204,13 @@ fun WatchPairGuide(
                 label = "pairGuideCaption",
             ) { shown ->
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Text(
+                    InstructionText(
                         stringResource(guideCaptions[shown]),
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
                     )
                     if (shown == WIRELESS_STEP) {
-                        Text(
+                        InstructionText(
                             stringResource(R.string.watchpair_guide_wireless_older),
                             style = MaterialTheme.typography.bodySmall,
                             color = colors.onSurfaceVariant,

@@ -68,6 +68,7 @@ import io.openshm.patcher.ui.components.FooterHint
 import io.openshm.patcher.ui.components.GroupedItem
 import io.openshm.patcher.ui.components.GroupedSpacing
 import io.openshm.patcher.ui.components.InfoChip
+import io.openshm.patcher.ui.components.LocalTwoPane
 import io.openshm.patcher.ui.components.OutlinedAction
 import io.openshm.patcher.ui.components.PolygonShape
 import io.openshm.patcher.ui.components.PrimaryAction
@@ -183,44 +184,21 @@ fun BuildScreen(
                 ) { Text(stringResource(R.string.action_cancel)) }
             }
         },
+        // Ring and current app beside the stage list and live log; narrow, the same order in one column.
+        secondary = {
+            StageList(state)
+            LogTail(state.log)
+        },
     ) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             BuildProgressRing(
                 progress = state.progress,
                 caption = stringResource(state.runningStage?.titleRes() ?: R.string.build_caption_idle),
+                ringSize = if (LocalTwoPane.current) 160.dp else 200.dp,
             )
         }
         if (state.almostDone) AlmostDoneMessage()
         state.currentApp?.let { CurrentAppCard(it) }
-        Column(verticalArrangement = GroupedSpacing) {
-            state.stages.forEachIndexed { index, row ->
-                val running = row.status == CheckStatus.Running
-                GroupedItem(
-                    index, state.stages.size,
-                    containerColor = if (running) MaterialTheme.colorScheme.primaryContainer
-                    else MaterialTheme.colorScheme.surfaceContainerLow,
-                    contentColor = if (running) MaterialTheme.colorScheme.onPrimaryContainer
-                    else MaterialTheme.colorScheme.onSurface,
-                ) {
-                    Row(
-                        Modifier.heightIn(min = if (running) 56.dp else 40.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        StatusShape(row.status)
-                        Text(
-                            if (row.stage == BuildStage.Apply) {
-                                pluralStringResource(R.plurals.build_stage_apply, state.patchCount, state.patchCount)
-                            } else {
-                                stringResource(row.stage.titleRes())
-                            },
-                            style = if (running) MaterialTheme.typography.titleSmall else MaterialTheme.typography.bodyLarge,
-                        )
-                    }
-                }
-            }
-        }
-        LogTail(state.log)
     }
     if (confirmCancel) {
         AlertDialog(
@@ -238,6 +216,38 @@ fun BuildScreen(
         )
     }
     if (state.logVisible) LogSheet(state.log) { onEvent(BuildEvent.HideLog) }
+}
+
+@Composable
+private fun StageList(state: BuildUiState) {
+    Column(verticalArrangement = GroupedSpacing) {
+        state.stages.forEachIndexed { index, row ->
+            val running = row.status == CheckStatus.Running
+            GroupedItem(
+                index, state.stages.size,
+                containerColor = if (running) MaterialTheme.colorScheme.primaryContainer
+                else MaterialTheme.colorScheme.surfaceContainerLow,
+                contentColor = if (running) MaterialTheme.colorScheme.onPrimaryContainer
+                else MaterialTheme.colorScheme.onSurface,
+            ) {
+                Row(
+                    Modifier.heightIn(min = if (running) 56.dp else 40.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    StatusShape(row.status)
+                    Text(
+                        if (row.stage == BuildStage.Apply) {
+                            pluralStringResource(R.plurals.build_stage_apply, state.patchCount, state.patchCount)
+                        } else {
+                            stringResource(row.stage.titleRes())
+                        },
+                        style = if (running) MaterialTheme.typography.titleSmall else MaterialTheme.typography.bodyLarge,
+                    )
+                }
+            }
+        }
+    }
 }
 
 /**

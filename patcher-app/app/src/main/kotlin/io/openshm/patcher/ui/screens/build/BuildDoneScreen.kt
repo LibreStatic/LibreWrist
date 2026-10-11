@@ -5,6 +5,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -53,6 +57,9 @@ import io.openshm.patcher.ui.components.InfoChip
 import io.openshm.patcher.ui.components.NoteRow
 import io.openshm.patcher.ui.components.PackageId
 import io.openshm.patcher.ui.components.PrimaryAction
+import io.openshm.patcher.ui.components.SinglePaneMaxWidth
+import io.openshm.patcher.ui.components.TwoPaneMaxWidth
+import io.openshm.patcher.ui.components.TwoPaneMinWidth
 import io.openshm.patcher.ui.components.TopActions
 
 /** One produced app: its label, the final package name (prefix already applied) and size. */
@@ -96,64 +103,106 @@ fun BuildDoneScreen(
     onSaveWithPassword: suspend (CharArray, CharArray) -> Boolean = { _, _ -> false },
 ) {
     val colors = MaterialTheme.colorScheme
-    Column(
+    // Caps itself (it is not in a ContentColumn): 640 dp single column, 1200 dp with two columns.
+    BoxWithConstraints(
         modifier.fillMaxSize().background(colors.surface).windowInsetsPadding(WindowInsets.safeDrawing),
+        contentAlignment = Alignment.TopCenter,
     ) {
-        TopActions(onBack = onBack)
-        Column(
-            Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Box(Modifier.fillMaxWidth().height(230.dp), contentAlignment = Alignment.Center) {
-                DecorShape(MaterialShapes.Sunny, 36.dp, colors.secondaryContainer, Modifier.align(Alignment.TopStart).padding(start = 40.dp, top = 12.dp))
-                DecorShape(MaterialShapes.Pill, 28.dp, colors.primaryContainer, Modifier.align(Alignment.BottomEnd).padding(end = 44.dp, bottom = 8.dp), rotation = 30f)
-                DecorShape(MaterialShapes.Diamond, 24.dp, colors.tertiaryContainer, Modifier.align(Alignment.TopEnd).padding(end = 52.dp, top = 24.dp))
-                CheckBlob(200.dp, colors.primary, colors.onPrimary, description = stringResource(R.string.build_done_title))
+        val twoPane = maxWidth >= TwoPaneMinWidth
+        Column(Modifier.widthIn(max = if (twoPane) TwoPaneMaxWidth else SinglePaneMaxWidth).fillMaxSize()) {
+            TopActions(onBack = onBack)
+            if (twoPane) {
+                Row(
+                    Modifier.weight(1f).fillMaxWidth().padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(24.dp),
+                ) {
+                    Column(
+                        Modifier.weight(1f).fillMaxHeight().verticalScroll(rememberScrollState()),
+                        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) { Hero(state, compact = true) }
+                    Column(
+                        Modifier.weight(1f).fillMaxHeight().verticalScroll(rememberScrollState()),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) { Details(state, onBackUpKey, onSaveBackup, onSaveWithPassword) }
+                }
+            } else {
+                Column(
+                    Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Hero(state, compact = false)
+                    Details(state, onBackUpKey, onSaveBackup, onSaveWithPassword)
+                }
             }
-            Text(
-                stringResource(R.string.build_done_title),
-                style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight(850)),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.semantics { heading() },
-            )
-            Text(
-                pluralStringResource(R.plurals.build_done_subtitle_apps, state.outputs.size, state.outputs.size) +
-                    " · " + pluralStringResource(R.plurals.build_done_subtitle_patches, state.patchCount, state.patchCount) +
-                    " · " + stringResource(R.string.build_done_ready),
-                style = MaterialTheme.typography.bodyLarge,
-                color = colors.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-            )
-            Column(Modifier.fillMaxWidth(), verticalArrangement = GroupedSpacing) {
-                state.outputs.forEachIndexed { index, out ->
-                    GroupedItem(index, state.outputs.size, outerRadius = 32) {
-                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Column(Modifier.weight(1f)) {
-                                Text(out.label, style = MaterialTheme.typography.titleSmall)
-                                PackageId(out.packageName)
-                            }
-                            Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                                InfoChip(stringResource(if (out.device == Device.Phone) R.string.device_phone else R.string.device_watch))
-                                if (out.sizeBytes > 0) {
-                                    Text(
-                                        stringResource(R.string.size_mb, out.sizeBytes / (1024.0 * 1024.0)),
-                                        style = MaterialTheme.typography.labelMedium,
-                                        color = colors.onSurfaceVariant,
-                                    )
-                                }
-                            }
+            Column(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp)) {
+                PrimaryAction(stringResource(R.string.build_done_install), onInstall)
+            }
+        }
+    }
+}
+
+/** The badge, title and summary line; [compact] shrinks the badge for the two-column layout. */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun ColumnScope.Hero(state: BuildDoneUiState, compact: Boolean) {
+    val colors = MaterialTheme.colorScheme
+    Box(Modifier.fillMaxWidth().height(if (compact) 170.dp else 230.dp), contentAlignment = Alignment.Center) {
+        DecorShape(MaterialShapes.Sunny, 36.dp, colors.secondaryContainer, Modifier.align(Alignment.TopStart).padding(start = 40.dp, top = 12.dp))
+        DecorShape(MaterialShapes.Pill, 28.dp, colors.primaryContainer, Modifier.align(Alignment.BottomEnd).padding(end = 44.dp, bottom = 8.dp), rotation = 30f)
+        DecorShape(MaterialShapes.Diamond, 24.dp, colors.tertiaryContainer, Modifier.align(Alignment.TopEnd).padding(end = 52.dp, top = 24.dp))
+        CheckBlob(if (compact) 140.dp else 200.dp, colors.primary, colors.onPrimary, description = stringResource(R.string.build_done_title))
+    }
+    Text(
+        stringResource(R.string.build_done_title),
+        style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight(850)),
+        textAlign = TextAlign.Center,
+        modifier = Modifier.semantics { heading() },
+    )
+    Text(
+        pluralStringResource(R.plurals.build_done_subtitle_apps, state.outputs.size, state.outputs.size) +
+            " · " + pluralStringResource(R.plurals.build_done_subtitle_patches, state.patchCount, state.patchCount) +
+            " · " + stringResource(R.string.build_done_ready),
+        style = MaterialTheme.typography.bodyLarge,
+        color = colors.onSurfaceVariant,
+        textAlign = TextAlign.Center,
+    )
+}
+
+/** The produced apps, the link note and the key backup card. */
+@Composable
+private fun ColumnScope.Details(
+    state: BuildDoneUiState,
+    onBackUpKey: () -> Unit,
+    onSaveBackup: () -> Unit,
+    onSaveWithPassword: suspend (CharArray, CharArray) -> Boolean,
+) {
+    val colors = MaterialTheme.colorScheme
+    Column(Modifier.fillMaxWidth(), verticalArrangement = GroupedSpacing) {
+        state.outputs.forEachIndexed { index, out ->
+            GroupedItem(index, state.outputs.size, outerRadius = 32) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Column(Modifier.weight(1f)) {
+                        Text(out.label, style = MaterialTheme.typography.titleSmall)
+                        PackageId(out.packageName)
+                    }
+                    Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        InfoChip(stringResource(if (out.device == Device.Phone) R.string.device_phone else R.string.device_watch))
+                        if (out.sizeBytes > 0) {
+                            Text(
+                                stringResource(R.string.size_mb, out.sizeBytes / (1024.0 * 1024.0)),
+                                style = MaterialTheme.typography.labelMedium,
+                                color = colors.onSurfaceVariant,
+                            )
                         }
                     }
                 }
             }
-            NoteRow(Icons.Rounded.Link, stringResource(R.string.build_done_link_note))
-            KeyBackupCard(state.backup, onBackUpKey, onSaveBackup, onSaveWithPassword)
-        }
-        Column(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp)) {
-            PrimaryAction(stringResource(R.string.build_done_install), onInstall)
         }
     }
+    NoteRow(Icons.Rounded.Link, stringResource(R.string.build_done_link_note))
+    KeyBackupCard(state.backup, onBackUpKey, onSaveBackup, onSaveWithPassword)
 }
 
 /** Status of the automatic signing key backup; when it failed, asks for the manual one (losing the key means installed apps can only be reinstalled). */
@@ -169,6 +218,8 @@ private fun KeyBackupCard(
     val colors = MaterialTheme.colorScheme
     if (status == KeyBackupStatus.Hidden) return
     val failed = status == KeyBackupStatus.Failed
+    // Filled buttons on the tertiary container use the tertiary pair, not the default primary one.
+    val onContainerButton = ButtonDefaults.buttonColors(containerColor = colors.tertiary, contentColor = colors.onTertiary)
     val declined = status == KeyBackupStatus.Declined || status == KeyBackupStatus.PrivateOnly
     val noManager = status == KeyBackupStatus.PrivateNoPasswordManager
     Surface(
@@ -211,13 +262,13 @@ private fun KeyBackupCard(
                 }
             }
             if (noManager) {
-                Button(onClick = { dialog = true }) { Text(stringResource(R.string.key_backup_with_password_action)) }
+                Button(onClick = { dialog = true }, colors = onContainerButton) { Text(stringResource(R.string.key_backup_with_password_action)) }
             } else if (declined) {
-                Button(onClick = onSave) { Text(stringResource(R.string.key_backup_save_action)) }
+                Button(onClick = onSave, colors = onContainerButton) { Text(stringResource(R.string.key_backup_save_action)) }
             } else if (failed) {
                 Button(
                     onClick = onBackUp,
-                    colors = ButtonDefaults.buttonColors(containerColor = colors.tertiary, contentColor = colors.onTertiary),
+                    colors = onContainerButton,
                 ) { Text(stringResource(R.string.signing_key_nudge_action)) }
             }
         }

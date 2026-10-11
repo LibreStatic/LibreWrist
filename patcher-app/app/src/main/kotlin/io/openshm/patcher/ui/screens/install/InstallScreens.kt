@@ -1,5 +1,6 @@
 package io.openshm.patcher.ui.screens.install
 
+import io.openshm.patcher.ui.components.InstructionText
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -41,6 +42,7 @@ import io.openshm.patcher.ui.components.CheckStatus
 import io.openshm.patcher.ui.components.GroupedItem
 import io.openshm.patcher.ui.components.GroupedSpacing
 import io.openshm.patcher.ui.components.InfoChip
+import io.openshm.patcher.ui.components.LocalTwoPane
 import io.openshm.patcher.ui.components.NoteRow
 import io.openshm.patcher.ui.components.PackageId
 import io.openshm.patcher.ui.components.PrimaryAction
@@ -202,8 +204,14 @@ private fun InstallStep(
                 )
             }
         },
+        secondary = {
+            // Wide: the explanation moves here from the top of the list; narrow it stays above the list.
+            if (LocalTwoPane.current) IntroText(intro)
+            if (phone) SelfAdbSection(state, onEvent)
+            NoteRow(Icons.Rounded.Info, note, Modifier.padding(top = 4.dp))
+        },
     ) {
-        Text(intro, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        if (!LocalTwoPane.current) IntroText(intro)
         state.errorRes?.let {
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
                 StatusShape(CheckStatus.Failed, size = 24.dp)
@@ -274,8 +282,6 @@ private fun InstallStep(
                 }
             }
         }
-        if (phone) SelfAdbSection(state, onEvent)
-        NoteRow(Icons.Rounded.Info, note, Modifier.padding(top = 4.dp))
     }
     val conflict = state.conflict
     if (state.confirmingReinstall && conflict != null) {
@@ -287,6 +293,10 @@ private fun InstallStep(
         )
     }
 }
+
+@Composable
+private fun IntroText(intro: String) =
+    InstructionText(intro, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
 /** Asks before the installed copy is removed: its data is lost and this cannot be undone. */
 @Composable
@@ -314,7 +324,7 @@ private fun SelfAdbSection(state: InstallUiState, onEvent: (InstallEvent) -> Uni
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         SectionTitle(stringResource(R.string.phone_adb_title))
         if (phase == null) {
-            Text(
+            InstructionText(
                 stringResource(R.string.phone_adb_intro),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -346,7 +356,7 @@ internal fun SelfAdbProgress(
     @StringRes retryLabel: Int = R.string.phone_adb_action,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(stringResource(phase.messageRes()), style = MaterialTheme.typography.bodyMedium)
+        InstructionText(stringResource(phase.messageRes()), style = MaterialTheme.typography.bodyMedium)
         if (phase == SelfAdbPhase.WaitingForCode || phase == SelfAdbPhase.WrongCode) {
             var code by rememberSaveable { mutableStateOf("") }
             OutlinedTextField(

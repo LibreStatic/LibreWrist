@@ -1,5 +1,6 @@
 package io.openshm.patcher.ui.screens.acquire
 
+import io.openshm.patcher.ui.components.InstructionText
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -189,7 +190,7 @@ private fun CoachCard(state: GuidedBrowserUiState) {
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.inversePrimary,
             )
-            Text(state.coachBody, style = MaterialTheme.typography.bodyMedium)
+            InstructionText(state.coachBody, style = MaterialTheme.typography.bodyMedium)
             if (state.target.isNotEmpty()) {
                 Text(
                     stringResource(R.string.browser_target_line, state.target),

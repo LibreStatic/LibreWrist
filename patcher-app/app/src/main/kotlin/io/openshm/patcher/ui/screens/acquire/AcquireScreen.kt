@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -91,21 +92,25 @@ fun AcquireScreen(
             }
             PrimaryAction(stringResource(R.string.action_continue), onContinue, enabled = waiting == 0)
         },
+        // The cards split across the panes (first half beside the intro); narrow, the same single column.
+        secondary = {
+            state.cards.drop((state.cards.size + 1) / 2).forEach { AcquireCardView(it, onEvent) }
+            NoteRow(Icons.Rounded.VerifiedUser, stringResource(R.string.acquire_verify_note))
+        },
     ) {
         Text(
             stringResource(R.string.acquire_intro),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        state.cards.forEach { AcquireCardView(it, onEvent) }
-        NoteRow(Icons.Rounded.VerifiedUser, stringResource(R.string.acquire_verify_note))
+        state.cards.take((state.cards.size + 1) / 2).forEach { AcquireCardView(it, onEvent) }
     }
 }
 
 @Composable
 private fun AcquireCardView(card: AcquireCard, onEvent: (AcquireEvent) -> Unit) {
     val input = card.input
-    Surface(shape = RoundedCornerShape(28.dp), color = MaterialTheme.colorScheme.surfaceContainerLow) {
+    Surface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(28.dp), color = MaterialTheme.colorScheme.surfaceContainerLow) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Column(Modifier.weight(1f)) {
