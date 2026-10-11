@@ -14,6 +14,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
+import io.openshm.patcher.ui.theme.LocalReducedMotion
 import androidx.core.content.ContextCompat
 import io.openshm.patcher.build.BuildStorage
 import androidx.activity.result.contract.ActivityResultContracts
@@ -94,7 +97,19 @@ fun PatcherNavHost(
     }
     val back: () -> Unit = { navController.popBackStack() }
 
-    NavHost(navController, startDestination = Route.Welcome.path, modifier = modifier) {
+    val pages = PageTransitions(
+        reducedMotion = LocalReducedMotion.current,
+        rtl = LocalLayoutDirection.current == LayoutDirection.Rtl,
+    )
+    NavHost(
+        navController,
+        startDestination = Route.Welcome.path,
+        modifier = modifier,
+        enterTransition = { pages.enter(forward = true) },
+        exitTransition = { pages.exit(forward = true) },
+        popEnterTransition = { pages.enter(forward = false) },
+        popExitTransition = { pages.exit(forward = false) },
+    ) {
         composable(Route.Welcome.path) {
             val vm: WelcomeViewModel = viewModel()
             val state by vm.state.collectAsStateWithLifecycle()

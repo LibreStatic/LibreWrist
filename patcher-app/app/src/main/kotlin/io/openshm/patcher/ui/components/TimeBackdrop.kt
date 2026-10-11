@@ -2,6 +2,8 @@ package io.openshm.patcher.ui.components
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -16,8 +18,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
@@ -38,6 +42,7 @@ import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
@@ -49,6 +54,18 @@ import kotlin.math.hypot
 import kotlin.math.sin
 import kotlin.random.Random
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+
+/** Screen widths the rail spans; wider than the screen so motifs can wait off-screen. */
+private const val WRAP_SPAN = 1.5f
+
+/** Screen widths the nearest motifs travel per wizard step. */
+private const val MOVE_LENGTH = 0.45f
+
+/** Degrees the nearest motifs roll per wizard step. */
+private const val MOVE_ROLL = 70f
 
 /** What one floating motif depicts; every kind is about watches or time. */
 private enum class Motif { Clock, Watch, Hourglass, Heart, Alarm, Stopwatch, Pulse, Calendar, Moon, Timer }
@@ -79,18 +96,56 @@ private class Floater(
  * and ringing alarms, drifting and turning slowly. Mostly fills
  * the side margins of large screens; on a phone it sits faintly behind the content.
  *
+ * The field rides a rail with the wizard: [progress] advances one unit per step and the motifs
+ * slide the same way as the pages, nearer (bigger) ones further, so the pages and the field read
+ * as layers (parallax). Each change of [beat] sends a light outward burst through them.
+ *
  * When [dispersed] becomes true the motifs fly out from the centre and fade; clearing it brings them
  * back in. Colours are container roles at low alpha, so they never carry content. With system
  * animations off the field is static and the exit is immediate.
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun TimeBackdrop(dispersed: Boolean, modifier: Modifier = Modifier) {
+fun TimeBackdrop(
+    dispersed: Boolean,
+    modifier: Modifier = Modifier,
+    progress: () -> Float = { 0f },
+    beat: () -> Int = { 0 },
+) {
     val reducedMotion = LocalReducedMotion.current
     val colors = MaterialTheme.colorScheme
     val fills = listOf(colors.primaryContainer, colors.secondaryContainer, colors.tertiaryContainer)
     val marks = listOf(colors.primary, colors.secondary, colors.tertiary)
     val seed = rememberSaveable { Random.nextInt() }
+
+    val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+    // Tracked as state so the long-lived collectors below always read the latest lambdas.
+    val currentProgress by rememberUpdatedState(progress)
+    val currentBeat by rememberUpdatedState(beat)
+
+    // Thresholds far below the defaults: the rail is multiplied by the screen width, so the default
+    // cut-off would snap the last pixels of a move in one frame.
+    val rail = remember { Animatable(progress(), visibilityThreshold = 0.0001f) }
+    LaunchedEffect(reducedMotion) {
+        snapshotFlow { currentProgress() }.collectLatest { target ->
+            if (reducedMotion) {
+                // A static field: shapes jumping on every page change would read as a glitch.
+                rail.snapTo(0f)
+            } else {
+                // A new target mid-move keeps the current velocity, so quick steps chain smoothly.
+                rail.animateTo(target, spring(dampingRatio = 0.9f, stiffness = Spring.StiffnessLow, visibilityThreshold = 0.0001f))
+            }
+        }
+    }
+    val burst = remember { Animatable(0f, visibilityThreshold = 0.0005f) }
+    LaunchedEffect(reducedMotion) {
+        if (reducedMotion) return@LaunchedEffect
+        // No burst for the page the wizard opens on, only for the user's own moves.
+        snapshotFlow { currentBeat() }.distinctUntilChanged().drop(1).collectLatest {
+            // An impulse from rest: the motifs swell outwards and settle back continuously.
+            burst.animateTo(0f, spring(dampingRatio = 0.45f, stiffness = Spring.StiffnessLow, visibilityThreshold = 0.0005f), initialVelocity = 4f)
+        }
+    }
 
     var time by remember { mutableFloatStateOf(0f) }
     LaunchedEffect(reducedMotion, dispersed) {
@@ -142,8 +197,8 @@ fun TimeBackdrop(dispersed: Boolean, modifier: Modifier = Modifier) {
                     motif = deck[index],
                     face = faces[random.nextInt(faces.size)],
                     role = random.nextInt(3),
-                    // Spread over a jittered grid so the motifs do not pile up.
-                    x = (index + 0.2f + random.nextFloat() * 0.6f) / count,
+                    // Spread over a jittered grid along the whole rail so the motifs do not pile up.
+                    x = (index + 0.2f + random.nextFloat() * 0.6f) / count * WRAP_SPAN,
                     y = random.nextFloat(),
                     sizeDp = 36f + 104f * depth,
                     depth = depth,
@@ -158,6 +213,9 @@ fun TimeBackdrop(dispersed: Boolean, modifier: Modifier = Modifier) {
             val center = Offset(size.width / 2f, size.height / 2f)
             val diagonal = hypot(size.width, size.height)
             val e = FastOutSlowInEasing.transform(exit.value)
+            val b = burst.value
+            // Forward moves the field towards the start side, like the pages.
+            val travel = rail.value * if (rtl) -1f else 1f
             // Easter egg: every clock and watch in the field tells the real time.
             // Reading the tick makes this draw run again on each minute while the field is static.
             @Suppress("UNUSED_VARIABLE") val redrawEachMinute = minuteTick
@@ -165,20 +223,25 @@ fun TimeBackdrop(dispersed: Boolean, modifier: Modifier = Modifier) {
             floaters.forEach { f ->
                 val side = f.sizeDp.dp.toPx()
                 val wobble = f.wobble.dp.toPx()
-                var cx = f.x * size.width + sin(time * 0.3f + f.phase) * wobble
+                // Rail travel with parallax: nearer (bigger) motifs move further. The rail wraps, so
+                // motifs leaving one side come back in on the other.
+                val along = ((f.x - travel * MOVE_LENGTH * f.depth) % WRAP_SPAN + WRAP_SPAN) % WRAP_SPAN
+                var cx = (along - (WRAP_SPAN - 1f) / 2f) * size.width + sin(time * 0.3f + f.phase) * wobble
                 var cy = f.y * size.height + cos(time * 0.23f + f.phase * 1.3f) * wobble
                 val dx = cx - center.x
                 val dy = cy - center.y
                 val distance = hypot(dx, dy).coerceAtLeast(1f)
-                // The exit pushes every motif outwards along the line from the centre.
-                val push = e * diagonal * (0.6f + f.depth)
+                // Bursts and the exit both push outwards along the line from the centre.
+                val push = b * 36.dp.toPx() * f.depth + e * diagonal * (0.6f + f.depth)
                 cx += dx / distance * push
                 cy += dy / distance * push
                 val alpha = (0.06f + 0.08f * f.depth) * (1f - e)
-                val angle = f.phase * 57.3f + time * f.spin + e * f.spin * 12f
+                // Motifs roll along the rail, each in its own spin direction.
+                val roll = travel * MOVE_ROLL * f.depth * if (f.spin > 0f) 1f else -1f
+                val angle = f.phase * 57.3f + time * f.spin + roll + e * f.spin * 12f
                 translate(cx - side / 2f, cy - side / 2f) {
                     val pivot = Offset(side / 2f, side / 2f)
-                    scale(1f + 0.4f * e, pivot) {
+                    scale(1f + 0.15f * b + 0.4f * e, pivot) {
                         rotate(angle, pivot) {
                             drawMotif(f, side, fills[f.role], marks[f.role], alpha, triangle, heart, bell, time, wall, angle)
                         }
