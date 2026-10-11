@@ -50,6 +50,9 @@ open class WatchLink(
 
     val rememberedHost: String? get() = store.host
 
+    /** The `adb-<serial>-` prefix recorded for the watch, if any (see [WatchHostStore.serialPrefix]). */
+    val rememberedSerialPrefix: String? get() = store.serialPrefix
+
     /**
      * Pairs with the watch's pairing service at [host]:[port], remembers [host], and connects. A
      * failed connect afterwards is not an error here (the code is already used up); [client]

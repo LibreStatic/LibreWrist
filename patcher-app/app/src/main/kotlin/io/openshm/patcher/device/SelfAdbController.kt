@@ -46,7 +46,7 @@ object SelfAdbController {
         while (true) {
             val current = _state.value
             if (current.active) return false
-            if (_state.compareAndSet(current, SelfAdbSnapshot(purpose, SelfAdbPhase.WaitingForService))) return true
+            if (_state.compareAndSet(current, SelfAdbSnapshot(purpose, SelfAdbPhase.Reconnecting))) return true
         }
     }
 

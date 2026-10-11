@@ -72,7 +72,7 @@ class DiscoveryAndSelfAdbTest {
         }
         val scope = CoroutineScope(Dispatchers.Default)
         val session = SelfAdbSession(
-            backend, pairing, connect, scope, connectServiceTimeoutMillis = 300,
+            backend, pairing, connect, scope, connectServiceTimeoutMillis = 300, reconnectTimeoutMillis = 150,
             isLocalHost = { it.startsWith("192.168.1.5") || it.startsWith("10.0.0.") },
         )
     }
@@ -127,6 +127,7 @@ class DiscoveryAndSelfAdbTest {
     fun `services advertised by other hosts are ignored`() = runBlocking {
         val env = Env()
         env.session.start()
+        env.session.await { it == SelfAdbState.WaitingForPairingService }
         env.pairing.value = listOf(AdbService("watch", "192.168.1.77", 39999, AdbServiceType.PAIRING))
         Thread.sleep(150)
         assertEquals(SelfAdbState.WaitingForPairingService, env.session.state.value)
@@ -232,13 +233,80 @@ class DiscoveryAndSelfAdbTest {
         while (env.pairCalls.isEmpty() && System.nanoTime() < deadline) Thread.sleep(10)
 
         // Restarting invalidates the in-flight pairing; its late completion must change nothing.
-        env.connect.value = listOf(AdbService("c", "192.168.1.5", 41040, AdbServiceType.CONNECT))
         env.session.start()
         env.pairGate!!.countDown()
-        Thread.sleep(300)
+        Thread.sleep(300) // the restarted session found no connect service to reconnect to
+        env.connect.value = listOf(AdbService("c", "192.168.1.5", 41040, AdbServiceType.CONNECT))
+        Thread.sleep(100)
         assertTrue(env.session.state.value !is SelfAdbState.Connected)
         assertTrue(env.connectCalls.isEmpty())
         assertEquals(1, env.pairCalls.size)
+        env.scope.cancel()
+    }
+
+    @Test
+    fun `an already paired key reconnects without pairing`() = runBlocking {
+        val env = Env()
+        env.connect.value = listOf(
+            AdbService("watch", "192.168.1.77", 45555, AdbServiceType.CONNECT),
+            AdbService("me", "192.168.1.5", 41100, AdbServiceType.CONNECT),
+        )
+        env.session.start()
+        val done = env.session.await { it is SelfAdbState.Connected || it is SelfAdbState.WaitingForPairingService }
+        assertTrue(done is SelfAdbState.Connected && done.client.isConnected)
+        assertEquals(listOf("127.0.0.1" to 41100), env.connectCalls)
+        assertTrue(env.pairCalls.isEmpty())
+        env.scope.cancel()
+    }
+
+    @Test
+    fun `a stale refused port is skipped while reconnecting`() = runBlocking {
+        val env = Env()
+        env.refusedPorts += 41101
+        env.connect.value = listOf(
+            AdbService("a", "192.168.1.5", 41101, AdbServiceType.CONNECT),
+            AdbService("b", "192.168.1.5", 41102, AdbServiceType.CONNECT),
+        )
+        env.session.start()
+        env.session.await { it is SelfAdbState.Connected }
+        assertEquals(listOf("127.0.0.1" to 41101, "127.0.0.1" to 41102), env.connectCalls)
+        env.scope.cancel()
+    }
+
+    @Test
+    fun `a rejected key falls back to the pairing flow`() = runBlocking {
+        val env = Env()
+        env.failConnect = javax.net.ssl.SSLException("certificate unknown")
+        env.connect.value = listOf(AdbService("me", "192.168.1.5", 41103, AdbServiceType.CONNECT))
+        env.session.start()
+        env.session.await { it == SelfAdbState.WaitingForPairingService }
+        env.pairing.value = listOf(AdbService("p", "192.168.1.5", 40040, AdbServiceType.PAIRING))
+        env.session.await { it == SelfAdbState.WaitingForCode(40040) }
+        assertEquals(1, env.connectCalls.size)
+        env.scope.cancel()
+    }
+
+    @Test
+    fun `no local connect service falls back to the pairing flow`() = runBlocking {
+        val env = Env()
+        env.connect.value = listOf(AdbService("watch", "192.168.1.77", 45555, AdbServiceType.CONNECT))
+        env.session.start()
+        assertEquals(SelfAdbState.Reconnecting, env.session.state.value)
+        env.session.await { it == SelfAdbState.WaitingForPairingService }
+        assertTrue(env.connectCalls.isEmpty())
+        env.pairing.value = listOf(AdbService("p", "192.168.1.5", 40041, AdbServiceType.PAIRING))
+        env.session.await { it == SelfAdbState.WaitingForCode(40041) }
+        env.scope.cancel()
+    }
+
+    @Test
+    fun `stop during the reconnect attempt leaves the session idle`() = runBlocking {
+        val env = Env()
+        env.session.start()
+        assertEquals(SelfAdbState.Reconnecting, env.session.state.value)
+        env.session.stop()
+        Thread.sleep(300)
+        assertEquals(SelfAdbState.Idle, env.session.state.value)
         env.scope.cancel()
     }
 }

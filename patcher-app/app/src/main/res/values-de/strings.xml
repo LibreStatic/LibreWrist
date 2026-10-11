@@ -148,6 +148,10 @@
     <string name="watchpair_title">Mit deiner Uhr verbinden</string>
     <string name="watchpair_intro">Die Uhr akzeptiert Installationen über Wi-Fi, sobald du sie mit einem kurzen Code koppelst.</string>
     <string name="watchpair_found">Uhr in deinem Netzwerk gefunden</string>
+    <string name="watchpair_reconnecting">Verbindung zu deiner Uhr wird wiederhergestellt…</string>
+    <string name="watchpair_reconnected">Wieder mit deiner Uhr verbunden</string>
+    <string name="watchpair_reconnected_model">Wieder mit deiner Uhr verbunden (%1$s)</string>
+    <string name="watchpair_remembered_hint">Wenn du diese Uhr bereits gekoppelt hast, aktiviere darauf das Drahtlose Debugging, dann verbindet sie sich von selbst wieder.</string>
     <string name="watchpair_searching">Suche nach deiner Uhr…</string>
     <string name="watchpair_code_label">Kopplungscode</string>
     <string name="watchpair_hint">Gib alle 6 Ziffern zum Koppeln ein</string>
@@ -356,6 +360,7 @@
     <string name="phone_adb_wrong_code">Der Code hat nicht funktioniert. Prüfe den Kopplungsbildschirm und versuche es erneut.</string>
     <string name="phone_adb_ambiguous">Auf diesem Smartphone wurde mehr als ein Dienst für **Kabelloses Debugging** gefunden. Schalte **Kabelloses Debugging** aus und wieder ein und versuche es dann erneut.</string>
     <string name="phone_adb_connecting">Verbindung zu diesem Smartphone wird hergestellt...</string>
+    <string name="phone_adb_reconnecting">Verbindung zu diesem Telefon wird wiederhergestellt...</string>
     <string name="phone_adb_granting">Verbunden. Zugriff wird erteilt...</string>
     <string name="phone_adb_failed">Verbindung zum Kabellosen Debugging dieses Smartphones nicht möglich.</string>
     <string name="phone_adb_code_label">Kopplungscode</string>

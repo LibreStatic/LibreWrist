@@ -148,6 +148,10 @@
     <string name="watchpair_title">Saatinize bağlanın</string>
     <string name="watchpair_intro">Saat, kısa bir kodla eşlendikten sonra Wi-Fi üzerinden kurulumu kabul eder.</string>
     <string name="watchpair_found">Saat ağınızda bulundu</string>
+    <string name="watchpair_reconnecting">Saatine yeniden bağlanılıyor…</string>
+    <string name="watchpair_reconnected">Saatine yeniden bağlanıldı</string>
+    <string name="watchpair_reconnected_model">Saatine yeniden bağlanıldı (%1$s)</string>
+    <string name="watchpair_remembered_hint">Bu saati daha önce eşleştirdiysen, üzerinde Kablosuz hata ayıklamayı aç; kendiliğinden yeniden bağlanır.</string>
     <string name="watchpair_searching">Saatiniz aranıyor…</string>
     <string name="watchpair_code_label">Eşleme kodu</string>
     <string name="watchpair_hint">Eşlemek için 6 haneyi de girin</string>
@@ -356,6 +360,7 @@
     <string name="phone_adb_wrong_code">Kod işe yaramadı. Eşleme ekranını kontrol edip tekrar deneyin.</string>
     <string name="phone_adb_ambiguous">Bu telefonda birden fazla **Kablosuz hata ayıklama** hizmeti bulundu. **Kablosuz hata ayıklama**\'yı kapatıp açın, sonra tekrar deneyin.</string>
     <string name="phone_adb_connecting">Bu telefona bağlanılıyor...</string>
+    <string name="phone_adb_reconnecting">Bu telefona yeniden bağlanılıyor...</string>
     <string name="phone_adb_granting">Bağlandı. Erişimler veriliyor...</string>
     <string name="phone_adb_failed">Bu telefonun Kablosuz hata ayıklamasına bağlanılamadı.</string>
     <string name="phone_adb_code_label">Eşleme kodu</string>

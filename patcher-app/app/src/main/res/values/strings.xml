@@ -217,6 +217,10 @@
     <string name="watchpair_title">Connect to your watch</string>
     <string name="watchpair_intro">The watch accepts installs over Wi-Fi once you pair it with a short code.</string>
     <string name="watchpair_found">Watch found on your network</string>
+    <string name="watchpair_reconnecting">Reconnecting to your watch…</string>
+    <string name="watchpair_reconnected">Reconnected to your watch</string>
+    <string name="watchpair_reconnected_model">Reconnected to your watch (%1$s)</string>
+    <string name="watchpair_remembered_hint">If you already paired this watch, turn on Wireless debugging on it and it will reconnect by itself.</string>
     <string name="watchpair_searching">Looking for your watch…</string>
     <string name="watchpair_code_label">Pairing code</string>
     <string name="watchpair_hint">Enter all 6 digits to pair</string>
@@ -463,6 +467,7 @@
     <string name="phone_adb_wrong_code">That code did not work. Check the pairing screen and try again.</string>
     <string name="phone_adb_ambiguous">More than one **Wireless debugging** service was found on this phone. Turn **Wireless debugging** off and on, then try again.</string>
     <string name="phone_adb_connecting">Connecting to this phone...</string>
+    <string name="phone_adb_reconnecting">Reconnecting to this phone...</string>
     <string name="phone_adb_granting">Connected. Granting access...</string>
     <string name="phone_adb_failed">Could not connect to this phone\'s Wireless debugging.</string>
     <string name="phone_adb_code_label">Pairing code</string>

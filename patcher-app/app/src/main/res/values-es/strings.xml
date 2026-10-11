@@ -148,6 +148,10 @@
     <string name="watchpair_title">Conectar con tu reloj</string>
     <string name="watchpair_intro">El reloj acepta instalaciones por Wi-Fi una vez que lo vinculas con un código corto.</string>
     <string name="watchpair_found">Reloj encontrado en tu red</string>
+    <string name="watchpair_reconnecting">Reconectando con tu reloj…</string>
+    <string name="watchpair_reconnected">Reconectado con tu reloj</string>
+    <string name="watchpair_reconnected_model">Reconectado con tu reloj (%1$s)</string>
+    <string name="watchpair_remembered_hint">Si ya vinculaste este reloj, activa Depuración inalámbrica en él y se reconectará solo.</string>
     <string name="watchpair_searching">Buscando tu reloj…</string>
     <string name="watchpair_code_label">Código de vinculación</string>
     <string name="watchpair_hint">Ingresa los 6 dígitos para vincular</string>
@@ -356,6 +360,7 @@
     <string name="phone_adb_wrong_code">Ese código no funcionó. Revisa la pantalla de vinculación e inténtalo de nuevo.</string>
     <string name="phone_adb_ambiguous">Se encontró más de un servicio de **depuración inalámbrica** en este teléfono. Desactiva y vuelve a activar la **depuración inalámbrica** y vuelve a intentarlo.</string>
     <string name="phone_adb_connecting">Conectando con este teléfono...</string>
+    <string name="phone_adb_reconnecting">Reconectando con este teléfono...</string>
     <string name="phone_adb_granting">Conectado. Concediendo acceso...</string>
     <string name="phone_adb_failed">No se pudo conectar con la depuración inalámbrica de este teléfono.</string>
     <string name="phone_adb_code_label">Código de vinculación</string>

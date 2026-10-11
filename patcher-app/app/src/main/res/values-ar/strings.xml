@@ -148,6 +148,10 @@
     <string name="watchpair_title">الاتصال بساعتك</string>
     <string name="watchpair_intro">تقبل الساعة التثبيت عبر Wi-Fi بعد اقترانها برمز قصير.</string>
     <string name="watchpair_found">تم العثور على الساعة في شبكتك</string>
+    <string name="watchpair_reconnecting">جارٍ إعادة الاتصال بساعتك…</string>
+    <string name="watchpair_reconnected">تمت إعادة الاتصال بساعتك</string>
+    <string name="watchpair_reconnected_model">تمت إعادة الاتصال بساعتك (%1$s)</string>
+    <string name="watchpair_remembered_hint">إذا سبق أن أقرنت هذه الساعة، فشغّل «تصحيح الأخطاء اللاسلكي» عليها وستعيد الاتصال تلقائيًا.</string>
     <string name="watchpair_searching">جارٍ البحث عن ساعتك…</string>
     <string name="watchpair_code_label">رمز الاقتران</string>
     <string name="watchpair_hint">أدخل الأرقام الستة كلها للاقتران</string>
@@ -380,6 +384,7 @@
     <string name="phone_adb_wrong_code">لم ينجح هذا الرمز. تحقق من شاشة الاقتران وحاول مرة أخرى.</string>
     <string name="phone_adb_ambiguous">عُثر على أكثر من خدمة ل**تصحيح الأخطاء اللاسلكي** في هذا الهاتف. أوقف **تصحيح الأخطاء اللاسلكي** ثم شغّله وحاول مرة أخرى.</string>
     <string name="phone_adb_connecting">جارٍ الاتصال بهذا الهاتف...</string>
+    <string name="phone_adb_reconnecting">جارٍ إعادة الاتصال بهذا الهاتف...</string>
     <string name="phone_adb_granting">تم الاتصال. جارٍ منح الوصول...</string>
     <string name="phone_adb_failed">تعذّر الاتصال بتصحيح الأخطاء اللاسلكي في هذا الهاتف.</string>
     <string name="phone_adb_code_label">رمز الاقتران</string>

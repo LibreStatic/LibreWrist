@@ -148,6 +148,10 @@
     <string name="watchpair_title">Connettiti al tuo orologio</string>
     <string name="watchpair_intro">L\'orologio accetta installazioni via Wi-Fi una volta associato con un breve codice.</string>
     <string name="watchpair_found">Orologio trovato sulla tua rete</string>
+    <string name="watchpair_reconnecting">Riconnessione al tuo orologio…</string>
+    <string name="watchpair_reconnected">Riconnesso al tuo orologio</string>
+    <string name="watchpair_reconnected_model">Riconnesso al tuo orologio (%1$s)</string>
+    <string name="watchpair_remembered_hint">Se hai già associato questo orologio, attiva il Debug wireless su di esso e si riconnetterà da solo.</string>
     <string name="watchpair_searching">Ricerca del tuo orologio…</string>
     <string name="watchpair_code_label">Codice di associazione</string>
     <string name="watchpair_hint">Inserisci tutte le 6 cifre per associare</string>
@@ -356,6 +360,7 @@
     <string name="phone_adb_wrong_code">Quel codice non ha funzionato. Controlla la schermata di associazione e riprova.</string>
     <string name="phone_adb_ambiguous">Su questo telefono è stato trovato più di un servizio di **debug wireless**. Disattiva e riattiva il **debug wireless**, poi riprova.</string>
     <string name="phone_adb_connecting">Connessione a questo telefono...</string>
+    <string name="phone_adb_reconnecting">Riconnessione a questo telefono...</string>
     <string name="phone_adb_granting">Connesso. Concessione degli accessi...</string>
     <string name="phone_adb_failed">Impossibile connettersi al debug wireless di questo telefono.</string>
     <string name="phone_adb_code_label">Codice di associazione</string>

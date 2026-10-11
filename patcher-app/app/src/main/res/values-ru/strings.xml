@@ -148,6 +148,10 @@
     <string name="watchpair_title">Подключение к часам</string>
     <string name="watchpair_intro">Часы принимают установку по Wi-Fi после сопряжения по короткому коду.</string>
     <string name="watchpair_found">Часы найдены в вашей сети</string>
+    <string name="watchpair_reconnecting">Повторное подключение к часам…</string>
+    <string name="watchpair_reconnected">Часы снова подключены</string>
+    <string name="watchpair_reconnected_model">Часы снова подключены (%1$s)</string>
+    <string name="watchpair_remembered_hint">Если вы уже связали эти часы, включите на них беспроводную отладку, и они подключатся снова сами.</string>
     <string name="watchpair_searching">Поиск часов…</string>
     <string name="watchpair_code_label">Код сопряжения</string>
     <string name="watchpair_hint">Введите все 6 цифр для сопряжения</string>
@@ -368,6 +372,7 @@
     <string name="phone_adb_wrong_code">Код не подошёл. Проверьте экран сопряжения и повторите.</string>
     <string name="phone_adb_ambiguous">На этом телефоне найдено несколько служб **Беспроводной отладки**. Выключите и снова включите **Беспроводную отладку**, затем повторите.</string>
     <string name="phone_adb_connecting">Подключение к этому телефону...</string>
+    <string name="phone_adb_reconnecting">Повторное подключение к этому телефону...</string>
     <string name="phone_adb_granting">Подключено. Выдача доступов...</string>
     <string name="phone_adb_failed">Не удалось подключиться к Беспроводной отладке этого телефона.</string>
     <string name="phone_adb_code_label">Код сопряжения</string>

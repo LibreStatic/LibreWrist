@@ -15,6 +15,12 @@ import kotlinx.coroutines.withTimeoutOrNull
 /** Progress of pairing the phone with its own Wireless debugging ("self-ADB"). */
 sealed interface SelfAdbState {
     data object Idle : SelfAdbState
+
+    /**
+     * Trying the key this app already has against this device's own connect service, before
+     * asking for a pairing code: if Wireless debugging still trusts the key, no code is needed.
+     */
+    data object Reconnecting : SelfAdbState
     data object WaitingForPairingService : SelfAdbState
 
     /**
@@ -51,6 +57,7 @@ class SelfAdbSession(
     private val scope: CoroutineScope,
     private val localHost: String = "127.0.0.1",
     private val connectServiceTimeoutMillis: Long = 15_000,
+    private val reconnectTimeoutMillis: Long = 5_000,
     private val isLocalHost: (String) -> Boolean = ::isOwnAddress,
 ) {
     private val mutableState = MutableStateFlow<SelfAdbState>(SelfAdbState.Idle)
@@ -65,15 +72,32 @@ class SelfAdbSession(
     @Volatile
     private var pairingPort: Int? = null
 
-    /** Starts looking for the pairing service. Safe to call again after a failure. */
+    /**
+     * Tries to connect with the already-paired key first ([SelfAdbState.Reconnecting]); when that
+     * finds no connect service or is rejected, starts looking for the pairing service. Safe to call
+     * again after a failure.
+     */
     @Synchronized
     fun start() {
         discoveryJob?.cancel()
         submitJob?.cancel()
-        generation++
+        val gen = ++generation
         pairingPort = null
-        mutableState.value = SelfAdbState.WaitingForPairingService
+        mutableState.value = SelfAdbState.Reconnecting
         discoveryJob = scope.launch {
+            val client = try {
+                reconnect()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: AdbException) {
+                null // not paired (the key was rejected): fall back to the pairing flow
+            }
+            if (client != null) {
+                // A late result must never replace a newer state, and must not leak the connection.
+                if (!transition(gen, SelfAdbState.Connected(client))) runCatching { client.close() }
+                return@launch
+            }
+            if (!transition(gen, SelfAdbState.WaitingForPairingService)) return@launch
             try {
                 pairingServices.collect { services -> onPairingServices(services.filter { isLocalHost(it.host) }) }
             } catch (e: CancellationException) {
@@ -82,6 +106,31 @@ class SelfAdbSession(
                 mutableState.value = SelfAdbState.Failed(e)
             }
         }
+    }
+
+    /**
+     * Dials the local connect services announced within [reconnectTimeoutMillis] with the stored
+     * key. A refused port (stale announcement) moves on; any other [AdbException] means the key is
+     * not trusted and propagates. Null when no local connect service shows up.
+     */
+    private suspend fun reconnect(): AdbClient? {
+        val tried = HashSet<Int>()
+        var client: AdbClient? = null
+        withTimeoutOrNull(reconnectTimeoutMillis) {
+            connectServices.first { list ->
+                for (port in list.filter { isLocalHost(it.host) }.map { it.port }.distinct()) {
+                    if (!tried.add(port)) continue
+                    try {
+                        client = AdbClient.connect(backend, localHost, port)
+                        return@first true
+                    } catch (e: AdbException.ConnectionFailed) {
+                        if (!AdbErrors.isRefused(e)) throw e
+                    }
+                }
+                false
+            }
+        }
+        return client
     }
 
     @Synchronized

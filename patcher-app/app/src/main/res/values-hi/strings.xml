@@ -148,6 +148,10 @@
     <string name="watchpair_title">अपनी घड़ी से जुड़ें</string>
     <string name="watchpair_intro">छोटे कोड से पेयर करने के बाद घड़ी Wi-Fi पर इंस्टॉल स्वीकार करती है।</string>
     <string name="watchpair_found">आपके नेटवर्क पर घड़ी मिली</string>
+    <string name="watchpair_reconnecting">आपकी घड़ी से दोबारा कनेक्ट हो रहा है…</string>
+    <string name="watchpair_reconnected">आपकी घड़ी से दोबारा कनेक्ट हो गया</string>
+    <string name="watchpair_reconnected_model">आपकी घड़ी से दोबारा कनेक्ट हो गया (%1$s)</string>
+    <string name="watchpair_remembered_hint">अगर आप इस घड़ी को पहले ही पेयर कर चुके हैं, तो उस पर वायरलेस डीबगिंग चालू करें और वह अपने आप दोबारा कनेक्ट हो जाएगी।</string>
     <string name="watchpair_searching">आपकी घड़ी खोजी जा रही है…</string>
     <string name="watchpair_code_label">पेयरिंग कोड</string>
     <string name="watchpair_hint">पेयर करने के लिए सभी 6 अंक डालें</string>
@@ -356,6 +360,7 @@
     <string name="phone_adb_wrong_code">वह कोड काम नहीं आया। पेयरिंग स्क्रीन देखें और फिर कोशिश करें।</string>
     <string name="phone_adb_ambiguous">इस फ़ोन पर एक से ज़्यादा **वायरलेस डीबगिंग** सेवा मिली। **वायरलेस डीबगिंग** बंद करके फिर चालू करें, फिर कोशिश करें।</string>
     <string name="phone_adb_connecting">इस फ़ोन से जुड़ रहा है...</string>
+    <string name="phone_adb_reconnecting">इस फ़ोन से दोबारा कनेक्ट हो रहा है...</string>
     <string name="phone_adb_granting">जुड़ गया। पहुँच दी जा रही है...</string>
     <string name="phone_adb_failed">इस फ़ोन की वायरलेस डीबगिंग से नहीं जुड़ सका।</string>
     <string name="phone_adb_code_label">पेयरिंग कोड</string>

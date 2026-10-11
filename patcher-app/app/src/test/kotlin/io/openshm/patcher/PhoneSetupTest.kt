@@ -204,6 +204,7 @@ class InstallStatusMappingTest {
     fun selfAdbStatesMapToScreenPhases() {
         assertNull(SelfAdbState.Idle.toPhase())
         assertEquals(SelfAdbPhase.WaitingForService, SelfAdbState.WaitingForPairingService.toPhase())
+        assertEquals(SelfAdbPhase.Reconnecting, SelfAdbState.Reconnecting.toPhase())
         assertEquals(SelfAdbPhase.WaitingForCode, SelfAdbState.WaitingForCode(1).toPhase())
         assertEquals(SelfAdbPhase.WrongCode, SelfAdbState.WaitingForCode(1, PairingFailure.WRONG_CODE).toPhase())
         assertEquals(SelfAdbPhase.Connecting, SelfAdbState.Pairing.toPhase())
@@ -491,7 +492,7 @@ class SelfAdbControllerTest {
         assertFalse(SelfAdbController.state.value.active)
         assertTrue(SelfAdbController.begin(SelfAdbPurpose.PhoneGrants))
         assertFalse(SelfAdbController.begin(SelfAdbPurpose.PhoneGrants))
-        assertEquals(SelfAdbPhase.WaitingForService, SelfAdbController.state.value.phase)
+        assertEquals(SelfAdbPhase.Reconnecting, SelfAdbController.state.value.phase)
         SelfAdbController.finish()
         assertFalse(SelfAdbController.state.value.active)
         assertTrue(SelfAdbController.begin(SelfAdbPurpose.PhoneGrants))
@@ -501,7 +502,7 @@ class SelfAdbControllerTest {
     fun sessionStatesAreFollowedAndIdleIsIgnored() {
         SelfAdbController.begin(SelfAdbPurpose.PhoneGrants)
         SelfAdbController.onSession(SelfAdbState.Idle)
-        assertEquals(SelfAdbPhase.WaitingForService, SelfAdbController.state.value.phase)
+        assertEquals(SelfAdbPhase.Reconnecting, SelfAdbController.state.value.phase)
         SelfAdbController.onSession(SelfAdbState.WaitingForCode(1))
         assertEquals(SelfAdbPhase.WaitingForCode, SelfAdbController.state.value.phase)
         SelfAdbController.onSession(SelfAdbState.Connected(client))

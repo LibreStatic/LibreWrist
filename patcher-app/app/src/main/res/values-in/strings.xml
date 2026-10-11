@@ -148,6 +148,10 @@
     <string name="watchpair_title">Hubungkan ke jammu</string>
     <string name="watchpair_intro">Jam menerima pemasangan lewat Wi-Fi setelah kamu menyandingkannya dengan kode singkat.</string>
     <string name="watchpair_found">Jam ditemukan di jaringanmu</string>
+    <string name="watchpair_reconnecting">Menyambungkan ulang ke jam tanganmu…</string>
+    <string name="watchpair_reconnected">Tersambung kembali ke jam tanganmu</string>
+    <string name="watchpair_reconnected_model">Tersambung kembali ke jam tanganmu (%1$s)</string>
+    <string name="watchpair_remembered_hint">Jika kamu sudah memasangkan jam tangan ini, aktifkan Proses debug nirkabel di jam tangan dan akan tersambung kembali sendiri.</string>
     <string name="watchpair_searching">Mencari jammu…</string>
     <string name="watchpair_code_label">Kode penyandingan</string>
     <string name="watchpair_hint">Masukkan semua 6 digit untuk menyandingkan</string>
@@ -350,6 +354,7 @@
     <string name="phone_adb_wrong_code">Kode itu tidak berhasil. Periksa layar penyandingan lalu coba lagi.</string>
     <string name="phone_adb_ambiguous">Lebih dari satu layanan **Debugging nirkabel** ditemukan di ponsel ini. Matikan lalu aktifkan lagi **Debugging nirkabel**, lalu coba lagi.</string>
     <string name="phone_adb_connecting">Menghubungkan ke ponsel ini...</string>
+    <string name="phone_adb_reconnecting">Menyambungkan ulang ke ponsel ini...</string>
     <string name="phone_adb_granting">Terhubung. Memberikan akses...</string>
     <string name="phone_adb_failed">Tidak dapat terhubung ke Debugging nirkabel ponsel ini.</string>
     <string name="phone_adb_code_label">Kode penyandingan</string>

@@ -18,6 +18,7 @@ import io.openshm.patcher.device.WatchLink
 import io.openshm.patcher.ui.components.PAIRING_CODE_LENGTH
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -45,6 +46,19 @@ internal fun WatchPairUiState.reduce(event: WatchPairEvent): WatchPairUiState = 
     WatchPairEvent.HideGuide -> copy(guideOpen = false)
     WatchPairEvent.ToggleManual -> copy(manual = !manual, errorRes = null)
     WatchPairEvent.ConfirmCorrection -> copy(correction = null, paired = true)
+    WatchPairEvent.ReconnectStarted -> if (pairing || paired || reconnected) this else copy(reconnecting = true)
+    is WatchPairEvent.Reconnected ->
+        // A code pairing in progress wins; its own outcome is reported by pair().
+        if (pairing) copy(reconnecting = false) else copy(
+            reconnecting = false,
+            rememberedNotFound = false,
+            reconnected = true,
+            reconnectedModel = event.model,
+            paired = event.correction == null,
+            correction = event.correction,
+            errorRes = null,
+        )
+    is WatchPairEvent.ReconnectFailed -> copy(reconnecting = false, rememberedNotFound = event.notFound || rememberedNotFound)
     // The code field is read-only from this very state on, not after the first answer.
     WatchPairEvent.Pair -> if (canPair) copy(pairing = true, errorRes = null) else this
 }
@@ -59,6 +73,21 @@ internal fun parseAddress(address: String): Pair<String, Int>? {
     val port = match.groupValues[2].toInt()
     return if (port in 1..65535) match.groupValues[1] to port else null
 }
+
+/**
+ * The connect services worth a reconnect that were not tried yet, as `host:port` keys: those of the
+ * remembered [host] or, when it moved, of the recorded [serialPrefix] (see [WatchLink.candidates]).
+ */
+internal fun freshReconnectTargets(
+    services: List<AdbService>,
+    host: String,
+    serialPrefix: String?,
+    tried: Set<String>,
+): List<String> = WatchLink.candidates(services, host, serialPrefix).map { "${it.host}:${it.port}" }.distinct().filter { it !in tried }
+
+/** The model the remembered watch announces in its connect service (`name` TXT record), or null. */
+internal fun announcedModel(services: List<AdbService>, host: String, serialPrefix: String?): String? =
+    WatchLink.candidates(services, host, serialPrefix).firstNotNullOfOrNull { it.attributes["name"]?.trim()?.takeIf(String::isNotEmpty) }
 
 /** The pairing service of another device on the network: the watch. This phone's own one is ignored. */
 internal fun foundWatchAddress(services: List<AdbService>, isOwn: (String) -> Boolean): String? =
@@ -84,7 +113,21 @@ class WatchPairViewModel(application: Application) : AndroidViewModel(applicatio
     private val _state = MutableStateFlow(WatchPairUiState())
     val state: StateFlow<WatchPairUiState> = _state.asStateFlow()
 
+    /** Latest connect-service snapshot and the targets already tried, for the quiet reconnect retries. */
+    @Volatile
+    private var latestConnect: List<AdbService> = emptyList()
+    private val tried = HashSet<String>()
+    private var attempt: Job? = null
+
+    @Volatile
+    private var attempting = false
+    private var connectWatch: Job? = null
+
+    @Volatile
+    private var closed = false
+
     init {
+        if (link.rememberedHost != null) startReconnect(application)
         viewModelScope.launch(Dispatchers.Default) {
             try {
                 AdbDiscovery(application).discover(AdbServiceType.PAIRING).collect { services ->
@@ -106,7 +149,75 @@ class WatchPairViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     /** The screen moved on; coming back starts a fresh pairing. */
-    fun onNavigated() = _state.update { it.copy(paired = false, code = "", correction = null) }
+    fun onNavigated() {
+        closed = true
+        attempt?.cancel()
+        connectWatch?.cancel()
+        _state.update { it.copy(paired = false, code = "", correction = null, reconnecting = false, reconnected = false) }
+    }
+
+    /**
+     * Reuses the pairing the watch already trusts: one reconnect right away, then a quiet one for each
+     * new connect port the remembered watch announces (turning Wireless debugging on is enough).
+     * Pairing discovery keeps running meanwhile, so a code still works.
+     */
+    private fun startReconnect(application: Application) {
+        launchAttempt(quiet = false)
+        connectWatch = viewModelScope.launch(Dispatchers.Default) {
+            try {
+                AdbDiscovery(application).discover(AdbServiceType.CONNECT).collect { services ->
+                    latestConnect = services
+                    retryIfFresh()
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                // No connect discovery: the first attempt and the code pairing still work.
+            }
+        }
+    }
+
+    @Synchronized
+    private fun retryIfFresh() {
+        val host = link.rememberedHost ?: return
+        if (closed || attempting || _state.value.let { it.paired || it.reconnected || it.pairing }) return
+        if (freshReconnectTargets(latestConnect, host, link.rememberedSerialPrefix, tried).isNotEmpty()) launchAttempt(quiet = true)
+    }
+
+    @Synchronized
+    private fun launchAttempt(quiet: Boolean) {
+        val host = link.rememberedHost ?: return
+        tried += freshReconnectTargets(latestConnect, host, link.rememberedSerialPrefix, tried)
+        if (!quiet) _state.update { it.reduce(WatchPairEvent.ReconnectStarted) }
+        attempting = true
+        attempt = viewModelScope.launch(Dispatchers.IO) {
+            try {
+                link.client()
+                val correction = detectCorrection()
+                val model = announcedModel(latestConnect, link.rememberedHost ?: host, link.rememberedSerialPrefix)
+                Log.d("WatchPair", "reconnected with the remembered pairing")
+                attempting = false
+                _state.update { it.reduce(WatchPairEvent.Reconnected(model, correction)) }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                // Not found, refused, or the watch forgot the key: the normal pairing UI stays.
+                Log.d("WatchPair", "reconnect failed: ${e::class.simpleName}")
+                attempting = false
+                _state.update { it.reduce(WatchPairEvent.ReconnectFailed(notFound = e is AdbException.Discovery && !quiet)) }
+                retryIfFresh()
+            }
+        }
+    }
+
+    /** Asks the watch for its Android version and corrects step 1's profile when it disagrees. */
+    private suspend fun detectCorrection(): WatchProfileCorrection? {
+        // The watch knows its Android version: correct step 1 when it disagrees, after a confirmation.
+        val detected = WatchDetector.detect(link, DETECT_TIMEOUT_MS)
+        val correction = WatchDetector.correction(SetupSession.state.value.watchProfile, detected) ?: return null
+        SetupSession.update { it.copy(watchProfile = correction.profile) }
+        return WatchProfileCorrection(correction.profile, correction.versionLabel)
+    }
 
     private fun pair() {
         val snapshot = _state.value
@@ -118,16 +229,9 @@ class WatchPairViewModel(application: Application) : AndroidViewModel(applicatio
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 link.pair(host, port, snapshot.code)
-                // The watch knows its Android version: correct step 1 when it disagrees, after a confirmation.
-                val detected = WatchDetector.detect(link, DETECT_TIMEOUT_MS)
-                val correction = WatchDetector.correction(SetupSession.state.value.watchProfile, detected)
-                if (correction == null) {
-                    _state.update { it.copy(pairing = false, paired = true) }
-                } else {
-                    SetupSession.update { it.copy(watchProfile = correction.profile) }
-                    _state.update {
-                        it.copy(pairing = false, correction = WatchProfileCorrection(correction.profile, correction.versionLabel))
-                    }
+                val correction = detectCorrection()
+                _state.update {
+                    if (correction == null) it.copy(pairing = false, paired = true) else it.copy(pairing = false, correction = correction)
                 }
             } catch (e: CancellationException) {
                 throw e

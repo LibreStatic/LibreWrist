@@ -148,6 +148,10 @@
     <string name="watchpair_title">Verbinden met je horloge</string>
     <string name="watchpair_intro">Het horloge accepteert installaties via Wi-Fi zodra je het koppelt met een korte code.</string>
     <string name="watchpair_found">Horloge gevonden op je netwerk</string>
+    <string name="watchpair_reconnecting">Opnieuw verbinden met je horloge…</string>
+    <string name="watchpair_reconnected">Opnieuw verbonden met je horloge</string>
+    <string name="watchpair_reconnected_model">Opnieuw verbonden met je horloge (%1$s)</string>
+    <string name="watchpair_remembered_hint">Als je dit horloge al hebt gekoppeld, zet dan Draadloze foutopsporing erop aan en het verbindt vanzelf opnieuw.</string>
     <string name="watchpair_searching">Zoeken naar je horloge…</string>
     <string name="watchpair_code_label">Koppelcode</string>
     <string name="watchpair_hint">Voer alle 6 cijfers in om te koppelen</string>
@@ -356,6 +360,7 @@
     <string name="phone_adb_wrong_code">Die code werkte niet. Controleer het koppelscherm en probeer het opnieuw.</string>
     <string name="phone_adb_ambiguous">Er is meer dan één service voor **Draadloze foutopsporing** op deze telefoon gevonden. Zet **Draadloze foutopsporing** uit en weer aan en probeer het opnieuw.</string>
     <string name="phone_adb_connecting">Verbinden met deze telefoon...</string>
+    <string name="phone_adb_reconnecting">Opnieuw verbinden met deze telefoon...</string>
     <string name="phone_adb_granting">Verbonden. Toegang verlenen...</string>
     <string name="phone_adb_failed">Kon geen verbinding maken met de Draadloze foutopsporing van deze telefoon.</string>
     <string name="phone_adb_code_label">Koppelcode</string>

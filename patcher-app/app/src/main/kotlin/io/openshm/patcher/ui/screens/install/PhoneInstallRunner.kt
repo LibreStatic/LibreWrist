@@ -22,6 +22,7 @@ internal fun SelfAdbState.toPhase(): SelfAdbPhase? = when (this) {
     SelfAdbState.WaitingForPairingService -> SelfAdbPhase.WaitingForService
     SelfAdbState.AmbiguousService -> SelfAdbPhase.Ambiguous
     is SelfAdbState.WaitingForCode -> if (lastFailure == null) SelfAdbPhase.WaitingForCode else SelfAdbPhase.WrongCode
+    SelfAdbState.Reconnecting -> SelfAdbPhase.Reconnecting
     SelfAdbState.Pairing, SelfAdbState.WaitingForConnectService, SelfAdbState.Connecting -> SelfAdbPhase.Connecting
     is SelfAdbState.Connected -> SelfAdbPhase.Granting
     is SelfAdbState.Failed -> SelfAdbPhase.Failed

@@ -148,6 +148,10 @@
     <string name="watchpair_title">Conectar ao seu relógio</string>
     <string name="watchpair_intro">O relógio aceita instalações por Wi-Fi depois de ser pareado com um código curto.</string>
     <string name="watchpair_found">Relógio encontrado na sua rede</string>
+    <string name="watchpair_reconnecting">Reconectando ao seu relógio…</string>
+    <string name="watchpair_reconnected">Reconectado ao seu relógio</string>
+    <string name="watchpair_reconnected_model">Reconectado ao seu relógio (%1$s)</string>
+    <string name="watchpair_remembered_hint">Se você já pareou este relógio, ative a Depuração sem fio nele e ele se reconectará sozinho.</string>
     <string name="watchpair_searching">Procurando seu relógio…</string>
     <string name="watchpair_code_label">Código de pareamento</string>
     <string name="watchpair_hint">Digite os 6 dígitos para parear</string>
@@ -356,6 +360,7 @@
     <string name="phone_adb_wrong_code">Esse código não funcionou. Confira a tela de pareamento e tente novamente.</string>
     <string name="phone_adb_ambiguous">Mais de um serviço de **depuração sem fio** foi encontrado neste celular. Desative e ative a **depuração sem fio** e tente novamente.</string>
     <string name="phone_adb_connecting">Conectando a este celular...</string>
+    <string name="phone_adb_reconnecting">Reconectando a este telefone...</string>
     <string name="phone_adb_granting">Conectado. Concedendo acesso...</string>
     <string name="phone_adb_failed">Não foi possível conectar à depuração sem fio deste celular.</string>
     <string name="phone_adb_code_label">Código de pareamento</string>

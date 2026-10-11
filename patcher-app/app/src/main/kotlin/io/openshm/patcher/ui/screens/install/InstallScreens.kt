@@ -85,7 +85,7 @@ data class InstallItem(
 data class SignatureConflict(val outputId: String, val packageName: String, val device: Device)
 
 /** Where the Wireless debugging fallback ("grant everything") is. */
-enum class SelfAdbPhase { WaitingForService, WaitingForCode, WrongCode, Ambiguous, Connecting, Granting, Failed }
+enum class SelfAdbPhase { Reconnecting, WaitingForService, WaitingForCode, WrongCode, Ambiguous, Connecting, Granting, Failed }
 
 data class InstallUiState(
     val items: List<InstallItem> = emptyList(),
@@ -456,6 +456,7 @@ internal fun SelfAdbPhase.messageRes(): Int = when (this) {
     SelfAdbPhase.WaitingForCode -> R.string.phone_adb_waiting_code
     SelfAdbPhase.WrongCode -> R.string.phone_adb_wrong_code
     SelfAdbPhase.Ambiguous -> R.string.phone_adb_ambiguous
+    SelfAdbPhase.Reconnecting -> R.string.phone_adb_reconnecting
     SelfAdbPhase.Connecting -> R.string.phone_adb_connecting
     SelfAdbPhase.Granting -> R.string.phone_adb_granting
     SelfAdbPhase.Failed -> R.string.phone_adb_failed

@@ -148,6 +148,10 @@
     <string name="watchpair_title">ウォッチに接続</string>
     <string name="watchpair_intro">短いコードでペア設定すると、ウォッチはWi-Fi経由のインストールを受け付けます。</string>
     <string name="watchpair_found">ネットワーク上でウォッチが見つかりました</string>
+    <string name="watchpair_reconnecting">ウォッチに再接続しています…</string>
+    <string name="watchpair_reconnected">ウォッチに再接続しました</string>
+    <string name="watchpair_reconnected_model">ウォッチに再接続しました（%1$s）</string>
+    <string name="watchpair_remembered_hint">すでにこのウォッチをペアリング済みの場合は、ウォッチでワイヤレスデバッグをオンにすると自動的に再接続されます。</string>
     <string name="watchpair_searching">ウォッチを探しています…</string>
     <string name="watchpair_code_label">ペア設定コード</string>
     <string name="watchpair_hint">6桁すべて入力するとペア設定できます</string>
@@ -350,6 +354,7 @@
     <string name="phone_adb_wrong_code">コードが正しくありません。ペア設定画面を確認して、もう一度お試しください。</string>
     <string name="phone_adb_ambiguous">このスマートフォンで複数の**ワイヤレスデバッグ**サービスが見つかりました。**ワイヤレスデバッグ**をオフにしてからオンにし、もう一度お試しください。</string>
     <string name="phone_adb_connecting">このスマートフォンに接続中...</string>
+    <string name="phone_adb_reconnecting">このスマートフォンに再接続しています...</string>
     <string name="phone_adb_granting">接続しました。アクセスを許可中...</string>
     <string name="phone_adb_failed">このスマートフォンのワイヤレスデバッグに接続できませんでした。</string>
     <string name="phone_adb_code_label">ペア設定コード</string>

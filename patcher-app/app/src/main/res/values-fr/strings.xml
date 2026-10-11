@@ -148,6 +148,10 @@
     <string name="watchpair_title">Se connecter à votre montre</string>
     <string name="watchpair_intro">La montre accepte les installations via Wi-Fi une fois associée avec un code court.</string>
     <string name="watchpair_found">Montre trouvée sur votre réseau</string>
+    <string name="watchpair_reconnecting">Reconnexion à votre montre…</string>
+    <string name="watchpair_reconnected">Reconnecté à votre montre</string>
+    <string name="watchpair_reconnected_model">Reconnecté à votre montre (%1$s)</string>
+    <string name="watchpair_remembered_hint">Si vous avez déjà associé cette montre, activez le débogage sans fil sur celle-ci et elle se reconnectera toute seule.</string>
     <string name="watchpair_searching">Recherche de votre montre…</string>
     <string name="watchpair_code_label">Code d\'association</string>
     <string name="watchpair_hint">Saisissez les 6 chiffres pour associer</string>
@@ -362,6 +366,7 @@
     <string name="phone_adb_wrong_code">Ce code n\'a pas fonctionné. Vérifiez l\'écran d\'association et réessayez.</string>
     <string name="phone_adb_ambiguous">Plusieurs services de **débogage sans fil** ont été trouvés sur ce téléphone. Désactivez puis réactivez le **débogage sans fil**, puis réessayez.</string>
     <string name="phone_adb_connecting">Connexion à ce téléphone...</string>
+    <string name="phone_adb_reconnecting">Reconnexion à ce téléphone...</string>
     <string name="phone_adb_granting">Connecté. Attribution des accès...</string>
     <string name="phone_adb_failed">Impossible de se connecter au débogage sans fil de ce téléphone.</string>
     <string name="phone_adb_code_label">Code d\'association</string>

@@ -148,6 +148,10 @@
     <string name="watchpair_title">Підключення до годинника</string>
     <string name="watchpair_intro">Годинник приймає встановлення через Wi-Fi після з\'єднання за коротким кодом.</string>
     <string name="watchpair_found">Годинник знайдено у вашій мережі</string>
+    <string name="watchpair_reconnecting">Повторне підключення до годинника…</string>
+    <string name="watchpair_reconnected">Годинник знову підключено</string>
+    <string name="watchpair_reconnected_model">Годинник знову підключено (%1$s)</string>
+    <string name="watchpair_remembered_hint">Якщо ви вже з’єднали цей годинник, увімкніть на ньому бездротове налагодження, і він підключиться знову сам.</string>
     <string name="watchpair_searching">Пошук годинника…</string>
     <string name="watchpair_code_label">Код з\'єднання</string>
     <string name="watchpair_hint">Введіть усі 6 цифр для з\'єднання</string>
@@ -368,6 +372,7 @@
     <string name="phone_adb_wrong_code">Код не підійшов. Перевірте екран з\'єднання й повторіть.</string>
     <string name="phone_adb_ambiguous">На цьому телефоні знайдено кілька служб **Бездротового налагодження**. Вимкніть і знову ввімкніть **Бездротове налагодження**, потім повторіть.</string>
     <string name="phone_adb_connecting">Підключення до цього телефона...</string>
+    <string name="phone_adb_reconnecting">Повторне підключення до цього телефона...</string>
     <string name="phone_adb_granting">Підключено. Надання доступів...</string>
     <string name="phone_adb_failed">Не вдалося підключитися до Бездротового налагодження цього телефона.</string>
     <string name="phone_adb_code_label">Код з\'єднання</string>

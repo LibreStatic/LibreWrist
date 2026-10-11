@@ -123,6 +123,12 @@ internal object PreviewData {
 
     fun watchPairPairing() = WatchPairUiState(foundAddress = WATCH_ADDRESS, guideOpen = false, code = "123456", pairing = true)
 
+    fun watchPairReconnecting() = WatchPairUiState(guideOpen = false, reconnecting = true)
+
+    fun watchPairReconnectHint() = WatchPairUiState(guideOpen = false, rememberedNotFound = true)
+
+    fun watchPairReconnected() = WatchPairUiState(paired = true, reconnected = true, reconnectedModel = "SM-R920")
+
     fun watchPairError() =
         WatchPairUiState(foundAddress = WATCH_ADDRESS, guideOpen = false, code = "123456", errorRes = R.string.watchpair_error_wrong_code)
 

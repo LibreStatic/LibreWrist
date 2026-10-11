@@ -148,6 +148,10 @@
     <string name="watchpair_title">連線到你的手錶</string>
     <string name="watchpair_intro">使用簡短的配對碼配對後，手錶即可透過 Wi-Fi 接受安裝。</string>
     <string name="watchpair_found">在你的網路中找到了手錶</string>
+    <string name="watchpair_reconnecting">正在重新連線你的手錶…</string>
+    <string name="watchpair_reconnected">已重新連線你的手錶</string>
+    <string name="watchpair_reconnected_model">已重新連線你的手錶（%1$s）</string>
+    <string name="watchpair_remembered_hint">如果你已配對過這支手錶，請在手錶上開啟無線偵錯，它會自動重新連線。</string>
     <string name="watchpair_searching">正在尋找你的手錶…</string>
     <string name="watchpair_code_label">配對碼</string>
     <string name="watchpair_hint">輸入全部 6 位數即可配對</string>
@@ -350,6 +354,7 @@
     <string name="phone_adb_wrong_code">該配對碼無效。請查看配對畫面後重試。</string>
     <string name="phone_adb_ambiguous">在這支手機上發現了多個**無線偵錯**服務。請先關閉再開啟**無線偵錯**，然後重試。</string>
     <string name="phone_adb_connecting">正在連線到這支手機...</string>
+    <string name="phone_adb_reconnecting">正在重新連線此手機...</string>
     <string name="phone_adb_granting">已連線。正在授予權限...</string>
     <string name="phone_adb_failed">無法連線到這支手機的無線偵錯。</string>
     <string name="phone_adb_code_label">配對碼</string>

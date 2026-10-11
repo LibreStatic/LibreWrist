@@ -74,6 +74,13 @@ data class WatchPairUiState(
     val correction: WatchProfileCorrection? = null,
     /** Failed pairing attempts so far; each one shakes the code field. */
     val failures: Int = 0,
+    /** The remembered watch is being reconnected with the key it already trusts. */
+    val reconnecting: Boolean = false,
+    /** The pairing was reused instead of a new code; [reconnectedModel] is the model the watch announced, if any. */
+    val reconnected: Boolean = false,
+    val reconnectedModel: String? = null,
+    /** The remembered watch did not answer: Wireless debugging is probably off on it. */
+    val rememberedNotFound: Boolean = false,
 ) {
     val codeComplete: Boolean get() = code.length == PAIRING_CODE_LENGTH
 
@@ -110,6 +117,15 @@ sealed interface WatchPairEvent {
     data object HideGuide : WatchPairEvent
     data object ToggleManual : WatchPairEvent
     data object Pair : WatchPairEvent
+
+    /** A reconnect to the remembered watch started (shown; retries stay quiet). */
+    data object ReconnectStarted : WatchPairEvent
+
+    /** The remembered pairing still works; [correction] is the profile change the watch's version asks for, if any. */
+    data class Reconnected(val model: String?, val correction: WatchProfileCorrection?) : WatchPairEvent
+
+    /** The reconnect failed; [notFound] when the watch did not announce itself (rather than rejecting the key). */
+    data class ReconnectFailed(val notFound: Boolean) : WatchPairEvent
 }
 
 @Composable
@@ -165,10 +181,10 @@ fun WatchPairScreen(
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        if (state.correction != null) {
+        if (state.correction != null || state.reconnected) {
             // Already paired: the form and its guide are done, only the profile change needs a look.
-            PairedCard()
-            CorrectionCard(state.correction)
+            PairedCard(state)
+            state.correction?.let { CorrectionCard(it) }
             return@StepScreenScaffold
         }
         PairPanel(state, onEvent)
@@ -217,6 +233,13 @@ private fun PairPanel(
             } else {
                 // Above the guide, so "looking for your watch" stays in sight while the steps are followed.
                 FoundRow(state, onEvent)
+                if (state.rememberedNotFound && !state.reconnecting && state.foundAddress == null) {
+                    InstructionText(
+                        stringResource(R.string.watchpair_remembered_hint),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onTertiaryContainer,
+                    )
+                }
                 if (guideInline) {
                     AnimatedVisibility(state.guideVisible, enter = enterTransition(), exit = exitTransition()) {
                         Guide(state, onEvent)
@@ -288,14 +311,18 @@ private fun PairPanel(
 }
 
 @Composable
-private fun PairedCard() {
+private fun PairedCard(state: WatchPairUiState) {
     Surface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(28.dp), color = MaterialTheme.colorScheme.tertiaryContainer) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             PhoneWatchIllustration(scale = 0.8f, linkColor = MaterialTheme.colorScheme.tertiary)
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
                 StatusShape(CheckStatus.Passed, size = 24.dp)
                 Text(
-                    stringResource(R.string.watchpair_paired),
+                    when {
+                        !state.reconnected -> stringResource(R.string.watchpair_paired)
+                        state.reconnectedModel != null -> stringResource(R.string.watchpair_reconnected_model, state.reconnectedModel)
+                        else -> stringResource(R.string.watchpair_reconnected)
+                    },
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onTertiaryContainer,
                 )
@@ -339,7 +366,11 @@ private fun FoundRow(state: WatchPairUiState, onEvent: (WatchPairEvent) -> Unit)
         Column(Modifier.weight(1f)) {
             Text(
                 stringResource(
-                    if (state.foundAddress != null) R.string.watchpair_found else R.string.watchpair_searching,
+                    when {
+                        state.reconnecting -> R.string.watchpair_reconnecting
+                        state.foundAddress != null -> R.string.watchpair_found
+                        else -> R.string.watchpair_searching
+                    },
                 ),
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onTertiaryContainer,

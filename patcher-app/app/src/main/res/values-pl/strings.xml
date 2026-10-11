@@ -148,6 +148,10 @@
     <string name="watchpair_title">Połącz z zegarkiem</string>
     <string name="watchpair_intro">Zegarek przyjmuje instalacje przez Wi-Fi po sparowaniu krótkim kodem.</string>
     <string name="watchpair_found">Znaleziono zegarek w Twojej sieci</string>
+    <string name="watchpair_reconnecting">Ponowne łączenie z zegarkiem…</string>
+    <string name="watchpair_reconnected">Ponownie połączono z zegarkiem</string>
+    <string name="watchpair_reconnected_model">Ponownie połączono z zegarkiem (%1$s)</string>
+    <string name="watchpair_remembered_hint">Jeśli ten zegarek jest już sparowany, włącz na nim Debugowanie bezprzewodowe, a połączy się ponownie sam.</string>
     <string name="watchpair_searching">Szukanie zegarka…</string>
     <string name="watchpair_code_label">Kod parowania</string>
     <string name="watchpair_hint">Wpisz wszystkie 6 cyfr, aby sparować</string>
@@ -368,6 +372,7 @@
     <string name="phone_adb_wrong_code">Ten kod nie zadziałał. Sprawdź ekran parowania i spróbuj ponownie.</string>
     <string name="phone_adb_ambiguous">Na tym telefonie znaleziono więcej niż jedną usługę **Debugowania bezprzewodowego**. Wyłącz i włącz **Debugowanie bezprzewodowe**, a potem spróbuj ponownie.</string>
     <string name="phone_adb_connecting">Łączenie z tym telefonem...</string>
+    <string name="phone_adb_reconnecting">Ponowne łączenie z tym telefonem...</string>
     <string name="phone_adb_granting">Połączono. Przyznawanie dostępu...</string>
     <string name="phone_adb_failed">Nie udało się połączyć z Debugowaniem bezprzewodowym tego telefonu.</string>
     <string name="phone_adb_code_label">Kod parowania</string>

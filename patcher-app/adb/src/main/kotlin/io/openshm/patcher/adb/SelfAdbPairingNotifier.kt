@@ -132,7 +132,7 @@ class SelfAdbPairingNotifier(
             SelfAdbState.AmbiguousService ->
                 builder.setContentTitle(texts.failed).setContentText(texts.ambiguous).setOngoing(true)
             SelfAdbState.Pairing -> builder.setContentTitle(texts.pairing).setOngoing(true)
-            SelfAdbState.WaitingForConnectService, SelfAdbState.Connecting ->
+            SelfAdbState.Reconnecting, SelfAdbState.WaitingForConnectService, SelfAdbState.Connecting ->
                 builder.setContentTitle(texts.connecting).setOngoing(true)
             is SelfAdbState.Connected -> builder.setContentTitle(texts.connected).setTimeoutAfter(10_000)
             is SelfAdbState.Failed -> builder.setContentTitle(texts.failed).setContentText(state.error.message)

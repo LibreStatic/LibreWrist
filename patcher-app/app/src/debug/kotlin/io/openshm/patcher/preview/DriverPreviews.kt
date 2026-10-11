@@ -179,6 +179,15 @@ fun WatchPairManualInvalidDriver() = PreviewHost(ColorMode.Fallback) {
 fun WatchPairPairingDriver() = PreviewHost(ColorMode.Fallback) { WatchPairSample(PreviewData.watchPairPairing()) }
 
 @Composable
+fun WatchPairReconnectingDriver() = PreviewHost(ColorMode.Fallback) { WatchPairSample(PreviewData.watchPairReconnecting()) }
+
+@Composable
+fun WatchPairReconnectHintDriver() = PreviewHost(ColorMode.Fallback) { WatchPairSample(PreviewData.watchPairReconnectHint()) }
+
+@Composable
+fun WatchPairReconnectedDriver() = PreviewHost(ColorMode.Fallback) { WatchPairSample(PreviewData.watchPairReconnected()) }
+
+@Composable
 fun WatchPairErrorDriver() = PreviewHost(ColorMode.Fallback) { WatchPairSample(PreviewData.watchPairError()) }
 
 /** The phone and watch illustration on the tertiary container, at the two sizes the app uses. */
