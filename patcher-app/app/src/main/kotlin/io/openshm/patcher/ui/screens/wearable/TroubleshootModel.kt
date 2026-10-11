@@ -122,7 +122,8 @@ internal class TroubleshootModel(
                 it.copy(
                     pendingClear = false,
                     errorRes = if (snapshot.needsNotifications) R.string.install_error_notifications else R.string.phone_adb_failed,
-                    detail = snapshot.error,
+                    // The notifications message says it all; the exception text is English-only.
+                    detail = snapshot.error.takeUnless { snapshot.needsNotifications },
                 )
             }
             SelfAdbPhase.Granting -> {

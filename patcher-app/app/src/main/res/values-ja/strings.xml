@@ -625,4 +625,6 @@
     <string name="troubleshoot_dialog_body">このスマートフォンのGoogle Play 開発者サービスがリセットされます。このスマートフォンのすべてのGoogleアカウントにアクセスできなくなり、再度ログインが必要になる場合があります。\n\nGoogle ウォレットのカード、デバイスを探す、バックアップ設定など、Google Play 開発者サービスを利用する一部のサービスは、再設定が必要になる場合があります。\n\nウォッチは変更されません。</string>
     <string name="troubleshoot_dialog_confirm">データを消去</string>
     <string name="troubleshoot_back_to_check">ペアリング確認に戻る</string>
+    <string name="profile_skip_title">この手順はスキップします</string>
+    <string name="profile_skip_body">自動で判別するのに十分な情報があります。</string>
 </resources>

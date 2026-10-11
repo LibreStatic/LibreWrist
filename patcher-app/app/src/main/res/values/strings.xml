@@ -635,4 +635,6 @@
     <string name="signing_key_nudge_body">Without it, installed apps cannot be updated, only reinstalled.</string>
     <string name="signing_key_nudge_action">Back up</string>
     <string name="home_menu_signing_key">Signing key</string>
+    <string name="profile_skip_title">Let\'s skip this step</string>
+    <string name="profile_skip_body">We have enough information to detect it automatically.</string>
 </resources>

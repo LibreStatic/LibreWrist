@@ -157,8 +157,8 @@ private fun Outcome(state: TroubleshootUiState) {
         ClearOutcome.PairedOnly -> NoteRow(Icons.Rounded.Check, stringResource(R.string.troubleshoot_adb_paired))
         ClearOutcome.Failed, null -> Unit
     }
-    // A failed attempt already says so through its phase; only the reason behind it is added.
-    if (state.adb != SelfAdbPhase.Failed) {
+    // A failed attempt already says it could not connect through its phase; a specific reason is still shown.
+    if (state.adb != SelfAdbPhase.Failed || state.errorRes != R.string.phone_adb_failed) {
         state.errorRes?.let { Text(stringResource(it), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error) }
     }
     state.detail?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error, maxLines = 4) }

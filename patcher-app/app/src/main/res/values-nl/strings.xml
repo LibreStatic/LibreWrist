@@ -633,4 +633,6 @@
     <string name="troubleshoot_dialog_body">Hiermee wordt Google Play-services op deze telefoon gereset. Je kunt de toegang tot al je Google-accounts op deze telefoon verliezen en moet mogelijk opnieuw inloggen.\n\nSommige services die van Google Play-services afhangen, zoals Google Wallet-kaarten, Zoek mijn apparaat en back-upinstellingen, moeten mogelijk opnieuw worden ingesteld.\n\nJe horloge wordt niet gewijzigd.</string>
     <string name="troubleshoot_dialog_confirm">Gegevens wissen</string>
     <string name="troubleshoot_back_to_check">Terug naar de koppelingscontrole</string>
+    <string name="profile_skip_title">We slaan deze stap over</string>
+    <string name="profile_skip_body">We hebben genoeg informatie om het automatisch te herkennen.</string>
 </resources>

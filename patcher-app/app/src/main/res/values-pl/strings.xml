@@ -649,4 +649,6 @@
     <string name="troubleshoot_dialog_body">To zresetuje Usługi Google Play na tym telefonie. Możesz utracić dostęp do wszystkich kont Google na tym telefonie i konieczne może być ponowne zalogowanie.\n\nNiektóre usługi zależne od Usług Google Play, takie jak karty w Portfelu Google, Znajdź urządzenie i ustawienia kopii zapasowej, mogą wymagać ponownej konfiguracji.\n\nZegarek nie zostanie zmieniony.</string>
     <string name="troubleshoot_dialog_confirm">Wyczyść dane</string>
     <string name="troubleshoot_back_to_check">Wróć do sprawdzania parowania</string>
+    <string name="profile_skip_title">Pomińmy ten krok</string>
+    <string name="profile_skip_body">Mamy wystarczająco informacji, aby wykryć to automatycznie.</string>
 </resources>

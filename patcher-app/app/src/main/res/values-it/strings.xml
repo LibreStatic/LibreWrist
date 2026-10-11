@@ -633,4 +633,6 @@
     <string name="troubleshoot_dialog_body">Questo reimposta Google Play Services su questo telefono. Potresti perdere l\'accesso a tutti i tuoi account Google su questo telefono e dover accedere di nuovo.\n\nAlcuni servizi che dipendono da Google Play Services, come le carte di Google Wallet, Trova il mio dispositivo e le impostazioni di backup, potrebbero dover essere configurati di nuovo.\n\nIl tuo orologio non viene modificato.</string>
     <string name="troubleshoot_dialog_confirm">Cancella dati</string>
     <string name="troubleshoot_back_to_check">Torna al controllo dell\'associazione</string>
+    <string name="profile_skip_title">Saltiamo questo passaggio</string>
+    <string name="profile_skip_body">Abbiamo abbastanza informazioni per rilevarlo automaticamente.</string>
 </resources>

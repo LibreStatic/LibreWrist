@@ -641,4 +641,6 @@
     <string name="troubleshoot_dialog_body">Cela réinitialise les Services Google Play sur ce téléphone. Vous risquez de perdre l\'accès à tous vos comptes Google sur ce téléphone et de devoir vous reconnecter.\n\nCertains services qui reposent sur les Services Google Play, comme les cartes Google Wallet, Localiser mon appareil et les paramètres de sauvegarde, devront peut-être être reconfigurés.\n\nVotre montre n\'est pas modifiée.</string>
     <string name="troubleshoot_dialog_confirm">Effacer les données</string>
     <string name="troubleshoot_back_to_check">Retour à la vérification de l\'association</string>
+    <string name="profile_skip_title">Passons cette étape</string>
+    <string name="profile_skip_body">Nous avons assez d\'informations pour le détecter automatiquement.</string>
 </resources>

@@ -633,4 +633,6 @@
     <string name="troubleshoot_dialog_body">Dadurch werden die Google Play-Dienste auf diesem Smartphone zurückgesetzt. Du verlierst eventuell den Zugriff auf alle Google-Konten auf diesem Smartphone und musst dich erneut anmelden.\n\nManche Dienste, die auf den Google Play-Diensten beruhen, etwa Google Wallet-Karten, Mein Gerät finden und Backup-Einstellungen, müssen eventuell neu eingerichtet werden.\n\nDeine Uhr wird nicht verändert.</string>
     <string name="troubleshoot_dialog_confirm">Daten löschen</string>
     <string name="troubleshoot_back_to_check">Zurück zur Kopplungsprüfung</string>
+    <string name="profile_skip_title">Diesen Schritt überspringen wir</string>
+    <string name="profile_skip_body">Wir haben genug Informationen, um es automatisch zu erkennen.</string>
 </resources>

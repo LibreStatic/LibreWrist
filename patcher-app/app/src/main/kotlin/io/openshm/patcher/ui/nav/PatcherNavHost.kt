@@ -7,7 +7,10 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
+import io.openshm.patcher.device.WatchDetection
+import io.openshm.patcher.device.WatchLink
 import io.openshm.patcher.ui.screens.install.InstallEvent
+import io.openshm.patcher.ui.screens.wearable.TroubleshootEvent
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.runtime.mutableStateOf
@@ -116,6 +119,9 @@ fun PatcherNavHost(
         composable(Route.Welcome.path) {
             val vm: WelcomeViewModel = viewModel()
             val state by vm.state.collectAsStateWithLifecycle()
+            val context = LocalContext.current
+            // Ask a remembered watch for its version now, so the profile step can be skipped.
+            LaunchedEffect(Unit) { WatchDetection.start(WatchLink.get(context)) }
             WelcomeScreen(state, vm::onEvent, onGetStarted = { next(Route.Welcome) }, onSettings = { navController.navigate(Route.SigningKey.path) })
         }
         composable(Route.Profile.path) {
@@ -123,6 +129,10 @@ fun PatcherNavHost(
             val state by vm.state.collectAsStateWithLifecycle()
             val context = LocalContext.current
             val permission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission(), vm::onBluetoothPermission)
+            LaunchedEffect(vm) {
+                vm.onShown()
+                vm.autoContinue.collect { next(Route.Profile) }
+            }
             ProfileScreen(
                 state,
                 onEvent = { event ->
@@ -136,7 +146,7 @@ fun PatcherNavHost(
                         vm.onEvent(event)
                     }
                 },
-                onContinue = { next(Route.Profile) }, onBack = back)
+                onContinue = { vm.onContinue(); next(Route.Profile) }, onBack = back)
         }
         composable(Route.WearablePairing.path) {
             val vm: WearablePairingViewModel = viewModel()
@@ -170,7 +180,17 @@ fun PatcherNavHost(
                     }
                 }
             }
-            WearableTroubleshootScreen(state, vm::onEvent, onBack = back)
+            val whenNotificationsAllowed = rememberNotificationGate()
+            WearableTroubleshootScreen(
+                state,
+                onEvent = { event ->
+                    when (event) {
+                        TroubleshootEvent.PairAdb, TroubleshootEvent.ClearConfirmed -> whenNotificationsAllowed { vm.onEvent(event) }
+                        else -> vm.onEvent(event)
+                    }
+                },
+                onBack = back,
+            )
         }
         composable(Route.WatchPair.path) {
             val vm: WatchPairViewModel = viewModel()
@@ -257,7 +277,15 @@ fun PatcherNavHost(
             }
             // Settings are changed outside the app: read them again when the screen is back.
             LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { vm.onEvent(InstallEvent.Refresh) }
-            InstallPhoneScreen(state, vm::onEvent, onContinue = { next(Route.InstallPhone) }, onBack = back)
+            val whenNotificationsAllowed = rememberNotificationGate()
+            InstallPhoneScreen(
+                state,
+                onEvent = { event ->
+                    if (event == InstallEvent.GrantWithAdb) whenNotificationsAllowed { vm.onEvent(event) } else vm.onEvent(event)
+                },
+                onContinue = { next(Route.InstallPhone) },
+                onBack = back,
+            )
         }
         composable(Route.WatchInstall.path) {
             val vm: InstallWatchViewModel = viewModel()
@@ -399,3 +427,27 @@ private fun shareReport(context: Context, text: String) {
 private const val PKCS12_MIME = "application/x-pkcs12"
 private const val BACKUP_FILE_NAME = "openshm-signing-key.p12"
 private const val APK_MIME = "application/vnd.android.package-archive"
+
+/**
+ * Runs an action once notifications may be posted, asking first on Android 13+: the self-ADB pairing
+ * code is typed into a notification. A refusal still runs it, so the attempt fails with its own message.
+ */
+@Composable
+private fun rememberNotificationGate(): (() -> Unit) -> Unit {
+    val context = LocalContext.current
+    var pending by remember { mutableStateOf<(() -> Unit)?>(null) }
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
+        pending?.invoke()
+        pending = null
+    }
+    return { action ->
+        val allowed = Build.VERSION.SDK_INT < 33 ||
+            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+        if (allowed) {
+            action()
+        } else {
+            pending = action
+            launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+}

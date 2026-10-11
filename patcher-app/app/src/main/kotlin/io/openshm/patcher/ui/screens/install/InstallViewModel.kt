@@ -136,7 +136,7 @@ class InstallPhoneViewModel(application: Application) : AndroidViewModel(applica
         }
         _state.update { it.copy(selfAdb = snapshot.phase) }
         if (snapshot.phase == SelfAdbPhase.Failed) {
-            if (snapshot.needsNotifications) fail(_state, R.string.install_error_notifications, snapshot.error)
+            if (snapshot.needsNotifications) fail(_state, R.string.install_error_notifications, null)
             else fail(_state, R.string.phone_adb_failed, snapshot.error)
         }
         if (snapshot.phase == SelfAdbPhase.Granting) {

@@ -649,4 +649,6 @@
     <string name="troubleshoot_dialog_body">Это сбросит Сервисы Google Play на этом телефоне. Вы можете потерять доступ ко всем аккаунтам Google на этом телефоне и понадобится войти снова.\n\nНекоторые сервисы, зависящие от Сервисов Google Play, например карты Google Кошелька, «Найти устройство» и настройки резервного копирования, возможно, придётся настроить заново.\n\nЧасы не затрагиваются.</string>
     <string name="troubleshoot_dialog_confirm">Очистить данные</string>
     <string name="troubleshoot_back_to_check">Назад к проверке подключения</string>
+    <string name="profile_skip_title">Пропустим этот шаг</string>
+    <string name="profile_skip_body">У нас достаточно данных, чтобы определить это автоматически.</string>
 </resources>

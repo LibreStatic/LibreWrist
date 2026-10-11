@@ -625,4 +625,6 @@
     <string name="troubleshoot_dialog_body">這會重設這支手機上的 Google Play 服務。你可能無法存取這支手機上的所有 Google 帳戶，需要重新登入。\n\n依賴 Google Play 服務的部分服務，例如 Google 錢包卡片、尋找我的裝置和備份設定，可能需要重新設定。\n\n你的手錶不會改變。</string>
     <string name="troubleshoot_dialog_confirm">清除資料</string>
     <string name="troubleshoot_back_to_check">返回配對檢查</string>
+    <string name="profile_skip_title">略過此步驟</string>
+    <string name="profile_skip_body">我們已有足夠的資訊可自動偵測。</string>
 </resources>

@@ -649,4 +649,6 @@
     <string name="troubleshoot_dialog_body">Це скине Сервіси Google Play на цьому телефоні. Ви можете втратити доступ до всіх облікових записів Google на цьому телефоні й мусити увійти знову.\n\nДеякі сервіси, що залежать від Сервісів Google Play, як-от картки Google Гаманця, «Знайти пристрій» і налаштування резервного копіювання, можливо, доведеться налаштувати знову.\n\nГодинник не змінюється.</string>
     <string name="troubleshoot_dialog_confirm">Очистити дані</string>
     <string name="troubleshoot_back_to_check">Назад до перевірки з\'єднання</string>
+    <string name="profile_skip_title">Пропустімо цей крок</string>
+    <string name="profile_skip_body">У нас достатньо даних, щоб визначити це автоматично.</string>
 </resources>
