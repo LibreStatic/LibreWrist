@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">OpenSHM Patcher</string>
+    <string name="app_name" translatable="false">OpenSHM Patcher</string>
 
     <!-- Shared actions -->
     <string name="action_back">Back</string>

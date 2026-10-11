@@ -1,0 +1,505 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Shared actions -->
+    <string name="action_back">Назад</string>
+    <string name="action_help">Справка</string>
+    <string name="action_close">Закрыть</string>
+    <string name="action_settings">Настройки</string>
+    <string name="action_more_options">Ещё</string>
+    <string name="action_continue">Продолжить</string>
+    <string name="action_cancel">Отмена</string>
+    <string name="action_done">Готово</string>
+    <string name="action_skip">Пропустить</string>
+    <string name="action_start">Начать</string>
+    <string name="action_retry">Повторить</string>
+    <string name="action_edit">Изменить</string>
+    <string name="action_fix">Исправить</string>
+    <string name="action_yes">Да</string>
+    <string name="action_no">Нет</string>
+    <string name="action_open_settings">Открыть настройки</string>
+    <string name="action_share_report">Поделиться отчётом</string>
+
+    <string name="state_expanded">Развёрнуто</string>
+    <string name="state_collapsed">Свёрнуто</string>
+    <string name="device_phone">Телефон</string>
+    <string name="device_watch">Часы</string>
+    <string name="chip_optional">Необязательно</string>
+    <string name="chip_apk_not_bundle">APK, не пакет</string>
+    <string name="chip_nodpi">nodpi</string>
+    <string name="chip_android_11">Android 11+</string>
+    <string name="chip_android_14">Android 14+</string>
+    <string name="size_mb">%1$.1f МБ</string>
+
+    <!-- Step header and status -->
+    <string name="step_label">ШАГ %1$d ИЗ %2$d</string>
+    <string name="step_label_watch_suffix">" · НА ЧАСАХ"</string>
+    <string name="status_pending">Ожидает</string>
+    <string name="status_running">Выполняется</string>
+    <string name="status_passed">Пройдено</string>
+    <string name="status_warning">Требует внимания</string>
+    <string name="status_failed">Ошибка</string>
+    <string name="progress_download_description">Загрузка: %1$d процентов</string>
+    <string name="progress_build_description">Сборка: %1$d процентов</string>
+
+    <!-- Welcome -->
+    <string name="welcome_title">Ваши приложения, ваши часы, ваши правила</string>
+    <string name="welcome_promise_download">Официальные приложения вы получаете сами: здесь ничего не встроено.</string>
+    <string name="welcome_promise_patch">Патчи позволяют Samsung Health Monitor работать на телефоне не от Samsung и устанавливаться рядом с оригинальным приложением на часах.</string>
+    <string name="welcome_promise_undo">Любое изменение можно отменить, а оригинальные приложения остаются на месте.</string>
+    <string name="welcome_get_started">Начать</string>
+    <string name="welcome_what_changes">Что изменится на моих устройствах?</string>
+    <string name="changes_title">Что изменится</string>
+    <string name="changes_intro">Устанавливаются только эти приложения и затрагиваются только эти настройки. Ничего не удаляется.</string>
+    <string name="changes_installs">Устанавливается</string>
+    <string name="changes_grants">Разрешается после установки</string>
+    <string name="changes_disables">Можно отключить</string>
+
+    <!-- Profile -->
+    <string name="profile_title">Какие у вас часы?</string>
+    <string name="profile_intro">От этого зависит, какие официальные приложения вам понадобятся.</string>
+    <string name="profile_wear5_title">Wear OS 5 или новее</string>
+    <string name="profile_wear5_summary">Health Monitor и будильники с телефона на часах.</string>
+    <string name="profile_wear5_apps">3 официальных приложения</string>
+    <string name="profile_wear3_title">Wear OS 3 или 4</string>
+    <string name="profile_wear3_summary">Только Health Monitor. Для приложения будильников на часах нужен Android 14.</string>
+    <string name="profile_wear3_apps">2 официальных приложения</string>
+    <string name="profile_detected">Проверено на часах: Android %1$s (%2$s)</string>
+    <string name="profile_check_paired">Проверить сопряжённые часы</string>
+    <string name="profile_hint_certain">Найдены %1$s. На них всегда Wear OS 5 или новее, поэтому выбран первый вариант.</string>
+    <string name="profile_hint_depends">На %1$s может быть любая версия. Откройте «Сведения о ПО» на часах или позвольте приложению проверить на шаге 3.</string>
+    <string name="profile_check_none">Сопряжённых Galaxy Watch не найдено. Выберите вариант или позвольте приложению проверить на шаге 3.</string>
+    <string name="profile_check_denied">Доступ к Bluetooth не разрешён, поэтому сопряжённые часы проверить нельзя. Выберите вариант или позвольте приложению проверить на шаге 3.</string>
+    <string name="profile_howto_title">Как определить</string>
+    <string name="profile_howto_watch">На часах: Настройки › О часах › Сведения о ПО. «Wear OS 5» или новее, «One UI 6 Watch» или новее, либо Android 14 или новее означает первый вариант.</string>
+    <string name="profile_howto_phone">Тот же экран есть в приложении Galaxy Wearable на телефоне: Настройки часов › О часах › Сведения о ПО.</string>
+    <string name="profile_howto_models">Galaxy Watch7, Watch Ultra и новее подходят всегда. Watch4, Watch5, Watch6 и Watch FE подходят только после обновления до One UI 6 Watch.</string>
+    <string name="profile_howto_unsure">Не уверены? Выберите любой: приложение само проверит часы после подключения (шаг 3) и исправит выбор до начала загрузки.</string>
+
+    <!-- Galaxy Wearable pairing check -->
+    <string name="wearable_title">Часы сопряжены?</string>
+    <string name="wearable_intro">Часы уже должны быть сопряжены с этим телефоном. Эти проверки ничего не меняют.</string>
+    <string name="wearable_check_app">Приложение-компаньон найдено</string>
+    <string name="wearable_check_app_detail">Приложение для управления часами установлено.</string>
+    <string name="wearable_check_paired">Часы сопряжены</string>
+    <string name="wearable_check_paired_detail">Часы связаны с этим телефоном.</string>
+    <string name="wearable_check_datalayer">Телефон и часы обмениваются данными</string>
+    <string name="wearable_check_datalayer_detail">Канал передачи данных Google между ними отвечает.</string>
+    <string name="wearable_note">Если проверка не пройдена, исправьте это в настройках самих часов и проверьте снова.</string>
+    <string name="wearable_recheck">Проверить снова</string>
+
+    <!-- Watch pairing over Wi-Fi -->
+    <string name="watchpair_correct_older">На ваших часах Android %1$s, поэтому приложение будильников пропускается: нужно 2 официальных приложения вместо 3.</string>
+    <string name="watchpair_correct_newer">На ваших часах Android %1$s, поэтому приложение будильников включено: нужно 3 официальных приложения вместо 2.</string>
+    <string name="watchpair_title">Подключение к часам</string>
+    <string name="watchpair_intro">Часы принимают установку по Wi-Fi после сопряжения по короткому коду.</string>
+    <string name="watchpair_on_watch">НА ЧАСАХ</string>
+    <string name="watchpair_on_watch_steps">Откройте Настройки, Параметры разработчика, Беспроводная отладка, затем Подключить новое устройство. Там отобразится 6-значный код.</string>
+    <string name="watchpair_found">Часы найдены в вашей сети</string>
+    <string name="watchpair_searching">Поиск часов…</string>
+    <string name="watchpair_address_label">Адрес (хост:порт)</string>
+    <string name="watchpair_code_label">Код сопряжения</string>
+    <string name="watchpair_check_wifi">Телефон и часы в одной сети Wi-Fi</string>
+    <string name="watchpair_check_developer">Параметры разработчика включены</string>
+    <string name="watchpair_check_wireless">Беспроводная отладка включена</string>
+    <string name="watchpair_check_code">Экран с кодом сопряжения открыт</string>
+    <string name="watchpair_hint">Введите все 6 цифр для сопряжения</string>
+    <string name="watchpair_ready">Готово к сопряжению</string>
+    <string name="watchpair_pair">Сопрячь</string>
+    <string name="watchpair_error_wrong_code">Код не принят. Проверьте часы и повторите.</string>
+    <string name="watchpair_error_bad_address">Введите адрес в формате хост:порт, например 192.168.1.20:37115.</string>
+    <string name="watchpair_error_timeout">Часы не ответили вовремя. Не закрывайте экран с кодом сопряжения и повторите.</string>
+    <string name="watchpair_error_network">Не удалось связаться с часами. Проверьте, что оба устройства в одной сети Wi-Fi.</string>
+    <string name="watchpair_error_restart">Ключ сопряжения сброшен. Закройте и снова откройте приложение, затем повторите сопряжение.</string>
+    <string name="watchpair_error_other">Не удалось выполнить сопряжение. Снова откройте экран с кодом сопряжения на часах и повторите.</string>
+
+    <!-- Acquire -->
+    <string name="acquire_title">Получите официальные приложения</string>
+    <string name="acquire_intro">Скачайте каждое приложение сами, из надёжного источника. Патчер их не хранит и не распространяет.</string>
+    <string name="acquire_open_mirror">Открыть на APKMirror</string>
+    <string name="acquire_more_ways">Другие способы получить это приложение</string>
+    <string name="acquire_use_file">Использовать имеющийся файл</string>
+    <string name="acquire_downloading">Загрузка…  %1$d%% · %2$d из %3$d МБ</string>
+    <string name="acquire_verified">Совпадает с ожидаемым файлом · %1$d МБ</string>
+    <string name="acquire_rejected_wrong_app">Этот файл относится к другому приложению. Выберите указанное выше.</string>
+    <string name="acquire_rejected_wrong_version">Этот файл — другая версия приложения, не ожидаемая.</string>
+    <string name="acquire_rejected_not_expected">Этот файл не соответствует ожидаемой сборке (другой вариант или повреждён). Скачайте его снова.</string>
+    <string name="acquire_rejected_unreadable">Не удалось прочитать файл.</string>
+    <string name="acquire_rejected_download_failed">Загрузка не завершилась. Проверьте подключение и повторите.</string>
+    <string name="acquire_rejected_too_large">Загрузка намного больше ожидаемого файла, поэтому её остановили.</string>
+    <string name="acquire_verify_note">Перед использованием каждый файл сверяется с известной контрольной суммой.</string>
+    <plurals name="acquire_waiting">
+        <item quantity="one">Ожидается %1$d приложение</item>
+        <item quantity="few">Ожидается %1$d приложения</item>
+        <item quantity="many">Ожидается %1$d приложений</item>
+        <item quantity="other">Ожидается %1$d приложения</item>
+    </plurals>
+
+    <!-- Guided browser -->
+    <string name="browser_page_placeholder">ВЕБ-СТРАНИЦА В ИСХОДНОМ ВИДЕ</string>
+    <string name="browser_coach_progress">%1$d из %2$d · %3$s</string>
+    <string name="browser_coach_1_title">Откройте нужный выпуск</string>
+    <string name="browser_coach_1_body">Выберите версию, указанную на карточке, а не новее или старше.</string>
+    <string name="browser_coach_2_title">Выберите вариант</string>
+    <string name="browser_coach_2_body">Выберите APK, а не пакет, и сборку nodpi для вашей версии Android.</string>
+    <string name="browser_coach_3_title">Скачайте</string>
+    <string name="browser_coach_3_body">Нажмите Download APK. Патчер подхватит файл после завершения загрузки.</string>
+    <string name="browser_coach_wrong_version_body">Это другая версия. Вернитесь и откройте %1$s.</string>
+    <string name="browser_notice_blocked">Заблокирована ссылка на другой сайт: %1$s</string>
+    <string name="browser_notice_bundle">Это файл пакета (.apkm, .xapk, .apks или .zip). Вернитесь и выберите обычный вариант APK.</string>
+    <string name="browser_notice_not_https">Эта загрузка идёт не по защищённой ссылке https, поэтому она не выполнена.</string>
+    <string name="browser_notice_open">Открыть в браузере</string>
+    <string name="browser_notice_dismiss">Скрыть</string>
+    <string name="browser_reload">Обновить</string>
+    <string name="browser_step_dots">Шаг %1$d из %2$d</string>
+    <string name="browser_use_file">Использовать файл</string>
+    <string name="browser_open_external">Открыть в браузере</string>
+    <string name="browser_back_to_page">Вернуться на нужную страницу</string>
+
+    <!-- Customize -->
+    <string name="customize_title">Выберите патчи</string>
+    <string name="customize_intro">Эти патчи нужны для работы приложений на ваших устройствах, поэтому они всегда включены.</string>
+    <string name="customize_required">Обязательно, всегда включено</string>
+    <string name="customize_advanced">Дополнительно</string>
+    <string name="customize_prefix_label">Префикс пакета для вспомогательных приложений</string>
+    <string name="customize_prefix_explainer">Задаёт имена приложений-мостов и приложения будильников. Два приложения Samsung Health Monitor сохраняют свой пакет, чтобы обмениваться данными.</string>
+    <string name="customize_prefix_ok">Новый префикс создаётся автоматически.</string>
+    <string name="customize_prefix_locked">Заблокировано: вспомогательные приложения установлены, а для обновлений нужен тот же префикс.</string>
+    <string name="customize_prefix_regenerate">Создать новый префикс</string>
+    <string name="customize_build">Собрать</string>
+    <string name="preset_recommended">Рекомендуется</string>
+    <string name="preset_minimal">Минимум</string>
+    <string name="preset_everything">Всё</string>
+    <string name="prefix_problem_empty">Введите префикс.</string>
+    <string name="prefix_problem_short">Используйте минимум две части, например io.example.</string>
+    <string name="prefix_problem_long">Префикс слишком длинный.</string>
+    <string name="prefix_problem_segment">Используйте строчные буквы, цифры и подчёркивания; каждая часть начинается с буквы.</string>
+    <string name="prefix_problem_reserved">Это пространство имён принадлежит другому.</string>
+    <plurals name="customize_summary_patches">
+        <item quantity="one">%1$d патч включён</item>
+        <item quantity="few">%1$d патча включено</item>
+        <item quantity="many">%1$d патчей включено</item>
+        <item quantity="other">%1$d патча включено</item>
+    </plurals>
+    <plurals name="customize_summary_apps">
+        <item quantity="one">%1$d приложение</item>
+        <item quantity="few">%1$d приложения</item>
+        <item quantity="many">%1$d приложений</item>
+        <item quantity="other">%1$d приложения</item>
+    </plurals>
+
+    <!-- Patch descriptions (titles come from the catalogue) -->
+    <string name="patch_generic_manufacturer_check">Принимает телефон не от Samsung.</string>
+    <string name="patch_generic_vendor_check">Принимает телефон без Samsung SDK.</string>
+    <string name="patch_shm_min_age_22_to_16">Снижает минимальный возраст с 22 до 16 лет.</string>
+    <string name="patch_shm_supported_type_ordinals">Считает поддерживаемым любой регион.</string>
+    <string name="patch_shm_region_supportedtype">Пропускает проверку региона.</string>
+    <string name="patch_shm_region_countrylist">Принимает любую страну из списка поддерживаемых.</string>
+    <string name="patch_shm_root_packagevalidator">Пропускает проверку сертификата производителя.</string>
+    <string name="patch_shm_force_update_response">Игнорирует неудачный или принудительный ответ об обновлении.</string>
+    <string name="patch_shm_force_update_pref">Игнорирует сохранённый флаг принудительного обновления.</string>
+    <string name="patch_shm_main_gates">Пропускает проверки при запуске, блокирующие другие телефоны.</string>
+    <string name="patch_shm_setup_network_gate">Пропускает проверку SIM и региона при настройке.</string>
+    <string name="patch_shm_sleep_apnea_support">Сообщает, что апноэ во сне поддерживается.</string>
+    <string name="patch_phone_rebrand_gms">Даёт приложению на телефоне тот же пакет и ключ, что и на часах, чтобы они могли обмениваться данными.</string>
+    <string name="patch_watch_rebrand_coexist">Переименовывает приложение на часах, чтобы оно стояло рядом с оригинальным.</string>
+    <string name="patch_watch_queries_health_service">Позволяет приложению на часах видеть службу здоровья.</string>
+    <string name="patch_watch_companion_vendor">Принимает телефон любой марки.</string>
+    <string name="patch_watch_alarm_system_app">Ставит точные будильники без системных привилегий.</string>
+    <string name="patch_watch_mobile_installed">Сообщает, что приложение на телефоне установлено.</string>
+    <string name="patch_watch_ecg_sensor_adapter">Читает датчик ЭКГ через службу Health Tracking.</string>
+    <string name="patch_watch_apnea_country">Пропускает проверку страны для апноэ.</string>
+    <string name="patch_watch_apnea_reeval_not_supported">Повторно проверяет поддержку апноэ, сохранённую как неподдерживаемую.</string>
+    <string name="patch_watch_mod">Добавляет модуль для связи со службой Health Tracking.</string>
+    <string name="patch_alarm_verify_symbols">Проверяет, что в приложении будильников есть всё нужное для связи.</string>
+    <string name="patch_alarm_rebrand_manifest">Переименовывает приложение будильников, чтобы оно устанавливалось рядом с оригинальным.</string>
+    <string name="patch_alarm_rebrand_code">Обновляет код приложения будильников под новое имя.</string>
+    <string name="patch_alarm_permissions_prune">Убирает разрешения, доступные только системным приложениям.</string>
+    <string name="patch_alarm_notification_permissions">Добавляет разрешения на уведомления и полноэкранные будильники.</string>
+    <string name="patch_alarm_queries_libs">Убирает запросы и библиотеки, не нужные форку.</string>
+    <string name="patch_alarm_components_prune">Убирает компоненты производителя, не нужные форку.</string>
+    <string name="patch_alarm_provider_open">Открывает данные будильников для форка.</string>
+    <string name="patch_alarm_link_components">Добавляет приёмник для будильников, отправленных с телефона.</string>
+    <string name="patch_alarm_appfunctions_drop">Убирает неиспользуемую ветку функций производителя.</string>
+    <string name="patch_alarm_semgesture_skip">Пропускает менеджер жестов производителя.</string>
+    <string name="patch_alarm_gms_observer_drop">Не даёт будильнику завершаться раньше времени.</string>
+    <string name="patch_alarm_service_stop_on_destroy">Гарантирует, что звук и вибрация всегда останавливаются.</string>
+    <string name="patch_alarm_force_sound_vibrate">Всегда звонит и вибрирует.</string>
+    <string name="patch_alarm_link_send">Отправляет изменения будильников на телефон.</string>
+    <string name="patch_alarm_hide_launcher">Скрывает лишний значок запуска.</string>
+    <string name="patch_alarm_relabel">Называет форк «Будильники телефона».</string>
+    <string name="patch_alarm_fork">Добавляет модуль, связывающий будильники с телефоном.</string>
+    <string name="output_shm_phone">Samsung Health Monitor (с патчами)</string>
+    <string name="output_shm_watch">Samsung Health Monitor для Wear OS (с патчами)</string>
+    <string name="output_bridge_watch">Мост для часов</string>
+    <string name="output_alarm_fork">Будильники телефона на часах</string>
+    <string name="output_bridge_phone">Мост для телефона</string>
+    <string name="stock_label_shm">Samsung Health Monitor (оригинал)</string>
+    <string name="stock_reason_shm">Две копии приложения будут конкурировать за один датчик.</string>
+
+    <!-- Build -->
+    <string name="build_title">Сборка приложений</string>
+    <string name="build_caption_idle">Подготовка</string>
+    <string name="build_stage_unpack">Распаковка</string>
+    <string name="build_stage_fingerprints">Проверка отпечатков патчей</string>
+    <string name="build_stage_apply_short">Применение патчей</string>
+    <plurals name="build_stage_apply">
+        <item quantity="one">Применить %1$d патч</item>
+        <item quantity="few">Применить %1$d патча</item>
+        <item quantity="many">Применить %1$d патчей</item>
+        <item quantity="other">Применить %1$d патча</item>
+    </plurals>
+    <string name="build_stage_rename">Переименование пакета</string>
+    <string name="build_stage_rebuild">Пересборка</string>
+    <string name="build_stage_sign">Подпись</string>
+    <string name="build_stage_selfcheck">Самопроверка</string>
+    <string name="build_can_leave">Можно выйти. Мы уведомим вас о завершении.</string>
+    <string name="build_channel_name">Ход сборки</string>
+    <string name="build_channel_description">Показывается, пока приложения собираются и подписываются.</string>
+    <string name="build_notification_title">Сборка приложений</string>
+    <string name="build_notification_progress">%1$s: %2$s</string>
+    <string name="build_notification_done">Приложения собраны и подписаны.</string>
+    <string name="build_notification_failed">Сборка не удалась. Откройте приложение, чтобы узнать причину.</string>
+    <string name="build_error_title">Сборка не завершилась</string>
+    <string name="build_show_log">Показать журнал</string>
+    <string name="build_log_title">Журнал сборки</string>
+    <string name="build_log_empty">Записей пока нет.</string>
+    <string name="build_done_title">Собрано и подписано</string>
+    <string name="build_done_ready">готово к установке</string>
+    <string name="build_done_install">Установить на телефон</string>
+    <string name="build_done_link_note">Два приложения Health Monitor используют одно имя пакета и один ключ подписи. Благодаря этому канал данных Google передаёт сообщения между ними.</string>
+    <plurals name="build_done_subtitle_patches">
+        <item quantity="one">%1$d патч</item>
+        <item quantity="few">%1$d патча</item>
+        <item quantity="many">%1$d патчей</item>
+        <item quantity="other">%1$d патча</item>
+    </plurals>
+    <plurals name="build_done_subtitle_apps">
+        <item quantity="one">%1$d приложение</item>
+        <item quantity="few">%1$d приложения</item>
+        <item quantity="many">%1$d приложений</item>
+        <item quantity="other">%1$d приложения</item>
+    </plurals>
+
+    <!-- Install -->
+    <string name="install_phone_title">Установка на этот телефон</string>
+    <string name="install_phone_intro">Android просит подтвердить каждую установку. Нужные приложениям доступы проверяются потом; недостающие вы включаете в настройках.</string>
+    <string name="install_phone_note">Разрешения, показ поверх других приложений, доступ к уведомлениям и ограниченные настройки включаете вы. Вернитесь на этот экран, и проверка пройдёт снова.</string>
+    <string name="install_watch_title">Установка на часы</string>
+    <string name="install_watch_intro">Установка по Wi-Fi в таком порядке: Health Monitor, мост, затем будильники телефона.</string>
+    <string name="install_watch_note">Часы остаются включёнными и подключёнными, пока это выполняется.</string>
+    <string name="install_start">Начать установку</string>
+    <string name="install_error_build_missing">Сборка отсутствует или не соответствует этой настройке. Соберите заново, затем установите.</string>
+    <string name="install_error_failed">Часы отклонили установку.</string>
+    <string name="install_error_signature">На часах уже есть копия, подписанная другим ключом. Ничего не удалено. Удалите эту копию сами и повторите.</string>
+    <string name="install_error_grant">Не удалось применить настройку доступа.</string>
+    <string name="action_open">Открыть</string>
+    <string name="action_allow_installing">Разрешить установку приложений</string>
+    <string name="install_check_again">Проверить снова</string>
+    <string name="install_continue_anyway">Всё равно продолжить</string>
+    <string name="install_onboarding">Откройте Samsung Health Monitor и завершите его настройку</string>
+    <string name="install_error_unknown_sources">Этому приложению ещё не разрешено устанавливать приложения. Разрешите и начните снова.</string>
+    <string name="install_error_notifications">Сначала разрешите уведомления для этого приложения: код сопряжения вводится в уведомлении.</string>
+    <string name="phone_adb_title">Выдать всё сразу</string>
+    <string name="phone_adb_intro">Если мешают переключатели, телефон может выдать их себе сам через Беспроводную отладку. Нужно быть в сети Wi-Fi.</string>
+    <string name="phone_adb_action">Выдать всё через Беспроводную отладку</string>
+    <string name="phone_adb_waiting_service">В разделе «Беспроводная отладка» включите её и нажмите «Подключить устройство с помощью кода подключения». Появится уведомление, где можно ввести код, не покидая этот экран.</string>
+    <string name="phone_adb_waiting_code">Введите шестизначный код с экрана сопряжения здесь или в уведомлении.</string>
+    <string name="phone_adb_wrong_code">Код не подошёл. Проверьте экран сопряжения и повторите.</string>
+    <string name="phone_adb_ambiguous">На этом телефоне найдено несколько служб Беспроводной отладки. Выключите и снова включите Беспроводную отладку, затем повторите.</string>
+    <string name="phone_adb_connecting">Подключение к этому телефону...</string>
+    <string name="phone_adb_granting">Подключено. Выдача доступов...</string>
+    <string name="phone_adb_failed">Не удалось подключиться к Беспроводной отладке этого телефона.</string>
+    <string name="phone_adb_code_label">Код сопряжения</string>
+    <string name="phone_adb_submit">Сопрячь</string>
+    <string name="selfadb_channel">Сопряжение с этим телефоном</string>
+    <string name="selfadb_code_channel">Код сопряжения</string>
+    <string name="selfadb_waiting_service">В разделе «Беспроводная отладка» нажмите «Подключить устройство с помощью кода подключения»</string>
+    <string name="selfadb_enter_code_title">Введите код сопряжения</string>
+    <string name="selfadb_enter_code_body">Введите шестизначный код с экрана сопряжения.</string>
+    <string name="selfadb_reply_label">Код сопряжения</string>
+    <string name="selfadb_reply_action">Ввести код</string>
+    <string name="selfadb_wrong_code">Код не подошёл. Проверьте экран сопряжения и повторите.</string>
+    <string name="selfadb_pairing">Сопряжение...</string>
+    <string name="selfadb_connecting">Подключение...</string>
+    <string name="selfadb_connected">Подключено к Беспроводной отладке этого телефона</string>
+    <string name="selfadb_ambiguous">На этом телефоне найдено несколько служб Беспроводной отладки. Выключите и снова включите Беспроводную отладку, затем повторите.</string>
+    <string name="selfadb_failed">Не удалось подключиться</string>
+    <string name="selfadb_service_channel">Беспроводная отладка</string>
+    <string name="selfadb_service_title">Подключение к Беспроводной отладке этого телефона</string>
+    <string name="phone_adb_timeout">Сопряжение заняло слишком много времени и было остановлено.</string>
+    <string name="phone_adb_interrupted">Сопряжение прервано.</string>
+    <string name="watch_error_unreachable">Часы недоступны. Проверьте, что Беспроводная отладка включена и оба устройства в одной сети Wi-Fi.</string>
+    <string name="watch_error_pairing">Часы больше не доверяют этому телефону. Вернитесь и выполните сопряжение снова.</string>
+    <string name="grant_permission">Разрешение</string>
+    <string name="grant_appop">Операция приложения</string>
+    <string name="grant_setting">Системная настройка</string>
+    <string name="grant_listener">Доступ к уведомлениям</string>
+    <string name="grant_battery">Исключение из экономии заряда</string>
+
+    <!-- Health Platform developer mode -->
+    <string name="devmode_title">Режим разработчика Health Platform</string>
+    <string name="devmode_intro">Служба Health Tracking общается с пропатченным приложением только в режиме разработчика. Включите его на часах.</string>
+    <string name="devmode_step_settings">Откройте Настройки на часах.</string>
+    <string name="devmode_step_apps">Перейдите в Приложения.</string>
+    <string name="devmode_step_health_platform">Выберите Health Platform.</string>
+    <string name="devmode_step_tap">Нажимайте на заголовок, пока не появится [Dev mode].</string>
+    <string name="devmode_open_settings">Открыть настройки Health Platform на часах</string>
+    <string name="devmode_waiting">Ожидание режима разработчика</string>
+    <string name="devmode_detected">Режим разработчика включён</string>
+    <string name="devmode_check">Проверить сейчас</string>
+    <string name="devmode_skip">Пропустить</string>
+
+    <!-- Disable stock apps -->
+    <string name="disable_title">Отключите оригинальное приложение</string>
+    <string name="disable_intro">Отключённое приложение скрыто и остановлено. Его можно включить в любой момент. Ничего не удаляется.</string>
+    <string name="disable_chip_installed">Приложение на часах установлено</string>
+    <string name="disable_chip_wear">Wear OS</string>
+    <string name="disable_chip_not_installed">Не установлено</string>
+    <string name="disable_error_some">Не удалось отключить некоторые приложения. Повторите или пропустите этот шаг.</string>
+    <plurals name="disable_action">
+        <item quantity="one">Отключить %1$d приложение</item>
+        <item quantity="few">Отключить %1$d приложения</item>
+        <item quantity="many">Отключить %1$d приложений</item>
+        <item quantity="other">Отключить %1$d приложения</item>
+    </plurals>
+
+    <!-- Self-test -->
+    <string name="selftest_title">Проверка всего</string>
+    <string name="selftest_section_phone">Телефон</string>
+    <string name="selftest_section_watch">Часы</string>
+    <string name="selftest_section_link">Связь телефона и часов</string>
+    <string name="selftest_section_human">Проверяете вы</string>
+    <string name="selftest_rerun">Запустить снова</string>
+    <string name="selftest_human_label">ПРОВЕРКА С ВАМИ · %1$d ИЗ %2$d</string>
+    <string name="selftest_share_subject">Самотест OpenSHM Patcher</string>
+
+    <!-- Self-test rows: %1$s is an app name or a list of access names -->
+    <string name="selftest_package_title">%1$s: установлено</string>
+    <string name="selftest_grants_title">%1$s: доступы выданы</string>
+    <string name="selftest_stock_title">%1$s: отключено</string>
+    <string name="selftest_bridge_link_title">Связь с часами через мост</string>
+    <string name="selftest_watch_platform">Health Platform в режиме разработчика</string>
+    <string name="selftest_gms_title">Часы подключены к телефону</string>
+    <string name="selftest_shm_title">Health Monitor видит часы</string>
+    <string name="selftest_ecg_title">ЭКГ доходит до телефона</string>
+    <string name="selftest_platform_question">Находится ли Health Platform на часах в режиме разработчика?</string>
+    <string name="selftest_gms_question">Показывает ли приложение Wear OS на телефоне, что часы подключены?</string>
+    <string name="selftest_shm_question">Показывает ли Samsung Health Monitor на телефоне, что часы подключены?</string>
+    <string name="selftest_ecg_question">Снимите ЭКГ на часах. Появляется ли она на телефоне?</string>
+    <string name="selftest_detail_answered_no">Вы ответили «нет»</string>
+
+    <string name="selftest_detail_package_ok">Версия %1$s, подписано вашим ключом, тот же файл, что и в сборке</string>
+    <string name="selftest_detail_package_ok_no_version">Подписано вашим ключом, тот же файл, что и в сборке</string>
+    <string name="selftest_detail_not_installed">Не установлено</string>
+    <string name="selftest_detail_wrong_cert">Подписано не вашим ключом</string>
+    <string name="selftest_detail_cert_unavailable">Не удалось прочитать ваш ключ подписи</string>
+    <string name="selftest_detail_no_build">Нет сборки для сравнения</string>
+    <string name="selftest_detail_hash_mismatch">Установленный файл отличается от последней сборки</string>
+    <string name="selftest_detail_hash_unreadable">Не удалось прочитать установленный файл</string>
+    <string name="selftest_detail_watch_ok">Установлено, тот же файл, что и в сборке</string>
+    <string name="selftest_detail_grants_ok">Все доступы выданы</string>
+    <string name="selftest_detail_grants_missing">Не хватает: %1$s</string>
+    <string name="selftest_detail_grants_unknown">Не удалось прочитать: %1$s</string>
+    <string name="selftest_detail_grants_optional">Необязательно, не задано: %1$s</string>
+    <string name="selftest_detail_skipped_not_installed">Пропущено, не установлено</string>
+    <string name="selftest_detail_watch_skipped">Пропущено, часы не подключены</string>
+    <string name="selftest_detail_watch_no_answer">Часы не ответили</string>
+    <string name="selftest_detail_error">Не удалось выполнить проверку</string>
+    <string name="selftest_detail_stock_still_on">Всё ещё включено</string>
+    <string name="selftest_detail_stock_off">Отключено</string>
+    <string name="selftest_detail_stock_absent">Нет на часах</string>
+    <string name="selftest_detail_bridge_missing">Мост не отвечает. Он установлен?</string>
+    <string name="selftest_detail_bridge_denied">Мост отклонил запрос состояния. Он собран с другим ключом</string>
+    <string name="selftest_detail_bridge_not_running">Служба моста не запущена</string>
+    <string name="selftest_detail_bridge_link_down">Связь с часами отсутствует</string>
+    <string name="selftest_detail_bridge_no_hello">Связь есть, но часы ещё не подали сигнал</string>
+    <string name="selftest_detail_bridge_ok">Связь есть, часы подали сигнал</string>
+
+    <!-- All set -->
+    <string name="allset_title">Всё готово</string>
+    <string name="allset_subtitle">Пройдено проверок: %1$d из %2$d</string>
+    <string name="allset_chip_link">Связь</string>
+
+    <!-- Home -->
+    <string name="home_title">OpenSHM</string>
+    <string name="home_status_ok">Всё работает</string>
+    <string name="home_status_warning">Стоит проверить</string>
+    <string name="home_status_failed">Что-то сломано</string>
+    <string name="home_status_unknown">Ещё не проверялось</string>
+    <string name="home_never_tested">Запустите тест, чтобы узнать</string>
+    <plurals name="home_tested_days_ago">
+        <item quantity="one">проверено %1$d день назад</item>
+        <item quantity="few">проверено %1$d дня назад</item>
+        <item quantity="many">проверено %1$d дней назад</item>
+        <item quantity="other">проверено %1$d дня назад</item>
+    </plurals>
+    <string name="home_test_again">Проверить снова</string>
+    <string name="home_update_title">Доступно обновление</string>
+    <string name="home_update_detail">%1$s: %2$s → %3$s</string>
+    <string name="home_update_patches">Обновлённые патчи для %1$s</string>
+    <string name="home_menu_check_catalogue">Проверить обновления каталога</string>
+    <string name="home_catalogue_updated">Каталог обновлён до версии %1$d</string>
+    <string name="home_catalogue_up_to_date">Каталог актуален</string>
+    <string name="home_catalogue_rejected">Загруженный каталог не принят</string>
+    <string name="home_catalogue_failed">Не удалось связаться с сервером обновлений</string>
+    <string name="home_catalogue_disabled">В этой сборке нет канала обновления каталога</string>
+    <string name="home_current_builds">Текущие сборки</string>
+    <string name="home_rebuild_description">Изменить патчи и пересобрать %1$s</string>
+    <string name="home_restore_description">Восстановить %1$s</string>
+    <string name="home_new_build">Новая сборка</string>
+    <string name="home_menu_new_build">Новая сборка</string>
+    <string name="home_menu_self_test">Запустить самотест</string>
+    <string name="home_menu_restore_watch">Восстановить часы</string>
+    <string name="home_menu_uninstall">Удалить</string>
+    <string name="restore_title">Восстановить оригинальное приложение?</string>
+    <string name="restore_body">Приложение с патчами будет удалено, а оригинальное снова включено. Ваши данные на часах сохранятся.</string>
+    <string name="restore_confirm">Восстановить</string>
+
+    <!-- Signing key -->
+    <string name="signing_key_title">Ключ подписи</string>
+    <string name="signing_key_explainer">Каждое собранное вами приложение подписывается этим ключом. Android устанавливает обновление только поверх приложения с тем же ключом, поэтому сохраните резервную копию.</string>
+    <string name="signing_key_present">Ключ подписи готов</string>
+    <string name="signing_key_absent">Ключа подписи пока нет</string>
+    <string name="signing_key_absent_note">Ключ создаётся при первой сборке. Если у вас уже есть резервная копия, можно импортировать её сейчас.</string>
+    <string name="signing_key_unreadable">Ключ невозможно прочитать на этом устройстве.</string>
+    <string name="signing_key_sha_label">SHA-256 сертификата</string>
+    <string name="signing_key_copy">Копировать SHA-256 сертификата</string>
+    <string name="signing_key_backed_up">Резервная копия есть</string>
+    <string name="signing_key_not_backed_up">Резервной копии пока нет</string>
+    <string name="signing_key_export">Экспортировать копию</string>
+    <string name="signing_key_import">Импортировать ключ</string>
+    <string name="signing_key_export_needs_key">Экспорт доступен, когда ключ создан.</string>
+    <string name="signing_key_export_hint">Задайте пароль для файла копии. Он нужен, чтобы снова импортировать ключ, и его нельзя восстановить.</string>
+    <string name="signing_key_import_hint">Выберите файл PKCS#12 (.p12) и введите его пароль.</string>
+    <string name="signing_key_password">Пароль</string>
+    <string name="signing_key_password_repeat">Повторите пароль</string>
+    <string name="signing_key_show_password">Показать пароль</string>
+    <string name="signing_key_hide_password">Скрыть пароль</string>
+    <string name="signing_key_choose_location">Выберите, куда сохранить</string>
+    <string name="signing_key_choose_file">Выберите файл</string>
+    <string name="signing_key_error_short">Используйте не менее %1$d символов.</string>
+    <string name="signing_key_error_mismatch">Пароли не совпадают.</string>
+    <string name="signing_key_error_empty">Введите пароль файла.</string>
+    <string name="signing_key_export_done">Копия сохранена. Храните файл и пароль в надёжном месте.</string>
+    <string name="signing_key_export_failed">Не удалось сохранить копию.</string>
+    <string name="signing_key_import_done">Ключ подписи импортирован.</string>
+    <string name="signing_key_import_failed">Не удалось импортировать ключ.</string>
+    <string name="signing_key_import_wrong_password">Неверный пароль, либо файл не является файлом ключа PKCS#12.</string>
+    <string name="signing_key_import_not_one_key">В файле должен быть ровно один ключ.</string>
+    <string name="signing_key_import_unusable">В файле нет пригодного закрытого ключа и сертификата.</string>
+    <string name="signing_key_import_weak">Ключ слишком слабый. Ключи RSA должны быть не короче 2048 бит.</string>
+    <string name="signing_key_import_type">Поддерживаются только ключи RSA и EC.</string>
+    <string name="signing_key_import_mismatch">Ключ не соответствует своему сертификату.</string>
+    <string name="signing_key_import_costly">Файл требует гораздо больше вычислений, чем обычный файл ключа, поэтому он отклонён.</string>
+    <string name="signing_key_import_unreadable">Не удалось прочитать файл.</string>
+    <string name="signing_key_confirm_title">Заменить ключ подписи?</string>
+    <string name="signing_key_confirm_current">Текущий ключ</string>
+    <string name="signing_key_confirm_new">Ключ в файле</string>
+    <string name="signing_key_confirm_none">Пока нет</string>
+    <string name="signing_key_confirm_warning">Приложения, уже установленные и подписанные текущим ключом, перестанут принимать обновления от этого приложения. Чтобы использовать новый ключ, их нужно удалить и установить заново, при этом их данные будут удалены.</string>
+    <string name="signing_key_confirm_replace">Заменить ключ</string>
+    <string name="signing_key_nudge_title">Сохраните резервную копию ключа подписи</string>
+    <string name="signing_key_nudge_body">Без неё установленные приложения нельзя обновить, только переустановить.</string>
+    <string name="signing_key_nudge_action">Сохранить копию</string>
+    <string name="home_menu_signing_key">Ключ подписи</string>
+</resources>

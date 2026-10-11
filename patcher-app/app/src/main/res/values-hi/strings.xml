@@ -1,0 +1,489 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Shared actions -->
+    <string name="action_back">वापस</string>
+    <string name="action_help">मदद</string>
+    <string name="action_close">बंद करें</string>
+    <string name="action_settings">सेटिंग</string>
+    <string name="action_more_options">और विकल्प</string>
+    <string name="action_continue">जारी रखें</string>
+    <string name="action_cancel">रद्द करें</string>
+    <string name="action_done">हो गया</string>
+    <string name="action_skip">अभी छोड़ें</string>
+    <string name="action_start">शुरू करें</string>
+    <string name="action_retry">फिर कोशिश करें</string>
+    <string name="action_edit">बदलें</string>
+    <string name="action_fix">ठीक करें</string>
+    <string name="action_yes">हाँ</string>
+    <string name="action_no">नहीं</string>
+    <string name="action_open_settings">सेटिंग खोलें</string>
+    <string name="action_share_report">रिपोर्ट शेयर करें</string>
+
+    <string name="state_expanded">फैला हुआ</string>
+    <string name="state_collapsed">समेटा हुआ</string>
+    <string name="device_phone">फ़ोन</string>
+    <string name="device_watch">घड़ी</string>
+    <string name="chip_optional">वैकल्पिक</string>
+    <string name="chip_apk_not_bundle">APK, बंडल नहीं</string>
+    <string name="chip_nodpi">nodpi</string>
+    <string name="chip_android_11">Android 11+</string>
+    <string name="chip_android_14">Android 14+</string>
+    <string name="size_mb">%1$.1f MB</string>
+
+    <!-- Step header and status -->
+    <string name="step_label">चरण %1$d / %2$d</string>
+    <string name="step_label_watch_suffix">" · घड़ी पर"</string>
+    <string name="status_pending">प्रतीक्षा में</string>
+    <string name="status_running">चल रहा है</string>
+    <string name="status_passed">सफल</string>
+    <string name="status_warning">ध्यान देने की ज़रूरत</string>
+    <string name="status_failed">विफल</string>
+    <string name="progress_download_description">डाउनलोड %1$d प्रतिशत</string>
+    <string name="progress_build_description">बिल्ड %1$d प्रतिशत</string>
+
+    <!-- Welcome -->
+    <string name="welcome_title">आपके ऐप, आपकी घड़ी, आपका तरीका</string>
+    <string name="welcome_promise_download">आधिकारिक ऐप आप खुद डाउनलोड करते हैं; यहाँ कुछ भी साथ नहीं आता।</string>
+    <string name="welcome_promise_patch">पैच Samsung Health Monitor को गैर-Samsung फ़ोन पर चलाते हैं और उसे स्टॉक घड़ी ऐप के साथ रहने देते हैं।</string>
+    <string name="welcome_promise_undo">हर बदलाव को वापस किया जा सकता है, और स्टॉक ऐप जस के तस रहते हैं।</string>
+    <string name="welcome_get_started">शुरू करें</string>
+    <string name="welcome_what_changes">मेरे डिवाइस पर क्या बदलेगा?</string>
+    <string name="changes_title">क्या बदलेगा</string>
+    <string name="changes_intro">सिर्फ़ यही ऐप इंस्टॉल होते हैं और सिर्फ़ यही सेटिंग छुई जाती हैं। कुछ भी मिटाया नहीं जाता।</string>
+    <string name="changes_installs">इंस्टॉल होंगे</string>
+    <string name="changes_grants">इंस्टॉल के बाद अनुमति</string>
+    <string name="changes_disables">बंद किए जा सकते हैं</string>
+
+    <!-- Profile -->
+    <string name="profile_title">आपके पास कौन सी घड़ी है?</string>
+    <string name="profile_intro">इससे तय होता है कि आपको कौन से आधिकारिक ऐप लाने होंगे।</string>
+    <string name="profile_wear5_title">Wear OS 5 या नया</string>
+    <string name="profile_wear5_summary">Health Monitor और घड़ी पर फ़ोन के अलार्म।</string>
+    <string name="profile_wear5_apps">3 आधिकारिक ऐप</string>
+    <string name="profile_wear3_title">Wear OS 3 या 4</string>
+    <string name="profile_wear3_summary">सिर्फ़ Health Monitor। अलार्म ऐप के लिए घड़ी पर Android 14 चाहिए।</string>
+    <string name="profile_wear3_apps">2 आधिकारिक ऐप</string>
+    <string name="profile_detected">आपकी घड़ी पर जाँचा गया: Android %1$s (%2$s)</string>
+    <string name="profile_check_paired">पेयर की गई घड़ियाँ जाँचें</string>
+    <string name="profile_hint_certain">%1$s मिली। यह हमेशा Wear OS 5 या नया चलाती है, इसलिए पहला विकल्प चुना गया है।</string>
+    <string name="profile_hint_depends">आपकी %1$s दोनों में से कोई भी चला सकती है। घड़ी पर सॉफ़्टवेयर जानकारी देखें, या ऐप को चरण 3 में जाँचने दें।</string>
+    <string name="profile_check_none">कोई पेयर की हुई Galaxy Watch नहीं मिली। कोई विकल्प चुनें या ऐप को चरण 3 में जाँचने दें।</string>
+    <string name="profile_check_denied">Bluetooth की अनुमति नहीं दी गई, इसलिए पेयर की गई घड़ियाँ नहीं जाँची जा सकतीं। कोई विकल्प चुनें या ऐप को चरण 3 में जाँचने दें।</string>
+    <string name="profile_howto_title">कैसे पता करें</string>
+    <string name="profile_howto_watch">घड़ी पर: सेटिंग › घड़ी के बारे में › सॉफ़्टवेयर जानकारी। \"Wear OS 5\" या नया, \"One UI 6 Watch\" या नया, या Android 14 या नया होने का मतलब पहला विकल्प है।</string>
+    <string name="profile_howto_phone">यही स्क्रीन फ़ोन के Galaxy Wearable ऐप में भी है: घड़ी की सेटिंग › घड़ी के बारे में › सॉफ़्टवेयर जानकारी।</string>
+    <string name="profile_howto_models">Galaxy Watch7, Watch Ultra और नई घड़ियाँ हमेशा योग्य हैं। Watch4, Watch5, Watch6 और Watch FE तभी योग्य हैं जब वे One UI 6 Watch पर अपडेट हो चुकी हों।</string>
+    <string name="profile_howto_unsure">पक्का नहीं है? कोई भी चुन लें: घड़ी जुड़ने के बाद (चरण 3) ऐप खुद जाँचता है और कुछ भी डाउनलोड होने से पहले चुनाव सुधार देता है।</string>
+
+    <!-- Galaxy Wearable pairing check -->
+    <string name="wearable_title">क्या आपकी घड़ी पेयर है?</string>
+    <string name="wearable_intro">घड़ी पहले से इस फ़ोन से पेयर होनी चाहिए। ये जाँचें कभी कुछ नहीं बदलतीं।</string>
+    <string name="wearable_check_app">सहयोगी ऐप मिला</string>
+    <string name="wearable_check_app_detail">घड़ी को संभालने वाला ऐप इंस्टॉल है।</string>
+    <string name="wearable_check_paired">घड़ी पेयर है</string>
+    <string name="wearable_check_paired_detail">एक घड़ी इस फ़ोन से जुड़ी है।</string>
+    <string name="wearable_check_datalayer">फ़ोन और घड़ी बात कर सकते हैं</string>
+    <string name="wearable_check_datalayer_detail">दोनों के बीच Google का डेटा लिंक जवाब देता है।</string>
+    <string name="wearable_note">अगर कोई जाँच विफल हो, तो घड़ी के अपने सेटअप में उसे ठीक करें, फिर दोबारा जाँचें।</string>
+    <string name="wearable_recheck">दोबारा जाँचें</string>
+
+    <!-- Watch pairing over Wi-Fi -->
+    <string name="watchpair_correct_older">आपकी घड़ी Android %1$s चलाती है, इसलिए अलार्म ऐप छोड़ दिया गया है: आपको 3 की जगह 2 आधिकारिक ऐप चाहिए।</string>
+    <string name="watchpair_correct_newer">आपकी घड़ी Android %1$s चलाती है, इसलिए अलार्म ऐप शामिल है: आपको 2 की जगह 3 आधिकारिक ऐप चाहिए।</string>
+    <string name="watchpair_title">अपनी घड़ी से जुड़ें</string>
+    <string name="watchpair_intro">छोटे कोड से पेयर करने के बाद घड़ी Wi-Fi पर इंस्टॉल स्वीकार करती है।</string>
+    <string name="watchpair_on_watch">आपकी घड़ी पर</string>
+    <string name="watchpair_on_watch_steps">सेटिंग, डेवलपर विकल्प, वायरलेस डीबगिंग खोलें, फिर नया डिवाइस पेयर करें चुनें। 6 अंकों का कोड वहीं दिखता है।</string>
+    <string name="watchpair_found">आपके नेटवर्क पर घड़ी मिली</string>
+    <string name="watchpair_searching">आपकी घड़ी खोजी जा रही है…</string>
+    <string name="watchpair_address_label">पता (host:port)</string>
+    <string name="watchpair_code_label">पेयरिंग कोड</string>
+    <string name="watchpair_check_wifi">फ़ोन और घड़ी एक ही Wi-Fi पर हैं</string>
+    <string name="watchpair_check_developer">डेवलपर विकल्प चालू हैं</string>
+    <string name="watchpair_check_wireless">वायरलेस डीबगिंग चालू है</string>
+    <string name="watchpair_check_code">पेयरिंग कोड वाली स्क्रीन खुली है</string>
+    <string name="watchpair_hint">पेयर करने के लिए सभी 6 अंक डालें</string>
+    <string name="watchpair_ready">पेयर करने के लिए तैयार</string>
+    <string name="watchpair_pair">पेयर करें</string>
+    <string name="watchpair_error_wrong_code">वह कोड स्वीकार नहीं हुआ। घड़ी देखें और फिर कोशिश करें।</string>
+    <string name="watchpair_error_bad_address">पता host:port के रूप में डालें, जैसे 192.168.1.20:37115।</string>
+    <string name="watchpair_error_timeout">घड़ी ने समय पर जवाब नहीं दिया। पेयरिंग कोड वाली स्क्रीन खुली रखें और फिर कोशिश करें।</string>
+    <string name="watchpair_error_network">घड़ी तक नहीं पहुँचा जा सका। जाँचें कि दोनों डिवाइस एक ही Wi-Fi पर हैं।</string>
+    <string name="watchpair_error_restart">पेयरिंग कुंजी रीसेट हो गई। यह ऐप बंद करके फिर खोलें, फिर दोबारा पेयर करें।</string>
+    <string name="watchpair_error_other">पेयरिंग विफल रही। घड़ी पर पेयरिंग कोड वाली स्क्रीन फिर खोलें और दोबारा कोशिश करें।</string>
+
+    <!-- Acquire -->
+    <string name="acquire_title">आधिकारिक ऐप लाएँ</string>
+    <string name="acquire_intro">हर ऐप खुद डाउनलोड करें, किसी भरोसेमंद स्रोत से। पैचर इन्हें न कभी सहेजता है, न साथ देता है।</string>
+    <string name="acquire_open_mirror">APKMirror पर खोलें</string>
+    <string name="acquire_more_ways">यह ऐप पाने के और तरीके</string>
+    <string name="acquire_use_file">मेरे पास पहले से मौजूद फ़ाइल इस्तेमाल करें</string>
+    <string name="acquire_downloading">डाउनलोड हो रहा है…  %1$d%% · %2$d / %3$d MB</string>
+    <string name="acquire_verified">अपेक्षित फ़ाइल से मेल खाती है · %1$d MB</string>
+    <string name="acquire_rejected_wrong_app">वह फ़ाइल किसी और ऐप की है। ऊपर बताई गई फ़ाइल चुनें।</string>
+    <string name="acquire_rejected_wrong_version">वह फ़ाइल ऐप के अपेक्षित संस्करण से अलग संस्करण की है।</string>
+    <string name="acquire_rejected_not_expected">वह फ़ाइल अपेक्षित बिल्ड से मेल नहीं खाती (दूसरा वेरिएंट, या खराब)। उसे दोबारा डाउनलोड करें।</string>
+    <string name="acquire_rejected_unreadable">वह फ़ाइल पढ़ी नहीं जा सकी।</string>
+    <string name="acquire_rejected_download_failed">डाउनलोड पूरा नहीं हुआ। अपना कनेक्शन जाँचें और फिर कोशिश करें।</string>
+    <string name="acquire_rejected_too_large">वह डाउनलोड अपेक्षित फ़ाइल से काफ़ी बड़ा है, इसलिए रोक दिया गया।</string>
+    <string name="acquire_verify_note">इस्तेमाल से पहले हर फ़ाइल को ज्ञात चेकसम से जाँचा जाता है।</string>
+    <plurals name="acquire_waiting">
+        <item quantity="one">%1$d ऐप की प्रतीक्षा</item>
+        <item quantity="other">%1$d ऐप की प्रतीक्षा</item>
+    </plurals>
+
+    <!-- Guided browser -->
+    <string name="browser_page_placeholder">वेब पेज, जैसा है वैसा</string>
+    <string name="browser_coach_progress">%1$d / %2$d · %3$s</string>
+    <string name="browser_coach_1_title">सही रिलीज़ खोलें</string>
+    <string name="browser_coach_1_body">कार्ड पर बताया गया संस्करण चुनें, उससे नया या पुराना नहीं।</string>
+    <string name="browser_coach_2_title">वेरिएंट चुनें</string>
+    <string name="browser_coach_2_body">APK चुनें, बंडल नहीं, और अपने Android संस्करण के लिए nodpi बिल्ड।</string>
+    <string name="browser_coach_3_title">डाउनलोड करें</string>
+    <string name="browser_coach_3_body">Download APK पर टैप करें। पूरा होने पर पैचर फ़ाइल उठा लेता है।</string>
+    <string name="browser_coach_wrong_version_body">यह दूसरा संस्करण है। वापस जाकर %1$s खोलें।</string>
+    <string name="browser_notice_blocked">दूसरी साइट का लिंक रोका गया: %1$s</string>
+    <string name="browser_notice_bundle">यह बंडल फ़ाइल है (.apkm, .xapk, .apks या .zip)। वापस जाकर सादा APK वेरिएंट चुनें।</string>
+    <string name="browser_notice_not_https">वह डाउनलोड सुरक्षित https लिंक नहीं है, इसलिए नहीं लाया गया।</string>
+    <string name="browser_notice_open">मेरे ब्राउज़र में खोलें</string>
+    <string name="browser_notice_dismiss">हटाएँ</string>
+    <string name="browser_reload">रीलोड करें</string>
+    <string name="browser_step_dots">चरण %1$d / %2$d</string>
+    <string name="browser_use_file">इसकी जगह फ़ाइल इस्तेमाल करें</string>
+    <string name="browser_open_external">मेरे ब्राउज़र में खोलें</string>
+    <string name="browser_back_to_page">मुझे सही पेज पर वापस ले जाएँ</string>
+
+    <!-- Customize -->
+    <string name="customize_title">अपने पैच चुनें</string>
+    <string name="customize_intro">ऐप को आपके डिवाइस पर चलाने के लिए ये पैच ज़रूरी हैं, इसलिए ये हमेशा चालू रहते हैं।</string>
+    <string name="customize_required">ज़रूरी, हमेशा चालू</string>
+    <string name="customize_advanced">उन्नत</string>
+    <string name="customize_prefix_label">सहायक ऐप के लिए पैकेज प्रीफ़िक्स</string>
+    <string name="customize_prefix_explainer">ब्रिज ऐप और अलार्म ऐप का नाम तय करता है। दोनों Samsung Health Monitor ऐप अपना पैकेज रखते हैं ताकि वे आपस में बात कर सकें।</string>
+    <string name="customize_prefix_ok">आपके लिए नया प्रीफ़िक्स बनाया जाता है।</string>
+    <string name="customize_prefix_locked">लॉक: सहायक ऐप इंस्टॉल हैं, और अपडेट के लिए वही प्रीफ़िक्स चाहिए।</string>
+    <string name="customize_prefix_regenerate">नया प्रीफ़िक्स बनाएँ</string>
+    <string name="customize_build">बिल्ड करें</string>
+    <string name="preset_recommended">सुझाया गया</string>
+    <string name="preset_minimal">न्यूनतम</string>
+    <string name="preset_everything">सब कुछ</string>
+    <string name="prefix_problem_empty">प्रीफ़िक्स डालें।</string>
+    <string name="prefix_problem_short">कम से कम दो हिस्से रखें, जैसे io.example।</string>
+    <string name="prefix_problem_long">वह प्रीफ़िक्स बहुत लंबा है।</string>
+    <string name="prefix_problem_segment">छोटे अक्षर, अंक और अंडरस्कोर इस्तेमाल करें; हर हिस्सा अक्षर से शुरू हो।</string>
+    <string name="prefix_problem_reserved">वह नेमस्पेस किसी और का है।</string>
+    <plurals name="customize_summary_patches">
+        <item quantity="one">%1$d पैच चालू</item>
+        <item quantity="other">%1$d पैच चालू</item>
+    </plurals>
+    <plurals name="customize_summary_apps">
+        <item quantity="one">%1$d ऐप</item>
+        <item quantity="other">%1$d ऐप</item>
+    </plurals>
+
+    <!-- Patch descriptions (titles come from the catalogue) -->
+    <string name="patch_generic_manufacturer_check">Samsung के न बने फ़ोन को स्वीकार करता है।</string>
+    <string name="patch_generic_vendor_check">Samsung SDK के बिना फ़ोन को स्वीकार करता है।</string>
+    <string name="patch_shm_min_age_22_to_16">न्यूनतम आयु 22 से घटाकर 16 करता है।</string>
+    <string name="patch_shm_supported_type_ordinals">हर क्षेत्र को समर्थित मानता है।</string>
+    <string name="patch_shm_region_supportedtype">क्षेत्र की जाँच पास होने देता है।</string>
+    <string name="patch_shm_region_countrylist">समर्थित सूची में किसी भी देश को स्वीकार करता है।</string>
+    <string name="patch_shm_root_packagevalidator">विक्रेता प्रमाणपत्र की जाँच छोड़ देता है।</string>
+    <string name="patch_shm_force_update_response">विफल या ज़बरदस्ती अपडेट के जवाब को अनदेखा करता है।</string>
+    <string name="patch_shm_force_update_pref">सहेजे गए ज़बरदस्ती-अपडेट फ़्लैग को अनदेखा करता है।</string>
+    <string name="patch_shm_main_gates">दूसरे फ़ोन को रोकने वाली स्टार्ट-अप जाँचें छोड़ देता है।</string>
+    <string name="patch_shm_setup_network_gate">सेटअप के दौरान SIM और क्षेत्र की जाँच छोड़ देता है।</string>
+    <string name="patch_shm_sleep_apnea_support">स्लीप एपनिया को समर्थित बताता है।</string>
+    <string name="patch_phone_rebrand_gms">फ़ोन ऐप को घड़ी ऐप जैसा ही पैकेज और कुंजी देता है ताकि दोनों डेटा का आदान-प्रदान कर सकें।</string>
+    <string name="patch_watch_rebrand_coexist">घड़ी ऐप का नाम बदलता है ताकि वह स्टॉक ऐप के साथ रह सके।</string>
+    <string name="patch_watch_queries_health_service">घड़ी ऐप को हेल्थ सेवा दिखने देता है।</string>
+    <string name="patch_watch_companion_vendor">किसी भी सहयोगी फ़ोन ब्रांड को स्वीकार करता है।</string>
+    <string name="patch_watch_alarm_system_app">सिस्टम विशेषाधिकार के बिना सटीक अलार्म शेड्यूल करता है।</string>
+    <string name="patch_watch_mobile_installed">फ़ोन ऐप को इंस्टॉल बताता है।</string>
+    <string name="patch_watch_ecg_sensor_adapter">Health Tracking सेवा के ज़रिए ECG सेंसर पढ़ता है।</string>
+    <string name="patch_watch_apnea_country">एपनिया की देश जाँच छोड़ देता है।</string>
+    <string name="patch_watch_apnea_reeval_not_supported">जो एपनिया समर्थन असमर्थित के रूप में सहेजा गया था, उसे दोबारा जाँचता है।</string>
+    <string name="patch_watch_mod">Health Tracking सेवा से बात करने वाला मॉड्यूल जोड़ता है।</string>
+    <string name="patch_alarm_verify_symbols">जाँचता है कि अलार्म ऐप में लिंक के लिए ज़रूरी हिस्से हैं।</string>
+    <string name="patch_alarm_rebrand_manifest">अलार्म ऐप का नाम बदलता है ताकि वह स्टॉक ऐप के साथ इंस्टॉल हो सके।</string>
+    <string name="patch_alarm_rebrand_code">अलार्म ऐप का कोड नए नाम पर अपडेट करता है।</string>
+    <string name="patch_alarm_permissions_prune">सिर्फ़ सिस्टम ऐप को मिलने वाली अनुमतियाँ हटाता है।</string>
+    <string name="patch_alarm_notification_permissions">सूचना और फ़ुल-स्क्रीन अलार्म की अनुमतियाँ जोड़ता है।</string>
+    <string name="patch_alarm_queries_libs">फ़ोर्क को जो लुकअप और लाइब्रेरी नहीं चाहिए, उन्हें हटाता है।</string>
+    <string name="patch_alarm_components_prune">फ़ोर्क को जो विक्रेता कंपोनेंट नहीं चाहिए, उन्हें हटाता है।</string>
+    <string name="patch_alarm_provider_open">अलार्म डेटा फ़ोर्क के लिए खोलता है।</string>
+    <string name="patch_alarm_link_components">फ़ोन से भेजे गए अलार्म के लिए रिसीवर जोड़ता है।</string>
+    <string name="patch_alarm_appfunctions_drop">विक्रेता की एक अनुपयोगी फ़ीचर ट्री हटाता है।</string>
+    <string name="patch_alarm_semgesture_skip">विक्रेता का जेस्चर मैनेजर छोड़ देता है।</string>
+    <string name="patch_alarm_gms_observer_drop">अलार्म को जल्दी बंद होने से रोकता है।</string>
+    <string name="patch_alarm_service_stop_on_destroy">पक्का करता है कि आवाज़ और कंपन हमेशा बंद हों।</string>
+    <string name="patch_alarm_force_sound_vibrate">हमेशा बजता है और कंपन करता है।</string>
+    <string name="patch_alarm_link_send">अलार्म में बदलाव फ़ोन को भेजता है।</string>
+    <string name="patch_alarm_hide_launcher">अतिरिक्त लॉन्चर आइकन छिपाता है।</string>
+    <string name="patch_alarm_relabel">फ़ोर्क का नाम \"फ़ोन अलार्म\" रखता है।</string>
+    <string name="patch_alarm_fork">अलार्म को फ़ोन से जोड़ने वाला मॉड्यूल जोड़ता है।</string>
+    <string name="output_shm_phone">Samsung Health Monitor (पैच किया हुआ)</string>
+    <string name="output_shm_watch">Wear OS के लिए Samsung Health Monitor (पैच किया हुआ)</string>
+    <string name="output_bridge_watch">घड़ी के लिए ब्रिज</string>
+    <string name="output_alarm_fork">घड़ी पर फ़ोन अलार्म</string>
+    <string name="output_bridge_phone">फ़ोन के लिए ब्रिज</string>
+    <string name="stock_label_shm">Samsung Health Monitor (स्टॉक)</string>
+    <string name="stock_reason_shm">ऐप की दो प्रतियाँ एक ही सेंसर के लिए होड़ करेंगी।</string>
+
+    <!-- Build -->
+    <string name="build_title">आपके ऐप बनाए जा रहे हैं</string>
+    <string name="build_caption_idle">तैयारी हो रही है</string>
+    <string name="build_stage_unpack">खोलना</string>
+    <string name="build_stage_fingerprints">पैच फ़िंगरप्रिंट जाँचना</string>
+    <string name="build_stage_apply_short">पैच लगाना</string>
+    <plurals name="build_stage_apply">
+        <item quantity="one">%1$d पैच लगाना</item>
+        <item quantity="other">%1$d पैच लगाना</item>
+    </plurals>
+    <string name="build_stage_rename">पैकेज का नाम बदलना</string>
+    <string name="build_stage_rebuild">दोबारा बनाना</string>
+    <string name="build_stage_sign">साइन करना</string>
+    <string name="build_stage_selfcheck">स्व-जाँच</string>
+    <string name="build_can_leave">आप जा सकते हैं। पूरा होने पर हम आपको सूचित करेंगे।</string>
+    <string name="build_channel_name">बिल्ड की प्रगति</string>
+    <string name="build_channel_description">आपके ऐप बनने और साइन होने के दौरान दिखता है।</string>
+    <string name="build_notification_title">आपके ऐप बनाए जा रहे हैं</string>
+    <string name="build_notification_progress">%1$s: %2$s</string>
+    <string name="build_notification_done">आपके ऐप बन गए हैं और साइन हो गए हैं।</string>
+    <string name="build_notification_failed">बिल्ड विफल रहा। वजह देखने के लिए ऐप खोलें।</string>
+    <string name="build_error_title">बिल्ड पूरा नहीं हुआ</string>
+    <string name="build_show_log">लॉग दिखाएँ</string>
+    <string name="build_log_title">बिल्ड लॉग</string>
+    <string name="build_log_empty">अभी कुछ दर्ज नहीं हुआ।</string>
+    <string name="build_done_title">बन गया और साइन हो गया</string>
+    <string name="build_done_ready">इंस्टॉल के लिए तैयार</string>
+    <string name="build_done_install">फ़ोन पर इंस्टॉल करें</string>
+    <string name="build_done_link_note">दोनों Health Monitor ऐप एक ही पैकेज नाम और साइनिंग कुंजी साझा करते हैं। इसी से Google का डेटा लिंक उनके बीच संदेश पहुँचा पाता है।</string>
+    <plurals name="build_done_subtitle_patches">
+        <item quantity="one">%1$d पैच</item>
+        <item quantity="other">%1$d पैच</item>
+    </plurals>
+    <plurals name="build_done_subtitle_apps">
+        <item quantity="one">%1$d ऐप</item>
+        <item quantity="other">%1$d ऐप</item>
+    </plurals>
+
+    <!-- Install -->
+    <string name="install_phone_title">इस फ़ोन पर इंस्टॉल करें</string>
+    <string name="install_phone_intro">Android हर इंस्टॉल की पुष्टि माँगता है। ऐप को जो पहुँच चाहिए, उसे बाद में जाँचा जाता है; जो कम है उसे आप सेटिंग में चालू करते हैं।</string>
+    <string name="install_phone_note">अनुमतियाँ, दूसरे ऐप के ऊपर दिखाना, सूचना की पहुँच और प्रतिबंधित सेटिंग आप खुद चालू करते हैं। बाद में इस स्क्रीन पर लौटें और यह फिर से जाँच करेगी।</string>
+    <string name="install_watch_title">अपनी घड़ी पर इंस्टॉल करें</string>
+    <string name="install_watch_intro">Wi-Fi पर इस क्रम में इंस्टॉल होता है: Health Monitor, ब्रिज, फिर फ़ोन अलार्म।</string>
+    <string name="install_watch_note">यह चलते समय घड़ी चालू और जुड़ी रहती है।</string>
+    <string name="install_start">इंस्टॉल शुरू करें</string>
+    <string name="install_error_build_missing">बिल्ड मौजूद नहीं है या इस सेटअप से मेल नहीं खाता। दोबारा बिल्ड करें, फिर इंस्टॉल करें।</string>
+    <string name="install_error_failed">घड़ी ने इंस्टॉल से इनकार कर दिया।</string>
+    <string name="install_error_signature">दूसरी कुंजी से साइन की गई एक प्रति पहले से घड़ी पर है। कुछ भी हटाया नहीं गया। उस प्रति को खुद अनइंस्टॉल करें, फिर कोशिश करें।</string>
+    <string name="install_error_grant">एक पहुँच सेटिंग लागू नहीं हो सकी।</string>
+    <string name="action_open">खोलें</string>
+    <string name="action_allow_installing">ऐप इंस्टॉल करने की अनुमति दें</string>
+    <string name="install_check_again">दोबारा जाँचें</string>
+    <string name="install_continue_anyway">फिर भी जारी रखें</string>
+    <string name="install_onboarding">Samsung Health Monitor खोलें और उसका सेटअप पूरा करें</string>
+    <string name="install_error_unknown_sources">इस ऐप को अभी ऐप इंस्टॉल करने की अनुमति नहीं है। अनुमति दें, फिर दोबारा शुरू करें।</string>
+    <string name="install_error_notifications">पहले इस ऐप के लिए सूचनाओं की अनुमति दें: पेयरिंग कोड सूचना में टाइप किया जाता है।</string>
+    <string name="phone_adb_title">सब कुछ एक साथ दें</string>
+    <string name="phone_adb_intro">अगर स्विच रास्ते में आएँ, तो यह फ़ोन वायरलेस डीबगिंग के ज़रिए खुद उन्हें दे सकता है। आपका Wi-Fi पर होना ज़रूरी है।</string>
+    <string name="phone_adb_action">वायरलेस डीबगिंग से सब कुछ दें</string>
+    <string name="phone_adb_waiting_service">वायरलेस डीबगिंग में उसे चालू करें और पेयरिंग कोड से डिवाइस पेयर करें पर टैप करें। एक सूचना आएगी जिसमें आप उस स्क्रीन को छोड़े बिना कोड टाइप कर सकते हैं।</string>
+    <string name="phone_adb_waiting_code">पेयरिंग स्क्रीन पर दिखा छह अंकों का कोड यहाँ या सूचना में टाइप करें।</string>
+    <string name="phone_adb_wrong_code">वह कोड काम नहीं आया। पेयरिंग स्क्रीन देखें और फिर कोशिश करें।</string>
+    <string name="phone_adb_ambiguous">इस फ़ोन पर एक से ज़्यादा वायरलेस डीबगिंग सेवा मिली। वायरलेस डीबगिंग बंद करके फिर चालू करें, फिर कोशिश करें।</string>
+    <string name="phone_adb_connecting">इस फ़ोन से जुड़ रहा है...</string>
+    <string name="phone_adb_granting">जुड़ गया। पहुँच दी जा रही है...</string>
+    <string name="phone_adb_failed">इस फ़ोन की वायरलेस डीबगिंग से नहीं जुड़ सका।</string>
+    <string name="phone_adb_code_label">पेयरिंग कोड</string>
+    <string name="phone_adb_submit">पेयर करें</string>
+    <string name="selfadb_channel">इस फ़ोन से पेयर हो रहा है</string>
+    <string name="selfadb_code_channel">पेयरिंग कोड</string>
+    <string name="selfadb_waiting_service">वायरलेस डीबगिंग में पेयरिंग कोड से डिवाइस पेयर करें पर टैप करें</string>
+    <string name="selfadb_enter_code_title">पेयरिंग कोड डालें</string>
+    <string name="selfadb_enter_code_body">पेयरिंग स्क्रीन पर दिखा छह अंकों का कोड टाइप करें।</string>
+    <string name="selfadb_reply_label">पेयरिंग कोड</string>
+    <string name="selfadb_reply_action">कोड डालें</string>
+    <string name="selfadb_wrong_code">वह कोड काम नहीं आया। पेयरिंग स्क्रीन देखें और फिर कोशिश करें।</string>
+    <string name="selfadb_pairing">पेयर हो रहा है...</string>
+    <string name="selfadb_connecting">जुड़ रहा है...</string>
+    <string name="selfadb_connected">इस फ़ोन की वायरलेस डीबगिंग से जुड़ गया</string>
+    <string name="selfadb_ambiguous">इस फ़ोन पर एक से ज़्यादा वायरलेस डीबगिंग सेवा मिली। वायरलेस डीबगिंग बंद करके फिर चालू करें, फिर कोशिश करें।</string>
+    <string name="selfadb_failed">जुड़ नहीं सका</string>
+    <string name="selfadb_service_channel">वायरलेस डीबगिंग</string>
+    <string name="selfadb_service_title">इस फ़ोन की वायरलेस डीबगिंग से जुड़ रहा है</string>
+    <string name="phone_adb_timeout">पेयरिंग में बहुत देर लगी और उसे रोक दिया गया।</string>
+    <string name="phone_adb_interrupted">पेयरिंग बीच में रुक गई।</string>
+    <string name="watch_error_unreachable">घड़ी तक नहीं पहुँचा जा सका। जाँचें कि वायरलेस डीबगिंग चालू है और दोनों डिवाइस एक ही Wi-Fi पर हैं।</string>
+    <string name="watch_error_pairing">घड़ी अब इस फ़ोन पर भरोसा नहीं करती। वापस जाकर फिर से पेयर करें।</string>
+    <string name="grant_permission">अनुमति</string>
+    <string name="grant_appop">ऐप ऑपरेशन</string>
+    <string name="grant_setting">सिस्टम सेटिंग</string>
+    <string name="grant_listener">सूचना की पहुँच</string>
+    <string name="grant_battery">बैटरी छूट</string>
+
+    <!-- Health Platform developer mode -->
+    <string name="devmode_title">Health Platform डेवलपर मोड</string>
+    <string name="devmode_intro">Health Tracking सेवा सिर्फ़ डेवलपर मोड में पैच किए ऐप से बात करती है। इसे घड़ी से चालू करें।</string>
+    <string name="devmode_step_settings">घड़ी पर सेटिंग खोलें।</string>
+    <string name="devmode_step_apps">ऐप में जाएँ।</string>
+    <string name="devmode_step_health_platform">Health Platform चुनें।</string>
+    <string name="devmode_step_tap">शीर्षक पर बार-बार टैप करें, जब तक [Dev mode] न दिखे।</string>
+    <string name="devmode_open_settings">घड़ी पर Health Platform सेटिंग खोलें</string>
+    <string name="devmode_waiting">डेवलपर मोड की प्रतीक्षा</string>
+    <string name="devmode_detected">डेवलपर मोड चालू है</string>
+    <string name="devmode_check">अभी जाँचें</string>
+    <string name="devmode_skip">अभी छोड़ें</string>
+
+    <!-- Disable stock apps -->
+    <string name="disable_title">स्टॉक ऐप बंद करें</string>
+    <string name="disable_intro">ऐप बंद करने से वह छिप जाता है और रुक जाता है। आप उसे कभी भी फिर चालू कर सकते हैं। कुछ भी अनइंस्टॉल नहीं होता।</string>
+    <string name="disable_chip_installed">घड़ी ऐप इंस्टॉल है</string>
+    <string name="disable_chip_wear">Wear OS</string>
+    <string name="disable_chip_not_installed">इंस्टॉल नहीं है</string>
+    <string name="disable_error_some">कुछ ऐप बंद नहीं हो सके। फिर कोशिश करें, या यह चरण छोड़ दें।</string>
+    <plurals name="disable_action">
+        <item quantity="one">%1$d ऐप बंद करें</item>
+        <item quantity="other">%1$d ऐप बंद करें</item>
+    </plurals>
+
+    <!-- Self-test -->
+    <string name="selftest_title">सब कुछ जाँचा जा रहा है</string>
+    <string name="selftest_section_phone">फ़ोन</string>
+    <string name="selftest_section_watch">घड़ी</string>
+    <string name="selftest_section_link">फ़ोन ↔ घड़ी लिंक</string>
+    <string name="selftest_section_human">आपके द्वारा जाँचा गया</string>
+    <string name="selftest_rerun">फिर चलाएँ</string>
+    <string name="selftest_human_label">आपके साथ जाँच · %1$d / %2$d</string>
+    <string name="selftest_share_subject">OpenSHM Patcher स्व-परीक्षण</string>
+
+    <!-- Self-test rows: %1$s is an app name or a list of access names -->
+    <string name="selftest_package_title">%1$s इंस्टॉल है</string>
+    <string name="selftest_grants_title">%1$s के पास अपनी पहुँच है</string>
+    <string name="selftest_stock_title">%1$s बंद है</string>
+    <string name="selftest_bridge_link_title">घड़ी से ब्रिज लिंक</string>
+    <string name="selftest_watch_platform">Health Platform डेवलपर मोड में</string>
+    <string name="selftest_gms_title">घड़ी फ़ोन से जुड़ी है</string>
+    <string name="selftest_shm_title">Health Monitor को घड़ी दिखती है</string>
+    <string name="selftest_ecg_title">ECG फ़ोन तक पहुँचता है</string>
+    <string name="selftest_platform_question">घड़ी पर, क्या Health Platform डेवलपर मोड में है?</string>
+    <string name="selftest_gms_question">क्या फ़ोन पर Wear OS ऐप घड़ी को जुड़ी हुई दिखाता है?</string>
+    <string name="selftest_shm_question">क्या फ़ोन पर Samsung Health Monitor घड़ी को जुड़ी हुई दिखाता है?</string>
+    <string name="selftest_ecg_question">घड़ी पर ECG लें। क्या वह फ़ोन पर दिखता है?</string>
+    <string name="selftest_detail_answered_no">आपने नहीं कहा</string>
+
+    <string name="selftest_detail_package_ok">संस्करण %1$s, आपकी कुंजी से साइन किया हुआ, बिल्ड वाली ही फ़ाइल</string>
+    <string name="selftest_detail_package_ok_no_version">आपकी कुंजी से साइन किया हुआ, बिल्ड वाली ही फ़ाइल</string>
+    <string name="selftest_detail_not_installed">इंस्टॉल नहीं है</string>
+    <string name="selftest_detail_wrong_cert">आपकी कुंजी से अलग कुंजी से साइन किया हुआ</string>
+    <string name="selftest_detail_cert_unavailable">आपकी साइनिंग कुंजी पढ़ी नहीं जा सकी</string>
+    <string name="selftest_detail_no_build">तुलना के लिए कोई बिल्ड नहीं</string>
+    <string name="selftest_detail_hash_mismatch">इंस्टॉल की गई फ़ाइल पिछले बिल्ड से अलग है</string>
+    <string name="selftest_detail_hash_unreadable">इंस्टॉल की गई फ़ाइल पढ़ी नहीं जा सकी</string>
+    <string name="selftest_detail_watch_ok">इंस्टॉल है, बिल्ड वाली ही फ़ाइल</string>
+    <string name="selftest_detail_grants_ok">सारी पहुँच दी गई है</string>
+    <string name="selftest_detail_grants_missing">कम है: %1$s</string>
+    <string name="selftest_detail_grants_unknown">पढ़ नहीं सका: %1$s</string>
+    <string name="selftest_detail_grants_optional">वैकल्पिक, सेट नहीं: %1$s</string>
+    <string name="selftest_detail_skipped_not_installed">छोड़ा गया, इंस्टॉल नहीं है</string>
+    <string name="selftest_detail_watch_skipped">छोड़ा गया, घड़ी जुड़ी नहीं है</string>
+    <string name="selftest_detail_watch_no_answer">घड़ी ने जवाब नहीं दिया</string>
+    <string name="selftest_detail_error">यह जाँच चल नहीं सकी</string>
+    <string name="selftest_detail_stock_still_on">अब भी चालू है</string>
+    <string name="selftest_detail_stock_off">बंद है</string>
+    <string name="selftest_detail_stock_absent">घड़ी पर नहीं है</string>
+    <string name="selftest_detail_bridge_missing">ब्रिज जवाब नहीं देता। क्या वह इंस्टॉल है?</string>
+    <string name="selftest_detail_bridge_denied">ब्रिज ने स्थिति के अनुरोध से इनकार किया। वह दूसरी कुंजी से बना था</string>
+    <string name="selftest_detail_bridge_not_running">ब्रिज सेवा नहीं चल रही</string>
+    <string name="selftest_detail_bridge_link_down">घड़ी से लिंक बंद है</string>
+    <string name="selftest_detail_bridge_no_hello">लिंक चालू है, पर घड़ी ने अभी तक हेलो नहीं कहा</string>
+    <string name="selftest_detail_bridge_ok">लिंक चालू है और घड़ी ने हेलो कहा</string>
+
+    <!-- All set -->
+    <string name="allset_title">सब तैयार है</string>
+    <string name="allset_subtitle">%2$d में से %1$d जाँचें सफल</string>
+    <string name="allset_chip_link">लिंक</string>
+
+    <!-- Home -->
+    <string name="home_title">OpenSHM</string>
+    <string name="home_status_ok">सब कुछ ठीक चल रहा है</string>
+    <string name="home_status_warning">एक नज़र डालें</string>
+    <string name="home_status_failed">कुछ खराब है</string>
+    <string name="home_status_unknown">अभी जाँचा नहीं गया</string>
+    <string name="home_never_tested">देखने के लिए जाँच चलाएँ</string>
+    <plurals name="home_tested_days_ago">
+        <item quantity="one">%1$d दिन पहले जाँचा गया</item>
+        <item quantity="other">%1$d दिन पहले जाँचा गया</item>
+    </plurals>
+    <string name="home_test_again">फिर जाँचें</string>
+    <string name="home_update_title">अपडेट तैयार है</string>
+    <string name="home_update_detail">%1$s: %2$s से %3$s</string>
+    <string name="home_update_patches">%1$s के लिए अपडेट किए गए पैच</string>
+    <string name="home_menu_check_catalogue">कैटलॉग अपडेट जाँचें</string>
+    <string name="home_catalogue_updated">कैटलॉग संस्करण %1$d पर अपडेट हुआ</string>
+    <string name="home_catalogue_up_to_date">कैटलॉग अप-टू-डेट है</string>
+    <string name="home_catalogue_rejected">डाउनलोड किया गया कैटलॉग स्वीकार नहीं हुआ</string>
+    <string name="home_catalogue_failed">अपडेट सर्वर तक नहीं पहुँचा जा सका</string>
+    <string name="home_catalogue_disabled">इस बिल्ड में कैटलॉग अपडेट का चैनल नहीं है</string>
+    <string name="home_current_builds">मौजूदा बिल्ड</string>
+    <string name="home_rebuild_description">पैच बदलें और %1$s दोबारा बनाएँ</string>
+    <string name="home_restore_description">%1$s बहाल करें</string>
+    <string name="home_new_build">नया बिल्ड</string>
+    <string name="home_menu_new_build">नया बिल्ड</string>
+    <string name="home_menu_self_test">स्व-परीक्षण चलाएँ</string>
+    <string name="home_menu_restore_watch">घड़ी बहाल करें</string>
+    <string name="home_menu_uninstall">अनइंस्टॉल करें</string>
+    <string name="restore_title">मूल ऐप बहाल करें?</string>
+    <string name="restore_body">पैच किया ऐप हटा दिया जाता है और स्टॉक ऐप फिर चालू हो जाता है। घड़ी पर आपका डेटा बना रहता है।</string>
+    <string name="restore_confirm">बहाल करें</string>
+
+    <!-- Signing key -->
+    <string name="signing_key_title">साइनिंग कुंजी</string>
+    <string name="signing_key_explainer">आपका बनाया हर ऐप इसी कुंजी से साइन होता है। Android अपडेट सिर्फ़ उसी कुंजी से साइन किए ऐप पर इंस्टॉल करता है, इसलिए बैकअप रखें।</string>
+    <string name="signing_key_present">साइनिंग कुंजी तैयार है</string>
+    <string name="signing_key_absent">अभी कोई साइनिंग कुंजी नहीं</string>
+    <string name="signing_key_absent_note">कुंजी आपके पहले बिल्ड पर बनती है। अगर आपके पास पहले से बैकअप है, तो उसे अभी इंपोर्ट कर सकते हैं।</string>
+    <string name="signing_key_unreadable">इस डिवाइस पर कुंजी पढ़ी नहीं जा सकती।</string>
+    <string name="signing_key_sha_label">प्रमाणपत्र SHA-256</string>
+    <string name="signing_key_copy">प्रमाणपत्र SHA-256 कॉपी करें</string>
+    <string name="signing_key_backed_up">बैकअप लिया गया</string>
+    <string name="signing_key_not_backed_up">अभी बैकअप नहीं लिया</string>
+    <string name="signing_key_export">बैकअप एक्सपोर्ट करें</string>
+    <string name="signing_key_import">कुंजी इंपोर्ट करें</string>
+    <string name="signing_key_export_needs_key">कुंजी बनने के बाद ही एक्सपोर्ट हो सकता है।</string>
+    <string name="signing_key_export_hint">बैकअप फ़ाइल के लिए पासवर्ड चुनें। कुंजी दोबारा इंपोर्ट करने के लिए यह चाहिए, और इसे वापस नहीं पाया जा सकता।</string>
+    <string name="signing_key_import_hint">PKCS#12 (.p12) फ़ाइल चुनें और उसका पासवर्ड डालें।</string>
+    <string name="signing_key_password">पासवर्ड</string>
+    <string name="signing_key_password_repeat">पासवर्ड दोबारा डालें</string>
+    <string name="signing_key_show_password">पासवर्ड दिखाएँ</string>
+    <string name="signing_key_hide_password">पासवर्ड छिपाएँ</string>
+    <string name="signing_key_choose_location">सहेजने की जगह चुनें</string>
+    <string name="signing_key_choose_file">फ़ाइल चुनें</string>
+    <string name="signing_key_error_short">कम से कम %1$d अक्षर रखें।</string>
+    <string name="signing_key_error_mismatch">पासवर्ड मेल नहीं खाते।</string>
+    <string name="signing_key_error_empty">फ़ाइल का पासवर्ड डालें।</string>
+    <string name="signing_key_export_done">बैकअप सहेज लिया गया। फ़ाइल और उसका पासवर्ड किसी सुरक्षित जगह रखें।</string>
+    <string name="signing_key_export_failed">बैकअप सहेजा नहीं जा सका।</string>
+    <string name="signing_key_import_done">साइनिंग कुंजी इंपोर्ट हो गई।</string>
+    <string name="signing_key_import_failed">कुंजी इंपोर्ट नहीं हो सकी।</string>
+    <string name="signing_key_import_wrong_password">पासवर्ड गलत है, या फ़ाइल PKCS#12 कुंजी फ़ाइल नहीं है।</string>
+    <string name="signing_key_import_not_one_key">फ़ाइल में ठीक एक कुंजी होनी चाहिए।</string>
+    <string name="signing_key_import_unusable">फ़ाइल में इस्तेमाल लायक निजी कुंजी और प्रमाणपत्र नहीं है।</string>
+    <string name="signing_key_import_weak">कुंजी बहुत कमज़ोर है। RSA कुंजी में कम से कम 2048 बिट चाहिए।</string>
+    <string name="signing_key_import_type">सिर्फ़ RSA और EC कुंजियाँ समर्थित हैं।</string>
+    <string name="signing_key_import_mismatch">कुंजी अपने प्रमाणपत्र से मेल नहीं खाती।</string>
+    <string name="signing_key_import_costly">फ़ाइल सामान्य कुंजी फ़ाइल से कहीं ज़्यादा गणना माँगती है, इसलिए उसे अस्वीकार कर दिया गया।</string>
+    <string name="signing_key_import_unreadable">फ़ाइल पढ़ी नहीं जा सकी।</string>
+    <string name="signing_key_confirm_title">साइनिंग कुंजी बदलें?</string>
+    <string name="signing_key_confirm_current">मौजूदा कुंजी</string>
+    <string name="signing_key_confirm_new">फ़ाइल में कुंजी</string>
+    <string name="signing_key_confirm_none">अभी कोई नहीं</string>
+    <string name="signing_key_confirm_warning">जो ऐप आप पहले से इंस्टॉल कर चुके हैं और मौजूदा कुंजी से साइन किए हैं, वे इस ऐप से अपडेट स्वीकार नहीं करेंगे। नई कुंजी इस्तेमाल करने के लिए आपको उन्हें अनइंस्टॉल करके दोबारा इंस्टॉल करना होगा, जिससे उनका डेटा मिट जाता है।</string>
+    <string name="signing_key_confirm_replace">कुंजी बदलें</string>
+    <string name="signing_key_nudge_title">अपनी साइनिंग कुंजी का बैकअप लें</string>
+    <string name="signing_key_nudge_body">इसके बिना इंस्टॉल किए ऐप अपडेट नहीं हो सकते, सिर्फ़ दोबारा इंस्टॉल हो सकते हैं।</string>
+    <string name="signing_key_nudge_action">बैकअप लें</string>
+    <string name="home_menu_signing_key">साइनिंग कुंजी</string>
+</resources>

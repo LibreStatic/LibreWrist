@@ -1,0 +1,489 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Shared actions -->
+    <string name="action_back">Zurück</string>
+    <string name="action_help">Hilfe</string>
+    <string name="action_close">Schließen</string>
+    <string name="action_settings">Einstellungen</string>
+    <string name="action_more_options">Weitere Optionen</string>
+    <string name="action_continue">Weiter</string>
+    <string name="action_cancel">Abbrechen</string>
+    <string name="action_done">Fertig</string>
+    <string name="action_skip">Vorerst überspringen</string>
+    <string name="action_start">Starten</string>
+    <string name="action_retry">Erneut versuchen</string>
+    <string name="action_edit">Bearbeiten</string>
+    <string name="action_fix">Beheben</string>
+    <string name="action_yes">Ja</string>
+    <string name="action_no">Nein</string>
+    <string name="action_open_settings">Einstellungen öffnen</string>
+    <string name="action_share_report">Bericht teilen</string>
+
+    <string name="state_expanded">Erweitert</string>
+    <string name="state_collapsed">Eingeklappt</string>
+    <string name="device_phone">Smartphone</string>
+    <string name="device_watch">Uhr</string>
+    <string name="chip_optional">Optional</string>
+    <string name="chip_apk_not_bundle">APK, kein Bundle</string>
+    <string name="chip_nodpi">nodpi</string>
+    <string name="chip_android_11">Android 11+</string>
+    <string name="chip_android_14">Android 14+</string>
+    <string name="size_mb">%1$.1f MB</string>
+
+    <!-- Step header and status -->
+    <string name="step_label">SCHRITT %1$d VON %2$d</string>
+    <string name="step_label_watch_suffix">" · AUF DER UHR"</string>
+    <string name="status_pending">Ausstehend</string>
+    <string name="status_running">Läuft</string>
+    <string name="status_passed">Bestanden</string>
+    <string name="status_warning">Braucht Aufmerksamkeit</string>
+    <string name="status_failed">Fehlgeschlagen</string>
+    <string name="progress_download_description">Download %1$d Prozent</string>
+    <string name="progress_build_description">Build %1$d Prozent</string>
+
+    <!-- Welcome -->
+    <string name="welcome_title">Deine Apps, deine Uhr, dein Weg</string>
+    <string name="welcome_promise_download">Du besorgst die offiziellen Apps selbst; hier ist nichts enthalten.</string>
+    <string name="welcome_promise_patch">Patches sorgen dafür, dass Samsung Health Monitor auf einem Nicht-Samsung-Smartphone läuft und neben der Original-Uhren-App existiert.</string>
+    <string name="welcome_promise_undo">Jede Änderung lässt sich rückgängig machen, und die Original-Apps bleiben erhalten.</string>
+    <string name="welcome_get_started">Los geht\'s</string>
+    <string name="welcome_what_changes">Was ändert sich auf meinen Geräten?</string>
+    <string name="changes_title">Was sich ändert</string>
+    <string name="changes_intro">Nur diese Apps werden installiert und nur diese Einstellungen angefasst. Nichts wird gelöscht.</string>
+    <string name="changes_installs">Installiert</string>
+    <string name="changes_grants">Nach der Installation erlaubt</string>
+    <string name="changes_disables">Kann deaktiviert werden</string>
+
+    <!-- Profile -->
+    <string name="profile_title">Welche Uhr hast du?</string>
+    <string name="profile_intro">Das bestimmt, welche offiziellen Apps du brauchst.</string>
+    <string name="profile_wear5_title">Wear OS 5 oder neuer</string>
+    <string name="profile_wear5_summary">Health Monitor plus Smartphone-Wecker auf der Uhr.</string>
+    <string name="profile_wear5_apps">3 offizielle Apps</string>
+    <string name="profile_wear3_title">Wear OS 3 oder 4</string>
+    <string name="profile_wear3_summary">Nur Health Monitor. Die Wecker-App benötigt Android 14 auf der Uhr.</string>
+    <string name="profile_wear3_apps">2 offizielle Apps</string>
+    <string name="profile_detected">Auf deiner Uhr geprüft: Android %1$s (%2$s)</string>
+    <string name="profile_check_paired">Gekoppelte Uhren prüfen</string>
+    <string name="profile_hint_certain">%1$s gefunden. Sie läuft immer mit Wear OS 5 oder neuer, daher ist die erste Option ausgewählt.</string>
+    <string name="profile_hint_depends">Deine %1$s kann beides haben. Prüfe die Softwareinformationen auf der Uhr oder lass die App in Schritt 3 prüfen.</string>
+    <string name="profile_check_none">Keine gekoppelte Galaxy Watch gefunden. Wähle eine Option oder lass die App in Schritt 3 prüfen.</string>
+    <string name="profile_check_denied">Der Bluetooth-Zugriff wurde nicht erlaubt, daher können gekoppelte Uhren nicht geprüft werden. Wähle eine Option oder lass die App in Schritt 3 prüfen.</string>
+    <string name="profile_howto_title">So erkennst du es</string>
+    <string name="profile_howto_watch">Auf der Uhr: Einstellungen › Über die Uhr › Softwareinformationen. \"Wear OS 5\" oder neuer, \"One UI 6 Watch\" oder neuer oder Android 14 oder neuer bedeutet die erste Option.</string>
+    <string name="profile_howto_phone">Derselbe Bildschirm findet sich in der Galaxy Wearable App auf dem Smartphone: Uhreneinstellungen › Über die Uhr › Softwareinformationen.</string>
+    <string name="profile_howto_models">Galaxy Watch7, Watch Ultra und neuer erfüllen die Voraussetzung immer. Watch4, Watch5, Watch6 und Watch FE erst nach dem Update auf One UI 6 Watch.</string>
+    <string name="profile_howto_unsure">Unsicher? Wähle irgendeine: Die App prüft deine Uhr selbst, sobald sie verbunden ist (Schritt 3), und korrigiert die Auswahl, bevor etwas heruntergeladen wird.</string>
+
+    <!-- Galaxy Wearable pairing check -->
+    <string name="wearable_title">Ist deine Uhr gekoppelt?</string>
+    <string name="wearable_intro">Die Uhr muss bereits mit diesem Smartphone gekoppelt sein. Diese Prüfungen ändern nichts.</string>
+    <string name="wearable_check_app">Begleit-App gefunden</string>
+    <string name="wearable_check_app_detail">Die App zur Verwaltung der Uhr ist installiert.</string>
+    <string name="wearable_check_paired">Uhr gekoppelt</string>
+    <string name="wearable_check_paired_detail">Eine Uhr ist diesem Smartphone zugeordnet.</string>
+    <string name="wearable_check_datalayer">Smartphone und Uhr können kommunizieren</string>
+    <string name="wearable_check_datalayer_detail">Die Google-Datenverbindung zwischen beiden antwortet.</string>
+    <string name="wearable_note">Wenn eine Prüfung fehlschlägt, behebe das in der Einrichtung der Uhr selbst und prüfe dann erneut.</string>
+    <string name="wearable_recheck">Erneut prüfen</string>
+
+    <!-- Watch pairing over Wi-Fi -->
+    <string name="watchpair_correct_older">Deine Uhr läuft mit Android %1$s, daher wird die Wecker-App übersprungen: Du brauchst 2 offizielle Apps statt 3.</string>
+    <string name="watchpair_correct_newer">Deine Uhr läuft mit Android %1$s, daher ist die Wecker-App enthalten: Du brauchst 3 offizielle Apps statt 2.</string>
+    <string name="watchpair_title">Mit deiner Uhr verbinden</string>
+    <string name="watchpair_intro">Die Uhr akzeptiert Installationen über Wi-Fi, sobald du sie mit einem kurzen Code koppelst.</string>
+    <string name="watchpair_on_watch">AUF DEINER UHR</string>
+    <string name="watchpair_on_watch_steps">Öffne Einstellungen, Entwickleroptionen, Kabelloses Debugging und dann Neues Gerät koppeln. Dort wird der 6-stellige Code angezeigt.</string>
+    <string name="watchpair_found">Uhr in deinem Netzwerk gefunden</string>
+    <string name="watchpair_searching">Suche nach deiner Uhr…</string>
+    <string name="watchpair_address_label">Adresse (Host:Port)</string>
+    <string name="watchpair_code_label">Kopplungscode</string>
+    <string name="watchpair_check_wifi">Smartphone und Uhr sind im selben Wi-Fi</string>
+    <string name="watchpair_check_developer">Entwickleroptionen sind aktiviert</string>
+    <string name="watchpair_check_wireless">Kabelloses Debugging ist aktiviert</string>
+    <string name="watchpair_check_code">Der Bildschirm mit dem Kopplungscode ist geöffnet</string>
+    <string name="watchpair_hint">Gib alle 6 Ziffern zum Koppeln ein</string>
+    <string name="watchpair_ready">Bereit zum Koppeln</string>
+    <string name="watchpair_pair">Koppeln</string>
+    <string name="watchpair_error_wrong_code">Der Code wurde nicht akzeptiert. Prüfe die Uhr und versuche es erneut.</string>
+    <string name="watchpair_error_bad_address">Gib die Adresse als Host:Port ein, zum Beispiel 192.168.1.20:37115.</string>
+    <string name="watchpair_error_timeout">Die Uhr hat nicht rechtzeitig geantwortet. Lass den Bildschirm mit dem Kopplungscode geöffnet und versuche es erneut.</string>
+    <string name="watchpair_error_network">Die Uhr konnte nicht erreicht werden. Prüfe, ob beide Geräte im selben Wi-Fi sind.</string>
+    <string name="watchpair_error_restart">Der Kopplungsschlüssel wurde zurückgesetzt. Schließe diese App, öffne sie erneut und koppele noch einmal.</string>
+    <string name="watchpair_error_other">Die Kopplung ist fehlgeschlagen. Öffne den Bildschirm mit dem Kopplungscode auf der Uhr erneut und versuche es noch einmal.</string>
+
+    <!-- Acquire -->
+    <string name="acquire_title">Die offiziellen Apps besorgen</string>
+    <string name="acquire_intro">Lade jede App selbst aus einer Quelle herunter, der du vertraust. Der Patcher speichert oder liefert sie nie mit.</string>
+    <string name="acquire_open_mirror">Auf APKMirror öffnen</string>
+    <string name="acquire_more_ways">Weitere Möglichkeiten, diese App zu bekommen</string>
+    <string name="acquire_use_file">Vorhandene Datei verwenden</string>
+    <string name="acquire_downloading">Wird heruntergeladen…  %1$d%% · %2$d von %3$d MB</string>
+    <string name="acquire_verified">Entspricht der erwarteten Datei · %1$d MB</string>
+    <string name="acquire_rejected_wrong_app">Diese Datei gehört zu einer anderen App. Wähle die oben genannte.</string>
+    <string name="acquire_rejected_wrong_version">Diese Datei ist eine andere Version der App als die erwartete.</string>
+    <string name="acquire_rejected_not_expected">Diese Datei entspricht nicht dem erwarteten Build (andere Variante oder beschädigt). Lade sie erneut herunter.</string>
+    <string name="acquire_rejected_unreadable">Diese Datei konnte nicht gelesen werden.</string>
+    <string name="acquire_rejected_download_failed">Der Download wurde nicht abgeschlossen. Prüfe deine Verbindung und versuche es erneut.</string>
+    <string name="acquire_rejected_too_large">Dieser Download ist weit größer als die erwartete Datei und wurde daher gestoppt.</string>
+    <string name="acquire_verify_note">Jede Datei wird vor der Verwendung anhand einer bekannten Prüfsumme geprüft.</string>
+    <plurals name="acquire_waiting">
+        <item quantity="one">Warte auf %1$d App</item>
+        <item quantity="other">Warte auf %1$d Apps</item>
+    </plurals>
+
+    <!-- Guided browser -->
+    <string name="browser_page_placeholder">DIE WEBSEITE, UNVERÄNDERT ANGEZEIGT</string>
+    <string name="browser_coach_progress">%1$d von %2$d · %3$s</string>
+    <string name="browser_coach_1_title">Die richtige Version öffnen</string>
+    <string name="browser_coach_1_body">Wähle die auf der Karte genannte Version, keine neuere oder ältere.</string>
+    <string name="browser_coach_2_title">Variante auswählen</string>
+    <string name="browser_coach_2_body">Wähle die APK, nicht das Bundle, und den nodpi-Build für deine Android-Version.</string>
+    <string name="browser_coach_3_title">Herunterladen</string>
+    <string name="browser_coach_3_body">Tippe auf Download APK. Der Patcher übernimmt die Datei, sobald sie fertig ist.</string>
+    <string name="browser_coach_wrong_version_body">Das ist eine andere Version. Gehe zurück und öffne %1$s.</string>
+    <string name="browser_notice_blocked">Link zu einer anderen Seite blockiert: %1$s</string>
+    <string name="browser_notice_bundle">Das ist eine Bundle-Datei (.apkm, .xapk, .apks oder .zip). Gehe zurück und wähle die einfache APK-Variante.</string>
+    <string name="browser_notice_not_https">Dieser Download ist kein sicherer https-Link und wurde daher nicht abgerufen.</string>
+    <string name="browser_notice_open">In meinem Browser öffnen</string>
+    <string name="browser_notice_dismiss">Schließen</string>
+    <string name="browser_reload">Neu laden</string>
+    <string name="browser_step_dots">Schritt %1$d von %2$d</string>
+    <string name="browser_use_file">Stattdessen eine Datei verwenden</string>
+    <string name="browser_open_external">In meinem Browser öffnen</string>
+    <string name="browser_back_to_page">Zurück zur richtigen Seite</string>
+
+    <!-- Customize -->
+    <string name="customize_title">Patches auswählen</string>
+    <string name="customize_intro">Diese Patches werden benötigt, damit die Apps auf deinen Geräten funktionieren, daher sind sie immer aktiv.</string>
+    <string name="customize_required">Erforderlich, immer aktiv</string>
+    <string name="customize_advanced">Erweitert</string>
+    <string name="customize_prefix_label">Paketpräfix für Hilfs-Apps</string>
+    <string name="customize_prefix_explainer">Benennt die Bridge-Apps und die Wecker-App. Die beiden Samsung Health Monitor Apps behalten ihr eigenes Paket, damit sie miteinander kommunizieren können.</string>
+    <string name="customize_prefix_ok">Ein neuer Präfix wird für dich erzeugt.</string>
+    <string name="customize_prefix_locked">Gesperrt: Hilfs-Apps sind installiert, und Updates benötigen denselben Präfix.</string>
+    <string name="customize_prefix_regenerate">Neuen Präfix erzeugen</string>
+    <string name="customize_build">Erstellen</string>
+    <string name="preset_recommended">Empfohlen</string>
+    <string name="preset_minimal">Minimal</string>
+    <string name="preset_everything">Alles</string>
+    <string name="prefix_problem_empty">Gib einen Präfix ein.</string>
+    <string name="prefix_problem_short">Verwende mindestens zwei Teile, wie io.example.</string>
+    <string name="prefix_problem_long">Dieser Präfix ist zu lang.</string>
+    <string name="prefix_problem_segment">Verwende Kleinbuchstaben, Ziffern und Unterstriche; jeder Teil beginnt mit einem Buchstaben.</string>
+    <string name="prefix_problem_reserved">Dieser Namensraum gehört jemand anderem.</string>
+    <plurals name="customize_summary_patches">
+        <item quantity="one">%1$d Patch aktiv</item>
+        <item quantity="other">%1$d Patches aktiv</item>
+    </plurals>
+    <plurals name="customize_summary_apps">
+        <item quantity="one">%1$d App</item>
+        <item quantity="other">%1$d Apps</item>
+    </plurals>
+
+    <!-- Patch descriptions (titles come from the catalogue) -->
+    <string name="patch_generic_manufacturer_check">Akzeptiert ein Smartphone, das nicht von Samsung stammt.</string>
+    <string name="patch_generic_vendor_check">Akzeptiert ein Smartphone ohne das Samsung SDK.</string>
+    <string name="patch_shm_min_age_22_to_16">Senkt das Mindestalter von 22 auf 16.</string>
+    <string name="patch_shm_supported_type_ordinals">Behandelt jede Region als unterstützt.</string>
+    <string name="patch_shm_region_supportedtype">Lässt die Regionsprüfung bestehen.</string>
+    <string name="patch_shm_region_countrylist">Akzeptiert jedes Land in der Liste der unterstützten.</string>
+    <string name="patch_shm_root_packagevalidator">Überspringt die Zertifikatsprüfung des Herstellers.</string>
+    <string name="patch_shm_force_update_response">Ignoriert eine fehlgeschlagene oder erzwungene Update-Antwort.</string>
+    <string name="patch_shm_force_update_pref">Ignoriert das gespeicherte Flag für erzwungene Updates.</string>
+    <string name="patch_shm_main_gates">Überspringt die Startprüfungen, die andere Smartphones blockieren.</string>
+    <string name="patch_shm_setup_network_gate">Überspringt die SIM- und Regionsprüfung bei der Einrichtung.</string>
+    <string name="patch_shm_sleep_apnea_support">Meldet Schlafapnoe als unterstützt.</string>
+    <string name="patch_phone_rebrand_gms">Gibt der Smartphone-App dasselbe Paket und denselben Schlüssel wie der Uhren-App, damit beide Daten austauschen können.</string>
+    <string name="patch_watch_rebrand_coexist">Benennt die Uhren-App um, damit sie neben der Original-App existiert.</string>
+    <string name="patch_watch_queries_health_service">Lässt die Uhren-App den Health-Dienst sehen.</string>
+    <string name="patch_watch_companion_vendor">Akzeptiert jede Marke eines Begleit-Smartphones.</string>
+    <string name="patch_watch_alarm_system_app">Plant exakte Wecker ohne Systemrechte.</string>
+    <string name="patch_watch_mobile_installed">Meldet die Smartphone-App als installiert.</string>
+    <string name="patch_watch_ecg_sensor_adapter">Liest den EKG-Sensor über den Health-Tracking-Dienst.</string>
+    <string name="patch_watch_apnea_country">Überspringt die Länderprüfung für Apnoe.</string>
+    <string name="patch_watch_apnea_reeval_not_supported">Prüft die Apnoe-Unterstützung erneut, die als nicht unterstützt gespeichert wurde.</string>
+    <string name="patch_watch_mod">Fügt das Modul hinzu, das mit dem Health-Tracking-Dienst kommuniziert.</string>
+    <string name="patch_alarm_verify_symbols">Prüft, ob die Wecker-App die Teile hat, die die Verbindung braucht.</string>
+    <string name="patch_alarm_rebrand_manifest">Benennt die Wecker-App um, damit sie neben der Original-App installiert wird.</string>
+    <string name="patch_alarm_rebrand_code">Passt den Code der Wecker-App an den neuen Namen an.</string>
+    <string name="patch_alarm_permissions_prune">Entfernt Berechtigungen, die nur Systemapps haben können.</string>
+    <string name="patch_alarm_notification_permissions">Fügt Berechtigungen für Benachrichtigungen und Vollbild-Wecker hinzu.</string>
+    <string name="patch_alarm_queries_libs">Entfernt Abfragen und Bibliotheken, die der Fork nicht braucht.</string>
+    <string name="patch_alarm_components_prune">Entfernt Herstellerkomponenten, die der Fork nicht braucht.</string>
+    <string name="patch_alarm_provider_open">Öffnet die Wecker-Daten für den Fork.</string>
+    <string name="patch_alarm_link_components">Fügt den Empfänger für vom Smartphone gesendete Wecker hinzu.</string>
+    <string name="patch_alarm_appfunctions_drop">Entfernt einen ungenutzten Funktionsbaum des Herstellers.</string>
+    <string name="patch_alarm_semgesture_skip">Überspringt den Gestenmanager des Herstellers.</string>
+    <string name="patch_alarm_gms_observer_drop">Verhindert, dass der Wecker vorzeitig endet.</string>
+    <string name="patch_alarm_service_stop_on_destroy">Stellt sicher, dass Ton und Vibration immer stoppen.</string>
+    <string name="patch_alarm_force_sound_vibrate">Klingelt und vibriert immer.</string>
+    <string name="patch_alarm_link_send">Sendet Wecker-Änderungen an das Smartphone.</string>
+    <string name="patch_alarm_hide_launcher">Blendet das zusätzliche Launcher-Symbol aus.</string>
+    <string name="patch_alarm_relabel">Nennt den Fork \"Smartphone-Wecker\".</string>
+    <string name="patch_alarm_fork">Fügt das Modul hinzu, das Wecker mit dem Smartphone verbindet.</string>
+    <string name="output_shm_phone">Samsung Health Monitor (gepatcht)</string>
+    <string name="output_shm_watch">Samsung Health Monitor für Wear OS (gepatcht)</string>
+    <string name="output_bridge_watch">Bridge für die Uhr</string>
+    <string name="output_alarm_fork">Smartphone-Wecker auf der Uhr</string>
+    <string name="output_bridge_phone">Bridge für das Smartphone</string>
+    <string name="stock_label_shm">Samsung Health Monitor (Original)</string>
+    <string name="stock_reason_shm">Zwei Kopien der App würden um denselben Sensor konkurrieren.</string>
+
+    <!-- Build -->
+    <string name="build_title">Deine Apps werden erstellt</string>
+    <string name="build_caption_idle">Wird vorbereitet</string>
+    <string name="build_stage_unpack">Entpacken</string>
+    <string name="build_stage_fingerprints">Patch-Fingerabdrücke prüfen</string>
+    <string name="build_stage_apply_short">Patches anwenden</string>
+    <plurals name="build_stage_apply">
+        <item quantity="one">%1$d Patch anwenden</item>
+        <item quantity="other">%1$d Patches anwenden</item>
+    </plurals>
+    <string name="build_stage_rename">Paket umbenennen</string>
+    <string name="build_stage_rebuild">Neu erstellen</string>
+    <string name="build_stage_sign">Signieren</string>
+    <string name="build_stage_selfcheck">Selbstprüfung</string>
+    <string name="build_can_leave">Du kannst die App verlassen. Wir benachrichtigen dich, wenn es fertig ist.</string>
+    <string name="build_channel_name">Build-Fortschritt</string>
+    <string name="build_channel_description">Wird angezeigt, während deine Apps erstellt und signiert werden.</string>
+    <string name="build_notification_title">Deine Apps werden erstellt</string>
+    <string name="build_notification_progress">%1$s: %2$s</string>
+    <string name="build_notification_done">Deine Apps sind erstellt und signiert.</string>
+    <string name="build_notification_failed">Der Build ist fehlgeschlagen. Öffne die App, um den Grund zu sehen.</string>
+    <string name="build_error_title">Der Build wurde nicht abgeschlossen</string>
+    <string name="build_show_log">Protokoll anzeigen</string>
+    <string name="build_log_title">Build-Protokoll</string>
+    <string name="build_log_empty">Noch nichts protokolliert.</string>
+    <string name="build_done_title">Erstellt und signiert</string>
+    <string name="build_done_ready">bereit zur Installation</string>
+    <string name="build_done_install">Auf dem Smartphone installieren</string>
+    <string name="build_done_link_note">Die beiden Health-Monitor-Apps teilen sich einen Paketnamen und einen Signaturschlüssel. Dadurch kann die Google-Datenverbindung Nachrichten zwischen ihnen weitergeben.</string>
+    <plurals name="build_done_subtitle_patches">
+        <item quantity="one">%1$d Patch</item>
+        <item quantity="other">%1$d Patches</item>
+    </plurals>
+    <plurals name="build_done_subtitle_apps">
+        <item quantity="one">%1$d App</item>
+        <item quantity="other">%1$d Apps</item>
+    </plurals>
+
+    <!-- Install -->
+    <string name="install_phone_title">Auf diesem Smartphone installieren</string>
+    <string name="install_phone_intro">Android bittet dich, jede Installation zu bestätigen. Der benötigte Zugriff wird danach geprüft; fehlende Berechtigungen aktivierst du in den Einstellungen.</string>
+    <string name="install_phone_note">Berechtigungen, Anzeige über anderen Apps, Benachrichtigungszugriff und eingeschränkte Einstellungen aktivierst du selbst. Komm danach zu diesem Bildschirm zurück, dann wird erneut geprüft.</string>
+    <string name="install_watch_title">Auf deiner Uhr installieren</string>
+    <string name="install_watch_intro">Installation über Wi-Fi in dieser Reihenfolge: Health Monitor, die Bridge, dann Smartphone-Wecker.</string>
+    <string name="install_watch_note">Die Uhr bleibt eingeschaltet und verbunden, solange das läuft.</string>
+    <string name="install_start">Installation starten</string>
+    <string name="install_error_build_missing">Der Build fehlt oder passt nicht zu dieser Einrichtung. Erstelle ihn neu und installiere dann.</string>
+    <string name="install_error_failed">Die Uhr hat die Installation abgelehnt.</string>
+    <string name="install_error_signature">Eine mit einem anderen Schlüssel signierte Kopie ist bereits auf der Uhr. Es wurde nichts entfernt. Deinstalliere diese Kopie selbst und versuche es dann erneut.</string>
+    <string name="install_error_grant">Eine Zugriffseinstellung konnte nicht angewendet werden.</string>
+    <string name="action_open">Öffnen</string>
+    <string name="action_allow_installing">Installation von Apps erlauben</string>
+    <string name="install_check_again">Erneut prüfen</string>
+    <string name="install_continue_anyway">Trotzdem fortfahren</string>
+    <string name="install_onboarding">Samsung Health Monitor öffnen und die Einrichtung abschließen</string>
+    <string name="install_error_unknown_sources">Diese App darf noch keine Apps installieren. Erlaube es und starte dann erneut.</string>
+    <string name="install_error_notifications">Erlaube zuerst Benachrichtigungen für diese App: Der Kopplungscode wird in einer Benachrichtigung eingegeben.</string>
+    <string name="phone_adb_title">Alles auf einmal erlauben</string>
+    <string name="phone_adb_intro">Wenn die Schalter im Weg sind, kann dieses Smartphone sie sich über Kabelloses Debugging selbst erteilen. Du musst dafür im Wi-Fi sein.</string>
+    <string name="phone_adb_action">Alles mit Kabellosem Debugging erlauben</string>
+    <string name="phone_adb_waiting_service">Aktiviere Kabelloses Debugging und tippe auf Gerät mit Kopplungscode koppeln. Eine Benachrichtigung erscheint, in der du den Code eingeben kannst, ohne diesen Bildschirm zu verlassen.</string>
+    <string name="phone_adb_waiting_code">Gib den sechsstelligen Code vom Kopplungsbildschirm hier oder in der Benachrichtigung ein.</string>
+    <string name="phone_adb_wrong_code">Der Code hat nicht funktioniert. Prüfe den Kopplungsbildschirm und versuche es erneut.</string>
+    <string name="phone_adb_ambiguous">Auf diesem Smartphone wurde mehr als ein Dienst für Kabelloses Debugging gefunden. Schalte Kabelloses Debugging aus und wieder ein und versuche es dann erneut.</string>
+    <string name="phone_adb_connecting">Verbindung zu diesem Smartphone wird hergestellt...</string>
+    <string name="phone_adb_granting">Verbunden. Zugriff wird erteilt...</string>
+    <string name="phone_adb_failed">Verbindung zum Kabellosen Debugging dieses Smartphones nicht möglich.</string>
+    <string name="phone_adb_code_label">Kopplungscode</string>
+    <string name="phone_adb_submit">Koppeln</string>
+    <string name="selfadb_channel">Kopplung mit diesem Smartphone</string>
+    <string name="selfadb_code_channel">Kopplungscode</string>
+    <string name="selfadb_waiting_service">Tippe in Kabelloses Debugging auf Gerät mit Kopplungscode koppeln</string>
+    <string name="selfadb_enter_code_title">Kopplungscode eingeben</string>
+    <string name="selfadb_enter_code_body">Gib den sechsstelligen Code vom Kopplungsbildschirm ein.</string>
+    <string name="selfadb_reply_label">Kopplungscode</string>
+    <string name="selfadb_reply_action">Code eingeben</string>
+    <string name="selfadb_wrong_code">Der Code hat nicht funktioniert. Prüfe den Kopplungsbildschirm und versuche es erneut.</string>
+    <string name="selfadb_pairing">Kopplung läuft...</string>
+    <string name="selfadb_connecting">Verbindung wird hergestellt...</string>
+    <string name="selfadb_connected">Mit dem Kabellosen Debugging dieses Smartphones verbunden</string>
+    <string name="selfadb_ambiguous">Auf diesem Smartphone wurde mehr als ein Dienst für Kabelloses Debugging gefunden. Schalte Kabelloses Debugging aus und wieder ein und versuche es dann erneut.</string>
+    <string name="selfadb_failed">Verbindung nicht möglich</string>
+    <string name="selfadb_service_channel">Kabelloses Debugging</string>
+    <string name="selfadb_service_title">Verbindung zum Kabellosen Debugging dieses Smartphones</string>
+    <string name="phone_adb_timeout">Die Kopplung hat zu lange gedauert und wurde gestoppt.</string>
+    <string name="phone_adb_interrupted">Die Kopplung wurde unterbrochen.</string>
+    <string name="watch_error_unreachable">Die Uhr ist nicht erreichbar. Prüfe, ob Kabelloses Debugging aktiviert ist und beide Geräte im selben Wi-Fi sind.</string>
+    <string name="watch_error_pairing">Die Uhr vertraut diesem Smartphone nicht mehr. Gehe zurück und koppele erneut.</string>
+    <string name="grant_permission">Berechtigung</string>
+    <string name="grant_appop">App-Operation</string>
+    <string name="grant_setting">Systemeinstellung</string>
+    <string name="grant_listener">Benachrichtigungszugriff</string>
+    <string name="grant_battery">Akku-Ausnahme</string>
+
+    <!-- Health Platform developer mode -->
+    <string name="devmode_title">Entwicklermodus der Health Platform</string>
+    <string name="devmode_intro">Der Health-Tracking-Dienst kommuniziert nur im Entwicklermodus mit der gepatchten App. Aktiviere ihn auf der Uhr.</string>
+    <string name="devmode_step_settings">Öffne die Einstellungen auf der Uhr.</string>
+    <string name="devmode_step_apps">Gehe zu Apps.</string>
+    <string name="devmode_step_health_platform">Wähle Health Platform.</string>
+    <string name="devmode_step_tap">Tippe immer wieder auf den Titel, bis [Dev mode] erscheint.</string>
+    <string name="devmode_open_settings">Health-Platform-Einstellungen auf der Uhr öffnen</string>
+    <string name="devmode_waiting">Warte auf den Entwicklermodus</string>
+    <string name="devmode_detected">Entwicklermodus ist aktiviert</string>
+    <string name="devmode_check">Jetzt prüfen</string>
+    <string name="devmode_skip">Vorerst überspringen</string>
+
+    <!-- Disable stock apps -->
+    <string name="disable_title">Original-App deaktivieren</string>
+    <string name="disable_intro">Eine deaktivierte App wird ausgeblendet und gestoppt. Du kannst sie jederzeit wieder aktivieren. Nichts wird deinstalliert.</string>
+    <string name="disable_chip_installed">Uhren-App installiert</string>
+    <string name="disable_chip_wear">Wear OS</string>
+    <string name="disable_chip_not_installed">Nicht installiert</string>
+    <string name="disable_error_some">Einige Apps konnten nicht deaktiviert werden. Versuche es erneut oder überspringe diesen Schritt.</string>
+    <plurals name="disable_action">
+        <item quantity="one">%1$d App deaktivieren</item>
+        <item quantity="other">%1$d Apps deaktivieren</item>
+    </plurals>
+
+    <!-- Self-test -->
+    <string name="selftest_title">Alles wird getestet</string>
+    <string name="selftest_section_phone">Smartphone</string>
+    <string name="selftest_section_watch">Uhr</string>
+    <string name="selftest_section_link">Verbindung Smartphone ↔ Uhr</string>
+    <string name="selftest_section_human">Von dir geprüft</string>
+    <string name="selftest_rerun">Erneut ausführen</string>
+    <string name="selftest_human_label">MIT DIR PRÜFEN · %1$d VON %2$d</string>
+    <string name="selftest_share_subject">OpenSHM Patcher Selbsttest</string>
+
+    <!-- Self-test rows: %1$s is an app name or a list of access names -->
+    <string name="selftest_package_title">%1$s installiert</string>
+    <string name="selftest_grants_title">%1$s hat seinen Zugriff</string>
+    <string name="selftest_stock_title">%1$s deaktiviert</string>
+    <string name="selftest_bridge_link_title">Bridge-Verbindung zur Uhr</string>
+    <string name="selftest_watch_platform">Health Platform im Entwicklermodus</string>
+    <string name="selftest_gms_title">Uhr mit dem Smartphone verbunden</string>
+    <string name="selftest_shm_title">Health Monitor sieht die Uhr</string>
+    <string name="selftest_ecg_title">EKG erreicht das Smartphone</string>
+    <string name="selftest_platform_question">Ist die Health Platform auf der Uhr im Entwicklermodus?</string>
+    <string name="selftest_gms_question">Zeigt die Wear OS App auf dem Smartphone die Uhr als verbunden an?</string>
+    <string name="selftest_shm_question">Zeigt Samsung Health Monitor auf dem Smartphone die Uhr als verbunden an?</string>
+    <string name="selftest_ecg_question">Mache ein EKG auf der Uhr. Erscheint es auf dem Smartphone?</string>
+    <string name="selftest_detail_answered_no">Du hast mit Nein geantwortet</string>
+
+    <string name="selftest_detail_package_ok">Version %1$s, mit deinem Schlüssel signiert, dieselbe Datei wie der Build</string>
+    <string name="selftest_detail_package_ok_no_version">Mit deinem Schlüssel signiert, dieselbe Datei wie der Build</string>
+    <string name="selftest_detail_not_installed">Nicht installiert</string>
+    <string name="selftest_detail_wrong_cert">Mit einem anderen Schlüssel als deinem signiert</string>
+    <string name="selftest_detail_cert_unavailable">Dein Signaturschlüssel konnte nicht gelesen werden</string>
+    <string name="selftest_detail_no_build">Kein Build zum Vergleichen</string>
+    <string name="selftest_detail_hash_mismatch">Die installierte Datei weicht vom letzten Build ab</string>
+    <string name="selftest_detail_hash_unreadable">Die installierte Datei konnte nicht gelesen werden</string>
+    <string name="selftest_detail_watch_ok">Installiert, dieselbe Datei wie der Build</string>
+    <string name="selftest_detail_grants_ok">Alle Zugriffe erteilt</string>
+    <string name="selftest_detail_grants_missing">Fehlt: %1$s</string>
+    <string name="selftest_detail_grants_unknown">Nicht lesbar: %1$s</string>
+    <string name="selftest_detail_grants_optional">Optional, nicht gesetzt: %1$s</string>
+    <string name="selftest_detail_skipped_not_installed">Übersprungen, nicht installiert</string>
+    <string name="selftest_detail_watch_skipped">Übersprungen, Uhr nicht verbunden</string>
+    <string name="selftest_detail_watch_no_answer">Die Uhr hat nicht geantwortet</string>
+    <string name="selftest_detail_error">Diese Prüfung konnte nicht ausgeführt werden</string>
+    <string name="selftest_detail_stock_still_on">Noch aktiviert</string>
+    <string name="selftest_detail_stock_off">Deaktiviert</string>
+    <string name="selftest_detail_stock_absent">Nicht auf der Uhr</string>
+    <string name="selftest_detail_bridge_missing">Die Bridge antwortet nicht. Ist sie installiert?</string>
+    <string name="selftest_detail_bridge_denied">Die Bridge hat die Statusanfrage abgelehnt. Sie wurde mit einem anderen Schlüssel erstellt</string>
+    <string name="selftest_detail_bridge_not_running">Der Bridge-Dienst läuft nicht</string>
+    <string name="selftest_detail_bridge_link_down">Die Verbindung zur Uhr ist unterbrochen</string>
+    <string name="selftest_detail_bridge_no_hello">Die Verbindung steht, aber die Uhr hat sich noch nicht gemeldet</string>
+    <string name="selftest_detail_bridge_ok">Die Verbindung steht und die Uhr hat sich gemeldet</string>
+
+    <!-- All set -->
+    <string name="allset_title">Alles bereit</string>
+    <string name="allset_subtitle">%1$d von %2$d Prüfungen bestanden</string>
+    <string name="allset_chip_link">Verbindung</string>
+
+    <!-- Home -->
+    <string name="home_title">OpenSHM</string>
+    <string name="home_status_ok">Alles funktioniert</string>
+    <string name="home_status_warning">Sollte angesehen werden</string>
+    <string name="home_status_failed">Etwas ist defekt</string>
+    <string name="home_status_unknown">Noch nicht getestet</string>
+    <string name="home_never_tested">Starte einen Test, um es zu sehen</string>
+    <plurals name="home_tested_days_ago">
+        <item quantity="one">vor %1$d Tag getestet</item>
+        <item quantity="other">vor %1$d Tagen getestet</item>
+    </plurals>
+    <string name="home_test_again">Erneut testen</string>
+    <string name="home_update_title">Ein Update ist bereit</string>
+    <string name="home_update_detail">%1$s: %2$s auf %3$s</string>
+    <string name="home_update_patches">Aktualisierte Patches für %1$s</string>
+    <string name="home_menu_check_catalogue">Nach Katalog-Updates suchen</string>
+    <string name="home_catalogue_updated">Katalog auf Version %1$d aktualisiert</string>
+    <string name="home_catalogue_up_to_date">Der Katalog ist aktuell</string>
+    <string name="home_catalogue_rejected">Der heruntergeladene Katalog wurde nicht akzeptiert</string>
+    <string name="home_catalogue_failed">Der Update-Server ist nicht erreichbar</string>
+    <string name="home_catalogue_disabled">Dieser Build hat keinen Kanal für Katalog-Updates</string>
+    <string name="home_current_builds">Aktuelle Builds</string>
+    <string name="home_rebuild_description">Patches ändern und %1$s neu erstellen</string>
+    <string name="home_restore_description">%1$s wiederherstellen</string>
+    <string name="home_new_build">Neuer Build</string>
+    <string name="home_menu_new_build">Neuer Build</string>
+    <string name="home_menu_self_test">Selbsttest ausführen</string>
+    <string name="home_menu_restore_watch">Uhr wiederherstellen</string>
+    <string name="home_menu_uninstall">Deinstallieren</string>
+    <string name="restore_title">Original-App wiederherstellen?</string>
+    <string name="restore_body">Die gepatchte App wird entfernt und die Original-App wieder aktiviert. Deine Daten auf der Uhr bleiben erhalten.</string>
+    <string name="restore_confirm">Wiederherstellen</string>
+
+    <!-- Signing key -->
+    <string name="signing_key_title">Signaturschlüssel</string>
+    <string name="signing_key_explainer">Jede von dir erstellte App wird mit diesem Schlüssel signiert. Android installiert ein Update nur über eine App, die mit demselben Schlüssel signiert ist, also bewahre ein Backup auf.</string>
+    <string name="signing_key_present">Signaturschlüssel bereit</string>
+    <string name="signing_key_absent">Noch kein Signaturschlüssel</string>
+    <string name="signing_key_absent_note">Der Schlüssel wird beim ersten Build erstellt. Wenn du bereits ein Backup hast, kannst du es jetzt importieren.</string>
+    <string name="signing_key_unreadable">Der Schlüssel kann auf diesem Gerät nicht gelesen werden.</string>
+    <string name="signing_key_sha_label">Zertifikat SHA-256</string>
+    <string name="signing_key_copy">Zertifikat SHA-256 kopieren</string>
+    <string name="signing_key_backed_up">Gesichert</string>
+    <string name="signing_key_not_backed_up">Noch nicht gesichert</string>
+    <string name="signing_key_export">Backup exportieren</string>
+    <string name="signing_key_import">Schlüssel importieren</string>
+    <string name="signing_key_export_needs_key">Der Export ist verfügbar, sobald der Schlüssel existiert.</string>
+    <string name="signing_key_export_hint">Wähle ein Passwort für die Backup-Datei. Du brauchst es, um den Schlüssel wieder zu importieren, und es kann nicht wiederhergestellt werden.</string>
+    <string name="signing_key_import_hint">Wähle eine PKCS#12-Datei (.p12) und gib ihr Passwort ein.</string>
+    <string name="signing_key_password">Passwort</string>
+    <string name="signing_key_password_repeat">Passwort wiederholen</string>
+    <string name="signing_key_show_password">Passwort anzeigen</string>
+    <string name="signing_key_hide_password">Passwort verbergen</string>
+    <string name="signing_key_choose_location">Speicherort wählen</string>
+    <string name="signing_key_choose_file">Datei wählen</string>
+    <string name="signing_key_error_short">Verwende mindestens %1$d Zeichen.</string>
+    <string name="signing_key_error_mismatch">Die Passwörter stimmen nicht überein.</string>
+    <string name="signing_key_error_empty">Gib das Passwort der Datei ein.</string>
+    <string name="signing_key_export_done">Backup gespeichert. Bewahre die Datei und ihr Passwort an einem sicheren Ort auf.</string>
+    <string name="signing_key_export_failed">Das Backup konnte nicht gespeichert werden.</string>
+    <string name="signing_key_import_done">Signaturschlüssel importiert.</string>
+    <string name="signing_key_import_failed">Der Schlüssel konnte nicht importiert werden.</string>
+    <string name="signing_key_import_wrong_password">Falsches Passwort, oder die Datei ist keine PKCS#12-Schlüsseldatei.</string>
+    <string name="signing_key_import_not_one_key">Die Datei muss genau einen Schlüssel enthalten.</string>
+    <string name="signing_key_import_unusable">Die Datei enthält keinen verwendbaren privaten Schlüssel und kein Zertifikat.</string>
+    <string name="signing_key_import_weak">Der Schlüssel ist zu schwach. RSA-Schlüssel brauchen mindestens 2048 Bit.</string>
+    <string name="signing_key_import_type">Nur RSA- und EC-Schlüssel werden unterstützt.</string>
+    <string name="signing_key_import_mismatch">Der Schlüssel passt nicht zu seinem Zertifikat.</string>
+    <string name="signing_key_import_costly">Die Datei verlangt weit mehr Rechenaufwand als eine normale Schlüsseldatei und wurde daher abgelehnt.</string>
+    <string name="signing_key_import_unreadable">Die Datei konnte nicht gelesen werden.</string>
+    <string name="signing_key_confirm_title">Signaturschlüssel ersetzen?</string>
+    <string name="signing_key_confirm_current">Aktueller Schlüssel</string>
+    <string name="signing_key_confirm_new">Schlüssel in der Datei</string>
+    <string name="signing_key_confirm_none">Noch keiner</string>
+    <string name="signing_key_confirm_warning">Bereits installierte Apps, die mit dem aktuellen Schlüssel signiert wurden, akzeptieren keine Updates mehr von dieser App. Um den neuen Schlüssel zu verwenden, musst du sie deinstallieren und neu installieren, wodurch ihre Daten gelöscht werden.</string>
+    <string name="signing_key_confirm_replace">Schlüssel ersetzen</string>
+    <string name="signing_key_nudge_title">Sichere deinen Signaturschlüssel</string>
+    <string name="signing_key_nudge_body">Ohne ihn können installierte Apps nicht aktualisiert, sondern nur neu installiert werden.</string>
+    <string name="signing_key_nudge_action">Sichern</string>
+    <string name="home_menu_signing_key">Signaturschlüssel</string>
+</resources>

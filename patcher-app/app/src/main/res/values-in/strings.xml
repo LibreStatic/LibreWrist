@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Shared actions -->
+    <string name="action_back">Kembali</string>
+    <string name="action_help">Bantuan</string>
+    <string name="action_close">Tutup</string>
+    <string name="action_settings">Setelan</string>
+    <string name="action_more_options">Opsi lainnya</string>
+    <string name="action_continue">Lanjutkan</string>
+    <string name="action_cancel">Batal</string>
+    <string name="action_done">Selesai</string>
+    <string name="action_skip">Lewati dulu</string>
+    <string name="action_start">Mulai</string>
+    <string name="action_retry">Coba lagi</string>
+    <string name="action_edit">Ubah</string>
+    <string name="action_fix">Perbaiki</string>
+    <string name="action_yes">Ya</string>
+    <string name="action_no">Tidak</string>
+    <string name="action_open_settings">Buka setelan</string>
+    <string name="action_share_report">Bagikan laporan</string>
+
+    <string name="state_expanded">Diperluas</string>
+    <string name="state_collapsed">Diciutkan</string>
+    <string name="device_phone">Ponsel</string>
+    <string name="device_watch">Jam</string>
+    <string name="chip_optional">Opsional</string>
+    <string name="chip_apk_not_bundle">APK, bukan bundel</string>
+    <string name="chip_nodpi">nodpi</string>
+    <string name="chip_android_11">Android 11+</string>
+    <string name="chip_android_14">Android 14+</string>
+    <string name="size_mb">%1$.1f MB</string>
+
+    <!-- Step header and status -->
+    <string name="step_label">LANGKAH %1$d DARI %2$d</string>
+    <string name="step_label_watch_suffix">" · DI JAM"</string>
+    <string name="status_pending">Menunggu</string>
+    <string name="status_running">Berjalan</string>
+    <string name="status_passed">Lulus</string>
+    <string name="status_warning">Perlu perhatian</string>
+    <string name="status_failed">Gagal</string>
+    <string name="progress_download_description">Unduhan %1$d persen</string>
+    <string name="progress_build_description">Build %1$d persen</string>
+
+    <!-- Welcome -->
+    <string name="welcome_title">Aplikasimu, jammu, caramu</string>
+    <string name="welcome_promise_download">Kamu mengunduh aplikasi resminya sendiri; tidak ada yang disertakan di sini.</string>
+    <string name="welcome_promise_patch">Patch membuat Samsung Health Monitor berfungsi di ponsel non-Samsung dan berdampingan dengan aplikasi jam bawaan.</string>
+    <string name="welcome_promise_undo">Setiap perubahan bisa dibatalkan, dan aplikasi bawaan tetap ada.</string>
+    <string name="welcome_get_started">Mulai</string>
+    <string name="welcome_what_changes">Apa yang akan berubah di perangkat saya?</string>
+    <string name="changes_title">Apa yang akan berubah</string>
+    <string name="changes_intro">Hanya aplikasi ini yang dipasang dan hanya setelan ini yang diubah. Tidak ada yang dihapus.</string>
+    <string name="changes_installs">Dipasang</string>
+    <string name="changes_grants">Diizinkan setelah pemasangan</string>
+    <string name="changes_disables">Bisa dimatikan</string>
+
+    <!-- Profile -->
+    <string name="profile_title">Jam apa yang kamu punya?</string>
+    <string name="profile_intro">Ini menentukan aplikasi resmi mana yang perlu kamu siapkan.</string>
+    <string name="profile_wear5_title">Wear OS 5 atau lebih baru</string>
+    <string name="profile_wear5_summary">Health Monitor plus alarm ponsel di jam.</string>
+    <string name="profile_wear5_apps">3 aplikasi resmi</string>
+    <string name="profile_wear3_title">Wear OS 3 atau 4</string>
+    <string name="profile_wear3_summary">Hanya Health Monitor. Aplikasi alarm membutuhkan Android 14 di jam.</string>
+    <string name="profile_wear3_apps">2 aplikasi resmi</string>
+    <string name="profile_detected">Diperiksa di jammu: Android %1$s (%2$s)</string>
+    <string name="profile_check_paired">Periksa jam yang terhubung</string>
+    <string name="profile_hint_certain">%1$s ditemukan. Jam ini selalu menjalankan Wear OS 5 atau lebih baru, jadi opsi pertama dipilih.</string>
+    <string name="profile_hint_depends">%1$s kamu bisa menjalankan keduanya. Periksa Informasi perangkat lunak di jam, atau biarkan aplikasi memeriksanya di langkah 3.</string>
+    <string name="profile_check_none">Tidak ada Galaxy Watch yang terhubung. Pilih salah satu opsi atau biarkan aplikasi memeriksanya di langkah 3.</string>
+    <string name="profile_check_denied">Akses Bluetooth tidak diizinkan, jadi jam yang terhubung tidak bisa diperiksa. Pilih salah satu opsi atau biarkan aplikasi memeriksanya di langkah 3.</string>
+    <string name="profile_howto_title">Cara mengetahuinya</string>
+    <string name="profile_howto_watch">Di jam: Setelan › Tentang jam › Informasi perangkat lunak. \"Wear OS 5\" atau lebih baru, \"One UI 6 Watch\" atau lebih baru, atau Android 14 atau lebih baru berarti opsi pertama.</string>
+    <string name="profile_howto_phone">Layar yang sama ada di aplikasi Galaxy Wearable di ponsel: Setelan jam › Tentang jam › Informasi perangkat lunak.</string>
+    <string name="profile_howto_models">Galaxy Watch7, Watch Ultra, dan yang lebih baru selalu memenuhi syarat. Watch4, Watch5, Watch6, dan Watch FE hanya memenuhi syarat setelah diperbarui ke One UI 6 Watch.</string>
+    <string name="profile_howto_unsure">Tidak yakin? Pilih saja salah satu: aplikasi akan memeriksa jammu sendiri setelah terhubung (langkah 3) dan mengoreksi pilihan sebelum apa pun diunduh.</string>
+
+    <!-- Galaxy Wearable pairing check -->
+    <string name="wearable_title">Apakah jammu sudah terhubung?</string>
+    <string name="wearable_intro">Jam harus sudah terhubung ke ponsel ini. Pemeriksaan ini tidak pernah mengubah apa pun.</string>
+    <string name="wearable_check_app">Aplikasi pendamping ditemukan</string>
+    <string name="wearable_check_app_detail">Aplikasi yang mengelola jam sudah terpasang.</string>
+    <string name="wearable_check_paired">Jam terhubung</string>
+    <string name="wearable_check_paired_detail">Sebuah jam terkait dengan ponsel ini.</string>
+    <string name="wearable_check_datalayer">Ponsel dan jam bisa berkomunikasi</string>
+    <string name="wearable_check_datalayer_detail">Tautan data Google di antara keduanya merespons.</string>
+    <string name="wearable_note">Jika pemeriksaan gagal, perbaiki di pengaturan jam itu sendiri, lalu periksa lagi.</string>
+    <string name="wearable_recheck">Periksa lagi</string>
+
+    <!-- Watch pairing over Wi-Fi -->
+    <string name="watchpair_correct_older">Jammu menjalankan Android %1$s, jadi aplikasi alarm dilewati: kamu perlu 2 aplikasi resmi, bukan 3.</string>
+    <string name="watchpair_correct_newer">Jammu menjalankan Android %1$s, jadi aplikasi alarm disertakan: kamu perlu 3 aplikasi resmi, bukan 2.</string>
+    <string name="watchpair_title">Hubungkan ke jammu</string>
+    <string name="watchpair_intro">Jam menerima pemasangan lewat Wi-Fi setelah kamu menyandingkannya dengan kode singkat.</string>
+    <string name="watchpair_on_watch">DI JAMMU</string>
+    <string name="watchpair_on_watch_steps">Buka Setelan, Opsi pengembang, Debugging nirkabel, lalu Sambungkan perangkat baru. Kode 6 digit ditampilkan di sana.</string>
+    <string name="watchpair_found">Jam ditemukan di jaringanmu</string>
+    <string name="watchpair_searching">Mencari jammu…</string>
+    <string name="watchpair_address_label">Alamat (host:port)</string>
+    <string name="watchpair_code_label">Kode penyandingan</string>
+    <string name="watchpair_check_wifi">Ponsel dan jam berada di Wi-Fi yang sama</string>
+    <string name="watchpair_check_developer">Opsi pengembang aktif</string>
+    <string name="watchpair_check_wireless">Debugging nirkabel aktif</string>
+    <string name="watchpair_check_code">Layar kode penyandingan terbuka</string>
+    <string name="watchpair_hint">Masukkan semua 6 digit untuk menyandingkan</string>
+    <string name="watchpair_ready">Siap disandingkan</string>
+    <string name="watchpair_pair">Sandingkan</string>
+    <string name="watchpair_error_wrong_code">Kode itu tidak diterima. Periksa jam lalu coba lagi.</string>
+    <string name="watchpair_error_bad_address">Masukkan alamat sebagai host:port, misalnya 192.168.1.20:37115.</string>
+    <string name="watchpair_error_timeout">Jam tidak merespons tepat waktu. Biarkan layar kode penyandingan tetap terbuka lalu coba lagi.</string>
+    <string name="watchpair_error_network">Tidak dapat menjangkau jam. Pastikan kedua perangkat berada di Wi-Fi yang sama.</string>
+    <string name="watchpair_error_restart">Kunci penyandingan telah direset. Tutup dan buka lagi aplikasi ini, lalu sandingkan ulang.</string>
+    <string name="watchpair_error_other">Penyandingan gagal. Buka lagi layar kode penyandingan di jam lalu coba lagi.</string>
+
+    <!-- Acquire -->
+    <string name="acquire_title">Siapkan aplikasi resmi</string>
+    <string name="acquire_intro">Unduh setiap aplikasi sendiri, dari sumber yang kamu percaya. Patcher tidak pernah menyimpan atau menyertakannya.</string>
+    <string name="acquire_open_mirror">Buka di APKMirror</string>
+    <string name="acquire_more_ways">Cara lain untuk mendapatkan aplikasi ini</string>
+    <string name="acquire_use_file">Gunakan file yang sudah saya punya</string>
+    <string name="acquire_downloading">Mengunduh…  %1$d%% · %2$d dari %3$d MB</string>
+    <string name="acquire_verified">Cocok dengan file yang diharapkan · %1$d MB</string>
+    <string name="acquire_rejected_wrong_app">File itu aplikasi yang berbeda. Pilih yang disebutkan di atas.</string>
+    <string name="acquire_rejected_wrong_version">File itu versi aplikasi yang berbeda dari yang diharapkan.</string>
+    <string name="acquire_rejected_not_expected">File itu tidak cocok dengan build yang diharapkan (varian lain, atau rusak). Unduh lagi.</string>
+    <string name="acquire_rejected_unreadable">File itu tidak dapat dibaca.</string>
+    <string name="acquire_rejected_download_failed">Unduhan tidak selesai. Periksa koneksimu lalu coba lagi.</string>
+    <string name="acquire_rejected_too_large">Unduhan itu jauh lebih besar dari file yang diharapkan, jadi dihentikan.</string>
+    <string name="acquire_verify_note">Setiap file diperiksa dengan checksum yang diketahui sebelum digunakan.</string>
+    <plurals name="acquire_waiting">
+        <item quantity="other">Menunggu %1$d aplikasi</item>
+    </plurals>
+
+    <!-- Guided browser -->
+    <string name="browser_page_placeholder">HALAMAN WEB, DITAMPILKAN APA ADANYA</string>
+    <string name="browser_coach_progress">%1$d dari %2$d · %3$s</string>
+    <string name="browser_coach_1_title">Buka rilis yang tepat</string>
+    <string name="browser_coach_1_body">Pilih versi yang disebutkan di kartu, bukan yang lebih baru atau lebih lama.</string>
+    <string name="browser_coach_2_title">Pilih varian</string>
+    <string name="browser_coach_2_body">Pilih APK, bukan bundel, dan build nodpi untuk versi Android kamu.</string>
+    <string name="browser_coach_3_title">Unduh</string>
+    <string name="browser_coach_3_body">Ketuk Download APK. Patcher mengambil file setelah selesai.</string>
+    <string name="browser_coach_wrong_version_body">Itu versi lain. Kembali dan buka %1$s.</string>
+    <string name="browser_notice_blocked">Tautan ke situs lain diblokir: %1$s</string>
+    <string name="browser_notice_bundle">Itu file bundel (.apkm, .xapk, .apks, atau .zip). Kembali dan pilih varian APK biasa.</string>
+    <string name="browser_notice_not_https">Unduhan itu bukan tautan https yang aman, jadi tidak diambil.</string>
+    <string name="browser_notice_open">Buka di browser saya</string>
+    <string name="browser_notice_dismiss">Tutup</string>
+    <string name="browser_reload">Muat ulang</string>
+    <string name="browser_step_dots">Langkah %1$d dari %2$d</string>
+    <string name="browser_use_file">Gunakan file saja</string>
+    <string name="browser_open_external">Buka di browser saya</string>
+    <string name="browser_back_to_page">Bawa saya kembali ke halaman yang benar</string>
+
+    <!-- Customize -->
+    <string name="customize_title">Pilih patch kamu</string>
+    <string name="customize_intro">Patch ini diperlukan agar aplikasi berfungsi di perangkatmu, jadi selalu aktif.</string>
+    <string name="customize_required">Wajib, selalu aktif</string>
+    <string name="customize_advanced">Lanjutan</string>
+    <string name="customize_prefix_label">Prefiks paket untuk aplikasi pembantu</string>
+    <string name="customize_prefix_explainer">Menamai aplikasi bridge dan aplikasi alarm. Kedua aplikasi Samsung Health Monitor mempertahankan paketnya sendiri agar bisa saling berkomunikasi.</string>
+    <string name="customize_prefix_ok">Prefiks baru dibuat untukmu.</string>
+    <string name="customize_prefix_locked">Terkunci: aplikasi pembantu sudah terpasang, dan pembaruan memerlukan prefiks yang sama.</string>
+    <string name="customize_prefix_regenerate">Buat prefiks baru</string>
+    <string name="customize_build">Build</string>
+    <string name="preset_recommended">Disarankan</string>
+    <string name="preset_minimal">Minimal</string>
+    <string name="preset_everything">Semua</string>
+    <string name="prefix_problem_empty">Masukkan prefiks.</string>
+    <string name="prefix_problem_short">Gunakan minimal dua bagian, seperti io.example.</string>
+    <string name="prefix_problem_long">Prefiks itu terlalu panjang.</string>
+    <string name="prefix_problem_segment">Gunakan huruf kecil, angka, dan garis bawah; setiap bagian diawali huruf.</string>
+    <string name="prefix_problem_reserved">Namespace itu milik orang lain.</string>
+    <plurals name="customize_summary_patches">
+        <item quantity="other">%1$d patch aktif</item>
+    </plurals>
+    <plurals name="customize_summary_apps">
+        <item quantity="other">%1$d aplikasi</item>
+    </plurals>
+
+    <!-- Patch descriptions (titles come from the catalogue) -->
+    <string name="patch_generic_manufacturer_check">Menerima ponsel yang bukan buatan Samsung.</string>
+    <string name="patch_generic_vendor_check">Menerima ponsel tanpa Samsung SDK.</string>
+    <string name="patch_shm_min_age_22_to_16">Menurunkan usia minimum dari 22 menjadi 16.</string>
+    <string name="patch_shm_supported_type_ordinals">Menganggap setiap wilayah didukung.</string>
+    <string name="patch_shm_region_supportedtype">Meloloskan pemeriksaan wilayah.</string>
+    <string name="patch_shm_region_countrylist">Menerima negara mana pun dalam daftar yang didukung.</string>
+    <string name="patch_shm_root_packagevalidator">Melewati validasi sertifikat vendor.</string>
+    <string name="patch_shm_force_update_response">Mengabaikan jawaban pembaruan yang gagal atau dipaksakan.</string>
+    <string name="patch_shm_force_update_pref">Mengabaikan penanda pembaruan paksa yang tersimpan.</string>
+    <string name="patch_shm_main_gates">Melewati pemeriksaan saat mulai yang memblokir ponsel lain.</string>
+    <string name="patch_shm_setup_network_gate">Melewati pemeriksaan SIM dan wilayah saat penyiapan.</string>
+    <string name="patch_shm_sleep_apnea_support">Melaporkan apnea tidur sebagai didukung.</string>
+    <string name="patch_phone_rebrand_gms">Memberi aplikasi ponsel paket dan kunci yang sama dengan aplikasi jam agar keduanya bisa bertukar data.</string>
+    <string name="patch_watch_rebrand_coexist">Mengganti nama aplikasi jam agar berdampingan dengan aplikasi bawaan.</string>
+    <string name="patch_watch_queries_health_service">Membuat aplikasi jam bisa melihat layanan kesehatan.</string>
+    <string name="patch_watch_companion_vendor">Menerima merek ponsel pendamping apa pun.</string>
+    <string name="patch_watch_alarm_system_app">Menjadwalkan alarm tepat waktu tanpa hak istimewa sistem.</string>
+    <string name="patch_watch_mobile_installed">Melaporkan aplikasi ponsel sebagai terpasang.</string>
+    <string name="patch_watch_ecg_sensor_adapter">Membaca sensor EKG melalui layanan Health Tracking.</string>
+    <string name="patch_watch_apnea_country">Melewati pemeriksaan negara untuk apnea.</string>
+    <string name="patch_watch_apnea_reeval_not_supported">Memeriksa ulang dukungan apnea yang tersimpan sebagai tidak didukung.</string>
+    <string name="patch_watch_mod">Menambahkan modul yang berkomunikasi dengan layanan Health Tracking.</string>
+    <string name="patch_alarm_verify_symbols">Memeriksa bahwa aplikasi alarm punya bagian yang dibutuhkan tautan.</string>
+    <string name="patch_alarm_rebrand_manifest">Mengganti nama aplikasi alarm agar terpasang berdampingan dengan aplikasi bawaan.</string>
+    <string name="patch_alarm_rebrand_code">Memperbarui kode aplikasi alarm ke nama baru.</string>
+    <string name="patch_alarm_permissions_prune">Menghapus izin yang hanya bisa dimiliki aplikasi sistem.</string>
+    <string name="patch_alarm_notification_permissions">Menambahkan izin notifikasi dan alarm layar penuh.</string>
+    <string name="patch_alarm_queries_libs">Menghapus kueri dan pustaka yang tidak dibutuhkan fork.</string>
+    <string name="patch_alarm_components_prune">Menghapus komponen vendor yang tidak dibutuhkan fork.</string>
+    <string name="patch_alarm_provider_open">Membuka data alarm untuk fork.</string>
+    <string name="patch_alarm_link_components">Menambahkan penerima untuk alarm yang dikirim dari ponsel.</string>
+    <string name="patch_alarm_appfunctions_drop">Menghapus pohon fitur vendor yang tidak terpakai.</string>
+    <string name="patch_alarm_semgesture_skip">Melewati pengelola gestur vendor.</string>
+    <string name="patch_alarm_gms_observer_drop">Mencegah alarm berhenti lebih awal.</string>
+    <string name="patch_alarm_service_stop_on_destroy">Memastikan suara dan getaran selalu berhenti.</string>
+    <string name="patch_alarm_force_sound_vibrate">Selalu berbunyi dan bergetar.</string>
+    <string name="patch_alarm_link_send">Mengirim perubahan alarm ke ponsel.</string>
+    <string name="patch_alarm_hide_launcher">Menyembunyikan ikon peluncur tambahan.</string>
+    <string name="patch_alarm_relabel">Menamai fork \"Alarm ponsel\".</string>
+    <string name="patch_alarm_fork">Menambahkan modul yang menautkan alarm ke ponsel.</string>
+    <string name="output_shm_phone">Samsung Health Monitor (dipatch)</string>
+    <string name="output_shm_watch">Samsung Health Monitor untuk Wear OS (dipatch)</string>
+    <string name="output_bridge_watch">Bridge untuk jam</string>
+    <string name="output_alarm_fork">Alarm ponsel di jam</string>
+    <string name="output_bridge_phone">Bridge untuk ponsel</string>
+    <string name="stock_label_shm">Samsung Health Monitor (bawaan)</string>
+    <string name="stock_reason_shm">Dua salinan aplikasi akan berebut sensor yang sama.</string>
+
+    <!-- Build -->
+    <string name="build_title">Membangun aplikasimu</string>
+    <string name="build_caption_idle">Bersiap</string>
+    <string name="build_stage_unpack">Ekstrak</string>
+    <string name="build_stage_fingerprints">Periksa sidik jari patch</string>
+    <string name="build_stage_apply_short">Terapkan patch</string>
+    <plurals name="build_stage_apply">
+        <item quantity="other">Terapkan %1$d patch</item>
+    </plurals>
+    <string name="build_stage_rename">Ganti nama paket</string>
+    <string name="build_stage_rebuild">Bangun ulang</string>
+    <string name="build_stage_sign">Tanda tangani</string>
+    <string name="build_stage_selfcheck">Pemeriksaan mandiri</string>
+    <string name="build_can_leave">Kamu boleh pergi. Kami akan memberi tahu saat selesai.</string>
+    <string name="build_channel_name">Progres build</string>
+    <string name="build_channel_description">Ditampilkan saat aplikasimu dibangun dan ditandatangani.</string>
+    <string name="build_notification_title">Membangun aplikasimu</string>
+    <string name="build_notification_progress">%1$s: %2$s</string>
+    <string name="build_notification_done">Aplikasimu sudah dibangun dan ditandatangani.</string>
+    <string name="build_notification_failed">Build gagal. Buka aplikasi untuk melihat sebabnya.</string>
+    <string name="build_error_title">Build tidak selesai</string>
+    <string name="build_show_log">Tampilkan log</string>
+    <string name="build_log_title">Log build</string>
+    <string name="build_log_empty">Belum ada yang dicatat.</string>
+    <string name="build_done_title">Dibangun dan ditandatangani</string>
+    <string name="build_done_ready">siap dipasang</string>
+    <string name="build_done_install">Pasang di ponsel</string>
+    <string name="build_done_link_note">Kedua aplikasi Health Monitor berbagi satu nama paket dan kunci penandatanganan. Itulah yang memungkinkan tautan data Google meneruskan pesan di antara keduanya.</string>
+    <plurals name="build_done_subtitle_patches">
+        <item quantity="other">%1$d patch</item>
+    </plurals>
+    <plurals name="build_done_subtitle_apps">
+        <item quantity="other">%1$d aplikasi</item>
+    </plurals>
+
+    <!-- Install -->
+    <string name="install_phone_title">Pasang di ponsel ini</string>
+    <string name="install_phone_intro">Android meminta kamu mengonfirmasi setiap pemasangan. Akses yang dibutuhkan aplikasi diperiksa sesudahnya; kamu mengaktifkan yang kurang di Setelan.</string>
+    <string name="install_phone_note">Izin, tampilan di atas aplikasi lain, akses notifikasi, dan setelan terbatas diaktifkan oleh kamu sendiri. Kembali ke layar ini sesudahnya dan akan diperiksa lagi.</string>
+    <string name="install_watch_title">Pasang di jammu</string>
+    <string name="install_watch_intro">Dipasang lewat Wi-Fi dengan urutan ini: Health Monitor, bridge, lalu alarm ponsel.</string>
+    <string name="install_watch_note">Jam tetap menyala dan terhubung selama proses ini berjalan.</string>
+    <string name="install_start">Mulai memasang</string>
+    <string name="install_error_build_missing">Build tidak ada atau tidak cocok dengan penyiapan ini. Bangun lagi, lalu pasang.</string>
+    <string name="install_error_failed">Jam menolak pemasangan.</string>
+    <string name="install_error_signature">Salinan yang ditandatangani dengan kunci berbeda sudah ada di jam. Tidak ada yang dihapus. Copot sendiri salinan itu, lalu coba lagi.</string>
+    <string name="install_error_grant">Satu setelan akses tidak dapat diterapkan.</string>
+    <string name="action_open">Buka</string>
+    <string name="action_allow_installing">Izinkan memasang aplikasi</string>
+    <string name="install_check_again">Periksa lagi</string>
+    <string name="install_continue_anyway">Tetap lanjutkan</string>
+    <string name="install_onboarding">Buka Samsung Health Monitor dan selesaikan penyiapannya</string>
+    <string name="install_error_unknown_sources">Aplikasi ini belum diizinkan memasang aplikasi. Izinkan, lalu mulai lagi.</string>
+    <string name="install_error_notifications">Izinkan notifikasi untuk aplikasi ini dulu: kode penyandingan diketik di notifikasi.</string>
+    <string name="phone_adb_title">Berikan semuanya sekaligus</string>
+    <string name="phone_adb_intro">Jika sakelar menghalangi, ponsel ini bisa memberikannya sendiri lewat Debugging nirkabel. Kamu harus terhubung ke Wi-Fi.</string>
+    <string name="phone_adb_action">Berikan semuanya dengan Debugging nirkabel</string>
+    <string name="phone_adb_waiting_service">Di Debugging nirkabel, aktifkan lalu ketuk Sambungkan perangkat dengan kode penyandingan. Notifikasi akan muncul tempat kamu bisa mengetik kode tanpa meninggalkan layar itu.</string>
+    <string name="phone_adb_waiting_code">Ketik kode enam digit yang ditampilkan di layar penyandingan, di sini atau di notifikasi.</string>
+    <string name="phone_adb_wrong_code">Kode itu tidak berhasil. Periksa layar penyandingan lalu coba lagi.</string>
+    <string name="phone_adb_ambiguous">Lebih dari satu layanan Debugging nirkabel ditemukan di ponsel ini. Matikan lalu aktifkan lagi Debugging nirkabel, lalu coba lagi.</string>
+    <string name="phone_adb_connecting">Menghubungkan ke ponsel ini...</string>
+    <string name="phone_adb_granting">Terhubung. Memberikan akses...</string>
+    <string name="phone_adb_failed">Tidak dapat terhubung ke Debugging nirkabel ponsel ini.</string>
+    <string name="phone_adb_code_label">Kode penyandingan</string>
+    <string name="phone_adb_submit">Sandingkan</string>
+    <string name="selfadb_channel">Menyandingkan dengan ponsel ini</string>
+    <string name="selfadb_code_channel">Kode penyandingan</string>
+    <string name="selfadb_waiting_service">Di Debugging nirkabel, ketuk Sambungkan perangkat dengan kode penyandingan</string>
+    <string name="selfadb_enter_code_title">Masukkan kode penyandingan</string>
+    <string name="selfadb_enter_code_body">Ketik kode enam digit yang ditampilkan di layar penyandingan.</string>
+    <string name="selfadb_reply_label">Kode penyandingan</string>
+    <string name="selfadb_reply_action">Masukkan kode</string>
+    <string name="selfadb_wrong_code">Kode itu tidak berhasil. Periksa layar penyandingan lalu coba lagi.</string>
+    <string name="selfadb_pairing">Menyandingkan...</string>
+    <string name="selfadb_connecting">Menghubungkan...</string>
+    <string name="selfadb_connected">Terhubung ke Debugging nirkabel ponsel ini</string>
+    <string name="selfadb_ambiguous">Lebih dari satu layanan Debugging nirkabel ditemukan di ponsel ini. Matikan lalu aktifkan lagi Debugging nirkabel, lalu coba lagi.</string>
+    <string name="selfadb_failed">Tidak dapat terhubung</string>
+    <string name="selfadb_service_channel">Debugging nirkabel</string>
+    <string name="selfadb_service_title">Menghubungkan ke Debugging nirkabel ponsel ini</string>
+    <string name="phone_adb_timeout">Penyandingan terlalu lama dan dihentikan.</string>
+    <string name="phone_adb_interrupted">Penyandingan terputus.</string>
+    <string name="watch_error_unreachable">Jam tidak dapat dijangkau. Pastikan Debugging nirkabel aktif dan kedua perangkat berada di Wi-Fi yang sama.</string>
+    <string name="watch_error_pairing">Jam tidak lagi memercayai ponsel ini. Kembali dan sandingkan lagi.</string>
+    <string name="grant_permission">Izin</string>
+    <string name="grant_appop">Operasi aplikasi</string>
+    <string name="grant_setting">Setelan sistem</string>
+    <string name="grant_listener">Akses notifikasi</string>
+    <string name="grant_battery">Pengecualian baterai</string>
+
+    <!-- Health Platform developer mode -->
+    <string name="devmode_title">Mode pengembang Health Platform</string>
+    <string name="devmode_intro">Layanan Health Tracking hanya berkomunikasi dengan aplikasi yang dipatch dalam mode pengembang. Aktifkan dari jam.</string>
+    <string name="devmode_step_settings">Buka Setelan di jam.</string>
+    <string name="devmode_step_apps">Buka Aplikasi.</string>
+    <string name="devmode_step_health_platform">Pilih Health Platform.</string>
+    <string name="devmode_step_tap">Ketuk judulnya berulang kali sampai [Dev mode] muncul.</string>
+    <string name="devmode_open_settings">Buka setelan Health Platform di jam</string>
+    <string name="devmode_waiting">Menunggu mode pengembang</string>
+    <string name="devmode_detected">Mode pengembang aktif</string>
+    <string name="devmode_check">Periksa sekarang</string>
+    <string name="devmode_skip">Lewati dulu</string>
+
+    <!-- Disable stock apps -->
+    <string name="disable_title">Matikan aplikasi bawaan</string>
+    <string name="disable_intro">Mematikan aplikasi menyembunyikan dan menghentikannya. Kamu bisa menyalakannya kembali kapan saja. Tidak ada yang dicopot.</string>
+    <string name="disable_chip_installed">Aplikasi jam terpasang</string>
+    <string name="disable_chip_wear">Wear OS</string>
+    <string name="disable_chip_not_installed">Tidak terpasang</string>
+    <string name="disable_error_some">Beberapa aplikasi tidak dapat dimatikan. Coba lagi, atau lewati langkah ini.</string>
+    <plurals name="disable_action">
+        <item quantity="other">Matikan %1$d aplikasi</item>
+    </plurals>
+
+    <!-- Self-test -->
+    <string name="selftest_title">Menguji semuanya</string>
+    <string name="selftest_section_phone">Ponsel</string>
+    <string name="selftest_section_watch">Jam</string>
+    <string name="selftest_section_link">Tautan ponsel ↔ jam</string>
+    <string name="selftest_section_human">Diperiksa olehmu</string>
+    <string name="selftest_rerun">Jalankan lagi</string>
+    <string name="selftest_human_label">PERIKSA BERSAMAMU · %1$d DARI %2$d</string>
+    <string name="selftest_share_subject">Uji mandiri OpenSHM Patcher</string>
+
+    <!-- Self-test rows: %1$s is an app name or a list of access names -->
+    <string name="selftest_package_title">%1$s terpasang</string>
+    <string name="selftest_grants_title">%1$s memiliki aksesnya</string>
+    <string name="selftest_stock_title">%1$s dimatikan</string>
+    <string name="selftest_bridge_link_title">Tautan bridge ke jam</string>
+    <string name="selftest_watch_platform">Health Platform dalam mode pengembang</string>
+    <string name="selftest_gms_title">Jam terhubung ke ponsel</string>
+    <string name="selftest_shm_title">Health Monitor melihat jam</string>
+    <string name="selftest_ecg_title">EKG sampai ke ponsel</string>
+    <string name="selftest_platform_question">Di jam, apakah Health Platform dalam mode pengembang?</string>
+    <string name="selftest_gms_question">Apakah aplikasi Wear OS di ponsel menampilkan jam sebagai terhubung?</string>
+    <string name="selftest_shm_question">Apakah Samsung Health Monitor di ponsel menampilkan jam sebagai terhubung?</string>
+    <string name="selftest_ecg_question">Rekam EKG di jam. Apakah muncul di ponsel?</string>
+    <string name="selftest_detail_answered_no">Kamu menjawab tidak</string>
+
+    <string name="selftest_detail_package_ok">Versi %1$s, ditandatangani dengan kuncimu, file sama dengan build</string>
+    <string name="selftest_detail_package_ok_no_version">Ditandatangani dengan kuncimu, file sama dengan build</string>
+    <string name="selftest_detail_not_installed">Tidak terpasang</string>
+    <string name="selftest_detail_wrong_cert">Ditandatangani dengan kunci yang berbeda dari milikmu</string>
+    <string name="selftest_detail_cert_unavailable">Kunci penandatanganmu tidak dapat dibaca</string>
+    <string name="selftest_detail_no_build">Tidak ada build untuk dibandingkan</string>
+    <string name="selftest_detail_hash_mismatch">File yang terpasang berbeda dari build terakhir</string>
+    <string name="selftest_detail_hash_unreadable">File yang terpasang tidak dapat dibaca</string>
+    <string name="selftest_detail_watch_ok">Terpasang, file sama dengan build</string>
+    <string name="selftest_detail_grants_ok">Semua akses diberikan</string>
+    <string name="selftest_detail_grants_missing">Kurang: %1$s</string>
+    <string name="selftest_detail_grants_unknown">Tidak dapat dibaca: %1$s</string>
+    <string name="selftest_detail_grants_optional">Opsional, belum diatur: %1$s</string>
+    <string name="selftest_detail_skipped_not_installed">Dilewati, tidak terpasang</string>
+    <string name="selftest_detail_watch_skipped">Dilewati, jam tidak terhubung</string>
+    <string name="selftest_detail_watch_no_answer">Jam tidak merespons</string>
+    <string name="selftest_detail_error">Pemeriksaan ini tidak dapat dijalankan</string>
+    <string name="selftest_detail_stock_still_on">Masih menyala</string>
+    <string name="selftest_detail_stock_off">Dimatikan</string>
+    <string name="selftest_detail_stock_absent">Tidak ada di jam</string>
+    <string name="selftest_detail_bridge_missing">Bridge tidak merespons. Apakah sudah terpasang?</string>
+    <string name="selftest_detail_bridge_denied">Bridge menolak permintaan status. Dibangun dengan kunci lain</string>
+    <string name="selftest_detail_bridge_not_running">Layanan bridge tidak berjalan</string>
+    <string name="selftest_detail_bridge_link_down">Tautan ke jam terputus</string>
+    <string name="selftest_detail_bridge_no_hello">Tautan aktif, tetapi jam belum menyapa</string>
+    <string name="selftest_detail_bridge_ok">Tautan aktif dan jam sudah menyapa</string>
+
+    <!-- All set -->
+    <string name="allset_title">Semuanya siap</string>
+    <string name="allset_subtitle">%1$d dari %2$d pemeriksaan lulus</string>
+    <string name="allset_chip_link">Tautan</string>
+
+    <!-- Home -->
+    <string name="home_title">OpenSHM</string>
+    <string name="home_status_ok">Semuanya berfungsi</string>
+    <string name="home_status_warning">Perlu dilihat</string>
+    <string name="home_status_failed">Ada yang rusak</string>
+    <string name="home_status_unknown">Belum diuji</string>
+    <string name="home_never_tested">Jalankan uji untuk melihat</string>
+    <plurals name="home_tested_days_ago">
+        <item quantity="other">diuji %1$d hari lalu</item>
+    </plurals>
+    <string name="home_test_again">Uji lagi</string>
+    <string name="home_update_title">Pembaruan siap</string>
+    <string name="home_update_detail">%1$s: %2$s ke %3$s</string>
+    <string name="home_update_patches">Patch diperbarui untuk %1$s</string>
+    <string name="home_menu_check_catalogue">Periksa pembaruan katalog</string>
+    <string name="home_catalogue_updated">Katalog diperbarui ke versi %1$d</string>
+    <string name="home_catalogue_up_to_date">Katalog sudah terbaru</string>
+    <string name="home_catalogue_rejected">Katalog yang diunduh tidak diterima</string>
+    <string name="home_catalogue_failed">Tidak dapat menjangkau server pembaruan</string>
+    <string name="home_catalogue_disabled">Build ini tidak memiliki saluran pembaruan katalog</string>
+    <string name="home_current_builds">Build saat ini</string>
+    <string name="home_rebuild_description">Ubah patch dan bangun ulang %1$s</string>
+    <string name="home_restore_description">Pulihkan %1$s</string>
+    <string name="home_new_build">Build baru</string>
+    <string name="home_menu_new_build">Build baru</string>
+    <string name="home_menu_self_test">Jalankan uji mandiri</string>
+    <string name="home_menu_restore_watch">Pulihkan jam</string>
+    <string name="home_menu_uninstall">Copot pemasangan</string>
+    <string name="restore_title">Pulihkan aplikasi asli?</string>
+    <string name="restore_body">Aplikasi yang dipatch dihapus dan aplikasi bawaan dinyalakan kembali. Datamu di jam tetap ada.</string>
+    <string name="restore_confirm">Pulihkan</string>
+
+    <!-- Signing key -->
+    <string name="signing_key_title">Kunci penandatanganan</string>
+    <string name="signing_key_explainer">Setiap aplikasi yang kamu bangun ditandatangani dengan kunci ini. Android hanya memasang pembaruan di atas aplikasi yang ditandatangani dengan kunci yang sama, jadi simpan cadangan.</string>
+    <string name="signing_key_present">Kunci penandatanganan siap</string>
+    <string name="signing_key_absent">Belum ada kunci penandatanganan</string>
+    <string name="signing_key_absent_note">Kunci dibuat saat build pertamamu. Jika sudah punya cadangan, kamu bisa mengimpornya sekarang.</string>
+    <string name="signing_key_unreadable">Kunci tidak dapat dibaca di perangkat ini.</string>
+    <string name="signing_key_sha_label">SHA-256 sertifikat</string>
+    <string name="signing_key_copy">Salin SHA-256 sertifikat</string>
+    <string name="signing_key_backed_up">Sudah dicadangkan</string>
+    <string name="signing_key_not_backed_up">Belum dicadangkan</string>
+    <string name="signing_key_export">Ekspor cadangan</string>
+    <string name="signing_key_import">Impor kunci</string>
+    <string name="signing_key_export_needs_key">Ekspor tersedia setelah kunci ada.</string>
+    <string name="signing_key_export_hint">Pilih kata sandi untuk file cadangan. Kamu memerlukannya untuk mengimpor kunci lagi, dan tidak dapat dipulihkan.</string>
+    <string name="signing_key_import_hint">Pilih file PKCS#12 (.p12) dan masukkan kata sandinya.</string>
+    <string name="signing_key_password">Kata sandi</string>
+    <string name="signing_key_password_repeat">Ulangi kata sandi</string>
+    <string name="signing_key_show_password">Tampilkan kata sandi</string>
+    <string name="signing_key_hide_password">Sembunyikan kata sandi</string>
+    <string name="signing_key_choose_location">Pilih tempat penyimpanan</string>
+    <string name="signing_key_choose_file">Pilih file</string>
+    <string name="signing_key_error_short">Gunakan minimal %1$d karakter.</string>
+    <string name="signing_key_error_mismatch">Kata sandi tidak cocok.</string>
+    <string name="signing_key_error_empty">Masukkan kata sandi file.</string>
+    <string name="signing_key_export_done">Cadangan disimpan. Simpan file dan kata sandinya di tempat yang aman.</string>
+    <string name="signing_key_export_failed">Cadangan tidak dapat disimpan.</string>
+    <string name="signing_key_import_done">Kunci penandatanganan diimpor.</string>
+    <string name="signing_key_import_failed">Kunci tidak dapat diimpor.</string>
+    <string name="signing_key_import_wrong_password">Kata sandi salah, atau file bukan file kunci PKCS#12.</string>
+    <string name="signing_key_import_not_one_key">File harus berisi tepat satu kunci.</string>
+    <string name="signing_key_import_unusable">File tidak memiliki kunci privat dan sertifikat yang dapat digunakan.</string>
+    <string name="signing_key_import_weak">Kunci terlalu lemah. Kunci RSA membutuhkan minimal 2048 bit.</string>
+    <string name="signing_key_import_type">Hanya kunci RSA dan EC yang didukung.</string>
+    <string name="signing_key_import_mismatch">Kunci tidak cocok dengan sertifikatnya.</string>
+    <string name="signing_key_import_costly">File meminta komputasi jauh lebih besar daripada file kunci normal, jadi ditolak.</string>
+    <string name="signing_key_import_unreadable">File tidak dapat dibaca.</string>
+    <string name="signing_key_confirm_title">Ganti kunci penandatanganan?</string>
+    <string name="signing_key_confirm_current">Kunci saat ini</string>
+    <string name="signing_key_confirm_new">Kunci di file</string>
+    <string name="signing_key_confirm_none">Belum ada</string>
+    <string name="signing_key_confirm_warning">Aplikasi yang sudah kamu pasang dan tandatangani dengan kunci saat ini tidak akan lagi menerima pembaruan dari aplikasi ini. Untuk memakai kunci baru, kamu harus mencopot dan memasangnya kembali, yang menghapus datanya.</string>
+    <string name="signing_key_confirm_replace">Ganti kunci</string>
+    <string name="signing_key_nudge_title">Cadangkan kunci penandatanganmu</string>
+    <string name="signing_key_nudge_body">Tanpanya, aplikasi yang terpasang tidak dapat diperbarui, hanya dipasang ulang.</string>
+    <string name="signing_key_nudge_action">Cadangkan</string>
+    <string name="home_menu_signing_key">Kunci penandatanganan</string>
+</resources>

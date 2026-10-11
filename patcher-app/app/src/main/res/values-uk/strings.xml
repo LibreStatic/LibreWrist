@@ -1,0 +1,505 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Shared actions -->
+    <string name="action_back">Назад</string>
+    <string name="action_help">Довідка</string>
+    <string name="action_close">Закрити</string>
+    <string name="action_settings">Налаштування</string>
+    <string name="action_more_options">Більше опцій</string>
+    <string name="action_continue">Продовжити</string>
+    <string name="action_cancel">Скасувати</string>
+    <string name="action_done">Готово</string>
+    <string name="action_skip">Пропустити</string>
+    <string name="action_start">Почати</string>
+    <string name="action_retry">Повторити</string>
+    <string name="action_edit">Змінити</string>
+    <string name="action_fix">Виправити</string>
+    <string name="action_yes">Так</string>
+    <string name="action_no">Ні</string>
+    <string name="action_open_settings">Відкрити налаштування</string>
+    <string name="action_share_report">Поділитися звітом</string>
+
+    <string name="state_expanded">Розгорнуто</string>
+    <string name="state_collapsed">Згорнуто</string>
+    <string name="device_phone">Телефон</string>
+    <string name="device_watch">Годинник</string>
+    <string name="chip_optional">Необов\'язково</string>
+    <string name="chip_apk_not_bundle">APK, не пакет</string>
+    <string name="chip_nodpi">nodpi</string>
+    <string name="chip_android_11">Android 11+</string>
+    <string name="chip_android_14">Android 14+</string>
+    <string name="size_mb">%1$.1f МБ</string>
+
+    <!-- Step header and status -->
+    <string name="step_label">КРОК %1$d З %2$d</string>
+    <string name="step_label_watch_suffix">" · НА ГОДИННИКУ"</string>
+    <string name="status_pending">Очікує</string>
+    <string name="status_running">Виконується</string>
+    <string name="status_passed">Пройдено</string>
+    <string name="status_warning">Потребує уваги</string>
+    <string name="status_failed">Помилка</string>
+    <string name="progress_download_description">Завантаження: %1$d відсотків</string>
+    <string name="progress_build_description">Збірка: %1$d відсотків</string>
+
+    <!-- Welcome -->
+    <string name="welcome_title">Ваші застосунки, ваш годинник, ваші правила</string>
+    <string name="welcome_promise_download">Офіційні застосунки ви отримуєте самі: тут нічого не вбудовано.</string>
+    <string name="welcome_promise_patch">Патчі дозволяють Samsung Health Monitor працювати на телефоні не від Samsung і встановлюватися поруч зі стандартним застосунком на годиннику.</string>
+    <string name="welcome_promise_undo">Кожну зміну можна скасувати, а стандартні застосунки залишаються на місці.</string>
+    <string name="welcome_get_started">Розпочати</string>
+    <string name="welcome_what_changes">Що зміниться на моїх пристроях?</string>
+    <string name="changes_title">Що зміниться</string>
+    <string name="changes_intro">Встановлюються лише ці застосунки й змінюються лише ці налаштування. Нічого не видаляється.</string>
+    <string name="changes_installs">Буде встановлено</string>
+    <string name="changes_grants">Дозволяється після встановлення</string>
+    <string name="changes_disables">Можна вимкнути</string>
+
+    <!-- Profile -->
+    <string name="profile_title">Який у вас годинник?</string>
+    <string name="profile_intro">Від цього залежить, які офіційні застосунки вам потрібні.</string>
+    <string name="profile_wear5_title">Wear OS 5 або новіша</string>
+    <string name="profile_wear5_summary">Health Monitor і будильники з телефона на годиннику.</string>
+    <string name="profile_wear5_apps">3 офіційні застосунки</string>
+    <string name="profile_wear3_title">Wear OS 3 або 4</string>
+    <string name="profile_wear3_summary">Лише Health Monitor. Для застосунку будильників на годиннику потрібен Android 14.</string>
+    <string name="profile_wear3_apps">2 офіційні застосунки</string>
+    <string name="profile_detected">Перевірено на годиннику: Android %1$s (%2$s)</string>
+    <string name="profile_check_paired">Перевірити пов\'язані годинники</string>
+    <string name="profile_hint_certain">Знайдено %1$s. На ньому завжди Wear OS 5 або новіша, тому вибрано перший варіант.</string>
+    <string name="profile_hint_depends">На вашому %1$s може бути будь-яка версія. Перегляньте «Інформація про ПЗ» на годиннику або дозвольте застосунку перевірити на кроці 3.</string>
+    <string name="profile_check_none">Пов\'язаних Galaxy Watch не знайдено. Виберіть варіант або дозвольте застосунку перевірити на кроці 3.</string>
+    <string name="profile_check_denied">Доступ до Bluetooth не надано, тому пов\'язані годинники перевірити не можна. Виберіть варіант або дозвольте застосунку перевірити на кроці 3.</string>
+    <string name="profile_howto_title">Як визначити</string>
+    <string name="profile_howto_watch">На годиннику: Налаштування › Про годинник › Інформація про ПЗ. «Wear OS 5» або новіша, «One UI 6 Watch» або новіша, чи Android 14 або новіший означає перший варіант.</string>
+    <string name="profile_howto_phone">Той самий екран є в застосунку Galaxy Wearable на телефоні: Налаштування годинника › Про годинник › Інформація про ПЗ.</string>
+    <string name="profile_howto_models">Galaxy Watch7, Watch Ultra і новіші підходять завжди. Watch4, Watch5, Watch6 і Watch FE підходять лише після оновлення до One UI 6 Watch.</string>
+    <string name="profile_howto_unsure">Не впевнені? Виберіть будь-який: застосунок сам перевірить годинник після підключення (крок 3) і виправить вибір до початку завантаження.</string>
+
+    <!-- Galaxy Wearable pairing check -->
+    <string name="wearable_title">Годинник з\'єднано?</string>
+    <string name="wearable_intro">Годинник уже має бути з\'єднаний із цим телефоном. Ці перевірки нічого не змінюють.</string>
+    <string name="wearable_check_app">Супутній застосунок знайдено</string>
+    <string name="wearable_check_app_detail">Застосунок для керування годинником встановлено.</string>
+    <string name="wearable_check_paired">Годинник з\'єднано</string>
+    <string name="wearable_check_paired_detail">Годинник пов\'язано з цим телефоном.</string>
+    <string name="wearable_check_datalayer">Телефон і годинник обмінюються даними</string>
+    <string name="wearable_check_datalayer_detail">Канал передавання даних Google між ними відповідає.</string>
+    <string name="wearable_note">Якщо перевірка не пройдена, виправте це в налаштуваннях самого годинника й перевірте знову.</string>
+    <string name="wearable_recheck">Перевірити знову</string>
+
+    <!-- Watch pairing over Wi-Fi -->
+    <string name="watchpair_correct_older">На вашому годиннику Android %1$s, тому застосунок будильників пропускається: потрібно 2 офіційні застосунки замість 3.</string>
+    <string name="watchpair_correct_newer">На вашому годиннику Android %1$s, тому застосунок будильників додається: потрібно 3 офіційні застосунки замість 2.</string>
+    <string name="watchpair_title">Підключення до годинника</string>
+    <string name="watchpair_intro">Годинник приймає встановлення через Wi-Fi після з\'єднання за коротким кодом.</string>
+    <string name="watchpair_on_watch">НА ГОДИННИКУ</string>
+    <string name="watchpair_on_watch_steps">Відкрийте Налаштування, Параметри розробника, Бездротове налагодження, потім Підключити новий пристрій. Там буде показано 6-значний код.</string>
+    <string name="watchpair_found">Годинник знайдено у вашій мережі</string>
+    <string name="watchpair_searching">Пошук годинника…</string>
+    <string name="watchpair_address_label">Адреса (хост:порт)</string>
+    <string name="watchpair_code_label">Код з\'єднання</string>
+    <string name="watchpair_check_wifi">Телефон і годинник в одній мережі Wi-Fi</string>
+    <string name="watchpair_check_developer">Параметри розробника ввімкнено</string>
+    <string name="watchpair_check_wireless">Бездротове налагодження ввімкнено</string>
+    <string name="watchpair_check_code">Екран із кодом з\'єднання відкрито</string>
+    <string name="watchpair_hint">Введіть усі 6 цифр для з\'єднання</string>
+    <string name="watchpair_ready">Готово до з\'єднання</string>
+    <string name="watchpair_pair">З\'єднати</string>
+    <string name="watchpair_error_wrong_code">Код не прийнято. Перевірте годинник і повторіть.</string>
+    <string name="watchpair_error_bad_address">Введіть адресу у форматі хост:порт, наприклад 192.168.1.20:37115.</string>
+    <string name="watchpair_error_timeout">Годинник не відповів вчасно. Не закривайте екран із кодом з\'єднання й повторіть.</string>
+    <string name="watchpair_error_network">Не вдалося зв\'язатися з годинником. Переконайтеся, що обидва пристрої в одній мережі Wi-Fi.</string>
+    <string name="watchpair_error_restart">Ключ з\'єднання скинуто. Закрийте й знову відкрийте застосунок, потім з\'єднайте ще раз.</string>
+    <string name="watchpair_error_other">З\'єднання не вдалося. Знову відкрийте на годиннику екран із кодом з\'єднання й повторіть.</string>
+
+    <!-- Acquire -->
+    <string name="acquire_title">Отримайте офіційні застосунки</string>
+    <string name="acquire_intro">Завантажте кожен застосунок самі, з надійного джерела. Патчер їх не зберігає і не поширює.</string>
+    <string name="acquire_open_mirror">Відкрити на APKMirror</string>
+    <string name="acquire_more_ways">Інші способи отримати цей застосунок</string>
+    <string name="acquire_use_file">Використати наявний файл</string>
+    <string name="acquire_downloading">Завантаження…  %1$d%% · %2$d з %3$d МБ</string>
+    <string name="acquire_verified">Збігається з очікуваним файлом · %1$d МБ</string>
+    <string name="acquire_rejected_wrong_app">Цей файл належить іншому застосунку. Виберіть той, що вказано вище.</string>
+    <string name="acquire_rejected_wrong_version">Цей файл — інша версія застосунку, не очікувана.</string>
+    <string name="acquire_rejected_not_expected">Цей файл не відповідає очікуваній збірці (інший варіант або пошкоджений). Завантажте його знову.</string>
+    <string name="acquire_rejected_unreadable">Не вдалося прочитати файл.</string>
+    <string name="acquire_rejected_download_failed">Завантаження не завершилося. Перевірте підключення й повторіть.</string>
+    <string name="acquire_rejected_too_large">Завантаження значно більше за очікуваний файл, тому його зупинено.</string>
+    <string name="acquire_verify_note">Перед використанням кожен файл звіряється з відомою контрольною сумою.</string>
+    <plurals name="acquire_waiting">
+        <item quantity="one">Очікується %1$d застосунок</item>
+        <item quantity="few">Очікується %1$d застосунки</item>
+        <item quantity="many">Очікується %1$d застосунків</item>
+        <item quantity="other">Очікується %1$d застосунку</item>
+    </plurals>
+
+    <!-- Guided browser -->
+    <string name="browser_page_placeholder">ВЕБСТОРІНКА ЯК Є</string>
+    <string name="browser_coach_progress">%1$d з %2$d · %3$s</string>
+    <string name="browser_coach_1_title">Відкрийте потрібний випуск</string>
+    <string name="browser_coach_1_body">Виберіть версію, указану на картці, а не новішу чи старішу.</string>
+    <string name="browser_coach_2_title">Виберіть варіант</string>
+    <string name="browser_coach_2_body">Виберіть APK, а не пакет, і збірку nodpi для вашої версії Android.</string>
+    <string name="browser_coach_3_title">Завантажте</string>
+    <string name="browser_coach_3_body">Натисніть Download APK. Патчер підхопить файл після завершення завантаження.</string>
+    <string name="browser_coach_wrong_version_body">Це інша версія. Поверніться й відкрийте %1$s.</string>
+    <string name="browser_notice_blocked">Заблоковано посилання на інший сайт: %1$s</string>
+    <string name="browser_notice_bundle">Це файл пакета (.apkm, .xapk, .apks або .zip). Поверніться й виберіть звичайний варіант APK.</string>
+    <string name="browser_notice_not_https">Це завантаження не за захищеним посиланням https, тому його не виконано.</string>
+    <string name="browser_notice_open">Відкрити в браузері</string>
+    <string name="browser_notice_dismiss">Закрити</string>
+    <string name="browser_reload">Оновити</string>
+    <string name="browser_step_dots">Крок %1$d з %2$d</string>
+    <string name="browser_use_file">Використати файл</string>
+    <string name="browser_open_external">Відкрити в браузері</string>
+    <string name="browser_back_to_page">Повернутися на потрібну сторінку</string>
+
+    <!-- Customize -->
+    <string name="customize_title">Виберіть патчі</string>
+    <string name="customize_intro">Ці патчі потрібні для роботи застосунків на ваших пристроях, тому вони завжди ввімкнені.</string>
+    <string name="customize_required">Обов\'язково, завжди ввімкнено</string>
+    <string name="customize_advanced">Додатково</string>
+    <string name="customize_prefix_label">Префікс пакета для допоміжних застосунків</string>
+    <string name="customize_prefix_explainer">Задає назви застосунків-мостів і застосунку будильників. Два застосунки Samsung Health Monitor зберігають свій пакет, щоб обмінюватися даними.</string>
+    <string name="customize_prefix_ok">Новий префікс створюється автоматично.</string>
+    <string name="customize_prefix_locked">Заблоковано: допоміжні застосунки встановлено, а для оновлень потрібен той самий префікс.</string>
+    <string name="customize_prefix_regenerate">Створити новий префікс</string>
+    <string name="customize_build">Зібрати</string>
+    <string name="preset_recommended">Рекомендовано</string>
+    <string name="preset_minimal">Мінімум</string>
+    <string name="preset_everything">Усе</string>
+    <string name="prefix_problem_empty">Введіть префікс.</string>
+    <string name="prefix_problem_short">Використайте щонайменше дві частини, наприклад io.example.</string>
+    <string name="prefix_problem_long">Префікс задовгий.</string>
+    <string name="prefix_problem_segment">Використовуйте малі літери, цифри й підкреслення; кожна частина починається з літери.</string>
+    <string name="prefix_problem_reserved">Цей простір імен належить комусь іншому.</string>
+    <plurals name="customize_summary_patches">
+        <item quantity="one">%1$d патч увімкнено</item>
+        <item quantity="few">%1$d патчі увімкнено</item>
+        <item quantity="many">%1$d патчів увімкнено</item>
+        <item quantity="other">%1$d патча увімкнено</item>
+    </plurals>
+    <plurals name="customize_summary_apps">
+        <item quantity="one">%1$d застосунок</item>
+        <item quantity="few">%1$d застосунки</item>
+        <item quantity="many">%1$d застосунків</item>
+        <item quantity="other">%1$d застосунку</item>
+    </plurals>
+
+    <!-- Patch descriptions (titles come from the catalogue) -->
+    <string name="patch_generic_manufacturer_check">Приймає телефон не від Samsung.</string>
+    <string name="patch_generic_vendor_check">Приймає телефон без Samsung SDK.</string>
+    <string name="patch_shm_min_age_22_to_16">Знижує мінімальний вік із 22 до 16 років.</string>
+    <string name="patch_shm_supported_type_ordinals">Вважає підтримуваним будь-який регіон.</string>
+    <string name="patch_shm_region_supportedtype">Пропускає перевірку регіону.</string>
+    <string name="patch_shm_region_countrylist">Приймає будь-яку країну зі списку підтримуваних.</string>
+    <string name="patch_shm_root_packagevalidator">Пропускає перевірку сертифіката виробника.</string>
+    <string name="patch_shm_force_update_response">Ігнорує невдалу або примусову відповідь щодо оновлення.</string>
+    <string name="patch_shm_force_update_pref">Ігнорує збережений прапорець примусового оновлення.</string>
+    <string name="patch_shm_main_gates">Пропускає перевірки під час запуску, що блокують інші телефони.</string>
+    <string name="patch_shm_setup_network_gate">Пропускає перевірку SIM і регіону під час налаштування.</string>
+    <string name="patch_shm_sleep_apnea_support">Повідомляє, що апное уві сні підтримується.</string>
+    <string name="patch_phone_rebrand_gms">Надає застосунку на телефоні той самий пакет і ключ, що й на годиннику, щоб вони могли обмінюватися даними.</string>
+    <string name="patch_watch_rebrand_coexist">Перейменовує застосунок на годиннику, щоб він стояв поруч зі стандартним.</string>
+    <string name="patch_watch_queries_health_service">Дозволяє застосунку на годиннику бачити службу здоров\'я.</string>
+    <string name="patch_watch_companion_vendor">Приймає телефон будь-якої марки.</string>
+    <string name="patch_watch_alarm_system_app">Планує точні будильники без системних привілеїв.</string>
+    <string name="patch_watch_mobile_installed">Повідомляє, що застосунок на телефоні встановлено.</string>
+    <string name="patch_watch_ecg_sensor_adapter">Зчитує датчик ЕКГ через службу Health Tracking.</string>
+    <string name="patch_watch_apnea_country">Пропускає перевірку країни для апное.</string>
+    <string name="patch_watch_apnea_reeval_not_supported">Повторно перевіряє підтримку апное, збережену як непідтримувана.</string>
+    <string name="patch_watch_mod">Додає модуль для зв\'язку зі службою Health Tracking.</string>
+    <string name="patch_alarm_verify_symbols">Перевіряє, що в застосунку будильників є все потрібне для зв\'язку.</string>
+    <string name="patch_alarm_rebrand_manifest">Перейменовує застосунок будильників, щоб він установлювався поруч зі стандартним.</string>
+    <string name="patch_alarm_rebrand_code">Оновлює код застосунку будильників під нову назву.</string>
+    <string name="patch_alarm_permissions_prune">Прибирає дозволи, доступні лише системним застосункам.</string>
+    <string name="patch_alarm_notification_permissions">Додає дозволи на сповіщення та повноекранні будильники.</string>
+    <string name="patch_alarm_queries_libs">Прибирає запити й бібліотеки, не потрібні форку.</string>
+    <string name="patch_alarm_components_prune">Прибирає компоненти виробника, не потрібні форку.</string>
+    <string name="patch_alarm_provider_open">Відкриває дані будильників для форка.</string>
+    <string name="patch_alarm_link_components">Додає приймач для будильників, надісланих із телефона.</string>
+    <string name="patch_alarm_appfunctions_drop">Прибирає невикористану гілку функцій виробника.</string>
+    <string name="patch_alarm_semgesture_skip">Пропускає менеджер жестів виробника.</string>
+    <string name="patch_alarm_gms_observer_drop">Не дає будильнику завершуватися завчасно.</string>
+    <string name="patch_alarm_service_stop_on_destroy">Гарантує, що звук і вібрація завжди зупиняються.</string>
+    <string name="patch_alarm_force_sound_vibrate">Завжди дзвонить і вібрує.</string>
+    <string name="patch_alarm_link_send">Надсилає зміни будильників на телефон.</string>
+    <string name="patch_alarm_hide_launcher">Приховує зайвий значок запуску.</string>
+    <string name="patch_alarm_relabel">Називає форк «Будильники телефона».</string>
+    <string name="patch_alarm_fork">Додає модуль, що пов\'язує будильники з телефоном.</string>
+    <string name="output_shm_phone">Samsung Health Monitor (з патчами)</string>
+    <string name="output_shm_watch">Samsung Health Monitor для Wear OS (з патчами)</string>
+    <string name="output_bridge_watch">Міст для годинника</string>
+    <string name="output_alarm_fork">Будильники телефона на годиннику</string>
+    <string name="output_bridge_phone">Міст для телефона</string>
+    <string name="stock_label_shm">Samsung Health Monitor (стандартний)</string>
+    <string name="stock_reason_shm">Дві копії застосунку конкуруватимуть за один датчик.</string>
+
+    <!-- Build -->
+    <string name="build_title">Збирання застосунків</string>
+    <string name="build_caption_idle">Підготовка</string>
+    <string name="build_stage_unpack">Розпакування</string>
+    <string name="build_stage_fingerprints">Перевірка відбитків патчів</string>
+    <string name="build_stage_apply_short">Застосування патчів</string>
+    <plurals name="build_stage_apply">
+        <item quantity="one">Застосувати %1$d патч</item>
+        <item quantity="few">Застосувати %1$d патчі</item>
+        <item quantity="many">Застосувати %1$d патчів</item>
+        <item quantity="other">Застосувати %1$d патча</item>
+    </plurals>
+    <string name="build_stage_rename">Перейменування пакета</string>
+    <string name="build_stage_rebuild">Перезбирання</string>
+    <string name="build_stage_sign">Підпис</string>
+    <string name="build_stage_selfcheck">Самоперевірка</string>
+    <string name="build_can_leave">Можна вийти. Ми сповістимо вас про завершення.</string>
+    <string name="build_channel_name">Перебіг збирання</string>
+    <string name="build_channel_description">Показується, поки застосунки збираються й підписуються.</string>
+    <string name="build_notification_title">Збирання застосунків</string>
+    <string name="build_notification_progress">%1$s: %2$s</string>
+    <string name="build_notification_done">Застосунки зібрано й підписано.</string>
+    <string name="build_notification_failed">Збирання не вдалося. Відкрийте застосунок, щоб дізнатися причину.</string>
+    <string name="build_error_title">Збирання не завершилося</string>
+    <string name="build_show_log">Показати журнал</string>
+    <string name="build_log_title">Журнал збирання</string>
+    <string name="build_log_empty">Записів поки немає.</string>
+    <string name="build_done_title">Зібрано й підписано</string>
+    <string name="build_done_ready">готово до встановлення</string>
+    <string name="build_done_install">Установити на телефон</string>
+    <string name="build_done_link_note">Два застосунки Health Monitor мають одну назву пакета й один ключ підпису. Саме це дає змогу каналу даних Google передавати повідомлення між ними.</string>
+    <plurals name="build_done_subtitle_patches">
+        <item quantity="one">%1$d патч</item>
+        <item quantity="few">%1$d патчі</item>
+        <item quantity="many">%1$d патчів</item>
+        <item quantity="other">%1$d патча</item>
+    </plurals>
+    <plurals name="build_done_subtitle_apps">
+        <item quantity="one">%1$d застосунок</item>
+        <item quantity="few">%1$d застосунки</item>
+        <item quantity="many">%1$d застосунків</item>
+        <item quantity="other">%1$d застосунку</item>
+    </plurals>
+
+    <!-- Install -->
+    <string name="install_phone_title">Встановлення на цей телефон</string>
+    <string name="install_phone_intro">Android просить підтвердити кожне встановлення. Потрібні застосункам доступи перевіряються потім; бракуючі ви вмикаєте в налаштуваннях.</string>
+    <string name="install_phone_note">Дозволи, показ поверх інших застосунків, доступ до сповіщень і обмежені налаштування вмикаєте ви. Поверніться на цей екран, і перевірка пройде знову.</string>
+    <string name="install_watch_title">Встановлення на годинник</string>
+    <string name="install_watch_intro">Встановлення через Wi-Fi у такому порядку: Health Monitor, міст, потім будильники телефона.</string>
+    <string name="install_watch_note">Годинник залишається ввімкненим і підключеним, поки це виконується.</string>
+    <string name="install_start">Почати встановлення</string>
+    <string name="install_error_build_missing">Збірка відсутня або не відповідає цьому налаштуванню. Зберіть знову, потім встановіть.</string>
+    <string name="install_error_failed">Годинник відхилив встановлення.</string>
+    <string name="install_error_signature">На годиннику вже є копія, підписана іншим ключем. Нічого не видалено. Видаліть цю копію самі й повторіть.</string>
+    <string name="install_error_grant">Не вдалося застосувати налаштування доступу.</string>
+    <string name="action_open">Відкрити</string>
+    <string name="action_allow_installing">Дозволити встановлення застосунків</string>
+    <string name="install_check_again">Перевірити знову</string>
+    <string name="install_continue_anyway">Усе одно продовжити</string>
+    <string name="install_onboarding">Відкрийте Samsung Health Monitor і завершіть його налаштування</string>
+    <string name="install_error_unknown_sources">Цьому застосунку ще не дозволено встановлювати застосунки. Дозвольте й почніть знову.</string>
+    <string name="install_error_notifications">Спершу дозвольте сповіщення для цього застосунку: код з\'єднання вводиться в сповіщенні.</string>
+    <string name="phone_adb_title">Надати все одразу</string>
+    <string name="phone_adb_intro">Якщо заважають перемикачі, телефон може надати їх собі сам через Бездротове налагодження. Потрібно бути в мережі Wi-Fi.</string>
+    <string name="phone_adb_action">Надати все через Бездротове налагодження</string>
+    <string name="phone_adb_waiting_service">У розділі «Бездротове налагодження» увімкніть його й торкніться «З\'єднати пристрій за кодом з\'єднання». З\'явиться сповіщення, де можна ввести код, не залишаючи того екрана.</string>
+    <string name="phone_adb_waiting_code">Введіть шестизначний код з екрана з\'єднання тут або в сповіщенні.</string>
+    <string name="phone_adb_wrong_code">Код не підійшов. Перевірте екран з\'єднання й повторіть.</string>
+    <string name="phone_adb_ambiguous">На цьому телефоні знайдено кілька служб Бездротового налагодження. Вимкніть і знову ввімкніть Бездротове налагодження, потім повторіть.</string>
+    <string name="phone_adb_connecting">Підключення до цього телефона...</string>
+    <string name="phone_adb_granting">Підключено. Надання доступів...</string>
+    <string name="phone_adb_failed">Не вдалося підключитися до Бездротового налагодження цього телефона.</string>
+    <string name="phone_adb_code_label">Код з\'єднання</string>
+    <string name="phone_adb_submit">З\'єднати</string>
+    <string name="selfadb_channel">З\'єднання з цим телефоном</string>
+    <string name="selfadb_code_channel">Код з\'єднання</string>
+    <string name="selfadb_waiting_service">У розділі «Бездротове налагодження» торкніться «З\'єднати пристрій за кодом з\'єднання»</string>
+    <string name="selfadb_enter_code_title">Введіть код з\'єднання</string>
+    <string name="selfadb_enter_code_body">Введіть шестизначний код з екрана з\'єднання.</string>
+    <string name="selfadb_reply_label">Код з\'єднання</string>
+    <string name="selfadb_reply_action">Ввести код</string>
+    <string name="selfadb_wrong_code">Код не підійшов. Перевірте екран з\'єднання й повторіть.</string>
+    <string name="selfadb_pairing">З\'єднання...</string>
+    <string name="selfadb_connecting">Підключення...</string>
+    <string name="selfadb_connected">Підключено до Бездротового налагодження цього телефона</string>
+    <string name="selfadb_ambiguous">На цьому телефоні знайдено кілька служб Бездротового налагодження. Вимкніть і знову ввімкніть Бездротове налагодження, потім повторіть.</string>
+    <string name="selfadb_failed">Не вдалося підключитися</string>
+    <string name="selfadb_service_channel">Бездротове налагодження</string>
+    <string name="selfadb_service_title">Підключення до Бездротового налагодження цього телефона</string>
+    <string name="phone_adb_timeout">З\'єднання тривало надто довго й було зупинене.</string>
+    <string name="phone_adb_interrupted">З\'єднання перервано.</string>
+    <string name="watch_error_unreachable">Годинник недоступний. Переконайтеся, що Бездротове налагодження ввімкнено й обидва пристрої в одній мережі Wi-Fi.</string>
+    <string name="watch_error_pairing">Годинник більше не довіряє цьому телефону. Поверніться й з\'єднайте знову.</string>
+    <string name="grant_permission">Дозвіл</string>
+    <string name="grant_appop">Операція застосунку</string>
+    <string name="grant_setting">Системне налаштування</string>
+    <string name="grant_listener">Доступ до сповіщень</string>
+    <string name="grant_battery">Виняток для економії заряду</string>
+
+    <!-- Health Platform developer mode -->
+    <string name="devmode_title">Режим розробника Health Platform</string>
+    <string name="devmode_intro">Служба Health Tracking спілкується з пропатченим застосунком лише в режимі розробника. Увімкніть його на годиннику.</string>
+    <string name="devmode_step_settings">Відкрийте Налаштування на годиннику.</string>
+    <string name="devmode_step_apps">Перейдіть до Застосунків.</string>
+    <string name="devmode_step_health_platform">Виберіть Health Platform.</string>
+    <string name="devmode_step_tap">Торкайтеся заголовка, доки не з\'явиться [Dev mode].</string>
+    <string name="devmode_open_settings">Відкрити налаштування Health Platform на годиннику</string>
+    <string name="devmode_waiting">Очікування режиму розробника</string>
+    <string name="devmode_detected">Режим розробника ввімкнено</string>
+    <string name="devmode_check">Перевірити зараз</string>
+    <string name="devmode_skip">Пропустити</string>
+
+    <!-- Disable stock apps -->
+    <string name="disable_title">Вимкніть стандартний застосунок</string>
+    <string name="disable_intro">Вимкнений застосунок прихований і зупинений. Його можна ввімкнути будь-коли. Нічого не видаляється.</string>
+    <string name="disable_chip_installed">Застосунок на годиннику встановлено</string>
+    <string name="disable_chip_wear">Wear OS</string>
+    <string name="disable_chip_not_installed">Не встановлено</string>
+    <string name="disable_error_some">Не вдалося вимкнути деякі застосунки. Повторіть або пропустіть цей крок.</string>
+    <plurals name="disable_action">
+        <item quantity="one">Вимкнути %1$d застосунок</item>
+        <item quantity="few">Вимкнути %1$d застосунки</item>
+        <item quantity="many">Вимкнути %1$d застосунків</item>
+        <item quantity="other">Вимкнути %1$d застосунку</item>
+    </plurals>
+
+    <!-- Self-test -->
+    <string name="selftest_title">Перевірка всього</string>
+    <string name="selftest_section_phone">Телефон</string>
+    <string name="selftest_section_watch">Годинник</string>
+    <string name="selftest_section_link">Зв\'язок телефона й годинника</string>
+    <string name="selftest_section_human">Перевіряєте ви</string>
+    <string name="selftest_rerun">Запустити знову</string>
+    <string name="selftest_human_label">ПЕРЕВІРКА З ВАМИ · %1$d З %2$d</string>
+    <string name="selftest_share_subject">Самотест OpenSHM Patcher</string>
+
+    <!-- Self-test rows: %1$s is an app name or a list of access names -->
+    <string name="selftest_package_title">%1$s: встановлено</string>
+    <string name="selftest_grants_title">%1$s: доступи надано</string>
+    <string name="selftest_stock_title">%1$s: вимкнено</string>
+    <string name="selftest_bridge_link_title">Зв\'язок із годинником через міст</string>
+    <string name="selftest_watch_platform">Health Platform у режимі розробника</string>
+    <string name="selftest_gms_title">Годинник підключено до телефона</string>
+    <string name="selftest_shm_title">Health Monitor бачить годинник</string>
+    <string name="selftest_ecg_title">ЕКГ доходить до телефона</string>
+    <string name="selftest_platform_question">Чи перебуває Health Platform на годиннику в режимі розробника?</string>
+    <string name="selftest_gms_question">Чи показує застосунок Wear OS на телефоні, що годинник підключено?</string>
+    <string name="selftest_shm_question">Чи показує Samsung Health Monitor на телефоні, що годинник підключено?</string>
+    <string name="selftest_ecg_question">Зніміть ЕКГ на годиннику. Чи з\'являється воно на телефоні?</string>
+    <string name="selftest_detail_answered_no">Ви відповіли «ні»</string>
+
+    <string name="selftest_detail_package_ok">Версія %1$s, підписано вашим ключем, той самий файл, що й у збірці</string>
+    <string name="selftest_detail_package_ok_no_version">Підписано вашим ключем, той самий файл, що й у збірці</string>
+    <string name="selftest_detail_not_installed">Не встановлено</string>
+    <string name="selftest_detail_wrong_cert">Підписано не вашим ключем</string>
+    <string name="selftest_detail_cert_unavailable">Не вдалося прочитати ваш ключ підпису</string>
+    <string name="selftest_detail_no_build">Немає збірки для порівняння</string>
+    <string name="selftest_detail_hash_mismatch">Встановлений файл відрізняється від останньої збірки</string>
+    <string name="selftest_detail_hash_unreadable">Не вдалося прочитати встановлений файл</string>
+    <string name="selftest_detail_watch_ok">Встановлено, той самий файл, що й у збірці</string>
+    <string name="selftest_detail_grants_ok">Усі доступи надано</string>
+    <string name="selftest_detail_grants_missing">Бракує: %1$s</string>
+    <string name="selftest_detail_grants_unknown">Не вдалося прочитати: %1$s</string>
+    <string name="selftest_detail_grants_optional">Необов\'язково, не задано: %1$s</string>
+    <string name="selftest_detail_skipped_not_installed">Пропущено, не встановлено</string>
+    <string name="selftest_detail_watch_skipped">Пропущено, годинник не підключено</string>
+    <string name="selftest_detail_watch_no_answer">Годинник не відповів</string>
+    <string name="selftest_detail_error">Не вдалося виконати перевірку</string>
+    <string name="selftest_detail_stock_still_on">Досі ввімкнено</string>
+    <string name="selftest_detail_stock_off">Вимкнено</string>
+    <string name="selftest_detail_stock_absent">Немає на годиннику</string>
+    <string name="selftest_detail_bridge_missing">Міст не відповідає. Він установлений?</string>
+    <string name="selftest_detail_bridge_denied">Міст відхилив запит стану. Його зібрано з іншим ключем</string>
+    <string name="selftest_detail_bridge_not_running">Службу мосту не запущено</string>
+    <string name="selftest_detail_bridge_link_down">Зв\'язку з годинником немає</string>
+    <string name="selftest_detail_bridge_no_hello">Зв\'язок є, але годинник ще не подав сигнал</string>
+    <string name="selftest_detail_bridge_ok">Зв\'язок є, годинник подав сигнал</string>
+
+    <!-- All set -->
+    <string name="allset_title">Усе готово</string>
+    <string name="allset_subtitle">Пройдено перевірок: %1$d з %2$d</string>
+    <string name="allset_chip_link">Зв\'язок</string>
+
+    <!-- Home -->
+    <string name="home_title">OpenSHM</string>
+    <string name="home_status_ok">Усе працює</string>
+    <string name="home_status_warning">Варто перевірити</string>
+    <string name="home_status_failed">Щось зламано</string>
+    <string name="home_status_unknown">Ще не перевірялося</string>
+    <string name="home_never_tested">Запустіть тест, щоб дізнатися</string>
+    <plurals name="home_tested_days_ago">
+        <item quantity="one">перевірено %1$d день тому</item>
+        <item quantity="few">перевірено %1$d дні тому</item>
+        <item quantity="many">перевірено %1$d днів тому</item>
+        <item quantity="other">перевірено %1$d дня тому</item>
+    </plurals>
+    <string name="home_test_again">Перевірити знову</string>
+    <string name="home_update_title">Доступне оновлення</string>
+    <string name="home_update_detail">%1$s: %2$s → %3$s</string>
+    <string name="home_update_patches">Оновлені патчі для %1$s</string>
+    <string name="home_menu_check_catalogue">Перевірити оновлення каталогу</string>
+    <string name="home_catalogue_updated">Каталог оновлено до версії %1$d</string>
+    <string name="home_catalogue_up_to_date">Каталог актуальний</string>
+    <string name="home_catalogue_rejected">Завантажений каталог не прийнято</string>
+    <string name="home_catalogue_failed">Не вдалося зв\'язатися із сервером оновлень</string>
+    <string name="home_catalogue_disabled">У цій збірці немає каналу оновлення каталогу</string>
+    <string name="home_current_builds">Поточні збірки</string>
+    <string name="home_rebuild_description">Змінити патчі й перезібрати %1$s</string>
+    <string name="home_restore_description">Відновити %1$s</string>
+    <string name="home_new_build">Нова збірка</string>
+    <string name="home_menu_new_build">Нова збірка</string>
+    <string name="home_menu_self_test">Запустити самотест</string>
+    <string name="home_menu_restore_watch">Відновити годинник</string>
+    <string name="home_menu_uninstall">Видалити</string>
+    <string name="restore_title">Відновити оригінальний застосунок?</string>
+    <string name="restore_body">Застосунок із патчами буде видалено, а стандартний знову ввімкнено. Ваші дані на годиннику збережуться.</string>
+    <string name="restore_confirm">Відновити</string>
+
+    <!-- Signing key -->
+    <string name="signing_key_title">Ключ підпису</string>
+    <string name="signing_key_explainer">Кожен зібраний вами застосунок підписується цим ключем. Android встановлює оновлення лише поверх застосунку з тим самим ключем, тому збережіть резервну копію.</string>
+    <string name="signing_key_present">Ключ підпису готовий</string>
+    <string name="signing_key_absent">Ключа підпису ще немає</string>
+    <string name="signing_key_absent_note">Ключ створюється під час першого збирання. Якщо у вас уже є резервна копія, можна імпортувати її зараз.</string>
+    <string name="signing_key_unreadable">Ключ неможливо прочитати на цьому пристрої.</string>
+    <string name="signing_key_sha_label">SHA-256 сертифіката</string>
+    <string name="signing_key_copy">Копіювати SHA-256 сертифіката</string>
+    <string name="signing_key_backed_up">Резервну копію створено</string>
+    <string name="signing_key_not_backed_up">Резервної копії ще немає</string>
+    <string name="signing_key_export">Експортувати копію</string>
+    <string name="signing_key_import">Імпортувати ключ</string>
+    <string name="signing_key_export_needs_key">Експорт доступний, коли ключ створено.</string>
+    <string name="signing_key_export_hint">Задайте пароль для файлу копії. Він потрібен, щоб знову імпортувати ключ, і його не можна відновити.</string>
+    <string name="signing_key_import_hint">Виберіть файл PKCS#12 (.p12) і введіть його пароль.</string>
+    <string name="signing_key_password">Пароль</string>
+    <string name="signing_key_password_repeat">Повторіть пароль</string>
+    <string name="signing_key_show_password">Показати пароль</string>
+    <string name="signing_key_hide_password">Сховати пароль</string>
+    <string name="signing_key_choose_location">Виберіть, куди зберегти</string>
+    <string name="signing_key_choose_file">Виберіть файл</string>
+    <string name="signing_key_error_short">Використайте щонайменше %1$d символів.</string>
+    <string name="signing_key_error_mismatch">Паролі не збігаються.</string>
+    <string name="signing_key_error_empty">Введіть пароль файлу.</string>
+    <string name="signing_key_export_done">Копію збережено. Зберігайте файл і пароль у надійному місці.</string>
+    <string name="signing_key_export_failed">Не вдалося зберегти копію.</string>
+    <string name="signing_key_import_done">Ключ підпису імпортовано.</string>
+    <string name="signing_key_import_failed">Не вдалося імпортувати ключ.</string>
+    <string name="signing_key_import_wrong_password">Неправильний пароль, або файл не є файлом ключа PKCS#12.</string>
+    <string name="signing_key_import_not_one_key">Файл має містити рівно один ключ.</string>
+    <string name="signing_key_import_unusable">У файлі немає придатного закритого ключа й сертифіката.</string>
+    <string name="signing_key_import_weak">Ключ надто слабкий. Ключі RSA мають бути не коротшими за 2048 біт.</string>
+    <string name="signing_key_import_type">Підтримуються лише ключі RSA та EC.</string>
+    <string name="signing_key_import_mismatch">Ключ не відповідає своєму сертифікату.</string>
+    <string name="signing_key_import_costly">Файл вимагає набагато більше обчислень, ніж звичайний файл ключа, тому його відхилено.</string>
+    <string name="signing_key_import_unreadable">Не вдалося прочитати файл.</string>
+    <string name="signing_key_confirm_title">Замінити ключ підпису?</string>
+    <string name="signing_key_confirm_current">Поточний ключ</string>
+    <string name="signing_key_confirm_new">Ключ у файлі</string>
+    <string name="signing_key_confirm_none">Поки немає</string>
+    <string name="signing_key_confirm_warning">Застосунки, які вже встановлено й підписано поточним ключем, більше не приймуть оновлень від цього застосунку. Щоб використати новий ключ, їх потрібно видалити й установити заново, при цьому їхні дані буде видалено.</string>
+    <string name="signing_key_confirm_replace">Замінити ключ</string>
+    <string name="signing_key_nudge_title">Збережіть резервну копію ключа підпису</string>
+    <string name="signing_key_nudge_body">Без неї встановлені застосунки не можна оновити, лише перевстановити.</string>
+    <string name="signing_key_nudge_action">Зберегти копію</string>
+    <string name="home_menu_signing_key">Ключ підпису</string>
+</resources>

@@ -1,0 +1,489 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Shared actions -->
+    <string name="action_back">Geri</string>
+    <string name="action_help">Yardım</string>
+    <string name="action_close">Kapat</string>
+    <string name="action_settings">Ayarlar</string>
+    <string name="action_more_options">Diğer seçenekler</string>
+    <string name="action_continue">Devam</string>
+    <string name="action_cancel">İptal</string>
+    <string name="action_done">Bitti</string>
+    <string name="action_skip">Şimdilik atla</string>
+    <string name="action_start">Başlat</string>
+    <string name="action_retry">Tekrar dene</string>
+    <string name="action_edit">Düzenle</string>
+    <string name="action_fix">Düzelt</string>
+    <string name="action_yes">Evet</string>
+    <string name="action_no">Hayır</string>
+    <string name="action_open_settings">Ayarları aç</string>
+    <string name="action_share_report">Raporu paylaş</string>
+
+    <string name="state_expanded">Genişletildi</string>
+    <string name="state_collapsed">Daraltıldı</string>
+    <string name="device_phone">Telefon</string>
+    <string name="device_watch">Saat</string>
+    <string name="chip_optional">İsteğe bağlı</string>
+    <string name="chip_apk_not_bundle">APK, paket değil</string>
+    <string name="chip_nodpi">nodpi</string>
+    <string name="chip_android_11">Android 11+</string>
+    <string name="chip_android_14">Android 14+</string>
+    <string name="size_mb">%1$.1f MB</string>
+
+    <!-- Step header and status -->
+    <string name="step_label">ADIM %1$d / %2$d</string>
+    <string name="step_label_watch_suffix">" · SAATTE"</string>
+    <string name="status_pending">Bekliyor</string>
+    <string name="status_running">Çalışıyor</string>
+    <string name="status_passed">Geçti</string>
+    <string name="status_warning">Dikkat gerekiyor</string>
+    <string name="status_failed">Başarısız</string>
+    <string name="progress_download_description">İndirme yüzde %1$d</string>
+    <string name="progress_build_description">Derleme yüzde %1$d</string>
+
+    <!-- Welcome -->
+    <string name="welcome_title">Uygulamalarınız, saatiniz, sizin kurallarınız</string>
+    <string name="welcome_promise_download">Resmi uygulamaları kendiniz edinirsiniz; burada hiçbiri paketlenmiş gelmez.</string>
+    <string name="welcome_promise_patch">Yamalar, Samsung Health Monitor\'ün Samsung olmayan bir telefonda çalışmasını ve saatteki orijinal uygulamayla yan yana durmasını sağlar.</string>
+    <string name="welcome_promise_undo">Her değişiklik geri alınabilir ve orijinal uygulamalar yerinde kalır.</string>
+    <string name="welcome_get_started">Başla</string>
+    <string name="welcome_what_changes">Cihazlarımda neler değişecek?</string>
+    <string name="changes_title">Neler değişecek</string>
+    <string name="changes_intro">Yalnızca bu uygulamalar kurulur ve yalnızca bu ayarlara dokunulur. Hiçbir şey silinmez.</string>
+    <string name="changes_installs">Kurulacak</string>
+    <string name="changes_grants">Kurulumdan sonra izin verilecek</string>
+    <string name="changes_disables">Kapatılabilir</string>
+
+    <!-- Profile -->
+    <string name="profile_title">Hangi saate sahipsiniz?</string>
+    <string name="profile_intro">Hangi resmi uygulamaları getirmeniz gerektiği buna bağlıdır.</string>
+    <string name="profile_wear5_title">Wear OS 5 veya üzeri</string>
+    <string name="profile_wear5_summary">Saatte Health Monitor ve telefon alarmları.</string>
+    <string name="profile_wear5_apps">3 resmi uygulama</string>
+    <string name="profile_wear3_title">Wear OS 3 veya 4</string>
+    <string name="profile_wear3_summary">Yalnızca Health Monitor. Alarm uygulaması için saatte Android 14 gerekir.</string>
+    <string name="profile_wear3_apps">2 resmi uygulama</string>
+    <string name="profile_detected">Saatinizde denetlendi: Android %1$s (%2$s)</string>
+    <string name="profile_check_paired">Eşlenmiş saatleri denetle</string>
+    <string name="profile_hint_certain">%1$s bulundu. Her zaman Wear OS 5 veya üzerini çalıştırır, bu yüzden ilk seçenek seçildi.</string>
+    <string name="profile_hint_depends">%1$s cihazınız ikisinden birini çalıştırıyor olabilir. Saatte Yazılım bilgileri\'ne bakın veya uygulamanın 3. adımda denetlemesine izin verin.</string>
+    <string name="profile_check_none">Eşlenmiş Galaxy Watch bulunamadı. Bir seçenek seçin veya uygulamanın 3. adımda denetlemesine izin verin.</string>
+    <string name="profile_check_denied">Bluetooth erişimine izin verilmedi, bu yüzden eşlenmiş saatler denetlenemiyor. Bir seçenek seçin veya uygulamanın 3. adımda denetlemesine izin verin.</string>
+    <string name="profile_howto_title">Nasıl anlaşılır</string>
+    <string name="profile_howto_watch">Saatte: Ayarlar › Saat hakkında › Yazılım bilgileri. \"Wear OS 5\" veya üzeri, \"One UI 6 Watch\" veya üzeri ya da Android 14 veya üzeri ilk seçenek demektir.</string>
+    <string name="profile_howto_phone">Aynı ekran telefondaki Galaxy Wearable uygulamasında da var: Saat ayarları › Saat hakkında › Yazılım bilgileri.</string>
+    <string name="profile_howto_models">Galaxy Watch7, Watch Ultra ve daha yenileri her zaman uygundur. Watch4, Watch5, Watch6 ve Watch FE ancak One UI 6 Watch\'a güncellendikten sonra uygundur.</string>
+    <string name="profile_howto_unsure">Emin değil misiniz? Birini seçin: uygulama saat bağlandıktan sonra (3. adım) saati kendisi denetler ve hiçbir şey indirilmeden önce seçimi düzeltir.</string>
+
+    <!-- Galaxy Wearable pairing check -->
+    <string name="wearable_title">Saatiniz eşlenmiş mi?</string>
+    <string name="wearable_intro">Saat bu telefonla zaten eşlenmiş olmalı. Bu denetimler hiçbir şeyi değiştirmez.</string>
+    <string name="wearable_check_app">Eşlik eden uygulama bulundu</string>
+    <string name="wearable_check_app_detail">Saati yöneten uygulama kurulu.</string>
+    <string name="wearable_check_paired">Saat eşlenmiş</string>
+    <string name="wearable_check_paired_detail">Bu telefonla ilişkilendirilmiş bir saat var.</string>
+    <string name="wearable_check_datalayer">Telefon ve saat haberleşiyor</string>
+    <string name="wearable_check_datalayer_detail">Aralarındaki Google veri bağlantısı yanıt veriyor.</string>
+    <string name="wearable_note">Bir denetim başarısız olursa saatin kendi kurulumunda düzeltin, sonra tekrar denetleyin.</string>
+    <string name="wearable_recheck">Tekrar denetle</string>
+
+    <!-- Watch pairing over Wi-Fi -->
+    <string name="watchpair_correct_older">Saatiniz Android %1$s çalıştırıyor, bu yüzden alarm uygulaması atlanır: 3 yerine 2 resmi uygulama gerekir.</string>
+    <string name="watchpair_correct_newer">Saatiniz Android %1$s çalıştırıyor, bu yüzden alarm uygulaması dahil edilir: 2 yerine 3 resmi uygulama gerekir.</string>
+    <string name="watchpair_title">Saatinize bağlanın</string>
+    <string name="watchpair_intro">Saat, kısa bir kodla eşlendikten sonra Wi-Fi üzerinden kurulumu kabul eder.</string>
+    <string name="watchpair_on_watch">SAATİNİZDE</string>
+    <string name="watchpair_on_watch_steps">Ayarlar, Geliştirici seçenekleri, Kablosuz hata ayıklama ve ardından Yeni cihaz eşle yolunu izleyin. 6 haneli kod orada gösterilir.</string>
+    <string name="watchpair_found">Saat ağınızda bulundu</string>
+    <string name="watchpair_searching">Saatiniz aranıyor…</string>
+    <string name="watchpair_address_label">Adres (ana makine:bağlantı noktası)</string>
+    <string name="watchpair_code_label">Eşleme kodu</string>
+    <string name="watchpair_check_wifi">Telefon ve saat aynı Wi-Fi ağında</string>
+    <string name="watchpair_check_developer">Geliştirici seçenekleri açık</string>
+    <string name="watchpair_check_wireless">Kablosuz hata ayıklama açık</string>
+    <string name="watchpair_check_code">Eşleme kodu ekranı açık</string>
+    <string name="watchpair_hint">Eşlemek için 6 haneyi de girin</string>
+    <string name="watchpair_ready">Eşlemeye hazır</string>
+    <string name="watchpair_pair">Eşle</string>
+    <string name="watchpair_error_wrong_code">Kod kabul edilmedi. Saati kontrol edip tekrar deneyin.</string>
+    <string name="watchpair_error_bad_address">Adresi ana makine:bağlantı noktası biçiminde girin, örneğin 192.168.1.20:37115.</string>
+    <string name="watchpair_error_timeout">Saat zamanında yanıt vermedi. Eşleme kodu ekranını açık tutup tekrar deneyin.</string>
+    <string name="watchpair_error_network">Saate ulaşılamadı. İki cihazın da aynı Wi-Fi ağında olduğundan emin olun.</string>
+    <string name="watchpair_error_restart">Eşleme anahtarı sıfırlandı. Bu uygulamayı kapatıp yeniden açın, sonra tekrar eşleyin.</string>
+    <string name="watchpair_error_other">Eşleme başarısız oldu. Saatte eşleme kodu ekranını yeniden açıp tekrar deneyin.</string>
+
+    <!-- Acquire -->
+    <string name="acquire_title">Resmi uygulamaları getirin</string>
+    <string name="acquire_intro">Her uygulamayı güvendiğiniz bir kaynaktan kendiniz indirin. Yama aracı onları asla saklamaz veya dağıtmaz.</string>
+    <string name="acquire_open_mirror">APKMirror\'da aç</string>
+    <string name="acquire_more_ways">Bu uygulamayı edinmenin diğer yolları</string>
+    <string name="acquire_use_file">Elimdeki dosyayı kullan</string>
+    <string name="acquire_downloading">İndiriliyor…  %%%1$d · %2$d / %3$d MB</string>
+    <string name="acquire_verified">Beklenen dosyayla eşleşiyor · %1$d MB</string>
+    <string name="acquire_rejected_wrong_app">Bu dosya farklı bir uygulama. Yukarıda adı geçeni seçin.</string>
+    <string name="acquire_rejected_wrong_version">Bu dosya, beklenenden farklı bir uygulama sürümü.</string>
+    <string name="acquire_rejected_not_expected">Bu dosya beklenen derlemeyle eşleşmiyor (başka bir varyant veya bozuk). Yeniden indirin.</string>
+    <string name="acquire_rejected_unreadable">Bu dosya okunamadı.</string>
+    <string name="acquire_rejected_download_failed">İndirme tamamlanmadı. Bağlantınızı kontrol edip tekrar deneyin.</string>
+    <string name="acquire_rejected_too_large">Bu indirme beklenen dosyadan çok daha büyük, bu yüzden durduruldu.</string>
+    <string name="acquire_verify_note">Her dosya, kullanılmadan önce bilinen bir sağlama toplamıyla denetlenir.</string>
+    <plurals name="acquire_waiting">
+        <item quantity="one">%1$d uygulama bekleniyor</item>
+        <item quantity="other">%1$d uygulama bekleniyor</item>
+    </plurals>
+
+    <!-- Guided browser -->
+    <string name="browser_page_placeholder">WEB SAYFASI, OLDUĞU GİBİ</string>
+    <string name="browser_coach_progress">%1$d / %2$d · %3$s</string>
+    <string name="browser_coach_1_title">Doğru sürümü açın</string>
+    <string name="browser_coach_1_body">Kartta adı geçen sürümü seçin; daha yeni ya da eski olanı değil.</string>
+    <string name="browser_coach_2_title">Varyantı seçin</string>
+    <string name="browser_coach_2_body">Paketi değil APK\'yı ve Android sürümünüze uygun nodpi derlemesini seçin.</string>
+    <string name="browser_coach_3_title">İndirin</string>
+    <string name="browser_coach_3_body">Download APK\'ya dokunun. Yama aracı, bittiğinde dosyayı alır.</string>
+    <string name="browser_coach_wrong_version_body">Bu başka bir sürüm. Geri dönüp %1$s sürümünü açın.</string>
+    <string name="browser_notice_blocked">Başka bir siteye giden bağlantı engellendi: %1$s</string>
+    <string name="browser_notice_bundle">Bu bir paket dosyası (.apkm, .xapk, .apks veya .zip). Geri dönüp düz APK varyantını seçin.</string>
+    <string name="browser_notice_not_https">Bu indirme güvenli bir https bağlantısı değil, bu yüzden alınmadı.</string>
+    <string name="browser_notice_open">Tarayıcımda aç</string>
+    <string name="browser_notice_dismiss">Kapat</string>
+    <string name="browser_reload">Yenile</string>
+    <string name="browser_step_dots">Adım %1$d / %2$d</string>
+    <string name="browser_use_file">Bunun yerine dosya kullan</string>
+    <string name="browser_open_external">Tarayıcımda aç</string>
+    <string name="browser_back_to_page">Beni doğru sayfaya geri götür</string>
+
+    <!-- Customize -->
+    <string name="customize_title">Yamalarınızı seçin</string>
+    <string name="customize_intro">Bu yamalar uygulamaların cihazlarınızda çalışması için gereklidir, bu yüzden her zaman açıktır.</string>
+    <string name="customize_required">Gerekli, her zaman açık</string>
+    <string name="customize_advanced">Gelişmiş</string>
+    <string name="customize_prefix_label">Yardımcı uygulamalar için paket öneki</string>
+    <string name="customize_prefix_explainer">Köprü uygulamalarını ve alarm uygulamasını adlandırır. İki Samsung Health Monitor uygulaması, birbirleriyle konuşabilmek için kendi paketini korur.</string>
+    <string name="customize_prefix_ok">Sizin için yeni bir önek oluşturulur.</string>
+    <string name="customize_prefix_locked">Kilitli: yardımcı uygulamalar kurulu ve güncellemeler aynı öneki gerektirir.</string>
+    <string name="customize_prefix_regenerate">Yeni önek oluştur</string>
+    <string name="customize_build">Derle</string>
+    <string name="preset_recommended">Önerilen</string>
+    <string name="preset_minimal">Asgari</string>
+    <string name="preset_everything">Hepsi</string>
+    <string name="prefix_problem_empty">Bir önek girin.</string>
+    <string name="prefix_problem_short">En az iki bölüm kullanın, örneğin io.example.</string>
+    <string name="prefix_problem_long">Bu önek çok uzun.</string>
+    <string name="prefix_problem_segment">Küçük harf, rakam ve alt çizgi kullanın; her bölüm bir harfle başlar.</string>
+    <string name="prefix_problem_reserved">Bu ad alanı başkasına ait.</string>
+    <plurals name="customize_summary_patches">
+        <item quantity="one">%1$d yama açık</item>
+        <item quantity="other">%1$d yama açık</item>
+    </plurals>
+    <plurals name="customize_summary_apps">
+        <item quantity="one">%1$d uygulama</item>
+        <item quantity="other">%1$d uygulama</item>
+    </plurals>
+
+    <!-- Patch descriptions (titles come from the catalogue) -->
+    <string name="patch_generic_manufacturer_check">Samsung üretimi olmayan telefonu kabul eder.</string>
+    <string name="patch_generic_vendor_check">Samsung SDK\'sı olmayan telefonu kabul eder.</string>
+    <string name="patch_shm_min_age_22_to_16">Asgari yaşı 22\'den 16\'ya düşürür.</string>
+    <string name="patch_shm_supported_type_ordinals">Her bölgeyi desteklenen sayar.</string>
+    <string name="patch_shm_region_supportedtype">Bölge denetiminin geçmesini sağlar.</string>
+    <string name="patch_shm_region_countrylist">Desteklenenler listesindeki her ülkeyi kabul eder.</string>
+    <string name="patch_shm_root_packagevalidator">Üretici sertifika doğrulamasını atlar.</string>
+    <string name="patch_shm_force_update_response">Başarısız veya zorunlu güncelleme yanıtını yok sayar.</string>
+    <string name="patch_shm_force_update_pref">Kayıtlı zorunlu güncelleme bayrağını yok sayar.</string>
+    <string name="patch_shm_main_gates">Diğer telefonları engelleyen açılış denetimlerini atlar.</string>
+    <string name="patch_shm_setup_network_gate">Kurulum sırasındaki SIM ve bölge denetimini atlar.</string>
+    <string name="patch_shm_sleep_apnea_support">Uyku apnesini destekleniyor olarak bildirir.</string>
+    <string name="patch_phone_rebrand_gms">Telefon uygulamasına saat uygulamasıyla aynı paketi ve anahtarı vererek ikisinin veri alışverişi yapmasını sağlar.</string>
+    <string name="patch_watch_rebrand_coexist">Saat uygulamasını orijinalinin yanında durması için yeniden adlandırır.</string>
+    <string name="patch_watch_queries_health_service">Saat uygulamasının sağlık hizmetini görmesini sağlar.</string>
+    <string name="patch_watch_companion_vendor">Her marka eşlik eden telefonu kabul eder.</string>
+    <string name="patch_watch_alarm_system_app">Sistem ayrıcalıkları olmadan tam zamanlı alarm kurar.</string>
+    <string name="patch_watch_mobile_installed">Telefon uygulamasını kurulu olarak bildirir.</string>
+    <string name="patch_watch_ecg_sensor_adapter">EKG sensörünü Health Tracking hizmeti üzerinden okur.</string>
+    <string name="patch_watch_apnea_country">Apne ülke denetimini atlar.</string>
+    <string name="patch_watch_apnea_reeval_not_supported">Desteklenmiyor olarak kaydedilmiş apne desteğini yeniden denetler.</string>
+    <string name="patch_watch_mod">Health Tracking hizmetiyle konuşan modülü ekler.</string>
+    <string name="patch_alarm_verify_symbols">Alarm uygulamasında bağlantının gerek duyduğu parçaların olduğunu denetler.</string>
+    <string name="patch_alarm_rebrand_manifest">Alarm uygulamasını orijinalinin yanına kurulması için yeniden adlandırır.</string>
+    <string name="patch_alarm_rebrand_code">Alarm uygulamasının kodunu yeni ada göre günceller.</string>
+    <string name="patch_alarm_permissions_prune">Yalnızca sistem uygulamalarının sahip olabileceği izinleri kaldırır.</string>
+    <string name="patch_alarm_notification_permissions">Bildirim ve tam ekran alarm izinlerini ekler.</string>
+    <string name="patch_alarm_queries_libs">Çatalın gerek duymadığı sorguları ve kitaplıkları kaldırır.</string>
+    <string name="patch_alarm_components_prune">Çatalın gerek duymadığı üretici bileşenlerini kaldırır.</string>
+    <string name="patch_alarm_provider_open">Alarm verilerini çatala açar.</string>
+    <string name="patch_alarm_link_components">Telefondan gönderilen alarmlar için alıcıyı ekler.</string>
+    <string name="patch_alarm_appfunctions_drop">Kullanılmayan bir üretici özellik ağacını kaldırır.</string>
+    <string name="patch_alarm_semgesture_skip">Üretici hareket yöneticisini atlar.</string>
+    <string name="patch_alarm_gms_observer_drop">Alarmın erken bitmesini engeller.</string>
+    <string name="patch_alarm_service_stop_on_destroy">Ses ve titreşimin her zaman durmasını sağlar.</string>
+    <string name="patch_alarm_force_sound_vibrate">Her zaman çalar ve titrer.</string>
+    <string name="patch_alarm_link_send">Alarm değişikliklerini telefona gönderir.</string>
+    <string name="patch_alarm_hide_launcher">Fazladan başlatıcı simgesini gizler.</string>
+    <string name="patch_alarm_relabel">Çatalı \"Telefon alarmları\" olarak adlandırır.</string>
+    <string name="patch_alarm_fork">Alarmları telefona bağlayan modülü ekler.</string>
+    <string name="output_shm_phone">Samsung Health Monitor (yamalı)</string>
+    <string name="output_shm_watch">Wear OS için Samsung Health Monitor (yamalı)</string>
+    <string name="output_bridge_watch">Saat için köprü</string>
+    <string name="output_alarm_fork">Saatte telefon alarmları</string>
+    <string name="output_bridge_phone">Telefon için köprü</string>
+    <string name="stock_label_shm">Samsung Health Monitor (orijinal)</string>
+    <string name="stock_reason_shm">Uygulamanın iki kopyası aynı sensör için çakışır.</string>
+
+    <!-- Build -->
+    <string name="build_title">Uygulamalarınız derleniyor</string>
+    <string name="build_caption_idle">Hazırlanıyor</string>
+    <string name="build_stage_unpack">Paketten çıkar</string>
+    <string name="build_stage_fingerprints">Yama parmak izlerini denetle</string>
+    <string name="build_stage_apply_short">Yamaları uygula</string>
+    <plurals name="build_stage_apply">
+        <item quantity="one">%1$d yamayı uygula</item>
+        <item quantity="other">%1$d yamayı uygula</item>
+    </plurals>
+    <string name="build_stage_rename">Paketi yeniden adlandır</string>
+    <string name="build_stage_rebuild">Yeniden derle</string>
+    <string name="build_stage_sign">İmzala</string>
+    <string name="build_stage_selfcheck">Kendi kendine denetim</string>
+    <string name="build_can_leave">Ayrılabilirsiniz. Bittiğinde size haber vereceğiz.</string>
+    <string name="build_channel_name">Derleme ilerlemesi</string>
+    <string name="build_channel_description">Uygulamalarınız derlenip imzalanırken görünür.</string>
+    <string name="build_notification_title">Uygulamalarınız derleniyor</string>
+    <string name="build_notification_progress">%1$s: %2$s</string>
+    <string name="build_notification_done">Uygulamalarınız derlendi ve imzalandı.</string>
+    <string name="build_notification_failed">Derleme başarısız oldu. Nedenini görmek için uygulamayı açın.</string>
+    <string name="build_error_title">Derleme tamamlanmadı</string>
+    <string name="build_show_log">Günlüğü göster</string>
+    <string name="build_log_title">Derleme günlüğü</string>
+    <string name="build_log_empty">Henüz bir şey kaydedilmedi.</string>
+    <string name="build_done_title">Derlendi ve imzalandı</string>
+    <string name="build_done_ready">kurulmaya hazır</string>
+    <string name="build_done_install">Telefona kur</string>
+    <string name="build_done_link_note">İki Health Monitor uygulaması aynı paket adını ve imza anahtarını paylaşır. Google veri bağlantısının aralarında mesaj iletmesini sağlayan budur.</string>
+    <plurals name="build_done_subtitle_patches">
+        <item quantity="one">%1$d yama</item>
+        <item quantity="other">%1$d yama</item>
+    </plurals>
+    <plurals name="build_done_subtitle_apps">
+        <item quantity="one">%1$d uygulama</item>
+        <item quantity="other">%1$d uygulama</item>
+    </plurals>
+
+    <!-- Install -->
+    <string name="install_phone_title">Bu telefona kur</string>
+    <string name="install_phone_intro">Android her kurulumu onaylamanızı ister. Uygulamaların ihtiyaç duyduğu erişimler sonra denetlenir; eksik olanları Ayarlar\'dan siz açarsınız.</string>
+    <string name="install_phone_note">İzinleri, diğer uygulamaların üzerinde görüntülemeyi, bildirim erişimini ve kısıtlı ayarları siz açarsınız. Sonra bu ekrana dönün, yeniden denetlenir.</string>
+    <string name="install_watch_title">Saatinize kurun</string>
+    <string name="install_watch_intro">Wi-Fi üzerinden şu sırayla kurulur: Health Monitor, köprü, sonra telefon alarmları.</string>
+    <string name="install_watch_note">Bu sürerken saat açık ve bağlı kalır.</string>
+    <string name="install_start">Kurulumu başlat</string>
+    <string name="install_error_build_missing">Derleme yok veya bu kurulumla uyuşmuyor. Yeniden derleyin, sonra kurun.</string>
+    <string name="install_error_failed">Saat kurulumu reddetti.</string>
+    <string name="install_error_signature">Saatte farklı bir anahtarla imzalanmış bir kopya zaten var. Hiçbir şey kaldırılmadı. O kopyayı kendiniz kaldırın, sonra tekrar deneyin.</string>
+    <string name="install_error_grant">Bir erişim ayarı uygulanamadı.</string>
+    <string name="action_open">Aç</string>
+    <string name="action_allow_installing">Uygulama kurulumuna izin ver</string>
+    <string name="install_check_again">Tekrar denetle</string>
+    <string name="install_continue_anyway">Yine de devam et</string>
+    <string name="install_onboarding">Samsung Health Monitor\'ü açıp kurulumunu bitirin</string>
+    <string name="install_error_unknown_sources">Bu uygulamanın henüz uygulama kurma izni yok. İzin verip yeniden başlayın.</string>
+    <string name="install_error_notifications">Önce bu uygulamaya bildirim izni verin: eşleme kodu bildirime yazılır.</string>
+    <string name="phone_adb_title">Hepsine tek seferde izin ver</string>
+    <string name="phone_adb_intro">Anahtarlar işinize engel oluyorsa bu telefon, Kablosuz hata ayıklama üzerinden bunları kendine verebilir. Wi-Fi\'de olmanız gerekir.</string>
+    <string name="phone_adb_action">Kablosuz hata ayıklamayla hepsine izin ver</string>
+    <string name="phone_adb_waiting_service">Kablosuz hata ayıklamada bunu açın ve Cihazı eşleme koduyla eşle\'ye dokunun. Kodu o ekrandan çıkmadan yazabileceğiniz bir bildirim görünecek.</string>
+    <string name="phone_adb_waiting_code">Eşleme ekranındaki altı haneli kodu burada veya bildirimde yazın.</string>
+    <string name="phone_adb_wrong_code">Kod işe yaramadı. Eşleme ekranını kontrol edip tekrar deneyin.</string>
+    <string name="phone_adb_ambiguous">Bu telefonda birden fazla Kablosuz hata ayıklama hizmeti bulundu. Kablosuz hata ayıklamayı kapatıp açın, sonra tekrar deneyin.</string>
+    <string name="phone_adb_connecting">Bu telefona bağlanılıyor...</string>
+    <string name="phone_adb_granting">Bağlandı. Erişimler veriliyor...</string>
+    <string name="phone_adb_failed">Bu telefonun Kablosuz hata ayıklamasına bağlanılamadı.</string>
+    <string name="phone_adb_code_label">Eşleme kodu</string>
+    <string name="phone_adb_submit">Eşle</string>
+    <string name="selfadb_channel">Bu telefonla eşleme</string>
+    <string name="selfadb_code_channel">Eşleme kodu</string>
+    <string name="selfadb_waiting_service">Kablosuz hata ayıklamada Cihazı eşleme koduyla eşle\'ye dokunun</string>
+    <string name="selfadb_enter_code_title">Eşleme kodunu girin</string>
+    <string name="selfadb_enter_code_body">Eşleme ekranındaki altı haneli kodu yazın.</string>
+    <string name="selfadb_reply_label">Eşleme kodu</string>
+    <string name="selfadb_reply_action">Kodu gir</string>
+    <string name="selfadb_wrong_code">Kod işe yaramadı. Eşleme ekranını kontrol edip tekrar deneyin.</string>
+    <string name="selfadb_pairing">Eşleniyor...</string>
+    <string name="selfadb_connecting">Bağlanılıyor...</string>
+    <string name="selfadb_connected">Bu telefonun Kablosuz hata ayıklamasına bağlandı</string>
+    <string name="selfadb_ambiguous">Bu telefonda birden fazla Kablosuz hata ayıklama hizmeti bulundu. Kablosuz hata ayıklamayı kapatıp açın, sonra tekrar deneyin.</string>
+    <string name="selfadb_failed">Bağlanılamadı</string>
+    <string name="selfadb_service_channel">Kablosuz hata ayıklama</string>
+    <string name="selfadb_service_title">Bu telefonun Kablosuz hata ayıklamasına bağlanılıyor</string>
+    <string name="phone_adb_timeout">Eşleme çok uzun sürdü ve durduruldu.</string>
+    <string name="phone_adb_interrupted">Eşleme yarıda kesildi.</string>
+    <string name="watch_error_unreachable">Saate ulaşılamıyor. Kablosuz hata ayıklamanın açık olduğunu ve iki cihazın aynı Wi-Fi ağında bulunduğunu kontrol edin.</string>
+    <string name="watch_error_pairing">Saat artık bu telefona güvenmiyor. Geri dönüp yeniden eşleyin.</string>
+    <string name="grant_permission">İzin</string>
+    <string name="grant_appop">Uygulama işlemi</string>
+    <string name="grant_setting">Sistem ayarı</string>
+    <string name="grant_listener">Bildirim erişimi</string>
+    <string name="grant_battery">Pil optimizasyonu muafiyeti</string>
+
+    <!-- Health Platform developer mode -->
+    <string name="devmode_title">Health Platform geliştirici modu</string>
+    <string name="devmode_intro">Health Tracking hizmeti yamalı uygulamayla yalnızca geliştirici modunda konuşur. Bunu saatten açın.</string>
+    <string name="devmode_step_settings">Saatte Ayarlar\'ı açın.</string>
+    <string name="devmode_step_apps">Uygulamalar\'a gidin.</string>
+    <string name="devmode_step_health_platform">Health Platform\'u seçin.</string>
+    <string name="devmode_step_tap">[Dev mode] görünene kadar başlığa art arda dokunun.</string>
+    <string name="devmode_open_settings">Saatte Health Platform ayarlarını aç</string>
+    <string name="devmode_waiting">Geliştirici modu bekleniyor</string>
+    <string name="devmode_detected">Geliştirici modu açık</string>
+    <string name="devmode_check">Şimdi denetle</string>
+    <string name="devmode_skip">Şimdilik atla</string>
+
+    <!-- Disable stock apps -->
+    <string name="disable_title">Orijinal uygulamayı kapatın</string>
+    <string name="disable_intro">Bir uygulamayı kapatmak onu gizler ve durdurur. İstediğiniz zaman geri açabilirsiniz. Hiçbir şey kaldırılmaz.</string>
+    <string name="disable_chip_installed">Saat uygulaması kurulu</string>
+    <string name="disable_chip_wear">Wear OS</string>
+    <string name="disable_chip_not_installed">Kurulu değil</string>
+    <string name="disable_error_some">Bazı uygulamalar kapatılamadı. Tekrar deneyin veya bu adımı atlayın.</string>
+    <plurals name="disable_action">
+        <item quantity="one">%1$d uygulamayı kapat</item>
+        <item quantity="other">%1$d uygulamayı kapat</item>
+    </plurals>
+
+    <!-- Self-test -->
+    <string name="selftest_title">Her şey sınanıyor</string>
+    <string name="selftest_section_phone">Telefon</string>
+    <string name="selftest_section_watch">Saat</string>
+    <string name="selftest_section_link">Telefon ↔ saat bağlantısı</string>
+    <string name="selftest_section_human">Sizin denetlediğiniz</string>
+    <string name="selftest_rerun">Tekrar çalıştır</string>
+    <string name="selftest_human_label">SİZİNLE DENETLE · %1$d / %2$d</string>
+    <string name="selftest_share_subject">OpenSHM Patcher kendi kendine sınama</string>
+
+    <!-- Self-test rows: %1$s is an app name or a list of access names -->
+    <string name="selftest_package_title">%1$s kurulu</string>
+    <string name="selftest_grants_title">%1$s erişimlerine sahip</string>
+    <string name="selftest_stock_title">%1$s kapalı</string>
+    <string name="selftest_bridge_link_title">Saate köprü bağlantısı</string>
+    <string name="selftest_watch_platform">Health Platform geliştirici modunda</string>
+    <string name="selftest_gms_title">Saat telefona bağlı</string>
+    <string name="selftest_shm_title">Health Monitor saati görüyor</string>
+    <string name="selftest_ecg_title">EKG telefona ulaşıyor</string>
+    <string name="selftest_platform_question">Saatte Health Platform geliştirici modunda mı?</string>
+    <string name="selftest_gms_question">Telefondaki Wear OS uygulaması saati bağlı olarak gösteriyor mu?</string>
+    <string name="selftest_shm_question">Telefondaki Samsung Health Monitor saati bağlı olarak gösteriyor mu?</string>
+    <string name="selftest_ecg_question">Saatte bir EKG çekin. Telefonda görünüyor mu?</string>
+    <string name="selftest_detail_answered_no">Hayır yanıtını verdiniz</string>
+
+    <string name="selftest_detail_package_ok">Sürüm %1$s, anahtarınızla imzalı, derlemeyle aynı dosya</string>
+    <string name="selftest_detail_package_ok_no_version">Anahtarınızla imzalı, derlemeyle aynı dosya</string>
+    <string name="selftest_detail_not_installed">Kurulu değil</string>
+    <string name="selftest_detail_wrong_cert">Sizinkinden farklı bir anahtarla imzalı</string>
+    <string name="selftest_detail_cert_unavailable">İmza anahtarınız okunamadı</string>
+    <string name="selftest_detail_no_build">Karşılaştırılacak derleme yok</string>
+    <string name="selftest_detail_hash_mismatch">Kurulu dosya son derlemeden farklı</string>
+    <string name="selftest_detail_hash_unreadable">Kurulu dosya okunamadı</string>
+    <string name="selftest_detail_watch_ok">Kurulu, derlemeyle aynı dosya</string>
+    <string name="selftest_detail_grants_ok">Tüm erişimler verildi</string>
+    <string name="selftest_detail_grants_missing">Eksik: %1$s</string>
+    <string name="selftest_detail_grants_unknown">Okunamadı: %1$s</string>
+    <string name="selftest_detail_grants_optional">İsteğe bağlı, ayarlanmadı: %1$s</string>
+    <string name="selftest_detail_skipped_not_installed">Atlandı, kurulu değil</string>
+    <string name="selftest_detail_watch_skipped">Atlandı, saat bağlı değil</string>
+    <string name="selftest_detail_watch_no_answer">Saat yanıt vermedi</string>
+    <string name="selftest_detail_error">Bu denetim çalıştırılamadı</string>
+    <string name="selftest_detail_stock_still_on">Hâlâ açık</string>
+    <string name="selftest_detail_stock_off">Kapalı</string>
+    <string name="selftest_detail_stock_absent">Saatte yok</string>
+    <string name="selftest_detail_bridge_missing">Köprü yanıt vermiyor. Kurulu mu?</string>
+    <string name="selftest_detail_bridge_denied">Köprü durum isteğini reddetti. Başka bir anahtarla derlenmiş</string>
+    <string name="selftest_detail_bridge_not_running">Köprü hizmeti çalışmıyor</string>
+    <string name="selftest_detail_bridge_link_down">Saatle bağlantı kopuk</string>
+    <string name="selftest_detail_bridge_no_hello">Bağlantı kurulu ama saat henüz selam vermedi</string>
+    <string name="selftest_detail_bridge_ok">Bağlantı kurulu ve saat selam verdi</string>
+
+    <!-- All set -->
+    <string name="allset_title">Her şey hazır</string>
+    <string name="allset_subtitle">%2$d denetimden %1$d geçti</string>
+    <string name="allset_chip_link">Bağlantı</string>
+
+    <!-- Home -->
+    <string name="home_title">OpenSHM</string>
+    <string name="home_status_ok">Her şey çalışıyor</string>
+    <string name="home_status_warning">Bakılması gerekiyor</string>
+    <string name="home_status_failed">Bir şey bozuk</string>
+    <string name="home_status_unknown">Henüz sınanmadı</string>
+    <string name="home_never_tested">Görmek için sınama çalıştırın</string>
+    <plurals name="home_tested_days_ago">
+        <item quantity="one">%1$d gün önce sınandı</item>
+        <item quantity="other">%1$d gün önce sınandı</item>
+    </plurals>
+    <string name="home_test_again">Tekrar sına</string>
+    <string name="home_update_title">Bir güncelleme hazır</string>
+    <string name="home_update_detail">%1$s: %2$s → %3$s</string>
+    <string name="home_update_patches">%1$s için güncel yamalar</string>
+    <string name="home_menu_check_catalogue">Katalog güncellemelerini denetle</string>
+    <string name="home_catalogue_updated">Katalog %1$d sürümüne güncellendi</string>
+    <string name="home_catalogue_up_to_date">Katalog güncel</string>
+    <string name="home_catalogue_rejected">İndirilen katalog kabul edilmedi</string>
+    <string name="home_catalogue_failed">Güncelleme sunucusuna ulaşılamadı</string>
+    <string name="home_catalogue_disabled">Bu derlemede katalog güncelleme kanalı yok</string>
+    <string name="home_current_builds">Güncel derlemeler</string>
+    <string name="home_rebuild_description">Yamaları değiştir ve %1$s uygulamasını yeniden derle</string>
+    <string name="home_restore_description">%1$s uygulamasını geri yükle</string>
+    <string name="home_new_build">Yeni derleme</string>
+    <string name="home_menu_new_build">Yeni derleme</string>
+    <string name="home_menu_self_test">Kendi kendine sınamayı çalıştır</string>
+    <string name="home_menu_restore_watch">Saati geri yükle</string>
+    <string name="home_menu_uninstall">Kaldır</string>
+    <string name="restore_title">Orijinal uygulama geri yüklensin mi?</string>
+    <string name="restore_body">Yamalı uygulama kaldırılır ve orijinali yeniden açılır. Saatteki verileriniz kalır.</string>
+    <string name="restore_confirm">Geri yükle</string>
+
+    <!-- Signing key -->
+    <string name="signing_key_title">İmza anahtarı</string>
+    <string name="signing_key_explainer">Derlediğiniz her uygulama bu anahtarla imzalanır. Android bir güncellemeyi yalnızca aynı anahtarla imzalanmış uygulamanın üzerine kurar, bu yüzden yedek alın.</string>
+    <string name="signing_key_present">İmza anahtarı hazır</string>
+    <string name="signing_key_absent">Henüz imza anahtarı yok</string>
+    <string name="signing_key_absent_note">Anahtar ilk derlemede oluşturulur. Zaten bir yedeğiniz varsa şimdi içe aktarabilirsiniz.</string>
+    <string name="signing_key_unreadable">Anahtar bu cihazda okunamıyor.</string>
+    <string name="signing_key_sha_label">Sertifika SHA-256</string>
+    <string name="signing_key_copy">Sertifika SHA-256\'yı kopyala</string>
+    <string name="signing_key_backed_up">Yedeklendi</string>
+    <string name="signing_key_not_backed_up">Henüz yedeklenmedi</string>
+    <string name="signing_key_export">Yedek dışa aktar</string>
+    <string name="signing_key_import">Anahtarı içe aktar</string>
+    <string name="signing_key_export_needs_key">Dışa aktarma, anahtar oluşturulduktan sonra kullanılabilir.</string>
+    <string name="signing_key_export_hint">Yedek dosyası için bir parola seçin. Anahtarı yeniden içe aktarmak için gerekir ve kurtarılamaz.</string>
+    <string name="signing_key_import_hint">Bir PKCS#12 (.p12) dosyası seçin ve parolasını girin.</string>
+    <string name="signing_key_password">Parola</string>
+    <string name="signing_key_password_repeat">Parolayı tekrarlayın</string>
+    <string name="signing_key_show_password">Parolayı göster</string>
+    <string name="signing_key_hide_password">Parolayı gizle</string>
+    <string name="signing_key_choose_location">Kaydedilecek yeri seçin</string>
+    <string name="signing_key_choose_file">Dosyayı seçin</string>
+    <string name="signing_key_error_short">En az %1$d karakter kullanın.</string>
+    <string name="signing_key_error_mismatch">Parolalar eşleşmiyor.</string>
+    <string name="signing_key_error_empty">Dosyanın parolasını girin.</string>
+    <string name="signing_key_export_done">Yedek kaydedildi. Dosyayı ve parolasını güvenli bir yerde saklayın.</string>
+    <string name="signing_key_export_failed">Yedek kaydedilemedi.</string>
+    <string name="signing_key_import_done">İmza anahtarı içe aktarıldı.</string>
+    <string name="signing_key_import_failed">Anahtar içe aktarılamadı.</string>
+    <string name="signing_key_import_wrong_password">Parola yanlış ya da dosya bir PKCS#12 anahtar dosyası değil.</string>
+    <string name="signing_key_import_not_one_key">Dosya tam olarak bir anahtar içermeli.</string>
+    <string name="signing_key_import_unusable">Dosyada kullanılabilir bir özel anahtar ve sertifika yok.</string>
+    <string name="signing_key_import_weak">Anahtar çok zayıf. RSA anahtarları en az 2048 bit olmalı.</string>
+    <string name="signing_key_import_type">Yalnızca RSA ve EC anahtarları desteklenir.</string>
+    <string name="signing_key_import_mismatch">Anahtar, sertifikasıyla eşleşmiyor.</string>
+    <string name="signing_key_import_costly">Dosya, normal bir anahtar dosyasından çok daha fazla hesaplama istiyor, bu yüzden reddedildi.</string>
+    <string name="signing_key_import_unreadable">Dosya okunamadı.</string>
+    <string name="signing_key_confirm_title">İmza anahtarı değiştirilsin mi?</string>
+    <string name="signing_key_confirm_current">Geçerli anahtar</string>
+    <string name="signing_key_confirm_new">Dosyadaki anahtar</string>
+    <string name="signing_key_confirm_none">Henüz yok</string>
+    <string name="signing_key_confirm_warning">Geçerli anahtarla kurulmuş ve imzalanmış uygulamalar bu uygulamadan güncelleme kabul etmeyecek. Yeni anahtarı kullanmak için onları kaldırıp yeniden kurmanız gerekir; bu, verilerini siler.</string>
+    <string name="signing_key_confirm_replace">Anahtarı değiştir</string>
+    <string name="signing_key_nudge_title">İmza anahtarınızı yedekleyin</string>
+    <string name="signing_key_nudge_body">Olmazsa kurulu uygulamalar güncellenemez, yalnızca yeniden kurulabilir.</string>
+    <string name="signing_key_nudge_action">Yedekle</string>
+    <string name="home_menu_signing_key">İmza anahtarı</string>
+</resources>

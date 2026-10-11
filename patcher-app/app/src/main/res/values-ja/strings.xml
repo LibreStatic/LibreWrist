@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Shared actions -->
+    <string name="action_back">戻る</string>
+    <string name="action_help">ヘルプ</string>
+    <string name="action_close">閉じる</string>
+    <string name="action_settings">設定</string>
+    <string name="action_more_options">その他のオプション</string>
+    <string name="action_continue">続ける</string>
+    <string name="action_cancel">キャンセル</string>
+    <string name="action_done">完了</string>
+    <string name="action_skip">今はスキップ</string>
+    <string name="action_start">開始</string>
+    <string name="action_retry">もう一度試す</string>
+    <string name="action_edit">編集</string>
+    <string name="action_fix">修正</string>
+    <string name="action_yes">はい</string>
+    <string name="action_no">いいえ</string>
+    <string name="action_open_settings">設定を開く</string>
+    <string name="action_share_report">レポートを共有</string>
+
+    <string name="state_expanded">展開済み</string>
+    <string name="state_collapsed">折りたたみ済み</string>
+    <string name="device_phone">スマートフォン</string>
+    <string name="device_watch">ウォッチ</string>
+    <string name="chip_optional">任意</string>
+    <string name="chip_apk_not_bundle">APK（バンドルではない）</string>
+    <string name="chip_nodpi">nodpi</string>
+    <string name="chip_android_11">Android 11以降</string>
+    <string name="chip_android_14">Android 14以降</string>
+    <string name="size_mb">%1$.1f MB</string>
+
+    <!-- Step header and status -->
+    <string name="step_label">ステップ %1$d/%2$d</string>
+    <string name="step_label_watch_suffix">" · ウォッチで操作"</string>
+    <string name="status_pending">待機中</string>
+    <string name="status_running">実行中</string>
+    <string name="status_passed">合格</string>
+    <string name="status_warning">要確認</string>
+    <string name="status_failed">失敗</string>
+    <string name="progress_download_description">ダウンロード %1$d%%</string>
+    <string name="progress_build_description">ビルド %1$d%%</string>
+
+    <!-- Welcome -->
+    <string name="welcome_title">あなたのアプリ、あなたのウォッチ、あなたの使い方で</string>
+    <string name="welcome_promise_download">公式アプリはご自身で入手します。このアプリには何も同梱されていません。</string>
+    <string name="welcome_promise_patch">パッチにより、Samsung Health Monitor がSamsung以外のスマートフォンでも動作し、標準のウォッチアプリと共存できるようになります。</string>
+    <string name="welcome_promise_undo">すべての変更は元に戻せます。標準アプリはそのまま残ります。</string>
+    <string name="welcome_get_started">始める</string>
+    <string name="welcome_what_changes">デバイスには何が変わりますか？</string>
+    <string name="changes_title">変更される内容</string>
+    <string name="changes_intro">インストールされるのはこれらのアプリだけで、変更される設定もこれらだけです。何も消去されません。</string>
+    <string name="changes_installs">インストールされるもの</string>
+    <string name="changes_grants">インストール後に許可されるもの</string>
+    <string name="changes_disables">オフにできるもの</string>
+
+    <!-- Profile -->
+    <string name="profile_title">お持ちのウォッチはどれですか？</string>
+    <string name="profile_intro">これにより、用意する公式アプリが決まります。</string>
+    <string name="profile_wear5_title">Wear OS 5以降</string>
+    <string name="profile_wear5_summary">ウォッチ上のHealth Monitorとスマートフォンのアラーム。</string>
+    <string name="profile_wear5_apps">公式アプリ3つ</string>
+    <string name="profile_wear3_title">Wear OS 3または4</string>
+    <string name="profile_wear3_summary">Health Monitorのみ。アラームアプリにはウォッチ側でAndroid 14が必要です。</string>
+    <string name="profile_wear3_apps">公式アプリ2つ</string>
+    <string name="profile_detected">ウォッチで確認済み：Android %1$s（%2$s）</string>
+    <string name="profile_check_paired">ペア設定済みのウォッチを確認</string>
+    <string name="profile_hint_certain">%1$s が見つかりました。常にWear OS 5以降で動作するため、最初の選択肢が選ばれています。</string>
+    <string name="profile_hint_depends">お使いの %1$s はどちらの場合もあります。ウォッチのソフトウェア情報を確認するか、ステップ3でアプリに確認させてください。</string>
+    <string name="profile_check_none">ペア設定済みのGalaxy Watchが見つかりません。選択肢を選ぶか、ステップ3でアプリに確認させてください。</string>
+    <string name="profile_check_denied">Bluetoothへのアクセスが許可されなかったため、ペア設定済みのウォッチを確認できません。選択肢を選ぶか、ステップ3でアプリに確認させてください。</string>
+    <string name="profile_howto_title">見分け方</string>
+    <string name="profile_howto_watch">ウォッチで：設定 › ウォッチ情報 › ソフトウェア情報。「Wear OS 5」以降、「One UI 6 Watch」以降、またはAndroid 14以降なら最初の選択肢です。</string>
+    <string name="profile_howto_phone">同じ画面はスマートフォンのGalaxy Wearableアプリにもあります：ウォッチの設定 › ウォッチ情報 › ソフトウェア情報。</string>
+    <string name="profile_howto_models">Galaxy Watch7、Watch Ultra以降は常に対象です。Watch4、Watch5、Watch6、Watch FEは、One UI 6 Watchにアップデートした場合のみ対象です。</string>
+    <string name="profile_howto_unsure">わからない場合はどちらかを選んでください。ウォッチが接続されると（ステップ3）アプリが自動で確認し、ダウンロード前に選択を修正します。</string>
+
+    <!-- Galaxy Wearable pairing check -->
+    <string name="wearable_title">ウォッチはペア設定済みですか？</string>
+    <string name="wearable_intro">ウォッチはあらかじめこのスマートフォンとペア設定されている必要があります。この確認では何も変更されません。</string>
+    <string name="wearable_check_app">コンパニオンアプリが見つかりました</string>
+    <string name="wearable_check_app_detail">ウォッチを管理するアプリがインストールされています。</string>
+    <string name="wearable_check_paired">ウォッチはペア設定済み</string>
+    <string name="wearable_check_paired_detail">このスマートフォンにウォッチが関連付けられています。</string>
+    <string name="wearable_check_datalayer">スマートフォンとウォッチが通信できます</string>
+    <string name="wearable_check_datalayer_detail">両者間のGoogleデータリンクが応答しています。</string>
+    <string name="wearable_note">確認に失敗した場合は、ウォッチ自体のセットアップで修正してから、もう一度確認してください。</string>
+    <string name="wearable_recheck">再確認</string>
+
+    <!-- Watch pairing over Wi-Fi -->
+    <string name="watchpair_correct_older">お使いのウォッチはAndroid %1$sで動作しているため、アラームアプリは省略されます。公式アプリは3つではなく2つ必要です。</string>
+    <string name="watchpair_correct_newer">お使いのウォッチはAndroid %1$sで動作しているため、アラームアプリが含まれます。公式アプリは2つではなく3つ必要です。</string>
+    <string name="watchpair_title">ウォッチに接続</string>
+    <string name="watchpair_intro">短いコードでペア設定すると、ウォッチはWi-Fi経由のインストールを受け付けます。</string>
+    <string name="watchpair_on_watch">ウォッチでの操作</string>
+    <string name="watchpair_on_watch_steps">設定、開発者向けオプション、ワイヤレスデバッグ、新しいデバイスとペア設定の順に開きます。6桁のコードがそこに表示されます。</string>
+    <string name="watchpair_found">ネットワーク上でウォッチが見つかりました</string>
+    <string name="watchpair_searching">ウォッチを探しています…</string>
+    <string name="watchpair_address_label">アドレス（ホスト:ポート）</string>
+    <string name="watchpair_code_label">ペア設定コード</string>
+    <string name="watchpair_check_wifi">スマートフォンとウォッチが同じWi-Fiに接続されている</string>
+    <string name="watchpair_check_developer">開発者向けオプションがオンになっている</string>
+    <string name="watchpair_check_wireless">ワイヤレスデバッグがオンになっている</string>
+    <string name="watchpair_check_code">ペア設定コードの画面が開いている</string>
+    <string name="watchpair_hint">6桁すべて入力するとペア設定できます</string>
+    <string name="watchpair_ready">ペア設定の準備ができました</string>
+    <string name="watchpair_pair">ペア設定</string>
+    <string name="watchpair_error_wrong_code">コードが受け付けられませんでした。ウォッチを確認して、もう一度お試しください。</string>
+    <string name="watchpair_error_bad_address">アドレスは「ホスト:ポート」の形式で入力してください（例：192.168.1.20:37115）。</string>
+    <string name="watchpair_error_timeout">ウォッチが時間内に応答しませんでした。ペア設定コードの画面を開いたまま、もう一度お試しください。</string>
+    <string name="watchpair_error_network">ウォッチに接続できませんでした。両方のデバイスが同じWi-Fiに接続されているか確認してください。</string>
+    <string name="watchpair_error_restart">ペア設定キーがリセットされました。このアプリを閉じて開き直し、もう一度ペア設定してください。</string>
+    <string name="watchpair_error_other">ペア設定に失敗しました。ウォッチでペア設定コードの画面をもう一度開いて、再試行してください。</string>
+
+    <!-- Acquire -->
+    <string name="acquire_title">公式アプリを用意する</string>
+    <string name="acquire_intro">各アプリは、信頼できる入手元からご自身でダウンロードしてください。パッチャーがアプリを保存したり配布したりすることはありません。</string>
+    <string name="acquire_open_mirror">APKMirrorで開く</string>
+    <string name="acquire_more_ways">このアプリの他の入手方法</string>
+    <string name="acquire_use_file">すでにあるファイルを使う</string>
+    <string name="acquire_downloading">ダウンロード中…  %1$d%% · %2$d/%3$d MB</string>
+    <string name="acquire_verified">想定したファイルと一致しました · %1$d MB</string>
+    <string name="acquire_rejected_wrong_app">そのファイルは別のアプリです。上に表示されているものを選んでください。</string>
+    <string name="acquire_rejected_wrong_version">そのファイルは、想定しているバージョンとは別のバージョンです。</string>
+    <string name="acquire_rejected_not_expected">そのファイルは想定したビルドと一致しません（別のバリアントか、破損しています）。もう一度ダウンロードしてください。</string>
+    <string name="acquire_rejected_unreadable">そのファイルを読み取れませんでした。</string>
+    <string name="acquire_rejected_download_failed">ダウンロードが完了しませんでした。接続を確認して、もう一度お試しください。</string>
+    <string name="acquire_rejected_too_large">ダウンロードが想定のファイルよりはるかに大きかったため、中止されました。</string>
+    <string name="acquire_verify_note">各ファイルは、使用前に既知のチェックサムと照合されます。</string>
+    <plurals name="acquire_waiting">
+        <item quantity="other">アプリ %1$d 個を待っています</item>
+    </plurals>
+
+    <!-- Guided browser -->
+    <string name="browser_page_placeholder">ウェブページをそのまま表示</string>
+    <string name="browser_coach_progress">%1$d/%2$d · %3$s</string>
+    <string name="browser_coach_1_title">正しいリリースを開く</string>
+    <string name="browser_coach_1_body">カードに記載されているバージョンを選んでください。それより新しいものや古いものは選ばないでください。</string>
+    <string name="browser_coach_2_title">バリアントを選ぶ</string>
+    <string name="browser_coach_2_body">バンドルではなくAPKを選び、お使いのAndroidバージョンに合ったnodpiビルドを選んでください。</string>
+    <string name="browser_coach_3_title">ダウンロード</string>
+    <string name="browser_coach_3_body">「Download APK」をタップします。完了するとパッチャーがファイルを取得します。</string>
+    <string name="browser_coach_wrong_version_body">それは別のバージョンです。戻って %1$s を開いてください。</string>
+    <string name="browser_notice_blocked">別のサイトへのリンクをブロックしました：%1$s</string>
+    <string name="browser_notice_bundle">それはバンドルファイル（.apkm、.xapk、.apks、.zip）です。戻って通常のAPKバリアントを選んでください。</string>
+    <string name="browser_notice_not_https">そのダウンロードは安全なhttpsリンクではないため、取得しませんでした。</string>
+    <string name="browser_notice_open">ブラウザで開く</string>
+    <string name="browser_notice_dismiss">閉じる</string>
+    <string name="browser_reload">再読み込み</string>
+    <string name="browser_step_dots">ステップ %1$d/%2$d</string>
+    <string name="browser_use_file">代わりにファイルを使う</string>
+    <string name="browser_open_external">ブラウザで開く</string>
+    <string name="browser_back_to_page">正しいページに戻る</string>
+
+    <!-- Customize -->
+    <string name="customize_title">パッチを選ぶ</string>
+    <string name="customize_intro">これらのパッチは、お使いのデバイスでアプリを動作させるために必要なため、常にオンです。</string>
+    <string name="customize_required">必須、常にオン</string>
+    <string name="customize_advanced">詳細設定</string>
+    <string name="customize_prefix_label">ヘルパーアプリのパッケージプレフィックス</string>
+    <string name="customize_prefix_explainer">ブリッジアプリとアラームアプリの名前になります。2つのSamsung Health Monitorアプリは、相互に通信できるよう独自のパッケージを維持します。</string>
+    <string name="customize_prefix_ok">新しいプレフィックスが自動生成されます。</string>
+    <string name="customize_prefix_locked">ロック中：ヘルパーアプリがインストール済みで、アップデートには同じプレフィックスが必要です。</string>
+    <string name="customize_prefix_regenerate">新しいプレフィックスを生成</string>
+    <string name="customize_build">ビルド</string>
+    <string name="preset_recommended">推奨</string>
+    <string name="preset_minimal">最小</string>
+    <string name="preset_everything">すべて</string>
+    <string name="prefix_problem_empty">プレフィックスを入力してください。</string>
+    <string name="prefix_problem_short">io.example のように、2つ以上の部分で指定してください。</string>
+    <string name="prefix_problem_long">プレフィックスが長すぎます。</string>
+    <string name="prefix_problem_segment">小文字、数字、アンダースコアを使用し、各部分は文字で始めてください。</string>
+    <string name="prefix_problem_reserved">その名前空間は他の人のものです。</string>
+    <plurals name="customize_summary_patches">
+        <item quantity="other">パッチ %1$d 件がオン</item>
+    </plurals>
+    <plurals name="customize_summary_apps">
+        <item quantity="other">アプリ %1$d 個</item>
+    </plurals>
+
+    <!-- Patch descriptions (titles come from the catalogue) -->
+    <string name="patch_generic_manufacturer_check">Samsung製ではないスマートフォンを受け入れます。</string>
+    <string name="patch_generic_vendor_check">Samsung SDKのないスマートフォンを受け入れます。</string>
+    <string name="patch_shm_min_age_22_to_16">最低年齢を22歳から16歳に引き下げます。</string>
+    <string name="patch_shm_supported_type_ordinals">すべての地域を対応地域として扱います。</string>
+    <string name="patch_shm_region_supportedtype">地域チェックを通過させます。</string>
+    <string name="patch_shm_region_countrylist">対応リスト内のどの国も受け入れます。</string>
+    <string name="patch_shm_root_packagevalidator">ベンダー証明書の検証をスキップします。</string>
+    <string name="patch_shm_force_update_response">失敗した、または強制のアップデート応答を無視します。</string>
+    <string name="patch_shm_force_update_pref">保存されている強制アップデートのフラグを無視します。</string>
+    <string name="patch_shm_main_gates">他のスマートフォンをブロックする起動時のチェックをスキップします。</string>
+    <string name="patch_shm_setup_network_gate">セットアップ中のSIMと地域のチェックをスキップします。</string>
+    <string name="patch_shm_sleep_apnea_support">睡眠時無呼吸に対応していると報告します。</string>
+    <string name="patch_phone_rebrand_gms">スマートフォンアプリにウォッチアプリと同じパッケージとキーを与え、両者がデータを交換できるようにします。</string>
+    <string name="patch_watch_rebrand_coexist">ウォッチアプリの名前を変更し、標準アプリと共存できるようにします。</string>
+    <string name="patch_watch_queries_health_service">ウォッチアプリがヘルスサービスを認識できるようにします。</string>
+    <string name="patch_watch_companion_vendor">どのメーカーのコンパニオンスマートフォンも受け入れます。</string>
+    <string name="patch_watch_alarm_system_app">システム権限なしで正確なアラームをスケジュールします。</string>
+    <string name="patch_watch_mobile_installed">スマートフォンアプリがインストール済みと報告します。</string>
+    <string name="patch_watch_ecg_sensor_adapter">Health Trackingサービス経由でECGセンサーを読み取ります。</string>
+    <string name="patch_watch_apnea_country">無呼吸の国チェックをスキップします。</string>
+    <string name="patch_watch_apnea_reeval_not_supported">非対応として保存されていた無呼吸の対応状況を再確認します。</string>
+    <string name="patch_watch_mod">Health Trackingサービスと通信するモジュールを追加します。</string>
+    <string name="patch_alarm_verify_symbols">アラームアプリに、リンクに必要な部品があるか確認します。</string>
+    <string name="patch_alarm_rebrand_manifest">アラームアプリの名前を変更し、標準アプリと共存してインストールできるようにします。</string>
+    <string name="patch_alarm_rebrand_code">アラームアプリのコードを新しい名前に更新します。</string>
+    <string name="patch_alarm_permissions_prune">システムアプリだけが持てる権限を削除します。</string>
+    <string name="patch_alarm_notification_permissions">通知と全画面アラームの権限を追加します。</string>
+    <string name="patch_alarm_queries_libs">フォークに不要な参照とライブラリを削除します。</string>
+    <string name="patch_alarm_components_prune">フォークに不要なベンダーコンポーネントを削除します。</string>
+    <string name="patch_alarm_provider_open">アラームのデータをフォークに公開します。</string>
+    <string name="patch_alarm_link_components">スマートフォンから送信されたアラームを受け取るレシーバーを追加します。</string>
+    <string name="patch_alarm_appfunctions_drop">使われていないベンダー機能のツリーを削除します。</string>
+    <string name="patch_alarm_semgesture_skip">ベンダーのジェスチャーマネージャーをスキップします。</string>
+    <string name="patch_alarm_gms_observer_drop">アラームが早く終了しないようにします。</string>
+    <string name="patch_alarm_service_stop_on_destroy">音と振動が必ず止まるようにします。</string>
+    <string name="patch_alarm_force_sound_vibrate">常に音と振動で知らせます。</string>
+    <string name="patch_alarm_link_send">アラームの変更をスマートフォンに送信します。</string>
+    <string name="patch_alarm_hide_launcher">余分なランチャーアイコンを非表示にします。</string>
+    <string name="patch_alarm_relabel">フォークの名前を「Phone alarms」にします。</string>
+    <string name="patch_alarm_fork">アラームをスマートフォンに連携させるモジュールを追加します。</string>
+    <string name="output_shm_phone">Samsung Health Monitor（パッチ適用済み）</string>
+    <string name="output_shm_watch">Samsung Health Monitor for Wear OS（パッチ適用済み）</string>
+    <string name="output_bridge_watch">ウォッチ用ブリッジ</string>
+    <string name="output_alarm_fork">ウォッチのスマートフォンアラーム</string>
+    <string name="output_bridge_phone">スマートフォン用ブリッジ</string>
+    <string name="stock_label_shm">Samsung Health Monitor（標準）</string>
+    <string name="stock_reason_shm">アプリが2つあると、同じセンサーを取り合ってしまいます。</string>
+
+    <!-- Build -->
+    <string name="build_title">アプリをビルド中</string>
+    <string name="build_caption_idle">準備中</string>
+    <string name="build_stage_unpack">展開</string>
+    <string name="build_stage_fingerprints">パッチのフィンガープリントを確認</string>
+    <string name="build_stage_apply_short">パッチを適用</string>
+    <plurals name="build_stage_apply">
+        <item quantity="other">パッチ %1$d 件を適用</item>
+    </plurals>
+    <string name="build_stage_rename">パッケージ名を変更</string>
+    <string name="build_stage_rebuild">再ビルド</string>
+    <string name="build_stage_sign">署名</string>
+    <string name="build_stage_selfcheck">セルフチェック</string>
+    <string name="build_can_leave">この画面を離れても大丈夫です。完了したらお知らせします。</string>
+    <string name="build_channel_name">ビルドの進行状況</string>
+    <string name="build_channel_description">アプリのビルドと署名中に表示されます。</string>
+    <string name="build_notification_title">アプリをビルド中</string>
+    <string name="build_notification_progress">%1$s：%2$s</string>
+    <string name="build_notification_done">アプリのビルドと署名が完了しました。</string>
+    <string name="build_notification_failed">ビルドに失敗しました。アプリを開いて原因を確認してください。</string>
+    <string name="build_error_title">ビルドが完了しませんでした</string>
+    <string name="build_show_log">ログを表示</string>
+    <string name="build_log_title">ビルドログ</string>
+    <string name="build_log_empty">まだ記録はありません。</string>
+    <string name="build_done_title">ビルドと署名が完了</string>
+    <string name="build_done_ready">インストール可能</string>
+    <string name="build_done_install">スマートフォンにインストール</string>
+    <string name="build_done_link_note">2つのHealth Monitorアプリは、同じパッケージ名と署名キーを共有します。これにより、Googleのデータリンクで両者間のメッセージをやり取りできます。</string>
+    <plurals name="build_done_subtitle_patches">
+        <item quantity="other">パッチ %1$d 件</item>
+    </plurals>
+    <plurals name="build_done_subtitle_apps">
+        <item quantity="other">アプリ %1$d 個</item>
+    </plurals>
+
+    <!-- Install -->
+    <string name="install_phone_title">このスマートフォンにインストール</string>
+    <string name="install_phone_intro">Androidがインストールごとに確認を求めます。アプリに必要なアクセス権はその後で確認されます。不足しているものは設定でオンにしてください。</string>
+    <string name="install_phone_note">権限、他のアプリの上に重ねて表示、通知へのアクセス、制限された設定は、ご自身でオンにしていただきます。その後この画面に戻ると、再確認されます。</string>
+    <string name="install_watch_title">ウォッチにインストール</string>
+    <string name="install_watch_intro">Wi-Fi経由で、Health Monitor、ブリッジ、スマートフォンアラームの順にインストールします。</string>
+    <string name="install_watch_note">実行中はウォッチの電源を入れたまま、接続を維持してください。</string>
+    <string name="install_start">インストールを開始</string>
+    <string name="install_error_build_missing">ビルドが見つからないか、このセットアップと一致しません。もう一度ビルドしてからインストールしてください。</string>
+    <string name="install_error_failed">ウォッチがインストールを拒否しました。</string>
+    <string name="install_error_signature">別のキーで署名されたコピーがすでにウォッチにあります。何も削除していません。そのコピーをご自身でアンインストールしてから、もう一度お試しください。</string>
+    <string name="install_error_grant">アクセス設定を適用できませんでした。</string>
+    <string name="action_open">開く</string>
+    <string name="action_allow_installing">アプリのインストールを許可</string>
+    <string name="install_check_again">再確認</string>
+    <string name="install_continue_anyway">このまま続ける</string>
+    <string name="install_onboarding">Samsung Health Monitor を開いて、セットアップを完了する</string>
+    <string name="install_error_unknown_sources">このアプリにはまだアプリのインストールが許可されていません。許可してから、もう一度開始してください。</string>
+    <string name="install_error_notifications">先にこのアプリの通知を許可してください。ペア設定コードは通知内で入力します。</string>
+    <string name="phone_adb_title">まとめて許可する</string>
+    <string name="phone_adb_intro">スイッチが邪魔な場合は、このスマートフォンがワイヤレスデバッグ経由で自分自身に許可を与えることができます。Wi-Fiに接続している必要があります。</string>
+    <string name="phone_adb_action">ワイヤレスデバッグですべて許可</string>
+    <string name="phone_adb_waiting_service">ワイヤレスデバッグをオンにして、「ペア設定コードによるデバイスのペア設定」をタップしてください。通知が表示され、その画面を離れずにコードを入力できます。</string>
+    <string name="phone_adb_waiting_code">ペア設定画面に表示されている6桁のコードを、ここまたは通知で入力してください。</string>
+    <string name="phone_adb_wrong_code">コードが正しくありません。ペア設定画面を確認して、もう一度お試しください。</string>
+    <string name="phone_adb_ambiguous">このスマートフォンで複数のワイヤレスデバッグサービスが見つかりました。ワイヤレスデバッグをオフにしてからオンにし、もう一度お試しください。</string>
+    <string name="phone_adb_connecting">このスマートフォンに接続中...</string>
+    <string name="phone_adb_granting">接続しました。アクセスを許可中...</string>
+    <string name="phone_adb_failed">このスマートフォンのワイヤレスデバッグに接続できませんでした。</string>
+    <string name="phone_adb_code_label">ペア設定コード</string>
+    <string name="phone_adb_submit">ペア設定</string>
+    <string name="selfadb_channel">このスマートフォンとのペア設定</string>
+    <string name="selfadb_code_channel">ペア設定コード</string>
+    <string name="selfadb_waiting_service">ワイヤレスデバッグで「ペア設定コードによるデバイスのペア設定」をタップしてください</string>
+    <string name="selfadb_enter_code_title">ペア設定コードを入力</string>
+    <string name="selfadb_enter_code_body">ペア設定画面に表示されている6桁のコードを入力してください。</string>
+    <string name="selfadb_reply_label">ペア設定コード</string>
+    <string name="selfadb_reply_action">コードを入力</string>
+    <string name="selfadb_wrong_code">コードが正しくありません。ペア設定画面を確認して、もう一度お試しください。</string>
+    <string name="selfadb_pairing">ペア設定中...</string>
+    <string name="selfadb_connecting">接続中...</string>
+    <string name="selfadb_connected">このスマートフォンのワイヤレスデバッグに接続しました</string>
+    <string name="selfadb_ambiguous">このスマートフォンで複数のワイヤレスデバッグサービスが見つかりました。ワイヤレスデバッグをオフにしてからオンにし、もう一度お試しください。</string>
+    <string name="selfadb_failed">接続できませんでした</string>
+    <string name="selfadb_service_channel">ワイヤレスデバッグ</string>
+    <string name="selfadb_service_title">このスマートフォンのワイヤレスデバッグに接続中</string>
+    <string name="phone_adb_timeout">ペア設定に時間がかかりすぎたため、中止されました。</string>
+    <string name="phone_adb_interrupted">ペア設定が中断されました。</string>
+    <string name="watch_error_unreachable">ウォッチに接続できません。ワイヤレスデバッグがオンで、両方のデバイスが同じWi-Fiに接続されているか確認してください。</string>
+    <string name="watch_error_pairing">ウォッチがこのスマートフォンを信頼しなくなりました。戻って、もう一度ペア設定してください。</string>
+    <string name="grant_permission">権限</string>
+    <string name="grant_appop">アプリ操作</string>
+    <string name="grant_setting">システム設定</string>
+    <string name="grant_listener">通知へのアクセス</string>
+    <string name="grant_battery">電池の最適化の除外</string>
+
+    <!-- Health Platform developer mode -->
+    <string name="devmode_title">Health Platformの開発者モード</string>
+    <string name="devmode_intro">Health Trackingサービスは、開発者モードのときだけパッチ適用済みアプリと通信します。ウォッチ側でオンにしてください。</string>
+    <string name="devmode_step_settings">ウォッチで設定を開きます。</string>
+    <string name="devmode_step_apps">アプリに進みます。</string>
+    <string name="devmode_step_health_platform">Health Platformを選びます。</string>
+    <string name="devmode_step_tap">[Dev mode] と表示されるまで、タイトルを何度もタップします。</string>
+    <string name="devmode_open_settings">ウォッチでHealth Platformの設定を開く</string>
+    <string name="devmode_waiting">開発者モードを待っています</string>
+    <string name="devmode_detected">開発者モードがオンです</string>
+    <string name="devmode_check">今すぐ確認</string>
+    <string name="devmode_skip">今はスキップ</string>
+
+    <!-- Disable stock apps -->
+    <string name="disable_title">標準アプリをオフにする</string>
+    <string name="disable_intro">アプリをオフにすると、非表示になり停止します。いつでもオンに戻せます。アンインストールはされません。</string>
+    <string name="disable_chip_installed">ウォッチアプリはインストール済み</string>
+    <string name="disable_chip_wear">Wear OS</string>
+    <string name="disable_chip_not_installed">未インストール</string>
+    <string name="disable_error_some">オフにできなかったアプリがあります。もう一度試すか、この手順をスキップしてください。</string>
+    <plurals name="disable_action">
+        <item quantity="other">アプリ %1$d 個をオフにする</item>
+    </plurals>
+
+    <!-- Self-test -->
+    <string name="selftest_title">すべてをテスト中</string>
+    <string name="selftest_section_phone">スマートフォン</string>
+    <string name="selftest_section_watch">ウォッチ</string>
+    <string name="selftest_section_link">スマートフォンとウォッチのリンク</string>
+    <string name="selftest_section_human">ご自身で確認</string>
+    <string name="selftest_rerun">もう一度実行</string>
+    <string name="selftest_human_label">確認をお願いします · %1$d/%2$d</string>
+    <string name="selftest_share_subject">OpenSHM Patcher セルフテスト</string>
+
+    <!-- Self-test rows: %1$s is an app name or a list of access names -->
+    <string name="selftest_package_title">%1$s はインストール済み</string>
+    <string name="selftest_grants_title">%1$s のアクセス権あり</string>
+    <string name="selftest_stock_title">%1$s はオフ</string>
+    <string name="selftest_bridge_link_title">ウォッチへのブリッジリンク</string>
+    <string name="selftest_watch_platform">Health Platformが開発者モード</string>
+    <string name="selftest_gms_title">ウォッチがスマートフォンに接続済み</string>
+    <string name="selftest_shm_title">Health Monitorがウォッチを認識</string>
+    <string name="selftest_ecg_title">ECGがスマートフォンに届く</string>
+    <string name="selftest_platform_question">ウォッチで、Health Platformは開発者モードになっていますか？</string>
+    <string name="selftest_gms_question">スマートフォンのWear OSアプリで、ウォッチは接続済みと表示されていますか？</string>
+    <string name="selftest_shm_question">スマートフォンのSamsung Health Monitorで、ウォッチは接続済みと表示されていますか？</string>
+    <string name="selftest_ecg_question">ウォッチでECGを測定してください。スマートフォンに表示されますか？</string>
+    <string name="selftest_detail_answered_no">「いいえ」と回答しました</string>
+
+    <string name="selftest_detail_package_ok">バージョン %1$s、お客様のキーで署名済み、ビルドと同じファイル</string>
+    <string name="selftest_detail_package_ok_no_version">お客様のキーで署名済み、ビルドと同じファイル</string>
+    <string name="selftest_detail_not_installed">未インストール</string>
+    <string name="selftest_detail_wrong_cert">お客様とは別のキーで署名されています</string>
+    <string name="selftest_detail_cert_unavailable">署名キーを読み取れませんでした</string>
+    <string name="selftest_detail_no_build">比較するビルドがありません</string>
+    <string name="selftest_detail_hash_mismatch">インストール済みのファイルが前回のビルドと異なります</string>
+    <string name="selftest_detail_hash_unreadable">インストール済みのファイルを読み取れませんでした</string>
+    <string name="selftest_detail_watch_ok">インストール済み、ビルドと同じファイル</string>
+    <string name="selftest_detail_grants_ok">すべてのアクセスを許可済み</string>
+    <string name="selftest_detail_grants_missing">不足：%1$s</string>
+    <string name="selftest_detail_grants_unknown">読み取れません：%1$s</string>
+    <string name="selftest_detail_grants_optional">任意、未設定：%1$s</string>
+    <string name="selftest_detail_skipped_not_installed">スキップ、未インストール</string>
+    <string name="selftest_detail_watch_skipped">スキップ、ウォッチが未接続</string>
+    <string name="selftest_detail_watch_no_answer">ウォッチが応答しませんでした</string>
+    <string name="selftest_detail_error">このチェックを実行できませんでした</string>
+    <string name="selftest_detail_stock_still_on">まだオンです</string>
+    <string name="selftest_detail_stock_off">オフです</string>
+    <string name="selftest_detail_stock_absent">ウォッチにありません</string>
+    <string name="selftest_detail_bridge_missing">ブリッジが応答しません。インストールされていますか？</string>
+    <string name="selftest_detail_bridge_denied">ブリッジがステータス要求を拒否しました。別のキーでビルドされています</string>
+    <string name="selftest_detail_bridge_not_running">ブリッジサービスが実行されていません</string>
+    <string name="selftest_detail_bridge_link_down">ウォッチへのリンクが切断されています</string>
+    <string name="selftest_detail_bridge_no_hello">リンクは確立していますが、ウォッチからまだ応答（hello）がありません</string>
+    <string name="selftest_detail_bridge_ok">リンクが確立し、ウォッチから応答（hello）がありました</string>
+
+    <!-- All set -->
+    <string name="allset_title">準備完了です</string>
+    <string name="allset_subtitle">%2$d 件中 %1$d 件のチェックに合格</string>
+    <string name="allset_chip_link">リンク</string>
+
+    <!-- Home -->
+    <string name="home_title">OpenSHM</string>
+    <string name="home_status_ok">すべて正常に動作しています</string>
+    <string name="home_status_warning">確認が必要です</string>
+    <string name="home_status_failed">問題が発生しています</string>
+    <string name="home_status_unknown">まだテストしていません</string>
+    <string name="home_never_tested">テストを実行して確認</string>
+    <plurals name="home_tested_days_ago">
+        <item quantity="other">%1$d 日前にテスト済み</item>
+    </plurals>
+    <string name="home_test_again">もう一度テスト</string>
+    <string name="home_update_title">アップデートの準備ができました</string>
+    <string name="home_update_detail">%1$s：%2$s から %3$s へ</string>
+    <string name="home_update_patches">%1$s のパッチを更新しました</string>
+    <string name="home_menu_check_catalogue">カタログの更新を確認</string>
+    <string name="home_catalogue_updated">カタログをバージョン %1$d に更新しました</string>
+    <string name="home_catalogue_up_to_date">カタログは最新です</string>
+    <string name="home_catalogue_rejected">ダウンロードしたカタログは受け入れられませんでした</string>
+    <string name="home_catalogue_failed">アップデートサーバーに接続できませんでした</string>
+    <string name="home_catalogue_disabled">このビルドにはカタログの更新チャネルがありません</string>
+    <string name="home_current_builds">現在のビルド</string>
+    <string name="home_rebuild_description">パッチを変更して %1$s を再ビルド</string>
+    <string name="home_restore_description">%1$s を復元</string>
+    <string name="home_new_build">新しいビルド</string>
+    <string name="home_menu_new_build">新しいビルド</string>
+    <string name="home_menu_self_test">セルフテストを実行</string>
+    <string name="home_menu_restore_watch">ウォッチを復元</string>
+    <string name="home_menu_uninstall">アンインストール</string>
+    <string name="restore_title">元のアプリを復元しますか？</string>
+    <string name="restore_body">パッチ適用済みのアプリが削除され、標準アプリがオンに戻ります。ウォッチ上のデータは残ります。</string>
+    <string name="restore_confirm">復元</string>
+
+    <!-- Signing key -->
+    <string name="signing_key_title">署名キー</string>
+    <string name="signing_key_explainer">ビルドしたすべてのアプリは、このキーで署名されます。Androidは、同じキーで署名されたアプリにのみアップデートをインストールするため、バックアップを保管してください。</string>
+    <string name="signing_key_present">署名キーの準備ができています</string>
+    <string name="signing_key_absent">署名キーはまだありません</string>
+    <string name="signing_key_absent_note">キーは最初のビルド時に作成されます。バックアップをお持ちの場合は、今インポートできます。</string>
+    <string name="signing_key_unreadable">このデバイスではキーを読み取れません。</string>
+    <string name="signing_key_sha_label">証明書 SHA-256</string>
+    <string name="signing_key_copy">証明書のSHA-256をコピー</string>
+    <string name="signing_key_backed_up">バックアップ済み</string>
+    <string name="signing_key_not_backed_up">まだバックアップしていません</string>
+    <string name="signing_key_export">バックアップをエクスポート</string>
+    <string name="signing_key_import">キーをインポート</string>
+    <string name="signing_key_export_needs_key">エクスポートはキーが作成されると利用できます。</string>
+    <string name="signing_key_export_hint">バックアップファイルのパスワードを決めてください。キーを再インポートする際に必要で、復元はできません。</string>
+    <string name="signing_key_import_hint">PKCS#12（.p12）ファイルを選び、そのパスワードを入力してください。</string>
+    <string name="signing_key_password">パスワード</string>
+    <string name="signing_key_password_repeat">パスワードを再入力</string>
+    <string name="signing_key_show_password">パスワードを表示</string>
+    <string name="signing_key_hide_password">パスワードを非表示</string>
+    <string name="signing_key_choose_location">保存先を選択</string>
+    <string name="signing_key_choose_file">ファイルを選択</string>
+    <string name="signing_key_error_short">%1$d 文字以上で入力してください。</string>
+    <string name="signing_key_error_mismatch">パスワードが一致しません。</string>
+    <string name="signing_key_error_empty">ファイルのパスワードを入力してください。</string>
+    <string name="signing_key_export_done">バックアップを保存しました。ファイルとパスワードは安全な場所に保管してください。</string>
+    <string name="signing_key_export_failed">バックアップを保存できませんでした。</string>
+    <string name="signing_key_import_done">署名キーをインポートしました。</string>
+    <string name="signing_key_import_failed">キーをインポートできませんでした。</string>
+    <string name="signing_key_import_wrong_password">パスワードが違うか、ファイルがPKCS#12のキーファイルではありません。</string>
+    <string name="signing_key_import_not_one_key">ファイルにはキーがちょうど1つ含まれている必要があります。</string>
+    <string name="signing_key_import_unusable">ファイルに使用可能な秘密鍵と証明書がありません。</string>
+    <string name="signing_key_import_weak">キーが脆弱すぎます。RSAキーは2048ビット以上が必要です。</string>
+    <string name="signing_key_import_type">RSAキーとECキーのみ対応しています。</string>
+    <string name="signing_key_import_mismatch">キーが証明書と一致しません。</string>
+    <string name="signing_key_import_costly">ファイルが通常のキーファイルよりはるかに多くの計算を要求するため、拒否されました。</string>
+    <string name="signing_key_import_unreadable">ファイルを読み取れませんでした。</string>
+    <string name="signing_key_confirm_title">署名キーを置き換えますか？</string>
+    <string name="signing_key_confirm_current">現在のキー</string>
+    <string name="signing_key_confirm_new">ファイル内のキー</string>
+    <string name="signing_key_confirm_none">まだありません</string>
+    <string name="signing_key_confirm_warning">現在のキーで署名してインストール済みのアプリは、このアプリからのアップデートを受け付けなくなります。新しいキーを使うには、それらをアンインストールして再インストールする必要があり、データは削除されます。</string>
+    <string name="signing_key_confirm_replace">キーを置き換える</string>
+    <string name="signing_key_nudge_title">署名キーをバックアップしてください</string>
+    <string name="signing_key_nudge_body">バックアップがないと、インストール済みのアプリはアップデートできず、再インストールのみになります。</string>
+    <string name="signing_key_nudge_action">バックアップ</string>
+    <string name="home_menu_signing_key">署名キー</string>
+</resources>

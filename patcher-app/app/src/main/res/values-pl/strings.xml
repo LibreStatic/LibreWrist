@@ -1,0 +1,505 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Shared actions -->
+    <string name="action_back">Wstecz</string>
+    <string name="action_help">Pomoc</string>
+    <string name="action_close">Zamknij</string>
+    <string name="action_settings">Ustawienia</string>
+    <string name="action_more_options">Więcej opcji</string>
+    <string name="action_continue">Dalej</string>
+    <string name="action_cancel">Anuluj</string>
+    <string name="action_done">Gotowe</string>
+    <string name="action_skip">Pomiń na razie</string>
+    <string name="action_start">Start</string>
+    <string name="action_retry">Spróbuj ponownie</string>
+    <string name="action_edit">Edytuj</string>
+    <string name="action_fix">Napraw</string>
+    <string name="action_yes">Tak</string>
+    <string name="action_no">Nie</string>
+    <string name="action_open_settings">Otwórz ustawienia</string>
+    <string name="action_share_report">Udostępnij raport</string>
+
+    <string name="state_expanded">Rozwinięto</string>
+    <string name="state_collapsed">Zwinięto</string>
+    <string name="device_phone">Telefon</string>
+    <string name="device_watch">Zegarek</string>
+    <string name="chip_optional">Opcjonalne</string>
+    <string name="chip_apk_not_bundle">APK, nie pakiet</string>
+    <string name="chip_nodpi">nodpi</string>
+    <string name="chip_android_11">Android 11+</string>
+    <string name="chip_android_14">Android 14+</string>
+    <string name="size_mb">%1$.1f MB</string>
+
+    <!-- Step header and status -->
+    <string name="step_label">KROK %1$d Z %2$d</string>
+    <string name="step_label_watch_suffix">" · NA ZEGARKU"</string>
+    <string name="status_pending">Oczekuje</string>
+    <string name="status_running">W toku</string>
+    <string name="status_passed">Zaliczone</string>
+    <string name="status_warning">Wymaga uwagi</string>
+    <string name="status_failed">Niepowodzenie</string>
+    <string name="progress_download_description">Pobieranie: %1$d procent</string>
+    <string name="progress_build_description">Kompilacja: %1$d procent</string>
+
+    <!-- Welcome -->
+    <string name="welcome_title">Twoje aplikacje, twój zegarek, twoje zasady</string>
+    <string name="welcome_promise_download">Oficjalne aplikacje pobierasz sam: nic nie jest tu dołączone.</string>
+    <string name="welcome_promise_patch">Łatki sprawiają, że Samsung Health Monitor działa na telefonie innym niż Samsung i obok standardowej aplikacji na zegarku.</string>
+    <string name="welcome_promise_undo">Każdą zmianę można cofnąć, a standardowe aplikacje zostają na miejscu.</string>
+    <string name="welcome_get_started">Zaczynamy</string>
+    <string name="welcome_what_changes">Co zmieni się na moich urządzeniach?</string>
+    <string name="changes_title">Co się zmieni</string>
+    <string name="changes_intro">Instalowane są tylko te aplikacje i zmieniane tylko te ustawienia. Nic nie jest usuwane.</string>
+    <string name="changes_installs">Instalowane</string>
+    <string name="changes_grants">Zezwalane po instalacji</string>
+    <string name="changes_disables">Można wyłączyć</string>
+
+    <!-- Profile -->
+    <string name="profile_title">Jaki masz zegarek?</string>
+    <string name="profile_intro">Od tego zależy, które oficjalne aplikacje musisz przynieść.</string>
+    <string name="profile_wear5_title">Wear OS 5 lub nowszy</string>
+    <string name="profile_wear5_summary">Health Monitor oraz alarmy z telefonu na zegarku.</string>
+    <string name="profile_wear5_apps">3 oficjalne aplikacje</string>
+    <string name="profile_wear3_title">Wear OS 3 lub 4</string>
+    <string name="profile_wear3_summary">Tylko Health Monitor. Aplikacja alarmów wymaga Androida 14 na zegarku.</string>
+    <string name="profile_wear3_apps">2 oficjalne aplikacje</string>
+    <string name="profile_detected">Sprawdzono na zegarku: Android %1$s (%2$s)</string>
+    <string name="profile_check_paired">Sprawdź sparowane zegarki</string>
+    <string name="profile_hint_certain">Znaleziono: %1$s. Zawsze ma Wear OS 5 lub nowszy, więc wybrano pierwszą opcję.</string>
+    <string name="profile_hint_depends">Twój %1$s może mieć dowolną wersję. Sprawdź Informacje o oprogramowaniu na zegarku lub pozwól aplikacji sprawdzić w kroku 3.</string>
+    <string name="profile_check_none">Nie znaleziono sparowanego Galaxy Watch. Wybierz opcję lub pozwól aplikacji sprawdzić w kroku 3.</string>
+    <string name="profile_check_denied">Nie zezwolono na dostęp do Bluetooth, więc nie można sprawdzić sparowanych zegarków. Wybierz opcję lub pozwól aplikacji sprawdzić w kroku 3.</string>
+    <string name="profile_howto_title">Jak to sprawdzić</string>
+    <string name="profile_howto_watch">Na zegarku: Ustawienia › Informacje o zegarku › Informacje o oprogramowaniu. „Wear OS 5” lub nowszy, „One UI 6 Watch” lub nowszy albo Android 14 lub nowszy oznacza pierwszą opcję.</string>
+    <string name="profile_howto_phone">Ten sam ekran jest w aplikacji Galaxy Wearable na telefonie: Ustawienia zegarka › Informacje o zegarku › Informacje o oprogramowaniu.</string>
+    <string name="profile_howto_models">Galaxy Watch7, Watch Ultra i nowsze zawsze się nadają. Watch4, Watch5, Watch6 i Watch FE nadają się dopiero po aktualizacji do One UI 6 Watch.</string>
+    <string name="profile_howto_unsure">Nie masz pewności? Wybierz dowolną: aplikacja sama sprawdzi zegarek po połączeniu (krok 3) i poprawi wybór przed pobraniem czegokolwiek.</string>
+
+    <!-- Galaxy Wearable pairing check -->
+    <string name="wearable_title">Czy zegarek jest sparowany?</string>
+    <string name="wearable_intro">Zegarek musi być już sparowany z tym telefonem. Te kontrole niczego nie zmieniają.</string>
+    <string name="wearable_check_app">Znaleziono aplikację towarzyszącą</string>
+    <string name="wearable_check_app_detail">Aplikacja zarządzająca zegarkiem jest zainstalowana.</string>
+    <string name="wearable_check_paired">Zegarek sparowany</string>
+    <string name="wearable_check_paired_detail">Zegarek jest powiązany z tym telefonem.</string>
+    <string name="wearable_check_datalayer">Telefon i zegarek się komunikują</string>
+    <string name="wearable_check_datalayer_detail">Łącze danych Google między nimi odpowiada.</string>
+    <string name="wearable_note">Jeśli kontrola się nie powiedzie, napraw to w ustawieniach samego zegarka i sprawdź ponownie.</string>
+    <string name="wearable_recheck">Sprawdź ponownie</string>
+
+    <!-- Watch pairing over Wi-Fi -->
+    <string name="watchpair_correct_older">Twój zegarek ma Androida %1$s, więc aplikacja alarmów jest pomijana: potrzebne są 2 oficjalne aplikacje zamiast 3.</string>
+    <string name="watchpair_correct_newer">Twój zegarek ma Androida %1$s, więc aplikacja alarmów jest uwzględniona: potrzebne są 3 oficjalne aplikacje zamiast 2.</string>
+    <string name="watchpair_title">Połącz z zegarkiem</string>
+    <string name="watchpair_intro">Zegarek przyjmuje instalacje przez Wi-Fi po sparowaniu krótkim kodem.</string>
+    <string name="watchpair_on_watch">NA ZEGARKU</string>
+    <string name="watchpair_on_watch_steps">Otwórz Ustawienia, Opcje programisty, Debugowanie bezprzewodowe, a potem Sparuj nowe urządzenie. Tam zobaczysz 6-cyfrowy kod.</string>
+    <string name="watchpair_found">Znaleziono zegarek w Twojej sieci</string>
+    <string name="watchpair_searching">Szukanie zegarka…</string>
+    <string name="watchpair_address_label">Adres (host:port)</string>
+    <string name="watchpair_code_label">Kod parowania</string>
+    <string name="watchpair_check_wifi">Telefon i zegarek są w tej samej sieci Wi-Fi</string>
+    <string name="watchpair_check_developer">Opcje programisty są włączone</string>
+    <string name="watchpair_check_wireless">Debugowanie bezprzewodowe jest włączone</string>
+    <string name="watchpair_check_code">Ekran z kodem parowania jest otwarty</string>
+    <string name="watchpair_hint">Wpisz wszystkie 6 cyfr, aby sparować</string>
+    <string name="watchpair_ready">Gotowe do parowania</string>
+    <string name="watchpair_pair">Sparuj</string>
+    <string name="watchpair_error_wrong_code">Kod nie został przyjęty. Sprawdź zegarek i spróbuj ponownie.</string>
+    <string name="watchpair_error_bad_address">Wpisz adres w formacie host:port, na przykład 192.168.1.20:37115.</string>
+    <string name="watchpair_error_timeout">Zegarek nie odpowiedział na czas. Zostaw otwarty ekran z kodem parowania i spróbuj ponownie.</string>
+    <string name="watchpair_error_network">Nie można połączyć się z zegarkiem. Sprawdź, czy oba urządzenia są w tej samej sieci Wi-Fi.</string>
+    <string name="watchpair_error_restart">Klucz parowania został zresetowany. Zamknij i ponownie otwórz aplikację, a potem sparuj jeszcze raz.</string>
+    <string name="watchpair_error_other">Parowanie się nie powiodło. Otwórz ponownie ekran z kodem parowania na zegarku i spróbuj jeszcze raz.</string>
+
+    <!-- Acquire -->
+    <string name="acquire_title">Przynieś oficjalne aplikacje</string>
+    <string name="acquire_intro">Pobierz każdą aplikację sam, z zaufanego źródła. Patcher nigdy ich nie przechowuje ani nie rozpowszechnia.</string>
+    <string name="acquire_open_mirror">Otwórz w APKMirror</string>
+    <string name="acquire_more_ways">Inne sposoby zdobycia tej aplikacji</string>
+    <string name="acquire_use_file">Użyj posiadanego pliku</string>
+    <string name="acquire_downloading">Pobieranie…  %1$d%% · %2$d z %3$d MB</string>
+    <string name="acquire_verified">Zgodny z oczekiwanym plikiem · %1$d MB</string>
+    <string name="acquire_rejected_wrong_app">Ten plik to inna aplikacja. Wybierz tę wskazaną powyżej.</string>
+    <string name="acquire_rejected_wrong_version">Ten plik to inna wersja aplikacji niż oczekiwana.</string>
+    <string name="acquire_rejected_not_expected">Ten plik nie pasuje do oczekiwanej kompilacji (inny wariant lub uszkodzony). Pobierz go ponownie.</string>
+    <string name="acquire_rejected_unreadable">Nie można odczytać tego pliku.</string>
+    <string name="acquire_rejected_download_failed">Pobieranie nie zostało ukończone. Sprawdź połączenie i spróbuj ponownie.</string>
+    <string name="acquire_rejected_too_large">To pobieranie jest znacznie większe niż oczekiwany plik, więc je przerwano.</string>
+    <string name="acquire_verify_note">Każdy plik jest sprawdzany ze znaną sumą kontrolną przed użyciem.</string>
+    <plurals name="acquire_waiting">
+        <item quantity="one">Oczekuje %1$d aplikacja</item>
+        <item quantity="few">Oczekują %1$d aplikacje</item>
+        <item quantity="many">Oczekuje %1$d aplikacji</item>
+        <item quantity="other">Oczekuje %1$d aplikacji</item>
+    </plurals>
+
+    <!-- Guided browser -->
+    <string name="browser_page_placeholder">STRONA WWW W ORYGINALNEJ POSTACI</string>
+    <string name="browser_coach_progress">%1$d z %2$d · %3$s</string>
+    <string name="browser_coach_1_title">Otwórz właściwe wydanie</string>
+    <string name="browser_coach_1_body">Wybierz wersję podaną na karcie, a nie nowszą ani starszą.</string>
+    <string name="browser_coach_2_title">Wybierz wariant</string>
+    <string name="browser_coach_2_body">Wybierz APK, a nie pakiet, oraz kompilację nodpi dla swojej wersji Androida.</string>
+    <string name="browser_coach_3_title">Pobierz</string>
+    <string name="browser_coach_3_body">Dotknij Download APK. Patcher przejmie plik po zakończeniu pobierania.</string>
+    <string name="browser_coach_wrong_version_body">To inna wersja. Wróć i otwórz %1$s.</string>
+    <string name="browser_notice_blocked">Zablokowano link do innej witryny: %1$s</string>
+    <string name="browser_notice_bundle">To plik pakietu (.apkm, .xapk, .apks lub .zip). Wróć i wybierz zwykły wariant APK.</string>
+    <string name="browser_notice_not_https">To pobieranie nie jest bezpiecznym linkiem https, więc go nie pobrano.</string>
+    <string name="browser_notice_open">Otwórz w mojej przeglądarce</string>
+    <string name="browser_notice_dismiss">Odrzuć</string>
+    <string name="browser_reload">Odśwież</string>
+    <string name="browser_step_dots">Krok %1$d z %2$d</string>
+    <string name="browser_use_file">Użyj pliku</string>
+    <string name="browser_open_external">Otwórz w mojej przeglądarce</string>
+    <string name="browser_back_to_page">Wróć do właściwej strony</string>
+
+    <!-- Customize -->
+    <string name="customize_title">Wybierz łatki</string>
+    <string name="customize_intro">Te łatki są potrzebne, aby aplikacje działały na Twoich urządzeniach, więc są zawsze włączone.</string>
+    <string name="customize_required">Wymagane, zawsze włączone</string>
+    <string name="customize_advanced">Zaawansowane</string>
+    <string name="customize_prefix_label">Prefiks pakietu aplikacji pomocniczych</string>
+    <string name="customize_prefix_explainer">Nadaje nazwy aplikacjom mostka i aplikacji alarmów. Dwie aplikacje Samsung Health Monitor zachowują własny pakiet, aby mogły się komunikować.</string>
+    <string name="customize_prefix_ok">Nowy prefiks zostanie wygenerowany automatycznie.</string>
+    <string name="customize_prefix_locked">Zablokowane: aplikacje pomocnicze są zainstalowane, a aktualizacje wymagają tego samego prefiksu.</string>
+    <string name="customize_prefix_regenerate">Wygeneruj nowy prefiks</string>
+    <string name="customize_build">Zbuduj</string>
+    <string name="preset_recommended">Zalecane</string>
+    <string name="preset_minimal">Minimalne</string>
+    <string name="preset_everything">Wszystko</string>
+    <string name="prefix_problem_empty">Wpisz prefiks.</string>
+    <string name="prefix_problem_short">Użyj co najmniej dwóch części, np. io.example.</string>
+    <string name="prefix_problem_long">Ten prefiks jest za długi.</string>
+    <string name="prefix_problem_segment">Użyj małych liter, cyfr i podkreśleń; każda część zaczyna się od litery.</string>
+    <string name="prefix_problem_reserved">Ta przestrzeń nazw należy do kogoś innego.</string>
+    <plurals name="customize_summary_patches">
+        <item quantity="one">%1$d łatka włączona</item>
+        <item quantity="few">%1$d łatki włączone</item>
+        <item quantity="many">%1$d łatek włączonych</item>
+        <item quantity="other">%1$d łatki włączonej</item>
+    </plurals>
+    <plurals name="customize_summary_apps">
+        <item quantity="one">%1$d aplikacja</item>
+        <item quantity="few">%1$d aplikacje</item>
+        <item quantity="many">%1$d aplikacji</item>
+        <item quantity="other">%1$d aplikacji</item>
+    </plurals>
+
+    <!-- Patch descriptions (titles come from the catalogue) -->
+    <string name="patch_generic_manufacturer_check">Akceptuje telefon, który nie jest marki Samsung.</string>
+    <string name="patch_generic_vendor_check">Akceptuje telefon bez Samsung SDK.</string>
+    <string name="patch_shm_min_age_22_to_16">Obniża minimalny wiek z 22 do 16 lat.</string>
+    <string name="patch_shm_supported_type_ordinals">Uznaje każdy region za obsługiwany.</string>
+    <string name="patch_shm_region_supportedtype">Przepuszcza kontrolę regionu.</string>
+    <string name="patch_shm_region_countrylist">Akceptuje dowolny kraj z listy obsługiwanych.</string>
+    <string name="patch_shm_root_packagevalidator">Pomija weryfikację certyfikatu producenta.</string>
+    <string name="patch_shm_force_update_response">Ignoruje nieudaną lub wymuszoną odpowiedź o aktualizacji.</string>
+    <string name="patch_shm_force_update_pref">Ignoruje zapisany znacznik wymuszonej aktualizacji.</string>
+    <string name="patch_shm_main_gates">Pomija kontrole przy uruchamianiu, które blokują inne telefony.</string>
+    <string name="patch_shm_setup_network_gate">Pomija kontrolę SIM i regionu podczas konfiguracji.</string>
+    <string name="patch_shm_sleep_apnea_support">Zgłasza obsługę bezdechu sennego.</string>
+    <string name="patch_phone_rebrand_gms">Nadaje aplikacji na telefonie ten sam pakiet i klucz co aplikacji na zegarku, aby mogły wymieniać dane.</string>
+    <string name="patch_watch_rebrand_coexist">Zmienia nazwę aplikacji na zegarku, aby działała obok standardowej.</string>
+    <string name="patch_watch_queries_health_service">Pozwala aplikacji na zegarku widzieć usługę zdrowia.</string>
+    <string name="patch_watch_companion_vendor">Akceptuje telefon dowolnej marki.</string>
+    <string name="patch_watch_alarm_system_app">Planuje dokładne alarmy bez uprawnień systemowych.</string>
+    <string name="patch_watch_mobile_installed">Zgłasza aplikację na telefonie jako zainstalowaną.</string>
+    <string name="patch_watch_ecg_sensor_adapter">Odczytuje czujnik EKG przez usługę Health Tracking.</string>
+    <string name="patch_watch_apnea_country">Pomija kontrolę kraju dla bezdechu.</string>
+    <string name="patch_watch_apnea_reeval_not_supported">Ponownie sprawdza obsługę bezdechu zapisaną jako nieobsługiwana.</string>
+    <string name="patch_watch_mod">Dodaje moduł komunikujący się z usługą Health Tracking.</string>
+    <string name="patch_alarm_verify_symbols">Sprawdza, czy aplikacja alarmów ma elementy potrzebne do połączenia.</string>
+    <string name="patch_alarm_rebrand_manifest">Zmienia nazwę aplikacji alarmów, aby instalowała się obok standardowej.</string>
+    <string name="patch_alarm_rebrand_code">Aktualizuje kod aplikacji alarmów do nowej nazwy.</string>
+    <string name="patch_alarm_permissions_prune">Usuwa uprawnienia, które mogą mieć tylko aplikacje systemowe.</string>
+    <string name="patch_alarm_notification_permissions">Dodaje uprawnienia do powiadomień i alarmów pełnoekranowych.</string>
+    <string name="patch_alarm_queries_libs">Usuwa zapytania i biblioteki zbędne dla forka.</string>
+    <string name="patch_alarm_components_prune">Usuwa komponenty producenta zbędne dla forka.</string>
+    <string name="patch_alarm_provider_open">Udostępnia dane alarmów forkowi.</string>
+    <string name="patch_alarm_link_components">Dodaje odbiornik alarmów wysyłanych z telefonu.</string>
+    <string name="patch_alarm_appfunctions_drop">Usuwa nieużywane drzewo funkcji producenta.</string>
+    <string name="patch_alarm_semgesture_skip">Pomija menedżera gestów producenta.</string>
+    <string name="patch_alarm_gms_observer_drop">Zapobiega przedwczesnemu kończeniu alarmu.</string>
+    <string name="patch_alarm_service_stop_on_destroy">Gwarantuje, że dźwięk i wibracje zawsze się zatrzymają.</string>
+    <string name="patch_alarm_force_sound_vibrate">Zawsze dzwoni i wibruje.</string>
+    <string name="patch_alarm_link_send">Wysyła zmiany alarmów do telefonu.</string>
+    <string name="patch_alarm_hide_launcher">Ukrywa dodatkową ikonę w launcherze.</string>
+    <string name="patch_alarm_relabel">Nazywa forka „Alarmy z telefonu”.</string>
+    <string name="patch_alarm_fork">Dodaje moduł łączący alarmy z telefonem.</string>
+    <string name="output_shm_phone">Samsung Health Monitor (z łatkami)</string>
+    <string name="output_shm_watch">Samsung Health Monitor dla Wear OS (z łatkami)</string>
+    <string name="output_bridge_watch">Mostek dla zegarka</string>
+    <string name="output_alarm_fork">Alarmy z telefonu na zegarku</string>
+    <string name="output_bridge_phone">Mostek dla telefonu</string>
+    <string name="stock_label_shm">Samsung Health Monitor (standardowy)</string>
+    <string name="stock_reason_shm">Dwie kopie aplikacji konkurowałyby o ten sam czujnik.</string>
+
+    <!-- Build -->
+    <string name="build_title">Budowanie aplikacji</string>
+    <string name="build_caption_idle">Przygotowanie</string>
+    <string name="build_stage_unpack">Rozpakowanie</string>
+    <string name="build_stage_fingerprints">Sprawdzenie odcisków łatek</string>
+    <string name="build_stage_apply_short">Zastosowanie łatek</string>
+    <plurals name="build_stage_apply">
+        <item quantity="one">Zastosuj %1$d łatkę</item>
+        <item quantity="few">Zastosuj %1$d łatki</item>
+        <item quantity="many">Zastosuj %1$d łatek</item>
+        <item quantity="other">Zastosuj %1$d łatki</item>
+    </plurals>
+    <string name="build_stage_rename">Zmiana nazwy pakietu</string>
+    <string name="build_stage_rebuild">Ponowne budowanie</string>
+    <string name="build_stage_sign">Podpisanie</string>
+    <string name="build_stage_selfcheck">Autokontrola</string>
+    <string name="build_can_leave">Możesz wyjść. Powiadomimy Cię po zakończeniu.</string>
+    <string name="build_channel_name">Postęp budowania</string>
+    <string name="build_channel_description">Wyświetlane, gdy aplikacje są budowane i podpisywane.</string>
+    <string name="build_notification_title">Budowanie aplikacji</string>
+    <string name="build_notification_progress">%1$s: %2$s</string>
+    <string name="build_notification_done">Aplikacje zostały zbudowane i podpisane.</string>
+    <string name="build_notification_failed">Budowanie się nie powiodło. Otwórz aplikację, aby zobaczyć powód.</string>
+    <string name="build_error_title">Budowanie nie zostało ukończone</string>
+    <string name="build_show_log">Pokaż dziennik</string>
+    <string name="build_log_title">Dziennik budowania</string>
+    <string name="build_log_empty">Nic jeszcze nie zapisano.</string>
+    <string name="build_done_title">Zbudowano i podpisano</string>
+    <string name="build_done_ready">gotowe do instalacji</string>
+    <string name="build_done_install">Zainstaluj na telefonie</string>
+    <string name="build_done_link_note">Obie aplikacje Health Monitor mają tę samą nazwę pakietu i klucz podpisu. Dzięki temu łącze danych Google może przekazywać między nimi wiadomości.</string>
+    <plurals name="build_done_subtitle_patches">
+        <item quantity="one">%1$d łatka</item>
+        <item quantity="few">%1$d łatki</item>
+        <item quantity="many">%1$d łatek</item>
+        <item quantity="other">%1$d łatki</item>
+    </plurals>
+    <plurals name="build_done_subtitle_apps">
+        <item quantity="one">%1$d aplikacja</item>
+        <item quantity="few">%1$d aplikacje</item>
+        <item quantity="many">%1$d aplikacji</item>
+        <item quantity="other">%1$d aplikacji</item>
+    </plurals>
+
+    <!-- Install -->
+    <string name="install_phone_title">Instalacja na tym telefonie</string>
+    <string name="install_phone_intro">Android prosi o potwierdzenie każdej instalacji. Potrzebne aplikacjom uprawnienia są sprawdzane potem; brakujące włączasz w Ustawieniach.</string>
+    <string name="install_phone_note">Uprawnienia, wyświetlanie nad innymi aplikacjami, dostęp do powiadomień i ustawienia z ograniczeniami włączasz Ty. Wróć potem na ten ekran, a sprawdzi je ponownie.</string>
+    <string name="install_watch_title">Instalacja na zegarku</string>
+    <string name="install_watch_intro">Instalacja przez Wi-Fi w tej kolejności: Health Monitor, mostek, a potem alarmy z telefonu.</string>
+    <string name="install_watch_note">Zegarek pozostaje włączony i połączony w trakcie instalacji.</string>
+    <string name="install_start">Rozpocznij instalację</string>
+    <string name="install_error_build_missing">Brak kompilacji lub nie pasuje do tej konfiguracji. Zbuduj ponownie, a potem zainstaluj.</string>
+    <string name="install_error_failed">Zegarek odrzucił instalację.</string>
+    <string name="install_error_signature">Na zegarku jest już kopia podpisana innym kluczem. Nic nie usunięto. Odinstaluj tę kopię samodzielnie i spróbuj ponownie.</string>
+    <string name="install_error_grant">Nie udało się zastosować ustawienia dostępu.</string>
+    <string name="action_open">Otwórz</string>
+    <string name="action_allow_installing">Zezwól na instalowanie aplikacji</string>
+    <string name="install_check_again">Sprawdź ponownie</string>
+    <string name="install_continue_anyway">Kontynuuj mimo to</string>
+    <string name="install_onboarding">Otwórz Samsung Health Monitor i dokończ jego konfigurację</string>
+    <string name="install_error_unknown_sources">Ta aplikacja nie ma jeszcze zezwolenia na instalowanie aplikacji. Zezwól i zacznij od nowa.</string>
+    <string name="install_error_notifications">Najpierw zezwól tej aplikacji na powiadomienia: kod parowania wpisuje się w powiadomieniu.</string>
+    <string name="phone_adb_title">Przyznaj wszystko naraz</string>
+    <string name="phone_adb_intro">Jeśli przełączniki przeszkadzają, ten telefon może sam je sobie przyznać przez Debugowanie bezprzewodowe. Musisz być w sieci Wi-Fi.</string>
+    <string name="phone_adb_action">Przyznaj wszystko przez Debugowanie bezprzewodowe</string>
+    <string name="phone_adb_waiting_service">W Debugowaniu bezprzewodowym włącz je i dotknij Sparuj urządzenie za pomocą kodu parowania. Pojawi się powiadomienie, w którym wpiszesz kod bez opuszczania tego ekranu.</string>
+    <string name="phone_adb_waiting_code">Wpisz sześciocyfrowy kod z ekranu parowania tutaj lub w powiadomieniu.</string>
+    <string name="phone_adb_wrong_code">Ten kod nie zadziałał. Sprawdź ekran parowania i spróbuj ponownie.</string>
+    <string name="phone_adb_ambiguous">Na tym telefonie znaleziono więcej niż jedną usługę Debugowania bezprzewodowego. Wyłącz i włącz Debugowanie bezprzewodowe, a potem spróbuj ponownie.</string>
+    <string name="phone_adb_connecting">Łączenie z tym telefonem...</string>
+    <string name="phone_adb_granting">Połączono. Przyznawanie dostępu...</string>
+    <string name="phone_adb_failed">Nie udało się połączyć z Debugowaniem bezprzewodowym tego telefonu.</string>
+    <string name="phone_adb_code_label">Kod parowania</string>
+    <string name="phone_adb_submit">Sparuj</string>
+    <string name="selfadb_channel">Parowanie z tym telefonem</string>
+    <string name="selfadb_code_channel">Kod parowania</string>
+    <string name="selfadb_waiting_service">W Debugowaniu bezprzewodowym dotknij Sparuj urządzenie za pomocą kodu parowania</string>
+    <string name="selfadb_enter_code_title">Wpisz kod parowania</string>
+    <string name="selfadb_enter_code_body">Wpisz sześciocyfrowy kod z ekranu parowania.</string>
+    <string name="selfadb_reply_label">Kod parowania</string>
+    <string name="selfadb_reply_action">Wpisz kod</string>
+    <string name="selfadb_wrong_code">Ten kod nie zadziałał. Sprawdź ekran parowania i spróbuj ponownie.</string>
+    <string name="selfadb_pairing">Parowanie...</string>
+    <string name="selfadb_connecting">Łączenie...</string>
+    <string name="selfadb_connected">Połączono z Debugowaniem bezprzewodowym tego telefonu</string>
+    <string name="selfadb_ambiguous">Na tym telefonie znaleziono więcej niż jedną usługę Debugowania bezprzewodowego. Wyłącz i włącz Debugowanie bezprzewodowe, a potem spróbuj ponownie.</string>
+    <string name="selfadb_failed">Nie udało się połączyć</string>
+    <string name="selfadb_service_channel">Debugowanie bezprzewodowe</string>
+    <string name="selfadb_service_title">Łączenie z Debugowaniem bezprzewodowym tego telefonu</string>
+    <string name="phone_adb_timeout">Parowanie trwało zbyt długo i zostało przerwane.</string>
+    <string name="phone_adb_interrupted">Parowanie zostało przerwane.</string>
+    <string name="watch_error_unreachable">Zegarek jest niedostępny. Sprawdź, czy Debugowanie bezprzewodowe jest włączone, a oba urządzenia są w tej samej sieci Wi-Fi.</string>
+    <string name="watch_error_pairing">Zegarek już nie ufa temu telefonowi. Wróć i sparuj ponownie.</string>
+    <string name="grant_permission">Uprawnienie</string>
+    <string name="grant_appop">Operacja aplikacji</string>
+    <string name="grant_setting">Ustawienie systemowe</string>
+    <string name="grant_listener">Dostęp do powiadomień</string>
+    <string name="grant_battery">Wyłączenie z oszczędzania baterii</string>
+
+    <!-- Health Platform developer mode -->
+    <string name="devmode_title">Tryb programisty Health Platform</string>
+    <string name="devmode_intro">Usługa Health Tracking rozmawia z załatanym programem tylko w trybie programisty. Włącz go na zegarku.</string>
+    <string name="devmode_step_settings">Otwórz Ustawienia na zegarku.</string>
+    <string name="devmode_step_apps">Przejdź do Aplikacji.</string>
+    <string name="devmode_step_health_platform">Wybierz Health Platform.</string>
+    <string name="devmode_step_tap">Dotykaj tytułu, aż pojawi się [Dev mode].</string>
+    <string name="devmode_open_settings">Otwórz ustawienia Health Platform na zegarku</string>
+    <string name="devmode_waiting">Oczekiwanie na tryb programisty</string>
+    <string name="devmode_detected">Tryb programisty jest włączony</string>
+    <string name="devmode_check">Sprawdź teraz</string>
+    <string name="devmode_skip">Pomiń na razie</string>
+
+    <!-- Disable stock apps -->
+    <string name="disable_title">Wyłącz standardową aplikację</string>
+    <string name="disable_intro">Wyłączona aplikacja jest ukryta i zatrzymana. Możesz ją włączyć w dowolnej chwili. Nic nie jest odinstalowywane.</string>
+    <string name="disable_chip_installed">Aplikacja na zegarku zainstalowana</string>
+    <string name="disable_chip_wear">Wear OS</string>
+    <string name="disable_chip_not_installed">Niezainstalowana</string>
+    <string name="disable_error_some">Nie udało się wyłączyć niektórych aplikacji. Spróbuj ponownie lub pomiń ten krok.</string>
+    <plurals name="disable_action">
+        <item quantity="one">Wyłącz %1$d aplikację</item>
+        <item quantity="few">Wyłącz %1$d aplikacje</item>
+        <item quantity="many">Wyłącz %1$d aplikacji</item>
+        <item quantity="other">Wyłącz %1$d aplikacji</item>
+    </plurals>
+
+    <!-- Self-test -->
+    <string name="selftest_title">Testowanie wszystkiego</string>
+    <string name="selftest_section_phone">Telefon</string>
+    <string name="selftest_section_watch">Zegarek</string>
+    <string name="selftest_section_link">Połączenie telefon ↔ zegarek</string>
+    <string name="selftest_section_human">Sprawdzane przez Ciebie</string>
+    <string name="selftest_rerun">Uruchom ponownie</string>
+    <string name="selftest_human_label">SPRAWDŹ RAZEM Z NAMI · %1$d Z %2$d</string>
+    <string name="selftest_share_subject">Autotest OpenSHM Patcher</string>
+
+    <!-- Self-test rows: %1$s is an app name or a list of access names -->
+    <string name="selftest_package_title">%1$s: zainstalowano</string>
+    <string name="selftest_grants_title">%1$s: dostęp przyznany</string>
+    <string name="selftest_stock_title">%1$s: wyłączono</string>
+    <string name="selftest_bridge_link_title">Połączenie mostkiem z zegarkiem</string>
+    <string name="selftest_watch_platform">Health Platform w trybie programisty</string>
+    <string name="selftest_gms_title">Zegarek połączony z telefonem</string>
+    <string name="selftest_shm_title">Health Monitor widzi zegarek</string>
+    <string name="selftest_ecg_title">EKG dociera do telefonu</string>
+    <string name="selftest_platform_question">Czy Health Platform na zegarku jest w trybie programisty?</string>
+    <string name="selftest_gms_question">Czy aplikacja Wear OS na telefonie pokazuje zegarek jako połączony?</string>
+    <string name="selftest_shm_question">Czy Samsung Health Monitor na telefonie pokazuje zegarek jako połączony?</string>
+    <string name="selftest_ecg_question">Wykonaj EKG na zegarku. Czy pojawia się na telefonie?</string>
+    <string name="selftest_detail_answered_no">Odpowiedziano: nie</string>
+
+    <string name="selftest_detail_package_ok">Wersja %1$s, podpisana Twoim kluczem, ten sam plik co w kompilacji</string>
+    <string name="selftest_detail_package_ok_no_version">Podpisana Twoim kluczem, ten sam plik co w kompilacji</string>
+    <string name="selftest_detail_not_installed">Niezainstalowano</string>
+    <string name="selftest_detail_wrong_cert">Podpisana innym kluczem niż Twój</string>
+    <string name="selftest_detail_cert_unavailable">Nie można odczytać Twojego klucza podpisu</string>
+    <string name="selftest_detail_no_build">Brak kompilacji do porównania</string>
+    <string name="selftest_detail_hash_mismatch">Zainstalowany plik różni się od ostatniej kompilacji</string>
+    <string name="selftest_detail_hash_unreadable">Nie można odczytać zainstalowanego pliku</string>
+    <string name="selftest_detail_watch_ok">Zainstalowano, ten sam plik co w kompilacji</string>
+    <string name="selftest_detail_grants_ok">Cały dostęp przyznany</string>
+    <string name="selftest_detail_grants_missing">Brakuje: %1$s</string>
+    <string name="selftest_detail_grants_unknown">Nie można odczytać: %1$s</string>
+    <string name="selftest_detail_grants_optional">Opcjonalne, nieustawione: %1$s</string>
+    <string name="selftest_detail_skipped_not_installed">Pominięto, niezainstalowano</string>
+    <string name="selftest_detail_watch_skipped">Pominięto, zegarek niepołączony</string>
+    <string name="selftest_detail_watch_no_answer">Zegarek nie odpowiedział</string>
+    <string name="selftest_detail_error">Nie można było wykonać tej kontroli</string>
+    <string name="selftest_detail_stock_still_on">Nadal włączona</string>
+    <string name="selftest_detail_stock_off">Wyłączona</string>
+    <string name="selftest_detail_stock_absent">Nie ma jej na zegarku</string>
+    <string name="selftest_detail_bridge_missing">Mostek nie odpowiada. Czy jest zainstalowany?</string>
+    <string name="selftest_detail_bridge_denied">Mostek odrzucił zapytanie o stan. Zbudowano go innym kluczem</string>
+    <string name="selftest_detail_bridge_not_running">Usługa mostka nie działa</string>
+    <string name="selftest_detail_bridge_link_down">Brak połączenia z zegarkiem</string>
+    <string name="selftest_detail_bridge_no_hello">Połączenie działa, ale zegarek jeszcze się nie odezwał</string>
+    <string name="selftest_detail_bridge_ok">Połączenie działa, zegarek się odezwał</string>
+
+    <!-- All set -->
+    <string name="allset_title">Wszystko gotowe</string>
+    <string name="allset_subtitle">Zaliczono kontroli: %1$d z %2$d</string>
+    <string name="allset_chip_link">Połączenie</string>
+
+    <!-- Home -->
+    <string name="home_title">OpenSHM</string>
+    <string name="home_status_ok">Wszystko działa</string>
+    <string name="home_status_warning">Warto sprawdzić</string>
+    <string name="home_status_failed">Coś nie działa</string>
+    <string name="home_status_unknown">Jeszcze nie testowano</string>
+    <string name="home_never_tested">Uruchom test, aby sprawdzić</string>
+    <plurals name="home_tested_days_ago">
+        <item quantity="one">testowano %1$d dzień temu</item>
+        <item quantity="few">testowano %1$d dni temu</item>
+        <item quantity="many">testowano %1$d dni temu</item>
+        <item quantity="other">testowano %1$d dnia temu</item>
+    </plurals>
+    <string name="home_test_again">Testuj ponownie</string>
+    <string name="home_update_title">Aktualizacja jest gotowa</string>
+    <string name="home_update_detail">%1$s: %2$s → %3$s</string>
+    <string name="home_update_patches">Zaktualizowane łatki dla %1$s</string>
+    <string name="home_menu_check_catalogue">Sprawdź aktualizacje katalogu</string>
+    <string name="home_catalogue_updated">Katalog zaktualizowano do wersji %1$d</string>
+    <string name="home_catalogue_up_to_date">Katalog jest aktualny</string>
+    <string name="home_catalogue_rejected">Pobrany katalog nie został zaakceptowany</string>
+    <string name="home_catalogue_failed">Nie można połączyć się z serwerem aktualizacji</string>
+    <string name="home_catalogue_disabled">Ta kompilacja nie ma kanału aktualizacji katalogu</string>
+    <string name="home_current_builds">Bieżące kompilacje</string>
+    <string name="home_rebuild_description">Zmień łatki i zbuduj ponownie %1$s</string>
+    <string name="home_restore_description">Przywróć %1$s</string>
+    <string name="home_new_build">Nowa kompilacja</string>
+    <string name="home_menu_new_build">Nowa kompilacja</string>
+    <string name="home_menu_self_test">Uruchom autotest</string>
+    <string name="home_menu_restore_watch">Przywróć zegarek</string>
+    <string name="home_menu_uninstall">Odinstaluj</string>
+    <string name="restore_title">Przywrócić oryginalną aplikację?</string>
+    <string name="restore_body">Załatana aplikacja zostanie usunięta, a standardowa włączona z powrotem. Twoje dane na zegarku zostaną zachowane.</string>
+    <string name="restore_confirm">Przywróć</string>
+
+    <!-- Signing key -->
+    <string name="signing_key_title">Klucz podpisu</string>
+    <string name="signing_key_explainer">Każda zbudowana aplikacja jest podpisana tym kluczem. Android instaluje aktualizację tylko na aplikacji podpisanej tym samym kluczem, więc zrób kopię zapasową.</string>
+    <string name="signing_key_present">Klucz podpisu gotowy</string>
+    <string name="signing_key_absent">Brak klucza podpisu</string>
+    <string name="signing_key_absent_note">Klucz powstaje przy pierwszej kompilacji. Jeśli masz już kopię zapasową, możesz ją teraz zaimportować.</string>
+    <string name="signing_key_unreadable">Nie można odczytać klucza na tym urządzeniu.</string>
+    <string name="signing_key_sha_label">SHA-256 certyfikatu</string>
+    <string name="signing_key_copy">Kopiuj SHA-256 certyfikatu</string>
+    <string name="signing_key_backed_up">Kopia zapasowa istnieje</string>
+    <string name="signing_key_not_backed_up">Brak kopii zapasowej</string>
+    <string name="signing_key_export">Eksportuj kopię zapasową</string>
+    <string name="signing_key_import">Importuj klucz</string>
+    <string name="signing_key_export_needs_key">Eksport jest dostępny po utworzeniu klucza.</string>
+    <string name="signing_key_export_hint">Ustaw hasło do pliku kopii zapasowej. Będzie potrzebne do ponownego importu klucza i nie można go odzyskać.</string>
+    <string name="signing_key_import_hint">Wybierz plik PKCS#12 (.p12) i wpisz jego hasło.</string>
+    <string name="signing_key_password">Hasło</string>
+    <string name="signing_key_password_repeat">Powtórz hasło</string>
+    <string name="signing_key_show_password">Pokaż hasło</string>
+    <string name="signing_key_hide_password">Ukryj hasło</string>
+    <string name="signing_key_choose_location">Wybierz miejsce zapisu</string>
+    <string name="signing_key_choose_file">Wybierz plik</string>
+    <string name="signing_key_error_short">Użyj co najmniej %1$d znaków.</string>
+    <string name="signing_key_error_mismatch">Hasła nie są takie same.</string>
+    <string name="signing_key_error_empty">Wpisz hasło do pliku.</string>
+    <string name="signing_key_export_done">Kopia zapisana. Przechowuj plik i hasło w bezpiecznym miejscu.</string>
+    <string name="signing_key_export_failed">Nie udało się zapisać kopii zapasowej.</string>
+    <string name="signing_key_import_done">Zaimportowano klucz podpisu.</string>
+    <string name="signing_key_import_failed">Nie udało się zaimportować klucza.</string>
+    <string name="signing_key_import_wrong_password">Złe hasło albo plik nie jest plikiem klucza PKCS#12.</string>
+    <string name="signing_key_import_not_one_key">Plik musi zawierać dokładnie jeden klucz.</string>
+    <string name="signing_key_import_unusable">Plik nie zawiera użytecznego klucza prywatnego i certyfikatu.</string>
+    <string name="signing_key_import_weak">Klucz jest zbyt słaby. Klucze RSA muszą mieć co najmniej 2048 bitów.</string>
+    <string name="signing_key_import_type">Obsługiwane są tylko klucze RSA i EC.</string>
+    <string name="signing_key_import_mismatch">Klucz nie pasuje do swojego certyfikatu.</string>
+    <string name="signing_key_import_costly">Plik wymaga znacznie więcej obliczeń niż zwykły plik klucza, więc go odrzucono.</string>
+    <string name="signing_key_import_unreadable">Nie można odczytać pliku.</string>
+    <string name="signing_key_confirm_title">Zastąpić klucz podpisu?</string>
+    <string name="signing_key_confirm_current">Bieżący klucz</string>
+    <string name="signing_key_confirm_new">Klucz w pliku</string>
+    <string name="signing_key_confirm_none">Jeszcze brak</string>
+    <string name="signing_key_confirm_warning">Aplikacje już zainstalowane i podpisane bieżącym kluczem przestaną przyjmować aktualizacje z tej aplikacji. Aby użyć nowego klucza, musisz je odinstalować i zainstalować ponownie, co usuwa ich dane.</string>
+    <string name="signing_key_confirm_replace">Zastąp klucz</string>
+    <string name="signing_key_nudge_title">Zrób kopię zapasową klucza podpisu</string>
+    <string name="signing_key_nudge_body">Bez niego zainstalowanych aplikacji nie można aktualizować, tylko instalować od nowa.</string>
+    <string name="signing_key_nudge_action">Utwórz kopię</string>
+    <string name="home_menu_signing_key">Klucz podpisu</string>
+</resources>

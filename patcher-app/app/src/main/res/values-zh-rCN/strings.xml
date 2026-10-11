@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Shared actions -->
+    <string name="action_back">返回</string>
+    <string name="action_help">帮助</string>
+    <string name="action_close">关闭</string>
+    <string name="action_settings">设置</string>
+    <string name="action_more_options">更多选项</string>
+    <string name="action_continue">继续</string>
+    <string name="action_cancel">取消</string>
+    <string name="action_done">完成</string>
+    <string name="action_skip">暂时跳过</string>
+    <string name="action_start">开始</string>
+    <string name="action_retry">重试</string>
+    <string name="action_edit">编辑</string>
+    <string name="action_fix">修复</string>
+    <string name="action_yes">是</string>
+    <string name="action_no">否</string>
+    <string name="action_open_settings">打开设置</string>
+    <string name="action_share_report">分享报告</string>
+
+    <string name="state_expanded">已展开</string>
+    <string name="state_collapsed">已收起</string>
+    <string name="device_phone">手机</string>
+    <string name="device_watch">手表</string>
+    <string name="chip_optional">可选</string>
+    <string name="chip_apk_not_bundle">APK，非 bundle</string>
+    <string name="chip_nodpi">nodpi</string>
+    <string name="chip_android_11">Android 11 及以上</string>
+    <string name="chip_android_14">Android 14 及以上</string>
+    <string name="size_mb">%1$.1f MB</string>
+
+    <!-- Step header and status -->
+    <string name="step_label">第 %1$d 步，共 %2$d 步</string>
+    <string name="step_label_watch_suffix">" · 在手表上操作"</string>
+    <string name="status_pending">等待中</string>
+    <string name="status_running">运行中</string>
+    <string name="status_passed">通过</string>
+    <string name="status_warning">需要留意</string>
+    <string name="status_failed">失败</string>
+    <string name="progress_download_description">下载 %1$d%%</string>
+    <string name="progress_build_description">构建 %1$d%%</string>
+
+    <!-- Welcome -->
+    <string name="welcome_title">你的应用，你的手表，由你做主</string>
+    <string name="welcome_promise_download">官方应用需要你自行获取，这里不附带任何应用。</string>
+    <string name="welcome_promise_patch">补丁可让 Samsung Health Monitor 在非三星手机上运行，并与手表自带的应用并存。</string>
+    <string name="welcome_promise_undo">所有更改都可以撤销，自带的应用会保留不动。</string>
+    <string name="welcome_get_started">开始使用</string>
+    <string name="welcome_what_changes">我的设备上会有什么变化？</string>
+    <string name="changes_title">将会发生的变化</string>
+    <string name="changes_intro">只会安装这些应用，也只会更改这些设置。不会删除任何内容。</string>
+    <string name="changes_installs">已安装</string>
+    <string name="changes_grants">安装后授予的权限</string>
+    <string name="changes_disables">可以关闭</string>
+
+    <!-- Profile -->
+    <string name="profile_title">你用的是哪款手表？</string>
+    <string name="profile_intro">这将决定你需要准备哪些官方应用。</string>
+    <string name="profile_wear5_title">Wear OS 5 或更高版本</string>
+    <string name="profile_wear5_summary">手表上的 Health Monitor 以及手机闹钟。</string>
+    <string name="profile_wear5_apps">3 个官方应用</string>
+    <string name="profile_wear3_title">Wear OS 3 或 4</string>
+    <string name="profile_wear3_summary">仅 Health Monitor。闹钟应用要求手表为 Android 14。</string>
+    <string name="profile_wear3_apps">2 个官方应用</string>
+    <string name="profile_detected">已在手表上检查：Android %1$s（%2$s）</string>
+    <string name="profile_check_paired">检查已配对的手表</string>
+    <string name="profile_hint_certain">已找到 %1$s。它始终运行 Wear OS 5 或更高版本，因此已选中第一个选项。</string>
+    <string name="profile_hint_depends">你的 %1$s 可能是其中任意一种。请在手表上查看软件信息，或在第 3 步让应用检查。</string>
+    <string name="profile_check_none">未找到已配对的 Galaxy Watch。请选择一个选项，或在第 3 步让应用检查。</string>
+    <string name="profile_check_denied">未获得 Bluetooth 访问权限，无法检查已配对的手表。请选择一个选项，或在第 3 步让应用检查。</string>
+    <string name="profile_howto_title">如何判断</string>
+    <string name="profile_howto_watch">在手表上：设置 › 关于手表 › 软件信息。如果是“Wear OS 5”或更高、“One UI 6 Watch”或更高，或 Android 14 或更高，请选第一个选项。</string>
+    <string name="profile_howto_phone">手机上的 Galaxy Wearable 应用中也有同样的界面：手表设置 › 关于手表 › 软件信息。</string>
+    <string name="profile_howto_models">Galaxy Watch7、Watch Ultra 及更新机型始终符合条件。Watch4、Watch5、Watch6 和 Watch FE 仅在更新到 One UI 6 Watch 后才符合条件。</string>
+    <string name="profile_howto_unsure">不确定？任选其一即可：手表连接后（第 3 步），应用会自行检查，并在下载任何内容之前更正你的选择。</string>
+
+    <!-- Galaxy Wearable pairing check -->
+    <string name="wearable_title">你的手表已配对吗？</string>
+    <string name="wearable_intro">手表必须已与这部手机配对。这些检查不会更改任何内容。</string>
+    <string name="wearable_check_app">已找到配套应用</string>
+    <string name="wearable_check_app_detail">管理手表的应用已安装。</string>
+    <string name="wearable_check_paired">手表已配对</string>
+    <string name="wearable_check_paired_detail">已有手表与这部手机关联。</string>
+    <string name="wearable_check_datalayer">手机和手表可以通信</string>
+    <string name="wearable_check_datalayer_detail">两者之间的 Google 数据链路有响应。</string>
+    <string name="wearable_note">如果检查未通过，请在手表自身的设置中修复，然后重新检查。</string>
+    <string name="wearable_recheck">重新检查</string>
+
+    <!-- Watch pairing over Wi-Fi -->
+    <string name="watchpair_correct_older">你的手表运行 Android %1$s，因此会跳过闹钟应用：只需 2 个官方应用，而不是 3 个。</string>
+    <string name="watchpair_correct_newer">你的手表运行 Android %1$s，因此包含闹钟应用：需要 3 个官方应用，而不是 2 个。</string>
+    <string name="watchpair_title">连接到你的手表</string>
+    <string name="watchpair_intro">使用简短的配对码配对后，手表即可通过 Wi-Fi 接受安装。</string>
+    <string name="watchpair_on_watch">在手表上操作</string>
+    <string name="watchpair_on_watch_steps">依次打开设置、开发者选项、无线调试，然后点按“配对新设备”。6 位配对码会显示在那里。</string>
+    <string name="watchpair_found">在你的网络中找到了手表</string>
+    <string name="watchpair_searching">正在查找你的手表…</string>
+    <string name="watchpair_address_label">地址（主机:端口）</string>
+    <string name="watchpair_code_label">配对码</string>
+    <string name="watchpair_check_wifi">手机和手表连接到同一个 Wi-Fi</string>
+    <string name="watchpair_check_developer">开发者选项已开启</string>
+    <string name="watchpair_check_wireless">无线调试已开启</string>
+    <string name="watchpair_check_code">配对码界面已打开</string>
+    <string name="watchpair_hint">输入全部 6 位数字即可配对</string>
+    <string name="watchpair_ready">可以配对</string>
+    <string name="watchpair_pair">配对</string>
+    <string name="watchpair_error_wrong_code">配对码未被接受。请查看手表后重试。</string>
+    <string name="watchpair_error_bad_address">请按“主机:端口”的格式输入地址，例如 192.168.1.20:37115。</string>
+    <string name="watchpair_error_timeout">手表未在规定时间内响应。请保持配对码界面打开，然后重试。</string>
+    <string name="watchpair_error_network">无法连接到手表。请确认两台设备连接的是同一个 Wi-Fi。</string>
+    <string name="watchpair_error_restart">配对密钥已重置。请关闭并重新打开此应用，然后再次配对。</string>
+    <string name="watchpair_error_other">配对失败。请在手表上重新打开配对码界面，然后重试。</string>
+
+    <!-- Acquire -->
+    <string name="acquire_title">获取官方应用</string>
+    <string name="acquire_intro">请自行从你信任的来源下载每个应用。补丁工具绝不会存储或附带它们。</string>
+    <string name="acquire_open_mirror">在 APKMirror 上打开</string>
+    <string name="acquire_more_ways">获取此应用的更多方式</string>
+    <string name="acquire_use_file">使用我已有的文件</string>
+    <string name="acquire_downloading">正在下载…  %1$d%% · %2$d / %3$d MB</string>
+    <string name="acquire_verified">与预期文件一致 · %1$d MB</string>
+    <string name="acquire_rejected_wrong_app">该文件属于另一个应用。请选择上方指定的那个。</string>
+    <string name="acquire_rejected_wrong_version">该文件的版本与预期版本不同。</string>
+    <string name="acquire_rejected_not_expected">该文件与预期的构建不匹配（可能是其他变体，或已损坏）。请重新下载。</string>
+    <string name="acquire_rejected_unreadable">无法读取该文件。</string>
+    <string name="acquire_rejected_download_failed">下载未完成。请检查网络连接后重试。</string>
+    <string name="acquire_rejected_too_large">该下载远大于预期文件，已被停止。</string>
+    <string name="acquire_verify_note">每个文件在使用前都会与已知校验和进行核对。</string>
+    <plurals name="acquire_waiting">
+        <item quantity="other">还差 %1$d 个应用</item>
+    </plurals>
+
+    <!-- Guided browser -->
+    <string name="browser_page_placeholder">网页将按原样显示</string>
+    <string name="browser_coach_progress">%1$d / %2$d · %3$s</string>
+    <string name="browser_coach_1_title">打开正确的版本</string>
+    <string name="browser_coach_1_body">请选择卡片上标明的版本，不要选更新或更旧的版本。</string>
+    <string name="browser_coach_2_title">选择变体</string>
+    <string name="browser_coach_2_body">请选择 APK 而不是 bundle，并选择适合你 Android 版本的 nodpi 构建。</string>
+    <string name="browser_coach_3_title">下载</string>
+    <string name="browser_coach_3_body">点按 Download APK。下载完成后，补丁工具会自动获取该文件。</string>
+    <string name="browser_coach_wrong_version_body">这是另一个版本。请返回并打开 %1$s。</string>
+    <string name="browser_notice_blocked">已拦截指向其他网站的链接：%1$s</string>
+    <string name="browser_notice_bundle">这是 bundle 文件（.apkm、.xapk、.apks 或 .zip）。请返回并选择普通 APK 变体。</string>
+    <string name="browser_notice_not_https">该下载不是安全的 https 链接，因此未获取。</string>
+    <string name="browser_notice_open">在我的浏览器中打开</string>
+    <string name="browser_notice_dismiss">忽略</string>
+    <string name="browser_reload">重新加载</string>
+    <string name="browser_step_dots">第 %1$d 步，共 %2$d 步</string>
+    <string name="browser_use_file">改用文件</string>
+    <string name="browser_open_external">在我的浏览器中打开</string>
+    <string name="browser_back_to_page">带我回到正确的页面</string>
+
+    <!-- Customize -->
+    <string name="customize_title">选择补丁</string>
+    <string name="customize_intro">这些补丁是应用在你的设备上正常运行所必需的，因此始终开启。</string>
+    <string name="customize_required">必需，始终开启</string>
+    <string name="customize_advanced">高级</string>
+    <string name="customize_prefix_label">辅助应用的包名前缀</string>
+    <string name="customize_prefix_explainer">用于命名桥接应用和闹钟应用。两个 Samsung Health Monitor 应用保留各自的包名，以便相互通信。</string>
+    <string name="customize_prefix_ok">将为你生成一个新前缀。</string>
+    <string name="customize_prefix_locked">已锁定：辅助应用已安装，更新需要使用相同的前缀。</string>
+    <string name="customize_prefix_regenerate">生成新前缀</string>
+    <string name="customize_build">构建</string>
+    <string name="preset_recommended">推荐</string>
+    <string name="preset_minimal">精简</string>
+    <string name="preset_everything">全部</string>
+    <string name="prefix_problem_empty">请输入前缀。</string>
+    <string name="prefix_problem_short">请至少使用两段，例如 io.example。</string>
+    <string name="prefix_problem_long">该前缀太长。</string>
+    <string name="prefix_problem_segment">请使用小写字母、数字和下划线；每一段都必须以字母开头。</string>
+    <string name="prefix_problem_reserved">该命名空间属于他人。</string>
+    <plurals name="customize_summary_patches">
+        <item quantity="other">已开启 %1$d 个补丁</item>
+    </plurals>
+    <plurals name="customize_summary_apps">
+        <item quantity="other">%1$d 个应用</item>
+    </plurals>
+
+    <!-- Patch descriptions (titles come from the catalogue) -->
+    <string name="patch_generic_manufacturer_check">接受非三星制造的手机。</string>
+    <string name="patch_generic_vendor_check">接受没有 Samsung SDK 的手机。</string>
+    <string name="patch_shm_min_age_22_to_16">将最低年龄从 22 岁降到 16 岁。</string>
+    <string name="patch_shm_supported_type_ordinals">将所有地区都视为受支持。</string>
+    <string name="patch_shm_region_supportedtype">让地区检查通过。</string>
+    <string name="patch_shm_region_countrylist">接受支持列表中的任何国家。</string>
+    <string name="patch_shm_root_packagevalidator">跳过厂商证书验证。</string>
+    <string name="patch_shm_force_update_response">忽略失败的或强制更新的应答。</string>
+    <string name="patch_shm_force_update_pref">忽略已存储的强制更新标记。</string>
+    <string name="patch_shm_main_gates">跳过会拦截其他手机的启动检查。</string>
+    <string name="patch_shm_setup_network_gate">在设置过程中跳过 SIM 卡和地区检查。</string>
+    <string name="patch_shm_sleep_apnea_support">将睡眠呼吸暂停报告为受支持。</string>
+    <string name="patch_phone_rebrand_gms">让手机应用使用与手表应用相同的包名和密钥，以便两者交换数据。</string>
+    <string name="patch_watch_rebrand_coexist">重命名手表应用，使其与自带应用并存。</string>
+    <string name="patch_watch_queries_health_service">让手表应用能够看到健康服务。</string>
+    <string name="patch_watch_companion_vendor">接受任何品牌的配套手机。</string>
+    <string name="patch_watch_alarm_system_app">无需系统权限即可安排精确闹钟。</string>
+    <string name="patch_watch_mobile_installed">将手机应用报告为已安装。</string>
+    <string name="patch_watch_ecg_sensor_adapter">通过 Health Tracking 服务读取心电图传感器。</string>
+    <string name="patch_watch_apnea_country">跳过呼吸暂停功能的国家检查。</string>
+    <string name="patch_watch_apnea_reeval_not_supported">重新检查曾被存储为不受支持的呼吸暂停功能支持情况。</string>
+    <string name="patch_watch_mod">添加与 Health Tracking 服务通信的模块。</string>
+    <string name="patch_alarm_verify_symbols">检查闹钟应用是否具备链路所需的组件。</string>
+    <string name="patch_alarm_rebrand_manifest">重命名闹钟应用，使其与自带应用并存安装。</string>
+    <string name="patch_alarm_rebrand_code">将闹钟应用的代码更新为新名称。</string>
+    <string name="patch_alarm_permissions_prune">移除只有系统应用才能持有的权限。</string>
+    <string name="patch_alarm_notification_permissions">添加通知和全屏闹钟权限。</string>
+    <string name="patch_alarm_queries_libs">移除该分支版本不需要的查询和库。</string>
+    <string name="patch_alarm_components_prune">移除该分支版本不需要的厂商组件。</string>
+    <string name="patch_alarm_provider_open">向该分支版本开放闹钟数据。</string>
+    <string name="patch_alarm_link_components">添加用于接收手机所发闹钟的接收器。</string>
+    <string name="patch_alarm_appfunctions_drop">移除未使用的厂商功能树。</string>
+    <string name="patch_alarm_semgesture_skip">跳过厂商手势管理器。</string>
+    <string name="patch_alarm_gms_observer_drop">防止闹钟提前结束。</string>
+    <string name="patch_alarm_service_stop_on_destroy">确保声音和振动始终会停止。</string>
+    <string name="patch_alarm_force_sound_vibrate">始终响铃并振动。</string>
+    <string name="patch_alarm_link_send">将闹钟的更改发送到手机。</string>
+    <string name="patch_alarm_hide_launcher">隐藏多余的启动器图标。</string>
+    <string name="patch_alarm_relabel">将该分支版本命名为“Phone alarms”。</string>
+    <string name="patch_alarm_fork">添加将闹钟与手机关联的模块。</string>
+    <string name="output_shm_phone">Samsung Health Monitor（已打补丁）</string>
+    <string name="output_shm_watch">Samsung Health Monitor for Wear OS（已打补丁）</string>
+    <string name="output_bridge_watch">手表端桥接应用</string>
+    <string name="output_alarm_fork">手表上的手机闹钟</string>
+    <string name="output_bridge_phone">手机端桥接应用</string>
+    <string name="stock_label_shm">Samsung Health Monitor（自带）</string>
+    <string name="stock_reason_shm">同时存在两个副本会争用同一个传感器。</string>
+
+    <!-- Build -->
+    <string name="build_title">正在构建你的应用</string>
+    <string name="build_caption_idle">准备中</string>
+    <string name="build_stage_unpack">解包</string>
+    <string name="build_stage_fingerprints">检查补丁指纹</string>
+    <string name="build_stage_apply_short">应用补丁</string>
+    <plurals name="build_stage_apply">
+        <item quantity="other">应用 %1$d 个补丁</item>
+    </plurals>
+    <string name="build_stage_rename">重命名包</string>
+    <string name="build_stage_rebuild">重新构建</string>
+    <string name="build_stage_sign">签名</string>
+    <string name="build_stage_selfcheck">自检</string>
+    <string name="build_can_leave">你可以先离开，完成后我们会通知你。</string>
+    <string name="build_channel_name">构建进度</string>
+    <string name="build_channel_description">在构建和签名应用期间显示。</string>
+    <string name="build_notification_title">正在构建你的应用</string>
+    <string name="build_notification_progress">%1$s：%2$s</string>
+    <string name="build_notification_done">你的应用已构建并签名完成。</string>
+    <string name="build_notification_failed">构建失败。请打开应用查看原因。</string>
+    <string name="build_error_title">构建未完成</string>
+    <string name="build_show_log">显示日志</string>
+    <string name="build_log_title">构建日志</string>
+    <string name="build_log_empty">暂无日志。</string>
+    <string name="build_done_title">已构建并签名</string>
+    <string name="build_done_ready">可以安装</string>
+    <string name="build_done_install">安装到手机</string>
+    <string name="build_done_link_note">两个 Health Monitor 应用使用相同的包名和签名密钥。这样 Google 的数据链路才能在它们之间传递消息。</string>
+    <plurals name="build_done_subtitle_patches">
+        <item quantity="other">%1$d 个补丁</item>
+    </plurals>
+    <plurals name="build_done_subtitle_apps">
+        <item quantity="other">%1$d 个应用</item>
+    </plurals>
+
+    <!-- Install -->
+    <string name="install_phone_title">安装到这部手机</string>
+    <string name="install_phone_intro">Android 会要求你确认每次安装。应用所需的访问权限会在之后检查；缺少的权限需要你在设置中开启。</string>
+    <string name="install_phone_note">权限、显示在其他应用上层、通知使用权以及受限制的设置，都需要由你自行开启。之后回到此界面，它会重新检查。</string>
+    <string name="install_watch_title">安装到你的手表</string>
+    <string name="install_watch_intro">通过 Wi-Fi 按以下顺序安装：Health Monitor、桥接应用，然后是手机闹钟。</string>
+    <string name="install_watch_note">运行期间，请保持手表开机并处于连接状态。</string>
+    <string name="install_start">开始安装</string>
+    <string name="install_error_build_missing">构建缺失，或与此次设置不匹配。请重新构建后再安装。</string>
+    <string name="install_error_failed">手表拒绝了此次安装。</string>
+    <string name="install_error_signature">手表上已有使用不同密钥签名的副本。未删除任何内容。请自行卸载该副本，然后重试。</string>
+    <string name="install_error_grant">无法应用某项访问设置。</string>
+    <string name="action_open">打开</string>
+    <string name="action_allow_installing">允许安装应用</string>
+    <string name="install_check_again">重新检查</string>
+    <string name="install_continue_anyway">仍然继续</string>
+    <string name="install_onboarding">打开 Samsung Health Monitor 并完成其设置</string>
+    <string name="install_error_unknown_sources">此应用尚未获准安装应用。请先允许，然后重新开始。</string>
+    <string name="install_error_notifications">请先允许此应用发送通知：配对码需要在通知中输入。</string>
+    <string name="phone_adb_title">一次性授予全部权限</string>
+    <string name="phone_adb_intro">如果开关操作不便，这部手机可以通过无线调试自行授予这些权限。你需要连接 Wi-Fi。</string>
+    <string name="phone_adb_action">通过无线调试授予全部权限</string>
+    <string name="phone_adb_waiting_service">在“无线调试”中，开启该功能并点按“使用配对码配对设备”。会弹出一条通知，你可以在不离开该界面的情况下输入配对码。</string>
+    <string name="phone_adb_waiting_code">请在此处或通知中输入配对界面上显示的 6 位配对码。</string>
+    <string name="phone_adb_wrong_code">该配对码无效。请查看配对界面后重试。</string>
+    <string name="phone_adb_ambiguous">在这部手机上发现了多个无线调试服务。请先关闭再开启无线调试，然后重试。</string>
+    <string name="phone_adb_connecting">正在连接到这部手机...</string>
+    <string name="phone_adb_granting">已连接。正在授予权限...</string>
+    <string name="phone_adb_failed">无法连接到这部手机的无线调试。</string>
+    <string name="phone_adb_code_label">配对码</string>
+    <string name="phone_adb_submit">配对</string>
+    <string name="selfadb_channel">与这部手机配对</string>
+    <string name="selfadb_code_channel">配对码</string>
+    <string name="selfadb_waiting_service">在“无线调试”中，点按“使用配对码配对设备”</string>
+    <string name="selfadb_enter_code_title">输入配对码</string>
+    <string name="selfadb_enter_code_body">请输入配对界面上显示的 6 位配对码。</string>
+    <string name="selfadb_reply_label">配对码</string>
+    <string name="selfadb_reply_action">输入配对码</string>
+    <string name="selfadb_wrong_code">该配对码无效。请查看配对界面后重试。</string>
+    <string name="selfadb_pairing">正在配对...</string>
+    <string name="selfadb_connecting">正在连接...</string>
+    <string name="selfadb_connected">已连接到这部手机的无线调试</string>
+    <string name="selfadb_ambiguous">在这部手机上发现了多个无线调试服务。请先关闭再开启无线调试，然后重试。</string>
+    <string name="selfadb_failed">无法连接</string>
+    <string name="selfadb_service_channel">无线调试</string>
+    <string name="selfadb_service_title">正在连接到这部手机的无线调试</string>
+    <string name="phone_adb_timeout">配对耗时过长，已停止。</string>
+    <string name="phone_adb_interrupted">配对已中断。</string>
+    <string name="watch_error_unreachable">无法连接到手表。请确认无线调试已开启，并且两台设备连接的是同一个 Wi-Fi。</string>
+    <string name="watch_error_pairing">手表不再信任这部手机。请返回并重新配对。</string>
+    <string name="grant_permission">权限</string>
+    <string name="grant_appop">应用操作</string>
+    <string name="grant_setting">系统设置</string>
+    <string name="grant_listener">通知使用权</string>
+    <string name="grant_battery">电池优化豁免</string>
+
+    <!-- Health Platform developer mode -->
+    <string name="devmode_title">Health Platform 开发者模式</string>
+    <string name="devmode_intro">Health Tracking 服务只有在开发者模式下才会与已打补丁的应用通信。请在手表上开启。</string>
+    <string name="devmode_step_settings">在手表上打开设置。</string>
+    <string name="devmode_step_apps">前往应用。</string>
+    <string name="devmode_step_health_platform">选择 Health Platform。</string>
+    <string name="devmode_step_tap">反复点按标题，直到出现 [Dev mode]。</string>
+    <string name="devmode_open_settings">在手表上打开 Health Platform 设置</string>
+    <string name="devmode_waiting">正在等待开发者模式</string>
+    <string name="devmode_detected">开发者模式已开启</string>
+    <string name="devmode_check">立即检查</string>
+    <string name="devmode_skip">暂时跳过</string>
+
+    <!-- Disable stock apps -->
+    <string name="disable_title">关闭自带应用</string>
+    <string name="disable_intro">关闭应用会将其隐藏并停止运行。你可以随时重新开启，不会卸载任何内容。</string>
+    <string name="disable_chip_installed">手表应用已安装</string>
+    <string name="disable_chip_wear">Wear OS</string>
+    <string name="disable_chip_not_installed">未安装</string>
+    <string name="disable_error_some">有些应用无法关闭。请重试，或跳过此步骤。</string>
+    <plurals name="disable_action">
+        <item quantity="other">关闭 %1$d 个应用</item>
+    </plurals>
+
+    <!-- Self-test -->
+    <string name="selftest_title">正在测试全部项目</string>
+    <string name="selftest_section_phone">手机</string>
+    <string name="selftest_section_watch">手表</string>
+    <string name="selftest_section_link">手机 ↔ 手表链路</string>
+    <string name="selftest_section_human">由你确认</string>
+    <string name="selftest_rerun">重新运行</string>
+    <string name="selftest_human_label">请你确认 · %1$d / %2$d</string>
+    <string name="selftest_share_subject">OpenSHM Patcher 自检</string>
+
+    <!-- Self-test rows: %1$s is an app name or a list of access names -->
+    <string name="selftest_package_title">%1$s 已安装</string>
+    <string name="selftest_grants_title">%1$s 已获得所需权限</string>
+    <string name="selftest_stock_title">%1$s 已关闭</string>
+    <string name="selftest_bridge_link_title">与手表的桥接链路</string>
+    <string name="selftest_watch_platform">Health Platform 处于开发者模式</string>
+    <string name="selftest_gms_title">手表已连接到手机</string>
+    <string name="selftest_shm_title">Health Monitor 能看到手表</string>
+    <string name="selftest_ecg_title">心电图已传到手机</string>
+    <string name="selftest_platform_question">在手表上，Health Platform 是否处于开发者模式？</string>
+    <string name="selftest_gms_question">手机上的 Wear OS 应用是否显示手表已连接？</string>
+    <string name="selftest_shm_question">手机上的 Samsung Health Monitor 是否显示手表已连接？</string>
+    <string name="selftest_ecg_question">在手表上测一次心电图。它是否出现在手机上？</string>
+    <string name="selftest_detail_answered_no">你回答了“否”</string>
+
+    <string name="selftest_detail_package_ok">版本 %1$s，已用你的密钥签名，与构建的文件相同</string>
+    <string name="selftest_detail_package_ok_no_version">已用你的密钥签名，与构建的文件相同</string>
+    <string name="selftest_detail_not_installed">未安装</string>
+    <string name="selftest_detail_wrong_cert">所用签名密钥与你的不同</string>
+    <string name="selftest_detail_cert_unavailable">无法读取你的签名密钥</string>
+    <string name="selftest_detail_no_build">没有可供比较的构建</string>
+    <string name="selftest_detail_hash_mismatch">已安装的文件与上次构建不同</string>
+    <string name="selftest_detail_hash_unreadable">无法读取已安装的文件</string>
+    <string name="selftest_detail_watch_ok">已安装，与构建的文件相同</string>
+    <string name="selftest_detail_grants_ok">已授予全部权限</string>
+    <string name="selftest_detail_grants_missing">缺少：%1$s</string>
+    <string name="selftest_detail_grants_unknown">无法读取：%1$s</string>
+    <string name="selftest_detail_grants_optional">可选，未设置：%1$s</string>
+    <string name="selftest_detail_skipped_not_installed">已跳过，未安装</string>
+    <string name="selftest_detail_watch_skipped">已跳过，手表未连接</string>
+    <string name="selftest_detail_watch_no_answer">手表没有响应</string>
+    <string name="selftest_detail_error">无法运行此项检查</string>
+    <string name="selftest_detail_stock_still_on">仍处于开启状态</string>
+    <string name="selftest_detail_stock_off">已关闭</string>
+    <string name="selftest_detail_stock_absent">手表上没有</string>
+    <string name="selftest_detail_bridge_missing">桥接应用没有响应。是否已安装？</string>
+    <string name="selftest_detail_bridge_denied">桥接应用拒绝了状态请求。它是用另一个密钥构建的</string>
+    <string name="selftest_detail_bridge_not_running">桥接服务未运行</string>
+    <string name="selftest_detail_bridge_link_down">与手表的链路已断开</string>
+    <string name="selftest_detail_bridge_no_hello">链路已建立，但手表尚未发来问候（hello）</string>
+    <string name="selftest_detail_bridge_ok">链路已建立，手表已发来问候（hello）</string>
+
+    <!-- All set -->
+    <string name="allset_title">一切就绪</string>
+    <string name="allset_subtitle">%2$d 项检查中已通过 %1$d 项</string>
+    <string name="allset_chip_link">链路</string>
+
+    <!-- Home -->
+    <string name="home_title">OpenSHM</string>
+    <string name="home_status_ok">一切正常</string>
+    <string name="home_status_warning">需要查看</string>
+    <string name="home_status_failed">出现故障</string>
+    <string name="home_status_unknown">尚未测试</string>
+    <string name="home_never_tested">运行测试即可查看</string>
+    <plurals name="home_tested_days_ago">
+        <item quantity="other">%1$d 天前测试</item>
+    </plurals>
+    <string name="home_test_again">重新测试</string>
+    <string name="home_update_title">有可用更新</string>
+    <string name="home_update_detail">%1$s：%2$s 至 %3$s</string>
+    <string name="home_update_patches">%1$s 的补丁已更新</string>
+    <string name="home_menu_check_catalogue">检查目录更新</string>
+    <string name="home_catalogue_updated">目录已更新到版本 %1$d</string>
+    <string name="home_catalogue_up_to_date">目录已是最新</string>
+    <string name="home_catalogue_rejected">下载的目录未被接受</string>
+    <string name="home_catalogue_failed">无法连接到更新服务器</string>
+    <string name="home_catalogue_disabled">此构建没有目录更新渠道</string>
+    <string name="home_current_builds">当前构建</string>
+    <string name="home_rebuild_description">更改补丁并重新构建 %1$s</string>
+    <string name="home_restore_description">还原 %1$s</string>
+    <string name="home_new_build">新建构建</string>
+    <string name="home_menu_new_build">新建构建</string>
+    <string name="home_menu_self_test">运行自检</string>
+    <string name="home_menu_restore_watch">还原手表</string>
+    <string name="home_menu_uninstall">卸载</string>
+    <string name="restore_title">还原原始应用？</string>
+    <string name="restore_body">将移除已打补丁的应用，并重新开启自带的应用。手表上的数据会保留。</string>
+    <string name="restore_confirm">还原</string>
+
+    <!-- Signing key -->
+    <string name="signing_key_title">签名密钥</string>
+    <string name="signing_key_explainer">你构建的每个应用都用此密钥签名。Android 只允许用相同密钥签名的更新覆盖安装，因此请务必备份。</string>
+    <string name="signing_key_present">签名密钥已就绪</string>
+    <string name="signing_key_absent">尚无签名密钥</string>
+    <string name="signing_key_absent_note">密钥会在首次构建时创建。如果你已有备份，现在即可导入。</string>
+    <string name="signing_key_unreadable">无法在此设备上读取该密钥。</string>
+    <string name="signing_key_sha_label">证书 SHA-256</string>
+    <string name="signing_key_copy">复制证书 SHA-256</string>
+    <string name="signing_key_backed_up">已备份</string>
+    <string name="signing_key_not_backed_up">尚未备份</string>
+    <string name="signing_key_export">导出备份</string>
+    <string name="signing_key_import">导入密钥</string>
+    <string name="signing_key_export_needs_key">密钥创建后才能导出。</string>
+    <string name="signing_key_export_hint">请为备份文件设置密码。再次导入密钥时需要该密码，且无法找回。</string>
+    <string name="signing_key_import_hint">请选择 PKCS#12（.p12）文件并输入其密码。</string>
+    <string name="signing_key_password">密码</string>
+    <string name="signing_key_password_repeat">再次输入密码</string>
+    <string name="signing_key_show_password">显示密码</string>
+    <string name="signing_key_hide_password">隐藏密码</string>
+    <string name="signing_key_choose_location">选择保存位置</string>
+    <string name="signing_key_choose_file">选择文件</string>
+    <string name="signing_key_error_short">请至少使用 %1$d 个字符。</string>
+    <string name="signing_key_error_mismatch">两次输入的密码不一致。</string>
+    <string name="signing_key_error_empty">请输入该文件的密码。</string>
+    <string name="signing_key_export_done">备份已保存。请将文件及其密码妥善保管。</string>
+    <string name="signing_key_export_failed">无法保存备份。</string>
+    <string name="signing_key_import_done">签名密钥已导入。</string>
+    <string name="signing_key_import_failed">无法导入该密钥。</string>
+    <string name="signing_key_import_wrong_password">密码错误，或该文件不是 PKCS#12 密钥文件。</string>
+    <string name="signing_key_import_not_one_key">文件必须恰好包含一个密钥。</string>
+    <string name="signing_key_import_unusable">文件中没有可用的私钥和证书。</string>
+    <string name="signing_key_import_weak">密钥强度太低。RSA 密钥至少需要 2048 位。</string>
+    <string name="signing_key_import_type">仅支持 RSA 和 EC 密钥。</string>
+    <string name="signing_key_import_mismatch">密钥与其证书不匹配。</string>
+    <string name="signing_key_import_costly">该文件要求的计算量远超正常密钥文件，因此被拒绝。</string>
+    <string name="signing_key_import_unreadable">无法读取该文件。</string>
+    <string name="signing_key_confirm_title">替换签名密钥？</string>
+    <string name="signing_key_confirm_current">当前密钥</string>
+    <string name="signing_key_confirm_new">文件中的密钥</string>
+    <string name="signing_key_confirm_none">暂无</string>
+    <string name="signing_key_confirm_warning">已使用当前密钥签名并安装的应用，将不再接受此应用提供的更新。要使用新密钥，你必须先卸载这些应用再重新安装，其数据也会被删除。</string>
+    <string name="signing_key_confirm_replace">替换密钥</string>
+    <string name="signing_key_nudge_title">请备份你的签名密钥</string>
+    <string name="signing_key_nudge_body">没有备份的话，已安装的应用将无法更新，只能重新安装。</string>
+    <string name="signing_key_nudge_action">备份</string>
+    <string name="home_menu_signing_key">签名密钥</string>
+</resources>

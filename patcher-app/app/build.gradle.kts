@@ -6,6 +6,10 @@ plugins {
 }
 
 android {
+    // Lists the translated locales for the per-app language setting (Android 13+).
+    androidResources {
+        generateLocaleConfig = true
+    }
     namespace = "io.openshm.patcher"
     compileSdk = 37
 
