@@ -26,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import io.openshm.patcher.R
+import io.openshm.patcher.data.WatchProfile
 import io.openshm.patcher.ui.components.Accent
 import io.openshm.patcher.ui.components.CheckStatus
 import io.openshm.patcher.ui.components.FooterHint
@@ -50,13 +51,19 @@ data class WatchPairUiState(
     /** Resource id of the last pairing failure, shown under the code. */
     val errorRes: Int? = null,
     val prerequisitesDone: List<Boolean> = listOf(false, false, false, false),
+    /** The watch disagrees with the chosen profile: shown for confirmation before moving on. */
+    val correction: WatchProfileCorrection? = null,
 ) {
     val codeComplete: Boolean get() = code.length == PAIRING_CODE_LENGTH
     val canPair: Boolean get() = codeComplete && !foundAddress.isNullOrBlank() && !pairing &&
         parseAddress(foundAddress) != null
 }
 
+/** The profile the watch's own Android version led to, replacing the one chosen in step 1. */
+data class WatchProfileCorrection(val profile: WatchProfile, val androidVersion: String)
+
 sealed interface WatchPairEvent {
+    data object ConfirmCorrection : WatchPairEvent
     data class CodeChanged(val code: String) : WatchPairEvent
     data class AddressChanged(val address: String) : WatchPairEvent
     data object ToggleEditAddress : WatchPairEvent
@@ -83,13 +90,17 @@ fun WatchPairScreen(
         onBack = onBack,
         modifier = modifier,
         footer = {
-            FooterHint(stringResource(if (state.codeComplete) R.string.watchpair_ready else R.string.watchpair_hint))
-            PrimaryAction(
-                stringResource(R.string.watchpair_pair),
-                { onEvent(WatchPairEvent.Pair) },
-                enabled = state.canPair,
-                accent = Accent.Tertiary,
-            )
+            if (state.correction != null) {
+                PrimaryAction(stringResource(R.string.action_continue), { onEvent(WatchPairEvent.ConfirmCorrection) })
+            } else {
+                FooterHint(stringResource(if (state.codeComplete) R.string.watchpair_ready else R.string.watchpair_hint))
+                PrimaryAction(
+                    stringResource(R.string.watchpair_pair),
+                    { onEvent(WatchPairEvent.Pair) },
+                    enabled = state.canPair,
+                    accent = Accent.Tertiary,
+                )
+            }
         },
     ) {
         Text(
@@ -97,6 +108,7 @@ fun WatchPairScreen(
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+        state.correction?.let { CorrectionCard(it) }
         Surface(shape = RoundedCornerShape(28.dp), color = MaterialTheme.colorScheme.tertiaryContainer) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -137,6 +149,22 @@ fun WatchPairScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun CorrectionCard(correction: WatchProfileCorrection) {
+    val text = when (correction.profile) {
+        WatchProfile.WearOs5 -> R.string.watchpair_correct_newer
+        WatchProfile.WearOs3Or4 -> R.string.watchpair_correct_older
+    }
+    Surface(shape = RoundedCornerShape(28.dp), color = MaterialTheme.colorScheme.primaryContainer) {
+        Text(
+            stringResource(text, correction.androidVersion),
+            modifier = Modifier.padding(16.dp),
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
+        )
     }
 }
 

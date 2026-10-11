@@ -24,6 +24,21 @@ private fun ProfilePreview(@PreviewParameter(ColorModeProvider::class) mode: Col
 
 @ScreenPreviews
 @Composable
+private fun ProfileDetectedPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { ProfileSample(ProfileVariant.Detected) }
+
+@ScreenPreviews
+@Composable
+private fun ProfileHintPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { ProfileSample(ProfileVariant.DependsHint) }
+
+@ScreenPreviews
+@Composable
+private fun WatchPairCorrectionPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { WatchPairSample(correction = true) }
+
+@ScreenPreviews
+@Composable
 private fun WearablePairingPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
     PreviewHost(mode) { WearablePairingSample() }
 

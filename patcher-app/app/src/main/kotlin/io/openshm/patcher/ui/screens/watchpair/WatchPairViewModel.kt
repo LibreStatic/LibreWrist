@@ -11,6 +11,8 @@ import io.openshm.patcher.adb.AdbService
 import io.openshm.patcher.adb.AdbServiceType
 import io.openshm.patcher.adb.PairingFailure
 import io.openshm.patcher.adb.SelfAdbSession
+import io.openshm.patcher.data.SetupSession
+import io.openshm.patcher.device.WatchDetector
 import io.openshm.patcher.device.WatchLink
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -28,8 +30,11 @@ internal fun WatchPairUiState.reduce(event: WatchPairEvent): WatchPairUiState = 
         errorRes = if (event.address.isBlank() || parseAddress(event.address) != null) null else R.string.watchpair_error_bad_address,
     )
     WatchPairEvent.ToggleEditAddress -> copy(editingAddress = !editingAddress)
+    WatchPairEvent.ConfirmCorrection -> copy(correction = null, paired = true)
     WatchPairEvent.Pair -> if (canPair) copy(pairing = true, errorRes = null) else this
 }
+
+private const val DETECT_TIMEOUT_MS = 5_000L
 
 private val ADDRESS = Regex("([A-Za-z0-9][A-Za-z0-9.:-]*):(\\d{1,5})")
 
@@ -91,7 +96,7 @@ class WatchPairViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     /** The screen moved on; coming back starts a fresh pairing. */
-    fun onNavigated() = _state.update { it.copy(paired = false, code = "") }
+    fun onNavigated() = _state.update { it.copy(paired = false, code = "", correction = null) }
 
     private fun pair() {
         val snapshot = _state.value
@@ -102,7 +107,17 @@ class WatchPairViewModel(application: Application) : AndroidViewModel(applicatio
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 link.pair(host, port, snapshot.code)
-                _state.update { it.copy(pairing = false, paired = true) }
+                // The watch knows its Android version: correct step 1 when it disagrees, after a confirmation.
+                val detected = WatchDetector.detect(link, DETECT_TIMEOUT_MS)
+                val correction = WatchDetector.correction(SetupSession.state.value.watchProfile, detected)
+                if (correction == null) {
+                    _state.update { it.copy(pairing = false, paired = true) }
+                } else {
+                    SetupSession.update { it.copy(watchProfile = correction.profile) }
+                    _state.update {
+                        it.copy(pairing = false, correction = WatchProfileCorrection(correction.profile, correction.versionLabel))
+                    }
+                }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {

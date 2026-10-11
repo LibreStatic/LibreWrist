@@ -4,10 +4,12 @@ import android.content.res.Configuration
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import io.openshm.patcher.data.AppCatalogue
+import io.openshm.patcher.ui.theme.LocalReducedMotion
 import io.openshm.patcher.ui.theme.PatcherTheme
 
 /** The two palettes every screen is checked with: wallpaper-derived and the canvas fallback. */
@@ -35,6 +37,9 @@ internal fun PreviewHost(mode: ColorMode, content: @Composable () -> Unit) {
     AppCatalogue.ensure(LocalContext.current)
     // Same root as PatcherApp: a Surface, so text without an explicit color gets the theme's content color.
     PatcherTheme(dynamicColor = mode == ColorMode.Dynamic) {
-        Surface(color = MaterialTheme.colorScheme.surface, content = content)
+        // Previews and drivers stay still: endless animations would never let a test clock go idle.
+        CompositionLocalProvider(LocalReducedMotion provides true) {
+            Surface(color = MaterialTheme.colorScheme.surface, content = content)
+        }
     }
 }

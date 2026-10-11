@@ -1,11 +1,14 @@
 package io.openshm.patcher.preview
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import io.openshm.patcher.R
 import io.openshm.patcher.ui.components.TimeBackdrop
-import io.openshm.patcher.ui.theme.LocalReducedMotion
+import io.openshm.patcher.ui.components.WelcomeHero
 import io.openshm.patcher.ui.screens.signingkey.SigningKeyForm
 
 /*
@@ -18,18 +21,19 @@ import io.openshm.patcher.ui.screens.signingkey.SigningKeyForm
 @Composable
 fun WelcomeDriver() = PreviewHost(ColorMode.Fallback) { WelcomeSample() }
 
-/**
- * Welcome over the floating backdrop, as PatcherApp layers them. Reduced motion keeps the field
- * still: its endless frame loop would otherwise never let the test clock go idle.
- */
+/** Welcome over the floating backdrop, as PatcherApp layers them (still, like every driver). */
 @Composable
 fun WelcomeBackdropDriver() = PreviewHost(ColorMode.Fallback) {
-    CompositionLocalProvider(LocalReducedMotion provides true) {
-        Box {
-            TimeBackdrop(dispersed = false)
-            WelcomeSample()
-        }
+    Box {
+        TimeBackdrop(dispersed = false)
+        WelcomeSample()
     }
+}
+
+/** The welcome hero frozen mid-heartbeat while the watch shows the ECG trace. */
+@Composable
+fun WelcomeHeroEcgDriver() = PreviewHost(ColorMode.Fallback) {
+    WelcomeHero(Modifier.fillMaxWidth().height(220.dp), frozenAt = 4.488f)
 }
 
 @Composable
@@ -37,6 +41,18 @@ fun WelcomeChangesDriver() = PreviewHost(ColorMode.Fallback) { WelcomeSample(she
 
 @Composable
 fun ProfileDriver() = PreviewHost(ColorMode.Fallback) { ProfileSample() }
+
+@Composable
+fun ProfileCertainHintDriver() = PreviewHost(ColorMode.Fallback) { ProfileSample(ProfileVariant.CertainHint) }
+
+@Composable
+fun ProfileDependsHintDriver() = PreviewHost(ColorMode.Fallback) { ProfileSample(ProfileVariant.DependsHint) }
+
+@Composable
+fun ProfileDetectedDriver() = PreviewHost(ColorMode.Fallback) { ProfileSample(ProfileVariant.Detected) }
+
+@Composable
+fun WatchPairCorrectionDriver() = PreviewHost(ColorMode.Fallback) { WatchPairSample(correction = true) }
 
 @Composable
 fun WearablePairingDriver() = PreviewHost(ColorMode.Fallback) { WearablePairingSample() }

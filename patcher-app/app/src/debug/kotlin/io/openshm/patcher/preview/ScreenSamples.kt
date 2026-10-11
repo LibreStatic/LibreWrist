@@ -30,14 +30,31 @@ import io.openshm.patcher.ui.screens.build.BuildStage
 internal fun WelcomeSample(sheet: Boolean = false) = WelcomeScreen(PreviewData.welcome(sheet), {}, {}, {})
 
 @Composable
-internal fun ProfileSample() = ProfileScreen(PreviewData.profile(), {}, {}, {})
+internal fun ProfileSample(variant: ProfileVariant = ProfileVariant.Plain) = ProfileScreen(
+    when (variant) {
+        ProfileVariant.Plain -> PreviewData.profile()
+        ProfileVariant.CertainHint -> PreviewData.profileCertainHint()
+        ProfileVariant.DependsHint -> PreviewData.profileDependsHint()
+        ProfileVariant.Detected -> PreviewData.profileDetected()
+    },
+    {}, {}, {},
+)
+
+internal enum class ProfileVariant { Plain, CertainHint, DependsHint, Detected }
 
 @Composable
 internal fun WearablePairingSample() = WearablePairingScreen(PreviewData.wearable(), {}, {}, {})
 
 @Composable
-internal fun WatchPairSample(ready: Boolean = false) =
-    WatchPairScreen(if (ready) PreviewData.watchPairReady() else PreviewData.watchPairEmpty(), {}, {})
+internal fun WatchPairSample(ready: Boolean = false, correction: Boolean = false) =
+    WatchPairScreen(
+        when {
+            correction -> PreviewData.watchPairCorrection()
+            ready -> PreviewData.watchPairReady()
+            else -> PreviewData.watchPairEmpty()
+        },
+        {}, {},
+    )
 
 @Composable
 internal fun AcquireSample() = AcquireScreen(PreviewData.acquire(), {}, {}, {})

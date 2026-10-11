@@ -64,6 +64,7 @@ import io.openshm.patcher.ui.screens.install.InstallPhoneScreen
 import io.openshm.patcher.ui.screens.install.InstallPhoneViewModel
 import io.openshm.patcher.ui.screens.install.InstallWatchViewModel
 import io.openshm.patcher.ui.screens.install.WatchInstallScreen
+import io.openshm.patcher.ui.screens.profile.ProfileEvent
 import io.openshm.patcher.ui.screens.profile.ProfileScreen
 import io.openshm.patcher.ui.screens.profile.ProfileViewModel
 import io.openshm.patcher.ui.screens.selftest.AllSetScreen
@@ -102,7 +103,22 @@ fun PatcherNavHost(
         composable(Route.Profile.path) {
             val vm: ProfileViewModel = viewModel()
             val state by vm.state.collectAsStateWithLifecycle()
-            ProfileScreen(state, vm::onEvent, onContinue = { next(Route.Profile) }, onBack = back)
+            val context = LocalContext.current
+            val permission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission(), vm::onBluetoothPermission)
+            ProfileScreen(
+                state,
+                onEvent = { event ->
+                    if (event is ProfileEvent.CheckPairedWatches) {
+                        if (ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+                            vm.onBluetoothPermission(true)
+                        } else {
+                            permission.launch(Manifest.permission.BLUETOOTH_CONNECT)
+                        }
+                    } else {
+                        vm.onEvent(event)
+                    }
+                },
+                onContinue = { next(Route.Profile) }, onBack = back)
         }
         composable(Route.WearablePairing.path) {
             val vm: WearablePairingViewModel = viewModel()

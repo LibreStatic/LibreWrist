@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Bluetooth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
@@ -18,20 +20,32 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import io.openshm.patcher.R
 import io.openshm.patcher.data.WatchProfile
+import io.openshm.patcher.device.DetectedWatch
 import io.openshm.patcher.ui.components.GroupedItem
 import io.openshm.patcher.ui.components.GroupedSpacing
 import io.openshm.patcher.ui.components.InfoChip
+import io.openshm.patcher.ui.components.OutlinedAction
 import io.openshm.patcher.ui.components.PrimaryAction
+import io.openshm.patcher.ui.components.SectionTitle
 import io.openshm.patcher.ui.components.SetupStep
 import io.openshm.patcher.ui.components.StepScreenScaffold
+
+/** Outcome of the "Check paired watches" action. */
+enum class PairedCheck { Idle, Done, NoWatch, Denied }
 
 data class ProfileUiState(
     val selected: WatchProfile = WatchProfile.WearOs5,
     val options: List<WatchProfile> = WatchProfile.entries,
+    /** What the watch itself reported over ADB, when it could be reached. */
+    val detected: DetectedWatch? = null,
+    /** What a paired Bluetooth device name suggests. */
+    val hint: WatchModelHint? = null,
+    val pairedCheck: PairedCheck = PairedCheck.Idle,
 )
 
 sealed interface ProfileEvent {
     data class Select(val profile: WatchProfile) : ProfileEvent
+    data object CheckPairedWatches : ProfileEvent
 }
 
 @Composable
@@ -86,6 +100,61 @@ fun ProfileScreen(
                         }
                     }
                 }
+            }
+        }
+        state.detected?.let { DetectedCard(it) }
+        PairedWatchesSection(state, onEvent)
+        HowToTell()
+    }
+}
+
+@Composable
+private fun DetectedCard(detected: DetectedWatch) {
+    val profile = stringResource(detected.profile.titleRes())
+    GroupedItem(0, 1, containerColor = MaterialTheme.colorScheme.tertiaryContainer, contentColor = MaterialTheme.colorScheme.onTertiaryContainer) {
+        Text(
+            stringResource(R.string.profile_detected, detected.versionLabel, profile),
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(vertical = 6.dp),
+        )
+    }
+}
+
+@Composable
+private fun PairedWatchesSection(state: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        OutlinedAction(
+            stringResource(R.string.profile_check_paired),
+            { onEvent(ProfileEvent.CheckPairedWatches) },
+            Icons.Rounded.Bluetooth,
+        )
+        val message = when (val hint = state.hint) {
+            is WatchModelHint.Certain -> stringResource(R.string.profile_hint_certain, hint.name)
+            is WatchModelHint.Depends -> stringResource(R.string.profile_hint_depends, hint.name)
+            null -> when (state.pairedCheck) {
+                PairedCheck.Denied -> stringResource(R.string.profile_check_denied)
+                PairedCheck.NoWatch -> stringResource(R.string.profile_check_none)
+                PairedCheck.Idle, PairedCheck.Done -> null
+            }
+        }
+        message?.let {
+            Text(it, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
+}
+
+@Composable
+private fun HowToTell() {
+    Column {
+        SectionTitle(stringResource(R.string.profile_howto_title))
+        GroupedItem(0, 1, contentPadding = PaddingValues(14.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                listOf(
+                    R.string.profile_howto_watch,
+                    R.string.profile_howto_phone,
+                    R.string.profile_howto_models,
+                    R.string.profile_howto_unsure,
+                ).forEach { Text(stringResource(it), style = MaterialTheme.typography.bodyMedium) }
             }
         }
     }

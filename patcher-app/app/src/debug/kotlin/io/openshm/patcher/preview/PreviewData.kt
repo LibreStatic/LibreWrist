@@ -29,7 +29,11 @@ import io.openshm.patcher.data.GrantKind
 import io.openshm.patcher.ui.screens.install.InstallItem
 import io.openshm.patcher.ui.screens.install.SelfAdbPhase
 import io.openshm.patcher.ui.screens.install.InstallUiState
+import io.openshm.patcher.device.DetectedWatch
+import io.openshm.patcher.ui.screens.profile.PairedCheck
 import io.openshm.patcher.ui.screens.profile.ProfileUiState
+import io.openshm.patcher.ui.screens.profile.WatchModelHint
+import io.openshm.patcher.ui.screens.watchpair.WatchProfileCorrection
 import io.openshm.patcher.ui.screens.selftest.AllSetUiState
 import io.openshm.patcher.ui.screens.selftest.SelfTestFix
 import io.openshm.patcher.ui.screens.selftest.SelfTestRow
@@ -67,9 +71,31 @@ internal object PreviewData {
 
     fun profile() = ProfileUiState()
 
+    fun profileCertainHint() = ProfileUiState(
+        hint = WatchModelHint.Certain("Galaxy Watch7 (A1B2)"),
+        pairedCheck = PairedCheck.Done,
+    )
+
+    fun profileDependsHint() = ProfileUiState(
+        selected = WatchProfile.WearOs3Or4,
+        hint = WatchModelHint.Depends("Galaxy Watch6 (A1B2)"),
+        pairedCheck = PairedCheck.Done,
+    )
+
+    fun profileDetected() = ProfileUiState(
+        selected = WatchProfile.WearOs3Or4,
+        detected = DetectedWatch(33, "13"),
+    )
+
     fun wearable(status: CheckStatus = CheckStatus.Passed) = WearablePairingUiState(initialWearableChecks(status))
 
     fun watchPairEmpty() = WatchPairUiState()
+
+    fun watchPairCorrection() = WatchPairUiState(
+        foundAddress = WATCH_ADDRESS,
+        prerequisitesDone = listOf(true, true, true, true),
+        correction = WatchProfileCorrection(WatchProfile.WearOs3Or4, "13"),
+    )
 
     fun watchPairReady() = WatchPairUiState(
         foundAddress = WATCH_ADDRESS,

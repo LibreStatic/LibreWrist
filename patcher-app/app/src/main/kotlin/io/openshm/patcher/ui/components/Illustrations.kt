@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -37,17 +38,28 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.PI
 import kotlin.math.sin
 
-/** Decorative wave between the phone and the watch (the "link"). */
+/**
+ * Decorative wave between the phone and the watch (the "link"). [phase] (radians, read while
+ * drawing, so animating it never recomposes) shifts the wave; a growing phase makes it travel from
+ * the start towards the end.
+ */
 @Composable
-fun LinkWave(color: Color, modifier: Modifier = Modifier, strokeWidth: Dp = 4.dp, cycles: Int = 3) {
+fun LinkWave(
+    color: Color,
+    modifier: Modifier = Modifier,
+    strokeWidth: Dp = 4.dp,
+    cycles: Int = 3,
+    phase: () -> Float = { 0f },
+) {
     Canvas(modifier.clearAndSetSemantics { }) {
+        val shift = phase()
         val amplitude = size.height / 2f - strokeWidth.toPx() / 2f
         val path = Path()
         val steps = 64
         for (i in 0..steps) {
             val t = i / steps.toFloat()
             val x = t * size.width
-            val y = size.height / 2f - amplitude * sin(t * cycles * 2f * PI.toFloat())
+            val y = size.height / 2f - amplitude * sin(t * cycles * 2f * PI.toFloat() - shift)
             if (i == 0) path.moveTo(x, y) else path.lineTo(x, y)
         }
         drawPath(path, color, style = Stroke(strokeWidth.toPx(), cap = StrokeCap.Round))
@@ -84,9 +96,10 @@ fun PhoneWatchIllustration(modifier: Modifier = Modifier, scale: Float = 1f, lin
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun WelcomeHero(modifier: Modifier = Modifier) {
+fun WelcomeHero(modifier: Modifier = Modifier, frozenAt: Float? = null) {
     val colors = MaterialTheme.colorScheme
     val strap = androidx.compose.ui.graphics.lerp(colors.tertiaryContainer, colors.tertiary, 0.35f)
+    val clock = rememberHeroClock(frozenAt)
     Box(
         modifier
             .clearAndSetSemantics { }
@@ -129,7 +142,12 @@ fun WelcomeHero(modifier: Modifier = Modifier) {
                         androidx.compose.material.icons.Icons.Rounded.Favorite,
                         contentDescription = null,
                         tint = colors.onPrimaryContainer,
-                        modifier = Modifier.size(26.dp),
+                        modifier = Modifier.size(26.dp).graphicsLayer {
+                            val beat = heartbeat(clock.value)
+                            scaleX = 1f + 0.22f * beat
+                            scaleY = 1f + 0.22f * beat
+                            alpha = 0.55f + 0.45f * beat
+                        },
                     )
                 }
                 Box(
@@ -141,7 +159,13 @@ fun WelcomeHero(modifier: Modifier = Modifier) {
                         .clip(RoundedCornerShape(5.dp)).background(colors.inversePrimary.copy(alpha = 0.7f)),
                 )
             }
-            LinkWave(colors.tertiary, Modifier.offset(150.dp, 88.dp).size(width = 52.dp, height = 20.dp), strokeWidth = 3.5.dp, cycles = 3)
+            LinkWave(
+                colors.tertiary,
+                Modifier.offset(150.dp, 88.dp).size(width = 52.dp, height = 20.dp),
+                strokeWidth = 3.5.dp,
+                cycles = 3,
+                phase = { clock.value * LINK_SPEED },
+            )
             // Watch: strap behind a round face with a bezel ring and the time.
             Box(
                 Modifier.offset(239.dp, 26.dp).size(width = 30.dp, height = 144.dp)
@@ -157,13 +181,106 @@ fun WelcomeHero(modifier: Modifier = Modifier) {
                     Modifier.size(76.dp)
                         .border(2.dp, colors.onTertiary.copy(alpha = 0.3f), androidx.compose.foundation.shape.CircleShape),
                 )
+                // The face keeps switching between the time and a live-looking ECG trace.
                 androidx.compose.material3.Text(
                     "10:08",
                     style = MaterialTheme.typography.titleMediumEmphasized,
                     color = colors.onTertiary,
+                    modifier = Modifier.graphicsLayer { alpha = 1f - ecgShown(clock.value) },
+                )
+                EcgTrace(
+                    colors.onTertiary,
+                    Modifier.size(width = 64.dp, height = 34.dp).graphicsLayer { alpha = ecgShown(clock.value) },
+                    time = { clock.value },
                 )
             }
         }
+    }
+}
+
+/** Radians per second the link wave travels from the phone to the watch. */
+private const val LINK_SPEED = 5f
+
+/** Seconds of one heartbeat; the heart and the ECG trace share it. */
+private const val BEAT = 1.1f
+
+/** Seconds the watch shows the time, then the ECG, in turn. */
+private const val FACE_HOLD = 3.2f
+private const val FACE_FADE = 0.45f
+
+/**
+ * Seconds since the hero appeared, advanced every frame. Readers must only read it inside draw or
+ * graphics-layer lambdas, so the animation never recomposes. With reduced motion it stays at 0
+ * (time on the face, the heart at rest); [frozenAt] pins it, for previews of a given moment.
+ */
+@Composable
+private fun rememberHeroClock(frozenAt: Float?): androidx.compose.runtime.State<Float> {
+    val clock = androidx.compose.runtime.remember { androidx.compose.runtime.mutableFloatStateOf(frozenAt ?: 0f) }
+    val reducedMotion = io.openshm.patcher.ui.theme.LocalReducedMotion.current
+    androidx.compose.runtime.LaunchedEffect(reducedMotion, frozenAt) {
+        if (reducedMotion || frozenAt != null) {
+            clock.floatValue = frozenAt ?: 0f
+            return@LaunchedEffect
+        }
+        val start = androidx.compose.runtime.withFrameNanos { it }
+        while (true) androidx.compose.runtime.withFrameNanos { clock.floatValue = (it - start) / 1_000_000_000f }
+    }
+    return clock
+}
+
+/** 0..1 pulse of a heartbeat at [t] seconds: a strong beat, a softer echo, then rest. */
+internal fun heartbeat(t: Float): Float {
+    val p = (t % BEAT) / BEAT
+    fun bump(at: Float, width: Float) = ((1f - kotlin.math.abs(p - at) / width).coerceAtLeast(0f)).let { it * it }
+    return maxOf(bump(0.08f, 0.08f), 0.6f * bump(0.26f, 0.07f))
+}
+
+/** How much of the ECG (vs the time) the watch face shows at [t] seconds, 0..1. */
+internal fun ecgShown(t: Float): Float {
+    val cycle = 2f * FACE_HOLD
+    val p = t % cycle
+    fun ramp(x: Float) = (x / FACE_FADE).coerceIn(0f, 1f)
+    // Time first, then the ECG fades in, holds, and fades back out at the end of the cycle.
+    return if (p < FACE_HOLD) 0f else minOf(ramp(p - FACE_HOLD), ramp(cycle - p))
+}
+
+/** One heartbeat of a stylised ECG (PQRST), x and y in 0..1 of a beat; y up is positive. */
+private val EcgBeat = listOf(
+    0f to 0f, 0.10f to 0f, 0.14f to 0.12f, 0.18f to 0f, 0.26f to 0f,
+    0.29f to -0.15f, 0.33f to 1f, 0.37f to -0.35f, 0.41f to 0f,
+    0.55f to 0f, 0.62f to 0.22f, 0.70f to 0f, 1f to 0f,
+)
+
+/**
+ * A scrolling ECG zigzag, like a monitor sweep: it moves right to left at one beat per [BEAT]
+ * seconds and fades out towards its oldest end. [time] is read while drawing.
+ */
+@Composable
+private fun EcgTrace(color: Color, modifier: Modifier, time: () -> Float) {
+    Canvas(modifier) {
+        val beats = 1.6f
+        val beatWidth = size.width / beats
+        val mid = size.height * 0.62f
+        val amp = size.height * 0.55f
+        val scroll = (time() / BEAT) % 1f * beatWidth
+        val path = Path()
+        var first = true
+        var beat = -1
+        while (beat * beatWidth - scroll < size.width) {
+            for ((bx, by) in EcgBeat) {
+                val x = (beat + bx) * beatWidth - scroll
+                val y = mid - by * amp
+                if (first) { path.moveTo(x, y); first = false } else path.lineTo(x, y)
+            }
+            beat++
+        }
+        drawPath(
+            path,
+            brush = androidx.compose.ui.graphics.Brush.horizontalGradient(
+                0f to color.copy(alpha = 0f), 0.35f to color, 1f to color,
+            ),
+            style = Stroke(2.5.dp.toPx(), cap = StrokeCap.Round, join = androidx.compose.ui.graphics.StrokeJoin.Round),
+        )
     }
 }
 
