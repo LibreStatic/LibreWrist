@@ -94,6 +94,7 @@ import io.openshm.patcher.ui.screens.welcome.SkipStepsOverlay
 import io.openshm.patcher.ui.screens.welcome.SkipDialog
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.Alignment
 
 @Composable
 fun PatcherNavHost(
@@ -121,7 +122,8 @@ fun PatcherNavHost(
         reducedMotion = LocalReducedMotion.current,
         rtl = LocalLayoutDirection.current == LayoutDirection.Rtl,
     )
-    Box(Modifier.fillMaxSize()) {
+    // Centered like the column it holds; the skip overlay still covers the whole window.
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
         NavHost(
             navController,
             startDestination = Route.Welcome.path,
