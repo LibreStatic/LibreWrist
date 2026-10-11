@@ -8,7 +8,6 @@ import io.openshm.patcher.data.SetupSession
 import io.openshm.patcher.data.WatchProfile
 import io.openshm.patcher.device.WatchDetection
 import io.openshm.patcher.device.WatchLink
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,11 +18,6 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     private val _state = MutableStateFlow(ProfileUiState(selected = SetupSession.state.value.watchProfile))
     val state: StateFlow<ProfileUiState> = _state.asStateFlow()
 
-    private val autoSkip = AutoSkip(viewModelScope)
-
-    /** Fires once when the watch answered on its own and the notice was shown: move to the next step. */
-    val autoContinue: Flow<Unit> = autoSkip.go
-
     init {
         // A remembered watch answers authoritatively; any failure is silent (the user just picks).
         WatchDetection.start(WatchLink.get(application))
@@ -33,20 +27,11 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
                 if (_state.value.detected != null) return@collect
                 select(detected.profile)
                 _state.update { it.copy(detected = detected) }
-                autoSkip.onDetected()
             }
         }
-        viewModelScope.launch { autoSkip.skipping.collect { s -> _state.update { it.copy(skipping = s) } } }
     }
 
-    /** The step is on screen (first time or after Back). */
-    fun onShown() = autoSkip.onShown()
-
-    /** The user pressed Continue themselves. */
-    fun onContinue() = autoSkip.disarm()
-
     fun onEvent(event: ProfileEvent) {
-        autoSkip.disarm()
         when (event) {
             is ProfileEvent.Select -> select(event.profile)
             // The host asks for the Bluetooth permission and reports back through onBluetoothPermission.
@@ -56,7 +41,6 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
 
     /** The result of the Bluetooth permission request (or its existing grant). */
     fun onBluetoothPermission(granted: Boolean) {
-        autoSkip.disarm()
         if (!granted) {
             _state.update { it.copy(pairedCheck = PairedCheck.Denied, hint = null) }
             return

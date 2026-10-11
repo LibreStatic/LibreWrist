@@ -641,6 +641,11 @@
     <string name="troubleshoot_dialog_body">Cela réinitialise les Services Google Play sur ce téléphone. Vous risquez de perdre l\'accès à tous vos comptes Google sur ce téléphone et de devoir vous reconnecter.\n\nCertains services qui reposent sur les Services Google Play, comme les cartes Google Wallet, Localiser mon appareil et les paramètres de sauvegarde, devront peut-être être reconfigurés.\n\nVotre montre n\'est pas modifiée.</string>
     <string name="troubleshoot_dialog_confirm">Effacer les données</string>
     <string name="troubleshoot_back_to_check">Retour à la vérification de l\'association</string>
-    <string name="profile_skip_title">Passons cette étape</string>
-    <string name="profile_skip_body">Nous avons assez d\'informations pour le détecter automatiquement.</string>
+    <string name="skip_title">Passons cette étape</string>
+    <string name="skip_body">Nous avons assez d\'informations pour le détecter automatiquement.</string>
+    <string name="skip_checking">Vérification de vos appareils…</string>
+    <string name="skip_card_step">Étape %1$d · %2$s</string>
+    <string name="skip_reason_profile">Android %1$s (%2$s) détecté sur la montre connectée.</string>
+    <string name="skip_reason_wearable">Votre montre est déjà associée à Galaxy Wearable.</string>
+    <string name="skip_reason_watchpair">Votre montre est déjà connectée via le débogage sans fil.</string>
 </resources>

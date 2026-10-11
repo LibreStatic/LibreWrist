@@ -625,6 +625,11 @@
     <string name="troubleshoot_dialog_body">Ini akan mereset Layanan Google Play di ponsel ini. Kamu mungkin kehilangan akses ke semua akun Google di ponsel ini dan perlu masuk lagi.\n\nBeberapa layanan yang bergantung pada Layanan Google Play, seperti kartu Google Wallet, Temukan Perangkat Saya, dan setelan cadangan, mungkin perlu disiapkan ulang.\n\nJam-mu tidak diubah.</string>
     <string name="troubleshoot_dialog_confirm">Hapus data</string>
     <string name="troubleshoot_back_to_check">Kembali ke pemeriksaan penyandingan</string>
-    <string name="profile_skip_title">Mari lewati langkah ini</string>
-    <string name="profile_skip_body">Kami punya cukup informasi untuk mendeteksinya secara otomatis.</string>
+    <string name="skip_title">Mari lewati ini</string>
+    <string name="skip_body">Kami punya cukup informasi untuk mendeteksinya secara otomatis.</string>
+    <string name="skip_checking">Memeriksa perangkat Anda…</string>
+    <string name="skip_card_step">Langkah %1$d · %2$s</string>
+    <string name="skip_reason_profile">Kami mendeteksi Android %1$s (%2$s) di jam yang terhubung.</string>
+    <string name="skip_reason_wearable">Jam Anda sudah disambungkan dengan Galaxy Wearable.</string>
+    <string name="skip_reason_watchpair">Jam Anda sudah terhubung lewat proses debug nirkabel.</string>
 </resources>

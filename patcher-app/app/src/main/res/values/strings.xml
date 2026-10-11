@@ -635,6 +635,11 @@
     <string name="signing_key_nudge_body">Without it, installed apps cannot be updated, only reinstalled.</string>
     <string name="signing_key_nudge_action">Back up</string>
     <string name="home_menu_signing_key">Signing key</string>
-    <string name="profile_skip_title">Let\'s skip this step</string>
-    <string name="profile_skip_body">We have enough information to detect it automatically.</string>
+    <string name="skip_title">Let\'s skip this</string>
+    <string name="skip_body">We have enough information to detect it automatically.</string>
+    <string name="skip_checking">Checking your devices…</string>
+    <string name="skip_card_step">Step %1$d · %2$s</string>
+    <string name="skip_reason_profile">We detected Android %1$s (%2$s) on the connected watch.</string>
+    <string name="skip_reason_wearable">Your watch is already paired with Galaxy Wearable.</string>
+    <string name="skip_reason_watchpair">Your watch is already connected over Wireless debugging.</string>
 </resources>

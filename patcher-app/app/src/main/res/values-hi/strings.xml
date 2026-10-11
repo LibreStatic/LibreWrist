@@ -633,6 +633,11 @@
     <string name="troubleshoot_dialog_body">इससे इस फ़ोन पर Google Play services रीसेट हो जाती है। इस फ़ोन पर आप अपने सभी Google खातों की पहुँच खो सकते हैं और आपको दोबारा साइन इन करना पड़ सकता है।\n\nGoogle Play services पर निर्भर कुछ सेवाएँ, जैसे Google Wallet कार्ड, मेरा डिवाइस ढूंढें और बैकअप सेटिंग, दोबारा सेट करनी पड़ सकती हैं।\n\nआपकी घड़ी में कोई बदलाव नहीं होता।</string>
     <string name="troubleshoot_dialog_confirm">डेटा मिटाएँ</string>
     <string name="troubleshoot_back_to_check">पेयरिंग जाँच पर वापस जाएँ</string>
-    <string name="profile_skip_title">चलिए यह चरण छोड़ते हैं</string>
-    <string name="profile_skip_body">इसे अपने-आप पहचानने के लिए हमारे पास पर्याप्त जानकारी है।</string>
+    <string name="skip_title">चलिए इसे छोड़ते हैं</string>
+    <string name="skip_body">इसे अपने-आप पहचानने के लिए हमारे पास पर्याप्त जानकारी है।</string>
+    <string name="skip_checking">आपके डिवाइस जाँचे जा रहे हैं…</string>
+    <string name="skip_card_step">चरण %1$d · %2$s</string>
+    <string name="skip_reason_profile">कनेक्ट की गई घड़ी पर Android %1$s (%2$s) मिला।</string>
+    <string name="skip_reason_wearable">आपकी घड़ी पहले से Galaxy Wearable से जुड़ी है।</string>
+    <string name="skip_reason_watchpair">आपकी घड़ी पहले से वायरलेस डीबगिंग से कनेक्ट है।</string>
 </resources>

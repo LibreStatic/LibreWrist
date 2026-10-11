@@ -649,6 +649,11 @@
     <string name="troubleshoot_dialog_body">Это сбросит Сервисы Google Play на этом телефоне. Вы можете потерять доступ ко всем аккаунтам Google на этом телефоне и понадобится войти снова.\n\nНекоторые сервисы, зависящие от Сервисов Google Play, например карты Google Кошелька, «Найти устройство» и настройки резервного копирования, возможно, придётся настроить заново.\n\nЧасы не затрагиваются.</string>
     <string name="troubleshoot_dialog_confirm">Очистить данные</string>
     <string name="troubleshoot_back_to_check">Назад к проверке подключения</string>
-    <string name="profile_skip_title">Пропустим этот шаг</string>
-    <string name="profile_skip_body">У нас достаточно данных, чтобы определить это автоматически.</string>
+    <string name="skip_title">Пропустим это</string>
+    <string name="skip_body">У нас достаточно данных, чтобы определить это автоматически.</string>
+    <string name="skip_checking">Проверяем ваши устройства…</string>
+    <string name="skip_card_step">Шаг %1$d · %2$s</string>
+    <string name="skip_reason_profile">На подключённых часах обнаружена Android %1$s (%2$s).</string>
+    <string name="skip_reason_wearable">Часы уже сопряжены с Galaxy Wearable.</string>
+    <string name="skip_reason_watchpair">Часы уже подключены по беспроводной отладке.</string>
 </resources>

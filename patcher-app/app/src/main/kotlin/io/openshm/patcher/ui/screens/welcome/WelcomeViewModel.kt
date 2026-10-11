@@ -1,10 +1,23 @@
 package io.openshm.patcher.ui.screens.welcome
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.Device
 import io.openshm.patcher.data.SetupSession
 import io.openshm.patcher.data.WatchProfile
+import io.openshm.patcher.device.WatchDetection
+import io.openshm.patcher.device.WatchLink
+import io.openshm.patcher.ui.nav.StepSkips
+import io.openshm.patcher.ui.screens.wearable.readWearableFacts
+import io.openshm.patcher.ui.screens.wearable.wearableState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,16 +38,47 @@ internal fun buildChanges(prefix: String, profile: WatchProfile): List<DeviceCha
     }
 }
 
-class WelcomeViewModel : ViewModel() {
+class WelcomeViewModel(application: Application) : AndroidViewModel(application) {
     private val _state = MutableStateFlow(
         SetupSession.state.value.let { WelcomeUiState(changes = buildChanges(it.packagePrefix, it.watchProfile)) },
     )
     val state: StateFlow<WelcomeUiState> = _state.asStateFlow()
+    private val link = WatchLink.get(application)
+
+    private val preflight = SkipPreflight(
+        viewModelScope,
+        watchRemembered = { link.rememberedHost != null },
+        detect = {
+            WatchDetection.start(link)
+            withTimeoutOrNull(DETECT_WAIT_MILLIS) { WatchDetection.state.first { !it.running } }?.watch
+        },
+        wearableReady = { withContext(Dispatchers.Default) { wearableState(readWearableFacts(application)).allPassed } },
+        apply = { steps, watch ->
+            StepSkips.current = steps
+            if (watch != null) SetupSession.update { it.copy(watchProfile = watch.profile) }
+        },
+    )
+
+    /** Open the next step that still needs the user; the nav host follows it. */
+    val go: Flow<Unit> = preflight.go
+
+    init {
+        // Ask a remembered watch for its version now, so it is known by the time the user starts.
+        WatchDetection.start(link)
+        viewModelScope.launch { preflight.dialog.collect { d -> _state.update { it.copy(skip = d) } } }
+    }
 
     fun onEvent(event: WelcomeEvent) {
         when (event) {
             WelcomeEvent.ShowChanges -> _state.update { it.copy(changesSheetVisible = true) }
             WelcomeEvent.HideChanges -> _state.update { it.copy(changesSheetVisible = false) }
+            WelcomeEvent.GetStarted -> preflight.start()
+            WelcomeEvent.CancelSkip -> preflight.cancel()
         }
+    }
+
+    private companion object {
+        /** A bit over the detector's own connect timeout. */
+        const val DETECT_WAIT_MILLIS = 6_000L
     }
 }

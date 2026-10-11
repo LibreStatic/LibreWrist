@@ -86,11 +86,15 @@ data class DeviceChanges(val device: Device, val apps: List<AppChange>, val disa
 data class WelcomeUiState(
     val changesSheetVisible: Boolean = false,
     val changes: List<DeviceChanges> = emptyList(),
+    /** The dialog shown after "Get started" while steps that need nothing are passed over. */
+    val skip: SkipDialog? = null,
 )
 
 sealed interface WelcomeEvent {
     data object ShowChanges : WelcomeEvent
     data object HideChanges : WelcomeEvent
+    data object GetStarted : WelcomeEvent
+    data object CancelSkip : WelcomeEvent
 }
 
 @Composable
@@ -101,8 +105,21 @@ fun WelcomeScreen(
     onSettings: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    Box(modifier.fillMaxSize()) {
+        WelcomeBody(state, onEvent, onGetStarted, onSettings)
+        SkipStepsOverlay(state.skip, onCancel = { onEvent(WelcomeEvent.CancelSkip) })
+    }
+}
+
+@Composable
+private fun WelcomeBody(
+    state: WelcomeUiState,
+    onEvent: (WelcomeEvent) -> Unit,
+    onGetStarted: () -> Unit,
+    onSettings: () -> Unit,
+) {
     Column(
-        modifier
+        Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing),
     ) {

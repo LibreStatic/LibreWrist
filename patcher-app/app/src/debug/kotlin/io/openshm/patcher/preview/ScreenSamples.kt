@@ -12,7 +12,10 @@ import io.openshm.patcher.ui.screens.disable.DisableStockScreen
 import io.openshm.patcher.ui.screens.home.HomeScreen
 import io.openshm.patcher.ui.screens.install.InstallPhoneScreen
 import io.openshm.patcher.ui.screens.install.WatchInstallScreen
+import io.openshm.patcher.device.DetectedWatch
+import io.openshm.patcher.ui.nav.skippableSteps
 import io.openshm.patcher.ui.screens.profile.ProfileScreen
+import io.openshm.patcher.ui.screens.welcome.SkipDialog
 import io.openshm.patcher.ui.screens.selftest.AllSetScreen
 import io.openshm.patcher.ui.screens.selftest.SelfTestScreen
 import io.openshm.patcher.ui.screens.signingkey.SigningKeyForm
@@ -33,7 +36,11 @@ import io.openshm.patcher.ui.screens.build.BuildStage
  */
 
 @Composable
-internal fun WelcomeSample(sheet: Boolean = false) = WelcomeScreen(PreviewData.welcome(sheet), {}, {}, {})
+internal fun WelcomeSample(sheet: Boolean = false, skip: SkipDialog? = null) =
+    WelcomeScreen(PreviewData.welcome(sheet).copy(skip = skip), {}, {}, {})
+
+/** All three first steps passed over: the watch answered and Galaxy Wearable is ready. */
+internal val SampleSkipping = SkipDialog.Skipping(skippableSteps(DetectedWatch(36, "16"), wearableReady = true))
 
 @Composable
 internal fun ProfileSample(variant: ProfileVariant = ProfileVariant.Plain) = ProfileScreen(
@@ -42,12 +49,11 @@ internal fun ProfileSample(variant: ProfileVariant = ProfileVariant.Plain) = Pro
         ProfileVariant.CertainHint -> PreviewData.profileCertainHint()
         ProfileVariant.DependsHint -> PreviewData.profileDependsHint()
         ProfileVariant.Detected -> PreviewData.profileDetected()
-        ProfileVariant.Skipping -> PreviewData.profileDetected().copy(skipping = true)
     },
     {}, {}, {},
 )
 
-internal enum class ProfileVariant { Plain, CertainHint, DependsHint, Detected, Skipping }
+internal enum class ProfileVariant { Plain, CertainHint, DependsHint, Detected }
 
 @Composable
 internal fun WearablePairingSample(state: WearablePairingUiState = PreviewData.wearable()) =

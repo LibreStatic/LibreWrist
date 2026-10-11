@@ -58,4 +58,11 @@ object SetupFlow {
         val index = order.indexOf(route)
         return if (index < 0) null else order.getOrNull(index + 1)
     }
+
+    /** The step after [route], passing over the [skipped] ones. */
+    fun next(route: Route, skipped: Set<Route>): Route? {
+        var target = next(route)
+        while (target != null && target in skipped) target = next(target)
+        return target
+    }
 }

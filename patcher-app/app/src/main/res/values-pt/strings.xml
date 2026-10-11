@@ -633,6 +633,11 @@
     <string name="troubleshoot_dialog_body">Isso redefine os Serviços do Google Play neste celular. Você pode perder o acesso a todas as suas contas do Google neste celular e precisar fazer login de novo.\n\nAlguns serviços que dependem dos Serviços do Google Play, como cartões do Google Wallet, Encontre Meu Dispositivo e configurações de backup, podem precisar ser configurados de novo.\n\nSeu relógio não é alterado.</string>
     <string name="troubleshoot_dialog_confirm">Limpar dados</string>
     <string name="troubleshoot_back_to_check">Voltar à verificação de pareamento</string>
-    <string name="profile_skip_title">Vamos pular esta etapa</string>
-    <string name="profile_skip_body">Temos informações suficientes para detectar isso automaticamente.</string>
+    <string name="skip_title">Vamos pular isto</string>
+    <string name="skip_body">Temos informações suficientes para detectar isso automaticamente.</string>
+    <string name="skip_checking">Verificando seus dispositivos…</string>
+    <string name="skip_card_step">Etapa %1$d · %2$s</string>
+    <string name="skip_reason_profile">Detectamos Android %1$s (%2$s) no relógio conectado.</string>
+    <string name="skip_reason_wearable">Seu relógio já está pareado com o Galaxy Wearable.</string>
+    <string name="skip_reason_watchpair">Seu relógio já está conectado pela depuração por Wi-Fi.</string>
 </resources>

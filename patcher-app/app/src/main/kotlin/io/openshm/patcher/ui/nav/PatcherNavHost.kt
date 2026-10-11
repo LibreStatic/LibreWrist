@@ -7,8 +7,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
-import io.openshm.patcher.device.WatchDetection
-import io.openshm.patcher.device.WatchLink
 import io.openshm.patcher.ui.screens.install.InstallEvent
 import io.openshm.patcher.ui.screens.wearable.TroubleshootEvent
 import android.os.Build
@@ -86,6 +84,7 @@ import io.openshm.patcher.ui.screens.wearable.WearablePairingScreen
 import io.openshm.patcher.ui.screens.wearable.WearablePairingViewModel
 import io.openshm.patcher.ui.screens.wearable.WearableTroubleshootScreen
 import io.openshm.patcher.ui.screens.wearable.WearableTroubleshootViewModel
+import io.openshm.patcher.ui.screens.welcome.WelcomeEvent
 import io.openshm.patcher.ui.screens.welcome.WelcomeScreen
 import io.openshm.patcher.ui.screens.welcome.WelcomeViewModel
 
@@ -95,7 +94,7 @@ fun PatcherNavHost(
     navController: NavHostController = rememberNavController(),
 ) {
     fun next(from: Route) {
-        val target = SetupFlow.next(from) ?: return
+        val target = SetupFlow.next(from, StepSkips.routes) ?: return
         navController.navigate(target.path) {
             // Home is the end of the guided setup: it replaces the whole stack.
             if (target == Route.Home) popUpTo(Route.Welcome.path) { inclusive = true }
@@ -119,20 +118,14 @@ fun PatcherNavHost(
         composable(Route.Welcome.path) {
             val vm: WelcomeViewModel = viewModel()
             val state by vm.state.collectAsStateWithLifecycle()
-            val context = LocalContext.current
-            // Ask a remembered watch for its version now, so the profile step can be skipped.
-            LaunchedEffect(Unit) { WatchDetection.start(WatchLink.get(context)) }
-            WelcomeScreen(state, vm::onEvent, onGetStarted = { next(Route.Welcome) }, onSettings = { navController.navigate(Route.SigningKey.path) })
+            LaunchedEffect(vm) { vm.go.collect { next(Route.Welcome) } }
+            WelcomeScreen(state, vm::onEvent, onGetStarted = { vm.onEvent(WelcomeEvent.GetStarted) }, onSettings = { navController.navigate(Route.SigningKey.path) })
         }
         composable(Route.Profile.path) {
             val vm: ProfileViewModel = viewModel()
             val state by vm.state.collectAsStateWithLifecycle()
             val context = LocalContext.current
             val permission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission(), vm::onBluetoothPermission)
-            LaunchedEffect(vm) {
-                vm.onShown()
-                vm.autoContinue.collect { next(Route.Profile) }
-            }
             ProfileScreen(
                 state,
                 onEvent = { event ->
@@ -146,7 +139,7 @@ fun PatcherNavHost(
                         vm.onEvent(event)
                     }
                 },
-                onContinue = { vm.onContinue(); next(Route.Profile) }, onBack = back)
+                onContinue = { next(Route.Profile) }, onBack = back)
         }
         composable(Route.WearablePairing.path) {
             val vm: WearablePairingViewModel = viewModel()

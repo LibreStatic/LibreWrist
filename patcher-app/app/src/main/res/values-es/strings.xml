@@ -633,6 +633,11 @@
     <string name="troubleshoot_dialog_body">Esto restablece Servicios de Google Play en este teléfono. Podrías perder el acceso a todas tus cuentas de Google en este teléfono y tener que iniciar sesión de nuevo.\n\nAlgunos servicios que dependen de Servicios de Google Play, como las tarjetas de Google Wallet, Encontrar mi dispositivo y los ajustes de copia de seguridad, quizá deban configurarse de nuevo.\n\nTu reloj no se modifica.</string>
     <string name="troubleshoot_dialog_confirm">Borrar datos</string>
     <string name="troubleshoot_back_to_check">Volver a la comprobación de vinculación</string>
-    <string name="profile_skip_title">Saltemos este paso</string>
-    <string name="profile_skip_body">Tenemos suficiente información para detectarlo automáticamente.</string>
+    <string name="skip_title">Saltémonos esto</string>
+    <string name="skip_body">Tenemos suficiente información para detectarlo automáticamente.</string>
+    <string name="skip_checking">Comprobando tus dispositivos…</string>
+    <string name="skip_card_step">Paso %1$d · %2$s</string>
+    <string name="skip_reason_profile">Detectamos Android %1$s (%2$s) en el reloj conectado.</string>
+    <string name="skip_reason_wearable">El reloj ya está vinculado con Galaxy Wearable.</string>
+    <string name="skip_reason_watchpair">El reloj ya está emparejado por depuración inalámbrica.</string>
 </resources>

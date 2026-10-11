@@ -1,34 +1,6 @@
 package io.openshm.patcher.ui.screens.profile
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.snap
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialShapes
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.semantics.LiveRegionMode
-import androidx.compose.ui.semantics.liveRegion
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.style.TextAlign
-import io.openshm.patcher.ui.theme.LocalReducedMotion
-import io.openshm.patcher.ui.theme.PatcherTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -58,7 +30,6 @@ import io.openshm.patcher.ui.components.GroupedItem
 import io.openshm.patcher.ui.components.GroupedSpacing
 import io.openshm.patcher.ui.components.InfoChip
 import io.openshm.patcher.ui.components.OutlinedAction
-import io.openshm.patcher.ui.components.PolygonShape
 import io.openshm.patcher.ui.components.PrimaryAction
 import io.openshm.patcher.ui.components.SetupStep
 import io.openshm.patcher.ui.components.StepScreenScaffold
@@ -74,8 +45,6 @@ data class ProfileUiState(
     /** What a paired Bluetooth device name suggests. */
     val hint: WatchModelHint? = null,
     val pairedCheck: PairedCheck = PairedCheck.Idle,
-    /** The watch answered on its own: the step shows why it is skipped, then moves on. */
-    val skipping: Boolean = false,
 )
 
 sealed interface ProfileEvent {
@@ -96,17 +65,14 @@ fun ProfileScreen(
         title = stringResource(R.string.profile_title),
         onBack = onBack,
         modifier = modifier,
-        footer = { PrimaryAction(stringResource(R.string.action_continue), onContinue, enabled = !state.skipping) },
+        footer = { PrimaryAction(stringResource(R.string.action_continue), onContinue) },
     ) {
         Text(
             stringResource(R.string.profile_intro),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        AnimatedVisibility(state.skipping, enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
-            SkippingNotice()
-        }
-        Column(verticalArrangement = GroupedSpacing, modifier = Modifier.alpha(if (state.skipping) 0.38f else 1f)) {
+        Column(verticalArrangement = GroupedSpacing) {
             state.options.forEachIndexed { index, option ->
                 val selected = option == state.selected
                 GroupedItem(
@@ -114,7 +80,6 @@ fun ProfileScreen(
                     state.options.size,
                     modifier = Modifier.selectable(
                         selected = selected,
-                        enabled = !state.skipping,
                         role = Role.RadioButton,
                         onClick = { onEvent(ProfileEvent.Select(option)) },
                     ),
@@ -144,56 +109,6 @@ fun ProfileScreen(
         state.detected?.let { DetectedCard(it) }
         PairedWatchesSection(state, onEvent)
         HowToTell()
-    }
-}
-
-/** A large expressive check: the watch told us enough, so this step is skipped. */
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-private fun SkippingNotice() {
-    val reduced = LocalReducedMotion.current
-    var shown by remember { mutableStateOf(reduced) }
-    LaunchedEffect(Unit) { shown = true }
-    val scale by animateFloatAsState(
-        if (shown) 1f else 0.4f,
-        if (reduced) snap() else spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow),
-        label = "checkScale",
-    )
-    val rotation by animateFloatAsState(
-        if (shown) 0f else -90f,
-        if (reduced) snap() else spring(dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessVeryLow),
-        label = "checkRotation",
-    )
-    val status = PatcherTheme.status
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .semantics(mergeDescendants = true) { liveRegion = LiveRegionMode.Polite }
-            .padding(vertical = 12.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        Box(
-            Modifier
-                .size(112.dp)
-                .graphicsLayer { scaleX = scale; scaleY = scale; rotationZ = rotation }
-                .clip(PolygonShape(MaterialShapes.Cookie12Sided))
-                .background(status.successContainer),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(Icons.Rounded.Check, contentDescription = null, tint = status.onSuccessContainer, modifier = Modifier.size(56.dp))
-        }
-        Text(
-            stringResource(R.string.profile_skip_title),
-            style = MaterialTheme.typography.headlineSmall,
-            textAlign = TextAlign.Center,
-        )
-        Text(
-            stringResource(R.string.profile_skip_body),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-        )
     }
 }
 
@@ -240,7 +155,7 @@ private fun HowToTell() {
     if (open) WatchVersionGuideDialog(onDismiss = { open = false })
 }
 
-private fun WatchProfile.titleRes() = when (this) {
+internal fun WatchProfile.titleRes() = when (this) {
     WatchProfile.WearOs5 -> R.string.profile_wear5_title
     WatchProfile.WearOs3Or4 -> R.string.profile_wear3_title
 }

@@ -665,6 +665,11 @@
     <string name="troubleshoot_dialog_body">يعيد هذا ضبط خدمات Google Play على هذا الهاتف. قد تفقد إمكانية الوصول إلى جميع حسابات Google على هذا الهاتف وقد تحتاج إلى تسجيل الدخول إليها مجددًا.\n\nقد تحتاج بعض الخدمات التي تعتمد على خدمات Google Play، مثل بطاقات Google Wallet وخدمة العثور على جهازي وإعدادات النسخ الاحتياطي، إلى إعداد من جديد.\n\nلا يتغيّر شيء في ساعتك.</string>
     <string name="troubleshoot_dialog_confirm">مسح البيانات</string>
     <string name="troubleshoot_back_to_check">العودة إلى فحص الإقران</string>
-    <string name="profile_skip_title">لنتخطَّ هذه الخطوة</string>
-    <string name="profile_skip_body">لدينا معلومات كافية لاكتشاف ذلك تلقائيًا.</string>
+    <string name="skip_title">لنتخطَّ هذا</string>
+    <string name="skip_body">لدينا معلومات كافية لاكتشاف ذلك تلقائيًا.</string>
+    <string name="skip_checking">جارٍ التحقق من أجهزتك…</string>
+    <string name="skip_card_step">الخطوة %1$d · %2$s</string>
+    <string name="skip_reason_profile">اكتشفنا Android %1$s (%2$s) على الساعة المتصلة.</string>
+    <string name="skip_reason_wearable">ساعتك مقترنة بالفعل مع Galaxy Wearable.</string>
+    <string name="skip_reason_watchpair">ساعتك متصلة بالفعل عبر تصحيح الأخطاء اللاسلكي.</string>
 </resources>

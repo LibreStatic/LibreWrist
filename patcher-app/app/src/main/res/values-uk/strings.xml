@@ -649,6 +649,11 @@
     <string name="troubleshoot_dialog_body">Це скине Сервіси Google Play на цьому телефоні. Ви можете втратити доступ до всіх облікових записів Google на цьому телефоні й мусити увійти знову.\n\nДеякі сервіси, що залежать від Сервісів Google Play, як-от картки Google Гаманця, «Знайти пристрій» і налаштування резервного копіювання, можливо, доведеться налаштувати знову.\n\nГодинник не змінюється.</string>
     <string name="troubleshoot_dialog_confirm">Очистити дані</string>
     <string name="troubleshoot_back_to_check">Назад до перевірки з\'єднання</string>
-    <string name="profile_skip_title">Пропустімо цей крок</string>
-    <string name="profile_skip_body">У нас достатньо даних, щоб визначити це автоматично.</string>
+    <string name="skip_title">Пропустімо це</string>
+    <string name="skip_body">У нас достатньо даних, щоб визначити це автоматично.</string>
+    <string name="skip_checking">Перевіряємо ваші пристрої…</string>
+    <string name="skip_card_step">Крок %1$d · %2$s</string>
+    <string name="skip_reason_profile">На підключеному годиннику виявлено Android %1$s (%2$s).</string>
+    <string name="skip_reason_wearable">Годинник уже з’єднано з Galaxy Wearable.</string>
+    <string name="skip_reason_watchpair">Годинник уже підключено через бездротове налагодження.</string>
 </resources>

@@ -625,6 +625,11 @@
     <string name="troubleshoot_dialog_body">这会重置此手机上的 Google Play 服务。你可能无法访问此手机上的所有 Google 账号，需要重新登录。\n\n依赖 Google Play 服务的部分服务，例如 Google 钱包卡片、查找我的设备和备份设置，可能需要重新设置。\n\n你的手表不会改变。</string>
     <string name="troubleshoot_dialog_confirm">清除数据</string>
     <string name="troubleshoot_back_to_check">返回配对检查</string>
-    <string name="profile_skip_title">跳过此步骤</string>
-    <string name="profile_skip_body">我们已有足够的信息来自动识别。</string>
+    <string name="skip_title">跳过这些步骤</string>
+    <string name="skip_body">我们已有足够的信息来自动识别。</string>
+    <string name="skip_checking">正在检查你的设备…</string>
+    <string name="skip_card_step">第 %1$d 步 · %2$s</string>
+    <string name="skip_reason_profile">已在连接的手表上检测到 Android %1$s（%2$s）。</string>
+    <string name="skip_reason_wearable">你的手表已与 Galaxy Wearable 配对。</string>
+    <string name="skip_reason_watchpair">你的手表已通过无线调试连接。</string>
 </resources>

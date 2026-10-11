@@ -633,6 +633,11 @@
     <string name="troubleshoot_dialog_body">Bu, bu telefondaki Google Play Hizmetleri\'ni sıfırlar. Bu telefondaki tüm Google hesaplarınıza erişimi kaybedebilir ve yeniden oturum açmanız gerekebilir.\n\nGoogle Cüzdan kartları, Cihazımı Bul ve yedekleme ayarları gibi Google Play Hizmetleri\'ne bağlı bazı hizmetlerin yeniden kurulması gerekebilir.\n\nSaatiniz değişmez.</string>
     <string name="troubleshoot_dialog_confirm">Verileri temizle</string>
     <string name="troubleshoot_back_to_check">Eşleştirme kontrolüne dön</string>
-    <string name="profile_skip_title">Bu adımı atlayalım</string>
-    <string name="profile_skip_body">Bunu otomatik olarak algılamak için yeterli bilgimiz var.</string>
+    <string name="skip_title">Bunu atlayalım</string>
+    <string name="skip_body">Bunu otomatik olarak algılamak için yeterli bilgimiz var.</string>
+    <string name="skip_checking">Cihazlarınız kontrol ediliyor…</string>
+    <string name="skip_card_step">Adım %1$d · %2$s</string>
+    <string name="skip_reason_profile">Bağlı saatte Android %1$s (%2$s) algılandı.</string>
+    <string name="skip_reason_wearable">Saatiniz zaten Galaxy Wearable ile eşlenmiş.</string>
+    <string name="skip_reason_watchpair">Saatiniz zaten kablosuz hata ayıklama ile bağlı.</string>
 </resources>

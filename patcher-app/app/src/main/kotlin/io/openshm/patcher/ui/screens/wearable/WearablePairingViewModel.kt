@@ -1,14 +1,9 @@
 package io.openshm.patcher.ui.screens.wearable
 
-import android.Manifest
 import android.app.Application
-import android.bluetooth.BluetoothManager
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -42,37 +37,7 @@ class WearablePairingViewModel(application: Application) : AndroidViewModel(appl
     }
 
     fun recheck() {
-        viewModelScope.launch(Dispatchers.Default) { _state.value = wearableState(readFacts()) }
-    }
-
-    private fun readFacts(): WearableFacts {
-        val context = getApplication<Application>()
-        val allowed = ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED
-        val bonded = if (allowed) {
-            try {
-                context.getSystemService(BluetoothManager::class.java)?.adapter?.bondedDevices.orEmpty()
-                    .map { BondedDevice(it.name, it.bluetoothClass?.majorDeviceClass) }
-            } catch (e: SecurityException) {
-                emptyList()
-            }
-        } else {
-            emptyList()
-        }
-        val installed = listOf(GALAXY_WEARABLE_PACKAGE, WATCH_PLUGIN_PACKAGE).filterTo(mutableSetOf(), ::isInstalled)
-        return WearableFacts(installed, allowed, bonded)
-    }
-
-    @Suppress("DEPRECATION")
-    private fun isInstalled(packageName: String): Boolean = try {
-        val pm = getApplication<Application>().packageManager
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            pm.getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(0))
-        } else {
-            pm.getPackageInfo(packageName, 0)
-        }
-        true
-    } catch (e: PackageManager.NameNotFoundException) {
-        false
+        viewModelScope.launch(Dispatchers.Default) { _state.value = wearableState(readWearableFacts(getApplication())) }
     }
 
     private fun open() {

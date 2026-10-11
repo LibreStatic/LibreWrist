@@ -625,6 +625,11 @@
     <string name="troubleshoot_dialog_body">이 휴대전화의 Google Play 서비스가 초기화됩니다. 이 휴대전화의 모든 Google 계정에 접근할 수 없게 될 수 있으며 다시 로그인해야 할 수 있습니다.\n\nGoogle 월렛 카드, 내 기기 찾기, 백업 설정 등 Google Play 서비스를 사용하는 일부 서비스는 다시 설정해야 할 수 있습니다.\n\n워치는 변경되지 않습니다.</string>
     <string name="troubleshoot_dialog_confirm">데이터 삭제</string>
     <string name="troubleshoot_back_to_check">페어링 확인으로 돌아가기</string>
-    <string name="profile_skip_title">이 단계는 건너뛸게요</string>
-    <string name="profile_skip_body">자동으로 감지할 수 있는 정보가 충분합니다.</string>
+    <string name="skip_title">이 단계는 건너뛸게요</string>
+    <string name="skip_body">자동으로 감지할 수 있는 정보가 충분합니다.</string>
+    <string name="skip_checking">기기를 확인하는 중…</string>
+    <string name="skip_card_step">%1$d단계 · %2$s</string>
+    <string name="skip_reason_profile">연결된 시계에서 Android %1$s(%2$s)을(를) 감지했습니다.</string>
+    <string name="skip_reason_wearable">시계가 이미 Galaxy Wearable과 페어링되어 있습니다.</string>
+    <string name="skip_reason_watchpair">시계가 이미 무선 디버깅으로 연결되어 있습니다.</string>
 </resources>

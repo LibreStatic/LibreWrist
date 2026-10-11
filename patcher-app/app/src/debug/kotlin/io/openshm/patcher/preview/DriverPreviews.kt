@@ -1,5 +1,6 @@
 package io.openshm.patcher.preview
 
+import io.openshm.patcher.ui.screens.welcome.SkipDialog
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -79,6 +80,12 @@ fun ChangesDriver() = PreviewHost(ColorMode.Fallback) {
 }
 
 @Composable
+fun WelcomeSkipDriver() = PreviewHost(ColorMode.Fallback) { WelcomeSample(skip = SampleSkipping) }
+
+@Composable
+fun WelcomeCheckingDriver() = PreviewHost(ColorMode.Fallback) { WelcomeSample(skip = SkipDialog.Checking) }
+
+@Composable
 fun ProfileDriver() = PreviewHost(ColorMode.Fallback) { ProfileSample() }
 
 @Composable
@@ -89,9 +96,6 @@ fun ProfileDependsHintDriver() = PreviewHost(ColorMode.Fallback) { ProfileSample
 
 @Composable
 fun ProfileDetectedDriver() = PreviewHost(ColorMode.Fallback) { ProfileSample(ProfileVariant.Detected) }
-
-@Composable
-fun ProfileSkippingDriver() = PreviewHost(ColorMode.Fallback) { ProfileSample(ProfileVariant.Skipping) }
 
 @Composable
 fun WatchPairCorrectionDriver() = PreviewHost(ColorMode.Fallback) { WatchPairSample(PreviewData.watchPairCorrection()) }
