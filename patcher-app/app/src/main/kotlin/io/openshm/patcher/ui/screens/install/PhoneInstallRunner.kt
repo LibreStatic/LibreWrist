@@ -1,6 +1,7 @@
 package io.openshm.patcher.ui.screens.install
 
 import io.openshm.patcher.R
+import io.openshm.patcher.adb.BridgeStart
 import io.openshm.patcher.adb.Grant as AdbGrant
 import io.openshm.patcher.adb.GrantReport
 import io.openshm.patcher.adb.InstallResult
@@ -42,6 +43,7 @@ internal class PhoneInstallRunner(
     private val build: () -> BuiltBuild?,
     private val prefix: () -> String,
     private val lockPrefix: () -> Unit,
+    private val log: (String) -> Unit = {},
 ) {
     private var locked = false
 
@@ -69,6 +71,20 @@ internal class PhoneInstallRunner(
             val item = state.value.items[index]
             if (item.status == CheckStatus.Passed) continue
             if (!install(state, index, files.getValue(item.outputId))) return
+            startBridge(item)
+        }
+    }
+
+    /**
+     * Starts a bridge once it is installed (clears the stopped state so boot delivery works from
+     * then on). The grants the user still has to give do not matter for this. Never fails the run.
+     */
+    private fun startBridge(item: InstallItem) {
+        if (item.outputId != BridgeStart.PHONE_OUTPUT) return
+        try {
+            installer.startBridge(item.packageName, BridgeStart.PHONE_RECEIVER, BridgeStart.action(prefix()))
+        } catch (e: RuntimeException) {
+            log("start request for ${item.outputId} failed: ${e.javaClass.simpleName}")
         }
     }
 

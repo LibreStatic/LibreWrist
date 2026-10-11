@@ -3,6 +3,7 @@ package io.openshm.patcher.ui.screens.install
 import androidx.annotation.StringRes
 import io.openshm.patcher.R
 import io.openshm.patcher.adb.AdbException
+import io.openshm.patcher.adb.BridgeStart
 import io.openshm.patcher.adb.InstallResult
 import io.openshm.patcher.build.BuiltBuild
 import io.openshm.patcher.data.Device
@@ -35,6 +36,7 @@ internal class WatchInstallRunner(
     private val build: () -> BuiltBuild?,
     private val prefix: () -> String,
     private val lockPrefix: () -> Unit,
+    private val log: (String) -> Unit = {},
 ) {
     private var locked = false
 
@@ -56,6 +58,19 @@ internal class WatchInstallRunner(
                 if (!install(state, index, files.getValue(item.outputId))) return
             }
             if (!grant(state, index)) return
+            startBridge(item)
+        }
+    }
+
+    /** Starts a bridge once it is installed and granted (clears the stopped state). Never fails the run. */
+    private suspend fun startBridge(item: InstallItem) {
+        if (!BridgeStart.isBridge(item.outputId)) return
+        try {
+            device.startBridge(item.packageName, prefix())
+        } catch (e: IOException) {
+            log("start request for ${item.outputId} failed: ${e.javaClass.simpleName}")
+        } catch (e: IllegalArgumentException) {
+            log("start request for ${item.outputId} rejected: ${e.javaClass.simpleName}")
         }
     }
 

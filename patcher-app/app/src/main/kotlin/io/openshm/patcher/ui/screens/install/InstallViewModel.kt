@@ -1,6 +1,7 @@
 package io.openshm.patcher.ui.screens.install
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import io.openshm.patcher.R
@@ -33,7 +34,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-private val USER_ONLY_ON_PHONE = setOf(GrantKind.Permission, GrantKind.AppOp)
+private val USER_ONLY_ON_PHONE = setOf(GrantKind.Permission, GrantKind.AppOp, GrantKind.BatteryExemption)
 
 /**
  * The install list for one device, in the catalogue `installOrder` (shm-watch, bridge-watch, alarm
@@ -50,7 +51,7 @@ internal fun installItemsFor(device: Device): List<InstallItem> {
                 packageName = out.packageName(session.packagePrefix),
                 status = CheckStatus.Pending,
                 grants = AppCatalogue.current.grants[out.id].orEmpty().map {
-                    // On the phone the app cannot apply permissions and app ops; only the user (or self-ADB) can.
+                    // On the phone the app cannot apply permissions, app ops and the battery exemption; only the user (or self-ADB) can.
                     GrantRow(it, CheckStatus.Pending, manual = device == Device.Phone && it.kind in USER_ONLY_ON_PHONE)
                 },
                 onboarding = out.userOnboarding,
@@ -78,6 +79,7 @@ class InstallPhoneViewModel(application: Application) : AndroidViewModel(applica
         build = { BuildStorage(application).record.read() },
         prefix = { SetupSession.state.value.packagePrefix },
         lockPrefix = { SetupSession.update { it.copy(prefixLocked = true) } },
+        log = { Log.w("BridgeStart", it) },
     )
 
     init {
@@ -171,6 +173,7 @@ class InstallWatchViewModel(application: Application) : AndroidViewModel(applica
         build = { BuildStorage(application).record.read() },
         prefix = { SetupSession.state.value.packagePrefix },
         lockPrefix = { SetupSession.update { it.copy(prefixLocked = true) } },
+        log = { Log.w("BridgeStart", it) },
     )
 
     fun onEvent(event: InstallEvent) {

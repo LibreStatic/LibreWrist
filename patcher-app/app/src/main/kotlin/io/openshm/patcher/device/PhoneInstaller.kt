@@ -2,6 +2,7 @@ package io.openshm.patcher.device
 
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
@@ -38,6 +39,12 @@ interface PhoneInstaller {
 
     /** Whether [packageName] is installed, and if so whether it is a system app. */
     fun packageKind(packageName: String): PackageKind
+
+    /**
+     * Sends the bridge [packageName] its START broadcast (action [action]) to [receiver], including
+     * stopped packages, so a fresh install leaves the stopped state and its service starts.
+     */
+    fun startBridge(packageName: String, receiver: String, action: String)
 
     /**
      * Removes [packageName] together with its data. Only called after the user confirmed it in
@@ -80,6 +87,13 @@ class SessionPhoneInstaller(
 
     private fun sha256(bytes: ByteArray) =
         MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") { "%02x".format(it) }
+
+    override fun startBridge(packageName: String, receiver: String, action: String) {
+        val intent = Intent(action)
+            .setComponent(ComponentName(packageName, packageName + receiver))
+            .addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES)
+        context.sendBroadcast(intent)
+    }
 
     override fun packageKind(packageName: String): PackageKind = try {
         val flags = context.packageManager.getApplicationInfo(packageName, 0).flags

@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "serial": 7,
+  "serial": 8,
   "minAppVersion": 1,
   "inputs": [
     {
@@ -1738,8 +1738,7 @@
       },
       {
         "kind": "deviceIdleWhitelist",
-        "optional": true,
-        "note": "Not required by the manifest; keeps link intents from being deferred while an alarm rings."
+        "note": "Battery (Doze) exemption so link intents are not deferred while an alarm rings."
       }
     ],
     "bridge-phone": [
@@ -1774,6 +1773,10 @@
       {
         "kind": "notificationListener",
         "component": ".BridgeNotificationListener"
+      },
+      {
+        "kind": "deviceIdleWhitelist",
+        "note": "Battery (Doze) exemption so the link service and its RFCOMM server keep running."
       }
     ]
   },

@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.os.PowerManager
 import android.provider.Settings
 import io.openshm.patcher.data.Grant
 import io.openshm.patcher.data.GrantKind
@@ -20,10 +21,13 @@ interface PhoneProbe {
     fun permissionGranted(pkg: String, permission: String): Boolean
     fun appOpAllowed(pkg: String, op: String): Boolean?
     fun listenerEnabled(pkg: String, component: String): Boolean
+
+    /** Whether [pkg] is exempt from battery optimisation (Doze list); `null` means "cannot tell". */
+    fun batteryExempt(pkg: String): Boolean? = null
 }
 
 /** Which system screen lets the user change a grant. */
-enum class SettingsTarget { AppDetails, Overlay, ListenerDetail }
+enum class SettingsTarget { AppDetails, Overlay, ListenerDetail, Battery }
 
 /**
  * The phone grants the app cannot apply by itself. Each row is checked against the system when
@@ -57,8 +61,13 @@ class PhoneGrants(private val probe: PhoneProbe) {
                     else -> missing
                 }
             }
+            GrantKind.BatteryExemption -> when (probe.batteryExempt(pkg)) {
+                true -> CheckStatus.Passed
+                false -> missing
+                null -> row.status
+            }
             // Not readable from here: whatever was last applied stands.
-            GrantKind.SecureSetting, GrantKind.BatteryExemption -> row.status
+            GrantKind.SecureSetting -> row.status
         }
     }
 
@@ -68,6 +77,7 @@ class PhoneGrants(private val probe: PhoneProbe) {
 
         fun targetFor(grant: Grant): SettingsTarget = when {
             grant.kind == GrantKind.NotificationListener -> SettingsTarget.ListenerDetail
+            grant.kind == GrantKind.BatteryExemption -> SettingsTarget.Battery
             grant.kind == GrantKind.AppOp && (grant.engine?.fields?.get("op") ?: grant.name) == OVERLAY -> SettingsTarget.Overlay
             else -> SettingsTarget.AppDetails
         }
@@ -118,6 +128,12 @@ class AndroidPhoneProbe(context: Context) : PhoneProbe {
         }
     }
 
+    override fun batteryExempt(pkg: String): Boolean? = try {
+        context.getSystemService(PowerManager::class.java).isIgnoringBatteryOptimizations(pkg)
+    } catch (e: RuntimeException) {
+        null
+    }
+
     override fun listenerEnabled(pkg: String, component: String): Boolean =
         isListenerEnabled(Settings.Secure.getString(context.contentResolver, "enabled_notification_listeners"), pkg, component)
 
@@ -151,6 +167,8 @@ object PhoneSettings {
             SettingsTarget.AppDetails -> LaunchRequest(details)
             SettingsTarget.Overlay ->
                 LaunchRequest(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$pkg")), details)
+            // The system list of apps with battery optimisation; the user switches this one to "Not optimised".
+            SettingsTarget.Battery -> LaunchRequest(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS), details)
             SettingsTarget.ListenerDetail -> LaunchRequest(
                 Intent(Settings.ACTION_NOTIFICATION_LISTENER_DETAIL_SETTINGS)
                     .putExtra(Settings.EXTRA_NOTIFICATION_LISTENER_COMPONENT_NAME, "$pkg/${listenerClass ?: ""}"),

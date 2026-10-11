@@ -55,12 +55,16 @@ private val RESTRICTED = Grant(GrantKind.AppOp, "ACCESS_RESTRICTED_SETTINGS", fa
 private val OVERLAY = Grant(GrantKind.AppOp, "SYSTEM_ALERT_WINDOW", false, engine("appop", "op" to "SYSTEM_ALERT_WINDOW"))
 private val LISTENER = Grant(GrantKind.NotificationListener, ".BridgeNotificationListener", false, engine("notificationListener", "component" to ".BridgeNotificationListener"))
 
+private val BATTERY = Grant(GrantKind.BatteryExemption, "deviceIdleWhitelist", false, engine("deviceIdleWhitelist"))
+
 private fun rows(vararg grants: Grant) = grants.map { GrantRow(it, CheckStatus.Pending, manual = it.kind != GrantKind.NotificationListener) }
 
 private class FakeProbe : PhoneProbe {
     val permissions = mutableSetOf<String>()
     val appOps = mutableMapOf<String, Boolean?>()
     var listener = false
+    var battery: Boolean? = null
+    override fun batteryExempt(pkg: String): Boolean? = battery
     override fun permissionGranted(pkg: String, permission: String) = permission in permissions
     override fun appOpAllowed(pkg: String, op: String): Boolean? = appOps[op]
     override fun listenerEnabled(pkg: String, component: String): Boolean {
@@ -117,6 +121,19 @@ class PhoneGrantsTest {
         assertEquals(CheckStatus.Warning, grants.refresh(PKG, rows(optional)).single().status)
         val running = listOf(GrantRow(ANSWER, CheckStatus.Running, manual = true))
         assertEquals(CheckStatus.Running, grants.refresh(PKG, running).single().status)
+    }
+
+    @Test
+    fun theBatteryExemptionIsReadFromTheSystemAndKeepsWhatWasAppliedWhenUnreadable() {
+        assertEquals(listOf(CheckStatus.Pending), statuses(BATTERY))
+        probe.battery = true
+        assertEquals(listOf(CheckStatus.Passed), statuses(BATTERY))
+        probe.battery = false
+        assertEquals(listOf(CheckStatus.Pending), statuses(BATTERY))
+        probe.battery = null
+        val applied = listOf(GrantRow(BATTERY, CheckStatus.Passed, manual = true))
+        assertEquals(CheckStatus.Passed, grants.refresh(PKG, applied).single().status)
+        assertEquals(SettingsTarget.Battery, PhoneGrants.targetFor(BATTERY))
     }
 
     @Test
@@ -211,6 +228,12 @@ private class FakePhoneInstaller : PhoneInstaller {
     }
     override fun packageKind(packageName: String): PackageKind = PackageKind.System // never offers a removal
     override suspend fun uninstall(packageName: String): UninstallResult = error("not used here")
+    val started = mutableListOf<Triple<String, String, String>>()
+    var startThrows: RuntimeException? = null
+    override fun startBridge(packageName: String, receiver: String, action: String) {
+        started += Triple(packageName, receiver, action)
+        startThrows?.let { throw it }
+    }
 }
 
 class PhoneInstallRunnerTest {
@@ -241,7 +264,9 @@ class PhoneInstallRunnerTest {
     private fun state(items: List<InstallItem> = items()) = MutableStateFlow(InstallUiState(items))
 
     private fun runner(build: BuiltBuild?, currentPrefix: String = prefix) =
-        PhoneInstallRunner(installer, PhoneGrants(probe), { build }, { currentPrefix }, { locked++ })
+        PhoneInstallRunner(installer, PhoneGrants(probe), { build }, { currentPrefix }, { locked++ }, { logged += it })
+
+    private val logged = mutableListOf<String>()
 
 
     @Test
@@ -258,6 +283,26 @@ class PhoneInstallRunnerTest {
         assertFalse(s.value.done)
         assertTrue(s.value.canSkipGrants)
         assertTrue(s.value.items[0].onboarding)
+    }
+
+    @Test
+    fun onlyTheBridgeIsStartedAfterItIsInstalled() = runBlocking {
+        val s = state()
+        runner(built("shm-phone", "bridge-phone")).run(s)
+        assertEquals(
+            listOf(Triple("$prefix.bridge", ".CommsBootReceiver", "$prefix.shmbridge.START")),
+            installer.started,
+        )
+    }
+
+    @Test
+    fun aFailedStartRequestIsLoggedAndDoesNotFailTheRun() = runBlocking {
+        installer.startThrows = SecurityException("denied")
+        val s = state()
+        runner(built("shm-phone", "bridge-phone")).run(s)
+        assertNull(s.value.errorRes)
+        assertTrue(s.value.items.all { it.status == CheckStatus.Passed })
+        assertEquals(1, logged.size)
     }
 
     @Test

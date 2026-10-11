@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="shminterop.shmbridge.watch"
-    android:versionCode="13" android:versionName="1.12">
+    android:versionCode="14" android:versionName="1.13">
 
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
@@ -37,13 +37,11 @@
         android:protectionLevel="signature"/>
     <uses-permission android:name="shminterop.shmbridge.permission.ALARM_LINK"/>
 
-    <application android:label="SHM Bridge" android:allowBackup="false">
-        <activity android:name=".MainActivity" android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
+    <application android:label="SHM Bridge" android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round">
+        <!-- No launcher entry on purpose: the bridge runs headless. Still startable with
+             `am start -n <pkg>/.MainActivity` (it starts the link service). -->
+        <activity android:name=".MainActivity" android:exported="true"/>
         <service android:name=".BridgeService" android:exported="false"
             android:foregroundServiceType="connectedDevice"/>
 
@@ -62,6 +60,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+                <action android:name="shminterop.shmbridge.START"/>
                 <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED"/>
             </intent-filter>
         </receiver>

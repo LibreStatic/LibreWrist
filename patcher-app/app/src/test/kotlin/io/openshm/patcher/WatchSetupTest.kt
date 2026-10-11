@@ -142,6 +142,14 @@ private class FakeDevice : WatchDevice {
 
     override suspend fun isInstalled(pkg: String) = pkg in present
 
+    val started = mutableListOf<Pair<String, String>>()
+    var startThrows: java.io.IOException? = null
+
+    override suspend fun startBridge(pkg: String, prefix: String) {
+        started += pkg to prefix
+        startThrows?.let { throw it }
+    }
+
     override suspend fun disable(pkg: String) {
         disableThrows(pkg)?.let { throw it }
         disabled += pkg
@@ -181,7 +189,9 @@ class WatchInstallRunnerTest {
     private fun state(vararg items: InstallItem) = MutableStateFlow(InstallUiState(items.toList()))
 
     private fun runner(device: WatchDevice, build: BuiltBuild?, currentPrefix: String = prefix) =
-        WatchInstallRunner(device, { build }, { currentPrefix }, { locked++ })
+        WatchInstallRunner(device, { build }, { currentPrefix }, { locked++ }, { logged += it })
+
+    private val logged = mutableListOf<String>()
 
     @Test
     fun installsInOrderAppliesGrantsAndLocksThePrefix() = runBlocking {
@@ -194,6 +204,35 @@ class WatchInstallRunnerTest {
         assertFalse(s.value.running)
         assertNull(s.value.errorRes)
         assertEquals(1, locked)
+    }
+
+    @Test
+    fun aBridgeIsStartedOnceAfterItsGrantsAndOtherItemsAreNot() = runBlocking {
+        val device = FakeDevice()
+        val s = state(item("shm-watch"), item("bridge-watch", required), item("alarm-fork"))
+        runner(device, built("shm-watch", "bridge-watch", "alarm-fork")).run(s)
+        assertEquals(listOf("$prefix.bridge-watch" to prefix), device.started)
+        assertEquals(listOf("$prefix.bridge-watch"), device.grantCalls.map { it.first })
+        assertTrue(s.value.done)
+    }
+
+    @Test
+    fun aFailedStartRequestIsLoggedAndDoesNotStopTheRun() = runBlocking {
+        val device = FakeDevice().apply { startThrows = AdbException.ConnectionFailed(ConnectException()) }
+        val s = state(item("bridge-watch"), item("alarm-fork"))
+        runner(device, built("bridge-watch", "alarm-fork")).run(s)
+        assertEquals(listOf("bridge-watch.apk", "alarm-fork.apk"), device.installed)
+        assertNull(s.value.errorRes)
+        assertTrue(s.value.done)
+        assertEquals(1, logged.size)
+    }
+
+    @Test
+    fun aFailedRequiredGrantDoesNotStartTheBridge() = runBlocking {
+        val device = FakeDevice().apply { failGrant = { it is AdbGrant.Permission } }
+        val s = state(item("bridge-watch", required))
+        runner(device, built("bridge-watch")).run(s)
+        assertTrue(device.started.isEmpty())
     }
 
     @Test

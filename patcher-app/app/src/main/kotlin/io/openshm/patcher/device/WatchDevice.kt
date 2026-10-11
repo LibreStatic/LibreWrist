@@ -3,6 +3,7 @@ package io.openshm.patcher.device
 import io.openshm.patcher.adb.AdbException
 import io.openshm.patcher.adb.AdbInstaller
 import io.openshm.patcher.adb.ApkSource
+import io.openshm.patcher.adb.BridgeStart
 import io.openshm.patcher.adb.Grant as AdbGrant
 import io.openshm.patcher.adb.GrantApplier
 import io.openshm.patcher.adb.GrantReport
@@ -17,6 +18,12 @@ interface WatchDevice {
     suspend fun install(apk: File, onProgress: (Float) -> Unit): InstallResult
     suspend fun applyGrants(pkg: String, grants: List<AdbGrant>): GrantReport
     suspend fun isInstalled(pkg: String): Boolean
+
+    /**
+     * Sends the bridge [pkg] its START broadcast (clears the stopped state, starts its service).
+     * [prefix] is the package prefix of the build. Failures are [AdbException]s or [IOException]s.
+     */
+    suspend fun startBridge(pkg: String, prefix: String)
 
     /** `pm disable-user`; never uninstalls. */
     suspend fun disable(pkg: String)
@@ -43,6 +50,11 @@ class AdbWatchDevice(private val link: WatchLink) : WatchDevice {
         GrantApplier(link.client(), GrantTarget.WATCH).apply(pkg, grants)
 
     override suspend fun isInstalled(pkg: String): Boolean = RemotePackages(link.client()).isInstalled(pkg)
+
+    override suspend fun startBridge(pkg: String, prefix: String) {
+        val command = BridgeStart.watchCommand(pkg, prefix)
+        link.client().shell(command).requireSuccess(command)
+    }
 
     override suspend fun disable(pkg: String) {
         RemotePackages(link.client()).disableUser(pkg)

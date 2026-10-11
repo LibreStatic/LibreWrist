@@ -15,7 +15,7 @@ class AppCatalogueTest {
 
     @Test
     fun serialAndInputs() {
-        assertEquals(7L, c.serial)
+        assertEquals(8L, c.serial)
         assertEquals(
             listOf(
                 listOf("shm-phone", "Samsung Health Monitor (phone)", "1.4.6.001", "Phone",
@@ -100,10 +100,11 @@ class AppCatalogueTest {
             names("bridge-watch"),
         )
         assertEquals(
-            listOf("Permission:POST_NOTIFICATIONS:false", "AppOp:USE_FULL_SCREEN_INTENT:false", "BatteryExemption:deviceIdleWhitelist:true"),
+            listOf("Permission:POST_NOTIFICATIONS:false", "AppOp:USE_FULL_SCREEN_INTENT:false", "BatteryExemption:deviceIdleWhitelist:false"),
             names("alarm-fork"),
         )
-        assertEquals(7, c.grants.getValue("bridge-phone").size)
+        assertEquals(8, c.grants.getValue("bridge-phone").size)
+        assertEquals("BatteryExemption:deviceIdleWhitelist:false", names("bridge-phone").last())
         assertEquals("permission", c.grants.getValue("bridge-watch").first().engine?.kind)
     }
 

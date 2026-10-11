@@ -53,7 +53,7 @@ adb -s $WATCH shell dumpsys deviceidle whitelist +$W
 F=shminterop.shmbridge.alarm
 adb -s $WATCH shell pm grant $F android.permission.POST_NOTIFICATIONS
 adb -s $WATCH shell appops set $F USE_FULL_SCREEN_INTENT allow
-adb -s $WATCH shell dumpsys deviceidle whitelist +$F          # optional
+adb -s $WATCH shell dumpsys deviceidle whitelist +$F
 
 # Phone bridge (output "bridge-phone")
 P=shminterop.shmbridge.phone
@@ -62,11 +62,24 @@ for p in ANSWER_PHONE_CALLS READ_PHONE_STATE POST_NOTIFICATIONS BLUETOOTH_CONNEC
 for op in ACCESS_RESTRICTED_SETTINGS SYSTEM_ALERT_WINDOW; do
   adb -s $PHONE shell appops set --user 0 $P $op allow; done
 adb -s $PHONE shell cmd notification allow_listener $P/$P.BridgeNotificationListener 0
+adb -s $PHONE shell cmd deviceidle whitelist +$P
 adb -s $PHONE shell am start-foreground-service --user 0 -n $P/.CommsService
 ```
 
-The watch app starts its link service when opened (`am start -n $W/.MainActivity`); the phone
-service also starts after boot and after an upgrade (`CommsBootReceiver`).
+Neither bridge has a launcher entry (the icon only shows in app lists; Android 10+ may show a
+generic "App info" entry on the phone, which is expected). A freshly installed app is in the
+stopped state and receives no `BOOT_COMPLETED` until something starts it once, so start each
+bridge after installing it (the patcher does this):
+
+```sh
+adb -s $WATCH shell am broadcast -a shminterop.shmbridge.START -n $W/.BridgeAlarmReceiver -f 0x20
+adb -s $PHONE shell am broadcast --user 0 -a shminterop.shmbridge.START -n $P/.CommsBootReceiver -f 0x20
+```
+
+The watch link service (`BridgeService`) starts on that action, after boot and after an upgrade
+(`BridgeAlarmReceiver`, which also re-arms the mirrored alarm); it still starts when
+`am start -n $W/.MainActivity` opens the status screen. The phone service starts on the same
+three triggers (`CommsBootReceiver`).
 
 ## Communications channel `/__bridge__/` (watch)
 

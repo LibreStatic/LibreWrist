@@ -50,6 +50,7 @@ private class ConflictingPhone(var kind: PackageKind = PackageKind.User) : Phone
     override fun canInstallPackages() = true
     override fun isUpToDate(apk: File, packageName: String) = false
     override fun packageKind(packageName: String) = kind
+    override fun startBridge(packageName: String, receiver: String, action: String) {}
     override suspend fun install(apk: File, packageName: String, onProgress: (Float) -> Unit): InstallResult {
         calls += "install:$packageName"
         return if (kind != PackageKind.Missing) signatureFailure else InstallResult.Success(1).also { installed = true }
@@ -73,6 +74,8 @@ private class ConflictingWatch(var kind: PackageKind = PackageKind.User, var fai
     }
 
     override suspend fun applyGrants(pkg: String, grants: List<AdbGrant>) = GrantReport(emptyList())
+
+    override suspend fun startBridge(pkg: String, prefix: String) {}
     override suspend fun isInstalled(pkg: String) = kind != PackageKind.Missing
     override suspend fun disable(pkg: String) = error("never disables here")
     override suspend fun packageKind(pkg: String) = kind
