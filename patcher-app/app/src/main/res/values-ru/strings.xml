@@ -14,7 +14,6 @@
     <string name="action_skip">Пропустить</string>
     <string name="action_start">Начать</string>
     <string name="action_retry">Повторить</string>
-    <string name="action_edit">Изменить</string>
     <string name="action_fix">Исправить</string>
     <string name="action_yes">Да</string>
     <string name="action_no">Нет</string>
@@ -136,14 +135,6 @@
 
     <!-- Galaxy Wearable pairing check -->
     <string name="wearable_title">Часы сопряжены?</string>
-    <string name="wearable_intro">Часы уже должны быть сопряжены с этим телефоном. Эти проверки ничего не меняют.</string>
-    <string name="wearable_check_app">Приложение-компаньон найдено</string>
-    <string name="wearable_check_app_detail">Приложение для управления часами установлено.</string>
-    <string name="wearable_check_paired">Часы сопряжены</string>
-    <string name="wearable_check_paired_detail">Часы связаны с этим телефоном.</string>
-    <string name="wearable_check_datalayer">Телефон и часы обмениваются данными</string>
-    <string name="wearable_check_datalayer_detail">Канал передачи данных Google между ними отвечает.</string>
-    <string name="wearable_note">Если проверка не пройдена, исправьте это в настройках самих часов и проверьте снова.</string>
     <string name="wearable_recheck">Проверить снова</string>
 
     <!-- Watch pairing over Wi-Fi -->
@@ -152,16 +143,9 @@
     <string name="watchpair_paired">Часы сопряжены</string>
     <string name="watchpair_title">Подключение к часам</string>
     <string name="watchpair_intro">Часы принимают установку по Wi-Fi после сопряжения по короткому коду.</string>
-    <string name="watchpair_on_watch">НА ЧАСАХ</string>
-    <string name="watchpair_on_watch_steps">Откройте Настройки, Параметры разработчика, Беспроводная отладка, затем Подключить новое устройство. Там отобразится 6-значный код.</string>
     <string name="watchpair_found">Часы найдены в вашей сети</string>
     <string name="watchpair_searching">Поиск часов…</string>
-    <string name="watchpair_address_label">Адрес (хост:порт)</string>
     <string name="watchpair_code_label">Код сопряжения</string>
-    <string name="watchpair_check_wifi">Телефон и часы в одной сети Wi-Fi</string>
-    <string name="watchpair_check_developer">Параметры разработчика включены</string>
-    <string name="watchpair_check_wireless">Беспроводная отладка включена</string>
-    <string name="watchpair_check_code">Экран с кодом сопряжения открыт</string>
     <string name="watchpair_hint">Введите все 6 цифр для сопряжения</string>
     <string name="watchpair_ready">Готово к сопряжению</string>
     <string name="watchpair_pair">Сопрячь</string>
@@ -198,9 +182,7 @@
     <string name="browser_page_placeholder">ВЕБ-СТРАНИЦА В ИСХОДНОМ ВИДЕ</string>
     <string name="browser_coach_progress">%1$d из %2$d · %3$s</string>
     <string name="browser_coach_1_title">Откройте нужный выпуск</string>
-    <string name="browser_coach_1_body">Выберите версию, указанную на карточке, а не новее или старше.</string>
     <string name="browser_coach_2_title">Выберите вариант</string>
-    <string name="browser_coach_2_body">Выберите APK, а не пакет, и сборку nodpi для вашей версии Android.</string>
     <string name="browser_coach_3_title">Скачайте</string>
     <string name="browser_coach_3_body">Нажмите Download APK. Патчер подхватит файл после завершения загрузки.</string>
     <string name="browser_coach_wrong_version_body">Это другая версия. Вернитесь и откройте %1$s.</string>
@@ -562,4 +544,55 @@
     <string name="signing_key_nudge_body">Без неё установленные приложения нельзя обновить, только переустановить.</string>
     <string name="signing_key_nudge_action">Сохранить копию</string>
     <string name="home_menu_signing_key">Ключ подписи</string>
+    <string name="watch_ui_software_version">Версия ПО</string>
+    <string name="watch_ui_devmode_on">Режим разработчика включен</string>
+    <string name="watch_ui_developer">Параметры разработчика</string>
+    <string name="watch_ui_adb">Отладка по ADB</string>
+    <string name="watch_ui_wireless">Беспроводная отладка</string>
+    <string name="watch_ui_connections">Подключения</string>
+    <string name="watch_ui_wifi">Wi-Fi</string>
+    <string name="watch_ui_bluetooth">Bluetooth</string>
+    <string name="watch_ui_pair_new">Подключить новое устройство</string>
+    <string name="wearable_intro_galaxy">Сначала часы нужно сопрячь с этим телефоном через официальное приложение Samsung Galaxy Wearable. Эти проверки только смотрят и ничего не меняют.</string>
+    <string name="wearable_howto_title">Как выполнить сопряжение</string>
+    <string name="wearable_howto_1">Установите приложение Galaxy Wearable.</string>
+    <string name="wearable_howto_2">Откройте его и нажмите «Начать».</string>
+    <string name="wearable_howto_3">Выберите свои часы в списке.</string>
+    <string name="wearable_howto_4">Подтвердите одинаковый код на телефоне и на часах.</string>
+    <string name="wearable_howto_5">Дождитесь сообщения о подключении. Плагин для часов установится сам.</string>
+    <string name="wearable_open_app">Открыть Galaxy Wearable</string>
+    <string name="wearable_get_app">Скачать Galaxy Wearable</string>
+    <string name="wearable_check_gw">Galaxy Wearable установлено</string>
+    <string name="wearable_check_gw_ok">Приложение Samsung для сопряжения и управления часами есть на этом телефоне.</string>
+    <string name="wearable_check_gw_missing">Не найдено. Установите его и вернитесь сюда.</string>
+    <string name="wearable_check_plugin">Плагин для часов установлен</string>
+    <string name="wearable_check_plugin_ok">Galaxy Wearable добавило плагин для ваших часов.</string>
+    <string name="wearable_check_plugin_missing">Не найдено. Galaxy Wearable устанавливает его при сопряжении часов.</string>
+    <string name="wearable_check_bonded">Часы сопряжены по Bluetooth</string>
+    <string name="wearable_check_bonded_ok">С этим телефоном сопряжены часы.</string>
+    <string name="wearable_check_bonded_missing">Сопряжённые часы не найдены. Завершите сопряжение в Galaxy Wearable.</string>
+    <string name="wearable_check_bonded_denied">Разрешите доступ к устройствам поблизости, чтобы приложение видело, сопряжены ли часы. Оно только читает список сопряжённых устройств.</string>
+    <string name="wearable_allow">Разрешить</string>
+    <string name="wearable_note_back">Вернитесь сюда, когда закончите: проверки запустятся снова сами.</string>
+    <string name="watchpair_error_bad_host">Введите IP-адрес часов, например 192.168.1.20.</string>
+    <string name="watchpair_error_bad_port">Введите порт от 1 до 65535.</string>
+    <string name="watchpair_guide_title">Включите сопряжение на часах</string>
+    <string name="watchpair_guide_1">На часах откройте «Настройки», «О часах», затем «Сведения о ПО». Нажимайте «Версия ПО» от 5 до 7 раз, пока часы не покажут: «Режим разработчика включен».</string>
+    <string name="watchpair_guide_2">Вернитесь в «Настройки», откройте «Параметры разработчика» и включите «Отладка по ADB».</string>
+    <string name="watchpair_guide_3">Подключите часы к той же сети Wi-Fi, что и телефон: «Настройки», «Подключения», «Wi-Fi».</string>
+    <string name="watchpair_guide_4">В «Параметрах разработчика» нажмите «Беспроводная отладка», включите её и разрешите.</string>
+    <string name="watchpair_guide_5">Нажмите «Подключить новое устройство». Часы покажут 6-значный код и адрес. Приложение найдёт адрес само; вам нужно ввести только код.</string>
+    <string name="watchpair_guide_again">Показать ещё раз</string>
+    <string name="watchpair_manual">Пропустить и сделать вручную</string>
+    <string name="watchpair_automatic">Искать мои часы автоматически</string>
+    <string name="watchpair_manual_intro">На часах нажмите «Подключить новое устройство», затем введите IP-адрес, порт и 6-значный код, которые они покажут.</string>
+    <string name="watchpair_host_label">IP-адрес</string>
+    <string name="watchpair_port_label">Порт</string>
+    <string name="watchpair_pairing">Сопряжение с часами…</string>
+    <string name="browser_target_line">Ищем: %1$s</string>
+    <string name="browser_coach_1_body_version">Откройте версию %1$s приложения.</string>
+    <string name="browser_coach_2_body_version">В таблице вариантов выберите APK (не BUNDLE) с пометкой nodpi для версии %1$s.</string>
+    <string name="browser_coach_no_mirror_title">Нет на APKMirror</string>
+    <string name="browser_coach_no_mirror_body">Версии %1$s нет на APKMirror. Закройте этот экран, выберите «Другие способы получить это приложение» и укажите файл, который у вас уже есть.</string>
+    <string name="acquire_not_on_mirror">Версии %1$s нет на APKMirror. Используйте файл, который у вас уже есть.</string>
 </resources>

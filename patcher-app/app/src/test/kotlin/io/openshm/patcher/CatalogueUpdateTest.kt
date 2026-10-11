@@ -53,9 +53,9 @@ class CatalogueUpdateTest {
 
     @After fun tearDown() { dir.deleteRecursively() }
 
-    private fun text(serial: Long = 4, minApp: Long = 1, edit: (String) -> String = { it }): ByteArray {
+    private fun text(serial: Long = 5, minApp: Long = 1, edit: (String) -> String = { it }): ByteArray {
         val base = String(TestCatalogue.bytes, Charsets.UTF_8)
-        val withSerial = base.replace("\"serial\": 4,", "\"serial\": $serial,").replace("\"minAppVersion\": 1,", "\"minAppVersion\": $minApp,")
+        val withSerial = base.replace("\"serial\": 5,", "\"serial\": $serial,").replace("\"minAppVersion\": 1,", "\"minAppVersion\": $minApp,")
         assertTrue(withSerial.contains("\"serial\": $serial,"))
         return edit(withSerial).toByteArray(Charsets.UTF_8)
     }
@@ -80,27 +80,27 @@ class CatalogueUpdateTest {
     private fun updater(
         fetcher: CatalogueFetcher, state: UpdateState = MemState(), base: String = "https://example.test/catalogue/",
         app: Int = 1, key: String = signer.publicKeyPem,
-    ) = CatalogueUpdater(base, key, app, bundledSerial = 4, store = store(), state = state, fetcher = fetcher)
+    ) = CatalogueUpdater(base, key, app, bundledSerial = 5, store = store(), state = state, fetcher = fetcher)
 
-    private fun signed(serial: Long = 5, minApp: Long = 1): FakeFetcher {
+    private fun signed(serial: Long = 6, minApp: Long = 1): FakeFetcher {
         val bytes = text(serial, minApp)
         return FakeFetcher(bytes, signer.sign(bytes))
     }
 
     @Test fun aLostStoredCopyOfTheHighestSerialIsStoredAgain() {
-        val state = MemState().apply { highestSerial = 5 }
+        val state = MemState().apply { highestSerial = 6 }
         val dir = store()
-        val result = CatalogueUpdater("https://example.test/c", signer.publicKeyPem, 1, 4, dir, state, signed(5)).check()
-        assertEquals(UpdateResult.Updated(5), result)
+        val result = CatalogueUpdater("https://example.test/c", signer.publicKeyPem, 1, 5, dir, state, signed(6)).check()
+        assertEquals(UpdateResult.Updated(6), result)
         assertNotNull(dir.read())
-        assertEquals(UpdateResult.UpToDate, CatalogueUpdater("https://example.test/c", signer.publicKeyPem, 1, 4, dir, state, signed(5)).check())
+        assertEquals(UpdateResult.UpToDate, CatalogueUpdater("https://example.test/c", signer.publicKeyPem, 1, 5, dir, state, signed(6)).check())
     }
 
     @Test fun happyPathStoresVerifiedBytesAndBumpsHighestSerial() {
-        val fetcher = signed(5)
+        val fetcher = signed(6)
         val state = MemState()
-        assertEquals(UpdateResult.Updated(5), updater(fetcher, state).check())
-        assertEquals(5, state.highestSerial)
+        assertEquals(UpdateResult.Updated(6), updater(fetcher, state).check())
+        assertEquals(6, state.highestSerial)
         assertEquals(listOf("https://example.test/catalogue/catalogue.json", "https://example.test/catalogue/catalogue.json.sig"), fetcher.urls)
         val stored = store().read()!!
         assertArrayEquals(fetcher.json, stored.json)
@@ -109,14 +109,14 @@ class CatalogueUpdateTest {
     }
 
     @Test fun badSignatureIsRejectedAndNothingIsStored() {
-        val fetcher = signed(5)
+        val fetcher = signed(6)
         fetcher.json = fetcher.json.copyOf().also { it[it.size / 2] = (it[it.size / 2].toInt() xor 1).toByte() }
         assertTrue(updater(fetcher).check() is UpdateResult.Rejected)
         assertNull(store().read())
     }
 
     @Test fun aSignatureByAnotherKeyIsRejected() {
-        val bytes = text(5)
+        val bytes = text(6)
         val fetcher = FakeFetcher(bytes, other.sign(bytes))
         val state = MemState()
         assertTrue(updater(fetcher, state).check() is UpdateResult.Rejected)
@@ -127,9 +127,9 @@ class CatalogueUpdateTest {
     @Test fun aRollbackIsRejectedAndTheSameSerialIsUpToDate() {
         val state = MemState(highestSerial = 9)
         assertTrue(updater(signed(8), state).check() is UpdateResult.Rejected)
-        // The bundled serial (4) is the floor even when the preferences never recorded anything.
-        assertTrue(updater(signed(3)).check() is UpdateResult.Rejected)
-        assertEquals(UpdateResult.UpToDate, updater(signed(4)).check())
+        // The bundled serial (5) is the floor even when the preferences never recorded anything.
+        assertTrue(updater(signed(4)).check() is UpdateResult.Rejected)
+        assertEquals(UpdateResult.UpToDate, updater(signed(5)).check())
         assertNull(store().read())
         // The same serial as the highest accepted, with that copy still stored, is up to date.
         store().write(text(9, 1), signer.sign(text(9, 1)))
@@ -139,18 +139,18 @@ class CatalogueUpdateTest {
 
     @Test fun aCatalogueNeedingANewerAppIsRejected() {
         val state = MemState()
-        assertTrue(updater(signed(5, minApp = 2), state, app = 1).check() is UpdateResult.Rejected)
+        assertTrue(updater(signed(6, minApp = 2), state, app = 1).check() is UpdateResult.Rejected)
         assertNull(store().read())
         assertEquals(0, state.highestSerial)
-        assertEquals(UpdateResult.Updated(5), updater(signed(5, minApp = 2), state, app = 2).check())
+        assertEquals(UpdateResult.Updated(6), updater(signed(6, minApp = 2), state, app = 2).check())
     }
 
     @Test fun oversizeResponsesAreRejected() {
-        val big = signed(5).also { it.json = ByteArray(CatalogueUpdater.MAX_JSON_BYTES + 1) }
+        val big = signed(6).also { it.json = ByteArray(CatalogueUpdater.MAX_JSON_BYTES + 1) }
         assertTrue(updater(big).check() is UpdateResult.Rejected)
-        val bigSig = signed(5).also { it.sig = ByteArray(CatalogueUpdater.MAX_SIG_BYTES + 1) }
+        val bigSig = signed(6).also { it.sig = ByteArray(CatalogueUpdater.MAX_SIG_BYTES + 1) }
         assertTrue(updater(bigSig).check() is UpdateResult.Rejected)
-        val refusing = signed(5).also { it.failure = RefusedResponseException("response larger") }
+        val refusing = signed(6).also { it.failure = RefusedResponseException("response larger") }
         assertTrue(updater(refusing).check() is UpdateResult.Rejected)
         assertNull(store().read())
     }
@@ -163,9 +163,9 @@ class CatalogueUpdateTest {
     }
 
     @Test fun networkFailureIsFailedAndAnEmptyOrInsecureUrlIsNot() {
-        val failing = signed(5).also { it.failure = IOException("offline") }
+        val failing = signed(6).also { it.failure = IOException("offline") }
         assertEquals(UpdateResult.Failed("offline"), updater(failing).check())
-        val fetcher = signed(5)
+        val fetcher = signed(6)
         assertEquals(UpdateResult.Disabled, updater(fetcher, base = "").check())
         assertTrue(updater(fetcher, base = "http://example.test/catalogue").check() is UpdateResult.Rejected)
         assertTrue(fetcher.urls.isEmpty())
@@ -194,36 +194,36 @@ class CatalogueUpdateTest {
         AppCatalogue.select(bundled, store(), signer.publicKeyPem, 1, TestCatalogue.resolve)
 
     @Test fun aStoredNewerCatalogueIsUsed() {
-        val newer = text(7)
+        val newer = text(8)
         store().write(newer, signer.sign(newer))
-        assertEquals(7L, select(load(text(4))).serial)
+        assertEquals(8L, select(load(text(5))).serial)
         assertNotNullFiles()
     }
 
     @Test fun aStoredCatalogueOlderThanTheBundledOneIsDeleted() {
-        val older = text(3)
+        val older = text(4)
         store().write(older, signer.sign(older))
-        assertEquals(5L, select(load(text(5))).serial)
+        assertEquals(6L, select(load(text(6))).serial)
         assertNull(store().read())
     }
 
     @Test fun aCorruptOrForeignStoredCatalogueIsDeleted() {
-        val bytes = text(7)
+        val bytes = text(8)
         store().write(bytes, other.sign(bytes))
-        assertEquals(4L, select(load(text(4))).serial)
+        assertEquals(5L, select(load(text(5))).serial)
         assertNull(store().read())
         store().write("garbage".toByteArray(), ByteArray(70))
-        assertEquals(4L, select(load(text(4))).serial)
+        assertEquals(5L, select(load(text(5))).serial)
         assertNull(store().read())
         // Needs a newer app than this one.
-        val future = text(8, minApp = 2)
+        val future = text(9, minApp = 2)
         store().write(future, signer.sign(future))
-        assertEquals(4L, select(load(text(4))).serial)
+        assertEquals(5L, select(load(text(5))).serial)
         assertNull(store().read())
     }
 
     @Test fun withoutStoredFilesTheBundledCatalogueIsUsed() {
-        assertEquals(4L, select(load(text(4))).serial)
+        assertEquals(5L, select(load(text(5))).serial)
     }
 
     private fun assertNotNullFiles() = assertFalse(store().read() == null)
@@ -237,8 +237,8 @@ class CatalogueUpdateTest {
         BuiltBuild("k", "p", catalogue.serial, 0, listOf(BuiltRecord("shm-phone", "x", 1, "ff")), facts)
 
     @Test fun anUpdatedInputOffersItsVersions() {
-        val old = load(text(4))
-        val new = load(text(5) { it.replace(watchSha, "b".repeat(64)).replace("\"versionName\": \"1.5.1.022\"", "\"versionName\": \"1.5.2.004\"") })
+        val old = load(text(5))
+        val new = load(text(6) { it.replace(watchSha, "b".repeat(64)).replace("\"versionName\": \"1.5.1.022\"", "\"versionName\": \"1.5.2.004\"") })
         assertEquals(
             UpdateOffer(new.input("shm-watch").label, "1.5.1.022", "1.5.2.004"),
             updateOfferFor(new, builtWith(old), ids),
@@ -246,25 +246,25 @@ class CatalogueUpdateTest {
     }
 
     @Test fun changedPatchesOfferAPatchesOnlyUpdate() {
-        val old = load(text(4))
-        val new = load(text(5) { it.replace("\"title\": \"Minimum age 16\"", "\"title\": \"Minimum age 17\"") })
+        val old = load(text(5))
+        val new = load(text(6) { it.replace("\"title\": \"Minimum age 16\"", "\"title\": \"Minimum age 17\"") })
         val offer = updateOfferFor(new, builtWith(old), ids)!!
         assertTrue(offer.patchesOnly)
         assertEquals(offer.fromVersion, offer.toVersion)
     }
 
     @Test fun nothingRelevantChangedOffersNothing() {
-        val old = load(text(4))
-        val new = load(text(5) { it.replace("\"title\": \"Manufacturer check\"", "\"title\": \"Manufacturer check\"") })
+        val old = load(text(5))
+        val new = load(text(6) { it.replace("\"title\": \"Manufacturer check\"", "\"title\": \"Manufacturer check\"") })
         assertNull(updateOfferFor(new, builtWith(old), ids))
         // A newer serial that only changes an input outside the user's outputs.
-        val alarmOnly = load(text(6) { it.replace("141832f22d7fb8bb7a6bb5e11695829015da6a33c5e19671a8695ecea276e8bd", "c".repeat(64)) })
+        val alarmOnly = load(text(7) { it.replace("141832f22d7fb8bb7a6bb5e11695829015da6a33c5e19671a8695ecea276e8bd", "c".repeat(64)) })
         assertNull(updateOfferFor(alarmOnly, builtWith(old), listOf("shm-phone", "shm-watch", "bridge-watch", "bridge-phone")))
     }
 
     @Test fun noOfferWithoutABuildOrWithAnEqualSerialOrNoFacts() {
-        val old = load(text(4))
-        val new = load(text(5) { it.replace(watchSha, "b".repeat(64)) })
+        val old = load(text(5))
+        val new = load(text(6) { it.replace(watchSha, "b".repeat(64)) })
         assertNull(updateOfferFor(new, null, ids))
         assertNull(updateOfferFor(new, builtWith(old, facts = emptyMap()), ids))
         assertNull(updateOfferFor(old, builtWith(old), ids))
@@ -272,7 +272,7 @@ class CatalogueUpdateTest {
     }
 
     @Test fun factsSurviveTheBuildRecordAndOldRecordsStillRead() {
-        val old = load(text(4))
+        val old = load(text(5))
         val apk = File(dir, "a.apk").also { it.writeBytes(ByteArray(5)) }
         val store = BuiltOutputs(File(dir, "record.properties"))
         val build = BuiltBuild("k", "com.example", 4, 99, listOf(BuiltRecord("a", apk.path, 5, "ff")), buildFacts(old, ids))

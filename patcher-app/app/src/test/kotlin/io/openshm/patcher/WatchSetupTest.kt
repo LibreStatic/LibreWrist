@@ -27,6 +27,7 @@ import io.openshm.patcher.ui.screens.install.InstallItem
 import io.openshm.patcher.ui.screens.install.InstallUiState
 import io.openshm.patcher.ui.screens.install.WatchInstallRunner
 import io.openshm.patcher.ui.screens.watchpair.WatchPairEvent
+import io.openshm.patcher.ui.screens.watchpair.WATCH_GUIDE_STEPS
 import io.openshm.patcher.ui.screens.watchpair.WatchPairUiState
 import io.openshm.patcher.ui.screens.watchpair.foundWatchAddress
 import io.openshm.patcher.ui.screens.watchpair.pairErrorRes
@@ -385,15 +386,79 @@ class WatchPairLogicTest {
         assertEquals("192.0.2.9:7", foundWatchAddress(listOf(svc("192.0.2.2", 1), svc("192.0.2.9", 7), svc("192.0.2.10", 8)), own))
     }
 
+    private val found = WatchPairUiState(foundAddress = "192.0.2.9:37115", guideOpen = false)
+
     @Test
-    fun editingTheAddressValidatesIt() {
-        val ok = WatchPairUiState(code = "123456").reduce(WatchPairEvent.AddressChanged("192.0.2.9:37115"))
-        assertNull(ok.errorRes)
-        assertTrue(ok.canPair)
-        val bad = ok.reduce(WatchPairEvent.AddressChanged("192.0.2.9"))
-        assertEquals(R.string.watchpair_error_bad_address, bad.errorRes)
-        assertFalse(bad.canPair)
-        assertNull(bad.reduce(WatchPairEvent.AddressChanged("")).errorRes)
+    fun manualAddressNeedsAValidHostAndPort() {
+        val manual = WatchPairUiState(code = "123456").reduce(WatchPairEvent.ToggleManual)
+        assertTrue(manual.manual && manual.entryVisible)
+        assertFalse(manual.canPair)
+        val typed = manual.reduce(WatchPairEvent.HostChanged(" 192.0.2.9 ")).reduce(WatchPairEvent.PortChanged("37a115"))
+        assertEquals("192.0.2.9:37115", typed.address)
+        assertTrue(typed.canPair)
+        val badPort = typed.reduce(WatchPairEvent.PortChanged("70000"))
+        assertTrue(badPort.portInvalid)
+        assertFalse(badPort.canPair)
+        val badHost = typed.reduce(WatchPairEvent.HostChanged("a b"))
+        assertTrue(badHost.hostInvalid)
+        assertFalse(badHost.canPair)
+        assertFalse(typed.hostInvalid || typed.portInvalid)
+        // Fields left empty are not an error yet, only not pairable.
+        assertFalse(manual.hostInvalid || manual.portInvalid)
+    }
+
+    @Test
+    fun manualModeIgnoresTheDiscoveredAddressAndGoingBackUsesIt() {
+        val s = found.copy(code = "123456").reduce(WatchPairEvent.ToggleManual)
+        assertFalse(s.canPair)
+        assertTrue(s.reduce(WatchPairEvent.ToggleManual).canPair)
+    }
+
+    @Test
+    fun theGuideClosesByItselfTheFirstTimeTheWatchIsFound() {
+        val searching = WatchPairUiState()
+        assertTrue(searching.guideOpen)
+        assertFalse(searching.entryVisible)
+        val seen = searching.reduce(WatchPairEvent.Discovered("192.0.2.9:37115"))
+        assertFalse(seen.guideOpen)
+        assertTrue(seen.entryVisible)
+        // Reopened by the user, it stays open while the same watch is still announced.
+        val reopened = seen.reduce(WatchPairEvent.ShowGuide)
+        assertTrue(reopened.reduce(WatchPairEvent.Discovered("192.0.2.9:40000")).guideOpen)
+        // The watch going away does not touch the guide; it closes again when it comes back.
+        val gone = reopened.reduce(WatchPairEvent.Discovered(null))
+        assertTrue(gone.guideOpen && gone.foundAddress == null)
+        assertFalse(gone.reduce(WatchPairEvent.Discovered("192.0.2.9:1")).guideOpen)
+    }
+
+    @Test
+    fun guideStepsStayInRange() {
+        assertEquals(0, WatchPairUiState().reduce(WatchPairEvent.GuideStep(-3)).guideStep)
+        assertEquals(WATCH_GUIDE_STEPS - 1, WatchPairUiState().reduce(WatchPairEvent.GuideStep(99)).guideStep)
+        assertEquals(2, WatchPairUiState().reduce(WatchPairEvent.GuideStep(2)).guideStep)
+        assertFalse(WatchPairUiState().reduce(WatchPairEvent.HideGuide).guideOpen)
+    }
+
+    @Test
+    fun startingToPairHidesTheCodeEntryAtOnceAndFreezesTheForm() {
+        val ready = found.copy(code = "123456")
+        assertTrue(ready.entryVisible)
+        val pairing = ready.reduce(WatchPairEvent.Pair)
+        assertTrue(pairing.pairing)
+        assertFalse(pairing.entryVisible)
+        // Neither edits nor a second Pair nor discovery change anything while pairing.
+        assertEquals(pairing, pairing.reduce(WatchPairEvent.CodeChanged("000000")))
+        assertEquals(pairing, pairing.reduce(WatchPairEvent.Pair))
+        assertEquals(pairing, pairing.reduce(WatchPairEvent.Discovered("192.0.2.1:2")))
+        // A failure brings the entry back with its error.
+        val failed = pairing.copy(pairing = false, errorRes = R.string.watchpair_error_wrong_code)
+        assertTrue(failed.entryVisible)
+        assertEquals("123456", failed.code)
+    }
+
+    @Test
+    fun anIncompleteCodeDoesNotStartPairing() {
+        assertEquals(found.copy(code = "123"), found.copy(code = "123").reduce(WatchPairEvent.Pair))
     }
 
     @Test

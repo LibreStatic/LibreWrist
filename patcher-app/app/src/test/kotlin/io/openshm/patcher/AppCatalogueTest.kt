@@ -15,7 +15,7 @@ class AppCatalogueTest {
 
     @Test
     fun serialAndInputs() {
-        assertEquals(4L, c.serial)
+        assertEquals(5L, c.serial)
         assertEquals(
             listOf(
                 listOf("shm-phone", "Samsung Health Monitor (phone)", "1.4.6.001", "Phone",
@@ -37,6 +37,16 @@ class AppCatalogueTest {
             "https://www.apkmirror.com/apk/samsung-electronics-co-ltd/alarm-wear-os/",
             c.input("alarm-watch").mirrorUrl,
         )
+        assertEquals(
+            listOf(
+                "https://www.apkmirror.com/apk/samsung-electronics-co-ltd/samsung-health-monitor-2/samsung-health-monitor-1-4-6-001-release/",
+                "https://www.apkmirror.com/apk/samsung-electronics-co-ltd/samsung-health-monitor-wear-os/samsung-health-monitor-wear-os-1-5-1-022-release/",
+                "https://www.apkmirror.com/apk/samsung-electronics-co-ltd/alarm-wear-os/",
+            ),
+            c.inputs.map { io.openshm.patcher.data.ApkMirrorGuide.startUrl(it) },
+        )
+        assertEquals(listOf(true, true, false), c.inputs.map { it.onApkMirror })
+        assertEquals(listOf("arm64-v8a", "armeabi-v7a"), c.input("shm-phone").abis)
     }
 
     @Test

@@ -14,7 +14,6 @@
     <string name="action_skip">Omitir por ahora</string>
     <string name="action_start">Iniciar</string>
     <string name="action_retry">Reintentar</string>
-    <string name="action_edit">Editar</string>
     <string name="action_fix">Corregir</string>
     <string name="action_yes">Sí</string>
     <string name="action_no">No</string>
@@ -136,14 +135,6 @@
 
     <!-- Galaxy Wearable pairing check -->
     <string name="wearable_title">¿Está vinculado tu reloj?</string>
-    <string name="wearable_intro">El reloj ya debe estar vinculado a este teléfono. Estas comprobaciones nunca cambian nada.</string>
-    <string name="wearable_check_app">App complementaria encontrada</string>
-    <string name="wearable_check_app_detail">La app que administra el reloj está instalada.</string>
-    <string name="wearable_check_paired">Reloj vinculado</string>
-    <string name="wearable_check_paired_detail">Hay un reloj asociado a este teléfono.</string>
-    <string name="wearable_check_datalayer">El teléfono y el reloj pueden comunicarse</string>
-    <string name="wearable_check_datalayer_detail">El enlace de datos de Google entre ambos responde.</string>
-    <string name="wearable_note">Si una comprobación falla, corrígelo en la configuración propia del reloj y vuelve a comprobar.</string>
     <string name="wearable_recheck">Comprobar de nuevo</string>
 
     <!-- Watch pairing over Wi-Fi -->
@@ -152,16 +143,9 @@
     <string name="watchpair_paired">Reloj vinculado</string>
     <string name="watchpair_title">Conectar con tu reloj</string>
     <string name="watchpair_intro">El reloj acepta instalaciones por Wi-Fi una vez que lo vinculas con un código corto.</string>
-    <string name="watchpair_on_watch">EN TU RELOJ</string>
-    <string name="watchpair_on_watch_steps">Abre Ajustes, Opciones de desarrollador, Depuración inalámbrica y luego Vincular dispositivo nuevo. Allí se muestra el código de 6 dígitos.</string>
     <string name="watchpair_found">Reloj encontrado en tu red</string>
     <string name="watchpair_searching">Buscando tu reloj…</string>
-    <string name="watchpair_address_label">Dirección (host:puerto)</string>
     <string name="watchpair_code_label">Código de vinculación</string>
-    <string name="watchpair_check_wifi">El teléfono y el reloj están en la misma red Wi-Fi</string>
-    <string name="watchpair_check_developer">Las opciones de desarrollador están activadas</string>
-    <string name="watchpair_check_wireless">La depuración inalámbrica está activada</string>
-    <string name="watchpair_check_code">La pantalla del código de vinculación está abierta</string>
     <string name="watchpair_hint">Ingresa los 6 dígitos para vincular</string>
     <string name="watchpair_ready">Listo para vincular</string>
     <string name="watchpair_pair">Vincular</string>
@@ -196,9 +180,7 @@
     <string name="browser_page_placeholder">LA PÁGINA WEB, TAL CUAL</string>
     <string name="browser_coach_progress">%1$d de %2$d · %3$s</string>
     <string name="browser_coach_1_title">Abre la versión correcta</string>
-    <string name="browser_coach_1_body">Elige la versión indicada en la tarjeta, no una más nueva ni más antigua.</string>
     <string name="browser_coach_2_title">Elige la variante</string>
-    <string name="browser_coach_2_body">Elige el APK, no el bundle, y la compilación nodpi para tu versión de Android.</string>
     <string name="browser_coach_3_title">Descarga</string>
     <string name="browser_coach_3_body">Toca Download APK. El parcheador toma el archivo cuando termine.</string>
     <string name="browser_coach_wrong_version_body">Esa es otra versión. Vuelve atrás y abre %1$s.</string>
@@ -546,4 +528,55 @@
     <string name="signing_key_nudge_body">Sin ella, las apps instaladas no se pueden actualizar, solo reinstalar.</string>
     <string name="signing_key_nudge_action">Respaldar</string>
     <string name="home_menu_signing_key">Clave de firma</string>
+    <string name="watch_ui_software_version">Versión del software</string>
+    <string name="watch_ui_devmode_on">Modo de desarrollador activado</string>
+    <string name="watch_ui_developer">Opciones de desarrollador</string>
+    <string name="watch_ui_adb">Depuración ADB</string>
+    <string name="watch_ui_wireless">Depuración inalámbrica</string>
+    <string name="watch_ui_connections">Conexiones</string>
+    <string name="watch_ui_wifi">Wi-Fi</string>
+    <string name="watch_ui_bluetooth">Bluetooth</string>
+    <string name="watch_ui_pair_new">Vincular dispositivo nuevo</string>
+    <string name="wearable_intro_galaxy">Primero debes vincular tu reloj con este teléfono mediante la app oficial de Samsung, Galaxy Wearable. Estas comprobaciones solo miran; nunca cambian nada.</string>
+    <string name="wearable_howto_title">Cómo vincular</string>
+    <string name="wearable_howto_1">Instala la app Galaxy Wearable.</string>
+    <string name="wearable_howto_2">Ábrela y toca Comenzar.</string>
+    <string name="wearable_howto_3">Elige tu reloj de la lista.</string>
+    <string name="wearable_howto_4">Confirma el mismo código en el teléfono y en el reloj.</string>
+    <string name="wearable_howto_5">Espera hasta que diga conectado. Instala el complemento del reloj por sí sola.</string>
+    <string name="wearable_open_app">Abrir Galaxy Wearable</string>
+    <string name="wearable_get_app">Obtener Galaxy Wearable</string>
+    <string name="wearable_check_gw">Galaxy Wearable instalada</string>
+    <string name="wearable_check_gw_ok">La app de Samsung que vincula y administra el reloj está en este teléfono.</string>
+    <string name="wearable_check_gw_missing">No se encontró. Instálala y vuelve aquí.</string>
+    <string name="wearable_check_plugin">Complemento del reloj instalado</string>
+    <string name="wearable_check_plugin_ok">Galaxy Wearable agregó el complemento para tu reloj.</string>
+    <string name="wearable_check_plugin_missing">No se encontró. Galaxy Wearable lo instala mientras vincula tu reloj.</string>
+    <string name="wearable_check_bonded">Reloj vinculado por Bluetooth</string>
+    <string name="wearable_check_bonded_ok">Hay un reloj vinculado con este teléfono.</string>
+    <string name="wearable_check_bonded_missing">No se encontró ningún reloj vinculado. Termina la vinculación en Galaxy Wearable.</string>
+    <string name="wearable_check_bonded_denied">Permite el acceso a dispositivos cercanos para que esta app pueda ver si hay un reloj vinculado. Solo lee la lista de dispositivos vinculados.</string>
+    <string name="wearable_allow">Permitir</string>
+    <string name="wearable_note_back">Vuelve aquí cuando termines: las comprobaciones se repiten solas.</string>
+    <string name="watchpair_error_bad_host">Ingresa la dirección IP del reloj, por ejemplo 192.168.1.20.</string>
+    <string name="watchpair_error_bad_port">Ingresa un puerto del 1 al 65535.</string>
+    <string name="watchpair_guide_title">Activa la vinculación en tu reloj</string>
+    <string name="watchpair_guide_1">En el reloj, abre Ajustes, Acerca del reloj y luego Información del software. Toca Versión del software de 5 a 7 veces, hasta que el reloj diga Modo de desarrollador activado.</string>
+    <string name="watchpair_guide_2">Vuelve a Ajustes, abre Opciones de desarrollador y activa Depuración ADB.</string>
+    <string name="watchpair_guide_3">Conecta el reloj a la misma red Wi-Fi que este teléfono: Ajustes, Conexiones, Wi-Fi.</string>
+    <string name="watchpair_guide_4">En Opciones de desarrollador, toca Depuración inalámbrica, actívala y permítela.</string>
+    <string name="watchpair_guide_5">Toca Vincular dispositivo nuevo. El reloj muestra un código de 6 dígitos y una dirección. Esta app encuentra la dirección sola; tú solo escribes el código.</string>
+    <string name="watchpair_guide_again">Mostrarme de nuevo cómo</string>
+    <string name="watchpair_manual">Omitir y hacerlo manualmente</string>
+    <string name="watchpair_automatic">Buscar mi reloj automáticamente</string>
+    <string name="watchpair_manual_intro">En el reloj, toca Vincular dispositivo nuevo y luego escribe la dirección IP, el puerto y el código de 6 dígitos que muestra.</string>
+    <string name="watchpair_host_label">Dirección IP</string>
+    <string name="watchpair_port_label">Puerto</string>
+    <string name="watchpair_pairing">Vinculando con tu reloj…</string>
+    <string name="browser_target_line">Buscando: %1$s</string>
+    <string name="browser_coach_1_body_version">Abre la versión %1$s de la app.</string>
+    <string name="browser_coach_2_body_version">En la tabla de variantes, elige el APK (no BUNDLE) marcado como nodpi para la versión %1$s.</string>
+    <string name="browser_coach_no_mirror_title">No está en APKMirror</string>
+    <string name="browser_coach_no_mirror_body">La versión %1$s no está publicada en APKMirror. Cierra esta pantalla, usa Más formas de conseguir esta app y elige un archivo que ya tengas.</string>
+    <string name="acquire_not_on_mirror">La versión %1$s no está en APKMirror. Usa un archivo que ya tengas.</string>
 </resources>

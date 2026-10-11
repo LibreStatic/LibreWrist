@@ -14,7 +14,6 @@
     <string name="action_skip">تخطَّ الآن</string>
     <string name="action_start">ابدأ</string>
     <string name="action_retry">حاول مرة أخرى</string>
-    <string name="action_edit">تعديل</string>
     <string name="action_fix">إصلاح</string>
     <string name="action_yes">نعم</string>
     <string name="action_no">لا</string>
@@ -136,14 +135,6 @@
 
     <!-- Galaxy Wearable pairing check -->
     <string name="wearable_title">هل ساعتك مقترنة؟</string>
-    <string name="wearable_intro">يجب أن تكون الساعة مقترنة بهذا الهاتف مسبقًا. هذه الفحوصات لا تغيّر أي شيء أبدًا.</string>
-    <string name="wearable_check_app">تم العثور على التطبيق المرافق</string>
-    <string name="wearable_check_app_detail">التطبيق الذي يدير الساعة مثبَّت.</string>
-    <string name="wearable_check_paired">الساعة مقترنة</string>
-    <string name="wearable_check_paired_detail">هناك ساعة مرتبطة بهذا الهاتف.</string>
-    <string name="wearable_check_datalayer">الهاتف والساعة يستطيعان التواصل</string>
-    <string name="wearable_check_datalayer_detail">رابط بيانات Google بينهما يستجيب.</string>
-    <string name="wearable_note">إذا فشل فحص، فأصلحه من إعداد الساعة نفسها ثم افحص مرة أخرى.</string>
     <string name="wearable_recheck">افحص مرة أخرى</string>
 
     <!-- Watch pairing over Wi-Fi -->
@@ -152,16 +143,9 @@
     <string name="watchpair_paired">تم إقران الساعة</string>
     <string name="watchpair_title">الاتصال بساعتك</string>
     <string name="watchpair_intro">تقبل الساعة التثبيت عبر Wi-Fi بعد اقترانها برمز قصير.</string>
-    <string name="watchpair_on_watch">على ساعتك</string>
-    <string name="watchpair_on_watch_steps">افتح الإعدادات، ثم خيارات المطور، ثم تصحيح الأخطاء اللاسلكي، ثم اقتران جهاز جديد. يظهر الرمز المكوّن من 6 أرقام هناك.</string>
     <string name="watchpair_found">تم العثور على الساعة في شبكتك</string>
     <string name="watchpair_searching">جارٍ البحث عن ساعتك…</string>
-    <string name="watchpair_address_label">العنوان (host:port)</string>
     <string name="watchpair_code_label">رمز الاقتران</string>
-    <string name="watchpair_check_wifi">الهاتف والساعة على شبكة Wi-Fi نفسها</string>
-    <string name="watchpair_check_developer">خيارات المطور مفعّلة</string>
-    <string name="watchpair_check_wireless">تصحيح الأخطاء اللاسلكي مفعّل</string>
-    <string name="watchpair_check_code">شاشة رمز الاقتران مفتوحة</string>
     <string name="watchpair_hint">أدخل الأرقام الستة كلها للاقتران</string>
     <string name="watchpair_ready">جاهز للاقتران</string>
     <string name="watchpair_pair">اقتران</string>
@@ -200,9 +184,7 @@
     <string name="browser_page_placeholder">صفحة الويب كما هي</string>
     <string name="browser_coach_progress">%1$d من %2$d · %3$s</string>
     <string name="browser_coach_1_title">افتح الإصدار الصحيح</string>
-    <string name="browser_coach_1_body">اختر الإصدار المذكور على البطاقة، لا أحدث ولا أقدم منه.</string>
     <string name="browser_coach_2_title">اختر النسخة</string>
-    <string name="browser_coach_2_body">اختر APK وليس الحزمة، ونسخة nodpi المناسبة لإصدار Android لديك.</string>
     <string name="browser_coach_3_title">التنزيل</string>
     <string name="browser_coach_3_body">اضغط على Download APK. يلتقط المُصحِّح الملف عند اكتماله.</string>
     <string name="browser_coach_wrong_version_body">هذا إصدار آخر. ارجع وافتح %1$s.</string>
@@ -578,4 +560,55 @@
     <string name="signing_key_nudge_body">من دونه لا يمكن تحديث التطبيقات المثبَّتة، بل إعادة تثبيتها فقط.</string>
     <string name="signing_key_nudge_action">نسخ احتياطي</string>
     <string name="home_menu_signing_key">مفتاح التوقيع</string>
+    <string name="watch_ui_software_version">إصدار البرنامج</string>
+    <string name="watch_ui_devmode_on">تم تشغيل وضع المطوّر</string>
+    <string name="watch_ui_developer">خيارات المطوّر</string>
+    <string name="watch_ui_adb">تصحيح أخطاء ADB</string>
+    <string name="watch_ui_wireless">تصحيح الأخطاء اللاسلكي</string>
+    <string name="watch_ui_connections">الاتصالات</string>
+    <string name="watch_ui_wifi">Wi-Fi</string>
+    <string name="watch_ui_bluetooth">Bluetooth</string>
+    <string name="watch_ui_pair_new">إقران جهاز جديد</string>
+    <string name="wearable_intro_galaxy">يجب أولًا إقران ساعتك بهذا الهاتف عبر تطبيق Galaxy Wearable الرسمي من Samsung. هذه الفحوصات تكتفي بالاطلاع ولا تغيّر أي شيء.</string>
+    <string name="wearable_howto_title">كيفية الإقران</string>
+    <string name="wearable_howto_1">ثبّت تطبيق Galaxy Wearable.</string>
+    <string name="wearable_howto_2">افتحه واضغط على ابدأ.</string>
+    <string name="wearable_howto_3">اختر ساعتك من القائمة.</string>
+    <string name="wearable_howto_4">أكّد الرمز نفسه على الهاتف وعلى الساعة.</string>
+    <string name="wearable_howto_5">انتظر حتى تظهر عبارة متصل. يثبّت التطبيق إضافة الساعة تلقائيًا.</string>
+    <string name="wearable_open_app">فتح Galaxy Wearable</string>
+    <string name="wearable_get_app">الحصول على Galaxy Wearable</string>
+    <string name="wearable_check_gw">Galaxy Wearable مثبّت</string>
+    <string name="wearable_check_gw_ok">تطبيق Samsung الذي يقرن الساعة ويديرها موجود على هذا الهاتف.</string>
+    <string name="wearable_check_gw_missing">لم يتم العثور عليه. ثبّته ثم عد إلى هنا.</string>
+    <string name="wearable_check_plugin">إضافة الساعة مثبّتة</string>
+    <string name="wearable_check_plugin_ok">أضاف Galaxy Wearable الإضافة الخاصة بساعتك.</string>
+    <string name="wearable_check_plugin_missing">لم يتم العثور عليها. يثبّتها Galaxy Wearable أثناء إقران ساعتك.</string>
+    <string name="wearable_check_bonded">الساعة مقترنة عبر Bluetooth</string>
+    <string name="wearable_check_bonded_ok">توجد ساعة مقترنة بهذا الهاتف.</string>
+    <string name="wearable_check_bonded_missing">لم يتم العثور على ساعة مقترنة. أكمل الإقران في Galaxy Wearable.</string>
+    <string name="wearable_check_bonded_denied">اسمح بالوصول إلى الأجهزة القريبة ليتمكن هذا التطبيق من معرفة ما إذا كانت الساعة مقترنة. هو يقرأ قائمة الأجهزة المقترنة فقط.</string>
+    <string name="wearable_allow">سماح</string>
+    <string name="wearable_note_back">عد إلى هنا عند الانتهاء: ستُجرى الفحوصات مجددًا تلقائيًا.</string>
+    <string name="watchpair_error_bad_host">أدخل عنوان IP الخاص بالساعة، مثل 192.168.1.20.</string>
+    <string name="watchpair_error_bad_port">أدخل منفذًا من 1 إلى 65535.</string>
+    <string name="watchpair_guide_title">فعّل الإقران على ساعتك</string>
+    <string name="watchpair_guide_1">على الساعة، افتح الإعدادات، ثم حول الساعة، ثم معلومات البرنامج. اضغط على إصدار البرنامج من 5 إلى 7 مرات حتى تعرض الساعة تم تشغيل وضع المطوّر.</string>
+    <string name="watchpair_guide_2">ارجع إلى الإعدادات، وافتح خيارات المطوّر وفعّل تصحيح أخطاء ADB.</string>
+    <string name="watchpair_guide_3">صِل الساعة بشبكة Wi-Fi نفسها التي يتصل بها هذا الهاتف: الإعدادات، الاتصالات، Wi-Fi.</string>
+    <string name="watchpair_guide_4">في خيارات المطوّر، اضغط على تصحيح الأخطاء اللاسلكي، وفعّله ثم اسمح به.</string>
+    <string name="watchpair_guide_5">اضغط على إقران جهاز جديد. تعرض الساعة رمزًا من 6 أرقام وعنوانًا. يعثر هذا التطبيق على العنوان تلقائيًا؛ وكل ما عليك هو كتابة الرمز.</string>
+    <string name="watchpair_guide_again">أرني الخطوات مرة أخرى</string>
+    <string name="watchpair_manual">تخطَّ وافعل ذلك يدويًا</string>
+    <string name="watchpair_automatic">ابحث عن ساعتي تلقائيًا</string>
+    <string name="watchpair_manual_intro">على الساعة، اضغط على إقران جهاز جديد، ثم اكتب عنوان IP والمنفذ والرمز المكوَّن من 6 أرقام الذي تعرضه.</string>
+    <string name="watchpair_host_label">عنوان IP</string>
+    <string name="watchpair_port_label">المنفذ</string>
+    <string name="watchpair_pairing">جارٍ الإقران بساعتك…</string>
+    <string name="browser_target_line">نبحث عن: %1$s</string>
+    <string name="browser_coach_1_body_version">افتح الإصدار %1$s من التطبيق.</string>
+    <string name="browser_coach_2_body_version">في جدول النسخ، اختر ملف APK (وليس BUNDLE) الموسوم بـ nodpi للإصدار %1$s.</string>
+    <string name="browser_coach_no_mirror_title">غير متوفر على APKMirror</string>
+    <string name="browser_coach_no_mirror_body">الإصدار %1$s غير منشور على APKMirror. أغلق هذه الشاشة، ثم استخدم طرق أخرى للحصول على هذا التطبيق واختر ملفًا لديك بالفعل.</string>
+    <string name="acquire_not_on_mirror">الإصدار %1$s غير موجود على APKMirror. استخدم ملفًا لديك بالفعل.</string>
 </resources>

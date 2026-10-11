@@ -12,6 +12,12 @@
       after its install. The bridge app is visible because this app is its installer.
     -->
     <queries>
+        <!--
+          Galaxy Wearable and its watch plugin: read-only presence checks on the "Is your watch
+          paired?" screen, and launching Galaxy Wearable from it.
+        -->
+        <package android:name="com.samsung.android.app.watchmanager" />
+        <package android:name="com.samsung.android.heartplugin" />
         <intent>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />

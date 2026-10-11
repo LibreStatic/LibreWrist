@@ -28,6 +28,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import io.openshm.patcher.data.ApkMirrorGuide
 import io.openshm.patcher.data.DownloadRequest
+import io.openshm.patcher.data.NavDecision
+import io.openshm.patcher.data.RedirectChain
 
 /** Lets the screen drive the WebView (reload, load a URL) without owning it. */
 class ApkMirrorWebController {
@@ -44,7 +46,8 @@ class ApkMirrorWebController {
 
 /**
  * The APKMirror page. Only https pages on apkmirror.com load; a top-level navigation anywhere else is
- * reported through [onBlocked] and not loaded. A download is not handled by the WebView: it is passed to
+ * reported through [onBlocked] and not loaded, except a server-redirect hop that follows an APKMirror page
+ * (its CDN hand-off, see [RedirectChain]); if such a hop renders as a page it is left again and reported. A download is not handled by the WebView: it is passed to
  * [onDownload] with the cookies the WebView holds for that URL. The WebView is destroyed with the composable.
  */
 @Composable
@@ -60,6 +63,8 @@ fun ApkMirrorWebView(
     val blocked by rememberUpdatedState(onBlocked)
     val download by rememberUpdatedState(onDownload)
     var canGoBack by remember { mutableStateOf(false) }
+    val chain = remember { RedirectChain() }
+    var lastMirrorUrl by remember { mutableStateOf(initialUrl) }
 
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     DisposableEffect(lifecycle, controller) {
@@ -85,15 +90,28 @@ fun ApkMirrorWebView(
                     override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
                         if (!request.isForMainFrame) return false
                         val url = request.url.toString()
-                        if (ApkMirrorGuide.isAllowedNavigation(url)) return false
+                        if (chain.onNavigation(url, request.isRedirect) != NavDecision.Block) return false
                         blocked(url)
                         return true
                     }
 
-                    override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) = page(url)
+                    override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
+                        if (ApkMirrorGuide.isAllowedNavigation(url)) lastMirrorUrl = url
+                        page(url)
+                    }
 
                     override fun doUpdateVisitedHistory(view: WebView, url: String, isReload: Boolean) {
                         canGoBack = view.canGoBack()
+                        if (ApkMirrorGuide.isAllowedNavigation(url)) {
+                            lastMirrorUrl = url
+                        } else if (chain.isHopHost(url)) {
+                            // An accepted CDN hop rendered as a page instead of a download: leave it.
+                            chain.onOffSitePage()
+                            view.stopLoading()
+                            if (view.canGoBack()) view.goBack() else view.loadUrl(lastMirrorUrl)
+                            blocked(url)
+                            return
+                        }
                         page(url)
                     }
 
@@ -105,6 +123,10 @@ fun ApkMirrorWebView(
                         callback.invoke(origin, false, false)
                 }
                 setDownloadListener { url, userAgent, contentDisposition, mimeType, contentLength ->
+                    if (!chain.mayDownloadFrom(url)) {
+                        blocked(url)
+                        return@setDownloadListener
+                    }
                     val cookie = CookieManager.getInstance().getCookie(url)
                     download(DownloadRequest(url, userAgent, contentDisposition, mimeType, contentLength, cookie))
                 }

@@ -70,25 +70,75 @@ fun LinkWave(
 
 /**
  * Phone, link and watch, as in the canvas Home / Disable / Welcome artboards. [scale] 1.0 is the
- * Home size (phone 40x66, watch cookie 60).
+ * Home size (phone 40x66, watch clover 60). The phone shows a heart on its screen and the watch a
+ * round face with clock hands, so both read as devices even at small scales.
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun PhoneWatchIllustration(modifier: Modifier = Modifier, scale: Float = 1f, linkColor: Color = MaterialTheme.colorScheme.primary) {
+    val colors = MaterialTheme.colorScheme
     Row(modifier.clearAndSetSemantics { }, verticalAlignment = Alignment.CenterVertically) {
+        // Phone: body, a screen inset with a heart and a content bar.
         Box(
             Modifier
                 .size(width = 40.dp * scale, height = 66.dp * scale)
                 .clip(RoundedCornerShape(12.dp * scale))
-                .background(MaterialTheme.colorScheme.primary),
-        )
+                .background(colors.primary),
+            contentAlignment = Alignment.Center,
+        ) {
+            Column(
+                Modifier
+                    .size(width = 32.dp * scale, height = 54.dp * scale)
+                    .clip(RoundedCornerShape(9.dp * scale))
+                    .background(colors.primaryContainer),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                androidx.compose.material3.Icon(
+                    androidx.compose.material.icons.Icons.Rounded.Favorite,
+                    contentDescription = null,
+                    tint = colors.onPrimaryContainer,
+                    modifier = Modifier.padding(top = 12.dp * scale).size(16.dp * scale),
+                )
+                Box(
+                    Modifier.padding(top = 9.dp * scale).size(width = 18.dp * scale, height = 4.dp * scale)
+                        .clip(RoundedCornerShape(2.dp * scale)).background(colors.onPrimaryContainer.copy(alpha = 0.45f)),
+                )
+                Box(
+                    Modifier.padding(top = 4.dp * scale).size(width = 12.dp * scale, height = 4.dp * scale)
+                        .clip(RoundedCornerShape(2.dp * scale)).background(colors.onPrimaryContainer.copy(alpha = 0.3f)),
+                )
+            }
+        }
         LinkWave(linkColor, Modifier.size(width = 64.dp * scale, height = 16.dp * scale), strokeWidth = 4.dp * scale)
+        // Watch: clover bezel around a dark round face with clock hands at 10:08.
         Box(
             Modifier
                 .size(60.dp * scale)
                 .clip(PolygonShape(MaterialShapes.Clover4Leaf))
-                .background(MaterialTheme.colorScheme.tertiary),
-        )
+                .background(colors.tertiary),
+            contentAlignment = Alignment.Center,
+        ) {
+            val hands = Color(0xFFF2F2F5)
+            Canvas(
+                Modifier.size(38.dp * scale).clip(androidx.compose.foundation.shape.CircleShape)
+                    .background(Color(0xFF14151A)),
+            ) {
+                val c = center
+                val r = size.minDimension / 2f
+                val w = 2.2.dp.toPx() * scale
+                // Minute hand towards 2 (8 minutes), hour hand towards 10.
+                fun hand(angleDeg: Float, length: Float) {
+                    val rad = Math.toRadians(angleDeg.toDouble() - 90.0)
+                    drawLine(
+                        hands, c, Offset(c.x + (kotlin.math.cos(rad) * r * length).toFloat(), c.y + (kotlin.math.sin(rad) * r * length).toFloat()),
+                        strokeWidth = w, cap = StrokeCap.Round,
+                    )
+                }
+                hand(304f, 0.5f)
+                hand(48f, 0.72f)
+                drawCircle(hands, radius = w * 0.9f, center = c)
+            }
+        }
     }
 }
 

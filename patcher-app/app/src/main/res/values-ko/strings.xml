@@ -14,7 +14,6 @@
     <string name="action_skip">나중에 하기</string>
     <string name="action_start">시작</string>
     <string name="action_retry">다시 시도</string>
-    <string name="action_edit">편집</string>
     <string name="action_fix">해결</string>
     <string name="action_yes">예</string>
     <string name="action_no">아니요</string>
@@ -136,14 +135,6 @@
 
     <!-- Galaxy Wearable pairing check -->
     <string name="wearable_title">워치가 페어링되어 있나요?</string>
-    <string name="wearable_intro">워치가 이미 이 휴대전화와 페어링되어 있어야 합니다. 이 확인은 아무것도 변경하지 않습니다.</string>
-    <string name="wearable_check_app">보조 앱을 찾음</string>
-    <string name="wearable_check_app_detail">워치를 관리하는 앱이 설치되어 있습니다.</string>
-    <string name="wearable_check_paired">워치 페어링됨</string>
-    <string name="wearable_check_paired_detail">이 휴대전화에 워치가 연결되어 있습니다.</string>
-    <string name="wearable_check_datalayer">휴대전화와 워치가 통신할 수 있음</string>
-    <string name="wearable_check_datalayer_detail">둘 사이의 Google 데이터 링크가 응답합니다.</string>
-    <string name="wearable_note">확인에 실패하면 워치 자체 설정에서 해결한 다음 다시 확인하세요.</string>
     <string name="wearable_recheck">다시 확인</string>
 
     <!-- Watch pairing over Wi-Fi -->
@@ -152,16 +143,9 @@
     <string name="watchpair_paired">워치가 페어링되었습니다</string>
     <string name="watchpair_title">워치에 연결</string>
     <string name="watchpair_intro">짧은 코드로 페어링하면 워치가 Wi-Fi를 통한 설치를 받아들입니다.</string>
-    <string name="watchpair_on_watch">워치에서 진행</string>
-    <string name="watchpair_on_watch_steps">설정, 개발자 옵션, 무선 디버깅, 새 기기 페어링 순서로 여세요. 6자리 코드가 여기에 표시됩니다.</string>
     <string name="watchpair_found">네트워크에서 워치를 찾았습니다</string>
     <string name="watchpair_searching">워치를 찾는 중…</string>
-    <string name="watchpair_address_label">주소 (호스트:포트)</string>
     <string name="watchpair_code_label">페어링 코드</string>
-    <string name="watchpair_check_wifi">휴대전화와 워치가 같은 Wi-Fi에 연결됨</string>
-    <string name="watchpair_check_developer">개발자 옵션이 켜져 있음</string>
-    <string name="watchpair_check_wireless">무선 디버깅이 켜져 있음</string>
-    <string name="watchpair_check_code">페어링 코드 화면이 열려 있음</string>
     <string name="watchpair_hint">6자리를 모두 입력하면 페어링할 수 있어요</string>
     <string name="watchpair_ready">페어링 준비 완료</string>
     <string name="watchpair_pair">페어링</string>
@@ -195,9 +179,7 @@
     <string name="browser_page_placeholder">웹페이지가 그대로 표시됩니다</string>
     <string name="browser_coach_progress">%1$d/%2$d · %3$s</string>
     <string name="browser_coach_1_title">올바른 릴리스 열기</string>
-    <string name="browser_coach_1_body">카드에 적힌 버전을 선택하세요. 더 새롭거나 오래된 버전은 안 됩니다.</string>
     <string name="browser_coach_2_title">변형 선택</string>
-    <string name="browser_coach_2_body">번들이 아닌 APK를 선택하고, 사용 중인 Android 버전에 맞는 nodpi 빌드를 선택하세요.</string>
     <string name="browser_coach_3_title">다운로드</string>
     <string name="browser_coach_3_body">Download APK를 탭하세요. 다운로드가 끝나면 패처가 파일을 가져갑니다.</string>
     <string name="browser_coach_wrong_version_body">다른 버전입니다. 뒤로 가서 %1$s을(를) 여세요.</string>
@@ -538,4 +520,55 @@
     <string name="signing_key_nudge_body">백업이 없으면 설치된 앱을 업데이트할 수 없고 다시 설치만 가능합니다.</string>
     <string name="signing_key_nudge_action">백업</string>
     <string name="home_menu_signing_key">서명 키</string>
+    <string name="watch_ui_software_version">소프트웨어 버전</string>
+    <string name="watch_ui_devmode_on">개발자 모드가 켜졌습니다</string>
+    <string name="watch_ui_developer">개발자 옵션</string>
+    <string name="watch_ui_adb">ADB 디버깅</string>
+    <string name="watch_ui_wireless">무선 디버깅</string>
+    <string name="watch_ui_connections">연결</string>
+    <string name="watch_ui_wifi">Wi-Fi</string>
+    <string name="watch_ui_bluetooth">Bluetooth</string>
+    <string name="watch_ui_pair_new">새 기기 페어링</string>
+    <string name="wearable_intro_galaxy">워치를 먼저 Samsung 공식 Galaxy Wearable 앱으로 이 휴대전화와 페어링해야 합니다. 여기서 하는 확인은 보기만 하며 아무것도 변경하지 않습니다.</string>
+    <string name="wearable_howto_title">페어링 방법</string>
+    <string name="wearable_howto_1">Galaxy Wearable 앱을 설치하세요.</string>
+    <string name="wearable_howto_2">앱을 열고 시작을 탭하세요.</string>
+    <string name="wearable_howto_3">목록에서 내 워치를 선택하세요.</string>
+    <string name="wearable_howto_4">휴대전화와 워치에 표시된 같은 코드를 확인하세요.</string>
+    <string name="wearable_howto_5">연결됨이라고 표시될 때까지 기다리세요. 워치 플러그인은 자동으로 설치됩니다.</string>
+    <string name="wearable_open_app">Galaxy Wearable 열기</string>
+    <string name="wearable_get_app">Galaxy Wearable 받기</string>
+    <string name="wearable_check_gw">Galaxy Wearable 설치됨</string>
+    <string name="wearable_check_gw_ok">워치를 페어링하고 관리하는 Samsung 앱이 이 휴대전화에 있습니다.</string>
+    <string name="wearable_check_gw_missing">찾을 수 없습니다. 설치한 다음 여기로 돌아오세요.</string>
+    <string name="wearable_check_plugin">워치 플러그인 설치됨</string>
+    <string name="wearable_check_plugin_ok">Galaxy Wearable이 내 워치용 플러그인을 추가했습니다.</string>
+    <string name="wearable_check_plugin_missing">찾을 수 없습니다. Galaxy Wearable이 워치를 페어링하는 동안 설치합니다.</string>
+    <string name="wearable_check_bonded">워치가 Bluetooth로 페어링됨</string>
+    <string name="wearable_check_bonded_ok">워치가 이 휴대전화와 페어링되어 있습니다.</string>
+    <string name="wearable_check_bonded_missing">페어링된 워치를 찾을 수 없습니다. Galaxy Wearable에서 페어링을 마무리하세요.</string>
+    <string name="wearable_check_bonded_denied">이 앱이 워치가 페어링되어 있는지 확인할 수 있도록 근처 기기에 대한 접근을 허용해 주세요. 페어링된 기기 목록만 읽습니다.</string>
+    <string name="wearable_allow">허용</string>
+    <string name="wearable_note_back">끝나면 여기로 돌아오세요. 확인이 자동으로 다시 실행됩니다.</string>
+    <string name="watchpair_error_bad_host">워치의 IP 주소를 입력하세요. 예: 192.168.1.20</string>
+    <string name="watchpair_error_bad_port">1에서 65535 사이의 포트를 입력하세요.</string>
+    <string name="watchpair_guide_title">워치에서 페어링 켜기</string>
+    <string name="watchpair_guide_1">워치에서 설정, 워치 정보, 소프트웨어 정보 순서로 엽니다. 소프트웨어 버전을 5~7번 탭해서 워치에 개발자 모드가 켜졌습니다라고 표시될 때까지 반복하세요.</string>
+    <string name="watchpair_guide_2">설정으로 돌아가 개발자 옵션을 열고 ADB 디버깅을 켜세요.</string>
+    <string name="watchpair_guide_3">워치를 이 휴대전화와 같은 Wi-Fi에 연결하세요: 설정, 연결, Wi-Fi.</string>
+    <string name="watchpair_guide_4">개발자 옵션에서 무선 디버깅을 탭하고 켠 다음 허용하세요.</string>
+    <string name="watchpair_guide_5">새 기기 페어링을 탭하세요. 워치에 6자리 코드와 주소가 표시됩니다. 주소는 이 앱이 자동으로 찾으니, 코드만 입력하면 됩니다.</string>
+    <string name="watchpair_guide_again">다시 보기</string>
+    <string name="watchpair_manual">건너뛰고 직접 하기</string>
+    <string name="watchpair_automatic">내 워치 자동으로 찾기</string>
+    <string name="watchpair_manual_intro">워치에서 새 기기 페어링을 탭한 다음, 표시된 IP 주소, 포트, 6자리 코드를 입력하세요.</string>
+    <string name="watchpair_host_label">IP 주소</string>
+    <string name="watchpair_port_label">포트</string>
+    <string name="watchpair_pairing">워치와 페어링하는 중…</string>
+    <string name="browser_target_line">찾는 항목: %1$s</string>
+    <string name="browser_coach_1_body_version">앱의 %1$s 버전을 여세요.</string>
+    <string name="browser_coach_2_body_version">변형 표에서 %1$s 버전의 nodpi로 표시된 APK(BUNDLE 아님)를 선택하세요.</string>
+    <string name="browser_coach_no_mirror_title">APKMirror에 없음</string>
+    <string name="browser_coach_no_mirror_body">%1$s 버전은 APKMirror에 게시되어 있지 않습니다. 이 화면을 닫고 이 앱을 받는 다른 방법에서 이미 가지고 있는 파일을 선택하세요.</string>
+    <string name="acquire_not_on_mirror">%1$s 버전은 APKMirror에 없습니다. 이미 가지고 있는 파일을 사용하세요.</string>
 </resources>

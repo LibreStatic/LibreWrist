@@ -14,7 +14,6 @@
     <string name="action_skip">Nu overslaan</string>
     <string name="action_start">Starten</string>
     <string name="action_retry">Opnieuw proberen</string>
-    <string name="action_edit">Bewerken</string>
     <string name="action_fix">Oplossen</string>
     <string name="action_yes">Ja</string>
     <string name="action_no">Nee</string>
@@ -136,14 +135,6 @@
 
     <!-- Galaxy Wearable pairing check -->
     <string name="wearable_title">Is je horloge gekoppeld?</string>
-    <string name="wearable_intro">Het horloge moet al aan deze telefoon gekoppeld zijn. Deze controles wijzigen nooit iets.</string>
-    <string name="wearable_check_app">Begeleidende app gevonden</string>
-    <string name="wearable_check_app_detail">De app die het horloge beheert, is geïnstalleerd.</string>
-    <string name="wearable_check_paired">Horloge gekoppeld</string>
-    <string name="wearable_check_paired_detail">Er is een horloge aan deze telefoon gekoppeld.</string>
-    <string name="wearable_check_datalayer">Telefoon en horloge kunnen communiceren</string>
-    <string name="wearable_check_datalayer_detail">De Google-gegevensverbinding ertussen reageert.</string>
-    <string name="wearable_note">Mislukt een controle, los het dan op in de eigen installatie van het horloge en controleer opnieuw.</string>
     <string name="wearable_recheck">Opnieuw controleren</string>
 
     <!-- Watch pairing over Wi-Fi -->
@@ -152,16 +143,9 @@
     <string name="watchpair_paired">Horloge gekoppeld</string>
     <string name="watchpair_title">Verbinden met je horloge</string>
     <string name="watchpair_intro">Het horloge accepteert installaties via Wi-Fi zodra je het koppelt met een korte code.</string>
-    <string name="watchpair_on_watch">OP JE HORLOGE</string>
-    <string name="watchpair_on_watch_steps">Open Instellingen, Ontwikkelaarsopties, Draadloze foutopsporing en dan Nieuw apparaat koppelen. De code van 6 cijfers staat daar.</string>
     <string name="watchpair_found">Horloge gevonden op je netwerk</string>
     <string name="watchpair_searching">Zoeken naar je horloge…</string>
-    <string name="watchpair_address_label">Adres (host:poort)</string>
     <string name="watchpair_code_label">Koppelcode</string>
-    <string name="watchpair_check_wifi">Telefoon en horloge zitten op hetzelfde Wi-Fi</string>
-    <string name="watchpair_check_developer">Ontwikkelaarsopties staan aan</string>
-    <string name="watchpair_check_wireless">Draadloze foutopsporing staat aan</string>
-    <string name="watchpair_check_code">Het scherm met de koppelcode is open</string>
     <string name="watchpair_hint">Voer alle 6 cijfers in om te koppelen</string>
     <string name="watchpair_ready">Klaar om te koppelen</string>
     <string name="watchpair_pair">Koppelen</string>
@@ -196,9 +180,7 @@
     <string name="browser_page_placeholder">DE WEBPAGINA, ZOALS DEZE IS</string>
     <string name="browser_coach_progress">%1$d van %2$d · %3$s</string>
     <string name="browser_coach_1_title">Open de juiste release</string>
-    <string name="browser_coach_1_body">Kies de versie die op de kaart staat, geen nieuwere of oudere.</string>
     <string name="browser_coach_2_title">Kies de variant</string>
-    <string name="browser_coach_2_body">Kies de APK, niet de bundel, en de nodpi-build voor jouw Android-versie.</string>
     <string name="browser_coach_3_title">Downloaden</string>
     <string name="browser_coach_3_body">Tik op Download APK. De patcher pakt het bestand op zodra het klaar is.</string>
     <string name="browser_coach_wrong_version_body">Dat is een andere versie. Ga terug en open %1$s.</string>
@@ -546,4 +528,55 @@
     <string name="signing_key_nudge_body">Zonder de sleutel kunnen geïnstalleerde apps niet worden bijgewerkt, alleen opnieuw geïnstalleerd.</string>
     <string name="signing_key_nudge_action">Back-up maken</string>
     <string name="home_menu_signing_key">Ondertekeningssleutel</string>
+    <string name="watch_ui_software_version">Softwareversie</string>
+    <string name="watch_ui_devmode_on">Ontwikkelaarsmodus ingeschakeld</string>
+    <string name="watch_ui_developer">Ontwikkelaarsopties</string>
+    <string name="watch_ui_adb">ADB-foutopsporing</string>
+    <string name="watch_ui_wireless">Draadloze foutopsporing</string>
+    <string name="watch_ui_connections">Verbindingen</string>
+    <string name="watch_ui_wifi">Wi-Fi</string>
+    <string name="watch_ui_bluetooth">Bluetooth</string>
+    <string name="watch_ui_pair_new">Nieuw apparaat koppelen</string>
+    <string name="wearable_intro_galaxy">Je horloge moet eerst met deze telefoon gekoppeld zijn, via de officiële Galaxy Wearable-app van Samsung. Deze controles kijken alleen; ze veranderen nooit iets.</string>
+    <string name="wearable_howto_title">Zo koppel je</string>
+    <string name="wearable_howto_1">Installeer de Galaxy Wearable-app.</string>
+    <string name="wearable_howto_2">Open de app en tik op Starten.</string>
+    <string name="wearable_howto_3">Kies je horloge uit de lijst.</string>
+    <string name="wearable_howto_4">Bevestig dezelfde code op de telefoon en op het horloge.</string>
+    <string name="wearable_howto_5">Wacht tot er staat dat het verbonden is. De plug-in voor het horloge wordt vanzelf geïnstalleerd.</string>
+    <string name="wearable_open_app">Galaxy Wearable openen</string>
+    <string name="wearable_get_app">Galaxy Wearable downloaden</string>
+    <string name="wearable_check_gw">Galaxy Wearable geïnstalleerd</string>
+    <string name="wearable_check_gw_ok">De app van Samsung waarmee je het horloge koppelt en beheert staat op deze telefoon.</string>
+    <string name="wearable_check_gw_missing">Niet gevonden. Installeer de app en kom dan terug.</string>
+    <string name="wearable_check_plugin">Horlogeplug-in geïnstalleerd</string>
+    <string name="wearable_check_plugin_ok">Galaxy Wearable heeft de plug-in voor je horloge toegevoegd.</string>
+    <string name="wearable_check_plugin_missing">Niet gevonden. Galaxy Wearable installeert de plug-in tijdens het koppelen van je horloge.</string>
+    <string name="wearable_check_bonded">Horloge gekoppeld via Bluetooth</string>
+    <string name="wearable_check_bonded_ok">Er is een horloge met deze telefoon gekoppeld.</string>
+    <string name="wearable_check_bonded_missing">Geen gekoppeld horloge gevonden. Rond het koppelen af in Galaxy Wearable.</string>
+    <string name="wearable_check_bonded_denied">Geef toegang tot apparaten in de buurt, zodat deze app kan zien of er een horloge is gekoppeld. De app leest alleen de lijst met gekoppelde apparaten.</string>
+    <string name="wearable_allow">Toestaan</string>
+    <string name="wearable_note_back">Kom hier terug als je klaar bent: de controles worden vanzelf opnieuw uitgevoerd.</string>
+    <string name="watchpair_error_bad_host">Vul het IP-adres van het horloge in, bijvoorbeeld 192.168.1.20.</string>
+    <string name="watchpair_error_bad_port">Vul een poort in van 1 tot 65535.</string>
+    <string name="watchpair_guide_title">Schakel koppelen in op je horloge</string>
+    <string name="watchpair_guide_1">Open op het horloge Instellingen, Over horloge en dan Software-informatie. Tik 5 tot 7 keer op Softwareversie, tot het horloge meldt: Ontwikkelaarsmodus ingeschakeld.</string>
+    <string name="watchpair_guide_2">Ga terug naar Instellingen, open Ontwikkelaarsopties en schakel ADB-foutopsporing in.</string>
+    <string name="watchpair_guide_3">Verbind het horloge met hetzelfde Wi-Fi-netwerk als deze telefoon: Instellingen, Verbindingen, Wi-Fi.</string>
+    <string name="watchpair_guide_4">Tik in Ontwikkelaarsopties op Draadloze foutopsporing, schakel het in en sta het toe.</string>
+    <string name="watchpair_guide_5">Tik op Nieuw apparaat koppelen. Het horloge toont een code van 6 cijfers en een adres. Deze app vindt het adres zelf; jij typt alleen de code.</string>
+    <string name="watchpair_guide_again">Laat het me nog eens zien</string>
+    <string name="watchpair_manual">Overslaan en handmatig doen</string>
+    <string name="watchpair_automatic">Automatisch naar mijn horloge zoeken</string>
+    <string name="watchpair_manual_intro">Tik op het horloge op Nieuw apparaat koppelen en typ dan het IP-adres, de poort en de code van 6 cijfers die het toont.</string>
+    <string name="watchpair_host_label">IP-adres</string>
+    <string name="watchpair_port_label">Poort</string>
+    <string name="watchpair_pairing">Koppelen met je horloge…</string>
+    <string name="browser_target_line">Zoeken naar: %1$s</string>
+    <string name="browser_coach_1_body_version">Open versie %1$s van de app.</string>
+    <string name="browser_coach_2_body_version">Kies in de tabel met varianten de APK (niet BUNDLE) met nodpi voor versie %1$s.</string>
+    <string name="browser_coach_no_mirror_title">Niet op APKMirror</string>
+    <string name="browser_coach_no_mirror_body">Versie %1$s staat niet op APKMirror. Sluit dit scherm, kies Meer manieren om deze app te krijgen en selecteer een bestand dat je al hebt.</string>
+    <string name="acquire_not_on_mirror">Versie %1$s staat niet op APKMirror. Gebruik een bestand dat je al hebt.</string>
 </resources>

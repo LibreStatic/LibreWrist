@@ -35,7 +35,7 @@ private fun ProfileHintPreview(@PreviewParameter(ColorModeProvider::class) mode:
 @ScreenPreviews
 @Composable
 private fun WatchPairCorrectionPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
-    PreviewHost(mode) { WatchPairSample(correction = true) }
+    PreviewHost(mode) { WatchPairSample(PreviewData.watchPairCorrection()) }
 
 @ScreenPreviews
 @Composable
@@ -50,7 +50,7 @@ private fun WatchPairPreview(@PreviewParameter(ColorModeProvider::class) mode: C
 @ScreenPreviews
 @Composable
 private fun WatchPairReadyPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
-    PreviewHost(mode) { WatchPairSample(ready = true) }
+    PreviewHost(mode) { WatchPairSample(PreviewData.watchPairReady()) }
 
 @ScreenPreviews
 @Composable

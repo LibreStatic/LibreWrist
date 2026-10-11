@@ -55,6 +55,8 @@ data class GuidedBrowserUiState(
     val coachTotal: Int,
     val coachTitle: String,
     val coachBody: String,
+    /** The exact build to pick, always visible, e.g. "1.4.6.001 · APK, not bundle · nodpi · arm64-v8a + armeabi-v7a". */
+    val target: String = "",
     val notice: BrowserNotice? = null,
 )
 
@@ -182,6 +184,13 @@ private fun CoachCard(state: GuidedBrowserUiState) {
                 color = MaterialTheme.colorScheme.inversePrimary,
             )
             Text(state.coachBody, style = MaterialTheme.typography.bodyMedium)
+            if (state.target.isNotEmpty()) {
+                Text(
+                    stringResource(R.string.browser_target_line, state.target),
+                    style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
+            }
         }
     }
 }

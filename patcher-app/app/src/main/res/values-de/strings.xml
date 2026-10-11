@@ -14,7 +14,6 @@
     <string name="action_skip">Vorerst überspringen</string>
     <string name="action_start">Starten</string>
     <string name="action_retry">Erneut versuchen</string>
-    <string name="action_edit">Bearbeiten</string>
     <string name="action_fix">Beheben</string>
     <string name="action_yes">Ja</string>
     <string name="action_no">Nein</string>
@@ -136,14 +135,6 @@
 
     <!-- Galaxy Wearable pairing check -->
     <string name="wearable_title">Ist deine Uhr gekoppelt?</string>
-    <string name="wearable_intro">Die Uhr muss bereits mit diesem Smartphone gekoppelt sein. Diese Prüfungen ändern nichts.</string>
-    <string name="wearable_check_app">Begleit-App gefunden</string>
-    <string name="wearable_check_app_detail">Die App zur Verwaltung der Uhr ist installiert.</string>
-    <string name="wearable_check_paired">Uhr gekoppelt</string>
-    <string name="wearable_check_paired_detail">Eine Uhr ist diesem Smartphone zugeordnet.</string>
-    <string name="wearable_check_datalayer">Smartphone und Uhr können kommunizieren</string>
-    <string name="wearable_check_datalayer_detail">Die Google-Datenverbindung zwischen beiden antwortet.</string>
-    <string name="wearable_note">Wenn eine Prüfung fehlschlägt, behebe das in der Einrichtung der Uhr selbst und prüfe dann erneut.</string>
     <string name="wearable_recheck">Erneut prüfen</string>
 
     <!-- Watch pairing over Wi-Fi -->
@@ -152,16 +143,9 @@
     <string name="watchpair_paired">Uhr gekoppelt</string>
     <string name="watchpair_title">Mit deiner Uhr verbinden</string>
     <string name="watchpair_intro">Die Uhr akzeptiert Installationen über Wi-Fi, sobald du sie mit einem kurzen Code koppelst.</string>
-    <string name="watchpair_on_watch">AUF DEINER UHR</string>
-    <string name="watchpair_on_watch_steps">Öffne Einstellungen, Entwickleroptionen, Kabelloses Debugging und dann Neues Gerät koppeln. Dort wird der 6-stellige Code angezeigt.</string>
     <string name="watchpair_found">Uhr in deinem Netzwerk gefunden</string>
     <string name="watchpair_searching">Suche nach deiner Uhr…</string>
-    <string name="watchpair_address_label">Adresse (Host:Port)</string>
     <string name="watchpair_code_label">Kopplungscode</string>
-    <string name="watchpair_check_wifi">Smartphone und Uhr sind im selben Wi-Fi</string>
-    <string name="watchpair_check_developer">Entwickleroptionen sind aktiviert</string>
-    <string name="watchpair_check_wireless">Kabelloses Debugging ist aktiviert</string>
-    <string name="watchpair_check_code">Der Bildschirm mit dem Kopplungscode ist geöffnet</string>
     <string name="watchpair_hint">Gib alle 6 Ziffern zum Koppeln ein</string>
     <string name="watchpair_ready">Bereit zum Koppeln</string>
     <string name="watchpair_pair">Koppeln</string>
@@ -196,9 +180,7 @@
     <string name="browser_page_placeholder">DIE WEBSEITE, UNVERÄNDERT ANGEZEIGT</string>
     <string name="browser_coach_progress">%1$d von %2$d · %3$s</string>
     <string name="browser_coach_1_title">Die richtige Version öffnen</string>
-    <string name="browser_coach_1_body">Wähle die auf der Karte genannte Version, keine neuere oder ältere.</string>
     <string name="browser_coach_2_title">Variante auswählen</string>
-    <string name="browser_coach_2_body">Wähle die APK, nicht das Bundle, und den nodpi-Build für deine Android-Version.</string>
     <string name="browser_coach_3_title">Herunterladen</string>
     <string name="browser_coach_3_body">Tippe auf Download APK. Der Patcher übernimmt die Datei, sobald sie fertig ist.</string>
     <string name="browser_coach_wrong_version_body">Das ist eine andere Version. Gehe zurück und öffne %1$s.</string>
@@ -546,4 +528,55 @@
     <string name="signing_key_nudge_body">Ohne ihn können installierte Apps nicht aktualisiert, sondern nur neu installiert werden.</string>
     <string name="signing_key_nudge_action">Sichern</string>
     <string name="home_menu_signing_key">Signaturschlüssel</string>
+    <string name="watch_ui_software_version">Softwareversion</string>
+    <string name="watch_ui_devmode_on">Entwicklermodus aktiviert</string>
+    <string name="watch_ui_developer">Entwickleroptionen</string>
+    <string name="watch_ui_adb">ADB-Debugging</string>
+    <string name="watch_ui_wireless">Drahtloses Debugging</string>
+    <string name="watch_ui_connections">Verbindungen</string>
+    <string name="watch_ui_wifi">Wi-Fi</string>
+    <string name="watch_ui_bluetooth">Bluetooth</string>
+    <string name="watch_ui_pair_new">Neues Gerät koppeln</string>
+    <string name="wearable_intro_galaxy">Deine Uhr muss zuerst über Samsungs offizielle Galaxy Wearable-App mit diesem Handy gekoppelt werden. Diese Prüfungen schauen nur nach; sie ändern nie etwas.</string>
+    <string name="wearable_howto_title">So koppelst du</string>
+    <string name="wearable_howto_1">Installiere die Galaxy Wearable-App.</string>
+    <string name="wearable_howto_2">Öffne sie und tippe auf Starten.</string>
+    <string name="wearable_howto_3">Wähle deine Uhr aus der Liste.</string>
+    <string name="wearable_howto_4">Bestätige denselben Code auf dem Handy und auf der Uhr.</string>
+    <string name="wearable_howto_5">Warte, bis „Verbunden“ erscheint. Das Uhr-Plugin wird automatisch installiert.</string>
+    <string name="wearable_open_app">Galaxy Wearable öffnen</string>
+    <string name="wearable_get_app">Galaxy Wearable holen</string>
+    <string name="wearable_check_gw">Galaxy Wearable installiert</string>
+    <string name="wearable_check_gw_ok">Die Samsung-App, die die Uhr koppelt und verwaltet, ist auf diesem Handy vorhanden.</string>
+    <string name="wearable_check_gw_missing">Nicht gefunden. Installiere sie und komm dann hierher zurück.</string>
+    <string name="wearable_check_plugin">Uhr-Plugin installiert</string>
+    <string name="wearable_check_plugin_ok">Galaxy Wearable hat das Plugin für deine Uhr hinzugefügt.</string>
+    <string name="wearable_check_plugin_missing">Nicht gefunden. Galaxy Wearable installiert es beim Koppeln deiner Uhr.</string>
+    <string name="wearable_check_bonded">Uhr per Bluetooth gekoppelt</string>
+    <string name="wearable_check_bonded_ok">Eine Uhr ist mit diesem Handy gekoppelt.</string>
+    <string name="wearable_check_bonded_missing">Keine gekoppelte Uhr gefunden. Schließe die Kopplung in Galaxy Wearable ab.</string>
+    <string name="wearable_check_bonded_denied">Erlaube den Zugriff auf Geräte in der Nähe, damit diese App sehen kann, ob eine Uhr gekoppelt ist. Sie liest nur die Liste der gekoppelten Geräte.</string>
+    <string name="wearable_allow">Erlauben</string>
+    <string name="wearable_note_back">Komm hierher zurück, wenn du fertig bist: Die Prüfungen laufen automatisch erneut.</string>
+    <string name="watchpair_error_bad_host">Gib die IP-Adresse der Uhr ein, zum Beispiel 192.168.1.20.</string>
+    <string name="watchpair_error_bad_port">Gib einen Port von 1 bis 65535 ein.</string>
+    <string name="watchpair_guide_title">Kopplung auf deiner Uhr aktivieren</string>
+    <string name="watchpair_guide_1">Öffne auf der Uhr Einstellungen, Über die Uhr und dann Softwareinformationen. Tippe 5- bis 7-mal auf Softwareversion, bis die Uhr „Entwicklermodus aktiviert“ anzeigt.</string>
+    <string name="watchpair_guide_2">Gehe zurück zu Einstellungen, öffne Entwickleroptionen und aktiviere ADB-Debugging.</string>
+    <string name="watchpair_guide_3">Verbinde die Uhr mit demselben Wi-Fi wie dieses Handy: Einstellungen, Verbindungen, Wi-Fi.</string>
+    <string name="watchpair_guide_4">Tippe in den Entwickleroptionen auf Drahtloses Debugging, aktiviere es und erlaube es.</string>
+    <string name="watchpair_guide_5">Tippe auf Neues Gerät koppeln. Die Uhr zeigt einen 6-stelligen Code und eine Adresse an. Diese App findet die Adresse selbst; du gibst nur den Code ein.</string>
+    <string name="watchpair_guide_again">Noch einmal zeigen</string>
+    <string name="watchpair_manual">Überspringen und manuell vorgehen</string>
+    <string name="watchpair_automatic">Meine Uhr automatisch suchen</string>
+    <string name="watchpair_manual_intro">Tippe auf der Uhr auf Neues Gerät koppeln und gib dann die IP-Adresse, den Port und den 6-stelligen Code ein, die sie anzeigt.</string>
+    <string name="watchpair_host_label">IP-Adresse</string>
+    <string name="watchpair_port_label">Port</string>
+    <string name="watchpair_pairing">Kopplung mit deiner Uhr…</string>
+    <string name="browser_target_line">Gesucht wird: %1$s</string>
+    <string name="browser_coach_1_body_version">Öffne Version %1$s der App.</string>
+    <string name="browser_coach_2_body_version">Wähle in der Variantentabelle die APK (nicht BUNDLE) mit nodpi für Version %1$s.</string>
+    <string name="browser_coach_no_mirror_title">Nicht auf APKMirror</string>
+    <string name="browser_coach_no_mirror_body">Version %1$s ist nicht auf APKMirror veröffentlicht. Schließe diesen Bildschirm, wähle dann Weitere Möglichkeiten, diese App zu bekommen und such eine Datei aus, die du schon hast.</string>
+    <string name="acquire_not_on_mirror">Version %1$s ist nicht auf APKMirror. Verwende eine Datei, die du schon hast.</string>
 </resources>

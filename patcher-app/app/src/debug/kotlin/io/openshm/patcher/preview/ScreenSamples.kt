@@ -17,7 +17,9 @@ import io.openshm.patcher.ui.screens.selftest.SelfTestScreen
 import io.openshm.patcher.ui.screens.signingkey.SigningKeyForm
 import io.openshm.patcher.ui.screens.signingkey.SigningKeyScreen
 import io.openshm.patcher.ui.screens.watchpair.WatchPairScreen
+import io.openshm.patcher.ui.screens.watchpair.WatchPairUiState
 import io.openshm.patcher.ui.screens.wearable.WearablePairingScreen
+import io.openshm.patcher.ui.screens.wearable.WearablePairingUiState
 import io.openshm.patcher.ui.screens.welcome.WelcomeScreen
 import io.openshm.patcher.ui.screens.build.BuildStage
 
@@ -43,18 +45,11 @@ internal fun ProfileSample(variant: ProfileVariant = ProfileVariant.Plain) = Pro
 internal enum class ProfileVariant { Plain, CertainHint, DependsHint, Detected }
 
 @Composable
-internal fun WearablePairingSample() = WearablePairingScreen(PreviewData.wearable(), {}, {}, {})
+internal fun WearablePairingSample(state: WearablePairingUiState = PreviewData.wearable()) =
+    WearablePairingScreen(state, {}, {}, {})
 
 @Composable
-internal fun WatchPairSample(ready: Boolean = false, correction: Boolean = false) =
-    WatchPairScreen(
-        when {
-            correction -> PreviewData.watchPairCorrection()
-            ready -> PreviewData.watchPairReady()
-            else -> PreviewData.watchPairEmpty()
-        },
-        {}, {},
-    )
+internal fun WatchPairSample(state: WatchPairUiState = PreviewData.watchPairEmpty()) = WatchPairScreen(state, {}, {})
 
 @Composable
 internal fun AcquireSample() = AcquireScreen(PreviewData.acquire(), {}, {}, {})

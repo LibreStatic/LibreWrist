@@ -78,6 +78,7 @@ import io.openshm.patcher.ui.screens.selftest.SelfTestScreen
 import io.openshm.patcher.ui.screens.selftest.SelfTestViewModel
 import io.openshm.patcher.ui.screens.watchpair.WatchPairScreen
 import io.openshm.patcher.ui.screens.watchpair.WatchPairViewModel
+import io.openshm.patcher.ui.screens.wearable.WearablePairingEvent
 import io.openshm.patcher.ui.screens.wearable.WearablePairingScreen
 import io.openshm.patcher.ui.screens.wearable.WearablePairingViewModel
 import io.openshm.patcher.ui.screens.welcome.WelcomeScreen
@@ -138,7 +139,17 @@ fun PatcherNavHost(
         composable(Route.WearablePairing.path) {
             val vm: WearablePairingViewModel = viewModel()
             val state by vm.state.collectAsStateWithLifecycle()
-            WearablePairingScreen(state, vm::onEvent, onContinue = { next(Route.WearablePairing) }, onBack = back)
+            val permission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { vm.recheck() }
+            // Coming back from Galaxy Wearable (or the permission dialog): look again.
+            LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { vm.recheck() }
+            WearablePairingScreen(
+                state,
+                onEvent = { event ->
+                    if (event == WearablePairingEvent.AllowBluetooth) permission.launch(Manifest.permission.BLUETOOTH_CONNECT) else vm.onEvent(event)
+                },
+                onContinue = { next(Route.WearablePairing) },
+                onBack = back,
+            )
         }
         composable(Route.WatchPair.path) {
             val vm: WatchPairViewModel = viewModel()

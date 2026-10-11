@@ -14,7 +14,6 @@
     <string name="action_skip">Lewati dulu</string>
     <string name="action_start">Mulai</string>
     <string name="action_retry">Coba lagi</string>
-    <string name="action_edit">Ubah</string>
     <string name="action_fix">Perbaiki</string>
     <string name="action_yes">Ya</string>
     <string name="action_no">Tidak</string>
@@ -136,14 +135,6 @@
 
     <!-- Galaxy Wearable pairing check -->
     <string name="wearable_title">Apakah jammu sudah terhubung?</string>
-    <string name="wearable_intro">Jam harus sudah terhubung ke ponsel ini. Pemeriksaan ini tidak pernah mengubah apa pun.</string>
-    <string name="wearable_check_app">Aplikasi pendamping ditemukan</string>
-    <string name="wearable_check_app_detail">Aplikasi yang mengelola jam sudah terpasang.</string>
-    <string name="wearable_check_paired">Jam terhubung</string>
-    <string name="wearable_check_paired_detail">Sebuah jam terkait dengan ponsel ini.</string>
-    <string name="wearable_check_datalayer">Ponsel dan jam bisa berkomunikasi</string>
-    <string name="wearable_check_datalayer_detail">Tautan data Google di antara keduanya merespons.</string>
-    <string name="wearable_note">Jika pemeriksaan gagal, perbaiki di pengaturan jam itu sendiri, lalu periksa lagi.</string>
     <string name="wearable_recheck">Periksa lagi</string>
 
     <!-- Watch pairing over Wi-Fi -->
@@ -152,16 +143,9 @@
     <string name="watchpair_paired">Jam tangan disambungkan</string>
     <string name="watchpair_title">Hubungkan ke jammu</string>
     <string name="watchpair_intro">Jam menerima pemasangan lewat Wi-Fi setelah kamu menyandingkannya dengan kode singkat.</string>
-    <string name="watchpair_on_watch">DI JAMMU</string>
-    <string name="watchpair_on_watch_steps">Buka Setelan, Opsi pengembang, Debugging nirkabel, lalu Sambungkan perangkat baru. Kode 6 digit ditampilkan di sana.</string>
     <string name="watchpair_found">Jam ditemukan di jaringanmu</string>
     <string name="watchpair_searching">Mencari jammu…</string>
-    <string name="watchpair_address_label">Alamat (host:port)</string>
     <string name="watchpair_code_label">Kode penyandingan</string>
-    <string name="watchpair_check_wifi">Ponsel dan jam berada di Wi-Fi yang sama</string>
-    <string name="watchpair_check_developer">Opsi pengembang aktif</string>
-    <string name="watchpair_check_wireless">Debugging nirkabel aktif</string>
-    <string name="watchpair_check_code">Layar kode penyandingan terbuka</string>
     <string name="watchpair_hint">Masukkan semua 6 digit untuk menyandingkan</string>
     <string name="watchpair_ready">Siap disandingkan</string>
     <string name="watchpair_pair">Sandingkan</string>
@@ -195,9 +179,7 @@
     <string name="browser_page_placeholder">HALAMAN WEB, DITAMPILKAN APA ADANYA</string>
     <string name="browser_coach_progress">%1$d dari %2$d · %3$s</string>
     <string name="browser_coach_1_title">Buka rilis yang tepat</string>
-    <string name="browser_coach_1_body">Pilih versi yang disebutkan di kartu, bukan yang lebih baru atau lebih lama.</string>
     <string name="browser_coach_2_title">Pilih varian</string>
-    <string name="browser_coach_2_body">Pilih APK, bukan bundel, dan build nodpi untuk versi Android kamu.</string>
     <string name="browser_coach_3_title">Unduh</string>
     <string name="browser_coach_3_body">Ketuk Download APK. Patcher mengambil file setelah selesai.</string>
     <string name="browser_coach_wrong_version_body">Itu versi lain. Kembali dan buka %1$s.</string>
@@ -538,4 +520,55 @@
     <string name="signing_key_nudge_body">Tanpanya, aplikasi yang terpasang tidak dapat diperbarui, hanya dipasang ulang.</string>
     <string name="signing_key_nudge_action">Cadangkan</string>
     <string name="home_menu_signing_key">Kunci penandatanganan</string>
+    <string name="watch_ui_software_version">Versi perangkat lunak</string>
+    <string name="watch_ui_devmode_on">Mode pengembang diaktifkan</string>
+    <string name="watch_ui_developer">Opsi pengembang</string>
+    <string name="watch_ui_adb">Debugging ADB</string>
+    <string name="watch_ui_wireless">Debugging nirkabel</string>
+    <string name="watch_ui_connections">Koneksi</string>
+    <string name="watch_ui_wifi">Wi-Fi</string>
+    <string name="watch_ui_bluetooth">Bluetooth</string>
+    <string name="watch_ui_pair_new">Sandingkan perangkat baru</string>
+    <string name="wearable_intro_galaxy">Jammu harus disandingkan dulu dengan ponsel ini lewat aplikasi resmi Samsung, Galaxy Wearable. Pemeriksaan ini hanya melihat; tidak mengubah apa pun.</string>
+    <string name="wearable_howto_title">Cara menyandingkan</string>
+    <string name="wearable_howto_1">Pasang aplikasi Galaxy Wearable.</string>
+    <string name="wearable_howto_2">Buka aplikasinya lalu ketuk Mulai.</string>
+    <string name="wearable_howto_3">Pilih jammu dari daftar.</string>
+    <string name="wearable_howto_4">Konfirmasi kode yang sama di ponsel dan di jam.</string>
+    <string name="wearable_howto_5">Tunggu sampai muncul tulisan terhubung. Plugin jam dipasang otomatis.</string>
+    <string name="wearable_open_app">Buka Galaxy Wearable</string>
+    <string name="wearable_get_app">Dapatkan Galaxy Wearable</string>
+    <string name="wearable_check_gw">Galaxy Wearable terpasang</string>
+    <string name="wearable_check_gw_ok">Aplikasi Samsung untuk menyandingkan dan mengelola jam ada di ponsel ini.</string>
+    <string name="wearable_check_gw_missing">Tidak ditemukan. Pasang dulu, lalu kembali ke sini.</string>
+    <string name="wearable_check_plugin">Plugin jam terpasang</string>
+    <string name="wearable_check_plugin_ok">Galaxy Wearable sudah menambahkan plugin untuk jammu.</string>
+    <string name="wearable_check_plugin_missing">Tidak ditemukan. Galaxy Wearable memasangnya saat menyandingkan jammu.</string>
+    <string name="wearable_check_bonded">Jam tersandingkan lewat Bluetooth</string>
+    <string name="wearable_check_bonded_ok">Ada jam yang tersandingkan dengan ponsel ini.</string>
+    <string name="wearable_check_bonded_missing">Tidak ada jam yang tersandingkan. Selesaikan penyandingan di Galaxy Wearable.</string>
+    <string name="wearable_check_bonded_denied">Izinkan akses ke perangkat di sekitar agar aplikasi ini bisa melihat apakah jam sudah tersandingkan. Aplikasi hanya membaca daftar perangkat yang tersandingkan.</string>
+    <string name="wearable_allow">Izinkan</string>
+    <string name="wearable_note_back">Kembali ke sini setelah selesai: pemeriksaan berjalan lagi dengan sendirinya.</string>
+    <string name="watchpair_error_bad_host">Masukkan alamat IP jam, misalnya 192.168.1.20.</string>
+    <string name="watchpair_error_bad_port">Masukkan port dari 1 sampai 65535.</string>
+    <string name="watchpair_guide_title">Aktifkan penyandingan di jammu</string>
+    <string name="watchpair_guide_1">Di jam, buka Setelan, Tentang jam, lalu Informasi perangkat lunak. Ketuk Versi perangkat lunak 5 sampai 7 kali, sampai jam menampilkan Mode pengembang diaktifkan.</string>
+    <string name="watchpair_guide_2">Kembali ke Setelan, buka Opsi pengembang lalu aktifkan Debugging ADB.</string>
+    <string name="watchpair_guide_3">Sambungkan jam ke Wi-Fi yang sama dengan ponsel ini: Setelan, Koneksi, Wi-Fi.</string>
+    <string name="watchpair_guide_4">Di Opsi pengembang, ketuk Debugging nirkabel, aktifkan, lalu izinkan.</string>
+    <string name="watchpair_guide_5">Ketuk Sandingkan perangkat baru. Jam menampilkan kode 6 digit dan sebuah alamat. Aplikasi ini menemukan alamatnya sendiri; kamu hanya perlu mengetik kodenya.</string>
+    <string name="watchpair_guide_again">Tunjukkan caranya lagi</string>
+    <string name="watchpair_manual">Lewati dan lakukan manual</string>
+    <string name="watchpair_automatic">Cari jamku secara otomatis</string>
+    <string name="watchpair_manual_intro">Di jam, ketuk Sandingkan perangkat baru, lalu ketik alamat IP, port, dan kode 6 digit yang ditampilkan.</string>
+    <string name="watchpair_host_label">Alamat IP</string>
+    <string name="watchpair_port_label">Port</string>
+    <string name="watchpair_pairing">Menyandingkan dengan jammu…</string>
+    <string name="browser_target_line">Mencari: %1$s</string>
+    <string name="browser_coach_1_body_version">Buka versi %1$s dari aplikasi.</string>
+    <string name="browser_coach_2_body_version">Di tabel varian, pilih APK (bukan BUNDLE) bertanda nodpi untuk versi %1$s.</string>
+    <string name="browser_coach_no_mirror_title">Tidak ada di APKMirror</string>
+    <string name="browser_coach_no_mirror_body">Versi %1$s tidak dipublikasikan di APKMirror. Tutup layar ini, lalu gunakan Cara lain untuk mendapatkan aplikasi ini dan pilih file yang sudah kamu punya.</string>
+    <string name="acquire_not_on_mirror">Versi %1$s tidak ada di APKMirror. Gunakan file yang sudah kamu punya.</string>
 </resources>

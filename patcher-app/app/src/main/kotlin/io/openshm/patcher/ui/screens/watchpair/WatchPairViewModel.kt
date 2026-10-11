@@ -24,13 +24,20 @@ import kotlinx.coroutines.launch
 
 /** Pure reducer so it can be unit tested without a ViewModel. */
 internal fun WatchPairUiState.reduce(event: WatchPairEvent): WatchPairUiState = when (event) {
-    is WatchPairEvent.CodeChanged -> copy(code = event.code.filter(Char::isDigit).take(PAIRING_CODE_LENGTH), errorRes = null)
-    is WatchPairEvent.AddressChanged -> copy(
-        foundAddress = event.address.ifBlank { null },
-        errorRes = if (event.address.isBlank() || parseAddress(event.address) != null) null else R.string.watchpair_error_bad_address,
-    )
-    WatchPairEvent.ToggleEditAddress -> copy(editingAddress = !editingAddress)
+    is WatchPairEvent.CodeChanged -> if (pairing) this else copy(code = event.code.filter(Char::isDigit).take(PAIRING_CODE_LENGTH), errorRes = null)
+    is WatchPairEvent.HostChanged -> copy(host = event.host.trim(), errorRes = null)
+    is WatchPairEvent.PortChanged -> copy(port = event.port.filter(Char::isDigit).take(5), errorRes = null)
+    // The first time the watch shows up the guide has done its job and closes by itself.
+    is WatchPairEvent.Discovered -> when {
+        pairing -> this
+        else -> copy(foundAddress = event.address, guideOpen = if (foundAddress == null && event.address != null) false else guideOpen)
+    }
+    is WatchPairEvent.GuideStep -> copy(guideStep = event.step.coerceIn(0, WATCH_GUIDE_STEPS - 1))
+    WatchPairEvent.ShowGuide -> copy(guideOpen = true)
+    WatchPairEvent.HideGuide -> copy(guideOpen = false)
+    WatchPairEvent.ToggleManual -> copy(manual = !manual, errorRes = null)
     WatchPairEvent.ConfirmCorrection -> copy(correction = null, paired = true)
+    // The code field is disabled and hidden from this very state on, not after the first answer.
     WatchPairEvent.Pair -> if (canPair) copy(pairing = true, errorRes = null) else this
 }
 
@@ -69,27 +76,22 @@ class WatchPairViewModel(application: Application) : AndroidViewModel(applicatio
     private val _state = MutableStateFlow(WatchPairUiState())
     val state: StateFlow<WatchPairUiState> = _state.asStateFlow()
 
-    /** Once the user typed an address, discovery no longer replaces it. */
-    @Volatile
-    private var addressEdited = false
-
     init {
         viewModelScope.launch(Dispatchers.Default) {
             try {
                 AdbDiscovery(application).discover(AdbServiceType.PAIRING).collect { services ->
                     val found = foundWatchAddress(services, SelfAdbSession::isOwnAddress)
-                    if (!addressEdited) _state.update { if (it.pairing) it else it.copy(foundAddress = found) }
+                    _state.update { it.reduce(WatchPairEvent.Discovered(found)) }
                 }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                // No discovery: the address can still be typed in.
+                // No discovery: the address can still be typed in ("Skip and do it manually").
             }
         }
     }
 
     fun onEvent(event: WatchPairEvent) {
-        if (event is WatchPairEvent.AddressChanged) addressEdited = true
         val wasPairing = _state.value.pairing
         _state.update { it.reduce(event) }
         if (!wasPairing && _state.value.pairing) pair()
@@ -100,7 +102,7 @@ class WatchPairViewModel(application: Application) : AndroidViewModel(applicatio
 
     private fun pair() {
         val snapshot = _state.value
-        val (host, port) = parseAddress(snapshot.foundAddress.orEmpty()) ?: run {
+        val (host, port) = parseAddress(snapshot.address.orEmpty()) ?: run {
             _state.update { it.copy(pairing = false, errorRes = R.string.watchpair_error_bad_address) }
             return
         }

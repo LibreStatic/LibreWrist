@@ -14,7 +14,6 @@
     <string name="action_skip">Şimdilik atla</string>
     <string name="action_start">Başlat</string>
     <string name="action_retry">Tekrar dene</string>
-    <string name="action_edit">Düzenle</string>
     <string name="action_fix">Düzelt</string>
     <string name="action_yes">Evet</string>
     <string name="action_no">Hayır</string>
@@ -136,14 +135,6 @@
 
     <!-- Galaxy Wearable pairing check -->
     <string name="wearable_title">Saatiniz eşlenmiş mi?</string>
-    <string name="wearable_intro">Saat bu telefonla zaten eşlenmiş olmalı. Bu denetimler hiçbir şeyi değiştirmez.</string>
-    <string name="wearable_check_app">Eşlik eden uygulama bulundu</string>
-    <string name="wearable_check_app_detail">Saati yöneten uygulama kurulu.</string>
-    <string name="wearable_check_paired">Saat eşlenmiş</string>
-    <string name="wearable_check_paired_detail">Bu telefonla ilişkilendirilmiş bir saat var.</string>
-    <string name="wearable_check_datalayer">Telefon ve saat haberleşiyor</string>
-    <string name="wearable_check_datalayer_detail">Aralarındaki Google veri bağlantısı yanıt veriyor.</string>
-    <string name="wearable_note">Bir denetim başarısız olursa saatin kendi kurulumunda düzeltin, sonra tekrar denetleyin.</string>
     <string name="wearable_recheck">Tekrar denetle</string>
 
     <!-- Watch pairing over Wi-Fi -->
@@ -152,16 +143,9 @@
     <string name="watchpair_paired">Saat eşlendi</string>
     <string name="watchpair_title">Saatinize bağlanın</string>
     <string name="watchpair_intro">Saat, kısa bir kodla eşlendikten sonra Wi-Fi üzerinden kurulumu kabul eder.</string>
-    <string name="watchpair_on_watch">SAATİNİZDE</string>
-    <string name="watchpair_on_watch_steps">Ayarlar, Geliştirici seçenekleri, Kablosuz hata ayıklama ve ardından Yeni cihaz eşle yolunu izleyin. 6 haneli kod orada gösterilir.</string>
     <string name="watchpair_found">Saat ağınızda bulundu</string>
     <string name="watchpair_searching">Saatiniz aranıyor…</string>
-    <string name="watchpair_address_label">Adres (ana makine:bağlantı noktası)</string>
     <string name="watchpair_code_label">Eşleme kodu</string>
-    <string name="watchpair_check_wifi">Telefon ve saat aynı Wi-Fi ağında</string>
-    <string name="watchpair_check_developer">Geliştirici seçenekleri açık</string>
-    <string name="watchpair_check_wireless">Kablosuz hata ayıklama açık</string>
-    <string name="watchpair_check_code">Eşleme kodu ekranı açık</string>
     <string name="watchpair_hint">Eşlemek için 6 haneyi de girin</string>
     <string name="watchpair_ready">Eşlemeye hazır</string>
     <string name="watchpair_pair">Eşle</string>
@@ -196,9 +180,7 @@
     <string name="browser_page_placeholder">WEB SAYFASI, OLDUĞU GİBİ</string>
     <string name="browser_coach_progress">%1$d / %2$d · %3$s</string>
     <string name="browser_coach_1_title">Doğru sürümü açın</string>
-    <string name="browser_coach_1_body">Kartta adı geçen sürümü seçin; daha yeni ya da eski olanı değil.</string>
     <string name="browser_coach_2_title">Varyantı seçin</string>
-    <string name="browser_coach_2_body">Paketi değil APK\'yı ve Android sürümünüze uygun nodpi derlemesini seçin.</string>
     <string name="browser_coach_3_title">İndirin</string>
     <string name="browser_coach_3_body">Download APK\'ya dokunun. Yama aracı, bittiğinde dosyayı alır.</string>
     <string name="browser_coach_wrong_version_body">Bu başka bir sürüm. Geri dönüp %1$s sürümünü açın.</string>
@@ -546,4 +528,55 @@
     <string name="signing_key_nudge_body">Olmazsa kurulu uygulamalar güncellenemez, yalnızca yeniden kurulabilir.</string>
     <string name="signing_key_nudge_action">Yedekle</string>
     <string name="home_menu_signing_key">İmza anahtarı</string>
+    <string name="watch_ui_software_version">Yazılım sürümü</string>
+    <string name="watch_ui_devmode_on">Geliştirici modu açıldı</string>
+    <string name="watch_ui_developer">Geliştirici seçenekleri</string>
+    <string name="watch_ui_adb">ADB hata ayıklama</string>
+    <string name="watch_ui_wireless">Kablosuz hata ayıklama</string>
+    <string name="watch_ui_connections">Bağlantılar</string>
+    <string name="watch_ui_wifi">Wi-Fi</string>
+    <string name="watch_ui_bluetooth">Bluetooth</string>
+    <string name="watch_ui_pair_new">Yeni cihaz eşle</string>
+    <string name="wearable_intro_galaxy">Saatinizin önce bu telefonla eşlenmesi gerekir; bunu Samsung\'un resmi Galaxy Wearable uygulamasıyla yaparsınız. Bu denetimler yalnızca bakar, hiçbir şeyi değiştirmez.</string>
+    <string name="wearable_howto_title">Nasıl eşlenir</string>
+    <string name="wearable_howto_1">Galaxy Wearable uygulamasını yükleyin.</string>
+    <string name="wearable_howto_2">Uygulamayı açıp Başlat\'a dokunun.</string>
+    <string name="wearable_howto_3">Listeden saatinizi seçin.</string>
+    <string name="wearable_howto_4">Telefonda ve saatte görünen aynı kodu onaylayın.</string>
+    <string name="wearable_howto_5">Bağlandı yazana kadar bekleyin. Saat eklentisi kendiliğinden yüklenir.</string>
+    <string name="wearable_open_app">Galaxy Wearable\'ı aç</string>
+    <string name="wearable_get_app">Galaxy Wearable\'ı edin</string>
+    <string name="wearable_check_gw">Galaxy Wearable yüklü</string>
+    <string name="wearable_check_gw_ok">Saati eşleyen ve yöneten Samsung uygulaması bu telefonda var.</string>
+    <string name="wearable_check_gw_missing">Bulunamadı. Yükleyin, sonra buraya dönün.</string>
+    <string name="wearable_check_plugin">Saat eklentisi yüklü</string>
+    <string name="wearable_check_plugin_ok">Galaxy Wearable saatiniz için eklentiyi ekledi.</string>
+    <string name="wearable_check_plugin_missing">Bulunamadı. Galaxy Wearable, saatinizi eşlerken bunu yükler.</string>
+    <string name="wearable_check_bonded">Saat Bluetooth ile eşlendi</string>
+    <string name="wearable_check_bonded_ok">Bu telefonla eşlenmiş bir saat var.</string>
+    <string name="wearable_check_bonded_missing">Eşlenmiş saat bulunamadı. Eşlemeyi Galaxy Wearable\'da tamamlayın.</string>
+    <string name="wearable_check_bonded_denied">Bu uygulamanın bir saatin eşlenip eşlenmediğini görebilmesi için yakındaki cihazlara erişime izin verin. Yalnızca eşlenmiş cihazların listesini okur.</string>
+    <string name="wearable_allow">İzin ver</string>
+    <string name="wearable_note_back">İşiniz bitince buraya dönün: denetimler kendiliğinden yeniden çalışır.</string>
+    <string name="watchpair_error_bad_host">Saatin IP adresini girin, örneğin 192.168.1.20.</string>
+    <string name="watchpair_error_bad_port">1 ile 65535 arasında bir bağlantı noktası girin.</string>
+    <string name="watchpair_guide_title">Saatinizde eşlemeyi açın</string>
+    <string name="watchpair_guide_1">Saatte Ayarlar, Saat hakkında, ardından Yazılım bilgileri\'ni açın. Saat Geliştirici modu açıldı yazana kadar Yazılım sürümü\'ne 5 ila 7 kez dokunun.</string>
+    <string name="watchpair_guide_2">Ayarlar\'a dönün, Geliştirici seçenekleri\'ni açın ve ADB hata ayıklama\'yı açın.</string>
+    <string name="watchpair_guide_3">Saati telefonla aynı Wi-Fi ağına bağlayın: Ayarlar, Bağlantılar, Wi-Fi.</string>
+    <string name="watchpair_guide_4">Geliştirici seçenekleri\'nde Kablosuz hata ayıklama\'ya dokunun, açın ve izin verin.</string>
+    <string name="watchpair_guide_5">Yeni cihaz eşle\'ye dokunun. Saat 6 haneli bir kod ve bir adres gösterir. Bu uygulama adresi kendisi bulur; siz yalnızca kodu yazarsınız.</string>
+    <string name="watchpair_guide_again">Bana tekrar göster</string>
+    <string name="watchpair_manual">Atla ve elle yap</string>
+    <string name="watchpair_automatic">Saatimi otomatik olarak ara</string>
+    <string name="watchpair_manual_intro">Saatte Yeni cihaz eşle\'ye dokunun, ardından gösterdiği IP adresini, bağlantı noktasını ve 6 haneli kodu yazın.</string>
+    <string name="watchpair_host_label">IP adresi</string>
+    <string name="watchpair_port_label">Bağlantı noktası</string>
+    <string name="watchpair_pairing">Saatinizle eşleniyor…</string>
+    <string name="browser_target_line">Aranan: %1$s</string>
+    <string name="browser_coach_1_body_version">Uygulamanın %1$s sürümünü açın.</string>
+    <string name="browser_coach_2_body_version">Varyant tablosunda %1$s sürümü için nodpi işaretli APK\'yı (BUNDLE değil) seçin.</string>
+    <string name="browser_coach_no_mirror_title">APKMirror\'da yok</string>
+    <string name="browser_coach_no_mirror_body">%1$s sürümü APKMirror\'da yayınlanmamış. Bu ekranı kapatın, Bu uygulamayı edinmenin diğer yolları\'nı kullanın ve elinizde olan bir dosyayı seçin.</string>
+    <string name="acquire_not_on_mirror">%1$s sürümü APKMirror\'da yok. Elinizde olan bir dosyayı kullanın.</string>
 </resources>

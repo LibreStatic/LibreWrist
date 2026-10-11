@@ -1,13 +1,19 @@
 package io.openshm.patcher.preview
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.openshm.patcher.R
+import io.openshm.patcher.ui.components.PhoneWatchIllustration
 import io.openshm.patcher.ui.components.TimeBackdrop
 import io.openshm.patcher.ui.components.WelcomeHero
 import io.openshm.patcher.ui.screens.profile.GuideStep
@@ -82,16 +88,62 @@ fun ProfileDependsHintDriver() = PreviewHost(ColorMode.Fallback) { ProfileSample
 fun ProfileDetectedDriver() = PreviewHost(ColorMode.Fallback) { ProfileSample(ProfileVariant.Detected) }
 
 @Composable
-fun WatchPairCorrectionDriver() = PreviewHost(ColorMode.Fallback) { WatchPairSample(correction = true) }
+fun WatchPairCorrectionDriver() = PreviewHost(ColorMode.Fallback) { WatchPairSample(PreviewData.watchPairCorrection()) }
 
+/** "Is your watch paired?": everything found; then each failing check; then the Bluetooth permission denied. */
 @Composable
 fun WearablePairingDriver() = PreviewHost(ColorMode.Fallback) { WearablePairingSample() }
 
 @Composable
+fun WearablePairingMissingDriver() = PreviewHost(ColorMode.Fallback) {
+    WearablePairingSample(PreviewData.wearable(packages = emptySet(), bonded = emptyList()))
+}
+
+@Composable
+fun WearablePairingNoWatchDriver() = PreviewHost(ColorMode.Fallback) { WearablePairingSample(PreviewData.wearable(bonded = emptyList())) }
+
+@Composable
+fun WearablePairingDeniedDriver() = PreviewHost(ColorMode.Fallback) {
+    WearablePairingSample(PreviewData.wearable(bluetoothAllowed = false, bonded = emptyList()))
+}
+
+/** Watch pairing: the inline guide at its first and last steps, found, manual, pairing and failed. */
+@Composable
 fun WatchPairDriver() = PreviewHost(ColorMode.Fallback) { WatchPairSample() }
 
 @Composable
-fun WatchPairReadyDriver() = PreviewHost(ColorMode.Fallback) { WatchPairSample(ready = true) }
+fun WatchPairGuideLastDriver() = PreviewHost(ColorMode.Fallback) { WatchPairSample(PreviewData.watchPairGuide(4)) }
+
+@Composable
+fun WatchPairGuideWifiDriver() = PreviewHost(ColorMode.Fallback) { WatchPairSample(PreviewData.watchPairGuide(2)) }
+
+@Composable
+fun WatchPairReadyDriver() = PreviewHost(ColorMode.Fallback) { WatchPairSample(PreviewData.watchPairReady()) }
+
+@Composable
+fun WatchPairManualDriver() = PreviewHost(ColorMode.Fallback) { WatchPairSample(PreviewData.watchPairManual()) }
+
+@Composable
+fun WatchPairManualInvalidDriver() = PreviewHost(ColorMode.Fallback) {
+    WatchPairSample(PreviewData.watchPairManual(host = "192.168 .1", port = "70000", code = "12"))
+}
+
+@Composable
+fun WatchPairPairingDriver() = PreviewHost(ColorMode.Fallback) { WatchPairSample(PreviewData.watchPairPairing()) }
+
+@Composable
+fun WatchPairErrorDriver() = PreviewHost(ColorMode.Fallback) { WatchPairSample(PreviewData.watchPairError()) }
+
+/** The phone and watch illustration on the tertiary container, at the two sizes the app uses. */
+@Composable
+fun PhoneWatchIllustrationDriver() = PreviewHost(ColorMode.Fallback) {
+    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Surface(shape = RoundedCornerShape(28.dp), color = MaterialTheme.colorScheme.tertiaryContainer) {
+            PhoneWatchIllustration(Modifier.padding(16.dp), scale = 0.8f, linkColor = MaterialTheme.colorScheme.tertiary)
+        }
+        PhoneWatchIllustration()
+    }
+}
 
 @Composable
 fun AcquireDriver() = PreviewHost(ColorMode.Fallback) { AcquireSample() }

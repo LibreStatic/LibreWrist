@@ -81,6 +81,9 @@ class LoadedCatalogue(val engine: Catalogue, private val resolve: (Int) -> Strin
             packageName = input.packageName,
             apkMirrorSlug = obtain?.get("apkmirror") as? String ?: "",
             variantChips = chipsOf(input.raw),
+            apkMirrorRelease = (obtain?.get("apkmirrorRelease") as? String)?.trim('/')?.takeIf { it.isNotEmpty() },
+            onApkMirror = obtain?.get("onApkMirror") != false,
+            abis = (input.raw["abis"] as? List<*>)?.filterIsInstance<String>().orEmpty(),
         )
     }
 

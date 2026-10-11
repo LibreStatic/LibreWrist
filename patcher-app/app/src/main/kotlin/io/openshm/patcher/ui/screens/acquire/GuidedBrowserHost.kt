@@ -14,9 +14,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import io.openshm.patcher.R
 import io.openshm.patcher.data.ApkMirrorGuide
+import io.openshm.patcher.data.CoachState
 import io.openshm.patcher.data.DownloadRequest
 import io.openshm.patcher.data.DownloadVerdict
 import io.openshm.patcher.data.InputApp
+import io.openshm.patcher.data.VariantChip
 import java.net.URI
 
 private const val BROWSER_HOST = "www.apkmirror.com"
@@ -45,7 +47,11 @@ fun GuidedBrowserHost(
     val controller = remember { ApkMirrorWebController() }
     var currentUrl by rememberSaveable { mutableStateOf(ApkMirrorGuide.startUrl(input)) }
     var notice by remember { mutableStateOf<Notice?>(null) }
-    val coach = ApkMirrorGuide.coachStep(currentUrl, input)
+    val coach = if (input.onApkMirror) ApkMirrorGuide.coachStep(currentUrl, input) else CoachState(1)
+    val chips = input.variantChips.filter { it == VariantChip.ApkNotBundle || it == VariantChip.NoDpi }
+        .map { stringResource(it.labelRes()) }
+    val target = (listOf(input.versionName) + chips + listOfNotNull(input.abis.takeIf { it.isNotEmpty() }?.joinToString(" + ")))
+        .joinToString(" · ")
 
     GuidedBrowserScreen(
         state = GuidedBrowserUiState(
@@ -53,12 +59,13 @@ fun GuidedBrowserHost(
             appLabel = input.label,
             coachStep = coach.step,
             coachTotal = COACH_TOTAL,
-            coachTitle = stringResource(coachTitle(coach.step)),
-            coachBody = if (coach.wrongVersion) {
-                stringResource(R.string.browser_coach_wrong_version_body, input.versionName)
-            } else {
-                stringResource(coachBody(coach.step))
+            coachTitle = stringResource(if (input.onApkMirror) coachTitle(coach.step) else R.string.browser_coach_no_mirror_title),
+            coachBody = when {
+                !input.onApkMirror -> stringResource(R.string.browser_coach_no_mirror_body, input.versionName)
+                coach.wrongVersion -> stringResource(R.string.browser_coach_wrong_version_body, input.versionName)
+                else -> stringResource(coachBody(coach.step), input.versionName)
             },
+            target = target,
             notice = notice?.toUi(),
         ),
         onEvent = { event ->
@@ -125,7 +132,7 @@ private fun coachTitle(step: Int) = when (step) {
 }
 
 private fun coachBody(step: Int) = when (step) {
-    1 -> R.string.browser_coach_1_body
-    2 -> R.string.browser_coach_2_body
+    1 -> R.string.browser_coach_1_body_version
+    2 -> R.string.browser_coach_2_body_version
     else -> R.string.browser_coach_3_body
 }

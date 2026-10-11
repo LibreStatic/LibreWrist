@@ -19,7 +19,26 @@ object ApkMirrorGuide {
     private const val APP_SEGMENTS = 3 // apk / <developer> / <app>
     private val BUNDLE_EXTENSIONS = listOf(".apkm", ".xapk", ".apks", ".zip")
 
-    fun startUrl(input: InputApp): String = "https://www.$HOST/apk/${input.apkMirrorSlug.trim('/')}/"
+    /** The release page of the exact version when the catalogue knows it, else the app's page. */
+    fun startUrl(input: InputApp): String {
+        val base = "https://www.$HOST/apk/${input.apkMirrorSlug.trim('/')}/"
+        val release = input.apkMirrorRelease?.trim('/')?.takeIf { it.isNotEmpty() && '/' !in it }
+        return if (release != null) "$base$release/" else base
+    }
+
+    /**
+     * An off-APKMirror hop of a server redirect (APKMirror hands the file to a CDN this way): https,
+     * no credentials, default port, a real redirect, and a chain that started on APKMirror.
+     */
+    fun isAcceptableRedirectHop(url: String, isRedirect: Boolean, chainFromApkMirror: Boolean): Boolean {
+        if (!isRedirect || !chainFromApkMirror) return false
+        val uri = parse(url) ?: return false
+        return uri.scheme == "https" && uri.userInfo == null && (uri.port == -1 || uri.port == 443) &&
+            !uri.host.isNullOrEmpty()
+    }
+
+    /** The host of an https URL, lowercase, or null. */
+    fun hostOf(url: String): String? = parse(url)?.host?.lowercase(Locale.ROOT)?.trimEnd('.')
 
     /** True for apkmirror.com and its subdomains, case-insensitively. */
     fun isApkMirrorHost(host: String?): Boolean {
@@ -66,8 +85,53 @@ object ApkMirrorGuide {
         return (star?.groupValues?.get(1) ?: plain?.let { it.groupValues[2].ifEmpty { it.groupValues[1] } })?.trim()
     }
 
-    private fun parse(url: String): URI? {
+    internal fun parse(url: String): URI? {
         if (url.contains('\\')) return null
         return runCatching { URI(url.trim()) }.getOrNull()
+    }
+}
+
+/** What to do with a main-frame navigation. */
+enum class NavDecision { Allow, AllowRedirectHop, Block }
+
+/**
+ * Tracks one navigation chain of the guided browser: an off-APKMirror redirect hop is only accepted
+ * while the chain began on an APKMirror page, and a download from such a host only if that host was
+ * the accepted hop. No Android types.
+ */
+class RedirectChain {
+    private var fromApkMirror = false
+    private var hopHost: String? = null
+
+    /** Called for every main-frame navigation request. */
+    fun onNavigation(url: String, isRedirect: Boolean): NavDecision {
+        if (ApkMirrorGuide.isAllowedNavigation(url)) {
+            fromApkMirror = true
+            hopHost = null
+            return NavDecision.Allow
+        }
+        if (ApkMirrorGuide.isAcceptableRedirectHop(url, isRedirect, fromApkMirror)) {
+            hopHost = ApkMirrorGuide.hostOf(url)
+            return NavDecision.AllowRedirectHop
+        }
+        return NavDecision.Block
+    }
+
+    /** True when [url] is on APKMirror or on the host the chain was redirected to. */
+    fun mayDownloadFrom(url: String): Boolean {
+        val host = ApkMirrorGuide.hostOf(url) ?: return false
+        return ApkMirrorGuide.isApkMirrorHost(host) || (hopHost != null && host == hopHost)
+    }
+
+    /** An accepted off-site hop rendered as a page: the chain is over. */
+    fun onOffSitePage() {
+        fromApkMirror = false
+        hopHost = null
+    }
+
+    /** True for a URL that is an accepted hop host rather than APKMirror (a page, not a download). */
+    fun isHopHost(url: String): Boolean {
+        val host = ApkMirrorGuide.hostOf(url) ?: return false
+        return hopHost != null && host == hopHost && !ApkMirrorGuide.isApkMirrorHost(host)
     }
 }

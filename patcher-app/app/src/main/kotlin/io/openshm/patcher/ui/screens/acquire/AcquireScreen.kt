@@ -18,6 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -160,6 +161,14 @@ private fun AcquireCardView(card: AcquireCard, onEvent: (AcquireEvent) -> Unit) 
 @Composable
 private fun GetActions(card: AcquireCard, onEvent: (AcquireEvent) -> Unit) {
     val id = card.input.id
+    if (!card.input.onApkMirror) {
+        Text(
+            stringResource(R.string.acquire_not_on_mirror, card.input.versionName),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        TextButton({ onEvent(AcquireEvent.UseFile(id)) }) { Text(stringResource(R.string.acquire_use_file)) }
+        return
+    }
     Column {
         SplitAction(
             text = stringResource(R.string.acquire_open_mirror),
@@ -181,7 +190,7 @@ private fun GetActions(card: AcquireCard, onEvent: (AcquireEvent) -> Unit) {
 
 private const val MEGABYTE = 1024L * 1024L
 
-private fun VariantChip.labelRes() = when (this) {
+internal fun VariantChip.labelRes() = when (this) {
     VariantChip.ApkNotBundle -> R.string.chip_apk_not_bundle
     VariantChip.NoDpi -> R.string.chip_nodpi
     VariantChip.MinAndroid11 -> R.string.chip_android_11

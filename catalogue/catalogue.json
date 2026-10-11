@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "serial": 4,
+  "serial": 5,
   "minAppVersion": 1,
   "inputs": [
     {
@@ -22,7 +22,8 @@
       "target": "phone",
       "role": "patched",
       "obtain": {
-        "apkmirror": "samsung-electronics-co-ltd/samsung-health-monitor-2"
+        "apkmirror": "samsung-electronics-co-ltd/samsung-health-monitor-2",
+        "apkmirrorRelease": "samsung-health-monitor-1-4-6-001-release"
       }
     },
     {
@@ -43,7 +44,8 @@
       "target": "watch",
       "role": "patched",
       "obtain": {
-        "apkmirror": "samsung-electronics-co-ltd/samsung-health-monitor-wear-os"
+        "apkmirror": "samsung-electronics-co-ltd/samsung-health-monitor-wear-os",
+        "apkmirrorRelease": "samsung-health-monitor-wear-os-1-5-1-022-release"
       }
     },
     {
@@ -62,7 +64,8 @@
       "target": "watch",
       "role": "patched",
       "obtain": {
-        "apkmirror": "samsung-electronics-co-ltd/alarm-wear-os"
+        "apkmirror": "samsung-electronics-co-ltd/alarm-wear-os",
+        "onApkMirror": false
       }
     }
   ],

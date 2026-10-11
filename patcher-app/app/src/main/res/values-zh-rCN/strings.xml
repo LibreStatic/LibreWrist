@@ -14,7 +14,6 @@
     <string name="action_skip">暂时跳过</string>
     <string name="action_start">开始</string>
     <string name="action_retry">重试</string>
-    <string name="action_edit">编辑</string>
     <string name="action_fix">修复</string>
     <string name="action_yes">是</string>
     <string name="action_no">否</string>
@@ -136,14 +135,6 @@
 
     <!-- Galaxy Wearable pairing check -->
     <string name="wearable_title">你的手表已配对吗？</string>
-    <string name="wearable_intro">手表必须已与这部手机配对。这些检查不会更改任何内容。</string>
-    <string name="wearable_check_app">已找到配套应用</string>
-    <string name="wearable_check_app_detail">管理手表的应用已安装。</string>
-    <string name="wearable_check_paired">手表已配对</string>
-    <string name="wearable_check_paired_detail">已有手表与这部手机关联。</string>
-    <string name="wearable_check_datalayer">手机和手表可以通信</string>
-    <string name="wearable_check_datalayer_detail">两者之间的 Google 数据链路有响应。</string>
-    <string name="wearable_note">如果检查未通过，请在手表自身的设置中修复，然后重新检查。</string>
     <string name="wearable_recheck">重新检查</string>
 
     <!-- Watch pairing over Wi-Fi -->
@@ -152,16 +143,9 @@
     <string name="watchpair_paired">手表已配对</string>
     <string name="watchpair_title">连接到你的手表</string>
     <string name="watchpair_intro">使用简短的配对码配对后，手表即可通过 Wi-Fi 接受安装。</string>
-    <string name="watchpair_on_watch">在手表上操作</string>
-    <string name="watchpair_on_watch_steps">依次打开设置、开发者选项、无线调试，然后点按“配对新设备”。6 位配对码会显示在那里。</string>
     <string name="watchpair_found">在你的网络中找到了手表</string>
     <string name="watchpair_searching">正在查找你的手表…</string>
-    <string name="watchpair_address_label">地址（主机:端口）</string>
     <string name="watchpair_code_label">配对码</string>
-    <string name="watchpair_check_wifi">手机和手表连接到同一个 Wi-Fi</string>
-    <string name="watchpair_check_developer">开发者选项已开启</string>
-    <string name="watchpair_check_wireless">无线调试已开启</string>
-    <string name="watchpair_check_code">配对码界面已打开</string>
     <string name="watchpair_hint">输入全部 6 位数字即可配对</string>
     <string name="watchpair_ready">可以配对</string>
     <string name="watchpair_pair">配对</string>
@@ -195,9 +179,7 @@
     <string name="browser_page_placeholder">网页将按原样显示</string>
     <string name="browser_coach_progress">%1$d / %2$d · %3$s</string>
     <string name="browser_coach_1_title">打开正确的版本</string>
-    <string name="browser_coach_1_body">请选择卡片上标明的版本，不要选更新或更旧的版本。</string>
     <string name="browser_coach_2_title">选择变体</string>
-    <string name="browser_coach_2_body">请选择 APK 而不是 bundle，并选择适合你 Android 版本的 nodpi 构建。</string>
     <string name="browser_coach_3_title">下载</string>
     <string name="browser_coach_3_body">点按 Download APK。下载完成后，补丁工具会自动获取该文件。</string>
     <string name="browser_coach_wrong_version_body">这是另一个版本。请返回并打开 %1$s。</string>
@@ -538,4 +520,55 @@
     <string name="signing_key_nudge_body">没有备份的话，已安装的应用将无法更新，只能重新安装。</string>
     <string name="signing_key_nudge_action">备份</string>
     <string name="home_menu_signing_key">签名密钥</string>
+    <string name="watch_ui_software_version">软件版本</string>
+    <string name="watch_ui_devmode_on">已开启开发者模式</string>
+    <string name="watch_ui_developer">开发者选项</string>
+    <string name="watch_ui_adb">ADB 调试</string>
+    <string name="watch_ui_wireless">无线调试</string>
+    <string name="watch_ui_connections">连接</string>
+    <string name="watch_ui_wifi">Wi-Fi</string>
+    <string name="watch_ui_bluetooth">Bluetooth</string>
+    <string name="watch_ui_pair_new">配对新设备</string>
+    <string name="wearable_intro_galaxy">手表需要先通过三星官方的 Galaxy Wearable 应用与这部手机配对。这里的检查只读取信息，不会更改任何内容。</string>
+    <string name="wearable_howto_title">配对方法</string>
+    <string name="wearable_howto_1">安装 Galaxy Wearable 应用。</string>
+    <string name="wearable_howto_2">打开应用，点按“开始”。</string>
+    <string name="wearable_howto_3">从列表中选择你的手表。</string>
+    <string name="wearable_howto_4">确认手机和手表上显示的是同一个代码。</string>
+    <string name="wearable_howto_5">等待显示“已连接”。手表插件会自动安装。</string>
+    <string name="wearable_open_app">打开 Galaxy Wearable</string>
+    <string name="wearable_get_app">获取 Galaxy Wearable</string>
+    <string name="wearable_check_gw">已安装 Galaxy Wearable</string>
+    <string name="wearable_check_gw_ok">这部手机上有用于配对和管理手表的三星应用。</string>
+    <string name="wearable_check_gw_missing">未找到。请先安装，然后回到这里。</string>
+    <string name="wearable_check_plugin">已安装手表插件</string>
+    <string name="wearable_check_plugin_ok">Galaxy Wearable 已为你的手表添加插件。</string>
+    <string name="wearable_check_plugin_missing">未找到。Galaxy Wearable 会在配对手表时安装它。</string>
+    <string name="wearable_check_bonded">手表已通过 Bluetooth 配对</string>
+    <string name="wearable_check_bonded_ok">有一块手表已与这部手机配对。</string>
+    <string name="wearable_check_bonded_missing">未找到已配对的手表。请在 Galaxy Wearable 中完成配对。</string>
+    <string name="wearable_check_bonded_denied">请允许访问附近的设备，这样本应用才能查看手表是否已配对。它只会读取已配对设备的列表。</string>
+    <string name="wearable_allow">允许</string>
+    <string name="wearable_note_back">完成后请回到这里：检查会自动重新运行。</string>
+    <string name="watchpair_error_bad_host">请输入手表的 IP 地址，例如 192.168.1.20。</string>
+    <string name="watchpair_error_bad_port">请输入 1 到 65535 之间的端口。</string>
+    <string name="watchpair_guide_title">在手表上开启配对</string>
+    <string name="watchpair_guide_1">在手表上依次打开“设置”、“关于手表”、“软件信息”。连续点按“软件版本”5 到 7 次，直到手表显示“已开启开发者模式”。</string>
+    <string name="watchpair_guide_2">返回“设置”，打开“开发者选项”，开启“ADB 调试”。</string>
+    <string name="watchpair_guide_3">让手表连接到与这部手机相同的 Wi-Fi：“设置”、“连接”、“Wi-Fi”。</string>
+    <string name="watchpair_guide_4">在“开发者选项”中，点按“无线调试”，将其开启并允许。</string>
+    <string name="watchpair_guide_5">点按“配对新设备”。手表会显示 6 位代码和一个地址。本应用会自动找到地址，你只需输入代码。</string>
+    <string name="watchpair_guide_again">再看一遍步骤</string>
+    <string name="watchpair_manual">跳过并手动操作</string>
+    <string name="watchpair_automatic">自动查找我的手表</string>
+    <string name="watchpair_manual_intro">在手表上点按“配对新设备”，然后输入它显示的 IP 地址、端口和 6 位代码。</string>
+    <string name="watchpair_host_label">IP 地址</string>
+    <string name="watchpair_port_label">端口</string>
+    <string name="watchpair_pairing">正在与你的手表配对…</string>
+    <string name="browser_target_line">正在查找：%1$s</string>
+    <string name="browser_coach_1_body_version">打开应用的 %1$s 版本。</string>
+    <string name="browser_coach_2_body_version">在变体表中，为 %1$s 版本选择标有 nodpi 的 APK（不是 BUNDLE）。</string>
+    <string name="browser_coach_no_mirror_title">APKMirror 上没有</string>
+    <string name="browser_coach_no_mirror_body">APKMirror 上没有发布 %1$s 版本。请关闭此界面，然后在“获取此应用的更多方式”中选择你已有的文件。</string>
+    <string name="acquire_not_on_mirror">APKMirror 上没有 %1$s 版本。请使用你已有的文件。</string>
 </resources>

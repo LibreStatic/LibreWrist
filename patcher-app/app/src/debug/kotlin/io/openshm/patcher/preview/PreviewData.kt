@@ -41,8 +41,11 @@ import io.openshm.patcher.ui.screens.selftest.SelfTestSection
 import io.openshm.patcher.ui.screens.selftest.SelfTestText
 import io.openshm.patcher.ui.screens.selftest.SelfTestUiState
 import io.openshm.patcher.ui.screens.watchpair.WatchPairUiState
-import io.openshm.patcher.ui.screens.wearable.WearablePairingUiState
-import io.openshm.patcher.ui.screens.wearable.initialWearableChecks
+import io.openshm.patcher.ui.screens.wearable.BondedDevice
+import io.openshm.patcher.ui.screens.wearable.GALAXY_WEARABLE_PACKAGE
+import io.openshm.patcher.ui.screens.wearable.WATCH_PLUGIN_PACKAGE
+import io.openshm.patcher.ui.screens.wearable.WearableFacts
+import io.openshm.patcher.ui.screens.wearable.wearableState
 import io.openshm.patcher.ui.screens.signingkey.ImportConfirmation
 import io.openshm.patcher.ui.screens.signingkey.SigningKeyForm
 import io.openshm.patcher.ui.screens.signingkey.SigningKeyUiState
@@ -87,21 +90,32 @@ internal object PreviewData {
         detected = DetectedWatch(33, "13"),
     )
 
-    fun wearable(status: CheckStatus = CheckStatus.Passed) = WearablePairingUiState(initialWearableChecks(status))
+    fun wearable(
+        packages: Set<String> = setOf(GALAXY_WEARABLE_PACKAGE, WATCH_PLUGIN_PACKAGE),
+        bluetoothAllowed: Boolean = true,
+        bonded: List<BondedDevice> = listOf(BondedDevice("Galaxy Watch5 Pro (A1B2)", 0x0700)),
+    ) = wearableState(WearableFacts(packages, bluetoothAllowed, bonded))
 
     fun watchPairEmpty() = WatchPairUiState()
 
     fun watchPairCorrection() = WatchPairUiState(
         foundAddress = WATCH_ADDRESS,
-        prerequisitesDone = listOf(true, true, true, true),
+        guideOpen = false,
         correction = WatchProfileCorrection(WatchProfile.WearOs3Or4, "13"),
     )
 
-    fun watchPairReady() = WatchPairUiState(
-        foundAddress = WATCH_ADDRESS,
-        code = "123456",
-        prerequisitesDone = listOf(true, true, true, false),
-    )
+    /** Found by discovery: the guide has closed by itself and the code entry shows. */
+    fun watchPairReady() = WatchPairUiState(foundAddress = WATCH_ADDRESS, guideOpen = false, code = "123456")
+
+    fun watchPairGuide(step: Int) = WatchPairUiState(guideStep = step)
+
+    fun watchPairManual(host: String = "", port: String = "", code: String = "") =
+        WatchPairUiState(guideOpen = false, manual = true, host = host, port = port, code = code)
+
+    fun watchPairPairing() = WatchPairUiState(foundAddress = WATCH_ADDRESS, guideOpen = false, code = "123456", pairing = true)
+
+    fun watchPairError() =
+        WatchPairUiState(foundAddress = WATCH_ADDRESS, guideOpen = false, code = "123456", errorRes = R.string.watchpair_error_wrong_code)
 
     fun acquire() = AcquireUiState(
         listOf(
@@ -117,8 +131,8 @@ internal object PreviewData {
 
     fun guidedBrowser(step: Int = 2, wrongVersion: Boolean = false): GuidedBrowserUiState {
         val (title, body) = when (step) {
-            1 -> "Open the right release" to "Choose the version named on the card, not a newer or older one."
-            2 -> "Pick the variant" to "Choose the APK, not the bundle, and the nodpi build for your Android version."
+            1 -> "Open the right release" to "Open version 1.5.1.022 of the app."
+            2 -> "Pick the variant" to "In the variants table, pick the APK (not BUNDLE) marked nodpi for version 1.5.1.022."
             else -> "Download" to "Tap Download APK. The patcher picks the file up when it finishes."
         }
         return GuidedBrowserUiState(
@@ -128,6 +142,7 @@ internal object PreviewData {
             coachTotal = 3,
             coachTitle = title,
             coachBody = if (wrongVersion) "That is another version. Go back and open 1.5.1.022." else body,
+            target = "1.5.1.022 · APK, not bundle · nodpi · armeabi-v7a",
         )
     }
 

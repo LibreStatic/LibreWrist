@@ -18,6 +18,12 @@ data class InputApp(
     val apkMirrorSlug: String,
     /** Variant facts shown as chips on the card. */
     val variantChips: List<VariantChip>,
+    /** The APKMirror release path segment of this exact version (`obtain.apkmirrorRelease`), when known. */
+    val apkMirrorRelease: String? = null,
+    /** False when this version is not published on APKMirror (`obtain.onApkMirror`). */
+    val onApkMirror: Boolean = true,
+    /** The ABIs of the expected build, for the on-screen target line. */
+    val abis: List<String> = emptyList(),
 ) {
     /** The APKMirror page listing this app's releases. */
     val mirrorUrl: String get() = "https://www.apkmirror.com/apk/$apkMirrorSlug/"
