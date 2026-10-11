@@ -90,6 +90,7 @@
     <!-- Watch pairing over Wi-Fi -->
     <string name="watchpair_correct_older">你的手錶執行 Android %1$s，因此會略過鬧鐘應用程式：只需 2 個官方應用程式，而不是 3 個。</string>
     <string name="watchpair_correct_newer">你的手錶執行 Android %1$s，因此包含鬧鐘應用程式：需要 3 個官方應用程式，而不是 2 個。</string>
+    <string name="watchpair_paired">手錶已配對</string>
     <string name="watchpair_title">連線到你的手錶</string>
     <string name="watchpair_intro">使用簡短的配對碼配對後，手錶即可透過 Wi-Fi 接受安裝。</string>
     <string name="watchpair_on_watch">在手錶上操作</string>

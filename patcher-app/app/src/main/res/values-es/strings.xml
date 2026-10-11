@@ -90,6 +90,7 @@
     <!-- Watch pairing over Wi-Fi -->
     <string name="watchpair_correct_older">Tu reloj usa Android %1$s, así que se omite la app de alarmas: necesitas 2 apps oficiales en lugar de 3.</string>
     <string name="watchpair_correct_newer">Tu reloj usa Android %1$s, así que se incluye la app de alarmas: necesitas 3 apps oficiales en lugar de 2.</string>
+    <string name="watchpair_paired">Reloj vinculado</string>
     <string name="watchpair_title">Conectar con tu reloj</string>
     <string name="watchpair_intro">El reloj acepta instalaciones por Wi-Fi una vez que lo vinculas con un código corto.</string>
     <string name="watchpair_on_watch">EN TU RELOJ</string>

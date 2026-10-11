@@ -90,6 +90,7 @@
     <!-- Watch pairing over Wi-Fi -->
     <string name="watchpair_correct_older">お使いのウォッチはAndroid %1$sで動作しているため、アラームアプリは省略されます。公式アプリは3つではなく2つ必要です。</string>
     <string name="watchpair_correct_newer">お使いのウォッチはAndroid %1$sで動作しているため、アラームアプリが含まれます。公式アプリは2つではなく3つ必要です。</string>
+    <string name="watchpair_paired">ウォッチをペア設定しました</string>
     <string name="watchpair_title">ウォッチに接続</string>
     <string name="watchpair_intro">短いコードでペア設定すると、ウォッチはWi-Fi経由のインストールを受け付けます。</string>
     <string name="watchpair_on_watch">ウォッチでの操作</string>

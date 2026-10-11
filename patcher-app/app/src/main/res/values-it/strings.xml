@@ -90,6 +90,7 @@
     <!-- Watch pairing over Wi-Fi -->
     <string name="watchpair_correct_older">Il tuo orologio usa Android %1$s, quindi l\'app delle sveglie viene saltata: ti servono 2 app ufficiali invece di 3.</string>
     <string name="watchpair_correct_newer">Il tuo orologio usa Android %1$s, quindi l\'app delle sveglie è inclusa: ti servono 3 app ufficiali invece di 2.</string>
+    <string name="watchpair_paired">Orologio associato</string>
     <string name="watchpair_title">Connettiti al tuo orologio</string>
     <string name="watchpair_intro">L\'orologio accetta installazioni via Wi-Fi una volta associato con un breve codice.</string>
     <string name="watchpair_on_watch">SUL TUO OROLOGIO</string>

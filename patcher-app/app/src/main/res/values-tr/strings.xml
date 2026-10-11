@@ -90,6 +90,7 @@
     <!-- Watch pairing over Wi-Fi -->
     <string name="watchpair_correct_older">Saatiniz Android %1$s çalıştırıyor, bu yüzden alarm uygulaması atlanır: 3 yerine 2 resmi uygulama gerekir.</string>
     <string name="watchpair_correct_newer">Saatiniz Android %1$s çalıştırıyor, bu yüzden alarm uygulaması dahil edilir: 2 yerine 3 resmi uygulama gerekir.</string>
+    <string name="watchpair_paired">Saat eşlendi</string>
     <string name="watchpair_title">Saatinize bağlanın</string>
     <string name="watchpair_intro">Saat, kısa bir kodla eşlendikten sonra Wi-Fi üzerinden kurulumu kabul eder.</string>
     <string name="watchpair_on_watch">SAATİNİZDE</string>

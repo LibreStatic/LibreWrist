@@ -90,6 +90,7 @@
     <!-- Watch pairing over Wi-Fi -->
     <string name="watchpair_correct_older">워치가 Android %1$s에서 실행 중이므로 알람 앱은 건너뜁니다. 공식 앱은 3개가 아니라 2개가 필요합니다.</string>
     <string name="watchpair_correct_newer">워치가 Android %1$s에서 실행 중이므로 알람 앱이 포함됩니다. 공식 앱은 2개가 아니라 3개가 필요합니다.</string>
+    <string name="watchpair_paired">워치가 페어링되었습니다</string>
     <string name="watchpair_title">워치에 연결</string>
     <string name="watchpair_intro">짧은 코드로 페어링하면 워치가 Wi-Fi를 통한 설치를 받아들입니다.</string>
     <string name="watchpair_on_watch">워치에서 진행</string>

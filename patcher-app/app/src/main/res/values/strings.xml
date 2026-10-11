@@ -92,6 +92,7 @@
     <!-- Watch pairing over Wi-Fi -->
     <string name="watchpair_correct_older">Your watch runs Android %1$s, so the alarm app is skipped: you need 2 official apps instead of 3.</string>
     <string name="watchpair_correct_newer">Your watch runs Android %1$s, so the alarm app is included: you need 3 official apps instead of 2.</string>
+    <string name="watchpair_paired">Watch paired</string>
     <string name="watchpair_title">Connect to your watch</string>
     <string name="watchpair_intro">The watch accepts installs over Wi-Fi once you pair it with a short code.</string>
     <string name="watchpair_on_watch">ON YOUR WATCH</string>

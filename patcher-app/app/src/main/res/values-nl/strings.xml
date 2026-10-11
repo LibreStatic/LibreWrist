@@ -90,6 +90,7 @@
     <!-- Watch pairing over Wi-Fi -->
     <string name="watchpair_correct_older">Je horloge draait Android %1$s, dus de wekker-app wordt overgeslagen: je hebt 2 officiële apps nodig in plaats van 3.</string>
     <string name="watchpair_correct_newer">Je horloge draait Android %1$s, dus de wekker-app is inbegrepen: je hebt 3 officiële apps nodig in plaats van 2.</string>
+    <string name="watchpair_paired">Horloge gekoppeld</string>
     <string name="watchpair_title">Verbinden met je horloge</string>
     <string name="watchpair_intro">Het horloge accepteert installaties via Wi-Fi zodra je het koppelt met een korte code.</string>
     <string name="watchpair_on_watch">OP JE HORLOGE</string>

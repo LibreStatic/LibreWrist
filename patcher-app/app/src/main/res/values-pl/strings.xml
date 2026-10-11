@@ -90,6 +90,7 @@
     <!-- Watch pairing over Wi-Fi -->
     <string name="watchpair_correct_older">Twój zegarek ma Androida %1$s, więc aplikacja alarmów jest pomijana: potrzebne są 2 oficjalne aplikacje zamiast 3.</string>
     <string name="watchpair_correct_newer">Twój zegarek ma Androida %1$s, więc aplikacja alarmów jest uwzględniona: potrzebne są 3 oficjalne aplikacje zamiast 2.</string>
+    <string name="watchpair_paired">Zegarek sparowany</string>
     <string name="watchpair_title">Połącz z zegarkiem</string>
     <string name="watchpair_intro">Zegarek przyjmuje instalacje przez Wi-Fi po sparowaniu krótkim kodem.</string>
     <string name="watchpair_on_watch">NA ZEGARKU</string>

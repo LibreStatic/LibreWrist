@@ -90,6 +90,7 @@
     <!-- Watch pairing over Wi-Fi -->
     <string name="watchpair_correct_older">На ваших часах Android %1$s, поэтому приложение будильников пропускается: нужно 2 официальных приложения вместо 3.</string>
     <string name="watchpair_correct_newer">На ваших часах Android %1$s, поэтому приложение будильников включено: нужно 3 официальных приложения вместо 2.</string>
+    <string name="watchpair_paired">Часы сопряжены</string>
     <string name="watchpair_title">Подключение к часам</string>
     <string name="watchpair_intro">Часы принимают установку по Wi-Fi после сопряжения по короткому коду.</string>
     <string name="watchpair_on_watch">НА ЧАСАХ</string>

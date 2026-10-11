@@ -90,6 +90,7 @@
     <!-- Watch pairing over Wi-Fi -->
     <string name="watchpair_correct_older">На вашому годиннику Android %1$s, тому застосунок будильників пропускається: потрібно 2 офіційні застосунки замість 3.</string>
     <string name="watchpair_correct_newer">На вашому годиннику Android %1$s, тому застосунок будильників додається: потрібно 3 офіційні застосунки замість 2.</string>
+    <string name="watchpair_paired">Годинник з’єднано</string>
     <string name="watchpair_title">Підключення до годинника</string>
     <string name="watchpair_intro">Годинник приймає встановлення через Wi-Fi після з\'єднання за коротким кодом.</string>
     <string name="watchpair_on_watch">НА ГОДИННИКУ</string>

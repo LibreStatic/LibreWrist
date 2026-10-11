@@ -90,6 +90,7 @@
     <!-- Watch pairing over Wi-Fi -->
     <string name="watchpair_correct_older">Deine Uhr läuft mit Android %1$s, daher wird die Wecker-App übersprungen: Du brauchst 2 offizielle Apps statt 3.</string>
     <string name="watchpair_correct_newer">Deine Uhr läuft mit Android %1$s, daher ist die Wecker-App enthalten: Du brauchst 3 offizielle Apps statt 2.</string>
+    <string name="watchpair_paired">Uhr gekoppelt</string>
     <string name="watchpair_title">Mit deiner Uhr verbinden</string>
     <string name="watchpair_intro">Die Uhr akzeptiert Installationen über Wi-Fi, sobald du sie mit einem kurzen Code koppelst.</string>
     <string name="watchpair_on_watch">AUF DEINER UHR</string>

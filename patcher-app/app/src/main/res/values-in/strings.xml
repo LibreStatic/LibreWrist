@@ -90,6 +90,7 @@
     <!-- Watch pairing over Wi-Fi -->
     <string name="watchpair_correct_older">Jammu menjalankan Android %1$s, jadi aplikasi alarm dilewati: kamu perlu 2 aplikasi resmi, bukan 3.</string>
     <string name="watchpair_correct_newer">Jammu menjalankan Android %1$s, jadi aplikasi alarm disertakan: kamu perlu 3 aplikasi resmi, bukan 2.</string>
+    <string name="watchpair_paired">Jam tangan disambungkan</string>
     <string name="watchpair_title">Hubungkan ke jammu</string>
     <string name="watchpair_intro">Jam menerima pemasangan lewat Wi-Fi setelah kamu menyandingkannya dengan kode singkat.</string>
     <string name="watchpair_on_watch">DI JAMMU</string>

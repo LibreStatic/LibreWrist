@@ -90,6 +90,7 @@
     <!-- Watch pairing over Wi-Fi -->
     <string name="watchpair_correct_older">आपकी घड़ी Android %1$s चलाती है, इसलिए अलार्म ऐप छोड़ दिया गया है: आपको 3 की जगह 2 आधिकारिक ऐप चाहिए।</string>
     <string name="watchpair_correct_newer">आपकी घड़ी Android %1$s चलाती है, इसलिए अलार्म ऐप शामिल है: आपको 2 की जगह 3 आधिकारिक ऐप चाहिए।</string>
+    <string name="watchpair_paired">घड़ी पेयर हो गई</string>
     <string name="watchpair_title">अपनी घड़ी से जुड़ें</string>
     <string name="watchpair_intro">छोटे कोड से पेयर करने के बाद घड़ी Wi-Fi पर इंस्टॉल स्वीकार करती है।</string>
     <string name="watchpair_on_watch">आपकी घड़ी पर</string>

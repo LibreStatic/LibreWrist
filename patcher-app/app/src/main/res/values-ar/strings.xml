@@ -90,6 +90,7 @@
     <!-- Watch pairing over Wi-Fi -->
     <string name="watchpair_correct_older">تعمل ساعتك بنظام Android %1$s، لذا يُتخطى تطبيق المنبّه: تحتاج إلى تطبيقين رسميين بدلًا من 3.</string>
     <string name="watchpair_correct_newer">تعمل ساعتك بنظام Android %1$s، لذا يُضمَّن تطبيق المنبّه: تحتاج إلى 3 تطبيقات رسمية بدلًا من تطبيقين.</string>
+    <string name="watchpair_paired">تم إقران الساعة</string>
     <string name="watchpair_title">الاتصال بساعتك</string>
     <string name="watchpair_intro">تقبل الساعة التثبيت عبر Wi-Fi بعد اقترانها برمز قصير.</string>
     <string name="watchpair_on_watch">على ساعتك</string>
