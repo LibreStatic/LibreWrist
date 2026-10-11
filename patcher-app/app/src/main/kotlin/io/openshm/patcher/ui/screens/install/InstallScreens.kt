@@ -2,6 +2,7 @@ package io.openshm.patcher.ui.screens.install
 
 import io.openshm.patcher.ui.components.InstructionText
 import androidx.annotation.StringRes
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,6 +30,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -237,13 +239,15 @@ private fun InstallStep(
                             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                                 PackageId(item.packageName, maxLines = 2)
                                 item.progress?.let { LinearProgressIndicator(progress = { it }, modifier = Modifier.fillMaxWidth()) }
-                                if (state.conflict?.outputId == item.outputId && !state.running) {
-                                    TextButton(
-                                        onClick = { onEvent(InstallEvent.RequestReinstall) },
-                                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
-                                    ) {
-                                        Text(stringResource(R.string.reinstall_action))
-                                    }
+                            }
+                            // Trailing, like the settings action of a grant row.
+                            if (state.conflict?.outputId == item.outputId && !state.running) {
+                                OutlinedButton(
+                                    onClick = { onEvent(InstallEvent.RequestReinstall) },
+                                    colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
+                                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
+                                ) {
+                                    Text(stringResource(R.string.reinstall_action))
                                 }
                             }
                         }
