@@ -1,6 +1,7 @@
 package io.openshm.patcher.ui.screens.selftest
 
 import io.openshm.patcher.R
+import io.openshm.patcher.adb.AdbException
 import io.openshm.patcher.adb.Grant as AdbGrant
 import io.openshm.patcher.adb.GrantChecker
 import io.openshm.patcher.adb.GrantState
@@ -99,6 +100,16 @@ private class RunContext(private val watch: WatchShell) {
     suspend fun shell(command: String): ShellResult = shellLock.withLock { watch.run(command) }
 }
 
+/** Row id of the watch access check of output [outputId]. */
+internal fun watchGrantsRowId(outputId: String) = "watch-grants-$outputId"
+
+/** The output id of a [watchGrantsRowId] row, or null for other rows. */
+internal fun outputOfWatchGrantsRow(rowId: String): String? = rowId.removePrefix("watch-grants-").takeIf { it != rowId }
+
+/** The watch could not be reached at all, as opposed to a command that ran and went wrong. */
+private fun IOException.isLinkFailure(): Boolean =
+    this !is AdbException || this is AdbException.ConnectionFailed || this is AdbException.Discovery ||
+        this is AdbException.PairingRequired || this is AdbException.AuthenticationRejected || this is AdbException.Timeout
 private const val SECTION_PHONE = 0
 private const val SECTION_WATCH = 1
 private const val SECTION_LINK = 2
@@ -129,6 +140,8 @@ internal class SelfTestRunner(
     private val bridge: BridgeStatusSource,
     private val watch: WatchShell,
     private val io: CoroutineDispatcher,
+    /** Where a check that threw is reported (the app's log; nothing in JVM tests). */
+    private val logFailure: (String, Throwable) -> Unit = { _, _ -> },
 ) {
     private val outputs = catalogue.outputs.filter { it.id in outputIds }
 
@@ -143,7 +156,7 @@ internal class SelfTestRunner(
             for (out in outputs.filter { it.device == Device.Watch }) {
                 add(Check(SECTION_WATCH, pendingRow("watch-pkg-${out.id}", text(R.string.selftest_package_title, out.label), SelfTestFix.InstallWatch)) { watchPackage(it, out) })
                 if (catalogue.grants[out.id].orEmpty().isNotEmpty()) {
-                    add(Check(SECTION_WATCH, pendingRow("watch-grants-${out.id}", text(R.string.selftest_grants_title, out.label), SelfTestFix.InstallWatch)) { watchAccess(it, out) })
+                    add(Check(SECTION_WATCH, pendingRow(watchGrantsRowId(out.id), text(R.string.selftest_grants_title, out.label), SelfTestFix.WatchGrants)) { watchAccess(it, out) })
                 }
             }
             for (stock in catalogue.stockAppsToDisable.filter { it.device == Device.Watch }) {
@@ -189,9 +202,14 @@ internal class SelfTestRunner(
     } catch (e: CancellationException) {
         throw e
     } catch (e: IOException) {
-        if (check.section == SECTION_WATCH) Outcome(CheckStatus.Warning, text(R.string.selftest_detail_watch_no_answer), SelfTestFix.WatchPair)
-        else Outcome(CheckStatus.Warning, text(R.string.selftest_detail_error))
+        logFailure("check ${check.row.id} failed", e)
+        if (check.section == SECTION_WATCH && e.isLinkFailure()) {
+            Outcome(CheckStatus.Warning, text(R.string.selftest_detail_watch_no_answer), SelfTestFix.WatchPair)
+        } else {
+            Outcome(CheckStatus.Warning, text(R.string.selftest_detail_error))
+        }
     } catch (e: RuntimeException) {
+        logFailure("check ${check.row.id} failed", e)
         Outcome(CheckStatus.Warning, text(R.string.selftest_detail_error))
     }
 
@@ -299,7 +317,7 @@ internal class SelfTestRunner(
                 GrantState.Unknown -> unknown += grant.name
             }
         }
-        return accessOutcome(missing, optional, unknown, SelfTestFix.InstallWatch)
+        return accessOutcome(missing, optional, unknown, SelfTestFix.WatchGrants)
     }
 
     private suspend fun watchStock(context: RunContext, pkg: String, optional: Boolean): Outcome {

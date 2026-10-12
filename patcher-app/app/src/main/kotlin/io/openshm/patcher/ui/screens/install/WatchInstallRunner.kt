@@ -29,7 +29,7 @@ internal fun watchErrorRes(e: IOException): Int = when (e) {
  *
  * Nothing is uninstalled unless the user confirms [reinstall] for a package whose copy another key
  * signed (never a system package, never a package outside the build). A run can be started again after a stop: items that are installed
- * are not sent again, and only grants that did not pass are applied again.
+ * are not sent again, nor are packages the watch already has from these exact bytes, and only grants that did not pass are applied again.
  */
 internal class WatchInstallRunner(
     private val device: WatchDevice,
@@ -78,6 +78,15 @@ internal class WatchInstallRunner(
     private suspend fun install(state: MutableStateFlow<InstallUiState>, index: Int, file: File): Boolean {
         val item = state.value.items[index]
         state.update { it.updateItem(index) { item -> item.copy(status = CheckStatus.Running, progress = 0f) } }
+        val upToDate = try {
+            device.isUpToDate(item.packageName, file)
+        } catch (e: IOException) {
+            false // the install below reports a broken link
+        }
+        if (upToDate) {
+            log("${item.outputId} already installed from this build, not sent again")
+            return markInstalled(state, index)
+        }
         val result = try {
             device.install(file) { fraction ->
                 state.update { it.updateItem(index) { item -> item.copy(progress = fraction.coerceIn(0f, 1f)) } }
@@ -88,14 +97,7 @@ internal class WatchInstallRunner(
             return false
         }
         return when (result) {
-            is InstallResult.Success -> {
-                state.update { it.updateItem(index) { item -> item.copy(status = CheckStatus.Passed, progress = null) } }
-                if (!locked) {
-                    locked = true
-                    lockPrefix()
-                }
-                true
-            }
+            is InstallResult.Success -> markInstalled(state, index)
             is InstallResult.Failure -> {
                 state.update { it.updateItem(index) { item -> item.copy(status = CheckStatus.Failed, progress = null) } }
                 val detail = listOfNotNull(result.code, result.message).distinct().joinToString(": ")
@@ -113,6 +115,15 @@ internal class WatchInstallRunner(
                 false
             }
         }
+    }
+
+    private fun markInstalled(state: MutableStateFlow<InstallUiState>, index: Int): Boolean {
+        state.update { it.updateItem(index) { item -> item.copy(status = CheckStatus.Passed, progress = null) } }
+        if (!locked) {
+            locked = true
+            lockPrefix()
+        }
+        return true
     }
 
     /**

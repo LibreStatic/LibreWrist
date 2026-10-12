@@ -223,6 +223,9 @@ private fun InstallStep(
     accent: Accent,
     phone: Boolean = false,
 ) {
+    // Unfinished apps first, so what blocks Continue is visible without scrolling.
+    val items = state.items.sortedBy { it.isComplete }
+    val split = twoPaneSplit(items.map { it.rowCount })
     StepScreenScaffold(
         step = step,
         title = title,
@@ -246,13 +249,13 @@ private fun InstallStep(
             }
         },
         secondary = {
-            // Wide: the explanation moves here from the top of the list; narrow it stays above the list.
-            if (LocalTwoPane.current) IntroText(intro)
+            // Wide: the list is split over both panes, so the right one continues it before the notes.
+            if (LocalTwoPane.current) items.drop(split).forEach { InstallItemGroup(it, state, onEvent) }
             if (phone) SelfAdbSection(state, onEvent)
             NoteRow(Icons.Rounded.Info, note, Modifier.padding(top = 4.dp))
         },
     ) {
-        if (!LocalTwoPane.current) IntroText(intro)
+        IntroText(intro)
         if (state.errorRes == R.string.watch_error_unreachable) {
             WatchUnreachableCard(state.errorDetail)
         } else state.errorRes?.let {
@@ -267,66 +270,8 @@ private fun InstallStep(
         if (state.needsUnknownSources) {
             OutlinedAction(stringResource(R.string.action_allow_installing), { onEvent(InstallEvent.OpenUnknownSources) }, Icons.Rounded.Settings)
         }
-        state.items.forEach { item ->
-            val rowCount = 1 + item.grants.size + if (item.onboarding) 1 else 0
-            Column {
-                SectionTitle(item.label)
-                Column(verticalArrangement = GroupedSpacing) {
-                    GroupedItem(0, rowCount) {
-                        Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                            StatusShape(item.status)
-                            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                                PackageId(item.packageName, maxLines = 2)
-                                item.progress?.let { LinearProgressIndicator(progress = { it }, modifier = Modifier.fillMaxWidth()) }
-                            }
-                            // Trailing, like the settings action of a grant row.
-                            if (state.conflict?.outputId == item.outputId && !state.running) {
-                                OutlinedButton(
-                                    onClick = { onEvent(InstallEvent.RequestReinstall) },
-                                    colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
-                                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
-                                ) {
-                                    Text(stringResource(R.string.reinstall_action))
-                                }
-                            }
-                        }
-                    }
-                    item.grants.forEachIndexed { i, row ->
-                        GroupedItem(i + 1, rowCount) {
-                            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                                StatusShape(row.status, size = 22.dp)
-                                Column(Modifier.weight(1f)) {
-                                    Text(stringResource(row.grant.kind.labelRes()), style = MaterialTheme.typography.labelMedium)
-                                    PackageId(row.grant.name)
-                                }
-                                if (row.grant.optional) InfoChip(stringResource(R.string.chip_optional))
-                                if (row.needsUser && row.status != CheckStatus.Passed) {
-                                    TextButton(onClick = { onEvent(InstallEvent.OpenGrantSettings(item.outputId, row.grant.name)) }) {
-                                        Text(stringResource(R.string.action_open_settings))
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (item.onboarding) {
-                        GroupedItem(rowCount - 1, rowCount) {
-                            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                                Text(
-                                    stringResource(R.string.install_onboarding),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    modifier = Modifier.weight(1f),
-                                )
-                                if (item.status == CheckStatus.Passed) {
-                                    TextButton(onClick = { onEvent(InstallEvent.OpenApp(item.outputId)) }) {
-                                        Text(stringResource(R.string.action_open))
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        val shown = if (LocalTwoPane.current) items.take(split) else items
+        shown.forEach { InstallItemGroup(it, state, onEvent) }
     }
     if (phone) {
         when (val outcome = state.adbOutcome) {
@@ -356,6 +301,88 @@ private fun InstallStep(
             onDismiss = { onEvent(InstallEvent.CancelReinstall) },
         )
     }
+}
+
+private val InstallItem.isComplete: Boolean
+    get() = status == CheckStatus.Passed && grants.all { it.status == CheckStatus.Passed || it.grant.optional }
+
+private val InstallItem.rowCount: Int get() = 1 + grants.size + if (onboarding) 1 else 0
+
+/**
+ * Where a two-pane layout splits the list: the first pane takes items until it holds about half the
+ * rows, so two long panes replace one scrolling list.
+ */
+internal fun twoPaneSplit(rows: List<Int>): Int {
+    if (rows.size < 2) return rows.size
+    val half = rows.sum() / 2.0
+    var acc = 0
+    rows.forEachIndexed { i, r ->
+        if (acc + r / 2.0 >= half) return maxOf(i, 1)
+        acc += r
+    }
+    return rows.size - 1
+}
+
+@Composable
+private fun InstallItemGroup(item: InstallItem, state: InstallUiState, onEvent: (InstallEvent) -> Unit) {
+        val rowCount = item.rowCount
+        Column {
+            SectionTitle(item.label)
+            Column(verticalArrangement = GroupedSpacing) {
+                GroupedItem(0, rowCount) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                        StatusShape(item.status)
+                        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            PackageId(item.packageName, maxLines = 2)
+                            item.progress?.let { LinearProgressIndicator(progress = { it }, modifier = Modifier.fillMaxWidth()) }
+                        }
+                        // Trailing, like the settings action of a grant row.
+                        if (state.conflict?.outputId == item.outputId && !state.running) {
+                            OutlinedButton(
+                                onClick = { onEvent(InstallEvent.RequestReinstall) },
+                                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
+                            ) {
+                                Text(stringResource(R.string.reinstall_action))
+                            }
+                        }
+                    }
+                }
+                item.grants.forEachIndexed { i, row ->
+                    GroupedItem(i + 1, rowCount) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                            StatusShape(row.status, size = 22.dp)
+                            Column(Modifier.weight(1f)) {
+                                Text(stringResource(row.grant.kind.labelRes()), style = MaterialTheme.typography.labelMedium)
+                                PackageId(row.grant.name)
+                            }
+                            if (row.grant.optional) InfoChip(stringResource(R.string.chip_optional))
+                            if (row.needsUser && row.status != CheckStatus.Passed) {
+                                TextButton(onClick = { onEvent(InstallEvent.OpenGrantSettings(item.outputId, row.grant.name)) }) {
+                                    Text(stringResource(R.string.action_open_settings))
+                                }
+                            }
+                        }
+                    }
+                }
+                if (item.onboarding) {
+                    GroupedItem(rowCount - 1, rowCount) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                stringResource(R.string.install_onboarding),
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.weight(1f),
+                            )
+                            if (item.status == CheckStatus.Passed) {
+                                TextButton(onClick = { onEvent(InstallEvent.OpenApp(item.outputId)) }) {
+                                    Text(stringResource(R.string.action_open))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 }
 
 @Composable

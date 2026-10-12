@@ -36,7 +36,8 @@ import io.openshm.patcher.ui.components.SetupStep
 import io.openshm.patcher.ui.components.StatusShape
 import io.openshm.patcher.ui.components.StepScreenScaffold
 
-enum class StockOutcome { None, Running, Disabled, NotInstalled, Failed }
+/** [AlreadyOff] and [NotInstalled] can be found before the user acts, when the screen checks the watch. */
+enum class StockOutcome { None, Running, Disabled, AlreadyOff, NotInstalled, Failed }
 
 data class StockAppChoice(val app: StockApp, val selected: Boolean, val outcome: StockOutcome = StockOutcome.None)
 
@@ -48,6 +49,14 @@ data class DisableStockUiState(
     @StringRes val errorRes: Int? = null,
 ) {
     val selectedCount: Int get() = choices.count { it.selected }
+
+    /** Every app is already off or absent: the step has nothing left to do. */
+    val nothingLeft: Boolean
+        get() = choices.isNotEmpty() && choices.all { it.outcome in FINISHED }
+
+    private companion object {
+        val FINISHED = setOf(StockOutcome.Disabled, StockOutcome.AlreadyOff, StockOutcome.NotInstalled)
+    }
 }
 
 sealed interface DisableStockEvent {
@@ -70,14 +79,18 @@ fun DisableStockScreen(
         modifier = modifier,
         secondary = { if (LocalTwoPane.current) HeroCard() },
         footer = {
-            ActionRow {
-                PrimaryAction(
-                    pluralStringResource(R.plurals.disable_action, state.selectedCount, state.selectedCount),
-                    { onEvent(DisableStockEvent.Disable) },
-                    enabled = state.selectedCount > 0 && !state.running,
-                    accent = Accent.Tertiary,
-                )
-                QuietAction(stringResource(R.string.action_skip), onSkip, accent = Accent.Tertiary)
+            if (state.nothingLeft) {
+                PrimaryAction(stringResource(R.string.action_continue), onSkip, accent = Accent.Tertiary)
+            } else {
+                ActionRow {
+                    PrimaryAction(
+                        pluralStringResource(R.plurals.disable_action, state.selectedCount, state.selectedCount),
+                        { onEvent(DisableStockEvent.Disable) },
+                        enabled = state.selectedCount > 0 && !state.running,
+                        accent = Accent.Tertiary,
+                    )
+                    QuietAction(stringResource(R.string.action_skip), onSkip, accent = Accent.Tertiary)
+                }
             }
         },
     ) {
@@ -95,16 +108,18 @@ fun DisableStockScreen(
         }
         Column(verticalArrangement = GroupedSpacing) {
             state.choices.forEachIndexed { index, choice ->
+                val settled = choice.outcome == StockOutcome.AlreadyOff || choice.outcome == StockOutcome.NotInstalled
                 GroupedItem(
                     index, state.choices.size,
                     modifier = Modifier.toggleable(
                         value = choice.selected,
+                        enabled = !settled,
                         role = Role.Checkbox,
                         onValueChange = { onEvent(DisableStockEvent.Toggle(choice.app.packageName)) },
                     ),
                 ) {
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Checkbox(choice.selected, onCheckedChange = null)
+                        Checkbox(choice.selected, onCheckedChange = null, enabled = !settled)
                         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                             Text(choice.app.label, style = MaterialTheme.typography.titleSmall)
                             PackageId(choice.app.packageName)
@@ -118,6 +133,7 @@ fun DisableStockScreen(
                             StockOutcome.Running -> StatusShape(CheckStatus.Running, size = 22.dp)
                             StockOutcome.Disabled -> StatusShape(CheckStatus.Passed, size = 22.dp)
                             StockOutcome.Failed -> StatusShape(CheckStatus.Failed, size = 22.dp)
+                            StockOutcome.AlreadyOff -> InfoChip(stringResource(R.string.disable_chip_already_off))
                             StockOutcome.NotInstalled -> InfoChip(stringResource(R.string.disable_chip_not_installed))
                             StockOutcome.None -> if (choice.app.optional) InfoChip(stringResource(R.string.chip_optional))
                         }

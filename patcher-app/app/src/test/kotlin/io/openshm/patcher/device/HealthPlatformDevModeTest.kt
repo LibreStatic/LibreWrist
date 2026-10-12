@@ -30,40 +30,58 @@ class HealthPlatformDevModeTest {
     }
 
     @Test
-    fun devModeShownAndTitleFoundByResourceId() {
-        val screen = HealthPlatformDevMode.parseSettingsScreen(DUMP_ON)
+    fun devModeShownAndTitleFoundByViewId() {
+        val screen = HealthPlatformDevMode.parseSettingsScreen(TOP_ON)
         assertTrue(screen.devModeShown)
         assertEquals(224 to 43, screen.titleCenter)
     }
 
     @Test
-    fun devModeOffWhenTheSubtitleIsMissing() {
-        val screen = HealthPlatformDevMode.parseSettingsScreen(DUMP_ON.replace(SUBTITLE_NODE, ""))
+    fun devModeOffWhenTheSubtitleIsMissingOrHidden() {
+        val missing = HealthPlatformDevMode.parseSettingsScreen(TOP_ON.replace(SUBTITLE_LINE, ""))
+        assertFalse(missing.devModeShown)
+        assertEquals(224 to 43, missing.titleCenter)
+        val gone = HealthPlatformDevMode.parseSettingsScreen(TOP_ON.replace("V.ED..... ........ 170", "G.ED..... ........ 170"))
+        assertFalse(gone.devModeShown)
+    }
+
+    @Test
+    fun titleCentreAddsTheParentsOffsets() {
+        val shifted = TOP_ON.replace("0,0-450,450 #1020002 android:id/content", "10,20-460,470 #1020002 android:id/content")
+        assertEquals(234 to 63, HealthPlatformDevMode.parseSettingsScreen(shifted).titleCenter)
+    }
+
+    @Test
+    fun otherActivitiesTitlesAreIgnored() {
+        val screen = HealthPlatformDevMode.parseSettingsScreen(OTHER_ACTIVITY)
         assertFalse(screen.devModeShown)
-        assertEquals(224 to 43, screen.titleCenter)
+        assertNull(screen.titleCenter)
     }
 
     @Test
-    fun languageDoesNotMatter() {
-        val screen = HealthPlatformDevMode.parseSettingsScreen(DUMP_ON.replace("Plataforma de Salud", "Health Platform"))
-        assertTrue(screen.devModeShown)
-        assertEquals(224 to 43, screen.titleCenter)
-    }
-
-    @Test
-    fun failedDumpReadsAsEmptyScreen() {
-        val screen = HealthPlatformDevMode.parseSettingsScreen("ERROR: null root node returned by UiTestAutomationBridge.")
+    fun emptyOutputReadsAsEmptyScreen() {
+        val screen = HealthPlatformDevMode.parseSettingsScreen("")
         assertFalse(screen.devModeShown)
         assertNull(screen.titleCenter)
     }
 
     private companion object {
-        const val SUBTITLE_NODE = """<node index="1" text="[Dev mode]" resource-id="com.samsung.android.service.health:id/dev_mode_subtitle" class="android.widget.TextView" clickable="false" bounds="[170,87][279,117]" />"""
-        const val DUMP_ON = """<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><hierarchy rotation="0">""" +
-            """<node index="0" text="" resource-id="android:id/content" class="android.widget.FrameLayout" bounds="[0,0][450,450]">""" +
-            """<node index="0" text="Plataforma de Salud" resource-id="com.samsung.android.service.health:id/title" class="android.widget.TextView" clickable="true" bounds="[102,0][347,87]" />""" +
-            SUBTITLE_NODE +
-            """<node index="2" text="Versión 1.7.00.05" resource-id="com.samsung.android.service.health:id/current_version" class="android.widget.TextView" bounds="[46,348][408,385]" />""" +
-            """</node></hierarchy>"""
+        const val SUBTITLE_LINE = "          android.widget.TextView{54b4675 V.ED..... ........ 170,87-279,117 #7f0a0098 app:id/dev_mode_subtitle}\n"
+        const val OTHER_ACTIVITY = "TASK 1 id=2\n" +
+            "  ACTIVITY com.android.settings/.Settings 1 pid=2\n" +
+            "    View Hierarchy:\n" +
+            "      DecorView@1[Settings]\n" +
+            "        android.widget.FrameLayout{a V.E...... ........ 0,0-450,450 #1020002 android:id/content}\n" +
+            "          android.widget.TextView{b VFED..C.. ........ 102,0-347,87 #1020016 android:id/title}\n" +
+            "          android.widget.TextView{c V.ED..... ........ 170,87-279,117 #7f0a0098 app:id/dev_mode_subtitle}\n"
+        const val TOP_ON = OTHER_ACTIVITY +
+            "TASK 2 id=3\n" +
+            "  ACTIVITY com.samsung.android.service.health/.wear.settings.home.SettingsMainActivity 2 pid=3\n" +
+            "    View Hierarchy:\n" +
+            "      DecorView@2[SettingsMainActivity]\n" +
+            "        android.widget.FrameLayout{d V.E...... ........ 0,0-450,450 #1020002 android:id/content}\n" +
+            "          android.widget.TextView{d64d9ac VFED..C.. ........ 102,0-347,87 #7f0a019c app:id/title}\n" +
+            SUBTITLE_LINE +
+            "          android.widget.TextView{e V.ED..... ........ 46,348-408,385 #7f0a0090 app:id/current_version}\n"
     }
 }

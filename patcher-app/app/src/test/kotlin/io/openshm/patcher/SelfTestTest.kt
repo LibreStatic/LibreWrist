@@ -25,6 +25,7 @@ import io.openshm.patcher.ui.screens.selftest.answer
 import io.openshm.patcher.ui.screens.selftest.buildSelfTestReport
 import io.openshm.patcher.ui.screens.selftest.engineLogSummary
 import io.openshm.patcher.ui.screens.selftest.result
+import io.openshm.patcher.adb.AdbException
 import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -328,6 +329,15 @@ class SelfTestRunnerTest {
     }
 
     @Test
+    fun `a watch command that answers with a protocol error is not reported as an unreachable watch`() {
+        world.watchFailure = AdbException.Protocol("unexpected shell packet")
+        val row = run().row("watch-grants-bridge-watch")
+        assertEquals(CheckStatus.Warning, row.status)
+        assertEquals(R.string.selftest_detail_error, row.detail?.res)
+        assertEquals(SelfTestFix.WatchGrants, row.fix)
+    }
+
+    @Test
     fun `watch package with another hash than the build fails`() {
         val path = world.watchInstalled.getValue(world.pkg("bridge-watch"))
         world.watchFileSha[path] = "d".repeat(64)
@@ -352,7 +362,7 @@ class SelfTestRunnerTest {
         val row = run().row("watch-grants-bridge-watch")
         assertEquals(CheckStatus.Failed, row.status)
         assertTrue("BLUETOOTH_CONNECT" in row.detail!!.args.single())
-        assertEquals(SelfTestFix.InstallWatch, row.fix)
+        assertEquals(SelfTestFix.WatchGrants, row.fix)
     }
 
     @Test

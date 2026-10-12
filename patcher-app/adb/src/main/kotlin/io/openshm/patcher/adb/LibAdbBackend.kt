@@ -92,11 +92,12 @@ private class LibAdbTransport(private val connection: AdbConnection) : AdbTransp
 
 private class LibAdbChannel(private val stream: AdbStream) : AdbChannel {
     override fun read(buffer: ByteArray, offset: Int, length: Int): Int {
-        if (stream.isClosed) return -1
+        // No isClosed check up front: the peer often sends its last data (the shell's exit packet)
+        // and closes at once, and libadb still hands out what it queued before saying "closed".
         return try {
             stream.read(buffer, offset, length)
         } catch (e: IOException) {
-            // libadb throws "Stream closed" when the peer closes between its checks; that is EOF.
+            // libadb throws "Stream closed" once the stream is closed and its queue is drained; that is EOF.
             if (stream.isClosed) -1 else throw e
         }
     }

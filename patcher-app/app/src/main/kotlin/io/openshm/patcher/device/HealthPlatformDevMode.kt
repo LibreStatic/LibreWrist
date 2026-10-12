@@ -4,15 +4,14 @@ import io.openshm.patcher.adb.AdbClient
 import kotlinx.coroutines.delay
 
 /**
- * Health Platform developer mode on the watch, driven over watch ADB with UI Automator dumps. The
- * flag itself is internal to the service, so it is read from the service's settings screen, which
- * shows a `dev_mode_subtitle` under its title while the mode is on, and turned on by tapping that
- * title 10 times (docs/health-tracking-protocol.md §8). Both are found by resource id, so the
+ * Health Platform developer mode on the watch, driven over watch ADB. The flag itself is internal to the service, so it is read from the service's settings screen, which
+ * shows a `dev_mode_subtitle` view under its title while the mode is on, and turned on by tapping that
+ * title 10 times (docs/health-tracking-protocol.md §8). Both are found by view id, so the
  * watch's language does not matter.
  */
 class HealthPlatformDevMode(private val client: suspend () -> AdbClient) {
 
-    /** What the settings screen shows, read from a UI dump. */
+    /** What the settings screen shows, read from its view hierarchy. */
     data class SettingsScreen(val devModeShown: Boolean, val titleCenter: Pair<Int, Int>?)
 
     /** Wakes the watch and brings up the Health Platform settings screen. */
@@ -29,16 +28,12 @@ class HealthPlatformDevMode(private val client: suspend () -> AdbClient) {
     }
 
     /**
-     * Dumps the watch's screen. Only meaningful while the settings screen is in front and awake; a
-     * failed dump reads as an empty screen.
+     * Reads the settings screen's view hierarchy from `dumpsys activity top`. Not a UI Automator
+     * dump: ending a UI Automator session "restores" the user rotation, and on a watch worn with the
+     * button on the right that flips the screen upside down each time.
      */
-    suspend fun readScreen(): SettingsScreen {
-        val out = client().shell(
-            "uiautomator dump $DUMP_PATH >/dev/null 2>&1; cat $DUMP_PATH 2>/dev/null; rm -f $DUMP_PATH",
-            DUMP_TIMEOUT_MS,
-        ).stdout
-        return parseSettingsScreen(out)
-    }
+    suspend fun readScreen(): SettingsScreen =
+        parseSettingsScreen(client().shell("dumpsys activity top", DUMP_TIMEOUT_MS).stdout)
 
     /**
      * Turns developer mode on: opens the settings, and only if the mode is not shown already, taps
@@ -66,33 +61,51 @@ class HealthPlatformDevMode(private val client: suspend () -> AdbClient) {
         const val PACKAGE = "com.samsung.android.service.health"
         const val SETTINGS_ACTION = "$PACKAGE.intent.action.START_SETTINGS_ACTIVITY"
         const val SETTINGS_COMPONENT = "$PACKAGE/.wear.settings.home.SettingsMainActivity"
-        const val TITLE_ID = "$PACKAGE:id/title"
-        const val SUBTITLE_ID = "$PACKAGE:id/dev_mode_subtitle"
         const val TAPS = 10
-        private const val DUMP_PATH = "/data/local/tmp/openshm-ui.xml"
         private const val DUMP_TIMEOUT_MS = 15_000L
         private const val TAP_TIMEOUT_MS = 30_000L
         private const val SETTLE_MS = 1_500L
 
-        private val NODE = Regex("<node [^>]*>")
-        private val ATTR = Regex("""([\w:-]+)="([^"]*)"""")
-        private val BOUNDS = Regex("""\[(\d+),(\d+)]\[(\d+),(\d+)]""")
+        private const val TITLE_VIEW_ID = "app:id/title"
+        private const val SUBTITLE_VIEW_ID = "app:id/dev_mode_subtitle"
+
+        /** A view line: indent, class{hash FLAGS flags2 l,t-r,b [#hex id]} (the flags' first letter is V, I or G). */
+        private val VIEW = Regex("""^(\s*)\S+\{[0-9a-f]+ ([VIG])\S* \S+ (-?\d+),(-?\d+)-(-?\d+),(-?\d+)(?: #[0-9a-f]+ ([^\s}]+))?""")
 
         internal fun isHealthPlatformInFront(dumpsys: String): Boolean =
             dumpsys.lineSequence().any { "topResumedActivity" in it && " $PACKAGE/" in it }
 
-        internal fun parseSettingsScreen(uiDump: String): SettingsScreen {
+        /**
+         * Finds the title and the developer-mode subtitle in the Health Platform activity's part of
+         * `dumpsys activity top`. View bounds there are relative to the parent, so the title's
+         * centre is made absolute by adding the offsets of the enclosing views (by indentation).
+         */
+        internal fun parseSettingsScreen(dumpsysTop: String): SettingsScreen {
             var shown = false
             var title: Pair<Int, Int>? = null
-            for (node in NODE.findAll(uiDump)) {
-                val attrs = ATTR.findAll(node.value).associate { it.groupValues[1] to it.groupValues[2] }
-                when (attrs["resource-id"]) {
-                    SUBTITLE_ID -> if (!attrs["text"].isNullOrBlank()) shown = true
-                    TITLE_ID -> BOUNDS.matchEntire(attrs["bounds"].orEmpty())?.let { m ->
-                        val (l, t, r, b) = m.destructured
-                        title = (l.toInt() + r.toInt()) / 2 to (t.toInt() + b.toInt()) / 2
-                    }
+            var inActivity = false
+            val parents = ArrayList<Triple<Int, Int, Int>>() // indent, absolute left, absolute top
+            for (line in dumpsysTop.lineSequence()) {
+                if (line.startsWith("  ACTIVITY ")) {
+                    inActivity = line.substringAfter("  ACTIVITY ").startsWith("$PACKAGE/")
+                    parents.clear()
+                    continue
                 }
+                if (!inActivity) continue
+                val m = VIEW.find(line) ?: continue
+                val indent = m.groupValues[1].length
+                while (parents.isNotEmpty() && parents.last().first >= indent) parents.removeAt(parents.size - 1)
+                val (baseX, baseY) = parents.lastOrNull()?.let { it.second to it.third } ?: (0 to 0)
+                val left = baseX + m.groupValues[3].toInt()
+                val top = baseY + m.groupValues[4].toInt()
+                val right = baseX + m.groupValues[5].toInt()
+                val bottom = baseY + m.groupValues[6].toInt()
+                val visible = m.groupValues[2] == "V"
+                when (m.groupValues[7]) {
+                    SUBTITLE_VIEW_ID -> if (visible) shown = true
+                    TITLE_VIEW_ID -> if (visible) title = (left + right) / 2 to (top + bottom) / 2
+                }
+                parents += Triple(indent, left, top)
             }
             return SettingsScreen(shown, title)
         }

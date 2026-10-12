@@ -13,8 +13,10 @@ import io.openshm.patcher.device.PhoneInstaller
 import io.openshm.patcher.ui.components.CheckStatus
 import java.io.File
 import java.io.IOException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.withContext
 
 /** The phase of the Wireless debugging fallback the screen shows; null phase means it is not in use. */
 internal fun SelfAdbState.toPhase(): SelfAdbPhase? = when (this) {
@@ -93,7 +95,8 @@ internal class PhoneInstallRunner(
     private suspend fun install(state: MutableStateFlow<InstallUiState>, index: Int, file: File): Boolean {
         val item = state.value.items[index]
         state.update { it.updateItem(index) { i -> i.copy(status = CheckStatus.Running, progress = 0f) } }
-        if (installer.isUpToDate(file, item.packageName)) {
+        // Hashes both files (tens of MB): off the main thread.
+        if (withContext(Dispatchers.IO) { installer.isUpToDate(file, item.packageName) }) {
             // Left from an earlier run (the screen was recreated): same version and key, nothing to send.
             return markInstalled(state, index)
         }

@@ -455,9 +455,12 @@ A clean client defines its own error reporting; these codes have no meaning to t
 - On the owner's watch (Health Platform 1.7.00.05) the element is the screen title, resource id
   `com.samsung.android.service.health:id/title`. While the flag is on, the screen shows a subtitle
   `[Dev mode]` (resource id `...:id/dev_mode_subtitle`, same text in every language) under the
-  title. The patcher reads both from a UI Automator dump over watch ADB, so it can detect the flag
-  and turn it on (10 `input tap`s on the title, only while the subtitle is absent, since the taps
-  toggle).
+  title. The patcher reads both from the view hierarchy in `dumpsys activity top` over watch ADB
+  (views listed as `app:id/title` and `app:id/dev_mode_subtitle`, bounds relative to the parent), so
+  it can detect the flag and turn it on (10 `input tap`s on the title, only while the subtitle is
+  absent, since the taps toggle). It does not use UI Automator: ending a UI Automator session
+  re-applies the user rotation, and on a watch worn with the button on the right that flips the
+  screen upside down after every dump.
 - On change the service sends a package-scoped broadcast to itself,
   `com.samsung.android.service.health.intent.action.SETTINGS_CHANGED_DEV_MODE`, with boolean extra
   `is_enabled`. Other apps cannot receive it, so a client cannot observe the flag directly. The only

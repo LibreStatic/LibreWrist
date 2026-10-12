@@ -175,7 +175,8 @@ class PhoneInstallItemsTest {
         val bridge = items.last()
         assertTrue(bridge.grants.isNotEmpty())
         assertTrue(bridge.grants.all { it.needsUser })
-        assertTrue(items.first().grants.isEmpty())
+        // Bluetooth for the phone SHM, so it can find the bonded watch.
+        assertEquals(listOf("BLUETOOTH_CONNECT", "BLUETOOTH_SCAN"), items.first().grants.map { it.grant.name })
         // The watch keeps applying its grants itself.
         assertTrue(installItemsFor(Device.Watch).flatMap { it.grants }.none { it.manual })
     }

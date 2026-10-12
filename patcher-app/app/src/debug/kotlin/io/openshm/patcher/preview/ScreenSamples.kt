@@ -89,9 +89,10 @@ internal fun GuidedBrowserSample(step: Int = 2, wrongVersion: Boolean = false) =
 internal fun CustomizeSample() = CustomizeScreen(PreviewData.customize(), {}, {}, {})
 
 @Composable
-internal fun BuildSample(logSheet: Boolean = false, almostDone: Boolean = false, cancelled: Boolean = false): Unit {
+internal fun BuildSample(logSheet: Boolean = false, almostDone: Boolean = false, cancelled: Boolean = false, selfCheck: Boolean = false): Unit {
     val state = when {
         cancelled -> PreviewData.buildCancelled()
+        selfCheck -> PreviewData.build(BuildStage.SelfCheck, number = 2, total = 5)
         almostDone -> PreviewData.build(BuildStage.Sign, number = 4, total = 5)
         else -> PreviewData.build(BuildStage.Apply)
     }
@@ -131,7 +132,8 @@ internal fun WatchInstallSample(unreachable: Boolean = false) =
 internal fun DevModeSample() = DevModeScreen(PreviewData.devMode(), {}, {}, {})
 
 @Composable
-internal fun DisableStockSample() = DisableStockScreen(PreviewData.disableStock(), {}, {}, {})
+internal fun DisableStockSample(alreadyOff: Boolean = false) =
+    DisableStockScreen(if (alreadyOff) PreviewData.disableStockAlreadyOff() else PreviewData.disableStock(), {}, {}, {})
 
 @Composable
 internal fun SelfTestSample(variant: SelfTestVariant = SelfTestVariant.Passed) = SelfTestScreen(

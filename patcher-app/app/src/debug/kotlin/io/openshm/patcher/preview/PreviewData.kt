@@ -21,6 +21,7 @@ import io.openshm.patcher.ui.screens.customize.CustomizeUiState
 import io.openshm.patcher.ui.screens.customize.customizeStateFor
 import io.openshm.patcher.ui.screens.devmode.DevModeUiState
 import io.openshm.patcher.ui.screens.disable.DisableStockUiState
+import io.openshm.patcher.ui.screens.disable.StockOutcome
 import io.openshm.patcher.ui.screens.disable.StockAppChoice
 import io.openshm.patcher.ui.screens.home.HomeStatus
 import io.openshm.patcher.ui.screens.home.HomeUiState
@@ -266,6 +267,12 @@ internal object PreviewData {
 
     fun disableStock() = DisableStockUiState(
         AppCatalogue.current.stockAppsToDisable.filter { it.device == Device.Watch }.map { StockAppChoice(it, selected = true) },
+    )
+
+    /** The watch was checked and the stock app is off already. */
+    fun disableStockAlreadyOff() = DisableStockUiState(
+        AppCatalogue.current.stockAppsToDisable.filter { it.device == Device.Watch }
+            .map { StockAppChoice(it, selected = false, outcome = StockOutcome.AlreadyOff) },
     )
 
     private fun t(res: Int, vararg args: String) = SelfTestText(res, args.toList())

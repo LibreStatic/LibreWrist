@@ -12,6 +12,7 @@ import android.content.pm.PackageManager
 import java.security.MessageDigest
 import android.os.Build
 import io.openshm.patcher.adb.InstallResult
+import io.openshm.patcher.build.BuildRunner
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
@@ -26,8 +27,9 @@ interface PhoneInstaller {
     fun canInstallPackages(): Boolean
 
     /**
-     * True when [packageName] is already installed with the version and signing certificate(s) of
-     * [apk], so sending it again would change nothing.
+     * True when [packageName] is already installed from exactly [apk] (same version, signing
+     * certificate(s) and bytes), so sending it again would change nothing. A rebuild with other
+     * patches keeps the version and the key, so those alone do not count.
      */
     fun isUpToDate(apk: File, packageName: String): Boolean
 
@@ -75,12 +77,19 @@ class SessionPhoneInstaller(
         val builtSigners = built?.let(::signersOf)
         built != null && built.packageName == packageName &&
             built.longVersionCode == installed.longVersionCode &&
-            !builtSigners.isNullOrEmpty() && builtSigners == signersOf(installed)
+            !builtSigners.isNullOrEmpty() && builtSigners == signersOf(installed) &&
+            installed.applicationInfo?.sourceDir?.let { sameBytes(apk, File(it)) } == true
     } catch (e: PackageManager.NameNotFoundException) {
         false // not installed, or not visible to this app: install it
+    } catch (e: IOException) {
+        false
     } catch (e: RuntimeException) {
         false
     }
+
+    private fun sameBytes(a: File, b: File): Boolean =
+        a.length() == b.length() && BuildRunner.sha256(a) == BuildRunner.sha256(b)
+
 
     private fun signersOf(info: PackageInfo): Set<String> =
         info.signingInfo?.apkContentsSigners.orEmpty().map { sha256(it.toByteArray()) }.toSet()

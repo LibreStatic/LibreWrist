@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.LinearWavyProgressIndicator
@@ -21,7 +23,9 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import io.openshm.patcher.R
 import io.openshm.patcher.ui.theme.LocalReducedMotion
 
@@ -75,13 +79,26 @@ fun BuildProgressRing(
             trackStroke = stroke,
             waveSpeed = if (reduced) 0.dp else 20.dp,
         )
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("$percent%", style = MaterialTheme.typography.displayMediumEmphasized)
+        // Kept inside the ring: the caption line sits below the centre, where the inner edge of the
+        // wave is narrowest, so long captions (Spanish "Autocomprobación") shrink instead of touching it.
+        val labelLarge = MaterialTheme.typography.labelLarge
+        Column(
+            modifier = Modifier.width(ringSize * CAPTION_WIDTH_FRACTION),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text("$percent%", style = MaterialTheme.typography.displayMediumEmphasized, maxLines = 1)
             Text(
                 caption,
-                style = MaterialTheme.typography.labelLarge,
+                style = labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+                softWrap = false,
+                autoSize = TextAutoSize.StepBased(minFontSize = 9.sp, maxFontSize = labelLarge.fontSize, stepSize = 0.5.sp),
             )
         }
     }
 }
+
+/** Width of the text inside [BuildProgressRing], as a share of the ring: clear of the wave's inner edge. */
+private const val CAPTION_WIDTH_FRACTION = 0.64f

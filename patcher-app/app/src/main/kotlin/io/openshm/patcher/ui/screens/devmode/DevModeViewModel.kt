@@ -21,7 +21,7 @@ import kotlinx.coroutines.sync.withLock
 /**
  * Health Platform developer mode: [DevModeEvent.Enable] turns it on through the watch's UI, and while
  * the screen is shown a background watch catches the user turning it on by hand (a cheap poll of
- * the front activity, and a screen dump only while the Health Platform settings are in front).
+ * the front activity, and a view-hierarchy read only while the Health Platform settings are in front).
  */
 class DevModeViewModel(application: Application) : AndroidViewModel(application) {
 

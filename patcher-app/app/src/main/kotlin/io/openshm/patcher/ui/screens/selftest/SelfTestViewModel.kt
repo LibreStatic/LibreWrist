@@ -8,10 +8,14 @@ import io.openshm.patcher.build.BuildController
 import io.openshm.patcher.build.BuildStorage
 import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.SetupSession
+import android.util.Log
+import io.openshm.patcher.device.AdbWatchDevice
 import io.openshm.patcher.device.AndroidPhoneProbe
 import io.openshm.patcher.device.PhoneGrants
 import io.openshm.patcher.device.WatchLink
+import io.openshm.patcher.device.toAdbGrant
 import io.openshm.patcher.ui.components.CheckStatus
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,6 +45,7 @@ class SelfTestViewModel(application: Application) : AndroidViewModel(application
         bridge = ContentResolverBridgeStatus(application),
         watch = LinkWatchShell(WatchLink.get(application)),
         io = Dispatchers.IO,
+        logFailure = { message, e -> Log.w(TAG, message, e) },
     )
 
     private val _state = MutableStateFlow(runner.initial())
@@ -66,11 +71,45 @@ class SelfTestViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    /** Where the Fix button of [rowId] leads, or null. The screen is tested again when the user comes back. */
+    /**
+     * Where the Fix button of [rowId] leads, or null. The screen is tested again when the user comes
+     * back. Watch access is repaired here instead: the grants are applied again and the test reruns.
+     */
     fun fixFor(rowId: String): SelfTestFix? {
         val row = _state.value.sections.flatMap { it.rows }.firstOrNull { it.id == rowId } ?: return null
         if (row.status != CheckStatus.Failed && row.status != CheckStatus.Warning) return null
-        return row.fix?.also { rerunOnResume = true }
+        val fix = row.fix ?: return null
+        if (fix == SelfTestFix.WatchGrants) {
+            outputOfWatchGrantsRow(rowId)?.let { applyWatchGrants(rowId, it) }
+            return null
+        }
+        rerunOnResume = true
+        return fix
+    }
+
+    private fun applyWatchGrants(rowId: String, outputId: String) {
+        val out = catalogue.outputs.firstOrNull { it.id == outputId } ?: return
+        job?.cancel()
+        _state.update { it.withRow(rowId) { row -> row.copy(status = CheckStatus.Running, detail = null) } }
+        job = viewModelScope.launch {
+            val pkg = out.packageName(session.packagePrefix)
+            val grants = catalogue.grants[outputId].orEmpty().mapNotNull { grant ->
+                try {
+                    grant.toAdbGrant()
+                } catch (e: IllegalArgumentException) {
+                    null
+                }
+            }
+            try {
+                val report = AdbWatchDevice(WatchLink.get(getApplication())).applyGrants(pkg, grants)
+                Log.i(TAG, "watch grants for $pkg: $report")
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.w(TAG, "watch grants for $pkg failed", e)
+            }
+            start()
+        }
     }
 
     /** The screen is in front again; after a fix the checks run once more. */
@@ -113,5 +152,9 @@ class SelfTestViewModel(application: Application) : AndroidViewModel(application
         if (saved) return
         saved = true
         record.save(result)
+    }
+
+    private companion object {
+        const val TAG = "SelfTest"
     }
 }

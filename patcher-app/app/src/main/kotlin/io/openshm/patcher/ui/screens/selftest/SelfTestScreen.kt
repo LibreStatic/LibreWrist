@@ -44,7 +44,8 @@ data class SelfTestText(@StringRes val res: Int, val args: List<String> = emptyL
 internal fun SelfTestText.asString(): String = stringResource(res, *args.toTypedArray())
 
 /** The existing screen a failed row can send the user to. */
-enum class SelfTestFix { InstallPhone, InstallWatch, WatchPair, Build, DisableStock, DevMode, WearablePairing }
+/** How a row gets repaired: a screen to open, or [WatchGrants], applied in place over watch ADB. */
+enum class SelfTestFix { InstallPhone, InstallWatch, WatchPair, Build, DisableStock, DevMode, WearablePairing, WatchGrants }
 
 data class SelfTestRow(
     val id: String,

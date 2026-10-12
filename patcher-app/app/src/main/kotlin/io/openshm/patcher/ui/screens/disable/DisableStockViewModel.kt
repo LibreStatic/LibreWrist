@@ -31,6 +31,33 @@ private fun DisableStockUiState.setOutcome(packageName: String, outcome: StockOu
 )
 
 /**
+ * Checks each stock app on the watch before the user acts: one that is already off or not installed
+ * is marked so and unselected, so the screen does not offer to turn it off again. A watch that
+ * cannot be reached leaves the list as it was; the disable run reports that itself.
+ */
+internal suspend fun probeStockApps(device: WatchDevice, state: MutableStateFlow<DisableStockUiState>) {
+    for (choice in state.value.choices) {
+        val pkg = choice.app.packageName
+        val found = try {
+            when {
+                !device.isInstalled(pkg) -> StockOutcome.NotInstalled
+                device.isDisabled(pkg) -> StockOutcome.AlreadyOff
+                else -> continue
+            }
+        } catch (e: AdbException.CommandFailed) {
+            continue
+        } catch (e: IOException) {
+            return
+        }
+        state.update { s ->
+            if (s.running) s else s.copy(
+                choices = s.choices.map { if (it.app.packageName == pkg && it.outcome == StockOutcome.None) it.copy(outcome = found, selected = false) else it },
+            )
+        }
+    }
+}
+
+/**
  * Turns the selected stock apps off (`pm disable-user`) when they are installed; an app that is not
  * there is marked and skipped. Nothing is uninstalled. Sets [DisableStockUiState.done] only when
  * every selected app ended up off or absent.
@@ -75,6 +102,10 @@ class DisableStockViewModel(application: Application) : AndroidViewModel(applica
     val state: StateFlow<DisableStockUiState> = _state.asStateFlow()
 
     private val device = AdbWatchDevice(WatchLink.get(application))
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) { probeStockApps(device, _state) }
+    }
 
     fun onEvent(event: DisableStockEvent) {
         val s = _state.value

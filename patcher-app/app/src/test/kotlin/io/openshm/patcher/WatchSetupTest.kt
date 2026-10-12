@@ -24,6 +24,7 @@ import io.openshm.patcher.ui.screens.disable.DisableStockUiState
 import io.openshm.patcher.ui.screens.disable.StockAppChoice
 import io.openshm.patcher.ui.screens.disable.StockOutcome
 import io.openshm.patcher.ui.screens.disable.disableSelected
+import io.openshm.patcher.ui.screens.disable.probeStockApps
 import io.openshm.patcher.ui.screens.install.GrantRow
 import io.openshm.patcher.ui.screens.install.InstallItem
 import io.openshm.patcher.ui.screens.install.InstallUiState
@@ -121,6 +122,13 @@ private class FakeDevice : WatchDevice {
     val present = mutableSetOf<String>()
     val disabled = mutableListOf<String>()
     var disableThrows: (String) -> java.io.IOException? = { null }
+    val upToDate = mutableSetOf<String>()
+    var upToDateThrows: java.io.IOException? = null
+
+    override suspend fun isUpToDate(pkg: String, apk: File): Boolean {
+        upToDateThrows?.let { throw it }
+        return pkg in upToDate
+    }
 
     override suspend fun install(apk: File, onProgress: (Float) -> Unit): InstallResult {
         installThrows?.let { throw it }
@@ -153,6 +161,14 @@ private class FakeDevice : WatchDevice {
     override suspend fun disable(pkg: String) {
         disableThrows(pkg)?.let { throw it }
         disabled += pkg
+    }
+
+    val off = mutableSetOf<String>()
+    var isDisabledThrows: java.io.IOException? = null
+
+    override suspend fun isDisabled(pkg: String): Boolean {
+        isDisabledThrows?.let { throw it }
+        return pkg in off
     }
 
     override suspend fun packageKind(pkg: String): PackageKind = PackageKind.System // never offers a removal
@@ -204,6 +220,26 @@ class WatchInstallRunnerTest {
         assertFalse(s.value.running)
         assertNull(s.value.errorRes)
         assertEquals(1, locked)
+    }
+
+    @Test
+    fun anAppAlreadyInstalledFromTheSameBytesIsNotSentButStillGranted() = runBlocking {
+        val device = FakeDevice().apply { upToDate += "$prefix.a" }
+        val s = state(item("a", required), item("b"))
+        runner(device, built("a", "b")).run(s)
+        assertEquals(listOf("b.apk"), device.installed)
+        assertEquals(listOf("$prefix.a"), device.grantCalls.map { it.first })
+        assertTrue(s.value.done)
+        assertEquals(1, locked)
+    }
+
+    @Test
+    fun aFailedUpToDateCheckFallsBackToInstalling() = runBlocking {
+        val device = FakeDevice().apply { upToDateThrows = AdbException.ConnectionFailed(ConnectException()) }
+        val s = state(item("a"))
+        runner(device, built("a")).run(s)
+        assertEquals(listOf("a.apk"), device.installed)
+        assertTrue(s.value.done)
     }
 
     @Test
@@ -374,6 +410,46 @@ class DisableStockRunTest {
         assertEquals(listOf(StockOutcome.Disabled, StockOutcome.NotInstalled), s.value.choices.map { it.outcome })
         assertTrue(s.value.done)
         assertFalse(s.value.running)
+    }
+
+    @Test
+    fun theProbeMarksAppsThatAreAlreadyOffOrAbsent() = runBlocking {
+        val device = FakeDevice().apply {
+            present += listOf("p.on", "p.off")
+            off += "p.off"
+        }
+        val s = state("p.on", "p.off", "p.gone")
+        probeStockApps(device, s)
+        assertEquals(listOf(StockOutcome.None, StockOutcome.AlreadyOff, StockOutcome.NotInstalled), s.value.choices.map { it.outcome })
+        assertEquals(listOf(true, false, false), s.value.choices.map { it.selected })
+        assertEquals(1, s.value.selectedCount)
+        assertFalse(s.value.nothingLeft)
+    }
+
+    @Test
+    fun whenEveryAppIsAlreadyOffNothingIsLeft() = runBlocking {
+        val device = FakeDevice().apply {
+            present += "p.off"
+            off += "p.off"
+        }
+        val s = state("p.off", "p.gone")
+        probeStockApps(device, s)
+        assertTrue(s.value.nothingLeft)
+        assertEquals(0, s.value.selectedCount)
+        assertTrue(device.disabled.isEmpty())
+    }
+
+    @Test
+    fun anUnreachableWatchLeavesTheListAsItWas() = runBlocking {
+        val device = FakeDevice().apply {
+            present += "p.one"
+            isDisabledThrows = AdbException.ConnectionFailed()
+        }
+        val s = state("p.one")
+        probeStockApps(device, s)
+        assertEquals(StockOutcome.None, s.value.choices.single().outcome)
+        assertTrue(s.value.choices.single().selected)
+        assertFalse(s.value.nothingLeft)
     }
 
     @Test

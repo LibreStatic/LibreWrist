@@ -223,6 +223,10 @@ fun CustomizeDriver() = PreviewHost(ColorMode.Fallback) { CustomizeSample() }
 @Composable
 fun BuildDriver() = PreviewHost(ColorMode.Fallback) { BuildSample() }
 
+/** The longest ring caption in Spanish ("Autocomprobación"): render with `--qualifiers es`. */
+@Composable
+fun BuildSelfCheckDriver() = PreviewHost(ColorMode.Fallback) { BuildSample(selfCheck = true) }
+
 @Composable
 fun BuildAlmostDoneDriver() = PreviewHost(ColorMode.Fallback) { BuildSample(almostDone = true) }
 
@@ -299,6 +303,9 @@ fun DevModeDriver() = PreviewHost(ColorMode.Fallback) { DevModeSample() }
 
 @Composable
 fun DisableStockDriver() = PreviewHost(ColorMode.Fallback) { DisableStockSample() }
+
+@Composable
+fun DisableStockAlreadyOffDriver() = PreviewHost(ColorMode.Fallback) { DisableStockSample(alreadyOff = true) }
 
 @Composable
 fun SelfTestDriver() = PreviewHost(ColorMode.Fallback) { SelfTestSample() }

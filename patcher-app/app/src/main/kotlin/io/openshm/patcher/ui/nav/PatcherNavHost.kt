@@ -519,6 +519,7 @@ internal fun SelfTestFix.route(): Route = when (this) {
     SelfTestFix.DisableStock -> Route.DisableStock
     SelfTestFix.DevMode -> Route.DevMode
     SelfTestFix.WearablePairing -> Route.WearablePairing
+    SelfTestFix.WatchGrants -> Route.WatchInstall // applied in place by the self-test; not navigated to
 }
 
 /** Offers the self-test report (plain text) to any app that takes it. */

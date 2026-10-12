@@ -11,11 +11,21 @@ import io.openshm.patcher.adb.GrantTarget
 import io.openshm.patcher.adb.InstallResult
 import io.openshm.patcher.adb.PmParsers
 import io.openshm.patcher.adb.RemotePackages
+import io.openshm.patcher.build.BuildRunner
+import io.openshm.patcher.ui.screens.selftest.SelfTestParsers
 import java.io.File
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /** What the watch screens need from the watch; the real one runs over ADB, tests use fakes. Failures are [AdbException]s. */
 interface WatchDevice {
     suspend fun install(apk: File, onProgress: (Float) -> Unit): InstallResult
+
+    /**
+     * True when [pkg] is installed on the watch from exactly [apk] (same bytes), so sending it again
+     * over the watch's slow Wi-Fi would change nothing. False when unsure.
+     */
+    suspend fun isUpToDate(pkg: String, apk: File): Boolean = false
     suspend fun applyGrants(pkg: String, grants: List<AdbGrant>): GrantReport
     suspend fun isInstalled(pkg: String): Boolean
 
@@ -27,6 +37,9 @@ interface WatchDevice {
 
     /** `pm disable-user`; never uninstalls. */
     suspend fun disable(pkg: String)
+
+    /** True when [pkg] is installed but turned off (`pm list packages -d`). */
+    suspend fun isDisabled(pkg: String): Boolean = false
 
     /** Whether [pkg] is installed on the watch, and if so whether it is a system package. */
     suspend fun packageKind(pkg: String): PackageKind
@@ -46,6 +59,16 @@ class AdbWatchDevice(private val link: WatchLink) : WatchDevice {
         }
     }
 
+    override suspend fun isUpToDate(pkg: String, apk: File): Boolean {
+        val adb = link.client()
+        val paths = adb.shell("pm path $pkg").takeIf { it.isSuccess }?.let { PmParsers.parsePaths(it.stdout) }.orEmpty()
+        // A split install was not sent by us: send ours.
+        val path = paths.singleOrNull()?.takeIf { SelfTestParsers.isSafePath(it) } ?: return false
+        val remote = adb.shell("sha256sum $path", HASH_TIMEOUT_MS).takeIf { it.isSuccess }?.let { SelfTestParsers.sha256sum(it.stdout) }
+            ?: return false
+        return remote == withContext(Dispatchers.IO) { BuildRunner.sha256(apk) }
+    }
+
     override suspend fun applyGrants(pkg: String, grants: List<AdbGrant>): GrantReport =
         GrantApplier(link.client(), GrantTarget.WATCH).apply(pkg, grants)
 
@@ -58,6 +81,11 @@ class AdbWatchDevice(private val link: WatchLink) : WatchDevice {
 
     override suspend fun disable(pkg: String) {
         RemotePackages(link.client()).disableUser(pkg)
+    }
+
+    override suspend fun isDisabled(pkg: String): Boolean {
+        val out = link.client().shell("pm list packages -d")
+        return out.isSuccess && pkg in PmParsers.parsePackageList(out.stdout)
     }
 
     override suspend fun packageKind(pkg: String): PackageKind {
@@ -76,5 +104,9 @@ class AdbWatchDevice(private val link: WatchLink) : WatchDevice {
         } else {
             UninstallResult.Failure((result.stdout + "\n" + result.stderr).trim().lineSequence().firstOrNull { it.isNotBlank() }?.trim() ?: "exit code ${result.exitCode}")
         }
+    }
+
+    private companion object {
+        const val HASH_TIMEOUT_MS = 60_000L
     }
 }
