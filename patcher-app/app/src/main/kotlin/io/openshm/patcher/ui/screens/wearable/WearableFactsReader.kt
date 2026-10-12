@@ -20,7 +20,7 @@ internal fun readWearableFacts(context: Context): WearableFacts {
     } else {
         emptyList()
     }
-    val installed = listOf(GALAXY_WEARABLE_PACKAGE, WATCH_PLUGIN_PACKAGE).filterTo(mutableSetOf()) { isInstalled(context, it) }
+    val installed = (listOf(GALAXY_WEARABLE_PACKAGE) + WATCH_PLUGIN_PACKAGES).filterTo(mutableSetOf()) { isInstalled(context, it) }
     return WearableFacts(installed, allowed, bonded)
 }
 

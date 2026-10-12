@@ -48,7 +48,7 @@ import io.openshm.patcher.ui.screens.selftest.SelfTestUiState
 import io.openshm.patcher.ui.screens.watchpair.WatchPairUiState
 import io.openshm.patcher.ui.screens.wearable.BondedDevice
 import io.openshm.patcher.ui.screens.wearable.GALAXY_WEARABLE_PACKAGE
-import io.openshm.patcher.ui.screens.wearable.WATCH_PLUGIN_PACKAGE
+import io.openshm.patcher.ui.screens.wearable.WATCH_PLUGIN_PACKAGES
 import io.openshm.patcher.ui.screens.wearable.WearableFacts
 import io.openshm.patcher.ui.screens.wearable.wearableState
 import io.openshm.patcher.ui.screens.signingkey.ImportConfirmation
@@ -102,7 +102,7 @@ internal object PreviewData {
     fun profileDenied() = ProfileUiState(pairedCheck = PairedCheck.Denied)
 
     fun wearable(
-        packages: Set<String> = setOf(GALAXY_WEARABLE_PACKAGE, WATCH_PLUGIN_PACKAGE),
+        packages: Set<String> = setOf(GALAXY_WEARABLE_PACKAGE, WATCH_PLUGIN_PACKAGES[1]),
         bluetoothAllowed: Boolean = true,
         bonded: List<BondedDevice> = listOf(BondedDevice("Galaxy Watch5 Pro (A1B2)", 0x0700)),
     ) = wearableState(WearableFacts(packages, bluetoothAllowed, bonded))

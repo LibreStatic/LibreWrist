@@ -3,7 +3,6 @@ package io.openshm.patcher
 import io.openshm.patcher.ui.components.CheckStatus
 import io.openshm.patcher.ui.screens.wearable.BondedDevice
 import io.openshm.patcher.ui.screens.wearable.GALAXY_WEARABLE_PACKAGE
-import io.openshm.patcher.ui.screens.wearable.WATCH_PLUGIN_PACKAGE
 import io.openshm.patcher.ui.screens.wearable.WearableCheckAction
 import io.openshm.patcher.ui.screens.wearable.WearableFacts
 import io.openshm.patcher.ui.screens.wearable.isWatch
@@ -16,8 +15,9 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 
 class WearableChecksTest {
+    private val heartPlugin = "com.samsung.android.heartplugin"
     private val watch = BondedDevice("Galaxy Watch5 Pro (A1B2)", 0x0700)
-    private val everything = WearableFacts(setOf(GALAXY_WEARABLE_PACKAGE, WATCH_PLUGIN_PACKAGE), true, listOf(watch))
+    private val everything = WearableFacts(setOf(GALAXY_WEARABLE_PACKAGE, heartPlugin), true, listOf(watch))
 
     private fun statuses(facts: WearableFacts) = wearableState(facts).checks.map { it.status }
 
@@ -33,7 +33,7 @@ class WearableChecksTest {
     fun eachCheckFailsOnItsOwn() {
         assertEquals(
             listOf(CheckStatus.Failed, CheckStatus.Passed, CheckStatus.Passed),
-            statuses(everything.copy(installedPackages = setOf(WATCH_PLUGIN_PACKAGE))),
+            statuses(everything.copy(installedPackages = setOf(heartPlugin))),
         )
         assertEquals(
             listOf(CheckStatus.Passed, CheckStatus.Failed, CheckStatus.Passed),
@@ -70,11 +70,20 @@ class WearableChecksTest {
     }
 
     @Test
-    fun watchPluginsAreTheKnownOneOrSamsungPluginPackages() {
+    fun everyWearOsWatchFamilyHasItsPlugin() {
+        assertTrue(isWatchPlugin("com.samsung.android.waterplugin"))
         assertTrue(isWatchPlugin("com.samsung.android.heartplugin"))
-        assertTrue(isWatchPlugin("com.samsung.android.gearoplugin"))
+        assertTrue(isWatchPlugin("com.samsung.wearable.watch6plugin"))
+        assertTrue(isWatchPlugin("com.samsung.wearable.watch7plugin"))
+        assertTrue(isWatchPlugin("com.samsung.wearable.watchuniteplugin"))
+        assertFalse(isWatchPlugin("com.samsung.android.gearoplugin"))
         assertFalse(isWatchPlugin("com.samsung.android.app.watchmanager"))
         assertFalse(isWatchPlugin("com.example.plugin"))
-        assertFalse(isWatchPlugin("com.samsung.android.plugins.other"))
+    }
+
+    @Test
+    fun aWatch8PluginPassesThePluginCheck() {
+        val watch8 = everything.copy(installedPackages = setOf(GALAXY_WEARABLE_PACKAGE, "com.samsung.wearable.watchuniteplugin"))
+        assertTrue(wearableState(watch8).allPassed)
     }
 }

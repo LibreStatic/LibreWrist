@@ -35,8 +35,11 @@ Known gotchas when transferring a previously used watch:
 - **Do not press Cancel while the watch is in the final step** (`phone_switching_status=7`): let
   the transport connect on its own.
 - **Watch faces/Tiles stuck loading** after the transfer: the watch plugin started with stale
-  state. Force-stop Galaxy Wearable and its plugin (`am force-stop com.samsung.android.heartplugin`)
-  and reopen.
+  state. Force-stop Galaxy Wearable and the plugin of your watch (`am force-stop <plugin>`) and
+  reopen. The plugin depends on the model: `com.samsung.android.waterplugin` (Watch4, Watch FE),
+  `com.samsung.android.heartplugin` (Watch5), `com.samsung.wearable.watch6plugin` (Watch6),
+  `com.samsung.wearable.watch7plugin` (Watch7, Watch Ultra), `com.samsung.wearable.watchuniteplugin`
+  (Watch8 and newer).
 
 Check: `adb -s $P shell dumpsys activity service com.google.android.gms/.wearable.service.WearableService`
 must show the watch configuration with `IsConnected=true`.

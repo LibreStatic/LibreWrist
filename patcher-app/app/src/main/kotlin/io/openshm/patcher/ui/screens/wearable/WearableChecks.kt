@@ -6,20 +6,24 @@ import io.openshm.patcher.ui.components.CheckStatus
 /** Samsung's official app that pairs and manages a Galaxy Watch. */
 internal const val GALAXY_WEARABLE_PACKAGE = "com.samsung.android.app.watchmanager"
 
-/** The watch plugin Galaxy Wearable installs for Galaxy Watch4 and newer. */
-internal const val WATCH_PLUGIN_PACKAGE = "com.samsung.android.heartplugin"
+/**
+ * The watch plugin Galaxy Wearable installs for each Wear OS Galaxy Watch, from its model table
+ * (Galaxy Wearable 2.2.72). Every model family has its own plugin; all of them must also be listed
+ * in the manifest `<queries>`, or this app cannot see them.
+ */
+internal val WATCH_PLUGIN_PACKAGES = listOf(
+    "com.samsung.android.waterplugin",       // Watch4, Watch4 Classic, Watch FE
+    "com.samsung.android.heartplugin",       // Watch5, Watch5 Pro
+    "com.samsung.wearable.watch6plugin",     // Watch6, Watch6 Classic
+    "com.samsung.wearable.watch7plugin",     // Watch7, Watch Ultra
+    "com.samsung.wearable.watchuniteplugin", // Watch8, Watch8 Classic, Watch Ultra (2025) and newer
+)
 
 /** `BluetoothClass.Device.Major.WEARABLE`, kept here so the check logic has no platform dependency. */
 internal const val BLUETOOTH_MAJOR_WEARABLE = 0x0700
 
-/**
- * Whether [packageName] is a Galaxy Wearable watch plugin: the known Watch4+ one, or any Samsung
- * `*plugin` package (the older watches' plugins follow that naming). Only packages this app can see
- * (declared in the manifest `<queries>`) are ever tested.
- */
-internal fun isWatchPlugin(packageName: String): Boolean =
-    packageName == WATCH_PLUGIN_PACKAGE ||
-        (packageName.startsWith("com.samsung.android.") && packageName.endsWith("plugin"))
+/** Whether [packageName] is the Galaxy Wearable plugin of a Wear OS Galaxy Watch. */
+internal fun isWatchPlugin(packageName: String): Boolean = packageName in WATCH_PLUGIN_PACKAGES
 
 /** A bonded Bluetooth device, reduced to what the watch test needs. */
 data class BondedDevice(val name: String?, val majorClass: Int?)
