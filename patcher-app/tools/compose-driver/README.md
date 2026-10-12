@@ -77,5 +77,8 @@ adb shell am start -W -S -n io.openshm.patcher/.preview.WalkthroughActivity --es
 adb exec-out screencap -p > welcome.png
 ```
 
-A screen must be listed in its `when` before it can be captured. On a software-rendered emulator,
+A screen must be listed in its `when` before it can be captured. `--es screen SelfAdbLive` runs the
+real Wireless debugging pairing with the same phone (notification, Settings and code entry) over the
+fake install list, without granting anything; the emulator needs Wi-Fi (`AndroidWifi`) and
+`POST_NOTIFICATIONS` granted. On a software-rendered emulator,
 wait several seconds before capturing.

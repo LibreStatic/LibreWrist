@@ -137,9 +137,8 @@ that key: **do it**, because you will need it for future updates.
 ### 7. Install on the phone
 
 Tap **Start installing** and confirm each Android install prompt. The patcher then checks the
-permissions each app needs. Any missing one has an **Open settings** button. On Android 13 or newer,
-you may need to allow *restricted settings* for the bridge first; if Settings will not let you, the
-patcher can grant them through the phone's own Wireless debugging.
+permissions each app needs. Any missing one has an **Open settings** button, where you switch it on
+yourself.
 
 Open the patched Samsung Health Monitor once and finish its setup.
 
@@ -147,6 +146,94 @@ Open the patched Samsung Health Monitor once and finish its setup.
   <img src="docs/images/walkthrough/14-install-phone.png" width="260" alt="Install on the phone">
   <img src="docs/images/walkthrough/15-phone-access.png" width="260" alt="Phone permissions">
 </p>
+
+#### The easy way: let the patcher grant everything (Wireless debugging on this phone)
+
+Some permissions are hard to find in Settings, and on Android 13 or newer some of them are blocked
+as *restricted settings*. The patcher can switch them all on for you. To do that, it connects to
+**this same phone** through Wireless debugging, a built-in Android developer feature.
+
+This sounds technical, but it is a one-time setup of a few taps. Read the whole list once before
+you start, because you will move between the patcher, Settings and the notification panel.
+
+> You need Wi-Fi for this: any network works, even without internet. Mobile data is not enough.
+> Nothing here changes your data, and you can turn Wireless debugging and Developer options off
+> again when you are done.
+
+**Step A: tap the button in the patcher.** Scroll down to **Grant everything at once** and tap
+**Grant everything with Wireless debugging**. The card shows the steps that follow. The patcher
+keeps waiting in the background and opens Developer options for you. If they are not on yet, do
+step B first.
+
+<img src="docs/images/walkthrough/14a-phone-adb-offer.png" width="260" alt="Grant everything with Wireless debugging">
+
+**Step B: turn on Developer options** (only the first time).
+
+1. Open **Settings → About phone**. On some phones it is under *Settings → System → About phone*.
+2. Scroll to the bottom and tap **Build number** seven times in a row. On some phones it is inside
+   *Software information*.
+3. After a few taps Android counts down (*"You are now 1 step away from being a developer"*).
+   If you have a screen lock, it asks for your PIN at the end. Then it says *"You are now a
+   developer!"*.
+
+<p>
+  <img src="docs/images/walkthrough/14b-phone-build-number.png" width="260" alt="Build number in About phone">
+  <img src="docs/images/walkthrough/14c-phone-developer-toast.png" width="260" alt="Developer countdown">
+</p>
+
+**Step C: turn on Wireless debugging.**
+
+1. Go to **Settings → System → Developer options**. The patcher normally opens it for you, scrolled
+   to the right place.
+2. Find **Wireless debugging** in the *Debugging* section and tap its **name**, not only the
+   switch, to open its page.
+3. Turn on **Use wireless debugging**. Android asks *"Allow wireless debugging on this network?"*:
+   tap **Allow**.
+
+<p>
+  <img src="docs/images/walkthrough/14d-phone-developer-options.png" width="260" alt="Developer options">
+  <img src="docs/images/walkthrough/14e-phone-allow-network.png" width="260" alt="Allow wireless debugging on this network">
+</p>
+
+**Step D: get a pairing code.** On the Wireless debugging page, tap **Pair device with pairing
+code**. Android shows a six-digit **Wi-Fi pairing code**. Leave this window open: closing it cancels
+the code.
+
+<p>
+  <img src="docs/images/walkthrough/14f-phone-wireless-debugging.png" width="260" alt="Wireless debugging page">
+  <img src="docs/images/walkthrough/14g-phone-pairing-code.png" width="260" alt="Wi-Fi pairing code">
+</p>
+
+**Step E: give the code to the patcher.** Without closing the code window:
+
+1. Swipe down from the top of the screen to open the notification panel.
+2. Find the OpenSHM Patcher notification **Enter the pairing code** and tap **Enter code**.
+3. Type the six digits shown on the code window and tap the send arrow.
+
+You can also go back to the patcher and type the code there, but the notification is easier,
+because it keeps the code window on screen.
+
+<p>
+  <img src="docs/images/walkthrough/14h-phone-notification.png" width="260" alt="Enter the pairing code notification">
+  <img src="docs/images/walkthrough/14i-phone-notification-code.png" width="260" alt="Typing the code in the notification">
+</p>
+
+**Step F: done.** The code window closes by itself. The patcher connects and switches on every
+missing permission. Go back to the patcher: it shows **All set** and the permission list turns
+green. *OpenSHM* now appears under **Paired devices** in Wireless debugging. The pairing is
+remembered, so next time the patcher reconnects without a new code, as long as Wireless debugging is
+on.
+
+<img src="docs/images/walkthrough/14j-phone-adb-done.png" width="260" alt="Pairing done">
+
+**If something goes wrong:**
+
+- *The notification never asks for a code*: check that Wireless debugging is on and that the phone
+  is on Wi-Fi. Also check that notifications are allowed for OpenSHM Patcher.
+- *"Wrong code"*: codes expire when the window closes. Tap **Pair device with pairing code**
+  again and use the new code.
+- *Wireless debugging turns itself off*: Android turns it off when you change Wi-Fi networks. Turn
+  it on again; you will not need a new code.
 
 ### 8. Install on the watch
 
