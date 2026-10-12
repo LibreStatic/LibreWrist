@@ -242,7 +242,11 @@ private fun PairPanel(
                 }
                 if (guideInline) {
                     AnimatedVisibility(state.guideVisible, enter = enterTransition(), exit = exitTransition()) {
-                        Guide(state, onEvent)
+                        WatchPairGuide(
+                            step = state.guideStep,
+                            onStep = { onEvent(WatchPairEvent.GuideStep(it)) },
+                            onDone = { onEvent(WatchPairEvent.HideGuide) },
+                        )
                     }
                 }
             }
