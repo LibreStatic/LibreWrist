@@ -85,6 +85,23 @@ object ExportPasswordPolicy {
         !password.contentEquals(confirm) -> R.string.signing_key_error_mismatch
         else -> null
     }
+
+    /**
+     * The problem to show while the user types: a field is judged once the user has left it ([passwordLeft],
+     * [confirmLeft]), and an error from an earlier submit ([submitted]) stays only while it still applies.
+     */
+    @StringRes
+    fun shownProblem(password: String, confirm: String, passwordLeft: Boolean, confirmLeft: Boolean, @StringRes submitted: Int?): Int? {
+        val short = password.length < MIN_LENGTH
+        val mismatch = password != confirm
+        return when {
+            passwordLeft && password.isNotEmpty() && short -> R.string.signing_key_error_short
+            confirmLeft && confirm.isNotEmpty() && mismatch -> R.string.signing_key_error_mismatch
+            submitted == R.string.signing_key_error_short -> submitted.takeIf { short }
+            submitted == R.string.signing_key_error_mismatch -> submitted.takeIf { mismatch }
+            else -> submitted
+        }
+    }
 }
 
 /** A digest in groups of four, upper case, for reading and comparing by eye. */

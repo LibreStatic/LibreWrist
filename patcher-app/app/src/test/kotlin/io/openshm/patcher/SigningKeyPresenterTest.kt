@@ -254,4 +254,28 @@ class SigningKeyPresenterTest {
         p.onEvent(SigningKeyEvent.SubmitImport(CharArray(0)))
         assertEquals(R.string.signing_key_error_empty, p.state.value.formError)
     }
+
+    @Test fun aShortPasswordIsFlaggedOnlyOnceTheFieldIsLeft() {
+        val short = "a".repeat(ExportPasswordPolicy.MIN_LENGTH - 1)
+        val ok = "a".repeat(ExportPasswordPolicy.MIN_LENGTH)
+        assertNull(ExportPasswordPolicy.shownProblem(short, "", passwordLeft = false, confirmLeft = false, submitted = null))
+        assertNull(ExportPasswordPolicy.shownProblem("", "", passwordLeft = true, confirmLeft = false, submitted = null))
+        assertEquals(R.string.signing_key_error_short, ExportPasswordPolicy.shownProblem(short, "", passwordLeft = true, confirmLeft = false, submitted = null))
+        assertNull(ExportPasswordPolicy.shownProblem(ok, "", passwordLeft = true, confirmLeft = false, submitted = null))
+    }
+
+    @Test fun aMismatchIsFlaggedOnceTheConfirmationIsLeft() {
+        val ok = "a".repeat(ExportPasswordPolicy.MIN_LENGTH)
+        assertNull(ExportPasswordPolicy.shownProblem(ok, "b", passwordLeft = true, confirmLeft = false, submitted = null))
+        assertEquals(R.string.signing_key_error_mismatch, ExportPasswordPolicy.shownProblem(ok, "b", passwordLeft = true, confirmLeft = true, submitted = null))
+        assertNull(ExportPasswordPolicy.shownProblem(ok, ok, passwordLeft = true, confirmLeft = true, submitted = null))
+    }
+
+    @Test fun aSubmittedErrorClearsOnceFixed() {
+        val ok = "a".repeat(ExportPasswordPolicy.MIN_LENGTH)
+        assertEquals(R.string.signing_key_error_short, ExportPasswordPolicy.shownProblem("a", "", false, false, R.string.signing_key_error_short))
+        assertNull(ExportPasswordPolicy.shownProblem(ok, "", false, false, R.string.signing_key_error_short))
+        assertNull(ExportPasswordPolicy.shownProblem(ok, ok, false, false, R.string.signing_key_error_mismatch))
+        assertEquals(R.string.signing_key_export_failed, ExportPasswordPolicy.shownProblem(ok, ok, false, false, R.string.signing_key_export_failed))
+    }
 }

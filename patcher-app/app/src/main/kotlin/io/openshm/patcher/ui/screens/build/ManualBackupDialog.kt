@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogWindowProvider
 import io.openshm.patcher.R
 import io.openshm.patcher.ui.screens.signingkey.ExportPasswordPolicy
+import io.openshm.patcher.ui.screens.signingkey.onLeave
 import kotlinx.coroutines.launch
 
 /**
@@ -40,6 +41,8 @@ fun ManualBackupDialog(onSave: suspend (CharArray, CharArray) -> Boolean, onDism
     var confirm by remember { mutableStateOf("") }
     var visible by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<Int?>(null) }
+    var passwordLeft by remember { mutableStateOf(false) }
+    var confirmLeft by remember { mutableStateOf(false) }
     var busy by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val activityWindow = LocalActivity.current?.window
@@ -52,6 +55,7 @@ fun ManualBackupDialog(onSave: suspend (CharArray, CharArray) -> Boolean, onDism
             activityWindow?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
         }
     }
+    val shown = ExportPasswordPolicy.shownProblem(password, confirm, passwordLeft, confirmLeft, error)
     val transformation = if (visible) VisualTransformation.None else PasswordVisualTransformation()
     val keyboard = KeyboardOptions(keyboardType = KeyboardType.Password, autoCorrectEnabled = false)
     AlertDialog(
@@ -61,18 +65,18 @@ fun ManualBackupDialog(onSave: suspend (CharArray, CharArray) -> Boolean, onDism
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(stringResource(R.string.key_backup_with_password_hint), style = MaterialTheme.typography.bodyMedium)
                 OutlinedTextField(
-                    password, { password = it }, Modifier, label = { Text(stringResource(R.string.signing_key_password)) },
+                    password, { password = it }, Modifier.onLeave { passwordLeft = true }, label = { Text(stringResource(R.string.signing_key_password)) },
                     singleLine = true, visualTransformation = transformation, keyboardOptions = keyboard,
-                    isError = error == R.string.signing_key_error_short,
-                    supportingText = if (error == R.string.signing_key_error_short) {
+                    isError = shown == R.string.signing_key_error_short,
+                    supportingText = if (shown == R.string.signing_key_error_short) {
                         { Text(stringResource(R.string.signing_key_error_short, ExportPasswordPolicy.MIN_LENGTH)) }
                     } else null,
                 )
                 OutlinedTextField(
-                    confirm, { confirm = it }, Modifier, label = { Text(stringResource(R.string.signing_key_password_repeat)) },
+                    confirm, { confirm = it }, Modifier.onLeave { confirmLeft = true }, label = { Text(stringResource(R.string.signing_key_password_repeat)) },
                     singleLine = true, visualTransformation = transformation, keyboardOptions = keyboard,
-                    isError = error == R.string.signing_key_error_mismatch,
-                    supportingText = if (error == R.string.signing_key_error_mismatch) {
+                    isError = shown == R.string.signing_key_error_mismatch,
+                    supportingText = if (shown == R.string.signing_key_error_mismatch) {
                         { Text(stringResource(R.string.signing_key_error_mismatch)) }
                     } else null,
                 )

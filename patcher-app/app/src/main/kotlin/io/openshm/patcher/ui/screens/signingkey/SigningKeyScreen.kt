@@ -39,6 +39,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.res.stringResource
@@ -268,17 +269,22 @@ private fun ExportForm(state: SigningKeyUiState, onEvent: (SigningKeyEvent) -> U
     var password by remember { mutableStateOf("") }
     var confirm by remember { mutableStateOf("") }
     var visible by remember { mutableStateOf(false) }
-    val mismatch = state.formError == R.string.signing_key_error_mismatch
+    var passwordLeft by remember { mutableStateOf(false) }
+    var confirmLeft by remember { mutableStateOf(false) }
+    val problem = ExportPasswordPolicy.shownProblem(password, confirm, passwordLeft, confirmLeft, state.formError)
+    val mismatch = problem == R.string.signing_key_error_mismatch
     FormCard {
         Text(stringResource(R.string.signing_key_export_hint), style = MaterialTheme.typography.bodyMedium)
         PasswordField(
             password, { password = it }, stringResource(R.string.signing_key_password), visible, { visible = !visible },
-            error = if (mismatch) null else state.formError,
+            error = if (mismatch) null else problem,
+            modifier = Modifier.onLeave { passwordLeft = true },
             args = ExportPasswordPolicy.MIN_LENGTH,
         )
         PasswordField(
             confirm, { confirm = it }, stringResource(R.string.signing_key_password_repeat), visible, { visible = !visible },
-            error = if (mismatch) state.formError else null,
+            error = if (mismatch) problem else null,
+            modifier = Modifier.onLeave { confirmLeft = true },
             toggle = false,
         )
         ActionRow {
@@ -332,6 +338,16 @@ private fun ImportForm(state: SigningKeyUiState, onEvent: (SigningKeyEvent) -> U
             )
             QuietAction(stringResource(R.string.action_cancel), { onEvent(SigningKeyEvent.CloseForm) })
         }
+    }
+}
+
+/** Calls [action] each time the element loses focus it had (not on the first, unfocused report). */
+@Composable
+internal fun Modifier.onLeave(action: () -> Unit): Modifier {
+    var focused by remember { mutableStateOf(false) }
+    return onFocusChanged {
+        if (focused && !it.isFocused) action()
+        focused = it.isFocused
     }
 }
 
