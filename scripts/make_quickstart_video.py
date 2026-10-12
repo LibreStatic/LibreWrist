@@ -87,8 +87,11 @@ def slide_png(i, s):
             "(", "-size", "432x964", "xc:none", "-fill", "white", "-draw", "roundrectangle 0,0,431,963,10,10", ")",
             "-compose", "DstIn", "-composite", ")", "-compose", "over", "-geometry", "+16+16", "-composite",
             "(", "+clone", "-background", "#00000055", "-shadow", "60x18+0+12", ")", "+swap",
-            "-background", "none", "-compose", "over", "-layers", "merge", "+repage", phone)
-        cmd += [phone, "-gravity", "NorthWest", "-geometry", "+1280+18", "-composite"]
+            "-background", "none", "-compose", "over", "-layers", "merge", "+repage",
+            # Scale down so the phone keeps a clear margin from the top and bottom edges.
+            "-resize", "x880", phone)
+        # Centred vertically above the progress bar, with the same margin on the right.
+        cmd += [phone, "-gravity", "East", "-geometry", "+170-5", "-composite", "-gravity", "NorthWest"]
     # Progress bar along the bottom.
     frac = i / (len(SLIDES) - 1)
     cmd += ["-fill", "#D5D9F5", "-draw", f"rectangle 0,{H-10} {W},{H}",
