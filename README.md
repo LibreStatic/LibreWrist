@@ -54,6 +54,176 @@ it.
 Export the signing key from the app after the first build. Upgrading the installed apps without
 losing data requires the **same key and the same package prefix**.
 
+## Walkthrough
+
+This section shows the patcher step by step, from the first screen to the end. The screenshots come
+from an emulator with **made-up data**: the addresses, versions, sizes and package prefix are
+examples, so your screens will show your own values.
+
+### 1. Welcome
+
+Open OpenSHM Patcher. **What will change on my devices?** lists every app that will be installed on
+the phone and on the watch, and what each one is allowed to do. Tap **Get started**.
+
+<p>
+  <img src="docs/images/walkthrough/01-welcome.png" width="260" alt="Welcome screen">
+  <img src="docs/images/walkthrough/02-what-will-change.png" width="260" alt="What will change sheet">
+</p>
+
+### 2. Pick your watch
+
+Choose the Wear OS version of your watch. If the watch is already reachable, the patcher checks the
+version for you. This decides which official apps you need: Health Monitor, plus the Alarm app on
+Wear OS 5 or newer.
+
+<img src="docs/images/walkthrough/03-watch-profile.png" width="260" alt="Watch profile">
+
+### 3. Pair the watch with Galaxy Wearable
+
+Pair the watch the usual way, with Galaxy Wearable and the watch plugin from the Play Store. All
+three checks must be ticked before you continue. If pairing fails, **Trouble pairing?** has the
+known fixes.
+
+<img src="docs/images/walkthrough/04-wearable-pairing.png" width="260" alt="Galaxy Wearable pairing">
+
+### 4. Connect to the watch over Wi-Fi
+
+The patcher installs apps on the watch over Wireless debugging. Put the phone and the watch on the
+same Wi-Fi network, then follow the guide on screen:
+
+1. On the watch, open **Settings → About watch → Software information**.
+2. Tap **Software version** until developer mode turns on.
+3. In **Developer options**, turn on **Wireless debugging**, allow it, then choose **Pair new
+   device**.
+
+The patcher finds the watch on the network by itself. Type the 6-digit code shown on the watch and
+tap **Pair**.
+
+<p>
+  <img src="docs/images/walkthrough/05-watch-adb-pairing.png" width="260" alt="Connect to the watch">
+  <img src="docs/images/walkthrough/06-wireless-debugging-guide.png" width="260" alt="Wireless debugging guide">
+  <img src="docs/images/walkthrough/08-pairing-code.png" width="260" alt="Pairing code entered">
+</p>
+
+### 5. Bring the official apps
+
+You get the official Samsung APKs yourself; the patcher never ships them. For each app, either:
+
+- tap **Open on APKMirror**, and a guided browser shows which variant to pick (APK, not bundle,
+  `nodpi`) and catches the download;
+- or, from the menu next to that button, pick a file you already have, or pull the app from your
+  own watch or phone.
+
+Every file is checked against the catalogue's checksum. Continue unlocks once all of them match.
+
+<p>
+  <img src="docs/images/walkthrough/09-official-apps.png" width="260" alt="Official apps">
+  <img src="docs/images/walkthrough/10-guided-download.png" width="260" alt="Guided download">
+</p>
+
+### 6. Review the patches and build
+
+The required patches are locked; the others can be switched off. The defaults are recommended. Tap
+**Build**. The build runs in the background with a notification, so you can leave the app. When it
+finishes, all five apps are patched and signed with your own key. The app then offers to back up
+that key: **do it**, because you will need it for future updates.
+
+<p>
+  <img src="docs/images/walkthrough/11-patches.png" width="260" alt="Patches">
+  <img src="docs/images/walkthrough/12-building.png" width="260" alt="Building">
+  <img src="docs/images/walkthrough/13-built.png" width="260" alt="Built and signed">
+</p>
+
+### 7. Install on the phone
+
+Tap **Start installing** and confirm each Android install prompt. The patcher then checks the
+permissions each app needs. Any missing one has an **Open settings** button. On Android 13 or newer,
+you may need to allow *restricted settings* for the bridge first; if Settings will not let you, the
+patcher can grant them through the phone's own Wireless debugging.
+
+Open the patched Samsung Health Monitor once and finish its setup.
+
+<p>
+  <img src="docs/images/walkthrough/14-install-phone.png" width="260" alt="Install on the phone">
+  <img src="docs/images/walkthrough/15-phone-access.png" width="260" alt="Phone permissions">
+</p>
+
+### 8. Install on the watch
+
+The watch apps are installed over Wi-Fi, in order: Health Monitor, the bridge, then phone alarms.
+Their permissions are granted automatically. Then:
+
+- **Health Platform developer mode**: tap **Turn it on for me** and keep the watch unlocked and
+  nearby; or do it by hand, as shown on screen. Without it, the watch will not take ECG
+  measurements with the patched app.
+- **Turn off the stock app**: the stock Health Monitor is disabled, not uninstalled, so it does not
+  compete with the patched one for the sensor. Apps that are already off are marked as done.
+
+<p>
+  <img src="docs/images/walkthrough/16-install-watch.png" width="260" alt="Install on the watch">
+  <img src="docs/images/walkthrough/17-developer-mode.png" width="260" alt="Health Platform developer mode">
+  <img src="docs/images/walkthrough/18-disable-stock.png" width="260" alt="Turn off the stock app">
+</p>
+
+### 9. Self-test
+
+The patcher runs these checks:
+
+- it confirms what is installed on both devices, with which signature;
+- it confirms that permissions are granted;
+- it checks that the bridge link between the phone and the watch is up.
+
+It then asks you a few questions about what you see on the devices. When every check passes, you
+are done. **Share report** produces a report with versions and results only, which is useful if
+something fails.
+
+<p>
+  <img src="docs/images/walkthrough/19-self-test.png" width="260" alt="Self-test">
+  <img src="docs/images/walkthrough/20-all-set.png" width="260" alt="All set">
+</p>
+
+### 10. Home
+
+From then on, the app opens on **Home**. It shows:
+
+- the state of the last test, with **Test again**;
+- the apps you built;
+- an update card when a newer catalogue supports newer official apps.
+
+Each app can be rebuilt or restored, which turns the stock apps back on and removes ours.
+
+<img src="docs/images/walkthrough/21-home.png" width="260" alt="Home">
+
+### What to expect when you are done
+
+- **On the watch**, the patched Samsung Health Monitor replaces the stock one in the app list. It
+  offers ECG, and blood pressure once calibrated. Irregular heart rhythm notifications can be turned
+  on from the phone app.
+- **On the phone**, Samsung Health Monitor finds the watch as a compatible device. Readings taken
+  on the watch appear there and can be exported as PDF.
+- **The bridge** sends phone notifications, incoming calls (answer or decline from the watch) and
+  phone alarms to the watch over Bluetooth, with no Samsung phone involved.
+- Nothing stock was uninstalled. Galaxy Wearable keeps managing the watch as before.
+
+### How to check that it works
+
+1. **ECG**:
+   - On the watch, open Samsung Health Monitor, choose **ECG**, rest your arm on a table and hold a
+     fingertip on the top button for 30 seconds.
+   - The watch shows a result (for example *Sinus rhythm*). Within a minute, the same reading shows
+     up in Samsung Health Monitor on the phone.
+2. **Blood pressure**:
+   - In the phone app, start a calibration with a cuff monitor, taking three readings.
+   - After that, measure from the watch. The result syncs to the phone the same way as ECG.
+3. **Bridge**:
+   - Send yourself a message, or call the phone: the notification or the call shows on the watch.
+   - Set an alarm on the phone a couple of minutes ahead: it rings on the watch.
+4. **If something does not arrive**, run **Test again** from Home and share the report. Most
+   problems are one of these:
+   - Health Platform developer mode turned off on the watch;
+   - a missing permission;
+   - the watch disconnected from Galaxy Wearable.
+
 ## How it works
 
 1. The watch is paired with the phone through the stock Galaxy Wearable flow, which creates the GMS

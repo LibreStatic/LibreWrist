@@ -65,3 +65,17 @@ root is used. Prefer the semantic tree for iteration and take a screenshot only 
 
 Fonts: Roboto Flex is requested through Google Play services, which the headless renderer does not
 have, so renders use the system font. Line breaks can therefore differ slightly from a device.
+
+## README walkthrough screenshots
+
+The walkthrough images in `docs/images/walkthrough/` are captured on an emulator, not with the
+driver, so they show real system bars. The debug-only `WalkthroughActivity` renders one `XxxDriver`
+full screen with fake data:
+
+```bash
+adb shell am start -W -S -n io.openshm.patcher/.preview.WalkthroughActivity --es screen WelcomeDriver
+adb exec-out screencap -p > welcome.png
+```
+
+A screen must be listed in its `when` before it can be captured. On a software-rendered emulator,
+wait several seconds before capturing.
