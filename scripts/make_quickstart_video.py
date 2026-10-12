@@ -56,6 +56,12 @@ def run(*cmd):
     subprocess.run(cmd, check=True)
 
 
+def bg_of(png):
+    """Colour of the screenshot's top-left corner (the status bar background)."""
+    return subprocess.run(["magick", png, "-format", "%[pixel:p{2,2}]", "info:"], check=True,
+                          capture_output=True, text=True).stdout.strip()
+
+
 def slide_png(i, s):
     img, label, title, caption, _ = s
     out = f"{WORK}/s{i:02d}.png"
@@ -79,12 +85,16 @@ def slide_png(i, s):
     if img:
         phone = f"{WORK}/p{i:02d}.png"
         # Rounded corners and a soft shadow around the screenshot.
-        # A dark bezel with rounded corners; the screen itself keeps nearly square corners so the
-        # status bar (clock, battery) is not clipped.
+        # A dark bezel with rounded corners; the screen radius (34) follows the bezel but stays small
+        # enough that the status bar (clock, battery) is not clipped.
         run("magick", "-size", "464x996", "xc:none", "-fill", "#1F1F24",
             "-draw", "roundrectangle 0,0,463,995,52,52",
-            "(", f"{IMG}/{img}.png", "-alpha", "set", "-type", "TrueColorAlpha",
-            "(", "-size", "432x964", "xc:none", "-fill", "white", "-draw", "roundrectangle 0,0,431,963,10,10", ")",
+            # The screenshot is shrunk a little and padded with its own background colour, so the
+            # status bar sits clear of the rounded screen corners.
+            "(", f"{IMG}/{img}.png", "-resize", "95%", "-background", bg_of(f"{IMG}/{img}.png"),
+            "-gravity", "center", "-extent", "432x964", "-gravity", "NorthWest",
+            "-alpha", "set", "-type", "TrueColorAlpha",
+            "(", "-size", "432x964", "xc:none", "-fill", "white", "-draw", "roundrectangle 0,0,431,963,34,34", ")",
             "-compose", "DstIn", "-composite", ")", "-compose", "over", "-geometry", "+16+16", "-composite",
             "(", "+clone", "-background", "#00000055", "-shadow", "60x18+0+12", ")", "+swap",
             "-background", "none", "-compose", "over", "-layers", "merge", "+repage",
