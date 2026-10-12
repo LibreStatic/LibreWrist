@@ -15,7 +15,7 @@ class AppCatalogueTest {
 
     @Test
     fun serialAndInputs() {
-        assertEquals(14L, c.serial)
+        assertEquals(15L, c.serial)
         assertEquals(
             listOf(
                 listOf("shm-phone", "Samsung Health Monitor (phone)", "1.4.6.001", "Phone",
@@ -94,7 +94,7 @@ class AppCatalogueTest {
         assertEquals(
             listOf("Permission:BODY_SENSORS:false", "Permission:BODY_SENSORS_BACKGROUND:false", "Permission:READ_HEART_RATE:false",
                 "Permission:READ_OXYGEN_SATURATION:false", "Permission:ACTIVITY_RECOGNITION:false", "Permission:BLUETOOTH_CONNECT:false",
-                "Permission:POST_NOTIFICATIONS:false", "Permission:READ_ADDITIONAL_HEALTH_DATA:false",
+                "Permission:POST_NOTIFICATIONS:false", "Permission:READ_ADDITIONAL_HEALTH_DATA:true",
                 "AppOp:SCHEDULE_EXACT_ALARM:false", "SecureSetting:doze_always_on:true"),
             names("shm-watch"),
         )
