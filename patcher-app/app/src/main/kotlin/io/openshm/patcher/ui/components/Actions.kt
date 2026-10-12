@@ -199,3 +199,60 @@ fun SplitAction(
         }
     }
 }
+
+/**
+ * Two or more actions in one row when their labels fit on one line there, else stacked full width in
+ * the given order (the first, the main action, on top). In a row the columns are equal when every
+ * label fits in an equal share, otherwise each gets its label's width plus an equal part of the rest.
+ * The order is reversed in a row so the main action sits at the end, where Material dialogs put the
+ * confirming one.
+ */
+@Composable
+fun ActionRow(
+    modifier: Modifier = Modifier,
+    spacing: androidx.compose.ui.unit.Dp = 8.dp,
+    content: @Composable () -> Unit,
+) {
+    androidx.compose.ui.layout.Layout(content = content, modifier = modifier.fillMaxWidth()) { measurables, constraints ->
+        val gap = spacing.roundToPx()
+        val width = constraints.maxWidth
+        val n = measurables.size
+        val free = width - gap * (n - 1).coerceAtLeast(0)
+        val natural = if (constraints.hasBoundedWidth) measurables.map { it.maxIntrinsicWidth(constraints.maxHeight) } else emptyList()
+        val widths: List<Int>? = when {
+            n < 2 || natural.isEmpty() -> null
+            natural.all { it <= free / n } -> List(n) { free / n }
+            natural.sum() <= free -> {
+                val extra = (free - natural.sum()) / n
+                natural.map { it + extra }
+            }
+            else -> null
+        }
+        if (widths != null) {
+            val height = measurables.indices.maxOf { measurables[it].minIntrinsicHeight(widths[it]) }
+            val placeables = measurables.mapIndexed { i, m ->
+                m.measure(androidx.compose.ui.unit.Constraints.fixed(widths[i], height).let {
+                    androidx.compose.ui.unit.Constraints(minWidth = it.minWidth, maxWidth = it.maxWidth, minHeight = height)
+                })
+            }
+            val rowHeight = placeables.maxOf { it.height }
+            layout(width, rowHeight) {
+                var x = 0
+                placeables.reversed().forEach { p ->
+                    p.placeRelative(x, (rowHeight - p.height) / 2)
+                    x += p.width + gap
+                }
+            }
+        } else {
+            val placeables = measurables.map { it.measure(constraints.copy(minWidth = width, minHeight = 0)) }
+            val total = placeables.sumOf { it.height } + gap * (placeables.size - 1).coerceAtLeast(0)
+            layout(width, total) {
+                var y = 0
+                placeables.forEach { p ->
+                    p.placeRelative(0, y)
+                    y += p.height + gap
+                }
+            }
+        }
+    }
+}

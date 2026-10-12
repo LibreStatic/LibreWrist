@@ -36,6 +36,11 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+private const val TAG = "SelfAdb"
+
+/** Phases in which the user has to act in Wireless debugging (the stored pairing did not reconnect). */
+internal val NEEDS_PAIRING_SCREEN = setOf(SelfAdbPhase.WaitingForService, SelfAdbPhase.Ambiguous, SelfAdbPhase.WaitingForCode)
+
 private val USER_ONLY_ON_PHONE = setOf(GrantKind.Permission, GrantKind.AppOp, GrantKind.BatteryExemption)
 
 /**
@@ -133,9 +138,15 @@ class InstallPhoneViewModel(application: Application) : AndroidViewModel(applica
     private fun startAdb() {
         if (_state.value.running || !SelfAdbController.begin(SelfAdbPurpose.PhoneGrants)) return
         _state.update { it.copy(errorRes = null, errorDetail = null) }
+        settingsOpened = false
         SelfAdbService.start(getApplication())
-        outgoing.trySend(PhoneSettings.wirelessDebugging())
     }
+
+    /**
+     * Wireless debugging opens only once the stored pairing could not reconnect: with a pairing
+     * that still works the grants are applied without leaving this screen.
+     */
+    private var settingsOpened = false
 
     /**
      * Follows [SelfAdbController], which outlives this view model. Once connected, one view model
@@ -149,6 +160,10 @@ class InstallPhoneViewModel(application: Application) : AndroidViewModel(applica
             return
         }
         _state.update { it.copy(selfAdb = snapshot.phase) }
+        if (snapshot.phase in NEEDS_PAIRING_SCREEN && !settingsOpened) {
+            settingsOpened = true
+            outgoing.trySend(PhoneSettings.wirelessDebugging())
+        }
         if (snapshot.phase == SelfAdbPhase.Failed) {
             if (snapshot.needsNotifications) fail(_state, R.string.install_error_notifications, null)
             else fail(_state, R.string.phone_adb_failed, snapshot.error)
@@ -157,7 +172,14 @@ class InstallPhoneViewModel(application: Application) : AndroidViewModel(applica
             val client = SelfAdbController.takeClient(SelfAdbPurpose.PhoneGrants) ?: return
             viewModelScope.launch(Dispatchers.IO) {
                 try {
-                    runner.grantWithAdb(_state) { pkg, grants -> GrantApplier(client, GrantTarget.PHONE).apply(pkg, grants) }
+                    runner.grantWithAdb(_state) { pkg, grants ->
+                        GrantApplier(client, GrantTarget.PHONE).apply(pkg, grants).also { report ->
+                            Log.i(TAG, "grants for $pkg: ${report.outcomes.count { it.applied }} of ${report.outcomes.size} applied")
+                        }
+                    }
+                    _state.value.items.forEach { item ->
+                        Log.i(TAG, "after refresh ${item.packageName}: ${item.grants.joinToString { "${it.grant.name}=${it.status}" }}")
+                    }
                 } finally {
                     SelfAdbController.finish()
                 }

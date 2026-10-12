@@ -1,5 +1,6 @@
 package io.openshm.patcher.ui.screens.selftest
 
+import io.openshm.patcher.ui.components.ActionRow
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -101,8 +102,10 @@ fun AllSetScreen(
             Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            PrimaryAction(stringResource(R.string.action_done), onDone)
-            OutlinedAction(stringResource(R.string.action_share_report), onShare, Icons.Rounded.Share)
+            ActionRow {
+                PrimaryAction(stringResource(R.string.action_done), onDone)
+                OutlinedAction(stringResource(R.string.action_share_report), onShare, Icons.Rounded.Share)
+            }
         }
     }
 }

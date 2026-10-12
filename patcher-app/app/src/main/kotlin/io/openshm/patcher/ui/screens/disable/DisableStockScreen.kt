@@ -1,5 +1,6 @@
 package io.openshm.patcher.ui.screens.disable
 
+import io.openshm.patcher.ui.components.ActionRow
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -69,13 +70,15 @@ fun DisableStockScreen(
         modifier = modifier,
         secondary = { if (LocalTwoPane.current) HeroCard() },
         footer = {
-            PrimaryAction(
-                pluralStringResource(R.plurals.disable_action, state.selectedCount, state.selectedCount),
-                { onEvent(DisableStockEvent.Disable) },
-                enabled = state.selectedCount > 0 && !state.running,
-                accent = Accent.Tertiary,
-            )
-            QuietAction(stringResource(R.string.action_skip), onSkip, accent = Accent.Tertiary)
+            ActionRow {
+                PrimaryAction(
+                    pluralStringResource(R.plurals.disable_action, state.selectedCount, state.selectedCount),
+                    { onEvent(DisableStockEvent.Disable) },
+                    enabled = state.selectedCount > 0 && !state.running,
+                    accent = Accent.Tertiary,
+                )
+                QuietAction(stringResource(R.string.action_skip), onSkip, accent = Accent.Tertiary)
+            }
         },
     ) {
         if (!LocalTwoPane.current) HeroCard()

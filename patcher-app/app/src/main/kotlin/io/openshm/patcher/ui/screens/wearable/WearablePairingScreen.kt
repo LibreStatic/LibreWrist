@@ -1,5 +1,6 @@
 package io.openshm.patcher.ui.screens.wearable
 
+import io.openshm.patcher.ui.components.ActionRow
 import io.openshm.patcher.ui.components.InstructionText
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
@@ -87,8 +88,10 @@ fun WearablePairingScreen(
         onBack = onBack,
         modifier = modifier,
         footer = {
-            PrimaryAction(stringResource(R.string.action_continue), onContinue, enabled = state.allPassed)
-            QuietAction(stringResource(R.string.wearable_recheck), { onEvent(WearablePairingEvent.Recheck) })
+            ActionRow {
+                PrimaryAction(stringResource(R.string.action_continue), onContinue, enabled = state.allPassed)
+                QuietAction(stringResource(R.string.wearable_recheck), { onEvent(WearablePairingEvent.Recheck) })
+            }
         },
         // Wide: the walk-through sits beside the checks; narrow it stays under the intro.
         secondary = { if (LocalTwoPane.current) HowToPair() },

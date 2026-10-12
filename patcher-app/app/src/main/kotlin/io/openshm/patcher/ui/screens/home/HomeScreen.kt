@@ -1,5 +1,6 @@
 package io.openshm.patcher.ui.screens.home
 
+import io.openshm.patcher.ui.components.ActionRow
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -282,8 +283,10 @@ private fun RestoreSheet(onEvent: (HomeEvent) -> Unit) {
                 modifier = Modifier.semantics { heading() },
             )
             Text(stringResource(R.string.restore_body), style = MaterialTheme.typography.bodyMedium)
-            PrimaryAction(stringResource(R.string.restore_confirm), { onEvent(HomeEvent.ConfirmRestore) })
-            QuietAction(stringResource(R.string.action_cancel), { onEvent(HomeEvent.DismissRestore) })
+            ActionRow {
+                PrimaryAction(stringResource(R.string.restore_confirm), { onEvent(HomeEvent.ConfirmRestore) })
+                QuietAction(stringResource(R.string.action_cancel), { onEvent(HomeEvent.DismissRestore) })
+            }
         }
     }
 }

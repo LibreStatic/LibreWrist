@@ -1,5 +1,6 @@
 package io.openshm.patcher.ui.screens.install
 
+import io.openshm.patcher.ui.components.ActionRow
 import io.openshm.patcher.ui.components.InstructionText
 import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
@@ -224,8 +225,10 @@ private fun InstallStep(
             if (state.done) {
                 PrimaryAction(stringResource(R.string.action_continue), onContinue, accent = accent)
             } else if (phone && state.canSkipGrants) {
-                PrimaryAction(stringResource(R.string.install_check_again), { onEvent(InstallEvent.Refresh) }, accent = accent)
-                QuietAction(stringResource(R.string.install_continue_anyway), onContinue, accent = accent)
+                ActionRow {
+                    PrimaryAction(stringResource(R.string.install_check_again), { onEvent(InstallEvent.Refresh) }, accent = accent)
+                    QuietAction(stringResource(R.string.install_continue_anyway), onContinue, accent = accent)
+                }
             } else {
                 PrimaryAction(
                     stringResource(if (state.errorRes != null) R.string.action_retry else R.string.install_start),
@@ -367,8 +370,10 @@ private fun SelfAdbSection(state: InstallUiState, onEvent: (InstallEvent) -> Uni
             )
             if (installed && !state.done && !state.running) {
                 SelfAdbGuide()
-                OutlinedAction(stringResource(R.string.phone_adb_action), { onEvent(InstallEvent.GrantWithAdb) }, Icons.Rounded.Wifi)
-                OpenWirelessDebuggingAction(onEvent)
+                ActionRow {
+                    OutlinedAction(stringResource(R.string.phone_adb_action), { onEvent(InstallEvent.GrantWithAdb) }, Icons.Rounded.Wifi)
+                    OpenWirelessDebuggingAction(onEvent)
+                }
             }
             return@Column
         }
@@ -462,10 +467,12 @@ internal fun SelfAdbProgress(
                 enabled = !busy && code.length == PAIRING_CODE_LENGTH,
             )
         }
-        if (phase == SelfAdbPhase.Failed || phase == SelfAdbPhase.Ambiguous) {
-            OutlinedAction(stringResource(retryLabel), onRetry, Icons.Rounded.Refresh)
+        ActionRow {
+            if (phase == SelfAdbPhase.Failed || phase == SelfAdbPhase.Ambiguous) {
+                OutlinedAction(stringResource(retryLabel), onRetry, Icons.Rounded.Refresh)
+            }
+            QuietAction(stringResource(R.string.action_cancel), onCancel)
         }
-        QuietAction(stringResource(R.string.action_cancel), onCancel)
     }
 }
 

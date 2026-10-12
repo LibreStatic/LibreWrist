@@ -1,5 +1,6 @@
 package io.openshm.patcher.ui.screens.welcome
 
+import io.openshm.patcher.ui.components.ActionRow
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -210,15 +211,16 @@ private fun SkippingContent(steps: List<SkippedStep>, onConfirm: () -> Unit, onM
         Column(Modifier.padding(top = 4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             steps.forEach { SkippedCard(it) }
         }
-        PrimaryAction(
-            stringResource(R.string.skip_confirm),
-            {
-                haptic.performHapticFeedback(HapticFeedbackType.Confirm)
-                onConfirm()
-            },
-            modifier = Modifier.padding(top = 8.dp),
-        )
-        QuietAction(stringResource(R.string.skip_manual), onManual)
+        ActionRow(Modifier.padding(top = 8.dp)) {
+            PrimaryAction(
+                stringResource(R.string.skip_confirm),
+                {
+                    haptic.performHapticFeedback(HapticFeedbackType.Confirm)
+                    onConfirm()
+                },
+            )
+            QuietAction(stringResource(R.string.skip_manual), onManual)
+        }
     }
 }
 

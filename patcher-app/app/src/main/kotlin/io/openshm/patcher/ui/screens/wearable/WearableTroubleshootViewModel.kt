@@ -10,6 +10,7 @@ import io.openshm.patcher.device.LaunchRequest
 import io.openshm.patcher.device.PhoneSettings
 import io.openshm.patcher.device.SelfAdbController
 import io.openshm.patcher.device.SelfAdbService
+import io.openshm.patcher.ui.screens.install.NEEDS_PAIRING_SCREEN
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -27,12 +28,14 @@ class WearableTroubleshootViewModel(application: Application) : AndroidViewModel
     /** Settings pages to start, from the activity. */
     val launches: Flow<LaunchRequest> = outgoing.receiveAsFlow()
 
+    private var settingsOpened = false
+
     private val model = TroubleshootModel(
         scope = viewModelScope,
         io = Dispatchers.IO,
         startAdb = {
+            settingsOpened = false
             SelfAdbService.start(application)
-            outgoing.trySend(PhoneSettings.wirelessDebugging())
         },
         runClear = { it.shell(CLEAR_GMS_COMMAND) },
     )
@@ -40,7 +43,16 @@ class WearableTroubleshootViewModel(application: Application) : AndroidViewModel
     val state: StateFlow<TroubleshootUiState> = model.state
 
     init {
-        viewModelScope.launch { SelfAdbController.state.collect(model::onAdb) }
+        viewModelScope.launch {
+            SelfAdbController.state.collect { snapshot ->
+                // Wireless debugging opens only when the stored pairing could not reconnect.
+                if (snapshot.purpose == TroubleshootModel.PURPOSE && snapshot.phase in NEEDS_PAIRING_SCREEN && !settingsOpened) {
+                    settingsOpened = true
+                    outgoing.trySend(PhoneSettings.wirelessDebugging())
+                }
+                model.onAdb(snapshot)
+            }
+        }
     }
 
     fun onEvent(event: TroubleshootEvent) {

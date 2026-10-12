@@ -1,5 +1,6 @@
 package io.openshm.patcher.ui.screens.welcome
 
+import io.openshm.patcher.ui.components.ActionRow
 import androidx.compose.foundation.background
 import androidx.annotation.StringRes
 import androidx.compose.foundation.selection.toggleable
@@ -214,7 +215,7 @@ private fun WelcomeText() {
 
 @Composable
 private fun WelcomeActions(onEvent: (WelcomeEvent) -> Unit, onGetStarted: () -> Unit, modifier: Modifier = Modifier) {
-    Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    ActionRow(modifier) {
         PrimaryAction(stringResource(R.string.welcome_get_started), onGetStarted)
         QuietAction(stringResource(R.string.welcome_what_changes), { onEvent(WelcomeEvent.ShowChanges) })
     }

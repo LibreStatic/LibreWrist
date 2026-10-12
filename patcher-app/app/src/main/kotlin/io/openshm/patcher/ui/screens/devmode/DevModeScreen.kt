@@ -1,5 +1,6 @@
 package io.openshm.patcher.ui.screens.devmode
 
+import io.openshm.patcher.ui.components.ActionRow
 import io.openshm.patcher.ui.components.InstructionText
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -72,11 +73,13 @@ fun DevModeScreen(
             if (state.detected) {
                 PrimaryAction(stringResource(R.string.action_continue), onContinue, accent = Accent.Tertiary)
             } else {
-                PrimaryAction(
-                    stringResource(R.string.devmode_check), { onEvent(DevModeEvent.Check) },
-                    enabled = !state.checking, accent = Accent.Tertiary,
-                )
-                QuietAction(stringResource(R.string.devmode_skip), onContinue, accent = Accent.Tertiary)
+                ActionRow {
+                    PrimaryAction(
+                        stringResource(R.string.devmode_check), { onEvent(DevModeEvent.Check) },
+                        enabled = !state.checking, accent = Accent.Tertiary,
+                    )
+                    QuietAction(stringResource(R.string.devmode_skip), onContinue, accent = Accent.Tertiary)
+                }
             }
         },
     ) {

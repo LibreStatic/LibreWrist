@@ -1,5 +1,6 @@
 package io.openshm.patcher.ui.screens.signingkey
 
+import io.openshm.patcher.ui.components.ActionRow
 import android.content.ClipData
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -115,18 +116,20 @@ fun SigningKeyScreen(
                 color = colors.primary,
                 modifier = Modifier.semantics { heading() },
             )
-            OutlinedAction(
-                stringResource(R.string.signing_key_export),
-                { onEvent(SigningKeyEvent.OpenExport) },
-                Icons.Rounded.SaveAlt,
-                enabled = state.keyExists && !state.unreadable && !state.busy,
-            )
-            OutlinedAction(
-                stringResource(R.string.key_backup_with_password_entry),
-                { manualDialog = true },
-                Icons.Rounded.SaveAlt,
-                enabled = state.keyExists && !state.unreadable && !state.busy,
-            )
+            ActionRow {
+                OutlinedAction(
+                    stringResource(R.string.signing_key_export),
+                    { onEvent(SigningKeyEvent.OpenExport) },
+                    Icons.Rounded.SaveAlt,
+                    enabled = state.keyExists && !state.unreadable && !state.busy,
+                )
+                OutlinedAction(
+                    stringResource(R.string.key_backup_with_password_entry),
+                    { manualDialog = true },
+                    Icons.Rounded.SaveAlt,
+                    enabled = state.keyExists && !state.unreadable && !state.busy,
+                )
+            }
             if (!state.keyExists && !state.loading) FooterHint(stringResource(R.string.signing_key_export_needs_key))
             OutlinedAction(
                 stringResource(R.string.signing_key_import),
@@ -278,12 +281,14 @@ private fun ExportForm(state: SigningKeyUiState, onEvent: (SigningKeyEvent) -> U
             error = if (mismatch) state.formError else null,
             toggle = false,
         )
-        PrimaryAction(
-            stringResource(R.string.signing_key_choose_location),
-            { onEvent(SigningKeyEvent.SubmitExport(password.toCharArray(), confirm.toCharArray())) },
-            enabled = !state.busy,
-        )
-        QuietAction(stringResource(R.string.action_cancel), { onEvent(SigningKeyEvent.CloseForm) })
+        ActionRow {
+            PrimaryAction(
+                stringResource(R.string.signing_key_choose_location),
+                { onEvent(SigningKeyEvent.SubmitExport(password.toCharArray(), confirm.toCharArray())) },
+                enabled = !state.busy,
+            )
+            QuietAction(stringResource(R.string.action_cancel), { onEvent(SigningKeyEvent.CloseForm) })
+        }
     }
 }
 
@@ -319,12 +324,14 @@ private fun ImportForm(state: SigningKeyUiState, onEvent: (SigningKeyEvent) -> U
             error = state.formError,
         )
         if (state.savedPasswordMismatch) Text(stringResource(R.string.key_backup_wrong_key), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
-        PrimaryAction(
-            stringResource(R.string.signing_key_choose_file),
-            { onEvent(SigningKeyEvent.SubmitImport(password.toCharArray(), savedId)) },
-            enabled = !state.busy,
-        )
-        QuietAction(stringResource(R.string.action_cancel), { onEvent(SigningKeyEvent.CloseForm) })
+        ActionRow {
+            PrimaryAction(
+                stringResource(R.string.signing_key_choose_file),
+                { onEvent(SigningKeyEvent.SubmitImport(password.toCharArray(), savedId)) },
+                enabled = !state.busy,
+            )
+            QuietAction(stringResource(R.string.action_cancel), { onEvent(SigningKeyEvent.CloseForm) })
+        }
     }
 }
 

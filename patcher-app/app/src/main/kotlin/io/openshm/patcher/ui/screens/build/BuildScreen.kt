@@ -1,5 +1,6 @@
 package io.openshm.patcher.ui.screens.build
 
+import io.openshm.patcher.ui.components.ActionRow
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.EnterTransition
@@ -173,18 +174,22 @@ fun BuildScreen(
                 }
                 state.cancelled -> {
                     FooterHint(stringResource(R.string.build_cancelled))
-                    PrimaryAction(stringResource(R.string.build_restart), { onEvent(BuildEvent.Retry) })
-                    OutlinedAction(stringResource(R.string.action_back), onBack, Icons.AutoMirrored.Rounded.ArrowBack)
+                    ActionRow {
+                        PrimaryAction(stringResource(R.string.build_restart), { onEvent(BuildEvent.Retry) })
+                        OutlinedAction(stringResource(R.string.action_back), onBack, Icons.AutoMirrored.Rounded.ArrowBack)
+                    }
                 }
                 else -> FooterHint(stringResource(R.string.build_can_leave))
             }
-            OutlinedAction(stringResource(R.string.build_show_log), { onEvent(BuildEvent.ShowLog) }, Icons.Rounded.Article)
-            if (state.running) {
-                TextButton(
-                    onClick = { confirmCancel = true },
-                    enabled = !state.cancelRequested,
-                    modifier = Modifier.fillMaxWidth(),
-                ) { Text(stringResource(R.string.action_cancel)) }
+            ActionRow {
+                OutlinedAction(stringResource(R.string.build_show_log), { onEvent(BuildEvent.ShowLog) }, Icons.Rounded.Article)
+                if (state.running) {
+                    TextButton(
+                        onClick = { confirmCancel = true },
+                        enabled = !state.cancelRequested,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) { Text(stringResource(R.string.action_cancel)) }
+                }
             }
         },
         // Ring and current app beside the stage list and live log; narrow, the same order in one column.
