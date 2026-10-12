@@ -32,6 +32,41 @@ class ArscResourceTable(bytes: ByteArray) : ResourceTable {
     override fun string(qualifier: String, name: String): String? =
         pkg.getEntry(qualifier, "string", name)?.valueAsString
 
+    private fun appPackage(id: Int): PackageBlock =
+        table.firstOrNull { it.id == (id ushr 24) } ?: throw PatchFailure("resources.arsc has no package 0x${"%02x".format(id ushr 24)}")
+
+    private fun definedEntries(pair: com.reandroid.arsc.container.SpecTypePair, index: Int): List<com.reandroid.arsc.value.Entry> {
+        val out = ArrayList<com.reandroid.arsc.value.Entry>()
+        val blocks = pair.typeBlocks
+        while (blocks.hasNext()) {
+            val e = blocks.next().getEntry(index)
+            if (e != null && !e.isNull) out.add(e)
+        }
+        return out
+    }
+
+    override fun entryAt(id: Int): String? {
+        val pair = appPackage(id).getSpecTypePair((id ushr 16) and 0xff) ?: return null
+        val e = definedEntries(pair, id and 0xffff).firstOrNull() ?: return null
+        return "${pair.typeName}/${e.name}"
+    }
+
+    override fun hasEntry(type: String, name: String): Boolean = table.getLocalResource(type, name) != null
+
+    override fun defineNullEntry(type: String, name: String, id: Int) {
+        val pkg = appPackage(id)
+        val pair = pkg.getSpecTypePair((id ushr 16) and 0xff)
+        if (pair == null || pair.typeName != type) {
+            throw PatchFailure("resource type 0x${"%02x".format((id ushr 16) and 0xff)} is ${pair?.typeName ?: "missing"}, expected $type")
+        }
+        val index = id and 0xffff
+        if (definedEntries(pair, index).isNotEmpty()) throw PatchFailure("resource slot 0x${"%08x".format(id)} is already defined")
+        val entry = pair.getOrCreateEntry(index.toShort(), "")
+        entry.setName(name, true)
+        entry.setValueAsReference(0)
+        modified = true
+    }
+
     /** Package names of the table (aapt2 sets them to the manifest package). */
     fun packageNames(): List<String> = table.map { it.name ?: "" }
 

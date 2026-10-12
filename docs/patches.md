@@ -124,6 +124,7 @@ Ops (one line each; the full contract is the docstring):
 | `replaceConstStringExact`, `replaceAllInFilesWithAnchor` | exact `const-string` replacement; replace text in files that contain an anchor |
 | `verifyClassContains`, `replaceInClass`, `replaceClassMethod`, `insertInClassMethod`, `removeSmaliDir` | class-targeted ops for pinned builds (every one asserts what it found) |
 | `addStringResources` | add a `<string>` to `res/values*/strings.xml` |
+| `defineResourceEntry` | define `type/name` at a resource `id` (`0x` + 8 hex digits) with value `@null` in the default config; fails if the type id does not match, the slot is defined in any config, or the name exists |
 | `manifestRebrand`, `manifestAddQueryPackage` | text edits of `AndroidManifest.xml` (exact semantics in the docstrings) |
 | `manifestExpect`, `manifestRemove`, `manifestSetAttr`, `manifestRemoveAttr`, `manifestAddChild` | structural manifest edits: select elements (`path`, `attr`, `attrIn`, `simpleNameIn`, `parentAttr`, `hasChild`), assert the count, then act |
 
@@ -179,6 +180,7 @@ Application order (the `#` column is the order in the `gms` profile of the catal
 | 11 | `shm-setup-network-gate` | `checkNoNetworkError` -> void | No SIM/region gate in setup |
 | 12 | `shm-sleep-apnea-support` | `isPhoneSupportSleepApnea` forced true (const after move-result) | Regional check disabled |
 | 13 | `phone-rebrand-gms` | package -> `com.samsung.android.shealthmonitors` (manifest, permissions, authorities, exact package strings, share URI) | Same package and certificate as the watch app: the GMS Data Layer only delivers between equal AppKeys |
+| 14 | `shm-wear-trusted-peers` | the `wear-trusted-peer-packages` meta-data is removed (see the watch table) | Same reason as on the watch |
 
 Profile: all of them in `gms`. Verified [V]: the decoded result (smali, manifest, resources) is
 identical to the owner-verified `shm-phone-1.4.6.001-stock-mod-gms1` build (24 patched sites).
@@ -189,6 +191,8 @@ identical to the owner-verified `shm-phone-1.4.6.001-stock-mod-gms1` build (24 p
 |---|---|---|---|
 | 1 | `generic-manufacturer-check` | as in the phone (one site, `y71`) | Manufacturer check |
 | 2 | `watch-rebrand-coexist` | package -> `com.samsung.android.shealthmonitors` in the manifest (package, permissions, authorities) and exact package strings in code (the tile package) | Coexists with the system SHM and shares the phone's AppKey |
+| 2b | `shm-wear-trusted-peers` | the `wear-trusted-peer-packages` meta-data (stock package + vendor certificate) is removed; same pattern on the phone | With it, the watch's Data Layer did not publish the patched app's `capability_ecg`, so the phone SHM found no compatible watch; without it the two patched apps match by package and certificate |
+| 2c | `watch-gms-resources-anchor` | `defineResourceEntry` defines `anim` `0x7f010000` (`openshm_gms_resources_anchor`, `@null`) | The vendor build stripped the first resource ID but kept a resource table named `com.samsung.android.shealthmonitor` (no `s`), different from the manifest package. Google Play services derives an app's resources package from that first ID and, when it is missing, falls back to the manifest package, finds no `android_wear_capabilities` array and registers no Wear capabilities, so the phone reported no compatible watch |
 | 3 | `watch-queries-health-service` | manifest `<queries>` declares `com.samsung.android.service.health` | Package visibility for the Health Tracking Service |
 | 4 | `watch-companion-vendor` | the `"samsung"` companion match is forced true; the denied-READ_COMPANION_INFO path emits TRUE | Companion vendor exemption for re-signed apps |
 | 5 | `watch-alarm-system-app` | the reflective lookup `setExactAlarmForSystemApp` is renamed to a non-existent name | A re-signed app is not a system app; the SecurityException kills the process from the IHRN off-body detector; the stock `setAlarmClock` path is used instead |

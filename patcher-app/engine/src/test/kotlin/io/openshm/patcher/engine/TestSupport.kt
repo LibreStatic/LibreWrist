@@ -91,6 +91,9 @@ internal class MapResources(files: Map<String, MutableMap<String, String>>) : Re
     override fun hasStringsFile(qualifier: String) = qualifier in files
     override fun addString(qualifier: String, name: String, text: String) { files.getValue(qualifier)[name] = text }
     override fun string(qualifier: String, name: String) = files[qualifier]?.get(name)
+    override fun entryAt(id: Int): String? = null
+    override fun hasEntry(type: String, name: String) = false
+    override fun defineNullEntry(type: String, name: String, id: Int) = throw UnsupportedOperationException()
 }
 
 internal fun op(name: String, argsJson: String): Op = OpRegistry.prepare(name, j(argsJson))

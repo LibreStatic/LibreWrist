@@ -51,6 +51,19 @@ interface ResourceTable {
 
     /** Value of string [name] in `values<qualifier>`, or null. */
     fun string(qualifier: String, name: String): String?
+
+    /** `type/name` of the entry defined at resource id [id] in any configuration, or null if the slot is empty everywhere. */
+    fun entryAt(id: Int): String?
+
+    /** True if an entry named [name] of type [type] exists in any configuration. */
+    fun hasEntry(type: String, name: String): Boolean
+
+    /**
+     * Defines [type]/[name] at [id] in the default configuration with the value `@null` (a reference
+     * with data 0, as aapt2 compiles `@null`). Throws [PatchFailure] if the table has no [type] with
+     * the id's type byte or the slot is defined in some configuration.
+     */
+    fun defineNullEntry(type: String, name: String, id: Int)
 }
 
 /** What the ops operate on: smali classes, the manifest and the resource table. */

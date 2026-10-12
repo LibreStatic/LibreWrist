@@ -124,7 +124,7 @@ class OpArgumentsTest {
     @Test fun unknownOp() { fails<OpArgError> { OpRegistry.prepare("getattr", emptyMap()) } }
 
     @Test fun everyCatalogueOpIsRegistered() {
-        val expected = setOf("addStringResources", "enumOrdinalsZero", "forceConstAfterMove", "forceInvokeResult",
+        val expected = setOf("addStringResources", "defineResourceEntry", "enumOrdinalsZero", "forceConstAfterMove", "forceInvokeResult",
             "insertAtMethodStart", "insertInClassMethod", "insertInMethodAtMatch", "manifestAddChild",
             "manifestAddQueryPackage", "manifestExpect", "manifestRebrand", "manifestRemove", "manifestRemoveAttr",
             "manifestSetAttr", "removeSmaliDir", "replaceAllInFilesWithAnchor", "replaceClassMethod",
@@ -598,5 +598,51 @@ class ManifestOpsTest {
         fails<PatchFailure> { f.apply("addStringResources", args) }
         fails<PatchFailure> { f.apply("addStringResources", """{"name": "m", "values": {"-fr": "x"}}""") }
         assertNotEquals(null, f.resources!!.string("", "n"))
+    }
+
+    /** A table with `anim` (type 0x01, entry 0 empty, entry 1 defined) and `string` (type 0x02) in two configurations. */
+    private fun animTable(): ArscResourceTable {
+        val t = com.reandroid.arsc.chunk.TableBlock()
+        val p = t.newPackage(0x7f, "com.example.app")
+        p.getOrCreate("", "anim", "fade").setValueAsReference(0x7f020000)
+        p.getOrCreate("-es", "anim", "fade").setValueAsReference(0x7f020000)
+        p.getOrCreate("", "string", "app_name").setValueAsString("App")
+        t.refresh()
+        return ArscResourceTable(t.bytes)
+    }
+
+    private fun arscCtx(r: ArscResourceTable) = PatchContext(MemorySmaliTree(), resourcesProvider = { r })
+
+    @Test fun defineResourceEntry() {
+        val args = """{"type": "string", "name": "anchor", "id": "0x7f0100ff"}"""
+        // type 0x01 is whatever ARSCLib numbered first; find the anim id
+        val r = animTable()
+        val animId = (0x7f000000 or (r.table.pickOne()!!.getSpecTypePair("anim")!!.id shl 16))
+        val idText = "0x%08x".format(animId + 5)
+        val okArgs = """{"type": "anim", "name": "anchor", "id": "$idText"}"""
+        val ctx = arscCtx(r)
+        fails<PatchFailure> { op("defineResourceEntry", okArgs).verifyApplied(ctx) }
+        op("defineResourceEntry", okArgs).apply(ctx)
+        val back = ArscResourceTable(r.toBytes())
+        assertEquals("anim/anchor", back.entryAt(animId + 5))
+        assertEquals(1, op("defineResourceEntry", okArgs).verifyApplied(arscCtx(back)).size)
+        assertEquals("anim/fade", back.entryAt(animId))
+        // default config only, @null = reference with data 0
+        val blocks = back.table.pickOne()!!.getSpecTypePair("anim")!!.typeBlocks
+        val seen = HashMap<String, com.reandroid.arsc.value.Entry?>()
+        while (blocks.hasNext()) blocks.next().let { seen[it.resConfig.qualifiers] = it.getEntry(5)?.takeIf { e -> !e.isNull } }
+        assertNotEquals(null, seen[""])
+        assertEquals(null, seen["-es"])
+        assertEquals(com.reandroid.arsc.value.ValueType.REFERENCE, seen[""]!!.valueType)
+        assertEquals(0, seen[""]!!.resValue.data)
+        // slot or name taken, wrong type
+        fails<PatchFailure> { op("defineResourceEntry", okArgs).apply(arscCtx(back)) }
+        fails<PatchFailure> { op("defineResourceEntry", """{"type": "anim", "name": "other", "id": "$idText"}""").apply(arscCtx(back)) }
+        fails<PatchFailure> { op("defineResourceEntry", """{"type": "anim", "name": "fade", "id": "0x%08x"}""".format(animId + 6)).apply(arscCtx(back)) }
+        fails<PatchFailure> { op("defineResourceEntry", """{"type": "anim", "name": "x", "id": "0x7f0900ff"}""").apply(arscCtx(back)) }
+        fails<PatchFailure> { op("defineResourceEntry", args).apply(arscCtx(animTable())) }
+        fails<PatchFailure> { op("defineResourceEntry", """{"type": "anim", "name": "x", "id": "0x7e010000"}""").apply(arscCtx(back)) }
+        fails<OpArgError> { op("defineResourceEntry", """{"type": "anim", "name": "x", "id": "7f010000"}""") }
+        fails<OpArgError> { op("defineResourceEntry", """{"type": "anim", "name": "x", "id": "0x7f01"}""") }
     }
 }

@@ -669,6 +669,55 @@ def op_add_string_resources(tree, name: 'str', values: 'strmap'):
     return done
 
 
+def op_define_resource_entry(tree, type: 'str', name: 'str', id: 'str'):
+    """Define the resource `<type>/<name>` at the id `id` (`0x` + 8 hex digits, e.g.
+    `0x7f010000`) with the value `@null` (aapt2: a reference with data 0), in the default
+    configuration only; nothing in the app references or loads it. Used to fill a slot the
+    vendor build stripped (e.g. the first `anim` id, which Google Play services uses to find an
+    app's resources package). Preconditions, otherwise RuntimeError: `res/values/public.xml`
+    declares `<type>` entries with the id's type byte (`0x01` in `0x7f01xxxx`); no `public`
+    entry has this id, and no `public` entry of `<type>` is named `<name>`. Effect: a
+    `<public type name id/>` line in `res/values/public.xml` and `<item type="<type>"
+    name="<name>">@null</item>` in `res/values/<type>s.xml` (created if missing, otherwise
+    appended; the name must not appear there). The compiled result is checked by the Kotlin
+    engine's equivalent (ARSC) op, which also fails when the slot is defined in any
+    configuration."""
+    from xml.sax.saxutils import quoteattr
+    if not re.fullmatch(r'0x[0-9a-fA-F]{8}', id):
+        raise OpArgError(f'defineResourceEntry.id: expected 0x + 8 hex digits, got {id!r}')
+    rid = int(id, 16)
+    pub = os.path.join(tree, 'res', 'values', 'public.xml')
+    if not os.path.exists(pub):
+        raise RuntimeError('res/values/public.xml not found')
+    src = read(pub)
+    entries = [(m.group(1), m.group(2), int(m.group(3), 16)) for m in re.finditer(
+        r'<public\s+type="([^"]*)"\s+name="([^"]*)"\s+id="(0x[0-9a-fA-F]+)"', src)]
+    if not any(t == type and (i >> 16) == (rid >> 16) for t, _n, i in entries):
+        raise RuntimeError(f'public.xml: no {type} entries with type id 0x{(rid >> 16) & 0xff:02x} '
+                           f'(did the base change? check the anchors)')
+    if any(i == rid for _t, _n, i in entries):
+        raise RuntimeError(f'resource id {id} is already defined')
+    if any(t == type and n == name for t, n, _i in entries):
+        raise RuntimeError(f'resource {type}/{name} already exists')
+    if src.count('</resources>') != 1:
+        raise RuntimeError('res/values/public.xml: unexpected structure')
+    vals = os.path.join(tree, 'res', 'values', type + 's.xml')
+    if os.path.exists(vals):
+        vsrc = read(vals)
+        if f'name="{name}"' in vsrc:
+            raise RuntimeError(f'res/values/{type}s.xml already declares {name}')
+        if vsrc.count('</resources>') != 1:
+            raise RuntimeError(f'res/values/{type}s.xml: unexpected structure')
+    else:
+        vsrc = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<resources>\n</resources>\n"
+    write(pub, src.replace('</resources>', f'    <public type={quoteattr(type)} name={quoteattr(name)} '
+                                            f'id="{id}" />\n</resources>'))
+    write(vals, vsrc.replace('</resources>', f'    <item type={quoteattr(type)} name={quoteattr(name)}>'
+                                              '@null</item>\n</resources>'))
+    return [f'res/values/public.xml :: + {type}/{name} {id}',
+            f'res/values/{type}s.xml :: + {name} = @null']
+
+
 # ---------------------------------------------------------------- manifest: text ops
 
 def op_manifest_rebrand(tree, old_pkg: 'str', new_pkg: 'str'):
@@ -943,6 +992,7 @@ OPS = {
     'insertInClassMethod': op_insert_in_class_method,
     'removeSmaliDir': op_remove_smali_dir,
     'addStringResources': op_add_string_resources,
+    'defineResourceEntry': op_define_resource_entry,
     'manifestRebrand': op_manifest_rebrand,
     'manifestAddQueryPackage': op_manifest_add_query_package,
     'manifestExpect': op_manifest_expect,

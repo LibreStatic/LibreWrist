@@ -41,6 +41,7 @@ internal object OpRegistry {
         "insertInClassMethod" to Def(listOf(req("className", T.STR), req("header", T.STR), req("insert", T.TEXT))) { InsertInClassMethod(it) },
         "removeSmaliDir" to Def(listOf(req("rel", T.STR))) { RemoveSmaliDir(it) },
         "addStringResources" to Def(listOf(req("name", T.STR), req("values", T.STRMAP))) { AddStringResources(it) },
+        "defineResourceEntry" to Def(listOf(req("type", T.STR), req("name", T.STR), req("id", T.STR))) { DefineResourceEntry(it) },
         "manifestRebrand" to Def(listOf(req("oldPkg", T.STR), req("newPkg", T.STR))) { ManifestRebrand(it) },
         "manifestAddQueryPackage" to Def(listOf(req("pkg", T.STR))) { ManifestAddQueryPackage(it) },
         "manifestExpect" to Def(listOf(req("select", T.SELECT), req("expect", T.MEXPECT))) { ManifestExpect(it) },

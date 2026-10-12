@@ -245,6 +245,8 @@
     <string name="patch_shm_sleep_apnea_support">Meldt slaapapneu als ondersteund.</string>
     <string name="patch_phone_rebrand_gms">Geeft de telefoon-app hetzelfde pakket en dezelfde sleutel als de horlogeapp zodat ze gegevens kunnen uitwisselen.</string>
     <string name="patch_watch_rebrand_coexist">Hernoemt de horlogeapp zodat hij naast de standaardapp staat.</string>
+    <string name="patch_shm_wear_trusted_peers">Laat de twee aangepaste apps elkaar herkennen via de horlogeverbinding, in plaats van alleen de originele apps.</string>
+    <string name="patch_watch_gms_resources_anchor">Definieert een resource die de originele build heeft verwijderd, zodat het horloge de app aan de telefoon kan melden.</string>
     <string name="patch_watch_queries_health_service">Laat de horlogeapp de gezondheidsservice zien.</string>
     <string name="patch_watch_companion_vendor">Accepteert elk merk begeleidende telefoon.</string>
     <string name="patch_watch_alarm_system_app">Plant exacte wekkers zonder systeemrechten.</string>
@@ -422,6 +424,7 @@
     <string name="disable_chip_installed">Horlogeapp geïnstalleerd</string>
     <string name="disable_chip_wear">Wear OS</string>
     <string name="disable_chip_not_installed">Niet geïnstalleerd</string>
+    <string name="disable_chip_already_off">Al uitgeschakeld</string>
     <string name="disable_error_some">Sommige apps konden niet worden uitgezet. Probeer het opnieuw of sla deze stap over.</string>
     <plurals name="disable_action">
         <item quantity="one">%1$d app uitzetten</item>
@@ -439,9 +442,9 @@
     <string name="selftest_share_subject">OpenSHM Patcher-zelftest</string>
 
     <!-- Self-test rows: %1$s is an app name or a list of access names -->
-    <string name="selftest_package_title">%1$s geïnstalleerd</string>
-    <string name="selftest_grants_title">%1$s heeft zijn toegang</string>
-    <string name="selftest_stock_title">%1$s uitgezet</string>
+    <string name="selftest_package_title">Installatie van %1$s</string>
+    <string name="selftest_grants_title">Toegang voor %1$s</string>
+    <string name="selftest_stock_title">Uitschakeling van %1$s</string>
     <string name="selftest_bridge_link_title">Bridge-verbinding met het horloge</string>
     <string name="selftest_watch_platform">Health Platform in ontwikkelaarsmodus</string>
     <string name="selftest_gms_title">Horloge verbonden met de telefoon</string>

@@ -15,7 +15,7 @@ class AppCatalogueTest {
 
     @Test
     fun serialAndInputs() {
-        assertEquals(8L, c.serial)
+        assertEquals(12L, c.serial)
         assertEquals(
             listOf(
                 listOf("shm-phone", "Samsung Health Monitor (phone)", "1.4.6.001", "Phone",
@@ -68,11 +68,11 @@ class AppCatalogueTest {
         assertEquals(
             listOf("generic-manufacturer-check", "generic-vendor-check", "shm-min-age-22-to-16", "shm-supported-type-ordinals",
                 "shm-region-supportedtype", "shm-region-countrylist", "shm-root-packagevalidator", "shm-force-update-response",
-                "shm-force-update-pref", "shm-main-gates", "shm-setup-network-gate", "shm-sleep-apnea-support", "phone-rebrand-gms"),
+                "shm-force-update-pref", "shm-main-gates", "shm-setup-network-gate", "shm-sleep-apnea-support", "phone-rebrand-gms", "shm-wear-trusted-peers"),
             c.patches("shm-phone").map { it.id },
         )
         val watch = c.patches("shm-watch")
-        assertEquals(10, watch.size)
+        assertEquals(12, watch.size)
         assertEquals("watch-mod", watch.last().id)
         assertEquals("Health Tracking module", watch.last().title)
         assertTrue(watch.last().injection)
@@ -83,15 +83,21 @@ class AppCatalogueTest {
         assertEquals(18, alarm.size)
         assertEquals("alarm-fork", alarm.last().id)
         assertEquals("Alarm link module", alarm.last().title)
-        assertEquals(13 + 9 + 17, c.patternCount(listOf("shm-phone", "shm-watch", "alarm-watch")))
+        assertEquals(14 + 11 + 17, c.patternCount(listOf("shm-phone", "shm-watch", "alarm-watch")))
         assertTrue(c.patchSets.flatMap { it.patches }.all { it.description.isNotBlank() })
     }
 
     @Test
     fun grantsKeepKindsAndShortNames() {
         fun names(id: String) = c.grants.getValue(id).map { "${it.kind}:${it.name}:${it.optional}" }
-        assertEquals(emptyList<String>(), names("shm-phone"))
-        assertEquals(listOf("AppOp:SCHEDULE_EXACT_ALARM:false", "SecureSetting:doze_always_on:true"), names("shm-watch"))
+        assertEquals(listOf("Permission:BLUETOOTH_CONNECT:false", "Permission:BLUETOOTH_SCAN:false"), names("shm-phone"))
+        assertEquals(
+            listOf("Permission:BODY_SENSORS:false", "Permission:BODY_SENSORS_BACKGROUND:false", "Permission:READ_HEART_RATE:false",
+                "Permission:READ_OXYGEN_SATURATION:false", "Permission:ACTIVITY_RECOGNITION:false", "Permission:BLUETOOTH_CONNECT:false",
+                "Permission:POST_NOTIFICATIONS:false", "Permission:READ_ADDITIONAL_HEALTH_DATA:false",
+                "AppOp:SCHEDULE_EXACT_ALARM:false", "SecureSetting:doze_always_on:true"),
+            names("shm-watch"),
+        )
         assertEquals(
             listOf("Permission:POST_NOTIFICATIONS:false", "Permission:BLUETOOTH_CONNECT:false", "Permission:READ_PHONE_STATE:false",
                 "Permission:ANSWER_PHONE_CALLS:false", "AppOp:SCHEDULE_EXACT_ALARM:false", "AppOp:USE_FULL_SCREEN_INTENT:false",

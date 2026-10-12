@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "serial": 8,
+  "serial": 12,
   "minAppVersion": 1,
   "inputs": [
     {
@@ -101,11 +101,14 @@
           "shm-main-gates",
           "shm-setup-network-gate",
           "shm-sleep-apnea-support",
-          "phone-rebrand-gms"
+          "phone-rebrand-gms",
+          "shm-wear-trusted-peers"
         ],
         "shm-watch": [
           "generic-manufacturer-check",
           "watch-rebrand-coexist",
+          "shm-wear-trusted-peers",
+          "watch-gms-resources-anchor",
           "watch-queries-health-service",
           "watch-companion-vendor",
           "watch-alarm-system-app",
@@ -1593,6 +1596,43 @@
           "expect": 1
         }
       ]
+    },
+    "shm-wear-trusted-peers": {
+      "families": [
+        "shm-phone",
+        "shm-watch"
+      ],
+      "title": "Wear trusted peers",
+      "description": "Manifest: drop the vendor's wear-trusted-peer-packages meta-data (it names the stock package and vendor certificate), so the Data Layer pairs the two patched apps by their shared package and certificate",
+      "optional": false,
+      "ops": [
+        {
+          "op": "manifestRemove",
+          "select": {
+            "path": "application/meta-data",
+            "attr": {
+              "android:name": "wear-trusted-peer-packages"
+            }
+          },
+          "expect": 1
+        }
+      ]
+    },
+    "watch-gms-resources-anchor": {
+      "families": [
+        "shm-watch"
+      ],
+      "title": "Data Layer capabilities",
+      "description": "Resources: define the first resource ID the vendor build stripped (anim 0x7f010000, value @null), so Google Play services can resolve the app's resources package and publish its Wear capabilities",
+      "optional": false,
+      "ops": [
+        {
+          "op": "defineResourceEntry",
+          "type": "anim",
+          "name": "openshm_gms_resources_anchor",
+          "id": "0x7f010000"
+        }
+      ]
     }
   },
   "outputs": [
@@ -1659,8 +1699,52 @@
     }
   ],
   "grants": {
-    "shm-phone": [],
+    "shm-phone": [
+      {
+        "kind": "permission",
+        "name": "android.permission.BLUETOOTH_CONNECT",
+        "note": "Without it the app cannot see the bonded watch and reports that no compatible watch was found."
+      },
+      {
+        "kind": "permission",
+        "name": "android.permission.BLUETOOTH_SCAN"
+      }
+    ],
     "shm-watch": [
+      {
+        "kind": "permission",
+        "name": "android.permission.BODY_SENSORS",
+        "note": "Runtime sensor access the system app already has; the ECG flow asks for it otherwise."
+      },
+      {
+        "kind": "permission",
+        "name": "android.permission.BODY_SENSORS_BACKGROUND",
+        "note": "Needs BODY_SENSORS first."
+      },
+      {
+        "kind": "permission",
+        "name": "android.permission.health.READ_HEART_RATE"
+      },
+      {
+        "kind": "permission",
+        "name": "android.permission.health.READ_OXYGEN_SATURATION"
+      },
+      {
+        "kind": "permission",
+        "name": "android.permission.ACTIVITY_RECOGNITION"
+      },
+      {
+        "kind": "permission",
+        "name": "android.permission.BLUETOOTH_CONNECT"
+      },
+      {
+        "kind": "permission",
+        "name": "android.permission.POST_NOTIFICATIONS"
+      },
+      {
+        "kind": "permission",
+        "name": "com.samsung.android.hardware.sensormanager.permission.READ_ADDITIONAL_HEALTH_DATA"
+      },
       {
         "kind": "appop",
         "op": "SCHEDULE_EXACT_ALARM",

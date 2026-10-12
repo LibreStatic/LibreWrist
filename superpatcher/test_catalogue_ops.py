@@ -468,6 +468,60 @@ class FileOps(Tree):
             self.op('verifyClassContains', checks=[{'className': 'a/C', 'contains': 'zz'}])
 
 
+class ResourceEntryOps(Tree):
+    PUBLIC = ('<?xml version="1.0" encoding="utf-8"?>\n<resources>\n'
+              '    <public type="anim" name="fade" id="0x7f010001" />\n'
+              '    <public type="string" name="app_name" id="0x7f020000" />\n</resources>\n')
+
+    def setUp(self):
+        super().setUp()
+        self.put('res/values/public.xml', self.PUBLIC)
+
+    def define(self, **kw):
+        args = {'type': 'anim', 'name': 'anchor', 'id': '0x7f010000'}
+        args.update(kw)
+        func, kwargs = E.prepare_op('defineResourceEntry', args)
+        return func(self.tree, **kwargs)
+
+    def test_defines_public_and_null_value(self):
+        self.define()
+        self.assertIn('<public type="anim" name="anchor" id="0x7f010000" />', self.get('res/values/public.xml'))
+        self.assertIn('<item type="anim" name="anchor">@null</item>', self.get('res/values/anims.xml'))
+
+    def test_appends_to_existing_values_file(self):
+        self.put('res/values/anims.xml', '<resources>\n    <item type="anim" name="x">@null</item>\n</resources>\n')
+        self.define()
+        v = self.get('res/values/anims.xml')
+        self.assertEqual(v.count('<item'), 2)
+        self.assertIn('name="anchor"', v)
+
+    def test_applying_twice_fails(self):  # the second run sees the id (and the name) as taken
+        self.define()
+        with self.assertRaises(RuntimeError):
+            self.define()
+
+    def test_id_taken(self):
+        with self.assertRaises(RuntimeError):
+            self.define(id='0x7f010001')
+
+    def test_name_taken(self):
+        with self.assertRaises(RuntimeError):
+            self.define(name='fade')
+        self.assertNotIn('fade', self.get('res/values/public.xml').replace('name="fade"', ''))
+
+    def test_wrong_type_id(self):
+        with self.assertRaises(RuntimeError):
+            self.define(id='0x7f090000')
+        with self.assertRaises(RuntimeError):
+            self.define(type='color')
+        self.assertFalse(os.path.exists(os.path.join(self.tree, 'res/values/anims.xml')))
+
+    def test_id_format(self):
+        for bad in ('7f010000', '0x7f01', '0x7f01000g'):
+            with self.assertRaises(E.OpArgError):
+                self.define(id=bad)
+
+
 class ManifestOps(Tree):
     def setUp(self):
         super().setUp()

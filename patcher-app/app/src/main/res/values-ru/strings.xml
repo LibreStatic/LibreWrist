@@ -251,6 +251,8 @@
     <string name="patch_shm_sleep_apnea_support">Сообщает, что апноэ во сне поддерживается.</string>
     <string name="patch_phone_rebrand_gms">Даёт приложению на телефоне тот же пакет и ключ, что и на часах, чтобы они могли обмениваться данными.</string>
     <string name="patch_watch_rebrand_coexist">Переименовывает приложение на часах, чтобы оно стояло рядом с оригинальным.</string>
+    <string name="patch_shm_wear_trusted_peers">Позволяет двум изменённым приложениям узнавать друг друга при связи с часами, а не только оригинальным.</string>
+    <string name="patch_watch_gms_resources_anchor">Определяет ресурс, удалённый из оригинальной сборки, чтобы часы могли сообщить телефону о приложении.</string>
     <string name="patch_watch_queries_health_service">Позволяет приложению на часах видеть службу здоровья.</string>
     <string name="patch_watch_companion_vendor">Принимает телефон любой марки.</string>
     <string name="patch_watch_alarm_system_app">Ставит точные будильники без системных привилегий.</string>
@@ -434,6 +436,7 @@
     <string name="disable_chip_installed">Приложение на часах установлено</string>
     <string name="disable_chip_wear">Wear OS</string>
     <string name="disable_chip_not_installed">Не установлено</string>
+    <string name="disable_chip_already_off">Уже отключено</string>
     <string name="disable_error_some">Не удалось отключить некоторые приложения. Повторите или пропустите этот шаг.</string>
     <plurals name="disable_action">
         <item quantity="one">Отключить %1$d приложение</item>
@@ -453,9 +456,9 @@
     <string name="selftest_share_subject">Самотест OpenSHM Patcher</string>
 
     <!-- Self-test rows: %1$s is an app name or a list of access names -->
-    <string name="selftest_package_title">%1$s: установлено</string>
-    <string name="selftest_grants_title">%1$s: доступы выданы</string>
-    <string name="selftest_stock_title">%1$s: отключено</string>
+    <string name="selftest_package_title">Установка: %1$s</string>
+    <string name="selftest_grants_title">Доступ: %1$s</string>
+    <string name="selftest_stock_title">Отключение: %1$s</string>
     <string name="selftest_bridge_link_title">Связь с часами через мост</string>
     <string name="selftest_watch_platform">Health Platform в режиме разработчика</string>
     <string name="selftest_gms_title">Часы подключены к телефону</string>

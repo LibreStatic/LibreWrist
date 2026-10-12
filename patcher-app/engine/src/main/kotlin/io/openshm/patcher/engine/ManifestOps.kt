@@ -296,3 +296,28 @@ internal class AddStringResources(a: Args) : Op("addStringResources") {
         return done
     }
 }
+
+internal class DefineResourceEntry(a: Args) : Op("defineResourceEntry") {
+    private val type = a.str("type")
+    private val resName = a.str("name")
+    private val idText = a.str("id")
+    private val id: Int
+
+    init {
+        if (!Regex("0x[0-9a-fA-F]{8}").matches(idText)) throw OpArgError("op defineResourceEntry.id: expected 0x + 8 hex digits, got '$idText'")
+        id = idText.substring(2).toLong(16).toInt()
+    }
+
+    override fun apply(ctx: PatchContext): List<String> {
+        val res = ctx.resources
+        if (res.hasEntry(type, resName)) throw PatchFailure("resource $type/$resName already exists")
+        res.defineNullEntry(type, resName, id)
+        return listOf("resources.arsc :: + $type/$resName = @null at $idText")
+    }
+
+    override fun verifyApplied(ctx: PatchContext): List<String> {
+        val have = ctx.resources.entryAt(id)
+        if (have != "$type/$resName") throw PatchFailure("resource $idText is ${have ?: "undefined"}, expected $type/$resName")
+        return listOf("resources.arsc :: $idText is $type/$resName")
+    }
+}

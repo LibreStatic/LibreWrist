@@ -245,6 +245,8 @@
     <string name="patch_shm_sleep_apnea_support">Segnala l\'apnea notturna come supportata.</string>
     <string name="patch_phone_rebrand_gms">Dà all\'app del telefono lo stesso pacchetto e la stessa chiave dell\'app dell\'orologio, così le due possono scambiarsi dati.</string>
     <string name="patch_watch_rebrand_coexist">Rinomina l\'app dell\'orologio per affiancarla a quella originale.</string>
+    <string name="patch_shm_wear_trusted_peers">Fa sì che le due app modificate si riconoscano sul collegamento con l\'orologio, invece delle sole app originali.</string>
+    <string name="patch_watch_gms_resources_anchor">Definisce una risorsa rimossa dalla versione originale, così l\'orologio può annunciare l\'app al telefono.</string>
     <string name="patch_watch_queries_health_service">Permette all\'app dell\'orologio di vedere il servizio salute.</string>
     <string name="patch_watch_companion_vendor">Accetta qualsiasi marca di telefono complementare.</string>
     <string name="patch_watch_alarm_system_app">Pianifica sveglie esatte senza privilegi di sistema.</string>
@@ -422,6 +424,7 @@
     <string name="disable_chip_installed">App dell\'orologio installata</string>
     <string name="disable_chip_wear">Wear OS</string>
     <string name="disable_chip_not_installed">Non installata</string>
+    <string name="disable_chip_already_off">Già disattivata</string>
     <string name="disable_error_some">Alcune app non si sono potute disattivare. Riprova oppure salta questo passo.</string>
     <plurals name="disable_action">
         <item quantity="one">Disattiva %1$d app</item>
@@ -439,9 +442,9 @@
     <string name="selftest_share_subject">Autotest di OpenSHM Patcher</string>
 
     <!-- Self-test rows: %1$s is an app name or a list of access names -->
-    <string name="selftest_package_title">%1$s installato</string>
-    <string name="selftest_grants_title">%1$s ha i suoi accessi</string>
-    <string name="selftest_stock_title">%1$s disattivato</string>
+    <string name="selftest_package_title">Installazione di %1$s</string>
+    <string name="selftest_grants_title">Accesso di %1$s</string>
+    <string name="selftest_stock_title">Disattivazione di %1$s</string>
     <string name="selftest_bridge_link_title">Collegamento del bridge con l\'orologio</string>
     <string name="selftest_watch_platform">Health Platform in modalità sviluppatore</string>
     <string name="selftest_gms_title">Orologio connesso al telefono</string>

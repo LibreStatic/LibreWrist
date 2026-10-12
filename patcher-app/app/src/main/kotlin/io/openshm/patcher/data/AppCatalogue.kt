@@ -176,6 +176,8 @@ class LoadedCatalogue(val engine: Catalogue, private val resolve: (Int) -> Strin
         "shm-sleep-apnea-support" to R.string.patch_shm_sleep_apnea_support,
         "phone-rebrand-gms" to R.string.patch_phone_rebrand_gms,
         "watch-rebrand-coexist" to R.string.patch_watch_rebrand_coexist,
+        "shm-wear-trusted-peers" to R.string.patch_shm_wear_trusted_peers,
+        "watch-gms-resources-anchor" to R.string.patch_watch_gms_resources_anchor,
         "watch-queries-health-service" to R.string.patch_watch_queries_health_service,
         "watch-companion-vendor" to R.string.patch_watch_companion_vendor,
         "watch-alarm-system-app" to R.string.patch_watch_alarm_system_app,

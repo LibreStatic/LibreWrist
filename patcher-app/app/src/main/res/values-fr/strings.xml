@@ -248,6 +248,8 @@
     <string name="patch_shm_sleep_apnea_support">Signale l\'apnée du sommeil comme prise en charge.</string>
     <string name="patch_phone_rebrand_gms">Donne à l\'app du téléphone le même paquet et la même clé que l\'app de la montre pour qu\'elles puissent échanger des données.</string>
     <string name="patch_watch_rebrand_coexist">Renomme l\'app de la montre pour qu\'elle cohabite avec celle d\'origine.</string>
+    <string name="patch_shm_wear_trusted_peers">Permet aux deux apps modifiées de se reconnaître sur la liaison avec la montre, au lieu des seules apps d\'origine.</string>
+    <string name="patch_watch_gms_resources_anchor">Définit une ressource supprimée par la version d\'origine, pour que la montre puisse annoncer l\'app au téléphone.</string>
     <string name="patch_watch_queries_health_service">Permet à l\'app de la montre de voir le service de santé.</string>
     <string name="patch_watch_companion_vendor">Accepte n\'importe quelle marque de téléphone compagnon.</string>
     <string name="patch_watch_alarm_system_app">Programme des alarmes exactes sans privilèges système.</string>
@@ -428,6 +430,7 @@
     <string name="disable_chip_installed">App de la montre installée</string>
     <string name="disable_chip_wear">Wear OS</string>
     <string name="disable_chip_not_installed">Non installée</string>
+    <string name="disable_chip_already_off">Déjà désactivée</string>
     <string name="disable_error_some">Certaines apps n\'ont pas pu être désactivées. Réessayez, ou passez cette étape.</string>
     <plurals name="disable_action">
         <item quantity="one">Désactiver %1$d app</item>
@@ -446,9 +449,9 @@
     <string name="selftest_share_subject">Autotest d\'OpenSHM Patcher</string>
 
     <!-- Self-test rows: %1$s is an app name or a list of access names -->
-    <string name="selftest_package_title">%1$s installé</string>
-    <string name="selftest_grants_title">%1$s a ses accès</string>
-    <string name="selftest_stock_title">%1$s désactivé</string>
+    <string name="selftest_package_title">Installation de %1$s</string>
+    <string name="selftest_grants_title">Accès de %1$s</string>
+    <string name="selftest_stock_title">Désactivation de %1$s</string>
     <string name="selftest_bridge_link_title">Liaison du pont avec la montre</string>
     <string name="selftest_watch_platform">Health Platform en mode développeur</string>
     <string name="selftest_gms_title">Montre connectée au téléphone</string>

@@ -242,6 +242,8 @@
     <string name="patch_shm_sleep_apnea_support">將睡眠呼吸中止症回報為受支援。</string>
     <string name="patch_phone_rebrand_gms">讓手機應用程式使用與手錶應用程式相同的套件名稱和金鑰，以便兩者交換資料。</string>
     <string name="patch_watch_rebrand_coexist">重新命名手錶應用程式，使其與內建應用程式並存。</string>
+    <string name="patch_shm_wear_trusted_peers">讓兩個已修補的 App 在手錶連線中互相識別，而不僅限於原版 App。</string>
+    <string name="patch_watch_gms_resources_anchor">定義原版建置中被移除的一項資源，讓手錶能向手機通告該 App。</string>
     <string name="patch_watch_queries_health_service">讓手錶應用程式能夠看到健康服務。</string>
     <string name="patch_watch_companion_vendor">接受任何品牌的配套手機。</string>
     <string name="patch_watch_alarm_system_app">無需系統權限即可排定精確鬧鐘。</string>
@@ -416,6 +418,7 @@
     <string name="disable_chip_installed">手錶應用程式已安裝</string>
     <string name="disable_chip_wear">Wear OS</string>
     <string name="disable_chip_not_installed">未安裝</string>
+    <string name="disable_chip_already_off">已停用</string>
     <string name="disable_error_some">有些應用程式無法關閉。請重試，或略過此步驟。</string>
     <plurals name="disable_action">
         <item quantity="other">關閉 %1$d 個應用程式</item>
@@ -432,9 +435,9 @@
     <string name="selftest_share_subject">OpenSHM Patcher 自我測試</string>
 
     <!-- Self-test rows: %1$s is an app name or a list of access names -->
-    <string name="selftest_package_title">%1$s 已安裝</string>
-    <string name="selftest_grants_title">%1$s 已取得所需權限</string>
-    <string name="selftest_stock_title">%1$s 已關閉</string>
+    <string name="selftest_package_title">安裝：%1$s</string>
+    <string name="selftest_grants_title">權限：%1$s</string>
+    <string name="selftest_stock_title">停用：%1$s</string>
     <string name="selftest_bridge_link_title">與手錶的橋接連結</string>
     <string name="selftest_watch_platform">Health Platform 處於開發人員模式</string>
     <string name="selftest_gms_title">手錶已連線到手機</string>

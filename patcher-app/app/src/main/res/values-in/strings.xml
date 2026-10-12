@@ -242,6 +242,8 @@
     <string name="patch_shm_sleep_apnea_support">Melaporkan apnea tidur sebagai didukung.</string>
     <string name="patch_phone_rebrand_gms">Memberi aplikasi ponsel paket dan kunci yang sama dengan aplikasi jam agar keduanya bisa bertukar data.</string>
     <string name="patch_watch_rebrand_coexist">Mengganti nama aplikasi jam agar berdampingan dengan aplikasi bawaan.</string>
+    <string name="patch_shm_wear_trusted_peers">Membuat kedua aplikasi yang ditambal saling mengenali di tautan jam, bukan hanya aplikasi aslinya.</string>
+    <string name="patch_watch_gms_resources_anchor">Mendefinisikan sumber daya yang dihapus build asli, agar jam dapat mengumumkan aplikasi ke ponsel.</string>
     <string name="patch_watch_queries_health_service">Membuat aplikasi jam bisa melihat layanan kesehatan.</string>
     <string name="patch_watch_companion_vendor">Menerima merek ponsel pendamping apa pun.</string>
     <string name="patch_watch_alarm_system_app">Menjadwalkan alarm tepat waktu tanpa hak istimewa sistem.</string>
@@ -416,6 +418,7 @@
     <string name="disable_chip_installed">Aplikasi jam terpasang</string>
     <string name="disable_chip_wear">Wear OS</string>
     <string name="disable_chip_not_installed">Tidak terpasang</string>
+    <string name="disable_chip_already_off">Sudah nonaktif</string>
     <string name="disable_error_some">Beberapa aplikasi tidak dapat dimatikan. Coba lagi, atau lewati langkah ini.</string>
     <plurals name="disable_action">
         <item quantity="other">Matikan %1$d aplikasi</item>
@@ -432,9 +435,9 @@
     <string name="selftest_share_subject">Uji mandiri OpenSHM Patcher</string>
 
     <!-- Self-test rows: %1$s is an app name or a list of access names -->
-    <string name="selftest_package_title">%1$s terpasang</string>
-    <string name="selftest_grants_title">%1$s memiliki aksesnya</string>
-    <string name="selftest_stock_title">%1$s dimatikan</string>
+    <string name="selftest_package_title">Instalasi %1$s</string>
+    <string name="selftest_grants_title">Akses %1$s</string>
+    <string name="selftest_stock_title">Penonaktifan %1$s</string>
     <string name="selftest_bridge_link_title">Tautan bridge ke jam</string>
     <string name="selftest_watch_platform">Health Platform dalam mode pengembang</string>
     <string name="selftest_gms_title">Jam terhubung ke ponsel</string>

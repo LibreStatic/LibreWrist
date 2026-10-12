@@ -245,6 +245,8 @@
     <string name="patch_shm_sleep_apnea_support">स्लीप एपनिया को समर्थित बताता है।</string>
     <string name="patch_phone_rebrand_gms">फ़ोन ऐप को घड़ी ऐप जैसा ही पैकेज और कुंजी देता है ताकि दोनों डेटा का आदान-प्रदान कर सकें।</string>
     <string name="patch_watch_rebrand_coexist">घड़ी ऐप का नाम बदलता है ताकि वह स्टॉक ऐप के साथ रह सके।</string>
+    <string name="patch_shm_wear_trusted_peers">दोनों पैच की गई ऐप्स को घड़ी के लिंक पर एक-दूसरे को पहचानने देता है, सिर्फ़ मूल ऐप्स को नहीं।</string>
+    <string name="patch_watch_gms_resources_anchor">विक्रेता बिल्ड द्वारा हटाया गया एक संसाधन परिभाषित करता है, ताकि घड़ी फ़ोन को ऐप की सूचना दे सके।</string>
     <string name="patch_watch_queries_health_service">घड़ी ऐप को हेल्थ सेवा दिखने देता है।</string>
     <string name="patch_watch_companion_vendor">किसी भी सहयोगी फ़ोन ब्रांड को स्वीकार करता है।</string>
     <string name="patch_watch_alarm_system_app">सिस्टम विशेषाधिकार के बिना सटीक अलार्म शेड्यूल करता है।</string>
@@ -422,6 +424,7 @@
     <string name="disable_chip_installed">घड़ी ऐप इंस्टॉल है</string>
     <string name="disable_chip_wear">Wear OS</string>
     <string name="disable_chip_not_installed">इंस्टॉल नहीं है</string>
+    <string name="disable_chip_already_off">पहले से बंद</string>
     <string name="disable_error_some">कुछ ऐप बंद नहीं हो सके। फिर कोशिश करें, या यह चरण छोड़ दें।</string>
     <plurals name="disable_action">
         <item quantity="one">%1$d ऐप बंद करें</item>
@@ -439,9 +442,9 @@
     <string name="selftest_share_subject">OpenSHM Patcher स्व-परीक्षण</string>
 
     <!-- Self-test rows: %1$s is an app name or a list of access names -->
-    <string name="selftest_package_title">%1$s इंस्टॉल है</string>
-    <string name="selftest_grants_title">%1$s के पास अपनी पहुँच है</string>
-    <string name="selftest_stock_title">%1$s बंद है</string>
+    <string name="selftest_package_title">इंस्टॉलेशन: %1$s</string>
+    <string name="selftest_grants_title">ऐक्सेस: %1$s</string>
+    <string name="selftest_stock_title">बंद: %1$s</string>
     <string name="selftest_bridge_link_title">घड़ी से ब्रिज लिंक</string>
     <string name="selftest_watch_platform">Health Platform डेवलपर मोड में</string>
     <string name="selftest_gms_title">घड़ी फ़ोन से जुड़ी है</string>

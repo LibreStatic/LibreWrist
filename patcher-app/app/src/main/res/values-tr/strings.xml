@@ -245,6 +245,8 @@
     <string name="patch_shm_sleep_apnea_support">Uyku apnesini destekleniyor olarak bildirir.</string>
     <string name="patch_phone_rebrand_gms">Telefon uygulamasına saat uygulamasıyla aynı paketi ve anahtarı vererek ikisinin veri alışverişi yapmasını sağlar.</string>
     <string name="patch_watch_rebrand_coexist">Saat uygulamasını orijinalinin yanında durması için yeniden adlandırır.</string>
+    <string name="patch_shm_wear_trusted_peers">Yamalı iki uygulamanın saat bağlantısında yalnızca orijinal uygulamaları değil birbirini tanımasını sağlar.</string>
+    <string name="patch_watch_gms_resources_anchor">Orijinal sürümün kaldırdığı bir kaynağı tanımlar, böylece saat uygulamayı telefona bildirebilir.</string>
     <string name="patch_watch_queries_health_service">Saat uygulamasının sağlık hizmetini görmesini sağlar.</string>
     <string name="patch_watch_companion_vendor">Her marka eşlik eden telefonu kabul eder.</string>
     <string name="patch_watch_alarm_system_app">Sistem ayrıcalıkları olmadan tam zamanlı alarm kurar.</string>
@@ -422,6 +424,7 @@
     <string name="disable_chip_installed">Saat uygulaması kurulu</string>
     <string name="disable_chip_wear">Wear OS</string>
     <string name="disable_chip_not_installed">Kurulu değil</string>
+    <string name="disable_chip_already_off">Zaten kapalı</string>
     <string name="disable_error_some">Bazı uygulamalar kapatılamadı. Tekrar deneyin veya bu adımı atlayın.</string>
     <plurals name="disable_action">
         <item quantity="one">%1$d uygulamayı kapat</item>
@@ -439,9 +442,9 @@
     <string name="selftest_share_subject">OpenSHM Patcher kendi kendine sınama</string>
 
     <!-- Self-test rows: %1$s is an app name or a list of access names -->
-    <string name="selftest_package_title">%1$s kurulu</string>
-    <string name="selftest_grants_title">%1$s erişimlerine sahip</string>
-    <string name="selftest_stock_title">%1$s kapalı</string>
+    <string name="selftest_package_title">Kurulum: %1$s</string>
+    <string name="selftest_grants_title">Erişim: %1$s</string>
+    <string name="selftest_stock_title">Devre dışı: %1$s</string>
     <string name="selftest_bridge_link_title">Saate köprü bağlantısı</string>
     <string name="selftest_watch_platform">Health Platform geliştirici modunda</string>
     <string name="selftest_gms_title">Saat telefona bağlı</string>
