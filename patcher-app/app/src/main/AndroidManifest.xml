@@ -11,7 +11,10 @@
 
     <!--
       Launcher apps are visible, so the Samsung Health Monitor copy this app installs can be opened
-      after its install. The bridge app is visible because this app is its installer.
+      after its install. Being its installer does not make the bridge visible (visibility only goes
+      from the installed app to its installer), and it has no launcher entry; its package name has
+      the user's random prefix, so it is matched through its notification listener instead. Without
+      it the permission, app-op and battery reads of the install screen report "not granted".
     -->
     <queries>
         <!--
@@ -23,6 +26,9 @@
         <intent>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+        <intent>
+            <action android:name="android.service.notification.NotificationListenerService" />
         </intent>
     </queries>
 
