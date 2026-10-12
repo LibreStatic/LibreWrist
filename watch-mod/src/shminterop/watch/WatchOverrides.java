@@ -2,6 +2,10 @@ package shminterop.watch;
 
 import android.util.Log;
 
+import com.samsung.android.hardware.sensormanager.SemSensorListener;
+
+import java.lang.reflect.Method;
+
 /**
  * Vendor overrides on the watch side (SHM 1.5.1.022). Called from smali patched by the
  * superpatcher pattern watch-ecg-sensor-adapter.
@@ -9,6 +13,10 @@ import android.util.Log;
  * sensorAvailability(): availability exemption for the sensor wrapper (sa2.a) for IHRN
  * (0x25) and SpO2/apnea (0x31). Sensor 0x1b (ECG) is resolved earlier in the wrapper
  * (EcgAdapter) and never gets here.
+ *
+ * unregisterListener(): replaces every direct SemSensorManager.unregisterListener(listener, int)
+ * call (pattern watch-sensor-unregister-compat). That overload is missing from some watch
+ * frameworks (Galaxy Watch8), where the direct call throws NoSuchMethodError and closes SHM.
  */
 public final class WatchOverrides {
     public static final String TAG = "ShmInterop";
@@ -19,7 +27,38 @@ public final class WatchOverrides {
     // Logged once per (type, HAL result) so logcat is not flooded (IhrnScheduler polls often).
     private static volatile int sSensorLogged;
 
+    // The unregisterListener overload of this watch's framework, resolved on first use.
+    private static volatile Method sUnregister;
+    private static volatile boolean sUnregisterResolved;
+
     private WatchOverrides() {}
+
+    /**
+     * Unregisters [listener] for sensor [type] from [manager] (a SemSensorManager, typed Object so
+     * no stub of it is needed) through whichever unregisterListener overload this framework has.
+     * Never throws: a missing overload or a failed call is logged and the listener stays
+     * registered, which is better than closing the app.
+     */
+    public static void unregisterListener(Object manager, SemSensorListener listener, int type) {
+        if (manager == null || listener == null) {
+            return;
+        }
+        if (!sUnregisterResolved) {
+            Method m = UnregisterMethod.pick(manager.getClass(), SemSensorListener.class);
+            sUnregister = m;
+            sUnregisterResolved = true;
+            Log.i(TAG, "sensor: unregisterListener overload = " + (m == null ? "none" : m.toGenericString()));
+        }
+        Method m = sUnregister;
+        if (m == null) {
+            return;
+        }
+        try {
+            UnregisterMethod.call(m, manager, listener, type);
+        } catch (Throwable t) {
+            Log.w(TAG, "sensor: unregisterListener(type " + type + ") failed: " + t);
+        }
+    }
 
     /**
      * Called at the end of sa2.a(I)Z with the real result of SemSensorManager.isAvailable(type).

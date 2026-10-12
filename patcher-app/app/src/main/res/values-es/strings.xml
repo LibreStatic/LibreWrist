@@ -252,6 +252,7 @@
     <string name="patch_watch_alarm_system_app">Programa alarmas exactas sin privilegios de sistema.</string>
     <string name="patch_watch_mobile_installed">Informa que la app del teléfono está instalada.</string>
     <string name="patch_watch_ecg_sensor_adapter">Lee el sensor de ECG a través del servicio Health Tracking.</string>
+    <string name="patch_watch_sensor_unregister_compat">Evita que la app se cierre al detener los sensores en relojes con otro framework de sensores, como el Galaxy Watch8.</string>
     <string name="patch_watch_apnea_country">Omite la comprobación de país para la apnea.</string>
     <string name="patch_watch_apnea_reeval_not_supported">Vuelve a comprobar la compatibilidad con apnea que se guardó como no compatible.</string>
     <string name="patch_watch_mod">Agrega el módulo que se comunica con el servicio Health Tracking.</string>

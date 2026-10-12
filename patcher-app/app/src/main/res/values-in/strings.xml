@@ -249,6 +249,7 @@
     <string name="patch_watch_alarm_system_app">Menjadwalkan alarm tepat waktu tanpa hak istimewa sistem.</string>
     <string name="patch_watch_mobile_installed">Melaporkan aplikasi ponsel sebagai terpasang.</string>
     <string name="patch_watch_ecg_sensor_adapter">Membaca sensor EKG melalui layanan Health Tracking.</string>
+    <string name="patch_watch_sensor_unregister_compat">Mencegah aplikasi tertutup saat sensor dihentikan di jam tangan dengan framework sensor berbeda, seperti Galaxy Watch8.</string>
     <string name="patch_watch_apnea_country">Melewati pemeriksaan negara untuk apnea.</string>
     <string name="patch_watch_apnea_reeval_not_supported">Memeriksa ulang dukungan apnea yang tersimpan sebagai tidak didukung.</string>
     <string name="patch_watch_mod">Menambahkan modul yang berkomunikasi dengan layanan Health Tracking.</string>

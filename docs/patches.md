@@ -198,12 +198,13 @@ identical to the owner-verified `shm-phone-1.4.6.001-stock-mod-gms1` build (24 p
 | 5 | `watch-alarm-system-app` | the reflective lookup `setExactAlarmForSystemApp` is renamed to a non-existent name | A re-signed app is not a system app; the SecurityException kills the process from the IHRN off-body detector; the stock `setAlarmClock` path is used instead |
 | 6 | `watch-mobile-installed` | the "phone app installed" getter (pref `application_installed_in_mobile`) returns true | Opens the ECG capability gate |
 | 7 | `watch-ecg-sensor-adapter` | sensor wrapper: type 0x1b (ECG) is always available and registered/unregistered through `EcgAdapter`; types 0x25 (IHRN) and 0x31 (SpO2/apnea) get an availability exemption through `WatchOverrides.sensorAvailability` | A re-signed app cannot reach the privileged ECG sensor; ECG comes from the Health Tracking Service through our own client (see [health-sdk.md](health-sdk.md)) |
+| 7b | `watch-sensor-unregister-compat` | the three direct `SemSensorManager.unregisterListener(listener, int)` calls (the sensor wrapper and two in the sensor controller) go through `WatchOverrides.unregisterListener`, which picks the framework's overload by reflection (`(listener, int)` with any return type, else `(listener)`) and logs failures instead of throwing | The Galaxy Watch8 framework has no `unregisterListener(listener, int)V`; the apnea version detector (run because of the 0x31 exemption) unregisters after its timeout, and the `NoSuchMethodError` escaped its `catch Exception` and closed the app on open |
 | 8 | `watch-apnea-country` | the apnea "supported country" check returns true up front | Regional check disabled (the original is a fixed country list) |
 | 9 | `watch-apnea-reeval-not-supported` | in the stored apnea version getter, a persisted `NOT_SUPPORTED` is re-evaluated instead of returned | A value persisted by an earlier build (regional check still on) would be sticky |
 
 Plus two injected smali sets (profile `inject`, merged into one new `smali_classesN` dir
 before `apktool b`): `watch-mod` (`watch-mod/build-watch-mod.sh`: `EcgAdapter`,
-`WatchOverrides` and the `shminterop.hsdk` Health Tracking client).
+`WatchOverrides`, `UnregisterMethod` and the `shminterop.hsdk` Health Tracking client).
 
 Verified [V], by decoding both final APKs and comparing with `shm-watch-mod-gms-v32-signed`
 (owner-verified on device, normalising the previous package marker to `shminterop`):

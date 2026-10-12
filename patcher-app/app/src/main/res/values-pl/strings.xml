@@ -258,6 +258,7 @@
     <string name="patch_watch_alarm_system_app">Planuje dokładne alarmy bez uprawnień systemowych.</string>
     <string name="patch_watch_mobile_installed">Zgłasza aplikację na telefonie jako zainstalowaną.</string>
     <string name="patch_watch_ecg_sensor_adapter">Odczytuje czujnik EKG przez usługę Health Tracking.</string>
+    <string name="patch_watch_sensor_unregister_compat">Zapobiega zamykaniu aplikacji przy wyłączaniu czujników na zegarkach z innym frameworkiem czujników, np. Galaxy Watch8.</string>
     <string name="patch_watch_apnea_country">Pomija kontrolę kraju dla bezdechu.</string>
     <string name="patch_watch_apnea_reeval_not_supported">Ponownie sprawdza obsługę bezdechu zapisaną jako nieobsługiwana.</string>
     <string name="patch_watch_mod">Dodaje moduł komunikujący się z usługą Health Tracking.</string>

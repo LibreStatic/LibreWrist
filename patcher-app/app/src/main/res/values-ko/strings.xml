@@ -249,6 +249,7 @@
     <string name="patch_watch_alarm_system_app">시스템 권한 없이 정확한 알람을 예약합니다.</string>
     <string name="patch_watch_mobile_installed">휴대전화 앱이 설치된 것으로 보고합니다.</string>
     <string name="patch_watch_ecg_sensor_adapter">Health Tracking 서비스를 통해 ECG 센서를 읽습니다.</string>
+    <string name="patch_watch_sensor_unregister_compat">Galaxy Watch8처럼 센서 프레임워크가 다른 워치에서 센서를 중지할 때 앱이 종료되지 않도록 합니다.</string>
     <string name="patch_watch_apnea_country">무호흡 국가 확인을 건너뜁니다.</string>
     <string name="patch_watch_apnea_reeval_not_supported">미지원으로 저장된 무호흡 지원 여부를 다시 확인합니다.</string>
     <string name="patch_watch_mod">Health Tracking 서비스와 통신하는 모듈을 추가합니다.</string>

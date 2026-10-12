@@ -249,6 +249,7 @@
     <string name="patch_watch_alarm_system_app">無需系統權限即可排定精確鬧鐘。</string>
     <string name="patch_watch_mobile_installed">將手機應用程式回報為已安裝。</string>
     <string name="patch_watch_ecg_sensor_adapter">透過 Health Tracking 服務讀取心電圖感測器。</string>
+    <string name="patch_watch_sensor_unregister_compat">避免在感測器框架不同的手錶（例如 Galaxy Watch8）上停止感測器時應用程式關閉。</string>
     <string name="patch_watch_apnea_country">略過呼吸中止功能的國家檢查。</string>
     <string name="patch_watch_apnea_reeval_not_supported">重新檢查曾被儲存為不受支援的呼吸中止功能支援情況。</string>
     <string name="patch_watch_mod">新增與 Health Tracking 服務通訊的模組。</string>

@@ -252,6 +252,7 @@
     <string name="patch_watch_alarm_system_app">Plant exakte Wecker ohne Systemrechte.</string>
     <string name="patch_watch_mobile_installed">Meldet die Smartphone-App als installiert.</string>
     <string name="patch_watch_ecg_sensor_adapter">Liest den EKG-Sensor über den Health-Tracking-Dienst.</string>
+    <string name="patch_watch_sensor_unregister_compat">Verhindert, dass die App beim Beenden der Sensoren auf Uhren mit anderem Sensor-Framework wie der Galaxy Watch8 abstürzt.</string>
     <string name="patch_watch_apnea_country">Überspringt die Länderprüfung für Apnoe.</string>
     <string name="patch_watch_apnea_reeval_not_supported">Prüft die Apnoe-Unterstützung erneut, die als nicht unterstützt gespeichert wurde.</string>
     <string name="patch_watch_mod">Fügt das Modul hinzu, das mit dem Health-Tracking-Dienst kommuniziert.</string>

@@ -258,6 +258,7 @@
     <string name="patch_watch_alarm_system_app">Ставит точные будильники без системных привилегий.</string>
     <string name="patch_watch_mobile_installed">Сообщает, что приложение на телефоне установлено.</string>
     <string name="patch_watch_ecg_sensor_adapter">Читает датчик ЭКГ через службу Health Tracking.</string>
+    <string name="patch_watch_sensor_unregister_compat">Не даёт приложению закрываться при остановке датчиков на часах с другим фреймворком датчиков, например Galaxy Watch8.</string>
     <string name="patch_watch_apnea_country">Пропускает проверку страны для апноэ.</string>
     <string name="patch_watch_apnea_reeval_not_supported">Повторно проверяет поддержку апноэ, сохранённую как неподдерживаемую.</string>
     <string name="patch_watch_mod">Добавляет модуль для связи со службой Health Tracking.</string>

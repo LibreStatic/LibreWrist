@@ -183,6 +183,7 @@ class LoadedCatalogue(val engine: Catalogue, private val resolve: (Int) -> Strin
         "watch-alarm-system-app" to R.string.patch_watch_alarm_system_app,
         "watch-mobile-installed" to R.string.patch_watch_mobile_installed,
         "watch-ecg-sensor-adapter" to R.string.patch_watch_ecg_sensor_adapter,
+        "watch-sensor-unregister-compat" to R.string.patch_watch_sensor_unregister_compat,
         "watch-apnea-country" to R.string.patch_watch_apnea_country,
         "watch-apnea-reeval-not-supported" to R.string.patch_watch_apnea_reeval_not_supported,
         "alarm-verify-symbols" to R.string.patch_alarm_verify_symbols,
