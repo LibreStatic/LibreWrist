@@ -30,6 +30,13 @@ android {
             "CATALOGUE_URL must be an https:// URL without quotes, backslashes or spaces"
         }
         buildConfigField("String", "CATALOGUE_URL", "\"$catalogueUrl\"")
+        // GitHub repository ("owner/name") whose releases carry newer patcher builds (UPDATE_REPO, or
+        // -PupdateRepo). Empty disables the in-app self-update.
+        val updateRepo = (providers.gradleProperty("updateRepo").orNull ?: System.getenv("UPDATE_REPO") ?: "").trim()
+        require(updateRepo.isEmpty() || Regex("""^(?!\.+/)[\w.-]+/(?!\.+$)[\w.-]+$""").matches(updateRepo)) {
+            "UPDATE_REPO must look like owner/name"
+        }
+        buildConfigField("String", "UPDATE_REPO", "\"$updateRepo\"")
     }
     // The patcher's own fixed key, shared by every checkout (OPENSHM_KEYS_DIR, default
     // ~/.local/share/openshm/keys, see config.env; alias PATCHER_KEY_ALIAS, default "patcher"). Without

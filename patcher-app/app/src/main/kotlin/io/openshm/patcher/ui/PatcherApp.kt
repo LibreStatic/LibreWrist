@@ -1,5 +1,6 @@
 package io.openshm.patcher.ui
 
+import android.content.ActivityNotFoundException
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -11,6 +12,11 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+import io.openshm.patcher.ui.update.AppUpdateDialog
+import io.openshm.patcher.ui.update.AppUpdateViewModel
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -37,6 +43,20 @@ fun PatcherApp() {
             if (step >= 0) railStep = step
             railBeat++
         }
+        // Activity-scoped, so Settings' "Check now" drives the same dialog as the startup check.
+        val appUpdate: AppUpdateViewModel = viewModel()
+        val updateState by appUpdate.state.collectAsState()
+        val context = LocalContext.current
+        LaunchedEffect(appUpdate) { appUpdate.checkAtStartup() }
+        LaunchedEffect(appUpdate) {
+            appUpdate.launches.collect { request ->
+                try {
+                    context.startActivity(request.intent)
+                } catch (e: ActivityNotFoundException) {
+                    request.fallback?.let { runCatching { context.startActivity(it) } }
+                }
+            }
+        }
         // Surface also sets the default content color, so text without an explicit color follows the theme.
         Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
             // Lambdas, read while drawing: page changes never recompose the backdrop.
@@ -49,6 +69,13 @@ fun PatcherApp() {
                 // Full width: each screen caps and centers its own column (ContentColumn, StepScreenScaffold).
                 PatcherNavHost(Modifier.fillMaxSize(), navController = navController)
             }
+            AppUpdateDialog(
+                updateState,
+                onUpdate = appUpdate::start,
+                onLater = appUpdate::dismiss,
+                onCancel = appUpdate::cancel,
+                onClose = appUpdate::close,
+            )
         }
     }
 }

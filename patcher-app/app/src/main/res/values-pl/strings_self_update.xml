@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="update_dialog_title">Dostępna nowa wersja</string>
+    <string name="update_dialog_body">Dostępna jest kompilacja %1$d (v%2$s). Masz kompilację %3$d.</string>
+    <string name="update_notes_show">Pokaż informacje o wersji</string>
+    <string name="update_notes_hide">Ukryj informacje o wersji</string>
+    <string name="update_action_update">Zaktualizuj</string>
+    <string name="update_action_later">Później</string>
+    <string name="update_closing_note">Aplikacja zamyka się podczas aktualizacji. Otwórz ją ponownie po jej zakończeniu.</string>
+    <string name="update_permission_text">Aby zaktualizować, zezwól OpenSHM Patcher na instalowanie aplikacji na właśnie otwartej stronie ustawień, a następnie wróć i dotknij Dalej.</string>
+    <string name="update_downloading">Pobieranie aktualizacji…</string>
+    <string name="update_verifying">Sprawdzanie pobranego pliku…</string>
+    <string name="update_installing">Instalowanie aktualizacji…</string>
+    <string name="update_error_download">Pobieranie nie powiodło się. Sprawdź połączenie i spróbuj ponownie.</string>
+    <string name="update_error_too_large">Pobierany plik jest większy, niż oczekiwano, i pobieranie przerwano.</string>
+    <string name="update_error_hash">Pobrany plik nie pasuje do opublikowanej sumy kontrolnej, więc go odrzucono.</string>
+    <string name="update_error_not_this_app">Pobrany plik to nie ta aplikacja, więc go odrzucono.</string>
+    <string name="update_error_wrong_build">Pobrany plik to nie zapowiedziana kompilacja, więc go odrzucono.</string>
+    <string name="update_error_other_signer">Pobrany plik jest podpisany innym kluczem, więc nie może zaktualizować tej aplikacji i został odrzucony.</string>
+    <string name="update_error_unreadable">Nie udało się odczytać pobranego pliku.</string>
+    <string name="update_error_install">Instalacja nie została ukończona.</string>
+    <string name="update_error_install_detail">Instalacja nie została ukończona (%1$s).</string>
+    <string name="settings_updates_heading">Aktualizacje</string>
+    <string name="settings_auto_check">Sprawdzaj aktualizacje automatycznie</string>
+    <string name="settings_check_now">Sprawdź teraz</string>
+    <string name="settings_checking">Sprawdzanie…</string>
+    <string name="settings_updates_unavailable">Aktualizacje nie są dostępne w tej kompilacji.</string>
+    <string name="settings_updates_explainer">Szuka nowszej oficjalnej wersji na GitHubie. Tę aplikację mogą zaktualizować tylko wersje podpisane tym samym kluczem.</string>
+    <string name="settings_up_to_date">Masz najnowszą wersję</string>
+    <string name="settings_check_failed">Nie udało się sprawdzić aktualizacji</string>
+    <string name="settings_signing_key_summary">Utwórz kopię zapasową lub przywróć klucz podpisujący Twoje kompilacje</string>
+    <string name="settings_version_label">Wersja</string>
+    <string name="settings_version_value">%1$s (kompilacja %2$d)</string>
+    <string name="update_channel_name">Aktualizacje aplikacji</string>
+    <string name="update_channel_description">Informuje, gdy dostępna jest nowsza wersja OpenSHM Patcher.</string>
+    <string name="update_notification_title">Dostępna nowa wersja</string>
+    <string name="update_notification_text">Kompilacja %1$d (v%2$s) jest gotowa do zainstalowania</string>
+</resources>

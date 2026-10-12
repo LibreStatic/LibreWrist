@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="update_dialog_title">Nouvelle version disponible</string>
+    <string name="update_dialog_body">Le build %1$d (v%2$s) est disponible. Vous avez le build %3$d.</string>
+    <string name="update_notes_show">Afficher les notes de version</string>
+    <string name="update_notes_hide">Masquer les notes de version</string>
+    <string name="update_action_update">Mettre à jour</string>
+    <string name="update_action_later">Plus tard</string>
+    <string name="update_closing_note">L\'application se ferme pendant la mise à jour. Rouvrez-la ensuite.</string>
+    <string name="update_permission_text">Pour mettre à jour, autorisez OpenSHM Patcher à installer des applications dans la page de réglages qui vient de s\'ouvrir, puis revenez et touchez Continuer.</string>
+    <string name="update_downloading">Téléchargement de la mise à jour…</string>
+    <string name="update_verifying">Vérification du téléchargement…</string>
+    <string name="update_installing">Installation de la mise à jour…</string>
+    <string name="update_error_download">Le téléchargement a échoué. Vérifiez votre connexion et réessayez.</string>
+    <string name="update_error_too_large">Le téléchargement est plus volumineux que prévu et a été arrêté.</string>
+    <string name="update_error_hash">Le fichier téléchargé ne correspond pas à la somme de contrôle publiée ; il a été écarté.</string>
+    <string name="update_error_not_this_app">Le fichier téléchargé n\'est pas cette application ; il a été écarté.</string>
+    <string name="update_error_wrong_build">Le fichier téléchargé n\'est pas le build annoncé ; il a été écarté.</string>
+    <string name="update_error_other_signer">Le fichier téléchargé est signé avec une autre clé, il ne peut donc pas mettre à jour cette application ; il a été écarté.</string>
+    <string name="update_error_unreadable">Le fichier téléchargé n\'a pas pu être lu.</string>
+    <string name="update_error_install">L\'installation n\'a pas abouti.</string>
+    <string name="update_error_install_detail">L\'installation n\'a pas abouti (%1$s).</string>
+    <string name="settings_updates_heading">Mises à jour</string>
+    <string name="settings_auto_check">Rechercher les mises à jour automatiquement</string>
+    <string name="settings_check_now">Rechercher maintenant</string>
+    <string name="settings_checking">Recherche…</string>
+    <string name="settings_updates_unavailable">Les mises à jour ne sont pas disponibles dans ce build.</string>
+    <string name="settings_updates_explainer">Recherche une version officielle plus récente sur GitHub. Seules les versions signées avec la même clé peuvent mettre à jour cette application.</string>
+    <string name="settings_up_to_date">Vous avez la dernière version</string>
+    <string name="settings_check_failed">Impossible de rechercher les mises à jour</string>
+    <string name="settings_signing_key_summary">Sauvegarder ou restaurer la clé qui signe vos builds</string>
+    <string name="settings_version_label">Version</string>
+    <string name="settings_version_value">%1$s (build %2$d)</string>
+    <string name="update_channel_name">Mises à jour de l\'application</string>
+    <string name="update_channel_description">Vous prévient quand une version plus récente d\'OpenSHM Patcher est disponible.</string>
+    <string name="update_notification_title">Nouvelle version disponible</string>
+    <string name="update_notification_text">Le build %1$d (v%2$s) est prêt à être installé</string>
+</resources>

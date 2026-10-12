@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="update_dialog_title">新しいバージョンがあります</string>
+    <string name="update_dialog_body">ビルド %1$d(v%2$s)が利用できます。現在のビルドは %3$d です。</string>
+    <string name="update_notes_show">リリースノートを表示</string>
+    <string name="update_notes_hide">リリースノートを隠す</string>
+    <string name="update_action_update">更新</string>
+    <string name="update_action_later">後で</string>
+    <string name="update_closing_note">更新中はアプリが終了します。完了後にもう一度開いてください。</string>
+    <string name="update_permission_text">更新するには、いま開いた設定ページで OpenSHM Patcher にアプリのインストールを許可し、戻って「続行」をタップしてください。</string>
+    <string name="update_downloading">更新をダウンロードしています…</string>
+    <string name="update_verifying">ダウンロードを確認しています…</string>
+    <string name="update_installing">更新をインストールしています…</string>
+    <string name="update_error_download">ダウンロードに失敗しました。接続を確認してもう一度お試しください。</string>
+    <string name="update_error_too_large">ダウンロードが想定より大きいため、中止しました。</string>
+    <string name="update_error_hash">ダウンロードしたファイルが公開されたチェックサムと一致しないため、破棄しました。</string>
+    <string name="update_error_not_this_app">ダウンロードしたファイルはこのアプリではないため、破棄しました。</string>
+    <string name="update_error_wrong_build">ダウンロードしたファイルは告知されたビルドではないため、破棄しました。</string>
+    <string name="update_error_other_signer">ダウンロードしたファイルは別の鍵で署名されており、このアプリを更新できないため、破棄しました。</string>
+    <string name="update_error_unreadable">ダウンロードしたファイルを読み取れませんでした。</string>
+    <string name="update_error_install">インストールが完了しませんでした。</string>
+    <string name="update_error_install_detail">インストールが完了しませんでした(%1$s)。</string>
+    <string name="settings_updates_heading">アップデート</string>
+    <string name="settings_auto_check">アップデートを自動で確認</string>
+    <string name="settings_check_now">今すぐ確認</string>
+    <string name="settings_checking">確認中…</string>
+    <string name="settings_updates_unavailable">このビルドではアップデートを利用できません。</string>
+    <string name="settings_updates_explainer">GitHub で新しい公式リリースを探します。同じ鍵で署名されたリリースだけがこのアプリを更新できます。</string>
+    <string name="settings_up_to_date">最新バージョンです</string>
+    <string name="settings_check_failed">アップデートを確認できませんでした</string>
+    <string name="settings_signing_key_summary">ビルドに署名する鍵をバックアップまたは復元します</string>
+    <string name="settings_version_label">バージョン</string>
+    <string name="settings_version_value">%1$s(ビルド %2$d)</string>
+    <string name="update_channel_name">アプリのアップデート</string>
+    <string name="update_channel_description">OpenSHM Patcher の新しいバージョンが利用できるときにお知らせします。</string>
+    <string name="update_notification_title">新しいバージョンがあります</string>
+    <string name="update_notification_text">ビルド %1$d(v%2$s)をインストールできます</string>
+</resources>

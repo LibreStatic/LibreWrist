@@ -22,6 +22,8 @@ enum class Route(val path: String) {
     Home("home"),
     /** Reached from Home, Welcome and the build-done nudge; not part of [SetupFlow]. */
     SigningKey("signing-key"),
+    /** Reached from Home and Welcome; not part of [SetupFlow]. */
+    Settings("settings"),
     ;
 
     companion object {

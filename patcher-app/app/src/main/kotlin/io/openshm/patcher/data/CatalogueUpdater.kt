@@ -33,7 +33,7 @@ fun interface CatalogueFetcher {
 class RefusedResponseException(message: String) : IOException(message)
 
 /** `HttpURLConnection` fetcher: https only, also across redirects, with timeouts and a size cap. */
-class HttpsCatalogueFetcher : CatalogueFetcher {
+class HttpsCatalogueFetcher(private val headers: Map<String, String> = emptyMap()) : CatalogueFetcher {
     override fun get(url: String, maxBytes: Int): ByteArray {
         var current = URL(url)
         requireHttps(current)
@@ -44,6 +44,8 @@ class HttpsCatalogueFetcher : CatalogueFetcher {
                 connection.connectTimeout = TIMEOUT_MS
                 connection.readTimeout = TIMEOUT_MS
                 connection.useCaches = false
+                // For this fetcher's own requests; callers must not pass secrets (they follow redirects).
+                headers.forEach { (name, value) -> connection.setRequestProperty(name, value) }
                 when (val code = connection.responseCode) {
                     HttpURLConnection.HTTP_OK -> return readCapped(connection, maxBytes)
                     301, 302, 303, 307, 308 -> current = nextUrl(current, connection.getHeaderField("Location"))

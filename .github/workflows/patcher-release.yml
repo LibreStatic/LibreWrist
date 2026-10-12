@@ -9,6 +9,8 @@
 #   PATCHER_CERT_SHA256  expected SHA-256 of the signing certificate; the release fails on a mismatch
 #   CATALOGUE_URL        catalogue update channel baked into the app; defaults to this repository's
 #                        raw catalogue/ directory on the default branch
+#   UPDATE_REPO          GitHub repository (owner/name) the app checks for newer builds; defaults to
+#                        this repository
 # Without the signing secrets the workflow fails instead of publishing a debug-signed APK, which
 # could not upgrade an installed patcher.
 
@@ -41,9 +43,13 @@ jobs:
       BUILD_TOOLS_VERSION: "36.0.0"
       PLATFORM_API: "36"
       PATCHER_VERSION_CODE: ${{ github.run_number }}
+      UPDATE_REPO: ${{ vars.UPDATE_REPO || github.repository }}
       CATALOGUE_URL: ${{ vars.CATALOGUE_URL || format('https://raw.githubusercontent.com/{0}/{1}/catalogue', github.repository, github.event.repository.default_branch) }}
     steps:
       - uses: actions/checkout@v5
+        with:
+          # Full history and tags: the release notes list the commits since the previous patcher release.
+          fetch-depth: 0
 
       - uses: actions/setup-java@v5
         with:
@@ -108,14 +114,29 @@ jobs:
           mkdir -p "$out"
           cp patcher-app/app/build/outputs/apk/release/app-release.apk "$out/openshm-patcher-$version-r$PATCHER_VERSION_CODE.apk"
           ( cd "$out" && sha256sum *.apk > SHA256SUMS )
+          # The earlier patcher release with the highest build number; its commit bounds the change list.
+          previous="$(git tag --list 'patcher-v*' | awk -F-r -v n="$PATCHER_VERSION_CODE" \
+            '{ c = $NF + 0 } c < n && c > best { best = c; t = $0 } END { print t }')"
+          if [ -n "$previous" ]; then
+            range="$previous..$GITHUB_SHA"
+            heading="Changes since ${previous#patcher-v}:"
+          else
+            range="$GITHUB_SHA"
+            heading="Changes:"
+          fi
+          limit=60
+          total="$(git rev-list --count --no-merges "$range")"
           {
             echo "OpenSHM Patcher $version (build $PATCHER_VERSION_CODE), built from ${GITHUB_SHA::7}."
             echo
-            echo "Install the APK on the phone; it upgrades any earlier build in place."
+            echo "$heading"
             echo
-            echo '```'
-            cat "$out/SHA256SUMS"
-            echo '```'
+            git log --no-merges --format='- %s (%h)' -n "$limit" "$range"
+            if [ "$total" -gt "$limit" ]; then
+              echo "- …and $((total - limit)) more"
+            fi
+            echo
+            echo "Install the APK on the phone; it upgrades any earlier build in place. Checksums: SHA256SUMS."
           } > "$out/notes.md"
           gh release create "$tag" "$out"/*.apk "$out/SHA256SUMS" \
             --target "$GITHUB_SHA" \

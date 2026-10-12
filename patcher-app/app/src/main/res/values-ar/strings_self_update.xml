@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="update_dialog_title">إصدار جديد متاح</string>
+    <string name="update_dialog_body">الإصدار %1$d (v%2$s) متاح. لديك الإصدار %3$d.</string>
+    <string name="update_notes_show">عرض ملاحظات الإصدار</string>
+    <string name="update_notes_hide">إخفاء ملاحظات الإصدار</string>
+    <string name="update_action_update">تحديث</string>
+    <string name="update_action_later">لاحقًا</string>
+    <string name="update_closing_note">يُغلق التطبيق أثناء التحديث. افتحه من جديد بعد ذلك.</string>
+    <string name="update_permission_text">للتحديث، اسمح لـ OpenSHM Patcher بتثبيت التطبيقات في صفحة الإعدادات التي فُتحت للتو، ثم عد واضغط على متابعة.</string>
+    <string name="update_downloading">جارٍ تنزيل التحديث…</string>
+    <string name="update_verifying">جارٍ فحص التنزيل…</string>
+    <string name="update_installing">جارٍ تثبيت التحديث…</string>
+    <string name="update_error_download">فشل التنزيل. تحقق من اتصالك وحاول مرة أخرى.</string>
+    <string name="update_error_too_large">حجم التنزيل أكبر من المتوقع فتم إيقافه.</string>
+    <string name="update_error_hash">الملف الذي تم تنزيله لا يطابق المجموع الاختباري المنشور، لذلك تم تجاهله.</string>
+    <string name="update_error_not_this_app">الملف الذي تم تنزيله ليس هذا التطبيق، لذلك تم تجاهله.</string>
+    <string name="update_error_wrong_build">الملف الذي تم تنزيله ليس الإصدار المعلن عنه، لذلك تم تجاهله.</string>
+    <string name="update_error_other_signer">الملف الذي تم تنزيله موقّع بمفتاح مختلف، لذلك لا يمكنه تحديث هذا التطبيق وتم تجاهله.</string>
+    <string name="update_error_unreadable">تعذرت قراءة الملف الذي تم تنزيله.</string>
+    <string name="update_error_install">لم يكتمل التثبيت.</string>
+    <string name="update_error_install_detail">لم يكتمل التثبيت (%1$s).</string>
+    <string name="settings_updates_heading">التحديثات</string>
+    <string name="settings_auto_check">البحث عن التحديثات تلقائيًا</string>
+    <string name="settings_check_now">تحقق الآن</string>
+    <string name="settings_checking">جارٍ التحقق…</string>
+    <string name="settings_updates_unavailable">التحديثات غير متاحة في هذا الإصدار.</string>
+    <string name="settings_updates_explainer">يبحث عن إصدار رسمي أحدث على GitHub. لا يمكن إلا للإصدارات الموقّعة بالمفتاح نفسه تحديث هذا التطبيق.</string>
+    <string name="settings_up_to_date">لديك أحدث إصدار</string>
+    <string name="settings_check_failed">تعذر البحث عن التحديثات</string>
+    <string name="settings_signing_key_summary">انسخ احتياطيًا المفتاح الذي يوقّع إصداراتك أو استعده</string>
+    <string name="settings_version_label">الإصدار</string>
+    <string name="settings_version_value">%1$s (الإصدار %2$d)</string>
+    <string name="update_channel_name">تحديثات التطبيق</string>
+    <string name="update_channel_description">يخبرك عند توفر إصدار أحدث من OpenSHM Patcher.</string>
+    <string name="update_notification_title">إصدار جديد متاح</string>
+    <string name="update_notification_text">الإصدار %1$d (v%2$s) جاهز للتثبيت</string>
+</resources>

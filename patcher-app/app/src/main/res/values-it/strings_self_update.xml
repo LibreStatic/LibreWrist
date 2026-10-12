@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="update_dialog_title">Nuova versione disponibile</string>
+    <string name="update_dialog_body">È disponibile la build %1$d (v%2$s). Hai la build %3$d.</string>
+    <string name="update_notes_show">Mostra le note di rilascio</string>
+    <string name="update_notes_hide">Nascondi le note di rilascio</string>
+    <string name="update_action_update">Aggiorna</string>
+    <string name="update_action_later">Più tardi</string>
+    <string name="update_closing_note">L\'app si chiude durante l\'aggiornamento. Riaprila dopo.</string>
+    <string name="update_permission_text">Per aggiornare, consenti a OpenSHM Patcher di installare app nella pagina delle impostazioni appena aperta, poi torna qui e tocca Continua.</string>
+    <string name="update_downloading">Download dell\'aggiornamento…</string>
+    <string name="update_verifying">Verifica del download…</string>
+    <string name="update_installing">Installazione dell\'aggiornamento…</string>
+    <string name="update_error_download">Download non riuscito. Controlla la connessione e riprova.</string>
+    <string name="update_error_too_large">Il download è più grande del previsto ed è stato interrotto.</string>
+    <string name="update_error_hash">Il file scaricato non corrisponde al checksum pubblicato ed è stato scartato.</string>
+    <string name="update_error_not_this_app">Il file scaricato non è questa app ed è stato scartato.</string>
+    <string name="update_error_wrong_build">Il file scaricato non è la build annunciata ed è stato scartato.</string>
+    <string name="update_error_other_signer">Il file scaricato è firmato con un\'altra chiave, quindi non può aggiornare questa app ed è stato scartato.</string>
+    <string name="update_error_unreadable">Impossibile leggere il file scaricato.</string>
+    <string name="update_error_install">L\'installazione non è stata completata.</string>
+    <string name="update_error_install_detail">L\'installazione non è stata completata (%1$s).</string>
+    <string name="settings_updates_heading">Aggiornamenti</string>
+    <string name="settings_auto_check">Cerca aggiornamenti automaticamente</string>
+    <string name="settings_check_now">Controlla ora</string>
+    <string name="settings_checking">Controllo in corso…</string>
+    <string name="settings_updates_unavailable">Gli aggiornamenti non sono disponibili in questa build.</string>
+    <string name="settings_updates_explainer">Cerca su GitHub una versione ufficiale più recente. Solo le versioni firmate con la stessa chiave possono aggiornare questa app.</string>
+    <string name="settings_up_to_date">Hai l\'ultima versione</string>
+    <string name="settings_check_failed">Impossibile cercare aggiornamenti</string>
+    <string name="settings_signing_key_summary">Esegui il backup o ripristina la chiave che firma le tue build</string>
+    <string name="settings_version_label">Versione</string>
+    <string name="settings_version_value">%1$s (build %2$d)</string>
+    <string name="update_channel_name">Aggiornamenti dell\'app</string>
+    <string name="update_channel_description">Ti avvisa quando è disponibile una versione più recente di OpenSHM Patcher.</string>
+    <string name="update_notification_title">Nuova versione disponibile</string>
+    <string name="update_notification_text">La build %1$d (v%2$s) è pronta per l\'installazione</string>
+</resources>

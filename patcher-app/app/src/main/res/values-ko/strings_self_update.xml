@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="update_dialog_title">새 버전이 있습니다</string>
+    <string name="update_dialog_body">빌드 %1$d(v%2$s)을(를) 사용할 수 있습니다. 현재 빌드는 %3$d입니다.</string>
+    <string name="update_notes_show">릴리스 노트 보기</string>
+    <string name="update_notes_hide">릴리스 노트 숨기기</string>
+    <string name="update_action_update">업데이트</string>
+    <string name="update_action_later">나중에</string>
+    <string name="update_closing_note">업데이트하는 동안 앱이 종료됩니다. 끝난 뒤 다시 여세요.</string>
+    <string name="update_permission_text">업데이트하려면 방금 열린 설정 페이지에서 OpenSHM Patcher의 앱 설치를 허용한 다음 돌아와 계속을 누르세요.</string>
+    <string name="update_downloading">업데이트를 다운로드하는 중…</string>
+    <string name="update_verifying">다운로드를 확인하는 중…</string>
+    <string name="update_installing">업데이트를 설치하는 중…</string>
+    <string name="update_error_download">다운로드하지 못했습니다. 연결을 확인하고 다시 시도하세요.</string>
+    <string name="update_error_too_large">다운로드가 예상보다 커서 중단했습니다.</string>
+    <string name="update_error_hash">다운로드한 파일이 게시된 체크섬과 일치하지 않아 삭제했습니다.</string>
+    <string name="update_error_not_this_app">다운로드한 파일이 이 앱이 아니어서 삭제했습니다.</string>
+    <string name="update_error_wrong_build">다운로드한 파일이 공지된 빌드가 아니어서 삭제했습니다.</string>
+    <string name="update_error_other_signer">다운로드한 파일이 다른 키로 서명되어 이 앱을 업데이트할 수 없으므로 삭제했습니다.</string>
+    <string name="update_error_unreadable">다운로드한 파일을 읽을 수 없습니다.</string>
+    <string name="update_error_install">설치가 완료되지 않았습니다.</string>
+    <string name="update_error_install_detail">설치가 완료되지 않았습니다(%1$s).</string>
+    <string name="settings_updates_heading">업데이트</string>
+    <string name="settings_auto_check">업데이트 자동 확인</string>
+    <string name="settings_check_now">지금 확인</string>
+    <string name="settings_checking">확인하는 중…</string>
+    <string name="settings_updates_unavailable">이 빌드에서는 업데이트를 사용할 수 없습니다.</string>
+    <string name="settings_updates_explainer">GitHub에서 더 새로운 공식 릴리스를 찾습니다. 같은 키로 서명된 릴리스만 이 앱을 업데이트할 수 있습니다.</string>
+    <string name="settings_up_to_date">최신 버전입니다</string>
+    <string name="settings_check_failed">업데이트를 확인하지 못했습니다</string>
+    <string name="settings_signing_key_summary">빌드에 서명하는 키를 백업하거나 복원합니다</string>
+    <string name="settings_version_label">버전</string>
+    <string name="settings_version_value">%1$s(빌드 %2$d)</string>
+    <string name="update_channel_name">앱 업데이트</string>
+    <string name="update_channel_description">OpenSHM Patcher의 새 버전이 있을 때 알려 줍니다.</string>
+    <string name="update_notification_title">새 버전이 있습니다</string>
+    <string name="update_notification_text">빌드 %1$d(v%2$s)을(를) 설치할 수 있습니다</string>
+</resources>

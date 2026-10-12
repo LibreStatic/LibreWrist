@@ -25,7 +25,7 @@ internal fun HomeUiState.reduce(event: HomeEvent): HomeUiState = when (event) {
     HomeEvent.ToggleMenu -> copy(menuOpen = !menuOpen)
     is HomeEvent.AskRestore -> copy(restoreSheetVisible = true)
     HomeEvent.ConfirmRestore, HomeEvent.DismissRestore -> copy(restoreSheetVisible = false)
-    HomeEvent.NewBuild, HomeEvent.CheckCatalogue, HomeEvent.RunSelfTest, HomeEvent.RestoreWatch, HomeEvent.Uninstall, HomeEvent.OpenSigningKey -> copy(menuOpen = false)
+    HomeEvent.NewBuild, HomeEvent.CheckCatalogue, HomeEvent.RunSelfTest, HomeEvent.RestoreWatch, HomeEvent.Uninstall, HomeEvent.OpenSettings -> copy(menuOpen = false)
     HomeEvent.MessageShown -> copy(catalogueMessage = null)
     else -> this
 }

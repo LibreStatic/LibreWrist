@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="update_dialog_title">有新版本可用</string>
+    <string name="update_dialog_body">組建 %1$d(v%2$s)已可使用。你目前的組建是 %3$d。</string>
+    <string name="update_notes_show">顯示版本資訊</string>
+    <string name="update_notes_hide">隱藏版本資訊</string>
+    <string name="update_action_update">更新</string>
+    <string name="update_action_later">稍後</string>
+    <string name="update_closing_note">更新期間應用程式會關閉。完成後請重新開啟。</string>
+    <string name="update_permission_text">若要更新，請在剛開啟的設定頁面中允許 OpenSHM Patcher 安裝應用程式，然後返回並點選「繼續」。</string>
+    <string name="update_downloading">正在下載更新…</string>
+    <string name="update_verifying">正在檢查下載內容…</string>
+    <string name="update_installing">正在安裝更新…</string>
+    <string name="update_error_download">下載失敗。請檢查網路連線後再試一次。</string>
+    <string name="update_error_too_large">下載內容比預期大，已停止。</string>
+    <string name="update_error_hash">下載的檔案與已發布的檢查碼不符，已被捨棄。</string>
+    <string name="update_error_not_this_app">下載的檔案不是此應用程式，已被捨棄。</string>
+    <string name="update_error_wrong_build">下載的檔案不是公布的組建，已被捨棄。</string>
+    <string name="update_error_other_signer">下載的檔案使用不同的金鑰簽署，無法更新此應用程式，已被捨棄。</string>
+    <string name="update_error_unreadable">無法讀取下載的檔案。</string>
+    <string name="update_error_install">安裝未完成。</string>
+    <string name="update_error_install_detail">安裝未完成(%1$s)。</string>
+    <string name="settings_updates_heading">更新</string>
+    <string name="settings_auto_check">自動檢查更新</string>
+    <string name="settings_check_now">立即檢查</string>
+    <string name="settings_checking">正在檢查…</string>
+    <string name="settings_updates_unavailable">此組建不支援更新。</string>
+    <string name="settings_updates_explainer">在 GitHub 上尋找較新的官方版本。只有使用相同金鑰簽署的版本才能更新此應用程式。</string>
+    <string name="settings_up_to_date">你已是最新版本</string>
+    <string name="settings_check_failed">無法檢查更新</string>
+    <string name="settings_signing_key_summary">備份或還原為你的組建簽署的金鑰</string>
+    <string name="settings_version_label">版本</string>
+    <string name="settings_version_value">%1$s(組建 %2$d)</string>
+    <string name="update_channel_name">應用程式更新</string>
+    <string name="update_channel_description">當 OpenSHM Patcher 有新版本時通知你。</string>
+    <string name="update_notification_title">有新版本可用</string>
+    <string name="update_notification_text">組建 %1$d(v%2$s)已可安裝</string>
+</resources>

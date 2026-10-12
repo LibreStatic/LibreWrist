@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="update_dialog_title">Доступна новая версия</string>
+    <string name="update_dialog_body">Доступна сборка %1$d (v%2$s). У вас сборка %3$d.</string>
+    <string name="update_notes_show">Показать примечания к выпуску</string>
+    <string name="update_notes_hide">Скрыть примечания к выпуску</string>
+    <string name="update_action_update">Обновить</string>
+    <string name="update_action_later">Позже</string>
+    <string name="update_closing_note">Во время обновления приложение закроется. После этого откройте его снова.</string>
+    <string name="update_permission_text">Для обновления разрешите OpenSHM Patcher устанавливать приложения на только что открывшейся странице настроек, затем вернитесь и нажмите «Продолжить».</string>
+    <string name="update_downloading">Загрузка обновления…</string>
+    <string name="update_verifying">Проверка загруженного файла…</string>
+    <string name="update_installing">Установка обновления…</string>
+    <string name="update_error_download">Не удалось загрузить. Проверьте подключение и повторите попытку.</string>
+    <string name="update_error_too_large">Загрузка оказалась больше ожидаемого и была остановлена.</string>
+    <string name="update_error_hash">Загруженный файл не совпадает с опубликованной контрольной суммой и был удалён.</string>
+    <string name="update_error_not_this_app">Загруженный файл — это не данное приложение, он был удалён.</string>
+    <string name="update_error_wrong_build">Загруженный файл — это не объявленная сборка, он был удалён.</string>
+    <string name="update_error_other_signer">Загруженный файл подписан другим ключом, поэтому не может обновить это приложение, и был удалён.</string>
+    <string name="update_error_unreadable">Не удалось прочитать загруженный файл.</string>
+    <string name="update_error_install">Установка не завершена.</string>
+    <string name="update_error_install_detail">Установка не завершена (%1$s).</string>
+    <string name="settings_updates_heading">Обновления</string>
+    <string name="settings_auto_check">Проверять обновления автоматически</string>
+    <string name="settings_check_now">Проверить сейчас</string>
+    <string name="settings_checking">Проверка…</string>
+    <string name="settings_updates_unavailable">В этой сборке обновления недоступны.</string>
+    <string name="settings_updates_explainer">Ищет на GitHub более новый официальный выпуск. Обновить это приложение могут только выпуски, подписанные тем же ключом.</string>
+    <string name="settings_up_to_date">У вас последняя версия</string>
+    <string name="settings_check_failed">Не удалось проверить обновления</string>
+    <string name="settings_signing_key_summary">Создайте резервную копию или восстановите ключ, которым подписываются ваши сборки</string>
+    <string name="settings_version_label">Версия</string>
+    <string name="settings_version_value">%1$s (сборка %2$d)</string>
+    <string name="update_channel_name">Обновления приложения</string>
+    <string name="update_channel_description">Сообщает, когда доступна более новая версия OpenSHM Patcher.</string>
+    <string name="update_notification_title">Доступна новая версия</string>
+    <string name="update_notification_text">Сборка %1$d (v%2$s) готова к установке</string>
+</resources>

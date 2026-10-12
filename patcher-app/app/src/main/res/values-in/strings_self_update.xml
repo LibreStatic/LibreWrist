@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="update_dialog_title">Versi baru tersedia</string>
+    <string name="update_dialog_body">Build %1$d (v%2$s) tersedia. Anda memakai build %3$d.</string>
+    <string name="update_notes_show">Tampilkan catatan rilis</string>
+    <string name="update_notes_hide">Sembunyikan catatan rilis</string>
+    <string name="update_action_update">Perbarui</string>
+    <string name="update_action_later">Nanti</string>
+    <string name="update_closing_note">Aplikasi akan tertutup saat diperbarui. Buka lagi setelahnya.</string>
+    <string name="update_permission_text">Untuk memperbarui, izinkan OpenSHM Patcher memasang aplikasi di halaman pengaturan yang baru terbuka, lalu kembali dan ketuk Lanjutkan.</string>
+    <string name="update_downloading">Mengunduh pembaruan…</string>
+    <string name="update_verifying">Memeriksa unduhan…</string>
+    <string name="update_installing">Memasang pembaruan…</string>
+    <string name="update_error_download">Unduhan gagal. Periksa koneksi Anda lalu coba lagi.</string>
+    <string name="update_error_too_large">Unduhan lebih besar dari yang diharapkan dan dihentikan.</string>
+    <string name="update_error_hash">File yang diunduh tidak cocok dengan checksum yang dipublikasikan, jadi dibuang.</string>
+    <string name="update_error_not_this_app">File yang diunduh bukan aplikasi ini, jadi dibuang.</string>
+    <string name="update_error_wrong_build">File yang diunduh bukan build yang diumumkan, jadi dibuang.</string>
+    <string name="update_error_other_signer">File yang diunduh ditandatangani dengan kunci lain, sehingga tidak dapat memperbarui aplikasi ini dan dibuang.</string>
+    <string name="update_error_unreadable">File yang diunduh tidak dapat dibaca.</string>
+    <string name="update_error_install">Pemasangan tidak selesai.</string>
+    <string name="update_error_install_detail">Pemasangan tidak selesai (%1$s).</string>
+    <string name="settings_updates_heading">Pembaruan</string>
+    <string name="settings_auto_check">Periksa pembaruan secara otomatis</string>
+    <string name="settings_check_now">Periksa sekarang</string>
+    <string name="settings_checking">Memeriksa…</string>
+    <string name="settings_updates_unavailable">Pembaruan tidak tersedia di build ini.</string>
+    <string name="settings_updates_explainer">Mencari rilis resmi yang lebih baru di GitHub. Hanya rilis yang ditandatangani dengan kunci yang sama yang dapat memperbarui aplikasi ini.</string>
+    <string name="settings_up_to_date">Anda memakai versi terbaru</string>
+    <string name="settings_check_failed">Tidak dapat memeriksa pembaruan</string>
+    <string name="settings_signing_key_summary">Cadangkan atau pulihkan kunci yang menandatangani build Anda</string>
+    <string name="settings_version_label">Versi</string>
+    <string name="settings_version_value">%1$s (build %2$d)</string>
+    <string name="update_channel_name">Pembaruan aplikasi</string>
+    <string name="update_channel_description">Memberi tahu Anda saat versi OpenSHM Patcher yang lebih baru tersedia.</string>
+    <string name="update_notification_title">Versi baru tersedia</string>
+    <string name="update_notification_text">Build %1$d (v%2$s) siap dipasang</string>
+</resources>

@@ -343,3 +343,43 @@ fun SigningKeyExportDriver() = PreviewHost(ColorMode.Fallback) {
 fun SigningKeyImportConfirmDriver() = PreviewHost(ColorMode.Fallback) {
     SigningKeySample(form = SigningKeyForm.Import, confirmation = true)
 }
+
+private val SampleAppUpdate = io.openshm.patcher.data.AppUpdate(
+    build = 9,
+    versionName = "0.1.0",
+    apkUrl = "https://example.invalid/openshm-patcher-0.1.0-r9.apk",
+    apkName = "openshm-patcher-0.1.0-r9.apk",
+    sha256 = "ab".repeat(32),
+    notes = "Fixes the watch SHM closing on open on the Galaxy Watch8.\nRecognizes the watch plugin of every Galaxy Watch family.",
+    sizeBytes = 42L * 1024 * 1024,
+)
+
+@Composable
+fun SettingsDriver() = PreviewHost(ColorMode.Fallback) {
+    io.openshm.patcher.ui.screens.settings.SettingsScreen(
+        io.openshm.patcher.ui.screens.settings.SettingsUiState(versionName = "0.1.0", versionCode = 7),
+        notice = null, onNoticeShown = {}, onAutoCheck = {}, onCheckNow = {}, onSigningKey = {}, onBack = {},
+    )
+}
+
+@Composable
+fun SettingsNoRepoDriver() = PreviewHost(ColorMode.Fallback) {
+    io.openshm.patcher.ui.screens.settings.SettingsScreen(
+        io.openshm.patcher.ui.screens.settings.SettingsUiState(updatesAvailable = false, versionName = "0.1.0", versionCode = 6),
+        notice = null, onNoticeShown = {}, onAutoCheck = {}, onCheckNow = {}, onSigningKey = {}, onBack = {},
+    )
+}
+
+@Composable
+fun AppUpdateDialogDriver() = PreviewHost(ColorMode.Fallback) {
+    io.openshm.patcher.ui.update.AppUpdateDialog(
+        io.openshm.patcher.ui.update.AppUpdateUiState.Available(SampleAppUpdate), {}, {}, {}, {},
+    )
+}
+
+@Composable
+fun AppUpdateDownloadingDriver() = PreviewHost(ColorMode.Fallback) {
+    io.openshm.patcher.ui.update.AppUpdateDialog(
+        io.openshm.patcher.ui.update.AppUpdateUiState.Downloading(SampleAppUpdate, 0.4f), {}, {}, {}, {},
+    )
+}

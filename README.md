@@ -288,6 +288,19 @@ Each app can be rebuilt or restored, which turns the stock apps back on and remo
 
 <img src="docs/images/walkthrough/21-home.png" width="260" alt="Home">
 
+#### Updates of the patcher itself
+
+Release builds of the patcher look for a newer official release on GitHub when they start and about
+every 12 hours in the background. When there is one, the app shows an update dialog (and a
+notification if the background check found it first); tapping **Update** downloads the APK, checks
+its SHA-256 against the release's `SHA256SUMS`, checks that it is this app signed with the same key,
+and then asks Android to install it. The app closes while it updates; open it again afterwards. Only
+official releases signed with the same key can update the app.
+
+To turn this off, open **Settings** (the gear on the first screen, or the Home menu) and switch off
+**Check for updates automatically**; that stops both the startup check and the background one.
+**Check now** in the same screen still works. Local builds without an update repository never check.
+
 ### What to expect when you are done
 
 - **On the watch**, the patched Samsung Health Monitor replaces the stock one in the app list. It

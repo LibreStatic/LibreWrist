@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="update_dialog_title">नया संस्करण उपलब्ध है</string>
+    <string name="update_dialog_body">बिल्ड %1$d (v%2$s) उपलब्ध है। आपके पास बिल्ड %3$d है।</string>
+    <string name="update_notes_show">रिलीज़ नोट्स दिखाएँ</string>
+    <string name="update_notes_hide">रिलीज़ नोट्स छिपाएँ</string>
+    <string name="update_action_update">अपडेट करें</string>
+    <string name="update_action_later">बाद में</string>
+    <string name="update_closing_note">अपडेट के दौरान ऐप बंद हो जाता है। बाद में उसे फिर से खोलें।</string>
+    <string name="update_permission_text">अपडेट करने के लिए अभी खुले सेटिंग पेज पर OpenSHM Patcher को ऐप इंस्टॉल करने की अनुमति दें, फिर वापस आकर जारी रखें पर टैप करें।</string>
+    <string name="update_downloading">अपडेट डाउनलोड हो रहा है…</string>
+    <string name="update_verifying">डाउनलोड जाँचा जा रहा है…</string>
+    <string name="update_installing">अपडेट इंस्टॉल हो रहा है…</string>
+    <string name="update_error_download">डाउनलोड विफल रहा। अपना कनेक्शन जाँचें और फिर कोशिश करें।</string>
+    <string name="update_error_too_large">डाउनलोड अपेक्षा से बड़ा है, इसलिए रोक दिया गया।</string>
+    <string name="update_error_hash">डाउनलोड की गई फ़ाइल प्रकाशित चेकसम से मेल नहीं खाती, इसलिए उसे हटा दिया गया।</string>
+    <string name="update_error_not_this_app">डाउनलोड की गई फ़ाइल यह ऐप नहीं है, इसलिए उसे हटा दिया गया।</string>
+    <string name="update_error_wrong_build">डाउनलोड की गई फ़ाइल घोषित बिल्ड नहीं है, इसलिए उसे हटा दिया गया।</string>
+    <string name="update_error_other_signer">डाउनलोड की गई फ़ाइल किसी दूसरी कुंजी से हस्ताक्षरित है, इसलिए वह इस ऐप को अपडेट नहीं कर सकती और उसे हटा दिया गया।</string>
+    <string name="update_error_unreadable">डाउनलोड की गई फ़ाइल पढ़ी नहीं जा सकी।</string>
+    <string name="update_error_install">इंस्टॉल पूरा नहीं हुआ।</string>
+    <string name="update_error_install_detail">इंस्टॉल पूरा नहीं हुआ (%1$s)।</string>
+    <string name="settings_updates_heading">अपडेट</string>
+    <string name="settings_auto_check">अपडेट अपने आप जाँचें</string>
+    <string name="settings_check_now">अभी जाँचें</string>
+    <string name="settings_checking">जाँच हो रही है…</string>
+    <string name="settings_updates_unavailable">इस बिल्ड में अपडेट उपलब्ध नहीं हैं।</string>
+    <string name="settings_updates_explainer">GitHub पर नया आधिकारिक रिलीज़ खोजता है। केवल उसी कुंजी से हस्ताक्षरित रिलीज़ इस ऐप को अपडेट कर सकते हैं।</string>
+    <string name="settings_up_to_date">आपके पास नवीनतम संस्करण है</string>
+    <string name="settings_check_failed">अपडेट जाँचे नहीं जा सके</string>
+    <string name="settings_signing_key_summary">अपने बिल्ड पर हस्ताक्षर करने वाली कुंजी का बैकअप लें या उसे पुनर्स्थापित करें</string>
+    <string name="settings_version_label">संस्करण</string>
+    <string name="settings_version_value">%1$s (बिल्ड %2$d)</string>
+    <string name="update_channel_name">ऐप अपडेट</string>
+    <string name="update_channel_description">OpenSHM Patcher का नया संस्करण उपलब्ध होने पर आपको बताता है।</string>
+    <string name="update_notification_title">नया संस्करण उपलब्ध है</string>
+    <string name="update_notification_text">बिल्ड %1$d (v%2$s) इंस्टॉल के लिए तैयार है</string>
+</resources>

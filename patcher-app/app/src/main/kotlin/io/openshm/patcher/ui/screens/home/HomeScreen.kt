@@ -20,7 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Fitbit
-import androidx.compose.material.icons.rounded.Key
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.PhoneAndroid
 import androidx.compose.material.icons.rounded.SettingsBackupRestore
 import androidx.compose.material.icons.rounded.Tune
@@ -98,7 +98,7 @@ sealed interface HomeEvent {
     data object RunSelfTest : HomeEvent
     data object RestoreWatch : HomeEvent
     data object Uninstall : HomeEvent
-    data object OpenSigningKey : HomeEvent
+    data object OpenSettings : HomeEvent
     data object CheckCatalogue : HomeEvent
     data object MessageShown : HomeEvent
 }
@@ -157,9 +157,9 @@ fun HomeScreen(
                     onClick = { onEvent(HomeEvent.CheckCatalogue) },
                 )
                 DropdownMenuItem(
-                    text = { Text(stringResource(R.string.home_menu_signing_key)) },
-                    leadingIcon = { Icon(Icons.Rounded.Key, contentDescription = null) },
-                    onClick = { onEvent(HomeEvent.OpenSigningKey) },
+                    text = { Text(stringResource(R.string.action_settings)) },
+                    leadingIcon = { Icon(Icons.Rounded.Settings, contentDescription = null) },
+                    onClick = { onEvent(HomeEvent.OpenSettings) },
                 )
                 DropdownMenuItem(
                     text = { Text(stringResource(R.string.home_menu_restore_watch)) },

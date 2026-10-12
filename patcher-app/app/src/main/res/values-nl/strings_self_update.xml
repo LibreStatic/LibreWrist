@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="update_dialog_title">Nieuwe versie beschikbaar</string>
+    <string name="update_dialog_body">Build %1$d (v%2$s) is beschikbaar. Je hebt build %3$d.</string>
+    <string name="update_notes_show">Release-opmerkingen tonen</string>
+    <string name="update_notes_hide">Release-opmerkingen verbergen</string>
+    <string name="update_action_update">Bijwerken</string>
+    <string name="update_action_later">Later</string>
+    <string name="update_closing_note">De app sluit tijdens het bijwerken. Open hem daarna opnieuw.</string>
+    <string name="update_permission_text">Sta OpenSHM Patcher toe om apps te installeren op de instellingenpagina die zojuist is geopend, kom daarna terug en tik op Doorgaan.</string>
+    <string name="update_downloading">Update downloaden…</string>
+    <string name="update_verifying">Download controleren…</string>
+    <string name="update_installing">Update installeren…</string>
+    <string name="update_error_download">Downloaden mislukt. Controleer je verbinding en probeer het opnieuw.</string>
+    <string name="update_error_too_large">De download is groter dan verwacht en is gestopt.</string>
+    <string name="update_error_hash">Het gedownloade bestand komt niet overeen met de gepubliceerde controlesom en is verwijderd.</string>
+    <string name="update_error_not_this_app">Het gedownloade bestand is niet deze app en is verwijderd.</string>
+    <string name="update_error_wrong_build">Het gedownloade bestand is niet de aangekondigde build en is verwijderd.</string>
+    <string name="update_error_other_signer">Het gedownloade bestand is met een andere sleutel ondertekend, kan deze app dus niet bijwerken en is verwijderd.</string>
+    <string name="update_error_unreadable">Het gedownloade bestand kon niet worden gelezen.</string>
+    <string name="update_error_install">De installatie is niet voltooid.</string>
+    <string name="update_error_install_detail">De installatie is niet voltooid (%1$s).</string>
+    <string name="settings_updates_heading">Updates</string>
+    <string name="settings_auto_check">Automatisch op updates controleren</string>
+    <string name="settings_check_now">Nu controleren</string>
+    <string name="settings_checking">Controleren…</string>
+    <string name="settings_updates_unavailable">Updates zijn niet beschikbaar in deze build.</string>
+    <string name="settings_updates_explainer">Zoekt op GitHub naar een nieuwere officiële release. Alleen releases die met dezelfde sleutel zijn ondertekend kunnen deze app bijwerken.</string>
+    <string name="settings_up_to_date">Je hebt de nieuwste versie</string>
+    <string name="settings_check_failed">Controleren op updates is mislukt</string>
+    <string name="settings_signing_key_summary">Maak een back-up van of herstel de sleutel waarmee je builds worden ondertekend</string>
+    <string name="settings_version_label">Versie</string>
+    <string name="settings_version_value">%1$s (build %2$d)</string>
+    <string name="update_channel_name">App-updates</string>
+    <string name="update_channel_description">Laat je weten wanneer er een nieuwere versie van OpenSHM Patcher beschikbaar is.</string>
+    <string name="update_notification_title">Nieuwe versie beschikbaar</string>
+    <string name="update_notification_text">Build %1$d (v%2$s) staat klaar om te installeren</string>
+</resources>

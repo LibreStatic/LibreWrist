@@ -48,6 +48,10 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import io.openshm.patcher.R
 import io.openshm.patcher.data.AppCatalogue
+import io.openshm.patcher.ui.screens.settings.SettingsScreen
+import io.openshm.patcher.ui.screens.settings.SettingsViewModel
+import io.openshm.patcher.ui.update.AppUpdateViewModel
+import androidx.activity.ComponentActivity
 import io.openshm.patcher.ui.screens.signingkey.SigningKeyRequest
 import io.openshm.patcher.ui.screens.signingkey.SigningKeyScreen
 import io.openshm.patcher.ui.screens.signingkey.SigningKeyViewModel
@@ -159,7 +163,7 @@ fun PatcherNavHost(
                 val welcomeContext = LocalContext.current
                 LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { WatchAnnouncements.start(welcomeContext, "welcome") }
                 LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { WatchAnnouncements.stop("welcome") }
-                WelcomeScreen(state, vm::onEvent, onGetStarted = { vm.onEvent(WelcomeEvent.GetStarted) }, onSettings = { navController.navigate(Route.SigningKey.path) })
+                WelcomeScreen(state, vm::onEvent, onGetStarted = { vm.onEvent(WelcomeEvent.GetStarted) }, onSettings = { navController.navigate(Route.Settings.path) })
             }
             composable(Route.Profile.path) {
                 val vm: ProfileViewModel = viewModel()
@@ -451,6 +455,23 @@ fun PatcherNavHost(
                     onSaveWithPassword = vm::saveWithPassword,
                 )
             }
+            columnComposable(Route.Settings.path) {
+                val vm: SettingsViewModel = viewModel()
+                val state by vm.state.collectAsStateWithLifecycle()
+                // The update dialog and its checks live in the activity-scoped view model.
+                val appUpdate: AppUpdateViewModel = viewModel(LocalActivity.current as ComponentActivity)
+                val checking by appUpdate.checking.collectAsStateWithLifecycle()
+                val notice by appUpdate.notice.collectAsStateWithLifecycle()
+                SettingsScreen(
+                    state = state.copy(checking = checking),
+                    notice = notice,
+                    onNoticeShown = appUpdate::noticeShown,
+                    onAutoCheck = vm::setAutoCheck,
+                    onCheckNow = appUpdate::checkNow,
+                    onSigningKey = { navController.navigate(Route.SigningKey.path) },
+                    onBack = back,
+                )
+            }
             columnComposable(Route.Home.path) {
                 val vm: HomeViewModel = viewModel()
                 val state by vm.state.collectAsStateWithLifecycle()
@@ -462,7 +483,7 @@ fun PatcherNavHost(
                         vm.onEvent(event)
                         if (event is HomeEvent.NewBuild) navController.navigate(Route.Profile.path)
                         if (event is HomeEvent.RunSelfTest || event is HomeEvent.TestAgain) navController.navigate(Route.SelfTest.path)
-                        if (event is HomeEvent.OpenSigningKey) navController.navigate(Route.SigningKey.path)
+                        if (event is HomeEvent.OpenSettings) navController.navigate(Route.Settings.path)
                         // Inputs whose verified files still match are already Verified on Acquire.
                         if (event is HomeEvent.StartUpdate) navController.navigate(Route.Acquire.path)
                     },
