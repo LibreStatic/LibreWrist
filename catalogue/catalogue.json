@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "serial": 13,
-  "minAppVersion": 1,
+  "serial": 14,
+  "minAppVersion": 6,
   "inputs": [
     {
       "id": "shm-phone",

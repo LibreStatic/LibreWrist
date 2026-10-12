@@ -55,7 +55,7 @@ class CatalogueUpdateTest {
 
     private fun text(serial: Long = 5, minApp: Long = 1, edit: (String) -> String = { it }): ByteArray {
         val base = String(TestCatalogue.bytes, Charsets.UTF_8)
-        val withSerial = base.replace(Regex("\"serial\": \\d+,"), "\"serial\": $serial,").replace("\"minAppVersion\": 1,", "\"minAppVersion\": $minApp,")
+        val withSerial = base.replace(Regex("\"serial\": \\d+,"), "\"serial\": $serial,").replace(Regex("\"minAppVersion\": \\d+,"), "\"minAppVersion\": $minApp,")
         assertTrue(withSerial.contains("\"serial\": $serial,"))
         return edit(withSerial).toByteArray(Charsets.UTF_8)
     }

@@ -18,7 +18,10 @@ android {
         minSdk = 31
         targetSdk = 36
         // CI sets PATCHER_VERSION_CODE (the workflow run number) so every published APK upgrades the last.
-        versionCode = System.getenv("PATCHER_VERSION_CODE")?.toIntOrNull() ?: 1
+        // Local builds use the bundled catalogue's minAppVersion, so they always accept their own catalogue.
+        val catalogueMinApp = Regex("\"minAppVersion\":\\s*(\\d+)")
+            .find(rootProject.file("../catalogue/catalogue.json").readText())?.groupValues?.get(1)?.toInt() ?: 1
+        versionCode = System.getenv("PATCHER_VERSION_CODE")?.toIntOrNull() ?: catalogueMinApp
         versionName = "0.1.0"
         // Base URL of the raw `catalogue/` directory of the public repository (config.env CATALOGUE_URL,
         // or -PcatalogueUrl). Empty disables catalogue updates. Only https is accepted.

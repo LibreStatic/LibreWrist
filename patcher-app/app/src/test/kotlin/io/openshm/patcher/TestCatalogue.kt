@@ -29,7 +29,7 @@ object TestCatalogue {
         lookup
     }
 
-    fun load(appVersionCode: Int = 1, bytes: ByteArray = this.bytes): LoadedCatalogue =
+    fun load(appVersionCode: Int = BuildConfig.VERSION_CODE, bytes: ByteArray = this.bytes): LoadedCatalogue =
         AppCatalogue.fromBytes(bytes, signature, publicKeyPem, appVersionCode, resolve)
 
     fun install() = AppCatalogue.install(load())

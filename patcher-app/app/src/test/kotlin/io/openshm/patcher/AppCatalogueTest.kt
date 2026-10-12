@@ -15,7 +15,7 @@ class AppCatalogueTest {
 
     @Test
     fun serialAndInputs() {
-        assertEquals(13L, c.serial)
+        assertEquals(14L, c.serial)
         assertEquals(
             listOf(
                 listOf("shm-phone", "Samsung Health Monitor (phone)", "1.4.6.001", "Phone",
@@ -156,7 +156,7 @@ class AppCatalogueTest {
 
     @Test
     fun aCatalogueNeedingANewerAppIsRejected() {
-        // minAppVersion in the repository catalogue is 1, so app version 0 is "too old".
+        // minAppVersion in the repository catalogue is at least 1, so app version 0 is "too old".
         try {
             TestCatalogue.load(appVersionCode = 0)
             fail("expected a minAppVersion failure")
