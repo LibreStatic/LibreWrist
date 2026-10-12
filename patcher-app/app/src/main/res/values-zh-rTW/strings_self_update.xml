@@ -6,6 +6,7 @@
     <string name="update_notes_hide">隱藏版本資訊</string>
     <string name="update_action_update">更新</string>
     <string name="update_action_later">稍後</string>
+    <string name="update_skip_version">不再顯示此版本</string>
     <string name="update_closing_note">更新期間應用程式會關閉。完成後請重新開啟。</string>
     <string name="update_permission_text">若要更新，請在剛開啟的設定頁面中允許 OpenSHM Patcher 安裝應用程式，然後返回並點選「繼續」。</string>
     <string name="update_downloading">正在下載更新…</string>

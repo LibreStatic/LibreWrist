@@ -2,6 +2,12 @@ package io.openshm.patcher.ui.update
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.material3.Checkbox
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.rememberScrollState
@@ -29,19 +35,32 @@ import io.openshm.patcher.data.AppUpdateError
 fun AppUpdateDialog(
     state: AppUpdateUiState,
     onUpdate: () -> Unit,
-    onLater: () -> Unit,
+    /** "Later"; true when the user ticked "Don't show this version again". */
+    onLater: (skip: Boolean) -> Unit,
     onCancel: () -> Unit,
     onClose: () -> Unit,
 ) {
     when (state) {
         AppUpdateUiState.Idle -> Unit
-        is AppUpdateUiState.Available -> OfferDialog(
-            state.update,
-            body = { Notes(state.update) },
-            confirm = DialogButton(R.string.update_action_update, onUpdate),
-            dismiss = DialogButton(R.string.update_action_later, onLater),
-            onDismissRequest = onLater,
-        )
+        is AppUpdateUiState.Available -> {
+            var skip by rememberSaveable(state.update.build) { mutableStateOf(false) }
+            OfferDialog(
+                state.update,
+                body = {
+                    Notes(state.update)
+                    Row(
+                        Modifier.fillMaxWidth().toggleable(skip, role = Role.Checkbox, onValueChange = { skip = it }),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Checkbox(skip, onCheckedChange = null)
+                        Text(stringResource(R.string.update_skip_version), Modifier.padding(start = 12.dp), style = MaterialTheme.typography.bodyMedium)
+                    }
+                },
+                confirm = DialogButton(R.string.update_action_update, onUpdate),
+                dismiss = DialogButton(R.string.update_action_later) { onLater(skip) },
+                onDismissRequest = { onLater(skip) },
+            )
+        }
         is AppUpdateUiState.NeedsPermission -> OfferDialog(
             state.update,
             body = { Text(stringResource(R.string.update_permission_text)) },

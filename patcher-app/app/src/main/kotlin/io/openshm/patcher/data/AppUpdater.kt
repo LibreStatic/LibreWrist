@@ -95,6 +95,10 @@ interface AppUpdateSettings {
     var lastCheckMillis: Long
     /** The highest build a notification was posted for, so a version is announced once. */
     var lastNotifiedBuild: Long
+    /** The newer build the last check found, offered again without a request until the next check is due. */
+    var cachedUpdate: AppUpdate?
+    /** A build the user asked not to be shown again at startup or in a notification (0: none). */
+    var skippedBuild: Long
 }
 
 /** What the periodic background check asks of its job. */
@@ -140,15 +144,34 @@ class AppUpdateChecker(
     private val settings: AppUpdateSettings,
     private val updater: () -> AppUpdateResult,
     private val clock: () -> Long = System::currentTimeMillis,
+    private val versionCode: Long = 0L,
 ) {
     val enabled: Boolean get() = repo.isNotBlank()
 
-    /** Null when the startup check is not due. */
+    /**
+     * The startup check: a request when due, otherwise the newer build the last check found (no request).
+     * Null when there is nothing to offer. A build the user skipped is never returned.
+     */
     fun checkAtStartup(): AppUpdateResult? {
+        if (!enabled || !settings.autoCheck) return null
         val now = clock()
         val last = settings.lastCheckMillis
-        val due = enabled && settings.autoCheck && (now - last >= MIN_INTERVAL_MS || last > now)
-        return if (due) run(now) else null
+        val due = now - last >= MIN_INTERVAL_MS || last > now
+        val result = if (due) run(now) else cached()?.let { AppUpdateResult.Available(it) }
+        return result.takeUnless { it is AppUpdateResult.Available && it.update.build == settings.skippedBuild }
+    }
+
+    /** "Don't show again" for [build]: no startup offer or notification for it; a later build is shown. */
+    fun skip(build: Long) {
+        settings.skippedBuild = build
+    }
+
+    /** The cached newer build; a cache this app has already reached (it was updated) is dropped. */
+    private fun cached(): AppUpdate? {
+        val update = settings.cachedUpdate ?: return null
+        if (update.build > versionCode) return update
+        settings.cachedUpdate = null
+        return null
     }
 
     /** Ignores the switch and the interval. */
@@ -160,7 +183,8 @@ class AppUpdateChecker(
         val result = run(clock())
         return when {
             result is AppUpdateResult.Failed -> BackgroundOutcome.Retry
-            result is AppUpdateResult.Available && shouldNotify(result, settings.autoCheck, settings.lastNotifiedBuild) ->
+            result is AppUpdateResult.Available && result.update.build != settings.skippedBuild &&
+                shouldNotify(result, settings.autoCheck, settings.lastNotifiedBuild) ->
                 BackgroundOutcome.Notify(result.update)
             else -> BackgroundOutcome.Done
         }
@@ -174,6 +198,11 @@ class AppUpdateChecker(
     private fun run(now: Long): AppUpdateResult {
         val result = updater()
         if (result != AppUpdateResult.Disabled) settings.lastCheckMillis = now
+        when (result) {
+            is AppUpdateResult.Available -> settings.cachedUpdate = result.update
+            AppUpdateResult.UpToDate -> settings.cachedUpdate = null
+            else -> Unit
+        }
         return result
     }
 

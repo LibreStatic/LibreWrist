@@ -6,6 +6,7 @@
     <string name="update_notes_hide">Сховати примітки до випуску</string>
     <string name="update_action_update">Оновити</string>
     <string name="update_action_later">Пізніше</string>
+    <string name="update_skip_version">Більше не показувати цю версію</string>
     <string name="update_closing_note">Під час оновлення застосунок закриється. Після цього відкрийте його знову.</string>
     <string name="update_permission_text">Щоб оновити, дозвольте OpenSHM Patcher встановлювати застосунки на сторінці налаштувань, що щойно відкрилася, а потім поверніться й торкніться «Продовжити».</string>
     <string name="update_downloading">Завантаження оновлення…</string>

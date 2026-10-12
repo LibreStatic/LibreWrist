@@ -6,6 +6,7 @@
     <string name="update_notes_hide">Sürüm notlarını gizle</string>
     <string name="update_action_update">Güncelle</string>
     <string name="update_action_later">Sonra</string>
+    <string name="update_skip_version">Bu sürümü bir daha gösterme</string>
     <string name="update_closing_note">Uygulama güncellenirken kapanır. Sonrasında tekrar açın.</string>
     <string name="update_permission_text">Güncellemek için az önce açılan ayarlar sayfasında OpenSHM Patcher\'ın uygulama yüklemesine izin verin, ardından geri dönüp Devam\'a dokunun.</string>
     <string name="update_downloading">Güncelleme indiriliyor…</string>

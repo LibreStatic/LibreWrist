@@ -6,6 +6,7 @@
     <string name="update_notes_hide">रिलीज़ नोट्स छिपाएँ</string>
     <string name="update_action_update">अपडेट करें</string>
     <string name="update_action_later">बाद में</string>
+    <string name="update_skip_version">यह संस्करण फिर से न दिखाएँ</string>
     <string name="update_closing_note">अपडेट के दौरान ऐप बंद हो जाता है। बाद में उसे फिर से खोलें।</string>
     <string name="update_permission_text">अपडेट करने के लिए अभी खुले सेटिंग पेज पर OpenSHM Patcher को ऐप इंस्टॉल करने की अनुमति दें, फिर वापस आकर जारी रखें पर टैप करें।</string>
     <string name="update_downloading">अपडेट डाउनलोड हो रहा है…</string>

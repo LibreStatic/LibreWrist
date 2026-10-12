@@ -6,6 +6,7 @@
     <string name="update_notes_hide">إخفاء ملاحظات الإصدار</string>
     <string name="update_action_update">تحديث</string>
     <string name="update_action_later">لاحقًا</string>
+    <string name="update_skip_version">لا تعرض هذا الإصدار مرة أخرى</string>
     <string name="update_closing_note">يُغلق التطبيق أثناء التحديث. افتحه من جديد بعد ذلك.</string>
     <string name="update_permission_text">للتحديث، اسمح لـ OpenSHM Patcher بتثبيت التطبيقات في صفحة الإعدادات التي فُتحت للتو، ثم عد واضغط على متابعة.</string>
     <string name="update_downloading">جارٍ تنزيل التحديث…</string>

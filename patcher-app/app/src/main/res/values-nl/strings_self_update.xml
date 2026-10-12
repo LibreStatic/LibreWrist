@@ -6,6 +6,7 @@
     <string name="update_notes_hide">Release-opmerkingen verbergen</string>
     <string name="update_action_update">Bijwerken</string>
     <string name="update_action_later">Later</string>
+    <string name="update_skip_version">Deze versie niet meer tonen</string>
     <string name="update_closing_note">De app sluit tijdens het bijwerken. Open hem daarna opnieuw.</string>
     <string name="update_permission_text">Sta OpenSHM Patcher toe om apps te installeren op de instellingenpagina die zojuist is geopend, kom daarna terug en tik op Doorgaan.</string>
     <string name="update_downloading">Update downloaden…</string>

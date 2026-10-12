@@ -104,7 +104,7 @@ class AppUpdateViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-    /** Once per process: the check the user allowed, at most once an hour. */
+    /** Once per opening: the check the user allowed, at most once an hour; in between, the cached newer build. */
     fun checkAtStartup() {
         if (startupChecked) return
         startupChecked = true
@@ -150,9 +150,12 @@ class AppUpdateViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-    /** "Later": hides the offer until the next start. */
-    fun dismiss() {
-        (_state.value as? AppUpdateUiState.Available)?.let { dismissedBuild = it.update.build }
+    /** "Later": hides the offer until the app opens again, or for good for this build when [skip] is set. */
+    fun dismiss(skip: Boolean) {
+        (_state.value as? AppUpdateUiState.Available)?.let {
+            dismissedBuild = it.update.build
+            if (skip) viewModelScope.launch(Dispatchers.IO) { checker.skip(it.update.build) }
+        }
         _state.value = AppUpdateUiState.Idle
     }
 

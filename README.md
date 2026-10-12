@@ -297,6 +297,10 @@ its SHA-256 against the release's `SHA256SUMS`, checks that it is this app signe
 and then asks Android to install it. The app closes while it updates; open it again afterwards. Only
 official releases signed with the same key can update the app.
 
+GitHub is asked at most once an hour; in between, the app offers the last build it found each time
+it opens. **Later** shows it again on the next opening; ticking **Don't show this version again**
+hides that build (dialog and notification) until a newer one comes out. **Check now** always shows it.
+
 To turn this off, open **Settings** (the gear on the first screen, or the Home menu) and switch off
 **Check for updates automatically**; that stops both the startup check and the background one.
 **Check now** in the same screen still works. Local builds without an update repository never check.

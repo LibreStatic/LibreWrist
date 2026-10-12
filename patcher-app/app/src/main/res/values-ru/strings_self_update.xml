@@ -6,6 +6,7 @@
     <string name="update_notes_hide">Скрыть примечания к выпуску</string>
     <string name="update_action_update">Обновить</string>
     <string name="update_action_later">Позже</string>
+    <string name="update_skip_version">Больше не показывать эту версию</string>
     <string name="update_closing_note">Во время обновления приложение закроется. После этого откройте его снова.</string>
     <string name="update_permission_text">Для обновления разрешите OpenSHM Patcher устанавливать приложения на только что открывшейся странице настроек, затем вернитесь и нажмите «Продолжить».</string>
     <string name="update_downloading">Загрузка обновления…</string>

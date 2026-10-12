@@ -6,6 +6,7 @@
     <string name="update_notes_hide">Sembunyikan catatan rilis</string>
     <string name="update_action_update">Perbarui</string>
     <string name="update_action_later">Nanti</string>
+    <string name="update_skip_version">Jangan tampilkan versi ini lagi</string>
     <string name="update_closing_note">Aplikasi akan tertutup saat diperbarui. Buka lagi setelahnya.</string>
     <string name="update_permission_text">Untuk memperbarui, izinkan OpenSHM Patcher memasang aplikasi di halaman pengaturan yang baru terbuka, lalu kembali dan ketuk Lanjutkan.</string>
     <string name="update_downloading">Mengunduh pembaruan…</string>

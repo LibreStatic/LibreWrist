@@ -6,6 +6,7 @@
     <string name="update_notes_hide">Hide release notes</string>
     <string name="update_action_update">Update</string>
     <string name="update_action_later">Later</string>
+    <string name="update_skip_version">Don\'t show this version again</string>
     <string name="update_closing_note">The app closes while it updates. Open it again afterwards.</string>
     <string name="update_permission_text">To update, allow OpenSHM Patcher to install apps on the settings page that just opened, then come back and tap Continue.</string>
     <string name="update_downloading">Downloading the update…</string>

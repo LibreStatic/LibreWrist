@@ -32,7 +32,13 @@ class AppUpdaterTest {
         }
     }
 
-    private class MemSettings(override var autoCheck: Boolean = true, override var lastCheckMillis: Long = 0L, override var lastNotifiedBuild: Long = 0L) : AppUpdateSettings
+    private class MemSettings(
+        override var autoCheck: Boolean = true,
+        override var lastCheckMillis: Long = 0L,
+        override var lastNotifiedBuild: Long = 0L,
+        override var cachedUpdate: io.openshm.patcher.data.AppUpdate? = null,
+        override var skippedBuild: Long = 0L,
+    ) : AppUpdateSettings
 
     private val apiUrl = "https://api.github.com/repos/owner/name/releases/latest"
     private val sumsUrl = "https://example.invalid/SHA256SUMS"
@@ -239,5 +245,60 @@ class AppUpdaterTest {
         assertFalse(fileHasSha256(file, hash))
         file.writeBytes("tampered".toByteArray())
         assertFalse(fileHasSha256(file, good))
+    }
+
+    // The cached offer and "don't show again".
+
+    @Test fun withinTheHourTheLastFoundBuildIsOfferedWithoutARequest() {
+        val calls = IntArray(1)
+        val settings = MemSettings()
+        var now = 10_000_000_000L
+        val c = AppUpdateChecker("owner/name", settings, { calls[0]++; AppUpdateResult.Available(update9) }, { now }, versionCode = 8)
+        assertEquals(AppUpdateResult.Available(update9), c.checkAtStartup())
+        assertEquals(1, calls[0])
+        now += 30 * 60_000
+        assertEquals(AppUpdateResult.Available(update9), c.checkAtStartup())
+        assertEquals(AppUpdateResult.Available(update9), c.checkAtStartup())
+        assertEquals(1, calls[0])
+    }
+
+    @Test fun anUpToDateCheckClearsTheCache() {
+        val settings = MemSettings(cachedUpdate = update9)
+        var now = 10_000_000L
+        val c = AppUpdateChecker("owner/name", settings, { AppUpdateResult.UpToDate }, { now }, versionCode = 8)
+        assertEquals(AppUpdateResult.UpToDate, c.checkAtStartup())
+        assertNull(settings.cachedUpdate)
+        now += 60_000
+        assertNull(c.checkAtStartup())
+    }
+
+    @Test fun aCachedBuildTheAppAlreadyReachedIsDropped() {
+        val settings = MemSettings(lastCheckMillis = 1_000_000, cachedUpdate = update9)
+        val c = AppUpdateChecker("owner/name", settings, { AppUpdateResult.UpToDate }, { 1_060_000 }, versionCode = 9)
+        assertNull(c.checkAtStartup())
+        assertNull(settings.cachedUpdate)
+    }
+
+    @Test fun theCacheHonoursTheSwitch() {
+        val settings = MemSettings(autoCheck = false, lastCheckMillis = 1_000_000, cachedUpdate = update9)
+        assertNull(AppUpdateChecker("owner/name", settings, { AppUpdateResult.UpToDate }, { 1_060_000 }, versionCode = 8).checkAtStartup())
+    }
+
+    @Test fun aSkippedBuildIsNotOfferedAtStartupNorNotifiedButALaterOneIs() {
+        val settings = MemSettings()
+        var now = 10_000_000_000L
+        var result: AppUpdateResult = AppUpdateResult.Available(update9)
+        val c = AppUpdateChecker("owner/name", settings, { result }, { now }, versionCode = 8)
+        c.skip(9)
+        assertNull(c.checkAtStartup())
+        now += 60_000
+        assertNull(c.checkAtStartup())
+        assertEquals(io.openshm.patcher.data.BackgroundOutcome.Done, c.checkInBackground())
+        assertEquals(AppUpdateResult.Available(update9), c.checkNow())
+        val update10 = update9.copy(build = 10)
+        result = AppUpdateResult.Available(update10)
+        now += 2 * 60 * 60_000
+        assertEquals(AppUpdateResult.Available(update10), c.checkAtStartup())
+        assertEquals(io.openshm.patcher.data.BackgroundOutcome.Notify(update10), c.checkInBackground())
     }
 }
