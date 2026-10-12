@@ -25,6 +25,13 @@ been tested.
 | Samsung Health Monitor | 1.5.1.022 (watch), 1.4.6.001 (phone) |
 | Phone | Motorola razr fold (non-Samsung) |
 
+## Quick start video
+
+Prefer watching to reading? This 90-second video shows the whole setup, step by step. The screens
+use sample data. Click it to open the full-quality MP4.
+
+[![OpenSHM quick start](docs/media/quick-start.gif)](docs/media/quick-start.mp4)
+
 ## Getting started: the patcher app
 
 The easiest way is **OpenSHM Patcher** (`patcher-app/`). This Android app does the whole job on the

@@ -82,3 +82,6 @@ real Wireless debugging pairing with the same phone (notification, Settings and 
 fake install list, without granting anything; the emulator needs Wi-Fi (`AndroidWifi`) and
 `POST_NOTIFICATIONS` granted. On a software-rendered emulator,
 wait several seconds before capturing.
+
+After replacing screenshots, rebuild the README Quick start video and GIF (`docs/media/`) with
+`scripts/make_quickstart_video.py`; its slide list names the screenshots and captions.
