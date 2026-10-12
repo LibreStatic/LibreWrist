@@ -394,7 +394,7 @@
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Entwicklermodus der Health Platform</string>
-    <string name="devmode_intro">Der Health-Tracking-Dienst kommuniziert nur im Entwicklermodus mit der gepatchten App. Aktiviere ihn auf der Uhr.</string>
+    <string name="devmode_intro">Der Health-Tracking-Dienst spricht nur im Entwicklermodus mit der angepassten App. Der Patcher kann ihn über den Bildschirm der Uhr aktivieren: Halte die Uhr entsperrt und in der Nähe.</string>
     <string name="devmode_step_settings">Öffne die **Einstellungen** auf der Uhr.</string>
     <string name="devmode_step_apps">Gehe zu **Apps**.</string>
     <string name="devmode_step_health_platform">Wähle **Health Platform**.</string>
@@ -402,8 +402,19 @@
     <string name="devmode_open_settings">Health-Platform-Einstellungen auf der Uhr öffnen</string>
     <string name="devmode_waiting">Warte auf den Entwicklermodus</string>
     <string name="devmode_detected">Entwicklermodus ist aktiviert</string>
-    <string name="devmode_check">Jetzt prüfen</string>
+    <string name="devmode_enable">Für mich aktivieren</string>
+    <string name="devmode_enabling">Wird auf der Uhr aktiviert …</string>
+    <string name="devmode_manual_header">Oder von Hand auf der Uhr</string>
     <string name="devmode_skip">Vorerst überspringen</string>
+    <string name="devmode_watch_unreachable">Uhr nicht erreichbar, neuer Versuch</string>
+    <string name="devmode_look_title">Schau auf deine Uhr</string>
+    <string name="devmode_look_message">Die Health-Platform-Einstellungen sind auf der Uhr geöffnet. Tippe immer wieder auf den Titel, bis [Dev mode] erscheint. Dieser Bildschirm erkennt es von selbst.</string>
+    <string name="devmode_not_yet_title">Automatisches Aktivieren fehlgeschlagen</string>
+    <string name="devmode_not_yet_message">[Dev mode] ist in den Health-Platform-Einstellungen auf der Uhr nicht erschienen. Entsperre die Uhr und versuche es erneut, oder tippe selbst 10-mal hintereinander auf den Titel.</string>
+    <string name="devmode_unreachable_title">Uhr nicht erreichbar</string>
+    <string name="devmode_unreachable_message">Prüfe, ob die Uhr eingeschaltet ist, im selben WLAN wie dieses Telefon, und ob Debugging über WLAN noch aktiv ist.</string>
+    <string name="devmode_success_title">Der Entwicklermodus ist aktiv</string>
+    <string name="devmode_success_message">Health Platform akzeptiert jetzt die angepasste App. Weiter zum nächsten Schritt.</string>
 
     <!-- Disable stock apps -->
     <string name="disable_title">Original-App deaktivieren</string>
@@ -678,4 +689,9 @@
     <string name="selfadb_guide_ui_pair_code">Gerät mit Kopplungscode koppeln</string>
     <string name="selfadb_guide_ui_paired">Gekoppelte Geräte</string>
     <string name="selfadb_open_wireless">Kabelloses Debugging öffnen</string>
+    <string name="outcome_acknowledge">Verstanden</string>
+    <string name="phone_adb_error_title">Das ist ein Problem der App</string>
+    <string name="phone_adb_error_message">Das ist ein Problem der App, nicht etwas, das du falsch gemacht hast, und du kannst es nicht selbst beheben. Du kannst weiterhin die Schaltflächen Einstellungen öffnen in jeder Zeile nutzen oder trotzdem fortfahren.</string>
+    <string name="phone_adb_success_title">Alles erledigt</string>
+    <string name="phone_adb_success_message">Weiter zum nächsten Schritt</string>
 </resources>

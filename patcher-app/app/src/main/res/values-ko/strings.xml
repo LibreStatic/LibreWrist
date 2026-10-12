@@ -388,7 +388,7 @@
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Health Platform 개발자 모드</string>
-    <string name="devmode_intro">Health Tracking 서비스는 개발자 모드에서만 패치된 앱과 통신합니다. 워치에서 켜세요.</string>
+    <string name="devmode_intro">Health Tracking 서비스는 개발자 모드에서만 수정된 앱과 통신합니다. 패처가 워치 화면을 통해 켤 수 있습니다. 워치의 잠금을 해제하고 가까이 두세요.</string>
     <string name="devmode_step_settings">워치에서 **설정**을 엽니다.</string>
     <string name="devmode_step_apps">**앱**으로 이동합니다.</string>
     <string name="devmode_step_health_platform">**Health Platform**을 선택합니다.</string>
@@ -396,8 +396,19 @@
     <string name="devmode_open_settings">워치에서 Health Platform 설정 열기</string>
     <string name="devmode_waiting">개발자 모드를 기다리는 중</string>
     <string name="devmode_detected">개발자 모드가 켜져 있습니다</string>
-    <string name="devmode_check">지금 확인</string>
+    <string name="devmode_enable">대신 켜 주기</string>
+    <string name="devmode_enabling">워치에서 켜는 중…</string>
+    <string name="devmode_manual_header">또는 워치에서 직접</string>
     <string name="devmode_skip">나중에 하기</string>
+    <string name="devmode_watch_unreachable">워치에 연결할 수 없어 다시 시도하는 중</string>
+    <string name="devmode_look_title">워치를 확인하세요</string>
+    <string name="devmode_look_message">워치에서 Health Platform 설정이 열렸습니다. [Dev mode]가 나타날 때까지 제목을 계속 탭하세요. 이 화면이 자동으로 감지합니다.</string>
+    <string name="devmode_not_yet_title">자동으로 켜지 못했습니다</string>
+    <string name="devmode_not_yet_message">워치의 Health Platform 설정에 [Dev mode]가 나타나지 않았습니다. 워치 잠금을 해제하고 다시 시도하거나 직접 제목을 연속으로 10번 탭하세요.</string>
+    <string name="devmode_unreachable_title">워치에 연결할 수 없음</string>
+    <string name="devmode_unreachable_message">워치가 켜져 있고 이 휴대전화와 같은 Wi-Fi에 연결되어 있으며 무선 디버깅이 아직 켜져 있는지 확인하세요.</string>
+    <string name="devmode_success_title">개발자 모드가 켜졌습니다</string>
+    <string name="devmode_success_message">이제 Health Platform이 수정된 앱을 허용합니다. 다음 단계로 이동합니다.</string>
 
     <!-- Disable stock apps -->
     <string name="disable_title">기본 앱 끄기</string>
@@ -670,4 +681,9 @@
     <string name="selfadb_guide_ui_pair_code">페어링 코드로 기기 페어링</string>
     <string name="selfadb_guide_ui_paired">페어링된 기기</string>
     <string name="selfadb_open_wireless">무선 디버깅 열기</string>
+    <string name="outcome_acknowledge">확인</string>
+    <string name="phone_adb_error_title">앱의 문제입니다</string>
+    <string name="phone_adb_error_message">앱의 문제이며 사용자가 잘못한 것이 아니고, 직접 해결할 수도 없습니다. 각 행의 설정 열기 버튼을 사용하거나 그대로 계속할 수 있습니다.</string>
+    <string name="phone_adb_success_title">모두 완료</string>
+    <string name="phone_adb_success_message">다음 단계로 넘어갑니다</string>
 </resources>

@@ -406,7 +406,7 @@
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Tryb programisty Health Platform</string>
-    <string name="devmode_intro">Usługa Health Tracking rozmawia z załatanym programem tylko w trybie programisty. Włącz go na zegarku.</string>
+    <string name="devmode_intro">Usługa Health Tracking komunikuje się ze zmodyfikowaną aplikacją tylko w trybie dewelopera. Patcher może go włączyć przez ekran zegarka: trzymaj zegarek odblokowany i w pobliżu.</string>
     <string name="devmode_step_settings">Otwórz **Ustawienia** na zegarku.</string>
     <string name="devmode_step_apps">Przejdź do **Aplikacji**.</string>
     <string name="devmode_step_health_platform">Wybierz **Health Platform**.</string>
@@ -414,8 +414,19 @@
     <string name="devmode_open_settings">Otwórz ustawienia Health Platform na zegarku</string>
     <string name="devmode_waiting">Oczekiwanie na tryb programisty</string>
     <string name="devmode_detected">Tryb programisty jest włączony</string>
-    <string name="devmode_check">Sprawdź teraz</string>
+    <string name="devmode_enable">Włącz za mnie</string>
+    <string name="devmode_enabling">Włączanie na zegarku…</string>
+    <string name="devmode_manual_header">Albo ręcznie na zegarku</string>
     <string name="devmode_skip">Pomiń na razie</string>
+    <string name="devmode_watch_unreachable">Brak połączenia z zegarkiem, ponawiam</string>
+    <string name="devmode_look_title">Spójrz na zegarek</string>
+    <string name="devmode_look_message">Ustawienia Health Platform są otwarte na zegarku. Dotykaj tytułu raz za razem, aż pojawi się [Dev mode]. Ten ekran wykryje to sam.</string>
+    <string name="devmode_not_yet_title">Nie udało się włączyć automatycznie</string>
+    <string name="devmode_not_yet_message">[Dev mode] nie pojawił się w ustawieniach Health Platform na zegarku. Odblokuj zegarek i spróbuj ponownie albo sam dotknij tytułu 10 razy z rzędu.</string>
+    <string name="devmode_unreachable_title">Brak połączenia z zegarkiem</string>
+    <string name="devmode_unreachable_message">Sprawdź, czy zegarek jest włączony, w tej samej sieci Wi-Fi co ten telefon, i czy debugowanie bezprzewodowe nadal jest włączone.</string>
+    <string name="devmode_success_title">Tryb dewelopera jest włączony</string>
+    <string name="devmode_success_message">Health Platform akceptuje teraz zmodyfikowaną aplikację. Przechodzimy do następnego kroku.</string>
 
     <!-- Disable stock apps -->
     <string name="disable_title">Wyłącz standardową aplikację</string>
@@ -694,4 +705,9 @@
     <string name="selfadb_guide_ui_pair_code">Sparuj urządzenie z kodem parowania</string>
     <string name="selfadb_guide_ui_paired">Sparowane urządzenia</string>
     <string name="selfadb_open_wireless">Otwórz debugowanie bezprzewodowe</string>
+    <string name="outcome_acknowledge">Rozumiem</string>
+    <string name="phone_adb_error_title">To problem aplikacji</string>
+    <string name="phone_adb_error_message">To problem aplikacji, a nie Twój błąd, i nie możesz go naprawić samodzielnie. Nadal możesz użyć przycisków Otwórz ustawienia w każdym wierszu lub mimo to kontynuować.</string>
+    <string name="phone_adb_success_title">Wszystko gotowe</string>
+    <string name="phone_adb_success_message">Przechodzimy do następnego kroku</string>
 </resources>

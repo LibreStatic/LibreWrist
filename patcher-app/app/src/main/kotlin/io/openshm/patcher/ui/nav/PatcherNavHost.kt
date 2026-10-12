@@ -36,6 +36,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
@@ -371,6 +372,10 @@ fun PatcherNavHost(
             composable(Route.DevMode.path) {
                 val vm: DevModeViewModel = viewModel()
                 val state by vm.state.collectAsStateWithLifecycle()
+                LifecycleStartEffect(vm) {
+                    vm.startWatching()
+                    onStopOrDispose { vm.stopWatching() }
+                }
                 DevModeScreen(state, vm::onEvent, onContinue = { next(Route.DevMode) }, onBack = back)
             }
             composable(Route.DisableStock.path) {

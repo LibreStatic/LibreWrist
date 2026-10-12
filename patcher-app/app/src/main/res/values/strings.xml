@@ -501,7 +501,7 @@
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Health Platform developer mode</string>
-    <string name="devmode_intro">The Health Tracking service only talks to the patched app in developer mode. Turn it on from the watch.</string>
+    <string name="devmode_intro">The Health Tracking service only talks to the patched app in developer mode. The patcher can turn it on through the watch\'s screen: keep the watch unlocked and nearby.</string>
     <string name="devmode_step_settings">Open **Settings** on the watch.</string>
     <string name="devmode_step_apps">Go to **Apps**.</string>
     <string name="devmode_step_health_platform">Choose **Health Platform**.</string>
@@ -509,8 +509,19 @@
     <string name="devmode_open_settings">Open Health Platform settings on the watch</string>
     <string name="devmode_waiting">Waiting for developer mode</string>
     <string name="devmode_detected">Developer mode is on</string>
-    <string name="devmode_check">Check now</string>
+    <string name="devmode_enable">Turn it on for me</string>
+    <string name="devmode_enabling">Turning it on on the watch…</string>
+    <string name="devmode_manual_header">Or by hand on the watch</string>
     <string name="devmode_skip">Skip for now</string>
+    <string name="devmode_watch_unreachable">Can\'t reach the watch, retrying</string>
+    <string name="devmode_look_title">Look at your watch</string>
+    <string name="devmode_look_message">Health Platform settings are open on the watch. Tap the title again and again until [Dev mode] appears. This screen notices it by itself.</string>
+    <string name="devmode_not_yet_title">Couldn\'t turn it on by itself</string>
+    <string name="devmode_not_yet_message">[Dev mode] didn\'t appear in the Health Platform settings on the watch. Unlock the watch and try again, or tap the title 10 times in a row yourself.</string>
+    <string name="devmode_unreachable_title">Can\'t reach the watch</string>
+    <string name="devmode_unreachable_message">Check that the watch is on, on the same Wi-Fi as this phone, and that Wireless debugging is still on.</string>
+    <string name="devmode_success_title">Developer mode is on</string>
+    <string name="devmode_success_message">Health Platform now accepts the patched app. Moving on to the next step.</string>
 
     <!-- Disable stock apps -->
     <string name="disable_title">Turn off the stock app</string>
@@ -680,4 +691,9 @@
     <string name="selfadb_guide_ui_pair_code">Pair device with pairing code</string>
     <string name="selfadb_guide_ui_paired">Paired devices</string>
     <string name="selfadb_open_wireless">Open Wireless debugging</string>
+    <string name="outcome_acknowledge">Got it</string>
+    <string name="phone_adb_error_title">This is a problem in the app</string>
+    <string name="phone_adb_error_message">This is a problem in the app, not something you did wrong, and you cannot fix it yourself. You can still use the Open settings buttons on each row, or continue anyway.</string>
+    <string name="phone_adb_success_title">All set</string>
+    <string name="phone_adb_success_message">Moving on to the next step</string>
 </resources>

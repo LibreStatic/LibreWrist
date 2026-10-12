@@ -14,6 +14,7 @@ import io.openshm.patcher.ui.screens.customize.CustomizeScreen
 import io.openshm.patcher.ui.screens.devmode.DevModeScreen
 import io.openshm.patcher.ui.screens.disable.DisableStockScreen
 import io.openshm.patcher.ui.screens.home.HomeScreen
+import io.openshm.patcher.ui.screens.install.AdbOutcome
 import io.openshm.patcher.ui.screens.install.InstallPhoneScreen
 import io.openshm.patcher.ui.screens.install.SelfAdbGuide
 import io.openshm.patcher.ui.screens.install.SelfAdbPhase
@@ -113,6 +114,10 @@ internal fun InstallPhoneSample(grants: Boolean = false, adb: SelfAdbPhase? = Se
 @Composable
 internal fun SelfAdbGuideSample(subStep: Int = 0) =
     CompositionLocalProvider(LocalFrozenGuideSubStep provides subStep) { SelfAdbGuide(Modifier.padding(16.dp)) }
+
+@Composable
+internal fun InstallPhoneAdbOutcomeSample(outcome: AdbOutcome) =
+    InstallPhoneScreen(PreviewData.installPhoneAdbOutcome(outcome), {}, {}, {})
 
 @Composable
 internal fun InstallPhoneConflictSample(confirming: Boolean = false) =

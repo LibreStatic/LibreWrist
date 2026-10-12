@@ -388,7 +388,7 @@
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Health Platform 开发者模式</string>
-    <string name="devmode_intro">Health Tracking 服务只有在开发者模式下才会与已打补丁的应用通信。请在手表上开启。</string>
+    <string name="devmode_intro">Health Tracking 服务只有在开发者模式下才会与修改后的应用通信。修补程序可以通过手表屏幕开启它：请保持手表解锁并放在附近。</string>
     <string name="devmode_step_settings">在手表上打开**设置**。</string>
     <string name="devmode_step_apps">前往**应用**。</string>
     <string name="devmode_step_health_platform">选择 **Health Platform**。</string>
@@ -396,8 +396,19 @@
     <string name="devmode_open_settings">在手表上打开 Health Platform 设置</string>
     <string name="devmode_waiting">正在等待开发者模式</string>
     <string name="devmode_detected">开发者模式已开启</string>
-    <string name="devmode_check">立即检查</string>
+    <string name="devmode_enable">帮我开启</string>
+    <string name="devmode_enabling">正在手表上开启…</string>
+    <string name="devmode_manual_header">或在手表上手动操作</string>
     <string name="devmode_skip">暂时跳过</string>
+    <string name="devmode_watch_unreachable">无法连接手表，正在重试</string>
+    <string name="devmode_look_title">请看手表</string>
+    <string name="devmode_look_message">手表上已打开 Health Platform 设置。反复点按标题，直到出现 [Dev mode]。此屏幕会自动检测到。</string>
+    <string name="devmode_not_yet_title">无法自动开启</string>
+    <string name="devmode_not_yet_message">手表上的 Health Platform 设置中没有出现 [Dev mode]。请解锁手表后重试，或自己连续点按标题 10 次。</string>
+    <string name="devmode_unreachable_title">无法连接手表</string>
+    <string name="devmode_unreachable_message">请确认手表已开机、与这部手机连接同一 Wi-Fi，并且无线调试仍处于开启状态。</string>
+    <string name="devmode_success_title">开发者模式已开启</string>
+    <string name="devmode_success_message">Health Platform 现在接受修改后的应用。正在进入下一步。</string>
 
     <!-- Disable stock apps -->
     <string name="disable_title">关闭自带应用</string>
@@ -670,4 +681,9 @@
     <string name="selfadb_guide_ui_pair_code">使用配对码配对设备</string>
     <string name="selfadb_guide_ui_paired">已配对的设备</string>
     <string name="selfadb_open_wireless">打开无线调试</string>
+    <string name="outcome_acknowledge">知道了</string>
+    <string name="phone_adb_error_title">这是应用本身的问题</string>
+    <string name="phone_adb_error_message">这是应用本身的问题，不是你的操作有误，你也无法自行修复。你仍可以使用每一行的“打开设置”按钮，或选择仍然继续。</string>
+    <string name="phone_adb_success_title">全部完成</string>
+    <string name="phone_adb_success_message">进入下一步</string>
 </resources>

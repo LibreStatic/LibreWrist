@@ -388,7 +388,7 @@
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Mode pengembang Health Platform</string>
-    <string name="devmode_intro">Layanan Health Tracking hanya berkomunikasi dengan aplikasi yang dipatch dalam mode pengembang. Aktifkan dari jam.</string>
+    <string name="devmode_intro">Layanan Health Tracking hanya berkomunikasi dengan aplikasi yang dimodifikasi dalam mode developer. Patcher dapat mengaktifkannya melalui layar jam: biarkan jam tidak terkunci dan berada di dekat Anda.</string>
     <string name="devmode_step_settings">Buka **Setelan** di jam.</string>
     <string name="devmode_step_apps">Buka **Aplikasi**.</string>
     <string name="devmode_step_health_platform">Pilih **Health Platform**.</string>
@@ -396,8 +396,19 @@
     <string name="devmode_open_settings">Buka setelan Health Platform di jam</string>
     <string name="devmode_waiting">Menunggu mode pengembang</string>
     <string name="devmode_detected">Mode pengembang aktif</string>
-    <string name="devmode_check">Periksa sekarang</string>
+    <string name="devmode_enable">Aktifkan untuk saya</string>
+    <string name="devmode_enabling">Mengaktifkan di jam…</string>
+    <string name="devmode_manual_header">Atau secara manual di jam</string>
     <string name="devmode_skip">Lewati dulu</string>
+    <string name="devmode_watch_unreachable">Jam tidak terjangkau, mencoba lagi</string>
+    <string name="devmode_look_title">Lihat jam Anda</string>
+    <string name="devmode_look_message">Setelan Health Platform terbuka di jam. Ketuk judulnya berulang kali sampai [Dev mode] muncul. Layar ini akan mendeteksinya sendiri.</string>
+    <string name="devmode_not_yet_title">Tidak bisa mengaktifkan sendiri</string>
+    <string name="devmode_not_yet_message">[Dev mode] tidak muncul di setelan Health Platform pada jam. Buka kunci jam dan coba lagi, atau ketuk sendiri judulnya 10 kali berturut-turut.</string>
+    <string name="devmode_unreachable_title">Jam tidak terjangkau</string>
+    <string name="devmode_unreachable_message">Pastikan jam menyala, berada di Wi-Fi yang sama dengan ponsel ini, dan proses debug nirkabel masih aktif.</string>
+    <string name="devmode_success_title">Mode developer aktif</string>
+    <string name="devmode_success_message">Health Platform kini menerima aplikasi yang dimodifikasi. Lanjut ke langkah berikutnya.</string>
 
     <!-- Disable stock apps -->
     <string name="disable_title">Matikan aplikasi bawaan</string>
@@ -670,4 +681,9 @@
     <string name="selfadb_guide_ui_pair_code">Sandingkan perangkat dengan kode penyandingan</string>
     <string name="selfadb_guide_ui_paired">Perangkat yang disandingkan</string>
     <string name="selfadb_open_wireless">Buka Debugging nirkabel</string>
+    <string name="outcome_acknowledge">Mengerti</string>
+    <string name="phone_adb_error_title">Ini masalah pada aplikasi</string>
+    <string name="phone_adb_error_message">Ini masalah pada aplikasi, bukan kesalahan Anda, dan Anda tidak dapat memperbaikinya sendiri. Anda masih dapat memakai tombol Buka pengaturan di setiap baris atau tetap melanjutkan.</string>
+    <string name="phone_adb_success_title">Semua siap</string>
+    <string name="phone_adb_success_message">Lanjut ke langkah berikutnya</string>
 </resources>

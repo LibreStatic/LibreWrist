@@ -31,6 +31,7 @@ import io.openshm.patcher.data.GrantKind
 import io.openshm.patcher.ui.screens.install.InstallItem
 import io.openshm.patcher.ui.screens.install.SelfAdbPhase
 import io.openshm.patcher.ui.screens.install.SignatureConflict
+import io.openshm.patcher.ui.screens.install.AdbOutcome
 import io.openshm.patcher.ui.screens.install.InstallUiState
 import io.openshm.patcher.device.DetectedWatch
 import io.openshm.patcher.ui.screens.profile.PairedCheck
@@ -227,6 +228,9 @@ internal object PreviewData {
         },
         selfAdb = adb,
     )
+
+    /** The Wireless debugging run ended with [outcome]: the dialog or overlay is up over the list. */
+    fun installPhoneAdbOutcome(outcome: AdbOutcome) = installPhoneGrants(adb = null).copy(adbOutcome = outcome)
 
     /** Health Monitor refused because another key signed the installed copy; optionally with the confirmation open. */
     fun installPhoneConflict(confirming: Boolean = false): InstallUiState {

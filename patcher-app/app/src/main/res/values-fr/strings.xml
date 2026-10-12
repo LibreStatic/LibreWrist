@@ -400,7 +400,7 @@
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Mode développeur de Health Platform</string>
-    <string name="devmode_intro">Le service Health Tracking ne communique avec l\'app patchée qu\'en mode développeur. Activez-le depuis la montre.</string>
+    <string name="devmode_intro">Le service Health Tracking ne communique avec l\'app modifiée qu\'en mode développeur. Le patcher peut l\'activer via l\'écran de la montre : gardez la montre déverrouillée et à proximité.</string>
     <string name="devmode_step_settings">Ouvrez **Paramètres** sur la montre.</string>
     <string name="devmode_step_apps">Allez dans **Applications**.</string>
     <string name="devmode_step_health_platform">Choisissez **Health Platform**.</string>
@@ -408,8 +408,19 @@
     <string name="devmode_open_settings">Ouvrir les paramètres de Health Platform sur la montre</string>
     <string name="devmode_waiting">En attente du mode développeur</string>
     <string name="devmode_detected">Le mode développeur est activé</string>
-    <string name="devmode_check">Vérifier maintenant</string>
+    <string name="devmode_enable">Active-le pour moi</string>
+    <string name="devmode_enabling">Activation sur la montre…</string>
+    <string name="devmode_manual_header">Ou à la main sur la montre</string>
     <string name="devmode_skip">Passer pour l\'instant</string>
+    <string name="devmode_watch_unreachable">Montre injoignable, nouvel essai</string>
+    <string name="devmode_look_title">Regardez votre montre</string>
+    <string name="devmode_look_message">Les paramètres de Health Platform sont ouverts sur la montre. Touchez le titre encore et encore jusqu\'à voir [Dev mode]. Cet écran le détecte tout seul.</string>
+    <string name="devmode_not_yet_title">Impossible de l\'activer automatiquement</string>
+    <string name="devmode_not_yet_message">[Dev mode] n\'est pas apparu dans les paramètres de Health Platform sur la montre. Déverrouillez la montre et réessayez, ou touchez vous-même le titre 10 fois de suite.</string>
+    <string name="devmode_unreachable_title">Montre injoignable</string>
+    <string name="devmode_unreachable_message">Vérifiez que la montre est allumée, sur le même Wi-Fi que ce téléphone, et que le débogage sans fil est toujours activé.</string>
+    <string name="devmode_success_title">Le mode développeur est activé</string>
+    <string name="devmode_success_message">Health Platform accepte maintenant l\'app modifiée. Passage à l\'étape suivante.</string>
 
     <!-- Disable stock apps -->
     <string name="disable_title">Désactivez l\'app d\'origine</string>
@@ -686,4 +697,9 @@
     <string name="selfadb_guide_ui_pair_code">Associer l\'appareil avec un code d\'association</string>
     <string name="selfadb_guide_ui_paired">Appareils associés</string>
     <string name="selfadb_open_wireless">Ouvrir le débogage sans fil</string>
+    <string name="outcome_acknowledge">Compris</string>
+    <string name="phone_adb_error_title">C\'est un problème de l\'appli</string>
+    <string name="phone_adb_error_message">C\'est un problème de l\'appli, pas une erreur de votre part, et vous ne pouvez pas le résoudre vous-même. Vous pouvez toujours utiliser les boutons Ouvrir les réglages de chaque ligne ou continuer quand même.</string>
+    <string name="phone_adb_success_title">Tout est prêt</string>
+    <string name="phone_adb_success_message">Passons à l\'étape suivante</string>
 </resources>

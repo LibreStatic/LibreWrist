@@ -143,7 +143,29 @@ internal fun resolveBuildFiles(state: MutableStateFlow<InstallUiState>, built: B
     return files
 }
 
-private val GRANT_DONE = setOf(CheckStatus.Passed, CheckStatus.Warning)
+internal val GRANT_DONE = setOf(CheckStatus.Passed, CheckStatus.Warning)
+
+/** How the "grant everything with Wireless debugging" run ended, for the dialog or overlay the screen shows. */
+sealed interface AdbOutcome {
+    data object Success : AdbOutcome
+
+    /** [detail] is technical text (an exception, the grants still missing); shown as is. */
+    data class Failure(val detail: String?) : AdbOutcome
+}
+
+/**
+ * Decides the outcome of a Wireless debugging grant run once the access state was read again:
+ * a run that reports failure fails, and so does a "successful" one after which the system still
+ * lacks a required grant of an installed app (optional grants may stay open).
+ */
+internal fun adbOutcomeOf(ok: Boolean, items: List<InstallItem>, errorDetail: String?): AdbOutcome {
+    if (!ok) return AdbOutcome.Failure(errorDetail)
+    val missing = items.filter { it.status == CheckStatus.Passed }
+        .flatMap { item -> item.grants.filter { !it.grant.optional && it.status !in GRANT_DONE }.map { it.grant.name } }
+        .distinct()
+    if (missing.isEmpty()) return AdbOutcome.Success
+    return AdbOutcome.Failure("Applied over ADB but the system still reports these as missing: ${missing.joinToString(", ")}")
+}
 
 private fun failedStatus(row: GrantRow) = if (row.grant.optional) CheckStatus.Warning else CheckStatus.Failed
 

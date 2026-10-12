@@ -394,7 +394,7 @@
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Modo desenvolvedor do Health Platform</string>
-    <string name="devmode_intro">O serviço Health Tracking só se comunica com o app com patch no modo desenvolvedor. Ative-o pelo relógio.</string>
+    <string name="devmode_intro">O serviço Health Tracking só se comunica com o app modificado no modo de desenvolvedor. O patcher pode ativá-lo pela tela do relógio: mantenha o relógio desbloqueado e por perto.</string>
     <string name="devmode_step_settings">Abra **Configurações** no relógio.</string>
     <string name="devmode_step_apps">Vá em **Apps**.</string>
     <string name="devmode_step_health_platform">Escolha **Health Platform**.</string>
@@ -402,8 +402,19 @@
     <string name="devmode_open_settings">Abrir as configurações do Health Platform no relógio</string>
     <string name="devmode_waiting">Aguardando o modo desenvolvedor</string>
     <string name="devmode_detected">O modo desenvolvedor está ativado</string>
-    <string name="devmode_check">Verificar agora</string>
+    <string name="devmode_enable">Ative para mim</string>
+    <string name="devmode_enabling">Ativando no relógio…</string>
+    <string name="devmode_manual_header">Ou manualmente no relógio</string>
     <string name="devmode_skip">Pular por enquanto</string>
+    <string name="devmode_watch_unreachable">Não é possível alcançar o relógio, tentando novamente</string>
+    <string name="devmode_look_title">Olhe para o relógio</string>
+    <string name="devmode_look_message">As configurações do Health Platform estão abertas no relógio. Toque no título repetidamente até aparecer [Dev mode]. Esta tela detecta isso sozinha.</string>
+    <string name="devmode_not_yet_title">Não foi possível ativar sozinho</string>
+    <string name="devmode_not_yet_message">[Dev mode] não apareceu nas configurações do Health Platform no relógio. Desbloqueie o relógio e tente de novo, ou toque você mesmo no título 10 vezes seguidas.</string>
+    <string name="devmode_unreachable_title">Não é possível alcançar o relógio</string>
+    <string name="devmode_unreachable_message">Verifique se o relógio está ligado, no mesmo Wi-Fi deste telefone, e se a depuração sem fio continua ativada.</string>
+    <string name="devmode_success_title">O modo de desenvolvedor está ativado</string>
+    <string name="devmode_success_message">O Health Platform já aceita o app modificado. Indo para o próximo passo.</string>
 
     <!-- Disable stock apps -->
     <string name="disable_title">Desative o app original</string>
@@ -678,4 +689,9 @@
     <string name="selfadb_guide_ui_pair_code">Parear dispositivo com código de pareamento</string>
     <string name="selfadb_guide_ui_paired">Dispositivos pareados</string>
     <string name="selfadb_open_wireless">Abrir depuração sem fio</string>
+    <string name="outcome_acknowledge">Entendi</string>
+    <string name="phone_adb_error_title">É um problema do app</string>
+    <string name="phone_adb_error_message">É um problema do app, não algo que você fez de errado, e você não pode resolvê-lo sozinho. Você ainda pode usar os botões Abrir configurações de cada linha ou continuar mesmo assim.</string>
+    <string name="phone_adb_success_title">Tudo pronto</string>
+    <string name="phone_adb_success_message">Vamos para a próxima etapa</string>
 </resources>

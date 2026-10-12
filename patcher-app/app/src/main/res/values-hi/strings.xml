@@ -394,7 +394,7 @@
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Health Platform डेवलपर मोड</string>
-    <string name="devmode_intro">Health Tracking सेवा सिर्फ़ डेवलपर मोड में पैच किए ऐप से बात करती है। इसे घड़ी से चालू करें।</string>
+    <string name="devmode_intro">Health Tracking सेवा बदले गए ऐप से सिर्फ़ डेवलपर मोड में बात करती है। पैचर इसे घड़ी की स्क्रीन के ज़रिए चालू कर सकता है: घड़ी अनलॉक और पास रखें।</string>
     <string name="devmode_step_settings">घड़ी पर **सेटिंग** खोलें।</string>
     <string name="devmode_step_apps">**ऐप** में जाएँ।</string>
     <string name="devmode_step_health_platform">**Health Platform** चुनें।</string>
@@ -402,8 +402,19 @@
     <string name="devmode_open_settings">घड़ी पर Health Platform सेटिंग खोलें</string>
     <string name="devmode_waiting">डेवलपर मोड की प्रतीक्षा</string>
     <string name="devmode_detected">डेवलपर मोड चालू है</string>
-    <string name="devmode_check">अभी जाँचें</string>
+    <string name="devmode_enable">मेरे लिए चालू करें</string>
+    <string name="devmode_enabling">घड़ी पर चालू किया जा रहा है…</string>
+    <string name="devmode_manual_header">या घड़ी पर खुद करें</string>
     <string name="devmode_skip">अभी छोड़ें</string>
+    <string name="devmode_watch_unreachable">घड़ी तक नहीं पहुँच पा रहे, फिर से कोशिश कर रहे हैं</string>
+    <string name="devmode_look_title">अपनी घड़ी देखें</string>
+    <string name="devmode_look_message">घड़ी पर Health Platform सेटिंग्स खुल गई हैं। [Dev mode] दिखने तक शीर्षक पर बार-बार टैप करें। यह स्क्रीन इसे अपने-आप पहचान लेगी।</string>
+    <string name="devmode_not_yet_title">अपने-आप चालू नहीं हो सका</string>
+    <string name="devmode_not_yet_message">घड़ी पर Health Platform सेटिंग्स में [Dev mode] नहीं दिखा। घड़ी अनलॉक करके फिर कोशिश करें, या खुद शीर्षक पर लगातार 10 बार टैप करें।</string>
+    <string name="devmode_unreachable_title">घड़ी तक नहीं पहुँच पा रहे</string>
+    <string name="devmode_unreachable_message">जाँचें कि घड़ी चालू है, इस फ़ोन वाले ही Wi-Fi पर है, और वायरलेस डीबगिंग अब भी चालू है।</string>
+    <string name="devmode_success_title">डेवलपर मोड चालू है</string>
+    <string name="devmode_success_message">Health Platform अब बदले गए ऐप को स्वीकार करता है। अगले चरण पर चल रहे हैं।</string>
 
     <!-- Disable stock apps -->
     <string name="disable_title">स्टॉक ऐप बंद करें</string>
@@ -678,4 +689,9 @@
     <string name="selfadb_guide_ui_pair_code">पेयरिंग कोड से डिवाइस पेयर करें</string>
     <string name="selfadb_guide_ui_paired">पेयर किए गए डिवाइस</string>
     <string name="selfadb_open_wireless">वायरलेस डीबगिंग खोलें</string>
+    <string name="outcome_acknowledge">समझ गया</string>
+    <string name="phone_adb_error_title">यह ऐप की समस्या है</string>
+    <string name="phone_adb_error_message">यह ऐप की समस्या है, आपकी कोई गलती नहीं है, और आप इसे खुद ठीक नहीं कर सकते। आप हर पंक्ति के सेटिंग खोलें बटन इस्तेमाल कर सकते हैं या फिर भी आगे बढ़ सकते हैं।</string>
+    <string name="phone_adb_success_title">सब तैयार है</string>
+    <string name="phone_adb_success_message">अगले चरण पर चलते हैं</string>
 </resources>

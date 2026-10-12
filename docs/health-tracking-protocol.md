@@ -452,6 +452,12 @@ A clean client defines its own error reporting; these codes have no meaning to t
   `com.samsung.android.service.health.intent.action.START_SETTINGS_ACTIVITY`) by tapping one specific
   element of that screen 10 times, each tap within 10 seconds of the previous one. Each 10-tap
   sequence flips the flag. Turning it off also turns off the dependent "feature mode" flag.
+- On the owner's watch (Health Platform 1.7.00.05) the element is the screen title, resource id
+  `com.samsung.android.service.health:id/title`. While the flag is on, the screen shows a subtitle
+  `[Dev mode]` (resource id `...:id/dev_mode_subtitle`, same text in every language) under the
+  title. The patcher reads both from a UI Automator dump over watch ADB, so it can detect the flag
+  and turn it on (10 `input tap`s on the title, only while the subtitle is absent, since the taps
+  toggle).
 - On change the service sends a package-scoped broadcast to itself,
   `com.samsung.android.service.health.intent.action.SETTINGS_CHANGED_DEV_MODE`, with boolean extra
   `is_enabled`. Other apps cannot receive it, so a client cannot observe the flag directly. The only
@@ -475,9 +481,7 @@ A clean client defines its own error reporting; these codes have no meaning to t
    whether batches are ever missing.
 5. **Lead-off semantics in practice**: confirm 0 / 5 for contact / no contact at index 0, and how
    often lead-off changes are reported.
-6. **Developer mode element**: which element of the Health Platform settings screen receives the
-   10 taps (believed to be a title or version label). Confirm the dev-mode state on the owner's
-   watch (log tag shows "isDeveloperMode" on each registration).
+6. **Developer mode element**: confirmed, see section 8 (the title, `id/title`).
 7. **Policy outcome for the patched SHM**: confirm that without developer mode the patched,
    re-signed SHM gets SDK_POLICY_ERROR (signature mismatch), and whether the unmodified SHM package
    name has a server policy at all.

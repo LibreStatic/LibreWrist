@@ -22,7 +22,9 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import io.openshm.patcher.ui.components.AppErrorDialog
 import io.openshm.patcher.ui.components.OutlinedAction
+import io.openshm.patcher.ui.components.SuccessOverlay
 import io.openshm.patcher.ui.components.PAIRING_CODE_LENGTH
 import io.openshm.patcher.ui.components.PairingCodeField
 import io.openshm.patcher.ui.components.QuietAction
@@ -102,6 +104,8 @@ data class InstallUiState(
     val conflict: SignatureConflict? = null,
     /** The confirmation dialog of the reinstall fallback is open (only with a [conflict]). */
     val confirmingReinstall: Boolean = false,
+    /** How the last Wireless debugging grant run ended, until the screen has shown it; phone screen only. */
+    val adbOutcome: AdbOutcome? = null,
 ) {
     /** Everything is installed but some access is still open: the user may go on without it. */
     val canSkipGrants: Boolean get() = !running && !done && items.isNotEmpty() && items.all { it.status == CheckStatus.Passed }
@@ -136,6 +140,9 @@ sealed interface InstallEvent {
 
     /** The user confirmed losing the installed copy's data: uninstall it, then install again. */
     data object ConfirmReinstall : InstallEvent
+
+    /** The error dialog of a Wireless debugging run was acknowledged, or its success overlay ran out. */
+    data object AcknowledgeAdbOutcome : InstallEvent
 }
 
 @Composable
@@ -319,6 +326,25 @@ private fun InstallStep(
                     }
                 }
             }
+        }
+    }
+    if (phone) {
+        when (val outcome = state.adbOutcome) {
+            null -> Unit
+            AdbOutcome.Success -> SuccessOverlay(
+                title = stringResource(R.string.phone_adb_success_title),
+                message = stringResource(R.string.phone_adb_success_message),
+                onFinished = {
+                    onEvent(InstallEvent.AcknowledgeAdbOutcome)
+                    onContinue()
+                },
+            )
+            is AdbOutcome.Failure -> AppErrorDialog(
+                title = stringResource(R.string.phone_adb_error_title),
+                message = stringResource(R.string.phone_adb_error_message),
+                detail = outcome.detail,
+                onAcknowledge = { onEvent(InstallEvent.AcknowledgeAdbOutcome) },
+            )
         }
     }
     val conflict = state.conflict

@@ -388,7 +388,7 @@
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Health Platform 開發人員模式</string>
-    <string name="devmode_intro">Health Tracking 服務只有在開發人員模式下才會與已修補的應用程式通訊。請在手錶上開啟。</string>
+    <string name="devmode_intro">Health Tracking 服務只有在開發人員模式下才會與修改過的應用程式通訊。修補程式可以透過手錶螢幕開啟它：請保持手錶解鎖並放在附近。</string>
     <string name="devmode_step_settings">在手錶上開啟**設定**。</string>
     <string name="devmode_step_apps">前往**應用程式**。</string>
     <string name="devmode_step_health_platform">選擇 **Health Platform**。</string>
@@ -396,8 +396,19 @@
     <string name="devmode_open_settings">在手錶上開啟 Health Platform 設定</string>
     <string name="devmode_waiting">正在等待開發人員模式</string>
     <string name="devmode_detected">開發人員模式已開啟</string>
-    <string name="devmode_check">立即檢查</string>
+    <string name="devmode_enable">幫我開啟</string>
+    <string name="devmode_enabling">正在手錶上開啟…</string>
+    <string name="devmode_manual_header">或在手錶上手動操作</string>
     <string name="devmode_skip">暫時略過</string>
+    <string name="devmode_watch_unreachable">無法連線到手錶，正在重試</string>
+    <string name="devmode_look_title">請看手錶</string>
+    <string name="devmode_look_message">手錶上已開啟 Health Platform 設定。反覆輕觸標題，直到出現 [Dev mode]。這個畫面會自動偵測。</string>
+    <string name="devmode_not_yet_title">無法自動開啟</string>
+    <string name="devmode_not_yet_message">手錶上的 Health Platform 設定中沒有出現 [Dev mode]。請解鎖手錶後再試一次，或自己連續輕觸標題 10 次。</string>
+    <string name="devmode_unreachable_title">無法連線到手錶</string>
+    <string name="devmode_unreachable_message">請確認手錶已開機、與這支手機連線到同一個 Wi-Fi，且無線偵錯仍為開啟狀態。</string>
+    <string name="devmode_success_title">開發人員模式已開啟</string>
+    <string name="devmode_success_message">Health Platform 現在接受修改過的應用程式。正在前往下一步。</string>
 
     <!-- Disable stock apps -->
     <string name="disable_title">關閉內建應用程式</string>
@@ -670,4 +681,9 @@
     <string name="selfadb_guide_ui_pair_code">使用配對碼配對裝置</string>
     <string name="selfadb_guide_ui_paired">已配對的裝置</string>
     <string name="selfadb_open_wireless">開啟無線偵錯</string>
+    <string name="outcome_acknowledge">知道了</string>
+    <string name="phone_adb_error_title">這是應用程式本身的問題</string>
+    <string name="phone_adb_error_message">這是應用程式本身的問題，不是你的操作有誤，你也無法自行修復。你仍可以使用每一列的「開啟設定」按鈕，或選擇仍然繼續。</string>
+    <string name="phone_adb_success_title">全部完成</string>
+    <string name="phone_adb_success_message">前往下一步</string>
 </resources>

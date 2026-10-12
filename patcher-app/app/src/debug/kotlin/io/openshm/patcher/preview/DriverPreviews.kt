@@ -1,5 +1,6 @@
 package io.openshm.patcher.preview
 
+import io.openshm.patcher.ui.screens.install.AdbOutcome
 import io.openshm.patcher.ui.screens.build.KeyBackupStatus
 import io.openshm.patcher.ui.screens.build.ManualBackupDialog
 import io.openshm.patcher.ui.screens.welcome.SkipDialog
@@ -263,6 +264,14 @@ fun InstallPhoneGrantsDriver() = PreviewHost(ColorMode.Fallback) { InstallPhoneS
 
 @Composable
 fun InstallPhoneAdbReadyDriver() = PreviewHost(ColorMode.Fallback) { InstallPhoneSample(grants = true, adb = null) }
+
+@Composable
+fun InstallPhoneAdbSuccessDriver() = PreviewHost(ColorMode.Fallback) { InstallPhoneAdbOutcomeSample(AdbOutcome.Success) }
+
+@Composable
+fun InstallPhoneAdbFailureDriver() = PreviewHost(ColorMode.Fallback) {
+    InstallPhoneAdbOutcomeSample(AdbOutcome.Failure("Applied over ADB but the system still reports these as missing: ANSWER_PHONE_CALLS, READ_CALL_LOG"))
+}
 
 @Composable
 fun InstallPhoneAdbWaitingDriver() = PreviewHost(ColorMode.Fallback) { InstallPhoneSample(grants = true, adb = SelfAdbPhase.WaitingForService) }

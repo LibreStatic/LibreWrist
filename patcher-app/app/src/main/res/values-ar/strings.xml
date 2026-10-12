@@ -418,7 +418,7 @@
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">وضع المطور في Health Platform</string>
-    <string name="devmode_intro">لا تتحدث خدمة Health Tracking مع التطبيق المصحَّح إلا في وضع المطور. فعّله من الساعة.</string>
+    <string name="devmode_intro">لا تتواصل خدمة Health Tracking مع التطبيق المعدّل إلا في وضع المطوّر. يمكن للأداة تفعيله عبر شاشة الساعة: أبقِ الساعة غير مقفلة وقريبة.</string>
     <string name="devmode_step_settings">افتح **الإعدادات** على الساعة.</string>
     <string name="devmode_step_apps">انتقل إلى **التطبيقات**.</string>
     <string name="devmode_step_health_platform">اختر **Health Platform**.</string>
@@ -426,8 +426,19 @@
     <string name="devmode_open_settings">فتح إعدادات Health Platform على الساعة</string>
     <string name="devmode_waiting">في انتظار وضع المطور</string>
     <string name="devmode_detected">وضع المطور مفعّل</string>
-    <string name="devmode_check">افحص الآن</string>
+    <string name="devmode_enable">فعّله نيابةً عني</string>
+    <string name="devmode_enabling">جارٍ التفعيل على الساعة…</string>
+    <string name="devmode_manual_header">أو يدويًا على الساعة</string>
     <string name="devmode_skip">تخطَّ الآن</string>
+    <string name="devmode_watch_unreachable">تعذّر الوصول إلى الساعة، جارٍ إعادة المحاولة</string>
+    <string name="devmode_look_title">انظر إلى ساعتك</string>
+    <string name="devmode_look_message">فُتحت إعدادات Health Platform على الساعة. انقر على العنوان مرارًا حتى يظهر [Dev mode]. ستكتشف هذه الشاشة ذلك تلقائيًا.</string>
+    <string name="devmode_not_yet_title">تعذّر التفعيل تلقائيًا</string>
+    <string name="devmode_not_yet_message">لم يظهر [Dev mode] في إعدادات Health Platform على الساعة. افتح قفل الساعة وحاول مرة أخرى، أو انقر بنفسك على العنوان 10 مرات متتالية.</string>
+    <string name="devmode_unreachable_title">تعذّر الوصول إلى الساعة</string>
+    <string name="devmode_unreachable_message">تأكد من أن الساعة تعمل، وأنها على شبكة Wi-Fi نفسها التي يستخدمها هذا الهاتف، وأن تصحيح الأخطاء اللاسلكي ما زال مفعّلًا.</string>
+    <string name="devmode_success_title">وضع المطوّر مفعّل</string>
+    <string name="devmode_success_message">أصبحت Health Platform تقبل التطبيق المعدّل. ننتقل إلى الخطوة التالية.</string>
 
     <!-- Disable stock apps -->
     <string name="disable_title">أوقف التطبيق الأصلي</string>
@@ -710,4 +721,9 @@
     <string name="selfadb_guide_ui_pair_code">إقران الجهاز باستخدام رمز الإقران</string>
     <string name="selfadb_guide_ui_paired">الأجهزة المقترنة</string>
     <string name="selfadb_open_wireless">فتح تصحيح الأخطاء اللاسلكي</string>
+    <string name="outcome_acknowledge">حسنًا</string>
+    <string name="phone_adb_error_title">هذه مشكلة في التطبيق</string>
+    <string name="phone_adb_error_message">هذه مشكلة في التطبيق وليست خطأً منك، ولا يمكنك إصلاحها بنفسك. لا يزال بإمكانك استخدام أزرار فتح الإعدادات في كل صف أو المتابعة على أي حال.</string>
+    <string name="phone_adb_success_title">كل شيء جاهز</string>
+    <string name="phone_adb_success_message">ننتقل إلى الخطوة التالية</string>
 </resources>

@@ -388,7 +388,7 @@
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Health Platformの開発者モード</string>
-    <string name="devmode_intro">Health Trackingサービスは、開発者モードのときだけパッチ適用済みアプリと通信します。ウォッチ側でオンにしてください。</string>
+    <string name="devmode_intro">Health Tracking サービスは、デベロッパー モードのときだけ変更済みアプリと通信します。パッチャーはウォッチの画面からオンにできます。ウォッチのロックを解除し、近くに置いてください。</string>
     <string name="devmode_step_settings">ウォッチで**設定**を開きます。</string>
     <string name="devmode_step_apps">**アプリ**に進みます。</string>
     <string name="devmode_step_health_platform">**Health Platform**を選びます。</string>
@@ -396,8 +396,19 @@
     <string name="devmode_open_settings">ウォッチでHealth Platformの設定を開く</string>
     <string name="devmode_waiting">開発者モードを待っています</string>
     <string name="devmode_detected">開発者モードがオンです</string>
-    <string name="devmode_check">今すぐ確認</string>
+    <string name="devmode_enable">自動でオンにする</string>
+    <string name="devmode_enabling">ウォッチでオンにしています…</string>
+    <string name="devmode_manual_header">またはウォッチで手動で</string>
     <string name="devmode_skip">今はスキップ</string>
+    <string name="devmode_watch_unreachable">ウォッチに接続できません。再試行しています</string>
+    <string name="devmode_look_title">ウォッチを見てください</string>
+    <string name="devmode_look_message">ウォッチで Health Platform の設定が開きました。[Dev mode] が表示されるまでタイトルを何度もタップしてください。この画面が自動で検出します。</string>
+    <string name="devmode_not_yet_title">自動でオンにできませんでした</string>
+    <string name="devmode_not_yet_message">ウォッチの Health Platform 設定に [Dev mode] が表示されませんでした。ウォッチのロックを解除してもう一度お試しいただくか、ご自身でタイトルを続けて 10 回タップしてください。</string>
+    <string name="devmode_unreachable_title">ウォッチに接続できません</string>
+    <string name="devmode_unreachable_message">ウォッチの電源が入っていて、このスマートフォンと同じ Wi-Fi に接続され、ワイヤレス デバッグがオンのままか確認してください。</string>
+    <string name="devmode_success_title">デベロッパー モードがオンです</string>
+    <string name="devmode_success_message">Health Platform が変更済みのアプリを受け入れるようになりました。次のステップに進みます。</string>
 
     <!-- Disable stock apps -->
     <string name="disable_title">標準アプリをオフにする</string>
@@ -670,4 +681,9 @@
     <string name="selfadb_guide_ui_pair_code">ペア設定コードによるデバイスのペア設定</string>
     <string name="selfadb_guide_ui_paired">ペア設定済みのデバイス</string>
     <string name="selfadb_open_wireless">ワイヤレスデバッグを開く</string>
+    <string name="outcome_acknowledge">了解</string>
+    <string name="phone_adb_error_title">アプリ側の問題です</string>
+    <string name="phone_adb_error_message">これはアプリ側の問題で、あなたの操作ミスではなく、ご自身では解決できません。各行の「設定を開く」ボタンを使うか、そのまま続行できます。</string>
+    <string name="phone_adb_success_title">準備完了</string>
+    <string name="phone_adb_success_message">次のステップへ進みます</string>
 </resources>

@@ -406,7 +406,7 @@
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Режим розробника Health Platform</string>
-    <string name="devmode_intro">Служба Health Tracking спілкується з пропатченим застосунком лише в режимі розробника. Увімкніть його на годиннику.</string>
+    <string name="devmode_intro">Служба Health Tracking працює зі зміненим застосунком лише в режимі розробника. Патчер може ввімкнути його через екран годинника: тримайте годинник розблокованим і поруч.</string>
     <string name="devmode_step_settings">Відкрийте **Налаштування** на годиннику.</string>
     <string name="devmode_step_apps">Перейдіть до **Застосунків**.</string>
     <string name="devmode_step_health_platform">Виберіть **Health Platform**.</string>
@@ -414,8 +414,19 @@
     <string name="devmode_open_settings">Відкрити налаштування Health Platform на годиннику</string>
     <string name="devmode_waiting">Очікування режиму розробника</string>
     <string name="devmode_detected">Режим розробника ввімкнено</string>
-    <string name="devmode_check">Перевірити зараз</string>
+    <string name="devmode_enable">Увімкнути за мене</string>
+    <string name="devmode_enabling">Вмикання на годиннику…</string>
+    <string name="devmode_manual_header">Або вручну на годиннику</string>
     <string name="devmode_skip">Пропустити</string>
+    <string name="devmode_watch_unreachable">Годинник недоступний, повторна спроба</string>
+    <string name="devmode_look_title">Подивіться на годинник</string>
+    <string name="devmode_look_message">На годиннику відкрито налаштування Health Platform. Натискайте на заголовок знову і знову, доки не з\'явиться [Dev mode]. Цей екран помітить це сам.</string>
+    <string name="devmode_not_yet_title">Не вдалося ввімкнути автоматично</string>
+    <string name="devmode_not_yet_message">[Dev mode] не з\'явився в налаштуваннях Health Platform на годиннику. Розблокуйте годинник і спробуйте ще раз або самі натисніть на заголовок 10 разів поспіль.</string>
+    <string name="devmode_unreachable_title">Годинник недоступний</string>
+    <string name="devmode_unreachable_message">Переконайтеся, що годинник увімкнений, у тій самій мережі Wi-Fi, що й цей телефон, і що бездротове налагодження досі ввімкнене.</string>
+    <string name="devmode_success_title">Режим розробника ввімкнено</string>
+    <string name="devmode_success_message">Health Platform тепер приймає змінений застосунок. Переходимо до наступного кроку.</string>
 
     <!-- Disable stock apps -->
     <string name="disable_title">Вимкніть стандартний застосунок</string>
@@ -694,4 +705,9 @@
     <string name="selfadb_guide_ui_pair_code">Підключити пристрій за кодом підключення</string>
     <string name="selfadb_guide_ui_paired">Підключені пристрої</string>
     <string name="selfadb_open_wireless">Відкрити бездротове налагодження</string>
+    <string name="outcome_acknowledge">Зрозуміло</string>
+    <string name="phone_adb_error_title">Це проблема застосунку</string>
+    <string name="phone_adb_error_message">Це проблема застосунку, а не ваша помилка, і виправити її самостійно не можна. Ви як і раніше можете скористатися кнопками «Відкрити налаштування» в кожному рядку або все одно продовжити.</string>
+    <string name="phone_adb_success_title">Усе готово</string>
+    <string name="phone_adb_success_message">Переходимо до наступного кроку</string>
 </resources>

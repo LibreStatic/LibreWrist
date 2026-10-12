@@ -394,7 +394,7 @@
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Modalità sviluppatore di Health Platform</string>
-    <string name="devmode_intro">Il servizio Health Tracking comunica con l\'app con patch solo in modalità sviluppatore. Attivala dall\'orologio.</string>
+    <string name="devmode_intro">Il servizio Health Tracking comunica con l\'app modificata solo in modalità sviluppatore. Il patcher può attivarla tramite lo schermo dell\'orologio: tieni l\'orologio sbloccato e vicino.</string>
     <string name="devmode_step_settings">Apri **Impostazioni** sull\'orologio.</string>
     <string name="devmode_step_apps">Vai su **App**.</string>
     <string name="devmode_step_health_platform">Scegli **Health Platform**.</string>
@@ -402,8 +402,19 @@
     <string name="devmode_open_settings">Apri le impostazioni di Health Platform sull\'orologio</string>
     <string name="devmode_waiting">In attesa della modalità sviluppatore</string>
     <string name="devmode_detected">La modalità sviluppatore è attiva</string>
-    <string name="devmode_check">Controlla ora</string>
+    <string name="devmode_enable">Attivala per me</string>
+    <string name="devmode_enabling">Attivazione sull\'orologio…</string>
+    <string name="devmode_manual_header">Oppure a mano sull\'orologio</string>
     <string name="devmode_skip">Salta per ora</string>
+    <string name="devmode_watch_unreachable">Orologio non raggiungibile, nuovo tentativo</string>
+    <string name="devmode_look_title">Guarda l\'orologio</string>
+    <string name="devmode_look_message">Le impostazioni di Health Platform sono aperte sull\'orologio. Tocca il titolo più volte finché compare [Dev mode]. Questa schermata lo rileva da sola.</string>
+    <string name="devmode_not_yet_title">Impossibile attivarla da sola</string>
+    <string name="devmode_not_yet_message">[Dev mode] non è comparso nelle impostazioni di Health Platform sull\'orologio. Sblocca l\'orologio e riprova, oppure tocca tu il titolo 10 volte di seguito.</string>
+    <string name="devmode_unreachable_title">Orologio non raggiungibile</string>
+    <string name="devmode_unreachable_message">Controlla che l\'orologio sia acceso, sulla stessa rete Wi-Fi di questo telefono, e che il debug wireless sia ancora attivo.</string>
+    <string name="devmode_success_title">La modalità sviluppatore è attiva</string>
+    <string name="devmode_success_message">Health Platform ora accetta l\'app modificata. Si passa al passaggio successivo.</string>
 
     <!-- Disable stock apps -->
     <string name="disable_title">Disattiva l\'app originale</string>
@@ -678,4 +689,9 @@
     <string name="selfadb_guide_ui_pair_code">Associa dispositivo con codice di associazione</string>
     <string name="selfadb_guide_ui_paired">Dispositivi associati</string>
     <string name="selfadb_open_wireless">Apri il debug wireless</string>
+    <string name="outcome_acknowledge">Ho capito</string>
+    <string name="phone_adb_error_title">È un problema dell\'app</string>
+    <string name="phone_adb_error_message">È un problema dell\'app, non un tuo errore, e non puoi risolverlo da solo. Puoi comunque usare i pulsanti Apri impostazioni di ogni riga o continuare comunque.</string>
+    <string name="phone_adb_success_title">Tutto pronto</string>
+    <string name="phone_adb_success_message">Passiamo al passo successivo</string>
 </resources>

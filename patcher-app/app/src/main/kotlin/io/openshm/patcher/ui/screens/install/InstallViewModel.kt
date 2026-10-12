@@ -107,6 +107,7 @@ class InstallPhoneViewModel(application: Application) : AndroidViewModel(applica
             InstallEvent.RequestReinstall -> requestReinstall(_state)
             InstallEvent.CancelReinstall -> cancelReinstall(_state)
             InstallEvent.ConfirmReinstall -> reinstall()
+            InstallEvent.AcknowledgeAdbOutcome -> _state.update { it.copy(adbOutcome = null) }
         }
     }
 
@@ -166,13 +167,16 @@ class InstallPhoneViewModel(application: Application) : AndroidViewModel(applica
         }
         if (snapshot.phase == SelfAdbPhase.Failed) {
             if (snapshot.needsNotifications) fail(_state, R.string.install_error_notifications, null)
-            else fail(_state, R.string.phone_adb_failed, snapshot.error)
+            else {
+                fail(_state, R.string.phone_adb_failed, snapshot.error)
+                _state.update { it.copy(adbOutcome = AdbOutcome.Failure(snapshot.error)) }
+            }
         }
         if (snapshot.phase == SelfAdbPhase.Granting) {
             val client = SelfAdbController.takeClient(SelfAdbPurpose.PhoneGrants) ?: return
             viewModelScope.launch(Dispatchers.IO) {
                 try {
-                    runner.grantWithAdb(_state) { pkg, grants ->
+                    val ok = runner.grantWithAdb(_state) { pkg, grants ->
                         GrantApplier(client, GrantTarget.PHONE).apply(pkg, grants).also { report ->
                             Log.i(TAG, "grants for $pkg: ${report.outcomes.count { it.applied }} of ${report.outcomes.size} applied")
                         }
@@ -180,6 +184,11 @@ class InstallPhoneViewModel(application: Application) : AndroidViewModel(applica
                     _state.value.items.forEach { item ->
                         Log.i(TAG, "after refresh ${item.packageName}: ${item.grants.joinToString { "${it.grant.name}=${it.status}" }}")
                     }
+                    val outcome = adbOutcomeOf(ok, _state.value.items, _state.value.errorDetail)
+                    _state.update { it.copy(adbOutcome = outcome) }
+                } catch (e: RuntimeException) {
+                    Log.w(TAG, "grant run failed", e)
+                    _state.update { it.copy(adbOutcome = AdbOutcome.Failure(e.toString())) }
                 } finally {
                     SelfAdbController.finish()
                 }

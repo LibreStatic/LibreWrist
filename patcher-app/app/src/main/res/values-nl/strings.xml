@@ -394,7 +394,7 @@
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Ontwikkelaarsmodus van Health Platform</string>
-    <string name="devmode_intro">De Health Tracking-service praat alleen met de gepatchte app in de ontwikkelaarsmodus. Zet deze aan vanaf het horloge.</string>
+    <string name="devmode_intro">De Health Tracking-service praat alleen in ontwikkelaarsmodus met de aangepaste app. De patcher kan die via het scherm van het horloge aanzetten: houd het horloge ontgrendeld en in de buurt.</string>
     <string name="devmode_step_settings">Open **Instellingen** op het horloge.</string>
     <string name="devmode_step_apps">Ga naar **Apps**.</string>
     <string name="devmode_step_health_platform">Kies **Health Platform**.</string>
@@ -402,8 +402,19 @@
     <string name="devmode_open_settings">Instellingen van Health Platform op het horloge openen</string>
     <string name="devmode_waiting">Wachten op ontwikkelaarsmodus</string>
     <string name="devmode_detected">Ontwikkelaarsmodus staat aan</string>
-    <string name="devmode_check">Nu controleren</string>
+    <string name="devmode_enable">Zet het voor me aan</string>
+    <string name="devmode_enabling">Wordt aangezet op het horloge…</string>
+    <string name="devmode_manual_header">Of met de hand op het horloge</string>
     <string name="devmode_skip">Nu overslaan</string>
+    <string name="devmode_watch_unreachable">Horloge niet bereikbaar, opnieuw proberen</string>
+    <string name="devmode_look_title">Kijk op je horloge</string>
+    <string name="devmode_look_message">De Health Platform-instellingen staan open op het horloge. Tik steeds opnieuw op de titel tot [Dev mode] verschijnt. Dit scherm merkt het vanzelf.</string>
+    <string name="devmode_not_yet_title">Kon het niet zelf aanzetten</string>
+    <string name="devmode_not_yet_message">[Dev mode] verscheen niet in de Health Platform-instellingen op het horloge. Ontgrendel het horloge en probeer het opnieuw, of tik zelf 10 keer achter elkaar op de titel.</string>
+    <string name="devmode_unreachable_title">Horloge niet bereikbaar</string>
+    <string name="devmode_unreachable_message">Controleer of het horloge aan staat, op hetzelfde wifi-netwerk als deze telefoon, en of draadloze foutopsporing nog aan staat.</string>
+    <string name="devmode_success_title">Ontwikkelaarsmodus staat aan</string>
+    <string name="devmode_success_message">Health Platform accepteert nu de aangepaste app. Door naar de volgende stap.</string>
 
     <!-- Disable stock apps -->
     <string name="disable_title">Zet de standaardapp uit</string>
@@ -678,4 +689,9 @@
     <string name="selfadb_guide_ui_pair_code">Apparaat koppelen met koppelcode</string>
     <string name="selfadb_guide_ui_paired">Gekoppelde apparaten</string>
     <string name="selfadb_open_wireless">Draadloze foutopsporing openen</string>
+    <string name="outcome_acknowledge">Begrepen</string>
+    <string name="phone_adb_error_title">Dit is een probleem in de app</string>
+    <string name="phone_adb_error_message">Dit is een probleem in de app, niet iets wat je fout hebt gedaan, en je kunt het niet zelf oplossen. Je kunt nog steeds de knoppen Instellingen openen bij elke rij gebruiken of toch doorgaan.</string>
+    <string name="phone_adb_success_title">Alles klaar</string>
+    <string name="phone_adb_success_message">Door naar de volgende stap</string>
 </resources>

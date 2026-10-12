@@ -406,7 +406,7 @@
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Режим разработчика Health Platform</string>
-    <string name="devmode_intro">Служба Health Tracking общается с пропатченным приложением только в режиме разработчика. Включите его на часах.</string>
+    <string name="devmode_intro">Служба Health Tracking работает с изменённым приложением только в режиме разработчика. Патчер может включить его через экран часов: держите часы разблокированными и рядом.</string>
     <string name="devmode_step_settings">Откройте **Настройки** на часах.</string>
     <string name="devmode_step_apps">Перейдите в **Приложения**.</string>
     <string name="devmode_step_health_platform">Выберите **Health Platform**.</string>
@@ -414,8 +414,19 @@
     <string name="devmode_open_settings">Открыть настройки Health Platform на часах</string>
     <string name="devmode_waiting">Ожидание режима разработчика</string>
     <string name="devmode_detected">Режим разработчика включён</string>
-    <string name="devmode_check">Проверить сейчас</string>
+    <string name="devmode_enable">Включить за меня</string>
+    <string name="devmode_enabling">Включение на часах…</string>
+    <string name="devmode_manual_header">Или вручную на часах</string>
     <string name="devmode_skip">Пропустить</string>
+    <string name="devmode_watch_unreachable">Часы недоступны, повторная попытка</string>
+    <string name="devmode_look_title">Посмотрите на часы</string>
+    <string name="devmode_look_message">На часах открыты настройки Health Platform. Нажимайте на заголовок снова и снова, пока не появится [Dev mode]. Этот экран заметит это сам.</string>
+    <string name="devmode_not_yet_title">Не удалось включить автоматически</string>
+    <string name="devmode_not_yet_message">[Dev mode] не появился в настройках Health Platform на часах. Разблокируйте часы и повторите попытку или сами нажмите на заголовок 10 раз подряд.</string>
+    <string name="devmode_unreachable_title">Часы недоступны</string>
+    <string name="devmode_unreachable_message">Убедитесь, что часы включены, подключены к той же сети Wi-Fi, что и этот телефон, и что отладка по Wi-Fi всё ещё включена.</string>
+    <string name="devmode_success_title">Режим разработчика включён</string>
+    <string name="devmode_success_message">Health Platform теперь принимает изменённое приложение. Переходим к следующему шагу.</string>
 
     <!-- Disable stock apps -->
     <string name="disable_title">Отключите оригинальное приложение</string>
@@ -694,4 +705,9 @@
     <string name="selfadb_guide_ui_pair_code">Подключить устройство по коду подключения</string>
     <string name="selfadb_guide_ui_paired">Подключённые устройства</string>
     <string name="selfadb_open_wireless">Открыть беспроводную отладку</string>
+    <string name="outcome_acknowledge">Понятно</string>
+    <string name="phone_adb_error_title">Это проблема приложения</string>
+    <string name="phone_adb_error_message">Это проблема приложения, а не ваша ошибка, и исправить её самостоятельно нельзя. Вы по-прежнему можете использовать кнопки «Открыть настройки» в каждой строке или всё равно продолжить.</string>
+    <string name="phone_adb_success_title">Всё готово</string>
+    <string name="phone_adb_success_message">Переходим к следующему шагу</string>
 </resources>

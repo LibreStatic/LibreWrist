@@ -394,7 +394,7 @@
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Health Platform geliştirici modu</string>
-    <string name="devmode_intro">Health Tracking hizmeti yamalı uygulamayla yalnızca geliştirici modunda konuşur. Bunu saatten açın.</string>
+    <string name="devmode_intro">Health Tracking hizmeti, değiştirilmiş uygulamayla yalnızca geliştirici modunda konuşur. Patcher bunu saatin ekranı üzerinden açabilir: saati kilitsiz ve yakında tut.</string>
     <string name="devmode_step_settings">Saatte **Ayarlar**\'ı açın.</string>
     <string name="devmode_step_apps">**Uygulamalar**\'a gidin.</string>
     <string name="devmode_step_health_platform">**Health Platform**\'u seçin.</string>
@@ -402,8 +402,19 @@
     <string name="devmode_open_settings">Saatte Health Platform ayarlarını aç</string>
     <string name="devmode_waiting">Geliştirici modu bekleniyor</string>
     <string name="devmode_detected">Geliştirici modu açık</string>
-    <string name="devmode_check">Şimdi denetle</string>
+    <string name="devmode_enable">Benim için aç</string>
+    <string name="devmode_enabling">Saatte açılıyor…</string>
+    <string name="devmode_manual_header">Ya da saatte elle</string>
     <string name="devmode_skip">Şimdilik atla</string>
+    <string name="devmode_watch_unreachable">Saate ulaşılamıyor, yeniden deneniyor</string>
+    <string name="devmode_look_title">Saatine bak</string>
+    <string name="devmode_look_message">Saatte Health Platform ayarları açıldı. [Dev mode] görünene kadar başlığa tekrar tekrar dokun. Bu ekran bunu kendiliğinden fark eder.</string>
+    <string name="devmode_not_yet_title">Kendiliğinden açılamadı</string>
+    <string name="devmode_not_yet_message">Saatteki Health Platform ayarlarında [Dev mode] görünmedi. Saatin kilidini açıp yeniden dene ya da başlığa art arda 10 kez kendin dokun.</string>
+    <string name="devmode_unreachable_title">Saate ulaşılamıyor</string>
+    <string name="devmode_unreachable_message">Saatin açık olduğunu, bu telefonla aynı Wi-Fi ağında olduğunu ve kablosuz hata ayıklamanın hâlâ açık olduğunu kontrol et.</string>
+    <string name="devmode_success_title">Geliştirici modu açık</string>
+    <string name="devmode_success_message">Health Platform artık değiştirilmiş uygulamayı kabul ediyor. Sonraki adıma geçiliyor.</string>
 
     <!-- Disable stock apps -->
     <string name="disable_title">Orijinal uygulamayı kapatın</string>
@@ -678,4 +689,9 @@
     <string name="selfadb_guide_ui_pair_code">Eşleştirme koduyla cihaz eşleştir</string>
     <string name="selfadb_guide_ui_paired">Eşleştirilmiş cihazlar</string>
     <string name="selfadb_open_wireless">Kablosuz hata ayıklamayı açın</string>
+    <string name="outcome_acknowledge">Anladım</string>
+    <string name="phone_adb_error_title">Bu uygulamadaki bir sorun</string>
+    <string name="phone_adb_error_message">Bu uygulamadaki bir sorundur, sizin bir hatanız değildir ve kendiniz çözemezsiniz. Her satırdaki Ayarları aç düğmelerini kullanabilir veya yine de devam edebilirsiniz.</string>
+    <string name="phone_adb_success_title">Her şey hazır</string>
+    <string name="phone_adb_success_message">Sonraki adıma geçiyoruz</string>
 </resources>

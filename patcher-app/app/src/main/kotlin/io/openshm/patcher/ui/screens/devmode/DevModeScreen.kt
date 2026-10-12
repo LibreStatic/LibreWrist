@@ -9,12 +9,20 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.TouchApp
+import androidx.compose.material.icons.rounded.Watch
+import androidx.compose.material.icons.rounded.WifiOff
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.openshm.patcher.R
 import io.openshm.patcher.ui.components.Accent
@@ -26,13 +34,29 @@ import io.openshm.patcher.ui.components.QuietAction
 import io.openshm.patcher.ui.components.SetupStep
 import io.openshm.patcher.ui.components.StatusShape
 import io.openshm.patcher.ui.components.StepScreenScaffold
+import io.openshm.patcher.ui.components.SuccessOverlay
 
-/** Whether the Health Platform developer mode has been seen on the watch. */
-data class DevModeUiState(val detected: Boolean = false, val checking: Boolean = false)
+/** Whether the Health Platform developer mode has been seen on the watch, and the watch's state. */
+data class DevModeUiState(
+    val detected: Boolean = false,
+    val checking: Boolean = false,
+    /** The background watch is running. */
+    val watching: Boolean = false,
+    /** The last watch poll reached the watch. */
+    val watchReachable: Boolean = true,
+    val notice: DevModeNotice? = null,
+    /** Show the success overlay once, then move on. */
+    val celebrate: Boolean = false,
+)
+
+/** A short dialog answering a button press; [NotYet] means turning it on for the user failed. */
+enum class DevModeNotice { LookAtWatch, NotYet, Unreachable }
 
 sealed interface DevModeEvent {
     data object OpenHealthPlatformSettings : DevModeEvent
-    data object Check : DevModeEvent
+    data object Enable : DevModeEvent
+    data object DismissNotice : DevModeEvent
+    data object Celebrated : DevModeEvent
 }
 
 private val steps = listOf(
@@ -57,9 +81,22 @@ fun DevModeScreen(
         modifier = modifier,
         secondary = {
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
-                StatusShape(if (state.detected) CheckStatus.Passed else if (state.checking) CheckStatus.Running else CheckStatus.Pending)
+                StatusShape(
+                    when {
+                        state.detected -> CheckStatus.Passed
+                        !state.watchReachable -> CheckStatus.Warning
+                        state.checking || state.watching -> CheckStatus.Running
+                        else -> CheckStatus.Pending
+                    },
+                )
                 Text(
-                    stringResource(if (state.detected) R.string.devmode_detected else R.string.devmode_waiting),
+                    stringResource(
+                        when {
+                            state.detected -> R.string.devmode_detected
+                            !state.watchReachable -> R.string.devmode_watch_unreachable
+                            else -> R.string.devmode_waiting
+                        },
+                    ),
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }
@@ -75,7 +112,8 @@ fun DevModeScreen(
             } else {
                 ActionRow {
                     PrimaryAction(
-                        stringResource(R.string.devmode_check), { onEvent(DevModeEvent.Check) },
+                        stringResource(if (state.checking) R.string.devmode_enabling else R.string.devmode_enable),
+                        { onEvent(DevModeEvent.Enable) },
                         enabled = !state.checking, accent = Accent.Tertiary,
                     )
                     QuietAction(stringResource(R.string.devmode_skip), onContinue, accent = Accent.Tertiary)
@@ -87,6 +125,11 @@ fun DevModeScreen(
             stringResource(R.string.devmode_intro),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            stringResource(R.string.devmode_manual_header),
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.tertiary,
         )
         Column(verticalArrangement = GroupedSpacing) {
             steps.forEachIndexed { index, res ->
@@ -104,4 +147,31 @@ fun DevModeScreen(
             }
         }
     }
+    state.notice?.let { DevModeNoticeDialog(it) { onEvent(DevModeEvent.DismissNotice) } }
+    if (state.celebrate) {
+        SuccessOverlay(
+            title = stringResource(R.string.devmode_success_title),
+            message = stringResource(R.string.devmode_success_message),
+            onFinished = {
+                onEvent(DevModeEvent.Celebrated)
+                onContinue()
+            },
+        )
+    }
+}
+
+@Composable
+private fun DevModeNoticeDialog(notice: DevModeNotice, onDismiss: () -> Unit) {
+    val (icon, title, text) = when (notice) {
+        DevModeNotice.LookAtWatch -> Triple(Icons.Rounded.Watch, R.string.devmode_look_title, R.string.devmode_look_message)
+        DevModeNotice.NotYet -> Triple(Icons.Rounded.TouchApp, R.string.devmode_not_yet_title, R.string.devmode_not_yet_message)
+        DevModeNotice.Unreachable -> Triple(Icons.Rounded.WifiOff, R.string.devmode_unreachable_title, R.string.devmode_unreachable_message)
+    }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = { Icon(icon, contentDescription = null) },
+        title = { Text(stringResource(title), textAlign = TextAlign.Center) },
+        text = { Text(stringResource(text), style = MaterialTheme.typography.bodyLarge) },
+        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.outcome_acknowledge)) } },
+    )
 }
