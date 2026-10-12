@@ -1,5 +1,6 @@
 package io.openshm.patcher.ui.screens.settings
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,16 +22,14 @@ import androidx.compose.material.icons.rounded.Key
 import androidx.compose.material.icons.rounded.Update
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
@@ -55,17 +54,18 @@ fun SettingsScreen(
     modifier: Modifier = Modifier,
 ) {
     val colors = MaterialTheme.colorScheme
-    val snackbar = remember { SnackbarHostState() }
+    val context = LocalContext.current
     val upToDate = stringResource(R.string.settings_up_to_date)
     val failed = stringResource(R.string.settings_check_failed)
+    // A toast, not a snackbar: clearing the notice restarts this effect, which would cancel a snackbar at once.
     LaunchedEffect(notice) {
         val text = when (notice) {
             UpdateNotice.UpToDate -> upToDate
             UpdateNotice.CheckFailed -> failed
             null -> return@LaunchedEffect
         }
+        Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
         onNoticeShown()
-        snackbar.showSnackbar(text)
     }
     Box(modifier.fillMaxSize().background(colors.surface).windowInsetsPadding(WindowInsets.safeDrawing)) {
         Column(Modifier.fillMaxSize()) {
@@ -145,6 +145,5 @@ fun SettingsScreen(
                 )
             }
         }
-        SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).padding(bottom = 24.dp))
     }
 }
