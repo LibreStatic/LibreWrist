@@ -43,9 +43,9 @@ jobs:
       PATCHER_VERSION_CODE: ${{ github.run_number }}
       CATALOGUE_URL: ${{ vars.CATALOGUE_URL || format('https://raw.githubusercontent.com/{0}/{1}/catalogue', github.repository, github.event.repository.default_branch) }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "17"
@@ -54,7 +54,7 @@ jobs:
         with:
           packages: "platform-tools platforms;android-36 platforms;android-37.0 build-tools;36.0.0 build-tools;37.0.0"
 
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v5
 
       - name: Restore the signing key
         env:
@@ -86,7 +86,12 @@ jobs:
           apk=patcher-app/app/build/outputs/apk/release/app-release.apk
           apksigner="$ANDROID_HOME/build-tools/37.0.0/apksigner"
           certs="$("$apksigner" verify --print-certs "$apk")"
-          actual="$(printf '%s\n' "$certs" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p')"
+          # "Signer #1 certificate ..." with a v1 signature, "V2 Signer: certificate ..." without one.
+          actual="$(printf '%s\n' "$certs" | sed -nE 's/^(Signer #1|V[0-9.]+ Signer:) certificate SHA-256 digest: //p' | head -n1)"
+          if [ -z "$actual" ]; then
+            echo "::error::could not read the signing certificate"
+            exit 1
+          fi
           echo "Signing certificate SHA-256: $actual"
           if [ -n "$EXPECTED_CERT" ] && [ "$actual" != "$(printf '%s' "$EXPECTED_CERT" | tr -d ': ' | tr 'A-F' 'a-f')" ]; then
             echo "::error::signing certificate does not match PATCHER_CERT_SHA256"
