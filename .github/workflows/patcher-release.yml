@@ -56,11 +56,39 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - uses: android-actions/setup-android@v3
+      # The SDK packages the build needs, cached so later runs skip the sdkmanager setup (which also
+      # downloads its own command-line tools whenever the runner image ships another version).
+      - name: Restore the Android SDK packages
+        id: sdk-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            /usr/local/lib/android/sdk/platforms/android-36
+            /usr/local/lib/android/sdk/platforms/android-37.0
+            /usr/local/lib/android/sdk/build-tools/36.0.0
+            /usr/local/lib/android/sdk/build-tools/37.0.0
+          key: android-sdk-${{ runner.os }}-platforms-36-37.0-build-tools-36.0.0-37.0.0
+
+      - if: steps.sdk-cache.outputs.cache-hit != 'true'
+        uses: android-actions/setup-android@v3
         with:
           packages: "platform-tools platforms;android-36 platforms;android-37.0 build-tools;36.0.0 build-tools;37.0.0"
 
+      # Caches the Gradle user home between runs: dependencies, the wrapper distribution, artifact
+      # transforms, compiled build scripts and the local build cache (task outputs reused by later
+      # builds; org.gradle.caching is on in gradle.properties).
       - uses: gradle/actions/setup-gradle@v5
+
+      # gradle.properties is sized for a memory-bound workstation; the runner (4 cores, 16 GB) gets a
+      # bigger daemon, one worker per core and two JVMs for the Robolectric tests. Properties in the
+      # Gradle user home override the project's.
+      - name: Size Gradle for the runner
+        run: |
+          cat >> "${GRADLE_USER_HOME:-$HOME/.gradle}/gradle.properties" <<'PROPS'
+          org.gradle.jvmargs=-Xmx6g -XX:MaxMetaspaceSize=1g -XX:+UseParallelGC -Dfile.encoding=UTF-8
+          org.gradle.workers.max=4
+          openshm.testForks=2
+          PROPS
 
       - name: Restore the signing key
         env:
@@ -79,11 +107,10 @@ jobs:
           echo "OPENSHM_KEYS_DIR=$keys" >> "$GITHUB_ENV"
           echo "PATCHER_KEY_ALIAS=$KEY_ALIAS" >> "$GITHUB_ENV"
 
-      - name: Test
-        run: patcher-app/gradlew --no-daemon :engine:test :app:testDebugUnitTest
-
-      - name: Build the release APK
-        run: patcher-app/gradlew --no-daemon :app:assembleRelease
+      # One Gradle run: the build is configured once and the release tasks overlap with the tests. A
+      # failing test still fails the step before anything is published.
+      - name: Test and build the release APK
+        run: patcher-app/gradlew --no-daemon :engine:test :app:testDebugUnitTest :app:assembleRelease
 
       - name: Check the signature
         env:

@@ -118,6 +118,11 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
 
+// CI runners have the cores and memory to run the Robolectric suite in several JVMs
+// (openshm.testForks); the default stays at one for memory-bound hosts.
+val testForks = providers.gradleProperty("openshm.testForks").map(String::toInt).orElse(1)
+tasks.withType<Test>().configureEach { maxParallelForks = testForks.get() }
+
 // Development-only Compose Driver: present only when settings.gradle.kts included
 // :tools:compose-driver (a task of that project, or -Popenshm.composeDriver). :app is an application
 // module and cannot be a dependency of another module, so the harness's server test is compiled
