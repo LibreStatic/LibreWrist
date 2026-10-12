@@ -55,3 +55,7 @@ JDK 17 (`JAVA_HOME=<jdk17> patcher-app/gradlew :engine:test`). Every shipped lib
 in `patcher-app/THIRD_PARTY.md` before it is added. The app's own code lives in `io.openshm.patcher`;
 code injected into vendor APKs still uses the `shminterop` placeholder.
 To render a screen without an emulator (Compose Driver, dev-only, needs a JDK 21+): `JAVA_HOME=<jdk21+> patcher-app/tools/compose-driver/compose-driver.sh start WelcomeDriver`, then `tree` (semantics) and `shot <name>`, then `stop`; see `patcher-app/tools/compose-driver/README.md`.
+
+## Versioning (for `patcher-app/`)
+
+- Bump `versionName` in `app/build.gradle.kts` in its own commit before every store release; never upload a new build under the previous version. Patch (`x.y.Z`) for fixes and small, self-contained changes (including a single small feature), minor (`x.Y.0`) for medium changes (several features, a reworked screen or flow), major (`X.0.0`) for a large overhaul; keep the pre-release suffix (e.g. `-beta`). The `versionCode` must also be higher than the last uploaded one.
