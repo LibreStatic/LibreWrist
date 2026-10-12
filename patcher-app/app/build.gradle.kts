@@ -17,7 +17,8 @@ android {
         applicationId = "io.openshm.patcher"
         minSdk = 31
         targetSdk = 36
-        versionCode = 1
+        // CI sets PATCHER_VERSION_CODE (the workflow run number) so every published APK upgrades the last.
+        versionCode = System.getenv("PATCHER_VERSION_CODE")?.toIntOrNull() ?: 1
         versionName = "0.1.0"
         // Base URL of the raw `catalogue/` directory of the public repository (config.env CATALOGUE_URL,
         // or -PcatalogueUrl). Empty disables catalogue updates. Only https is accepted.
@@ -28,7 +29,8 @@ android {
         buildConfigField("String", "CATALOGUE_URL", "\"$catalogueUrl\"")
     }
     // The patcher's own fixed key, shared by every checkout (OPENSHM_KEYS_DIR, default
-    // ~/.local/share/openshm/keys, see config.env). Without it builds fall back to the SDK debug key.
+    // ~/.local/share/openshm/keys, see config.env; alias PATCHER_KEY_ALIAS, default "patcher"). Without
+    // it builds fall back to the SDK debug key.
     val keysDir = System.getenv("OPENSHM_KEYS_DIR")?.takeIf { it.isNotBlank() }?.let(::File)
         ?: File(System.getProperty("user.home"), ".local/share/openshm/keys")
     val patcherStore = File(keysDir, "patcher.p12")
@@ -39,7 +41,7 @@ android {
             storeFile = patcherStore
             storeType = "PKCS12"
             storePassword = password
-            keyAlias = "patcher"
+            keyAlias = System.getenv("PATCHER_KEY_ALIAS")?.takeIf { it.isNotBlank() } ?: "patcher"
             keyPassword = password
         }
     } else {

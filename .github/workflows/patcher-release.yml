@@ -1,0 +1,122 @@
+# Builds the OpenSHM Patcher app and publishes its APK as a GitHub release whenever something under
+# patcher-app/, or one of the directories it bundles, changes on main (or on demand).
+#
+# Repository secrets (the LibreStatic release key; store and key share one password):
+#   LIBRESTATIC_KEYSTORE_BASE64   base64 of the PKCS#12 keystore
+#   LIBRESTATIC_KEYSTORE_PASSWORD its password
+#   LIBRESTATIC_KEY_ALIAS         the key's alias
+# Optional repository variables:
+#   PATCHER_CERT_SHA256  expected SHA-256 of the signing certificate; the release fails on a mismatch
+#   CATALOGUE_URL        catalogue update channel baked into the app; defaults to this repository's
+#                        raw catalogue/ directory on the default branch
+# Without the signing secrets the workflow fails instead of publishing a debug-signed APK, which
+# could not upgrade an installed patcher.
+
+name: Patcher release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "patcher-app/**"
+      # Bundled into the APK as assets (patcher-app/app/own-code.gradle.kts).
+      - "watch-mod/**"
+      - "shm-bridge/**"
+      - "catalogue/**"
+      - ".github/workflows/patcher-release.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: patcher-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      BUILD_TOOLS_VERSION: "36.0.0"
+      PLATFORM_API: "36"
+      PATCHER_VERSION_CODE: ${{ github.run_number }}
+      CATALOGUE_URL: ${{ vars.CATALOGUE_URL || format('https://raw.githubusercontent.com/{0}/{1}/catalogue', github.repository, github.event.repository.default_branch) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: "platform-tools platforms;android-36 platforms;android-37.0 build-tools;36.0.0 build-tools;37.0.0"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Restore the signing key
+        env:
+          P12_BASE64: ${{ secrets.LIBRESTATIC_KEYSTORE_BASE64 }}
+          P12_PASSWORD: ${{ secrets.LIBRESTATIC_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.LIBRESTATIC_KEY_ALIAS }}
+        run: |
+          if [ -z "$P12_BASE64" ] || [ -z "$P12_PASSWORD" ] || [ -z "$KEY_ALIAS" ]; then
+            echo "::error::the LIBRESTATIC_KEYSTORE_BASE64, LIBRESTATIC_KEYSTORE_PASSWORD and LIBRESTATIC_KEY_ALIAS secrets are required to publish"
+            exit 1
+          fi
+          keys="$RUNNER_TEMP/openshm-keys"
+          ( umask 077; mkdir -p "$keys"
+            printf '%s' "$P12_BASE64" | base64 -d > "$keys/patcher.p12"
+            printf '%s' "$P12_PASSWORD" > "$keys/patcher.pass" )
+          echo "OPENSHM_KEYS_DIR=$keys" >> "$GITHUB_ENV"
+          echo "PATCHER_KEY_ALIAS=$KEY_ALIAS" >> "$GITHUB_ENV"
+
+      - name: Test
+        run: patcher-app/gradlew --no-daemon :engine:test :app:testDebugUnitTest
+
+      - name: Build the release APK
+        run: patcher-app/gradlew --no-daemon :app:assembleRelease
+
+      - name: Check the signature
+        env:
+          EXPECTED_CERT: ${{ vars.PATCHER_CERT_SHA256 }}
+        run: |
+          apk=patcher-app/app/build/outputs/apk/release/app-release.apk
+          apksigner="$ANDROID_HOME/build-tools/37.0.0/apksigner"
+          certs="$("$apksigner" verify --print-certs "$apk")"
+          actual="$(printf '%s\n' "$certs" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p')"
+          echo "Signing certificate SHA-256: $actual"
+          if [ -n "$EXPECTED_CERT" ] && [ "$actual" != "$(printf '%s' "$EXPECTED_CERT" | tr -d ': ' | tr 'A-F' 'a-f')" ]; then
+            echo "::error::signing certificate does not match PATCHER_CERT_SHA256"
+            exit 1
+          fi
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="$(sed -n 's/^ *versionName = "\(.*\)"$/\1/p' patcher-app/app/build.gradle.kts)"
+          tag="patcher-v$version-r$PATCHER_VERSION_CODE"
+          out="$RUNNER_TEMP/out"
+          mkdir -p "$out"
+          cp patcher-app/app/build/outputs/apk/release/app-release.apk "$out/openshm-patcher-$version-r$PATCHER_VERSION_CODE.apk"
+          ( cd "$out" && sha256sum *.apk > SHA256SUMS )
+          {
+            echo "OpenSHM Patcher $version (build $PATCHER_VERSION_CODE), built from ${GITHUB_SHA::7}."
+            echo
+            echo "Install the APK on the phone; it upgrades any earlier build in place."
+            echo
+            echo '```'
+            cat "$out/SHA256SUMS"
+            echo '```'
+          } > "$out/notes.md"
+          gh release create "$tag" "$out"/*.apk "$out/SHA256SUMS" \
+            --target "$GITHUB_SHA" \
+            --title "OpenSHM Patcher $version (build $PATCHER_VERSION_CODE)" \
+            --notes-file "$out/notes.md"
+
+      - name: Remove the signing key
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/openshm-keys"
