@@ -101,6 +101,12 @@ adb -s $WATCH shell cmd companiondevice list 0
 adb -s $WATCH shell cmd companiondevice disassociate 0 $W <phone_mac>   # back to notification mode
 ```
 
+Updating an associated bridge (`adb install -r`) makes the Companion Device Manager drop its user
+Doze exemption a few seconds later (seen on a Galaxy Watch with Wear OS 5; an unassociated package
+keeps it, associating does not remove it, and `REQUEST_COMPANION_RUN_IN_BACKGROUND` does not
+prevent it). The patcher puts it back after the link step; by hand, run
+`adb -s $WATCH shell cmd deviceidle whitelist +$W` again after the update.
+
 ## Communications channel `/__bridge__/` (watch)
 
 Phone notifications, alarms and calls mirrored on the watch. The protocol is documented in the

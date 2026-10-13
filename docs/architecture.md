@@ -43,6 +43,8 @@ address the bridge records when its first session opens and exposes to the shell
 `<prefix>.shmbridge.watch.link`), the system binds the bridge's `CompanionDeviceService` while the
 phone is connected, and the process stays perceptible without a notification. Without an
 association the link runs in a `connectedDevice` foreground service with an ongoing notification.
+Updating an associated bridge makes the Companion Device Manager drop its Doze exemption, so the
+patcher applies it again after the link step.
 The patcher's revert removes the association before uninstalling the bridge.
 
 The only configuration is the mirrored capabilities (`caps`), changed through the bridge debug

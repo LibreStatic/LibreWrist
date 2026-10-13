@@ -8,6 +8,7 @@ import io.openshm.patcher.adb.CompanionAssociation
 import io.openshm.patcher.adb.CompanionCommands
 import io.openshm.patcher.adb.Grant as AdbGrant
 import io.openshm.patcher.adb.GrantApplier
+import io.openshm.patcher.adb.GrantReadback
 import io.openshm.patcher.adb.GrantReport
 import io.openshm.patcher.adb.GrantTarget
 import io.openshm.patcher.adb.InstallResult
@@ -83,6 +84,9 @@ interface WatchDevice {
     suspend fun disassociateCompanion(pkg: String, mac: String) {
         throw UnsupportedOperationException("disassociateCompanion is not supported")
     }
+
+    /** True when [pkg] is on the watch's Doze allow-list, null when that cannot be read. */
+    suspend fun isDozeExempt(pkg: String): Boolean? = null
 }
 
 class AdbWatchDevice(private val link: WatchLink) : WatchDevice {
@@ -174,6 +178,11 @@ class AdbWatchDevice(private val link: WatchLink) : WatchDevice {
     override suspend fun disassociateCompanion(pkg: String, mac: String) {
         val command = CompanionCommands.disassociateCommand(pkg, mac)
         link.client().shell(command).requireSuccess(command)
+    }
+
+    override suspend fun isDozeExempt(pkg: String): Boolean? {
+        val out = link.client().shell("dumpsys deviceidle whitelist")
+        return if (out.isSuccess) GrantReadback.deviceIdleWhitelisted(out.stdout, pkg) else null
     }
 
     private fun requireSettingKey(key: String): String {

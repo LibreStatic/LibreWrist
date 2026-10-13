@@ -180,6 +180,12 @@ private class FakeDevice : WatchDevice {
         associations.remove(CompanionAssociation(pkg, mac))
     }
 
+    /** Readback results of [isDozeExempt]: one per call, the last one repeats. */
+    var dozeExempt: List<Boolean?> = listOf(true)
+    var dozeReads = 0
+
+    override suspend fun isDozeExempt(pkg: String): Boolean? = dozeExempt[minOf(dozeReads++, dozeExempt.lastIndex)]
+
     override suspend fun disable(pkg: String) {
         disableThrows(pkg)?.let { throw it }
         disabled += pkg
@@ -292,7 +298,8 @@ class WatchInstallRunnerTest {
         assertTrue(s.value.done)
         assertEquals(listOf("associate:$bridge:$mac"), device.companionCalls)
         assertEquals(listOf(bridge to prefix, bridge to prefix), device.started)
-        assertEquals(listOf(2000L, 2000L), pauses)
+        assertEquals(listOf(2000L, 2000L, 5000L), pauses)
+        assertEquals(1, device.dozeReads)
     }
 
     @Test
@@ -303,6 +310,7 @@ class WatchInstallRunnerTest {
         assertNull(s.value.errorRes)
         assertTrue(device.companionCalls.isEmpty())
         assertEquals(1, device.started.size)
+        assertEquals(0, device.dozeReads)
         assertEquals(10, pauses.size)
         assertEquals(20_000L, pauses.sum())
     }
@@ -325,6 +333,48 @@ class WatchInstallRunnerTest {
         bridgeRun(device)
         assertTrue(device.companionCalls.isEmpty())
         assertEquals(1, device.started.size)
+    }
+
+    @Test
+    fun aDozeExemptionDroppedAfterTheUpdateOfAnAssociatedBridgeIsRestored() {
+        val device = FakeDevice().apply {
+            macs = listOf(mac)
+            associations += CompanionAssociation(bridge, mac)
+            dozeExempt = listOf(false, true)
+        }
+        val s = bridgeRun(device)
+        assertTrue(s.value.done)
+        val restores = device.grantCalls
+        assertEquals(listOf(bridge to listOf<AdbGrant>(AdbGrant.DeviceIdleWhitelist())), restores)
+        assertEquals(2, device.dozeReads)
+        assertEquals(listOf(5000L, 5000L), pauses)
+        assertEquals(1, device.started.size)
+    }
+
+    @Test
+    fun aDozeExemptionThatKeepsDisappearingStopsAfterThreeTries() {
+        val device = FakeDevice().apply {
+            macs = listOf(mac)
+            associations += CompanionAssociation(bridge, mac)
+            dozeExempt = listOf(false)
+        }
+        val s = bridgeRun(device)
+        assertTrue(s.value.done)
+        assertNull(s.value.errorRes)
+        assertEquals(3, device.grantCalls.size)
+        assertEquals(3, device.dozeReads)
+    }
+
+    @Test
+    fun anUnreadableDozeListIsLeftAlone() {
+        val device = FakeDevice().apply {
+            macs = listOf(mac)
+            associations += CompanionAssociation(bridge, mac)
+            dozeExempt = listOf(null)
+        }
+        bridgeRun(device)
+        assertTrue(device.grantCalls.isEmpty())
+        assertEquals(1, device.dozeReads)
     }
 
     @Test
