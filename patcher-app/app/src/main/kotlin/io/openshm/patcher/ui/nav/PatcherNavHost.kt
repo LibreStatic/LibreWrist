@@ -29,7 +29,6 @@ import io.openshm.patcher.build.BuildStorage
 import io.openshm.patcher.device.AdbPresence
 import io.openshm.patcher.device.DeviceLogs
 import io.openshm.patcher.device.WatchAnnouncements
-import io.openshm.patcher.device.WatchDetection
 import io.openshm.patcher.ui.screens.devicelogs.DeviceLogsEvent
 import io.openshm.patcher.ui.screens.devicelogs.DeviceLogsScreen
 import io.openshm.patcher.ui.screens.devicelogs.DeviceLogsViewModel
@@ -178,11 +177,10 @@ fun PatcherNavHost(
                 val welcomeContext = LocalContext.current
                 LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
                     WatchAnnouncements.start(welcomeContext, "welcome")
-                    AdbPresence.start(welcomeContext, "welcome")
+                    vm.refreshLogsLink()
                 }
                 LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
                     WatchAnnouncements.stop("welcome")
-                    AdbPresence.stop("welcome")
                 }
                 WelcomeScreen(
                     state, vm::onEvent,
@@ -449,13 +447,9 @@ fun PatcherNavHost(
                 val vm: SelfTestViewModel = viewModel(selfTest)
                 val state by vm.state.collectAsStateWithLifecycle()
                 val context = LocalContext.current
-                // The device logs link needs the watch reachable over ADB: the detection already answered or it announces itself now.
-                LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { AdbPresence.start(context, "all-set") }
-                LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { AdbPresence.stop("all-set") }
-                val presence by AdbPresence.state.collectAsStateWithLifecycle()
-                val detection by WatchDetection.state.collectAsStateWithLifecycle()
+                // The device logs link shows once a device was paired; the logs screen connects and says what is missing.
                 AllSetScreen(
-                    AllSetUiState(state.passedCount, state.totalCount, watchReachable = presence.watchAvailable || detection.watch != null),
+                    AllSetUiState(state.passedCount, state.totalCount, logsAvailable = AdbPresence.hasEverPaired(context)),
                     onDone = { next(Route.AllSet) },
                     onShare = { shareReport(context, vm.reportText()) },
                     onDeviceLogs = { navController.navigate(Route.DeviceLogs.path) },

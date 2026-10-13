@@ -48,8 +48,8 @@ import kotlin.math.sin
 data class AllSetUiState(
     val passed: Int = 0,
     val total: Int = 0,
-    /** The watch answered over ADB, so its device logs can be opened. */
-    val watchReachable: Boolean = false,
+    /** A device was paired over ADB, so the device logs can be opened. */
+    val logsAvailable: Boolean = false,
 )
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -116,7 +116,7 @@ fun AllSetScreen(
                 PrimaryAction(stringResource(R.string.action_done), onDone)
                 OutlinedAction(stringResource(R.string.action_share_report), onShare, Icons.Rounded.Share)
             }
-            if (state.watchReachable) SubtleLink(stringResource(R.string.device_logs_link), onDeviceLogs, icon = Icons.Rounded.Terminal)
+            if (state.logsAvailable) SubtleLink(stringResource(R.string.device_logs_link), onDeviceLogs, icon = Icons.Rounded.Terminal)
             SubtleLink(stringResource(R.string.revert_title), onRevert, icon = Icons.Rounded.Undo)
         }
     }

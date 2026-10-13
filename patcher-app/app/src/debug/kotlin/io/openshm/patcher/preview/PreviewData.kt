@@ -90,8 +90,8 @@ internal object PreviewData {
 
     private val session = SessionState(WatchProfile.WearOs5, PREFIX)
 
-    fun welcome(sheet: Boolean = false, watchReachable: Boolean = false, canRevert: Boolean = false) =
-        WelcomeUiState(changesSheetVisible = sheet, changes = buildChanges(PREFIX, WatchProfile.WearOs5), watchReachable = watchReachable, canRevert = canRevert)
+    fun welcome(sheet: Boolean = false, logsAvailable: Boolean = false, canRevert: Boolean = false) =
+        WelcomeUiState(changesSheetVisible = sheet, changes = buildChanges(PREFIX, WatchProfile.WearOs5), logsAvailable = logsAvailable, canRevert = canRevert)
 
     private fun revertItem(outputId: String, device: Device, action: RevertAction = RevertAction.Uninstall) = AppCatalogue.current.output(outputId).let {
         RevertItem(device, it.label, it.packageName(PREFIX), action)
@@ -505,7 +505,7 @@ internal object PreviewData {
         )
     }
 
-    fun allSet(watchReachable: Boolean = false) = AllSetUiState(passed = 8, total = 8, watchReachable = watchReachable)
+    fun allSet(logsAvailable: Boolean = false) = AllSetUiState(passed = 8, total = 8, logsAvailable = logsAvailable)
 
     private val logSamples = listOf(
         "1234  1301 I ActivityManager: Start proc 4821:com.samsung.android.shealthmonitors/u0a123 for service",

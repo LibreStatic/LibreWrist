@@ -97,8 +97,8 @@ data class WelcomeUiState(
     val changes: List<DeviceChanges> = emptyList(),
     /** The dialog shown after "Get started" while steps that need nothing are passed over. */
     val skip: SkipDialog? = null,
-    /** The watch answered a probe or announced itself over ADB, so its device logs can be opened. */
-    val watchReachable: Boolean = false,
+    /** A device was paired over ADB, so the device logs can be opened. */
+    val logsAvailable: Boolean = false,
     /** Something was installed by the setup, so everything can be undone. */
     val canRevert: Boolean = false,
 )
@@ -164,7 +164,7 @@ private fun WelcomeBody(
                         WelcomeHero(Modifier.weight(1f).height(260.dp))
                         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(20.dp)) {
                             WelcomeText()
-                            WelcomeActions(state.watchReachable, state.canRevert, onEvent, onGetStarted, onDeviceLogs, onRevert, Modifier.padding(top = 4.dp))
+                            WelcomeActions(state.logsAvailable, state.canRevert, onEvent, onGetStarted, onDeviceLogs, onRevert, Modifier.padding(top = 4.dp))
                         }
                     }
                 }
@@ -180,7 +180,7 @@ private fun WelcomeBody(
                     WelcomeHero(Modifier.fillMaxWidth().height(220.dp))
                     WelcomeText()
                 }
-                WelcomeActions(state.watchReachable, state.canRevert, onEvent, onGetStarted, onDeviceLogs, onRevert, Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 16.dp))
+                WelcomeActions(state.logsAvailable, state.canRevert, onEvent, onGetStarted, onDeviceLogs, onRevert, Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 16.dp))
             }
         }
     }
@@ -226,7 +226,7 @@ private fun WelcomeText() {
 
 @Composable
 private fun WelcomeActions(
-    watchReachable: Boolean,
+    logsAvailable: Boolean,
     canRevert: Boolean,
     onEvent: (WelcomeEvent) -> Unit,
     onGetStarted: () -> Unit,
@@ -239,7 +239,7 @@ private fun WelcomeActions(
             PrimaryAction(stringResource(R.string.welcome_get_started), onGetStarted)
             QuietAction(stringResource(R.string.welcome_what_changes), { onEvent(WelcomeEvent.ShowChanges) })
         }
-        if (watchReachable) SubtleLink(stringResource(R.string.device_logs_link), onDeviceLogs, Modifier.padding(top = 4.dp), Icons.Rounded.Terminal)
+        if (logsAvailable) SubtleLink(stringResource(R.string.device_logs_link), onDeviceLogs, Modifier.padding(top = 4.dp), Icons.Rounded.Terminal)
         if (canRevert) SubtleLink(stringResource(R.string.revert_title), onRevert, Modifier.padding(top = 4.dp), Icons.Rounded.Undo)
     }
 }

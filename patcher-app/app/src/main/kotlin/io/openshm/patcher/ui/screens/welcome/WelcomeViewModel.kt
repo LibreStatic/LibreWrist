@@ -17,7 +17,6 @@ import io.openshm.patcher.ui.screens.wearable.readWearableFacts
 import io.openshm.patcher.ui.screens.wearable.wearableState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -80,12 +79,16 @@ class WelcomeViewModel(application: Application) : AndroidViewModel(application)
                 .collect { locked -> _state.update { it.copy(canRevert = locked) } }
         }
         viewModelScope.launch { preflight.dialog.collect { d -> _state.update { it.copy(skip = d) } } }
-        // The device logs link shows once the watch is known to answer over ADB, now or when it announces itself.
-        viewModelScope.launch {
-            combine(WatchDetection.state, AdbPresence.state) { detection, presence ->
-                detection.watch != null || presence.watchAvailable
-            }.distinctUntilChanged().collect { reachable -> _state.update { it.copy(watchReachable = reachable) } }
-        }
+        refreshLogsLink()
+    }
+
+    /**
+     * Shows the device logs link once a device was paired. Whether it answers right now is left to the logs
+     * screen, which connects and says what is missing: an idle watch does not answer mDNS, so waiting for it
+     * here kept the link hidden.
+     */
+    fun refreshLogsLink() {
+        _state.update { it.copy(logsAvailable = AdbPresence.hasEverPaired(getApplication())) }
     }
 
     fun onEvent(event: WelcomeEvent) {

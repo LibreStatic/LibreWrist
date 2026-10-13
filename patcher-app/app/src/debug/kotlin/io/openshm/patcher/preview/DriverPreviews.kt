@@ -45,7 +45,7 @@ fun WelcomeDriver() = PreviewHost(ColorMode.Fallback) { WelcomeSample() }
 /** Welcome over the floating backdrop, as PatcherApp layers them (still, like every driver). */
 /** Welcome with the watch reachable over ADB: the device logs link shows at the bottom. */
 @Composable
-fun WelcomeWatchDriver() = PreviewHost(ColorMode.Fallback) { WelcomeSample(watchReachable = true) }
+fun WelcomeWatchDriver() = PreviewHost(ColorMode.Fallback) { WelcomeSample(logsAvailable = true) }
 
 /** Welcome after a setup installed something: the "Undo all changes" link shows. */
 @Composable
@@ -77,7 +77,7 @@ fun RevertDonePartialDriver() = PreviewHost(ColorMode.Fallback) { RevertSample(P
 
 /** AllSet with the watch reachable over ADB. */
 @Composable
-fun AllSetWatchDriver() = PreviewHost(ColorMode.Fallback) { AllSetSample(watchReachable = true) }
+fun AllSetWatchDriver() = PreviewHost(ColorMode.Fallback) { AllSetSample(logsAvailable = true) }
 
 /** Device logs: the watch tab streaming ~40 lines, the phone tab disconnected. */
 @Composable

@@ -49,8 +49,8 @@ import io.openshm.patcher.ui.screens.build.LocalAppIconLoader
  */
 
 @Composable
-internal fun WelcomeSample(sheet: Boolean = false, skip: SkipDialog? = null, watchReachable: Boolean = false, canRevert: Boolean = false) =
-    WelcomeScreen(PreviewData.welcome(sheet, watchReachable, canRevert).copy(skip = skip), {}, {}, {})
+internal fun WelcomeSample(sheet: Boolean = false, skip: SkipDialog? = null, logsAvailable: Boolean = false, canRevert: Boolean = false) =
+    WelcomeScreen(PreviewData.welcome(sheet, logsAvailable, canRevert).copy(skip = skip), {}, {}, {})
 
 @Composable
 internal fun RevertSample(state: RevertUiState) = RevertScreen(state, {}, {}, {})
@@ -161,7 +161,7 @@ internal fun SelfTestSample(variant: SelfTestVariant = SelfTestVariant.Passed) =
 internal enum class SelfTestVariant { Passed, Failures, WatchOff }
 
 @Composable
-internal fun AllSetSample(watchReachable: Boolean = false) = AllSetScreen(PreviewData.allSet(watchReachable), {}, {})
+internal fun AllSetSample(logsAvailable: Boolean = false) = AllSetScreen(PreviewData.allSet(logsAvailable), {}, {})
 
 @Composable
 internal fun DeviceLogsSample(state: DeviceLogsUiState = PreviewData.deviceLogs()) = DeviceLogsScreen(state, {}, {})
