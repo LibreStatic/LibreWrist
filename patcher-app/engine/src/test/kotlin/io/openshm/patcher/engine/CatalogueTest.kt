@@ -44,7 +44,7 @@ class CatalogueTest {
 
     @Test fun committedCatalogueParses() {
         val c = Catalogue.parse(String(catalogueBytes, Charsets.UTF_8))
-        assertEquals(51, c.patterns.size)
+        assertEquals(52, c.patterns.size)
         assertEquals(setOf("gms", "alarm", "shealth"), c.profiles.keys)
     }
 
@@ -100,7 +100,7 @@ class CatalogueTest {
         val c = Catalogue.parse(String(catalogueBytes, Charsets.UTF_8))
         assertEquals(
             setOf(
-                "shm-min-age-22-to-16", "shm-setup-network-gate", "shm-sleep-apnea-support", "watch-apnea-country",
+                "shm-min-age-22-to-16", "watch-min-age-22-to-16", "shm-setup-network-gate", "shm-sleep-apnea-support", "watch-apnea-country",
                 "watch-apnea-reeval-not-supported", "alarm-force-sound-vibrate", "alarm-hide-launcher", "alarm-relabel",
                 "shealth-oobe-local", "shealth-capability-gates", "shealth-launcher-badge", "shm-launcher-badge",
             ),
@@ -109,6 +109,10 @@ class CatalogueTest {
         assertEquals(
             setOf("shm-sleep-apnea-support", "watch-apnea-country", "watch-apnea-reeval-not-supported"),
             c.patterns.values.filter { it.optionGroup == "sleep-apnea" }.map { it.id }.toSet(),
+        )
+        assertEquals(
+            setOf("shm-min-age-22-to-16", "watch-min-age-22-to-16"),
+            c.patterns.values.filter { it.optionGroup == "minimum-age" }.map { it.id }.toSet(),
         )
         assertEquals(
             setOf("shealth-oobe-local"),
@@ -163,7 +167,7 @@ class CatalogueTest {
 
     @Test fun parseSignedVerifiesBeforeParsing() {
         val key = CatalogueVerifier.parsePublicKey(pem)
-        assertEquals(51, Catalogue.parseSigned(catalogueBytes, signature, key).patterns.size)
+        assertEquals(52, Catalogue.parseSigned(catalogueBytes, signature, key).patterns.size)
         val tampered = catalogueBytes.copyOf().also { it[100] = (it[100].toInt() xor 1).toByte() }
         try {
             Catalogue.parseSigned(tampered, signature, key)

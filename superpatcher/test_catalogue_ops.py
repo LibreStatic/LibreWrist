@@ -273,7 +273,7 @@ class Interpreter(Tree):
     def test_real_catalogue_optional_set(self):
         pats = P.load_catalogue()['patterns']
         self.assertEqual({i for i, p in pats.items() if p['optional']}, {
-            'shm-min-age-22-to-16', 'shm-setup-network-gate', 'shm-sleep-apnea-support',
+            'shm-min-age-22-to-16', 'watch-min-age-22-to-16', 'shm-setup-network-gate', 'shm-sleep-apnea-support',
             'watch-apnea-country', 'watch-apnea-reeval-not-supported',
             'alarm-force-sound-vibrate', 'alarm-hide-launcher', 'alarm-relabel',
             'shealth-oobe-local', 'shealth-capability-gates',
@@ -283,6 +283,8 @@ class Interpreter(Tree):
         self.assertEqual({i for i, p in pats.items() if p.get('optionGroup') == 'sleep-apnea'},
                          {'shm-sleep-apnea-support', 'watch-apnea-country',
                           'watch-apnea-reeval-not-supported'})
+        self.assertEqual({i for i, p in pats.items() if p.get('optionGroup') == 'minimum-age'},
+                         {'shm-min-age-22-to-16', 'watch-min-age-22-to-16'})
 
     def test_validate_reports_bad_ops_and_references(self):
         cat = copy.deepcopy(P.load_catalogue())

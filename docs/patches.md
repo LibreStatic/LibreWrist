@@ -87,7 +87,7 @@ scripts/build_shm_watch.sh        # -> $DIST_DIR/shm-watch-1.5.1.022-gms.apk
   disabled pattern is simply not run (`PatchRequest.disabledPatterns` in the Kotlin engine,
   `--skip <id>` in `scripts/superpatcher.py`); asking to skip a required or unknown id is an error,
   and the patterns that do run keep the "anchor must match, otherwise abort" rule. The optional
-  patterns are `shm-min-age-22-to-16`, `shm-setup-network-gate`, the sleep-apnea group below,
+  patterns are the minimum-age group below, `shm-setup-network-gate`, the sleep-apnea group below,
   `alarm-force-sound-vibrate`, `alarm-hide-launcher`, `alarm-relabel`, `shm-launcher-badge`,
   `shealth-launcher-badge` and `shealth-oobe-local`.
 - **Off-by-default patterns** (`"offByDefault": true`, optional patterns only): the build leaves
@@ -99,8 +99,9 @@ scripts/build_shm_watch.sh        # -> $DIST_DIR/shm-watch-1.5.1.022-gms.apk
   only user is `shealth-oobe-local` (see "Samsung Health" below).
 - **Option groups** (`"optionGroup": "<name>"`, optional patterns only, at least two members):
   the members are always on or off together, across inputs, so a partial skip is an error. The
-  only group is `sleep-apnea`: `shm-sleep-apnea-support` (phone SHM) with `watch-apnea-country` and
-  `watch-apnea-reeval-not-supported` (watch SHM). Both validators (`superpatcher/patterns.py` and
+  groups are `sleep-apnea`: `shm-sleep-apnea-support` (phone SHM) with `watch-apnea-country` and
+  `watch-apnea-reeval-not-supported` (watch SHM); and `minimum-age`: `shm-min-age-22-to-16`
+  (phone SHM) with `watch-min-age-22-to-16` (watch SHM). Both validators (`superpatcher/patterns.py` and
   `Catalogue.kt`) accept and type-check the field.
 - **Ops are named and documented** in `superpatcher/engine.py` (`OPS` registry; the docstring of
   each `op_*` function is its semantics contract, also for the Kotlin port). An unknown op, an
@@ -211,6 +212,7 @@ identical to the owner-verified `shm-phone-1.4.6.001-stock-mod-gms1` build (24 p
 | 4 | `watch-companion-vendor` | the `"samsung"` companion match is forced true; the denied-READ_COMPANION_INFO path emits TRUE | Companion vendor exemption for re-signed apps |
 | 5 | `watch-alarm-system-app` | the reflective lookup `setExactAlarmForSystemApp` is renamed to a non-existent name | A re-signed app is not a system app; the SecurityException kills the process from the IHRN off-body detector; the stock `setAlarmClock` path is used instead |
 | 6 | `watch-mobile-installed` | the "phone app installed" getter (pref `application_installed_in_mobile`) returns true | Opens the ECG capability gate |
+| 6b | `watch-min-age-22-to-16` *(optional, group `minimum-age`)* | in the shared date-of-birth check (the method that logs `has date of birth` and calls `DateOfBirth.isPastThanOrEqual`), the feature's minimum age (`w()`: 22, or 18 for apnea 2.0) is overwritten with 16 right after it is read | The watch app runs its own age check against the date of birth synced from the phone and shows "cannot be used by people under 22" on ECG, BP and apnea; the phone pattern alone does not reach it |
 | 7 | `watch-ecg-sensor-adapter` | sensor wrapper: type 0x1b (ECG) is always available and registered/unregistered through `EcgAdapter`; types 0x25 (IHRN) and 0x31 (SpO2/apnea) get an availability exemption through `WatchOverrides.sensorAvailability` | A re-signed app cannot reach the privileged ECG sensor; ECG comes from the Health Tracking Service through our own client (see [health-sdk.md](health-sdk.md)) |
 | 7b | `watch-sensor-unregister-compat` | the three direct `SemSensorManager.unregisterListener(listener, int)` calls (the sensor wrapper and two in the sensor controller) go through `WatchOverrides.unregisterListener`, which picks the framework's overload by reflection (`(listener, int)` with any return type, else `(listener)`) and logs failures instead of throwing | The Galaxy Watch8 framework has no `unregisterListener(listener, int)V`; the apnea version detector (run because of the 0x31 exemption) unregisters after its timeout, and the `NoSuchMethodError` escaped its `catch Exception` and closed the app on open |
 | 8 | `watch-apnea-country` | the apnea "supported country" check returns true up front | Regional check disabled (the original is a fixed country list) |

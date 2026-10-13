@@ -186,6 +186,7 @@ class LoadedCatalogue(val engine: Catalogue, private val resolve: (Int) -> Strin
         "watch-companion-vendor" to R.string.patch_watch_companion_vendor,
         "watch-alarm-system-app" to R.string.patch_watch_alarm_system_app,
         "watch-mobile-installed" to R.string.patch_watch_mobile_installed,
+        "watch-min-age-22-to-16" to R.string.patch_shm_min_age_22_to_16,
         "watch-ecg-sensor-adapter" to R.string.patch_watch_ecg_sensor_adapter,
         "watch-sensor-unregister-compat" to R.string.patch_watch_sensor_unregister_compat,
         "watch-apnea-country" to R.string.patch_watch_apnea_country,

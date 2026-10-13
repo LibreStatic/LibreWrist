@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "serial": 24,
+  "serial": 25,
   "minAppVersion": 15,
   "inputs": [
     {
@@ -142,6 +142,7 @@
           "watch-companion-vendor",
           "watch-alarm-system-app",
           "watch-mobile-installed",
+          "watch-min-age-22-to-16",
           "watch-ecg-sensor-adapter",
           "watch-sensor-unregister-compat",
           "watch-apnea-country",
@@ -239,12 +240,12 @@
     },
     "shm-min-age-22-to-16": {
       "families": [
-        "shm-phone",
-        "shm-watch"
+        "shm-phone"
       ],
       "title": "Minimum age 16",
       "description": "MIN_AGE 0x16 (22) -> 0x10 (16) in util/c",
       "optional": true,
+      "optionGroup": "minimum-age",
       "ops": [
         {
           "op": "swapConst",
@@ -695,6 +696,36 @@
             "    const/4 v0, 0x1",
             "",
             "    return v0"
+          ],
+          "expect": 1
+        }
+      ]
+    },
+    "watch-min-age-22-to-16": {
+      "families": [
+        "shm-watch"
+      ],
+      "title": "Minimum age 16 (watch)",
+      "description": "Watch: the date-of-birth check of every feature (ECG, BP, apnea) compares against 16 instead of the feature's minimum age (22, or 18 for apnea 2.0)",
+      "optional": true,
+      "optionGroup": "minimum-age",
+      "ops": [
+        {
+          "op": "insertInMethodAtMatch",
+          "sigRegex": "public \\w+\\(\\)Z",
+          "fileAll": [
+            "Lcom/samsung/android/shealthmonitor/util/DateOfBirth;->isPastThanOrEqual"
+          ],
+          "bodyAll": [
+            "\"has date of birth\"",
+            "Lcom/samsung/android/shealthmonitor/util/DateOfBirth;->isPastThanOrEqual"
+          ],
+          "pattern": "invoke-virtual \\{p0\\}, L\\w+;->\\w+\\(\\)I\\n\\n    move-result (?P<reg>[pv]\\d+)\\n(?P<at>)",
+          "insert": [
+            "",
+            "    # PATCH: minimum age 16 for every feature",
+            "    const/16 {{reg}}, 0x10",
+            ""
           ],
           "expect": 1
         }

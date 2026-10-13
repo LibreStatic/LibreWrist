@@ -72,7 +72,7 @@ class CustomizeStateTest {
     private val session = SessionState(watchProfile = WatchProfile.WearOs5, packagePrefix = "io.openshm.u3fa91c", samsungHealth = false)
 
     private val optionalIds = setOf(
-        "shm-min-age-22-to-16", "shm-setup-network-gate", "shm-sleep-apnea-support", "watch-apnea-country",
+        "shm-min-age-22-to-16", "watch-min-age-22-to-16", "shm-setup-network-gate", "shm-sleep-apnea-support", "watch-apnea-country",
         "watch-apnea-reeval-not-supported", "alarm-force-sound-vibrate", "alarm-hide-launcher", "alarm-relabel", "shm-launcher-badge",
     )
     private val apneaIds = setOf("shm-sleep-apnea-support", "watch-apnea-country", "watch-apnea-reeval-not-supported")
@@ -87,7 +87,7 @@ class CustomizeStateTest {
     fun optionalPatchesStartEnabledAndPresetsAreShown() {
         val s = customizeStateFor(session)
         assertEquals(3, s.appCount)
-        assertEquals(9, s.optionalCount)
+        assertEquals(10, s.optionalCount)
         assertEquals(optionalIds, s.groups.flatMap { it.patches }.filter { !it.required }.map { it.info.id }.toSet())
         assertTrue(s.showPresets)
         assertEquals(Preset.Recommended, s.preset)
@@ -127,7 +127,7 @@ class CustomizeStateTest {
         val minimal = s.reduce(CustomizeEvent.SelectPreset(Preset.Minimal))
         assertEquals(Preset.Minimal, minimal.preset)
         assertEquals(optionalIds, minimal.disabledIds)
-        assertEquals(s.enabledPatchCount - 9, minimal.enabledPatchCount)
+        assertEquals(s.enabledPatchCount - 10, minimal.enabledPatchCount)
         assertTrue(minimal.canBuild)
         assertEquals(s, minimal.reduce(CustomizeEvent.SelectPreset(Preset.Recommended)))
     }
