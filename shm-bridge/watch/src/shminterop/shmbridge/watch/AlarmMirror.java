@@ -70,7 +70,7 @@ public final class AlarmMirror {
             am.setAlarmClock(new AlarmManager.AlarmClockInfo(fire, showIntent(c)), fireIntent(c));
             Log.i(BridgeHub.TAG, "local alarm scheduled: fire=" + fire);
         } catch (SecurityException e) {
-            Log.w(BridgeHub.TAG, "setAlarmClock rechazado: " + e);
+            Log.w(BridgeHub.TAG, "setAlarmClock rejected: " + e);
         }
     }
 

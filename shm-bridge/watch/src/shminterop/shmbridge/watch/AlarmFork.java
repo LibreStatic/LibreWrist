@@ -34,6 +34,8 @@ final class AlarmFork {
     static volatile String phoneId;
     /** Instant at which the ring was sent to the fork. */
     static volatile long ringAt;
+    /** The fork's ring in progress is the bridge's own fallback alarm (no phone id). */
+    static volatile boolean localRing;
 
     private AlarmFork() {}
 
@@ -77,7 +79,7 @@ final class AlarmFork {
      * Sends {@code /c_alarm/started} to the fork: the phone alarm started ringing.
      *
      * @param id    phone alarm id (string, hashed to int for alarmItem)
-     * @param label alarm label (null -> "Alarma")
+     * @param label alarm label (null -> localized {@code alarm_title})
      * @param canSnooze whether the alarm can be snoozed
      * @param ts    fire instant (epoch ms)
      */
@@ -91,15 +93,19 @@ final class AlarmFork {
 
             JSONObject item = new JSONObject();
             item.put("id", id == null ? 0 : id.hashCode());
-            item.put("alarmName", label != null ? label : "Alarma");
+            item.put("alarmName", label != null ? label : CallMirror.str(c, "alarm_title"));
             item.put("alarmTime", alarmTime);
             item.put("bedAlarmTime", -1);
             item.put("active", 1);
             item.put("snz", canSnooze ? 1 : 0);
             item.put("alertTime", ts);
-            item.put("snzDuration", 0);
-            item.put("snzRepeat", 3);
-            item.put("snzCount", 0);
+            // Snooze fields as AlarmWatch reads them (o2.c): the snooze button is hidden when
+            // snz == 0 or snzCount == 0 (snzCount works as "snoozes left", 1 = last ring);
+            // snzDuration >= 1000 is a custom duration in minutes (1000 + min); snzRepeat is an
+            // index + 2 into {3, 5, forever}. The phone's Clock app governs the real snooze.
+            item.put("snzDuration", 1000 + (int) (AlarmMirror.SNOOZE_MS / 60_000L));
+            item.put("snzRepeat", 4);
+            item.put("snzCount", canSnooze ? 5 : 0);
             item.put("alarmSoundType", 0);
             item.put("dailyBr", 1);
             item.put("rep", 1);
@@ -119,10 +125,11 @@ final class AlarmFork {
             c.startActivity(i);
 
             phoneId = id;
+            localRing = id == null;
             ringAt = System.currentTimeMillis();
             Log.i(BridgeHub.TAG, "fork: ring id=" + id);
         } catch (Exception e) {
-            Log.w(BridgeHub.TAG, "fork: ring fallido: " + e);
+            Log.w(BridgeHub.TAG, "fork: ring failed: " + e);
         }
     }
 
@@ -138,7 +145,7 @@ final class AlarmFork {
             c.sendBroadcast(i, PERM);
             Log.i(BridgeHub.TAG, "fork: stop id=" + id);
         } catch (Exception e) {
-            Log.w(BridgeHub.TAG, "fork: stop fallido: " + e);
+            Log.w(BridgeHub.TAG, "fork: stop failed: " + e);
         }
     }
 
@@ -151,18 +158,25 @@ final class AlarmFork {
     static void onForkAction(Context c, String path, String data) {
         String pid = phoneId;
         if (pid == null) {
+            if (localRing) {
+                // The bridge's own fallback alarm: there is no phone alarm to control.
+                localRing = false;
+                if ("/w_alarm/snooze".equals(path)) AlarmMirror.snoozeLocal(c);
+                Log.i(BridgeHub.TAG, "fork: " + path + " on the local alarm");
+                return;
+            }
             Log.i(BridgeHub.TAG, "fork: action " + path + " with no active ring, ignored");
             return;
         }
         if ("/w_alarm/dismiss".equals(path)) {
             BridgeHub.get(c).send("alarm/dismiss", BridgeHub.obj("id", pid));
             phoneId = null;
-            Log.i(BridgeHub.TAG, "fork: dismiss -> telefono id=" + pid);
+            Log.i(BridgeHub.TAG, "fork: dismiss -> phone id=" + pid);
         } else if ("/w_alarm/snooze".equals(path)) {
             BridgeHub.get(c).send("alarm/snooze", BridgeHub.obj("id", pid));
-            Log.i(BridgeHub.TAG, "fork: snooze -> telefono id=" + pid);
+            Log.i(BridgeHub.TAG, "fork: snooze -> phone id=" + pid);
         } else {
-            Log.i(BridgeHub.TAG, "fork: action desconocida path=" + path);
+            Log.i(BridgeHub.TAG, "fork: unknown action path=" + path);
         }
     }
 }

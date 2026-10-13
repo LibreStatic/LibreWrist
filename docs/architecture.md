@@ -76,7 +76,9 @@ and calls natively, so by default the phone only announces `caps=["alarm"]`.
 
 ### Alarms
 - Phone → watch: `alarm/next` `{"t":<epoch ms>|null}` (the watch schedules its own alarm at
-  `t + 5 s` that rings even if the link is down), `alarm/ring`, `alarm/stop`.
+  `t + 5 s` that rings even if the link is down; `t` is null unless the next alarm clock belongs
+  to the Clock app, since other apps' `setAlarmClock()` never post a ring), `alarm/ring`,
+  `alarm/stop`.
 - Watch → phone: `alarm/snooze`, `alarm/dismiss` (the phone tries the Clock app notification
   action, then `ACTION_SNOOZE_ALARM`/`ACTION_DISMISS_ALARM`, and finally `cancelNotification`).
 - UI priority on the watch: Alarm fork → `AlarmRinger` (our own fallback).

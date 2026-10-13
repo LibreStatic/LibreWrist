@@ -500,15 +500,27 @@ final class CommsHub implements BridgeLink.Listener {
         return clockPkg;
     }
 
+    /**
+     * alarm/next: the phone's next alarm, used by the watch as a fallback when no ring arrives.
+     * {@code getNextAlarmClock()} returns the next {@code setAlarmClock()} of ANY app (reminders,
+     * calendars, sleep trackers...), whose fire never posts a Clock-app ring; mirroring it made the
+     * watch ring on its own at unrelated times. Only the Clock app's alarm is mirrored: when another
+     * app owns the next alarm clock, t=null (the Clock alarm still rings on the watch through its
+     * notification while the link is up).
+     */
     void sendAlarmNext() {
         handler.post(() -> {
             try {
                 AlarmManager am = (AlarmManager) ctx.getSystemService(Context.ALARM_SERVICE);
                 AlarmManager.AlarmClockInfo ai = am == null ? null : am.getNextAlarmClock();
+                String owner = ai == null || ai.getShowIntent() == null
+                        ? null : ai.getShowIntent().getCreatorPackage();
+                boolean clock = owner != null && NotifCodec.isClockPackage(owner, clockPackage());
                 JSONObject o = new JSONObject();
-                o.put("t", ai == null ? JSONObject.NULL : (Object) ai.getTriggerTime());
+                o.put("t", clock ? (Object) ai.getTriggerTime() : JSONObject.NULL);
                 send(P + "alarm/next", o);
-                Log.i(TAG, "alarm/next t=" + (ai == null ? "null" : String.valueOf(ai.getTriggerTime())));
+                Log.i(TAG, "alarm/next t=" + (ai == null ? "null" : String.valueOf(ai.getTriggerTime()))
+                        + " owner=" + owner + (ai != null && !clock ? " (not the Clock app, not mirrored)" : ""));
             } catch (Exception e) {
                 Log.w(TAG, "alarm/next: " + e.getClass().getSimpleName());
             }

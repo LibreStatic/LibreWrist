@@ -322,7 +322,7 @@ final class SamsungAlarm {
             c.startActivity(i);
             return true;
         } catch (Exception e) {
-            Log.w(BridgeHub.TAG, "samsung: " + i.getAction() + " rechazado: " + e);
+            Log.w(BridgeHub.TAG, "samsung: " + i.getAction() + " rejected: " + e);
             return false;
         }
     }

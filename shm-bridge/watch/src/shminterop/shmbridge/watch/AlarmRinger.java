@@ -118,7 +118,7 @@ public final class AlarmRinger {
                     AlarmMirror.snoozeLocal(ctx);
                 }
                 Log.i(BridgeHub.TAG, "alarm: " + (snooze ? "snooze" : "dismiss")
-                        + " (origen=" + (fromPhone ? "phone" : "local") + ")");
+                        + " (origin=" + (fromPhone ? "phone" : "local") + ")");
                 stopNow(ctx);
             }
         });

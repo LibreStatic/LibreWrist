@@ -28,7 +28,7 @@ BRIDGE_ONLY=phone ./shm-bridge/scripts/build-bridge.sh   # only one of them (wat
 ```
 
 It signs with the local keystore (`KEYSTORE` in `config.env`, generated if missing).
-`versionCode` / `versionName` come from each `AndroidManifest.xml` (watch 13 / 1.12, phone 7 / 1.6).
+`versionCode` / `versionName` come from each `AndroidManifest.xml` (watch 16 / 1.15, phone 10 / 1.9).
 Optional `PATCHER_CERT_SHA256`: see "Status provider" below.
 
 ## Install and grants
