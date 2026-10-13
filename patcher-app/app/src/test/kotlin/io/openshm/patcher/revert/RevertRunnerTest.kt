@@ -143,6 +143,86 @@ class RevertRunnerTest {
         assertEquals("1", watch.settings["doze_always_on"])
     }
 
+    private val key = "hidden_api_blacklist_exemptions"
+    private val ours = "Lcom/samsung/android/hardware/sensormanager/"
+
+    private fun exemptionItem(probe: io.openshm.patcher.ui.screens.revert.RevertProbe) =
+        probe.items.single { it.action == RevertAction.RemoveExemption }
+
+    @Test
+    fun theExemptionIsPresentOnlyWhenOurExactEntryIsListed() {
+        val cases = mapOf<String?, Presence>(
+            ours to Presence.Present,
+            "Lother/,$ours,Lmore/" to Presence.Present,
+            null to Presence.Absent,
+            "Lother/" to Presence.Absent,
+            "${ours}extra/" to Presence.Absent,
+        )
+        for ((value, expected) in cases) {
+            val (phone, watch) = fullInstall()
+            if (value != null) watch.globals[key] = value
+            val (probe, _) = runner(phone, watch).probeAndRun()
+            assertEquals("value $value", expected, exemptionItem(probe).presence)
+        }
+    }
+
+    @Test
+    fun ourEntryIsRemovedAndForeignOnesKept() {
+        val (phone, watch) = fullInstall()
+        watch.globals[key] = "Lother/,$ours,${ours}extra/"
+        val (probe, report) = runner(phone, watch).probeAndRun()
+        assertEquals(StepOutcome.Done, report.outcomeOf(exemptionItem(probe)))
+        assertEquals("Lother/,${ours}extra/", watch.globals[key])
+        assertTrue(watch.calls.contains("putGlobal:$key=Lother/,${ours}extra/"))
+        assertTrue(report.complete)
+    }
+
+    @Test
+    fun theSettingIsDeletedWhenOursWasTheOnlyEntry() {
+        val (phone, watch) = fullInstall()
+        watch.globals[key] = ours
+        val (probe, report) = runner(phone, watch).probeAndRun()
+        assertEquals(StepOutcome.Done, report.outcomeOf(exemptionItem(probe)))
+        assertFalse(watch.globals.containsKey(key))
+        assertTrue(watch.calls.contains("deleteGlobal:$key"))
+        assertFalse(watch.calls.any { it.startsWith("putGlobal:") })
+    }
+
+    @Test
+    fun theExemptionRunsAfterTheWatchUninstalls() {
+        val (phone, watch) = fullInstall()
+        watch.globals[key] = ours
+        runner(phone, watch).probeAndRun()
+        val at = watch.calls.indexOf("deleteGlobal:$key")
+        assertTrue(at > watch.calls.indexOfLast { it.startsWith("uninstall:") })
+    }
+
+    @Test
+    fun anEntryThatVanishedAfterTheProbeIsSkipped() {
+        val (phone, watch) = fullInstall()
+        watch.globals[key] = ours
+        val runner = runner(phone, watch)
+        val report = runBlocking {
+            val probe = runner.probe()
+            watch.globals.remove(key)
+            runner.run(probe.items, true) { _, _ -> }
+        }
+        assertEquals(StepOutcome.Skipped(SkipReason.NothingToDo), report.outcomes["Watch:RemoveExemption:$key"])
+        assertFalse(watch.calls.any { it.contains("Global:") })
+    }
+
+    @Test
+    fun aListThatCannotBeRewrittenSafelyIsFailedAndLeftAlone() {
+        val (phone, watch) = fullInstall()
+        val original = "L'quoted/,$ours"
+        watch.globals[key] = original
+        val (probe, report) = runner(phone, watch).probeAndRun()
+        assertTrue(report.outcomeOf(exemptionItem(probe)) is StepOutcome.Failed)
+        assertEquals(original, watch.globals[key])
+        assertFalse(watch.calls.any { it.contains("Global:") })
+        assertFalse(report.complete)
+    }
+
     @Test
     fun anUnreachableWatchStillLetsThePhoneRevertAndTheRunIsPartial() {
         val (phone, watch) = fullInstall()

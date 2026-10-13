@@ -12,6 +12,7 @@ sealed class Grant {
     data class NotificationListener(val component: String, override val optional: Boolean = false) : Grant()
     data class DeviceIdleWhitelist(override val optional: Boolean = false) : Grant()
     data class SecureSetting(val key: String, val value: String, override val optional: Boolean = false) : Grant()
+    data class GlobalSetting(val key: String, val value: String, override val optional: Boolean = false) : Grant()
 }
 
 /** Which device the commands are for; the phone needs an explicit user argument in places. */
@@ -50,7 +51,19 @@ class GrantCommandBuilder(private val target: GrantTarget) {
                 check(SETTING_VALUE.matches(grant.value), "setting value", grant.value)
                 "settings put secure ${grant.key} ${grant.value}"
             }
+            is Grant.GlobalSetting -> {
+                validateGlobalSetting(grant)
+                throw UnsupportedOperationException(
+                    "GlobalSetting is a read-modify-write grant; apply it with GrantApplier, not GrantCommandBuilder.build",
+                )
+            }
         }
+    }
+
+    /** Validates a [Grant.GlobalSetting]'s key and value against the catalogue character sets. */
+    internal fun validateGlobalSetting(grant: Grant.GlobalSetting) {
+        check(SETTING_KEY.matches(grant.key), "setting key", grant.key)
+        check(GLOBAL_SETTING_VALUE.matches(grant.value), "global setting value", grant.value)
     }
 
     private fun check(ok: Boolean, what: String, value: String) {
@@ -64,6 +77,7 @@ class GrantCommandBuilder(private val target: GrantTarget) {
         val COMPONENT = Regex("(\\.[A-Za-z][A-Za-z0-9_]*)+|[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z][A-Za-z0-9_]*)+")
         val SETTING_KEY = Regex("[a-z][a-z0-9_]*")
         val SETTING_VALUE = Regex("[A-Za-z0-9_.][A-Za-z0-9_.-]{0,63}") // no leading "-": it would be read as an option
+        val GLOBAL_SETTING_VALUE = Regex("L[a-zA-Z0-9_/\$-]{0,127}")
     }
 }
 
@@ -88,13 +102,59 @@ class GrantApplier(private val client: AdbClient, private val target: GrantTarge
      * optional grant that fails is recorded and skipped; a failed required grant stops the run.
      */
     suspend fun apply(pkg: String, grants: List<Grant>): GrantReport {
-        val commands = grants.map { it to builder.build(pkg, it) }
+        // Every grant is validated before any command runs. A GlobalSetting has no single safe
+        // command (it is a read-modify-write), so it is validated here and applied specially below.
+        val commands = grants.map { grant ->
+            if (grant is Grant.GlobalSetting) {
+                check(Names.isPackage(pkg), "package name", pkg)
+                builder.validateGlobalSetting(grant)
+                grant to null
+            } else {
+                grant to builder.build(pkg, grant)
+            }
+        }
         val outcomes = ArrayList<GrantOutcome>(commands.size)
         for ((grant, command) in commands) {
-            val outcome = GrantOutcome(grant, command, client.shell(command))
+            val outcome = if (grant is Grant.GlobalSetting) {
+                applyGlobalSetting(pkg, grant)
+            } else {
+                GrantOutcome(grant, command!!, client.shell(command))
+            }
             outcomes += outcome
             if (!outcome.applied && !grant.optional) break
         }
         return GrantReport(outcomes)
+    }
+
+    private fun check(ok: Boolean, what: String, value: String) {
+        if (!ok) throw UnsafeGrantValueException("Unsafe $what: ${value.take(60)}")
+    }
+
+    /**
+     * Append-to-comma-list apply for a global setting: read the current value, skip the write
+     * when our entry is already present, otherwise write the appended value single-quoted
+     * (foreign entries preserved verbatim) and force-stop [pkg] so ART re-reads the exemptions
+     * at process start.
+     */
+    private suspend fun applyGlobalSetting(pkg: String, grant: Grant.GlobalSetting): GrantOutcome {
+        val getCommand = "settings get global ${grant.key}"
+        val read = client.shell(getCommand)
+        if (!read.isSuccess) return GrantOutcome(grant, getCommand, read)
+        val current = GrantReadback.settingValue(read.stdout)
+        if (GrantReadback.listContainsEntry(current, grant.value)) {
+            return GrantOutcome(grant, getCommand, read)
+        }
+        // Foreign entries go back inside single quotes: a quote or a line break in them (or a
+        // multi-line read, which settingValue would truncate) cannot be written back safely.
+        val lines = read.stdout.lineSequence().count { it.isNotBlank() }
+        if (lines > 1 || current.orEmpty().any { it == '\'' || it.isISOControl() }) {
+            return GrantOutcome(grant, getCommand, ShellResult(1, read.stdout, "current value cannot be rewritten safely"))
+        }
+        val newValue = GrantReadback.appendListEntry(current, grant.value)
+        val putCommand = "settings put global ${grant.key} '$newValue'"
+        val put = client.shell(putCommand)
+        if (!put.isSuccess) return GrantOutcome(grant, putCommand, put)
+        val stop = client.shell("am force-stop $pkg")
+        return GrantOutcome(grant, putCommand, if (stop.isSuccess) put else stop)
     }
 }

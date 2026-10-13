@@ -14,6 +14,9 @@ enum class RevertAction {
 
     /** Put a secure setting back to its default value. */
     RestoreSetting,
+
+    /** Remove our entry from a list-valued global setting; the other entries are kept. */
+    RemoveExemption,
 }
 
 /** What the probe found for an entry. */
@@ -31,7 +34,7 @@ enum class Presence {
     Unknown,
 }
 
-/** One thing the revert may undo on one device. [pkg] is the package name, or the setting key for [RevertAction.RestoreSetting]. */
+/** One thing the revert may undo on one device. [pkg] is the package name, or the setting key for the setting actions. */
 data class RevertItem(
     val device: Device,
     val label: String,
@@ -57,6 +60,10 @@ object RevertPlan {
     /** The secure setting the earlier catalogue changed on the watch, and the default it is put back to. */
     const val ALWAYS_ON_KEY = "doze_always_on"
     const val ALWAYS_ON_DEFAULT = "1"
+
+    /** The global setting and the entry the `shm-watch` globalSetting grant appends to it. */
+    const val HIDDEN_API_KEY = "hidden_api_blacklist_exemptions"
+    const val HIDDEN_API_ENTRY = "Lcom/samsung/android/hardware/sensormanager/"
 
     private const val PLACEHOLDER = "\${PKG_PREFIX}"
 

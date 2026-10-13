@@ -102,6 +102,51 @@ class GrantReadbackTest {
     }
 
     @Test
+    fun `comma list entries match exactly, not by prefix or substring`() {
+        val value = "Lcom/samsung/android/hardware/sensormanager/"
+        assertTrue(GrantReadback.listContainsEntry(value, value))
+        assertTrue(GrantReadback.listContainsEntry("Lother/,$value", value))
+        assertTrue(GrantReadback.listContainsEntry("$value,Lother/", value))
+        assertFalse(GrantReadback.listContainsEntry("Lcom/samsung/android/hardware/sensormanager/extra/", value))
+        assertFalse(GrantReadback.listContainsEntry("Lcom/samsung/android/hardware/sensormanager", value))
+        assertFalse(GrantReadback.listContainsEntry("XL$value", value))
+        assertFalse(GrantReadback.listContainsEntry(null, value))
+        assertFalse(GrantReadback.listContainsEntry("null", value))
+        assertFalse(GrantReadback.listContainsEntry("", value))
+    }
+
+    @Test
+    fun `appending to a comma list covers unset, null and foreign entries`() {
+        val value = "Lcom/samsung/android/hardware/sensormanager/"
+        assertEquals(value, GrantReadback.appendListEntry(null, value))
+        assertEquals(value, GrantReadback.appendListEntry("null", value))
+        assertEquals(value, GrantReadback.appendListEntry("", value))
+        assertEquals("Lother/,$value", GrantReadback.appendListEntry("Lother/", value))
+        assertEquals("Lother/,$value", GrantReadback.appendListEntry("Lother/,$value", value))
+        // A similar-but-different entry is not mistaken for ours, and stays verbatim.
+        assertEquals(
+            "Lcom/samsung/android/hardware/sensormanager/extra/,$value",
+            GrantReadback.appendListEntry("Lcom/samsung/android/hardware/sensormanager/extra/", value),
+        )
+    }
+
+    @Test
+    fun `removing a comma list entry keeps the others verbatim and in order`() {
+        val value = "Lcom/samsung/android/hardware/sensormanager/"
+        assertNull(GrantReadback.removeListEntry(value, value))
+        assertNull(GrantReadback.removeListEntry("$value,$value", value))
+        assertNull(GrantReadback.removeListEntry(null, value))
+        assertNull(GrantReadback.removeListEntry("null", value))
+        assertNull(GrantReadback.removeListEntry("  ", value))
+        assertEquals("Lb/,Lc/", GrantReadback.removeListEntry("$value,Lb/,Lc/", value))
+        assertEquals("Lb/,Lc/", GrantReadback.removeListEntry("Lb/,$value,Lc/", value))
+        assertEquals("Lb/,Lc/", GrantReadback.removeListEntry("Lb/,Lc/,$value", value))
+        assertEquals("Lb/", GrantReadback.removeListEntry("Lb/, $value ", value))
+        val longer = "${value}extra/"
+        assertEquals(longer, GrantReadback.removeListEntry("$longer,$value", value))
+    }
+
+    @Test
     fun `deviceidle whitelist matches the exact package`() {
         val dump = """
             system-excidle,com.android.shell,2000
@@ -157,6 +202,21 @@ class GrantCheckerTest {
         )
         // The package dump is fetched once for both permissions.
         assertEquals(1, commands.count { it == "dumpsys package $PKG" })
+    }
+
+    @Test
+    fun `a global setting is granted only when the exact entry is present`() = runBlocking {
+        val cmd = "settings get global hidden_api_blacklist_exemptions"
+        val grant = Grant.GlobalSetting("hidden_api_blacklist_exemptions", "Lcom/samsung/android/hardware/sensormanager/")
+        val granted = checker(mapOf(cmd to ok("Lother/,Lcom/samsung/android/hardware/sensormanager/\n"))).check(PKG, listOf(grant))
+        val similar = checker(mapOf(cmd to ok("Lcom/samsung/android/hardware/sensormanager/extra/\n"))).check(PKG, listOf(grant))
+        val unset = checker(mapOf(cmd to ok("null\n"))).check(PKG, listOf(grant))
+        val failed = checker(emptyMap()).check(PKG, listOf(grant))
+        assertEquals(GrantState.Granted, granted.single().state)
+        assertEquals(GrantState.Missing, similar.single().state)
+        assertEquals(GrantState.Missing, unset.single().state)
+        assertEquals(GrantState.Unknown, failed.single().state)
+        assertTrue(commands.all { it == cmd })
     }
 
     @Test

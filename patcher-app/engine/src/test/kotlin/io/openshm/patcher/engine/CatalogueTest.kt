@@ -44,7 +44,7 @@ class CatalogueTest {
 
     @Test fun committedCatalogueParses() {
         val c = Catalogue.parse(String(catalogueBytes, Charsets.UTF_8))
-        assertEquals(52, c.patterns.size)
+        assertEquals(53, c.patterns.size)
         assertEquals(setOf("gms", "alarm", "shealth"), c.profiles.keys)
     }
 
@@ -74,6 +74,50 @@ class CatalogueTest {
             fail()
         } catch (e: CatalogueException) {
             assertTrue(e.problems.any { "field 'value'" in it })
+        }
+    }
+
+    private fun withFirstAppopAs(grantJson: String): String = mutated {
+        it.replaceFirst(
+            "\"kind\": \"appop\",\n        \"op\": \"SCHEDULE_EXACT_ALARM\",\n        \"mode\": \"allow\"",
+            grantJson,
+        )
+    }
+
+    @Test fun globalSettingGrantIsAccepted() {
+        val text = withFirstAppopAs(
+            "\"kind\": \"globalSetting\",\n        \"key\": \"some_list_key\",\n        \"value\": \"Lcom/example/other/\"",
+        )
+        assertTrue(text != String(catalogueBytes, Charsets.UTF_8))
+        val c = Catalogue.parse(text)
+        val grant = c.grants.getValue("shm-watch").single { it.fields["key"] == "some_list_key" }
+        assertEquals("globalSetting", grant.kind)
+        assertEquals("Lcom/example/other/", grant.fields.getValue("value"))
+        assertFalse(grant.optional)
+        // The committed entry for the watch sensor-manager exemption parses too.
+        val watch = c.grants.getValue("shm-watch").single { it.fields["key"] == "hidden_api_blacklist_exemptions" }
+        assertEquals("Lcom/samsung/android/hardware/sensormanager/", watch.fields.getValue("value"))
+    }
+
+    @Test fun globalSettingGrantRejectsUnsafeValues() {
+        for ((grantJson, field) in listOf(
+            "\"kind\": \"globalSetting\",\n        \"key\": \"hidden_api_blacklist_exemptions\",\n        \"value\": \"Lcom/foo bar/\"" to "value",
+            "\"kind\": \"globalSetting\",\n        \"key\": \"hidden_api_blacklist_exemptions\",\n        \"value\": \"Lcom/foo/;id\"" to "value",
+            "\"kind\": \"globalSetting\",\n        \"key\": \"hidden_api_blacklist_exemptions\",\n        \"value\": \"Lcom/foo/'\"" to "value",
+            "\"kind\": \"globalSetting\",\n        \"key\": \"hidden_api_blacklist_exemptions\",\n        \"value\": \"com/samsung/android/hardware/sensormanager/\"" to "value",
+            "\"kind\": \"globalSetting\",\n        \"key\": \"hidden_api_blacklist_exemptions\",\n        \"value\": \"L${"a".repeat(128)}\"" to "value",
+            "\"kind\": \"globalSetting\",\n        \"key\": \"Bad Key\",\n        \"value\": \"Lcom/foo/\"" to "key",
+            "\"kind\": \"globalSetting\",\n        \"key\": \"hidden_api_blacklist_exemptions\"" to "value",
+            "\"kind\": \"globalSetting\",\n        \"key\": \"hidden_api_blacklist_exemptions\",\n        \"value\": \"Lcom/foo/\",\n        \"extra\": \"x\"" to "unknown fields",
+        )) {
+            val text = withFirstAppopAs(grantJson)
+            assertTrue(text != String(catalogueBytes, Charsets.UTF_8))
+            try {
+                Catalogue.parse(text)
+                fail(grantJson)
+            } catch (e: CatalogueException) {
+                assertTrue(e.problems.toString(), e.problems.any { field in it })
+            }
         }
     }
 
@@ -167,7 +211,7 @@ class CatalogueTest {
 
     @Test fun parseSignedVerifiesBeforeParsing() {
         val key = CatalogueVerifier.parsePublicKey(pem)
-        assertEquals(52, Catalogue.parseSigned(catalogueBytes, signature, key).patterns.size)
+        assertEquals(53, Catalogue.parseSigned(catalogueBytes, signature, key).patterns.size)
         val tampered = catalogueBytes.copyOf().also { it[100] = (it[100].toInt() xor 1).toByte() }
         try {
             Catalogue.parseSigned(tampered, signature, key)

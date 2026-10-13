@@ -42,6 +42,7 @@ internal fun grantTitle(grant: Grant): Int = when (grant.name) {
         GrantKind.Permission -> R.string.grant_permission
         GrantKind.AppOp -> R.string.grant_appop
         GrantKind.SecureSetting -> R.string.grant_setting
+        GrantKind.GlobalSetting -> R.string.grant_title_hidden_api
     }
 }
 
@@ -52,6 +53,7 @@ internal fun grantReason(outputId: String, grant: Grant): Int? {
     return when (grant.kind) {
         GrantKind.NotificationListener -> if (watch) R.string.grant_why_listener_watch else R.string.grant_why_listener_phone
         GrantKind.BatteryExemption -> if (outputId == "alarm-fork") R.string.grant_why_battery_alarm else R.string.grant_why_battery_bridge
+        GrantKind.GlobalSetting -> R.string.grant_why_hidden_api
         else -> when (grant.name) {
             "ANSWER_PHONE_CALLS" -> R.string.grant_why_calls
             "READ_PHONE_STATE" -> R.string.grant_why_phone_state
@@ -76,5 +78,6 @@ internal fun grantReason(outputId: String, grant: Grant): Int? {
 internal fun grantTechnicalName(grant: Grant): String = when (grant.kind) {
     GrantKind.BatteryExemption -> "deviceidle whitelist"
     GrantKind.SecureSetting -> "settings secure ${grant.name}"
+    GrantKind.GlobalSetting -> "settings global ${grant.name}"
     else -> grant.name
 }

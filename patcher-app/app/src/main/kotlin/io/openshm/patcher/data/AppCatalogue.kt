@@ -120,6 +120,7 @@ class LoadedCatalogue(val engine: Catalogue, private val resolve: (Int) -> Strin
             "notificationListener" -> GrantKind.NotificationListener to g.fields.getValue("component")
             "deviceIdleWhitelist" -> GrantKind.BatteryExemption to "deviceIdleWhitelist"
             "secureSetting" -> GrantKind.SecureSetting to g.fields.getValue("key")
+            "globalSetting" -> GrantKind.GlobalSetting to g.fields.getValue("key")
             else -> throw IllegalArgumentException("unknown grant kind '${g.kind}'")
         }
         return Grant(kind, name, g.optional, g)

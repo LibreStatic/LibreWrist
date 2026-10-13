@@ -589,6 +589,7 @@ private fun GrantKind.labelRes(): Int = when (this) {
     GrantKind.Permission -> R.string.grant_permission
     GrantKind.AppOp -> R.string.grant_appop
     GrantKind.SecureSetting -> R.string.grant_setting
+    GrantKind.GlobalSetting -> R.string.grant_global_setting
     GrantKind.NotificationListener -> R.string.grant_listener
     GrantKind.BatteryExemption -> R.string.grant_battery
 }

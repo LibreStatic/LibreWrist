@@ -65,14 +65,21 @@ scripts/build_shm_watch.sh        # -> $DIST_DIR/shm-watch-1.5.1.022-gms.apk
     | `notificationListener` | `component` | `cmd notification allow_listener <pkg>/<class>`; either `.Class` (relative to the output package) or a fully qualified class name — a bare class name is rejected because `ComponentName` would not resolve it |
     | `deviceIdleWhitelist` | none | `dumpsys deviceidle whitelist +<pkg>` |
     | `secureSetting` | `key`, `value` | `settings put secure <key> <value>` |
+    | `globalSetting` | `key`, `value` | append `value` to the comma-separated list in `settings get global <key>` (foreign entries preserved, then `settings put global <key> '<current>,<value>'`), and force-stop the output so the new value is read at process start |
 
     Regexes: permission `^[a-zA-Z][\w.]*$`, appop `^[A-Z][A-Z0-9_]*$`, setting key
     `^[a-z][a-z0-9_]*$`, value `^\w[\w.-]{0,63}$` (no leading `-`, which `settings` would read as an option), component `.Class` or `fully.qualified.Class` (no `$`), package
-    `^[a-zA-Z]\w*(\.[a-zA-Z]\w*)+$` (after expansion). The `grants` keys are output ids; an
+    `^[a-zA-Z]\w*(\.[a-zA-Z]\w*)+$` (after expansion); the `globalSetting` value is a separate,
+    narrower set, `^L[a-zA-Z0-9_/$-]{0,127}$` (an ART member-signature prefix as it appears in a
+    hidden-API exemption list). The `grants` keys are output ids; an
     output without grants has an empty list. Grants are repeated after every reinstall.
     No grant changes a device-wide user setting: the former optional `secureSetting
     doze_always_on=0` on `shm-watch` was dropped (serial 22), since the ECG does not need it. The
-    patcher's revert sets `doze_always_on` back to `1` on a watch where it still reads `0`.
+    patcher's revert sets `doze_always_on` back to `1` on a watch where it still reads `0`, and removes our `hidden_api_blacklist_exemptions`
+    entry (see the `globalSetting` grant below).
+    (The `globalSetting` exemption on `shm-watch`, below, is the single deliberate exception: it
+    is a list of hidden-API member prefixes, not a `secure` user preference, and it is appended to,
+    never overwritten.)
   - `stockAppsToDisable`: stock system apps that should be disabled on a device
     (`pm disable-user --user 0 <package>`); `optional` apps are offered, not forced.
 
@@ -214,13 +221,48 @@ identical to the owner-verified `shm-phone-1.4.6.001-stock-mod-gms1` build (24 p
 | 6 | `watch-mobile-installed` | the "phone app installed" getter (pref `application_installed_in_mobile`) returns true | Opens the ECG capability gate |
 | 6b | `watch-min-age-22-to-16` *(optional, group `minimum-age`)* | in the shared date-of-birth check (the method that logs `has date of birth` and calls `DateOfBirth.isPastThanOrEqual`), the feature's minimum age (`w()`: 22, or 18 for apnea 2.0) is overwritten with 16 right after it is read | The watch app runs its own age check against the date of birth synced from the phone and shows "cannot be used by people under 22" on ECG, BP and apnea; the phone pattern alone does not reach it |
 | 7 | `watch-ecg-sensor-adapter` | sensor wrapper: type 0x1b (ECG) is always available and registered/unregistered through `EcgAdapter`; types 0x25 (IHRN) and 0x31 (SpO2/apnea) get an availability exemption through `WatchOverrides.sensorAvailability` | A re-signed app cannot reach the privileged ECG sensor; ECG comes from the Health Tracking Service through our own client (see [health-sdk.md](health-sdk.md)) |
-| 7b | `watch-sensor-unregister-compat` | the three direct `SemSensorManager.unregisterListener(listener, int)` calls (the sensor wrapper and two in the sensor controller) go through `WatchOverrides.unregisterListener`, which picks the framework's overload by reflection (`(listener, int)` with any return type, else `(listener)`) and logs failures instead of throwing | The Galaxy Watch8 framework has no `unregisterListener(listener, int)V`; the apnea version detector (run because of the 0x31 exemption) unregisters after its timeout, and the `NoSuchMethodError` escaped its `catch Exception` and closed the app on open |
+| 7b | `watch-sensor-unregister-compat` | the three direct `SemSensorManager.unregisterListener(listener, int)` calls (the sensor wrapper and two in the sensor controller) go through `WatchOverrides.unregisterListener`, which picks the framework's overload by reflection (`(listener, int)` with any return type, else `(listener)`) and logs failures instead of throwing | The One UI 8 Watch framework **denies** `SemSensorManager.unregisterListener` to a re-signed app (see `globalSetting` below): hidden-API enforcement makes the direct call surface as `NoSuchMethodError` (`api=blocked`), and the reflection fallback finds no overload because `getMethods()` also filters hidden members. The apnea version detector (run because of the 0x31 exemption) unregisters after its timeout, and that `NoSuchMethodError` escaped its `catch Exception` and closed the app on open |
+| 7c | `watch-bp-attribute-guard` | in the BP calibration path (`sl.g`), the `SemHrSensorAttribute` construction is routed through `WatchOverrides.makeHrSensorAttribute`, which builds it by reflection and returns null on any failure (`LinkageError` included); the following `setType`/`setDuration`/`setAttribute`/`registerListener` calls are skipped when it is null | The same hidden-API denial hits `SemHrSensorAttribute.<init>()V` on those watches; the uncaught `NoSuchMethodError` killed the process on every BP calibration attempt (3 crashes in one log). With the guard SHM takes its normal sensor-error path instead |
 | 8 | `watch-apnea-country` | the apnea "supported country" check returns true up front | Regional check disabled (the original is a fixed country list) |
 | 9 | `watch-apnea-reeval-not-supported` | in the stored apnea version getter, a persisted `NOT_SUPPORTED` is re-evaluated instead of returned | A value persisted by an earlier build (regional check still on) would be sticky |
 
+The `shm-watch` output also carries one **`globalSetting`** grant (the only device-wide setting any
+grant touches): `hidden_api_blacklist_exemptions` gets the value
+`Lcom/samsung/android/hardware/sensormanager/` appended.
+
+- **What it does**: Android's ART hidden-API enforcement honours
+  `Settings.Global.hidden_api_blacklist_exemptions`, a comma-separated list of member-signature
+  **prefixes**; a process started after the write may use the members under those prefixes even
+  when they are on the blocked list. Our prefix covers `SemSensorManager`, `SemEcgSensorEvent`,
+  `SemHrSensorAttribute`, `SemSensorListener` and the rest of the package.
+- **Why it is needed**: on Android 16 / One UI 8 Watch (Watch7/8 and newer, and any watch that
+  gets that framework) those `com.samsung.android.hardware.sensormanager` members are
+  `api=blocked` for non-system apps. The stock SHM is a preloaded system app and is allow-listed;
+  our build is a re-signed `/data/app` user app, so every call it makes into that package
+  is denied and surfaces as `NoSuchMethodError` — ECG (`SemEcgSensorEvent.<init>`, also built by
+  our `EcgAdapter`), BP calibration (row 7c) and the apnea SpO2 probe (row 7b). See
+  [watch-hidden-api-handoff.md](watch-hidden-api-handoff.md).
+- **Scope caveat**: the exemption is device-wide, for every app, for that package prefix. It is
+  not per-app: the prefix is what keeps it narrow.
+- **How the patcher applies it**: it reads the current value and, only when our prefix is not
+  already one of the comma-separated entries (an exact-entry comparison, so a different
+  `sensormanager`-like entry is not mistaken for ours), writes `<current>,<value>` — or just
+  `<value>` when the list is unset. Entries set by other tools are preserved verbatim. The value
+  is single-quoted and restricted to `^L[a-zA-Z0-9_/$-]{0,127}$`, so it cannot break out of the
+  shell command; a current value whose foreign entries hold a quote or a line break is refused
+  (the grant fails) rather than rewritten. After the write the patcher force-stops the twin
+  (`am force-stop com.samsung.android.shealthmonitors`), because ART applies the exemption list
+  when a process starts. The watch self-test reads it back and reports it as granted when our
+  prefix is present among the entries.
+- **Revert**: the patcher's "Undo all changes" removes exactly our entry from the list (other
+  entries stay) and deletes the setting only when no entries remain, instead of writing an empty
+  value. By hand, the same is done with the adb commands in
+  [installation.md](installation.md#2-install-order).
+
 Plus two injected smali sets (profile `inject`, merged into one new `smali_classesN` dir
 before `apktool b`): `watch-mod` (`watch-mod/build-watch-mod.sh`: `EcgAdapter`,
-`WatchOverrides`, `UnregisterMethod` and the `shminterop.hsdk` Health Tracking client).
+`WatchOverrides` — `sensorAvailability`, `unregisterListener` and `makeHrSensorAttribute` —,
+`UnregisterMethod` and the `shminterop.hsdk` Health Tracking client).
 
 Verified [V], by decoding both final APKs and comparing with `shm-watch-mod-gms-v32-signed`
 (owner-verified on device, normalising the previous package marker to `shminterop`):

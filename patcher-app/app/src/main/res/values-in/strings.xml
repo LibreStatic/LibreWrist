@@ -74,6 +74,7 @@
     <string name="grant_title_ongoing_calls">Kelola panggilan yang sedang berlangsung</string>
     <string name="grant_title_always_on">Always-on display mati</string>
     <string name="grant_title_battery">Penggunaan baterai tanpa batasan</string>
+    <string name="grant_title_hidden_api">Akses sensor di jam tangan baru</string>
     <string name="grant_why_calls">Menjawab atau menolak panggilan dari jam tangan.</string>
     <string name="grant_why_phone_state">Mengetahui kapan panggilan berdering atau berakhir, agar jam tangan bisa menampilkannya.</string>
     <string name="grant_why_notifications_phone">Menampilkan notifikasi kecil selama terhubung ke jam tangan.</string>
@@ -94,6 +95,7 @@
     <string name="grant_why_always_on">Mencegah layar always-on membuat jam tangan tidur saat pengukuran.</string>
     <string name="grant_why_battery_bridge">Menjaga koneksi Bluetooth tetap hidup saat jam tangan menghemat baterai.</string>
     <string name="grant_why_battery_alarm">Berbunyi tepat waktu meski jam tangan menghemat baterai.</string>
+    <string name="grant_why_hidden_api">Mengizinkan aplikasi jam tangan memakai layanan sensor Samsung untuk EKG, tekanan darah, dan apnea tidur. Berlaku untuk seluruh jam tangan, tetapi hanya untuk perangkat lunak sensor Samsung.</string>
     <string name="changes_disables">Bisa dimatikan</string>
 
     <!-- Profile -->
@@ -393,6 +395,7 @@
     <string name="grant_setting">Setelan sistem</string>
     <string name="grant_listener">Akses notifikasi</string>
     <string name="grant_battery">Pengecualian baterai</string>
+    <string name="grant_global_setting">Setelan sistem global</string>
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Mode pengembang Health Platform</string>
@@ -750,6 +753,8 @@
     <string name="revert_action_restore">Pulihkan</string>
     <string name="revert_setting_label">Pengaturan layar selalu aktif</string>
     <string name="revert_setting_note">Saat ini nonaktif; akan diaktifkan kembali.</string>
+    <string name="revert_exemption_label">Pengecualian akses sensor</string>
+    <string name="revert_exemption_note">Entri kami di daftar pengecualian sensor jam akan dihapus; entri dari aplikasi lain tetap ada.</string>
     <string name="revert_enable_note">Penyiapan menonaktifkannya; akan diaktifkan kembali.</string>
     <string name="revert_not_installed">Tidak terpasang, tidak ada yang perlu dilakukan: %1$s</string>
     <string name="revert_system_apps">Dibiarkan karena merupakan aplikasi sistem: %1$s</string>

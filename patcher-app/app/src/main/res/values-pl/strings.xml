@@ -74,6 +74,7 @@
     <string name="grant_title_ongoing_calls">Zarządzanie trwającymi połączeniami</string>
     <string name="grant_title_always_on">Wyłączony tryb Always On Display</string>
     <string name="grant_title_battery">Bez ograniczeń baterii</string>
+    <string name="grant_title_hidden_api">Dostęp do czujników w nowszych zegarkach</string>
     <string name="grant_why_calls">Odbierz lub odrzuć połączenie na zegarku.</string>
     <string name="grant_why_phone_state">Wiedzieć, kiedy połączenie dzwoni lub się kończy, żeby zegarek mógł to pokazać.</string>
     <string name="grant_why_notifications_phone">Utrzymuje małe powiadomienie, gdy jest połączona z zegarkiem.</string>
@@ -94,6 +95,7 @@
     <string name="grant_why_always_on">Zapobiega usypianiu zegarka przez ekran Always On podczas pomiaru.</string>
     <string name="grant_why_battery_bridge">Utrzymuje połączenie Bluetooth, gdy zegarek oszczędza baterię.</string>
     <string name="grant_why_battery_alarm">Dzwoni o czasie, nawet gdy zegarek oszczędza baterię.</string>
+    <string name="grant_why_hidden_api">Pozwala aplikacji zegarka korzystać z usługi czujników Samsunga do EKG, ciśnienia krwi i bezdechu sennego. Dotyczy całego zegarka, ale tylko oprogramowania czujników Samsunga.</string>
     <string name="changes_disables">Można wyłączyć</string>
 
     <!-- Profile -->
@@ -411,6 +413,7 @@
     <string name="grant_setting">Ustawienie systemowe</string>
     <string name="grant_listener">Dostęp do powiadomień</string>
     <string name="grant_battery">Wyłączenie z oszczędzania baterii</string>
+    <string name="grant_global_setting">Globalne ustawienie systemowe</string>
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Tryb programisty Health Platform</string>
@@ -774,6 +777,8 @@
     <string name="revert_action_restore">Przywróć</string>
     <string name="revert_setting_label">Ustawienie stale włączonego ekranu</string>
     <string name="revert_setting_note">Jest teraz wyłączone; zostanie włączone ponownie.</string>
+    <string name="revert_exemption_label">Wyjątek dostępu do czujników</string>
+    <string name="revert_exemption_note">Nasz wpis na liście wyjątków czujników zegarka zostanie usunięty; wpisy innych aplikacji pozostaną.</string>
     <string name="revert_enable_note">Konfiguracja je wyłączyła; zostanie włączone ponownie.</string>
     <string name="revert_not_installed">Niezainstalowane, nic do zrobienia: %1$s</string>
     <string name="revert_system_apps">Pozostawione bez zmian, bo to aplikacje systemowe: %1$s</string>

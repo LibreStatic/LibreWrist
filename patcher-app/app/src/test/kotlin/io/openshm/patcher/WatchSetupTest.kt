@@ -83,6 +83,13 @@ class GrantMappingTest {
             AdbGrant.SecureSetting("some_key", "1", false),
             grant(GrantKind.SecureSetting, "some_key", engineGrant("secureSetting", "key" to "some_key", "value" to "1")).toAdbGrant(),
         )
+        assertEquals(
+            AdbGrant.GlobalSetting("hidden_api_blacklist_exemptions", "Lcom/samsung/android/hardware/sensormanager/", true),
+            grant(
+                GrantKind.GlobalSetting, "hidden_api_blacklist_exemptions",
+                engineGrant("globalSetting", "key" to "hidden_api_blacklist_exemptions", "value" to "Lcom/samsung/android/hardware/sensormanager/", optional = true),
+            ).toAdbGrant(),
+        )
     }
 
     @Test
@@ -95,6 +102,7 @@ class GrantMappingTest {
     fun unknownKindMissingFieldAndMissingEntryAreRejected() {
         for (bad in listOf(
             grant(GrantKind.Permission, "x", engineGrant("teleport")),
+            grant(GrantKind.GlobalSetting, "x", engineGrant("globalSetting", "key" to "some_key")),
             grant(GrantKind.Permission, "x", engineGrant("permission")),
             grant(GrantKind.Permission, "x", null),
         )) {

@@ -74,6 +74,7 @@
     <string name="grant_title_ongoing_calls">進行中の通話を管理</string>
     <string name="grant_title_always_on">常時表示ディスプレイをオフ</string>
     <string name="grant_title_battery">制限なし</string>
+    <string name="grant_title_hidden_api">新しいウォッチでのセンサーアクセス</string>
     <string name="grant_why_calls">ウォッチから通話に応答または拒否します。</string>
     <string name="grant_why_phone_state">着信や通話終了を検知して、ウォッチに表示します。</string>
     <string name="grant_why_notifications_phone">ウォッチとの接続中、小さな通知を表示し続けます。</string>
@@ -94,6 +95,7 @@
     <string name="grant_why_always_on">測定中に常時表示画面でウォッチがスリープしないようにします。</string>
     <string name="grant_why_battery_bridge">ウォッチが電池を節約している間も、Bluetooth接続を維持します。</string>
     <string name="grant_why_battery_alarm">ウォッチが電池を節約している間も、時間どおりに鳴らします。</string>
+    <string name="grant_why_hidden_api">ウォッチのアプリが、心電図、血圧、睡眠時無呼吸のためにSamsungのセンサーサービスを使えるようにします。ウォッチ全体に適用されますが、対象はSamsungのセンサーソフトウェアだけです。</string>
     <string name="changes_disables">オフにできるもの</string>
 
     <!-- Profile -->
@@ -393,6 +395,7 @@
     <string name="grant_setting">システム設定</string>
     <string name="grant_listener">通知へのアクセス</string>
     <string name="grant_battery">電池の最適化の除外</string>
+    <string name="grant_global_setting">グローバルなシステム設定</string>
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Health Platformの開発者モード</string>
@@ -750,6 +753,8 @@
     <string name="revert_action_restore">復元</string>
     <string name="revert_setting_label">常時表示ディスプレイの設定</string>
     <string name="revert_setting_note">現在オフです。オンに戻します。</string>
+    <string name="revert_exemption_label">センサーアクセスの例外</string>
+    <string name="revert_exemption_note">ウォッチのセンサー例外リストから当アプリの項目を削除します。他のアプリの項目はそのまま残ります。</string>
     <string name="revert_enable_note">セットアップでオフにされました。オンに戻します。</string>
     <string name="revert_not_installed">未インストールのため対応不要: %1$s</string>
     <string name="revert_system_apps">システムアプリのため変更しません: %1$s</string>

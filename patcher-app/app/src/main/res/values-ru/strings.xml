@@ -74,6 +74,7 @@
     <string name="grant_title_ongoing_calls">Управление текущими звонками</string>
     <string name="grant_title_always_on">Always-on display выключен</string>
     <string name="grant_title_battery">Без ограничений</string>
+    <string name="grant_title_hidden_api">Доступ к датчикам на новых часах</string>
     <string name="grant_why_calls">Отвечать на звонок или отклонять его с часов.</string>
     <string name="grant_why_phone_state">Знать, когда звонок поступает или завершается, чтобы часы могли это показать.</string>
     <string name="grant_why_notifications_phone">Показывать небольшое уведомление, пока есть связь с часами.</string>
@@ -94,6 +95,7 @@
     <string name="grant_why_always_on">Не даёт всегда включённому экрану усыплять часы во время измерения.</string>
     <string name="grant_why_battery_bridge">Поддерживать связь по Bluetooth, пока часы экономят заряд.</string>
     <string name="grant_why_battery_alarm">Звонить вовремя, даже когда часы экономят заряд.</string>
+    <string name="grant_why_hidden_api">Позволяет приложению часов использовать сервис датчиков Samsung для ЭКГ, давления и апноэ во сне. Действует для всех часов, но только для ПО датчиков Samsung.</string>
     <string name="changes_disables">Можно отключить</string>
 
     <!-- Profile -->
@@ -411,6 +413,7 @@
     <string name="grant_setting">Системная настройка</string>
     <string name="grant_listener">Доступ к уведомлениям</string>
     <string name="grant_battery">Исключение из экономии заряда</string>
+    <string name="grant_global_setting">Глобальная системная настройка</string>
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Режим разработчика Health Platform</string>
@@ -774,6 +777,8 @@
     <string name="revert_action_restore">Восстановить</string>
     <string name="revert_setting_label">Настройка всегда включённого экрана</string>
     <string name="revert_setting_note">Сейчас она выключена; будет включена снова.</string>
+    <string name="revert_exemption_label">Исключение для доступа к датчикам</string>
+    <string name="revert_exemption_note">Наша запись в списке исключений датчиков часов будет удалена; записи других приложений останутся.</string>
     <string name="revert_enable_note">Её выключила настройка; будет включена снова.</string>
     <string name="revert_not_installed">Не установлены, делать нечего: %1$s</string>
     <string name="revert_system_apps">Не тронуты, так как это системные приложения: %1$s</string>

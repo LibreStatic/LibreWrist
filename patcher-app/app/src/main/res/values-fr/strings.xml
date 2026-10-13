@@ -74,6 +74,7 @@
     <string name="grant_title_ongoing_calls">Gérer les appels en cours</string>
     <string name="grant_title_always_on">Écran toujours actif désactivé</string>
     <string name="grant_title_battery">Utilisation illimitée de la batterie</string>
+    <string name="grant_title_hidden_api">Accès aux capteurs sur les montres récentes</string>
     <string name="grant_why_calls">Répondre à un appel ou le refuser depuis la montre.</string>
     <string name="grant_why_phone_state">Savoir quand un appel sonne ou se termine, pour que la montre l\'affiche.</string>
     <string name="grant_why_notifications_phone">Garder une petite notification tant qu\'elle est connectée à la montre.</string>
@@ -94,6 +95,7 @@
     <string name="grant_why_always_on">Empêche l\'écran toujours actif de mettre la montre en veille pendant une mesure.</string>
     <string name="grant_why_battery_bridge">Maintenir la liaison Bluetooth active quand la montre économise la batterie.</string>
     <string name="grant_why_battery_alarm">Sonner à l\'heure même quand la montre économise la batterie.</string>
+    <string name="grant_why_hidden_api">Permet à l\'app de la montre d\'utiliser le service de capteurs de Samsung pour l\'ECG, la tension artérielle et l\'apnée du sommeil. S\'applique à toute la montre, mais uniquement au logiciel de capteurs de Samsung.</string>
     <string name="changes_disables">Peut être désactivé</string>
 
     <!-- Profile -->
@@ -405,6 +407,7 @@
     <string name="grant_setting">Paramètre système</string>
     <string name="grant_listener">Accès aux notifications</string>
     <string name="grant_battery">Exemption de batterie</string>
+    <string name="grant_global_setting">Paramètre système global</string>
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Mode développeur de Health Platform</string>
@@ -766,6 +769,8 @@
     <string name="revert_action_restore">Rétablir</string>
     <string name="revert_setting_label">Réglage de l’affichage toujours activé</string>
     <string name="revert_setting_note">Il est désactivé actuellement ; il sera réactivé.</string>
+    <string name="revert_exemption_label">Exception d’accès aux capteurs</string>
+    <string name="revert_exemption_note">Notre entrée dans la liste d’exceptions des capteurs de la montre sera supprimée ; celles des autres applications restent.</string>
     <string name="revert_enable_note">La configuration l’a désactivée ; elle sera réactivée.</string>
     <string name="revert_not_installed">Non installées, rien à faire : %1$s</string>
     <string name="revert_system_apps">Laissées intactes car ce sont des applications système : %1$s</string>

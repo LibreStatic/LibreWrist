@@ -74,6 +74,7 @@
     <string name="grant_title_ongoing_calls">चालू कॉल मैनेज करना</string>
     <string name="grant_title_always_on">Always-on डिसप्ले बंद</string>
     <string name="grant_title_battery">बैटरी का बिना पाबंदी उपयोग</string>
+    <string name="grant_title_hidden_api">नई घड़ियों पर सेंसर एक्सेस</string>
     <string name="grant_why_calls">घड़ी से कॉल का जवाब देना या उसे अस्वीकार करना।</string>
     <string name="grant_why_phone_state">यह जानना कि कॉल कब आती या खत्म होती है, ताकि घड़ी उसे दिखा सके।</string>
     <string name="grant_why_notifications_phone">घड़ी से जुड़े रहने के दौरान एक छोटी सूचना बनाए रखना।</string>
@@ -94,6 +95,7 @@
     <string name="grant_why_always_on">माप के दौरान Always-on स्क्रीन को घड़ी को स्लीप में जाने से रोकता है।</string>
     <string name="grant_why_battery_bridge">घड़ी के बैटरी बचाने पर भी ब्लूटूथ कनेक्शन बनाए रखना।</string>
     <string name="grant_why_battery_alarm">घड़ी के बैटरी बचाने पर भी समय पर बजना।</string>
+    <string name="grant_why_hidden_api">घड़ी के ऐप को ECG, ब्लड प्रेशर और स्लीप एपनिया के लिए Samsung की सेंसर सेवा इस्तेमाल करने देता है। यह पूरी घड़ी पर लागू होता है, लेकिन सिर्फ़ Samsung के सेंसर सॉफ़्टवेयर के लिए।</string>
     <string name="changes_disables">बंद किए जा सकते हैं</string>
 
     <!-- Profile -->
@@ -399,6 +401,7 @@
     <string name="grant_setting">सिस्टम सेटिंग</string>
     <string name="grant_listener">सूचना की पहुँच</string>
     <string name="grant_battery">बैटरी छूट</string>
+    <string name="grant_global_setting">ग्लोबल सिस्टम सेटिंग</string>
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Health Platform डेवलपर मोड</string>
@@ -758,6 +761,8 @@
     <string name="revert_action_restore">पहले जैसा करें</string>
     <string name="revert_setting_label">हमेशा चालू डिस्प्ले की सेटिंग</string>
     <string name="revert_setting_note">अभी यह बंद है; इसे फिर से चालू किया जाएगा।</string>
+    <string name="revert_exemption_label">सेंसर एक्सेस छूट</string>
+    <string name="revert_exemption_note">घड़ी की सेंसर छूट सूची से हमारी प्रविष्टि हटाई जाएगी; अन्य ऐप की प्रविष्टियाँ बनी रहेंगी।</string>
     <string name="revert_enable_note">सेटअप ने इसे बंद किया था; इसे फिर से चालू किया जाएगा।</string>
     <string name="revert_not_installed">इंस्टॉल नहीं हैं, कुछ करने की ज़रूरत नहीं: %1$s</string>
     <string name="revert_system_apps">सिस्टम ऐप होने के कारण नहीं छेड़े गए: %1$s</string>

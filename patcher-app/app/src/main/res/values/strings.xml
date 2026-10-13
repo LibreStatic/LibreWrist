@@ -76,6 +76,7 @@
     <string name="grant_title_ongoing_calls">Manage ongoing calls</string>
     <string name="grant_title_always_on">Always-on display off</string>
     <string name="grant_title_battery">Unrestricted battery use</string>
+    <string name="grant_title_hidden_api">Sensor access on newer watches</string>
     <string name="grant_why_calls">Answer or decline a call from the watch.</string>
     <string name="grant_why_phone_state">Know when a call rings or ends, so the watch can show it.</string>
     <string name="grant_why_notifications_phone">Keep a small notification while it is connected to the watch.</string>
@@ -96,6 +97,7 @@
     <string name="grant_why_always_on">Keeps the always-on screen from putting the watch to sleep during a measurement.</string>
     <string name="grant_why_battery_bridge">Keep the Bluetooth link alive while the watch saves battery.</string>
     <string name="grant_why_battery_alarm">Ring on time even while the watch saves battery.</string>
+    <string name="grant_why_hidden_api">Lets the watch app use Samsung\'s sensor service for ECG, blood pressure and sleep apnea. It applies to the whole watch, only for Samsung\'s sensor software.</string>
     <string name="changes_disables">Can be turned off</string>
 
     <!-- Profile -->
@@ -506,6 +508,7 @@
     <string name="grant_setting">System setting</string>
     <string name="grant_listener">Notification access</string>
     <string name="grant_battery">Battery exemption</string>
+    <string name="grant_global_setting">Global system setting</string>
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Health Platform developer mode</string>
@@ -760,6 +763,8 @@
     <string name="revert_action_restore">Restore</string>
     <string name="revert_setting_label">Always-on display setting</string>
     <string name="revert_setting_note">It is switched off now; it will be set back to on.</string>
+    <string name="revert_exemption_label">Sensor access exemption</string>
+    <string name="revert_exemption_note">Our entry in the watch\'s sensor exemption list will be removed; entries from other apps stay.</string>
     <string name="revert_enable_note">The setup turned it off; it will be turned back on.</string>
     <string name="revert_not_installed">Not installed, nothing to do: %1$s</string>
     <string name="revert_system_apps">Left alone because they are system apps: %1$s</string>

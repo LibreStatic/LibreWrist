@@ -74,6 +74,7 @@
     <string name="grant_title_ongoing_calls">진행 중인 통화 관리</string>
     <string name="grant_title_always_on">상시 표시 화면 끄기</string>
     <string name="grant_title_battery">제한 없음</string>
+    <string name="grant_title_hidden_api">최신 워치의 센서 접근</string>
     <string name="grant_why_calls">워치에서 전화를 받거나 거절합니다.</string>
     <string name="grant_why_phone_state">전화가 오거나 끝난 것을 알아내 워치에 표시합니다.</string>
     <string name="grant_why_notifications_phone">워치와 연결된 동안 작은 알림을 유지합니다.</string>
@@ -94,6 +95,7 @@
     <string name="grant_why_always_on">측정 중에 상시 표시 화면 때문에 워치가 절전 모드로 들어가지 않게 합니다.</string>
     <string name="grant_why_battery_bridge">워치가 배터리를 아끼는 동안에도 블루투스 연결을 유지합니다.</string>
     <string name="grant_why_battery_alarm">워치가 배터리를 아끼는 동안에도 제때 울립니다.</string>
+    <string name="grant_why_hidden_api">워치 앱이 심전도, 혈압, 수면 무호흡을 위해 Samsung 센서 서비스를 사용할 수 있게 합니다. 워치 전체에 적용되지만 Samsung 센서 소프트웨어에만 해당됩니다.</string>
     <string name="changes_disables">끌 수 있음</string>
 
     <!-- Profile -->
@@ -393,6 +395,7 @@
     <string name="grant_setting">시스템 설정</string>
     <string name="grant_listener">알림 접근</string>
     <string name="grant_battery">배터리 최적화 예외</string>
+    <string name="grant_global_setting">전역 시스템 설정</string>
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Health Platform 개발자 모드</string>
@@ -750,6 +753,8 @@
     <string name="revert_action_restore">복원</string>
     <string name="revert_setting_label">상시 표시 디스플레이 설정</string>
     <string name="revert_setting_note">현재 꺼져 있으며 다시 켜집니다.</string>
+    <string name="revert_exemption_label">센서 접근 예외</string>
+    <string name="revert_exemption_note">워치의 센서 예외 목록에서 이 앱의 항목을 제거합니다. 다른 앱의 항목은 그대로 유지됩니다.</string>
     <string name="revert_enable_note">설정 과정에서 꺼졌으며 다시 켜집니다.</string>
     <string name="revert_not_installed">설치되지 않아 할 일 없음: %1$s</string>
     <string name="revert_system_apps">시스템 앱이라 그대로 둠: %1$s</string>

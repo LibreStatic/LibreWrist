@@ -16,6 +16,7 @@ fun Grant.toAdbGrant(): AdbGrant {
         "notificationListener" -> AdbGrant.NotificationListener(field("component"), optional)
         "deviceIdleWhitelist" -> AdbGrant.DeviceIdleWhitelist(optional)
         "secureSetting" -> AdbGrant.SecureSetting(field("key"), field("value"), optional)
+        "globalSetting" -> AdbGrant.GlobalSetting(field("key"), field("value"), optional)
         else -> throw UnsupportedGrantException("Unknown grant kind '${g.kind}'")
     }
 }

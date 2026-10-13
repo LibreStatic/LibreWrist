@@ -60,6 +60,23 @@ must show the watch configuration with `IsConnected=true`.
 
 To upgrade without losing data: same key and same `PKG_PREFIX` as the previous install.
 
+One grant on the watch SHM output is device-wide: the patcher appends
+`Lcom/samsung/android/hardware/sensormanager/` to the comma-separated list in
+`settings get global hidden_api_blacklist_exemptions`, so the watch app may use Samsung's
+sensor-manager classes that Android 16 / One UI 8 Watch blocks for non-system apps (ECG, blood
+pressure and sleep apnea need them). It applies to every app, but only for that one package
+prefix. The patcher's "Undo all changes" removes exactly that entry; to do it by hand instead,
+remove exactly that entry from the list (keep any other entries), and only delete the setting when
+no entries remain:
+
+```sh
+adb -s $W shell settings get global hidden_api_blacklist_exemptions   # note the current list
+adb -s $W shell settings put global hidden_api_blacklist_exemptions '<list without our entry>'
+# or, when our entry was the only one:
+adb -s $W shell settings delete global hidden_api_blacklist_exemptions
+adb -s $W shell am force-stop com.samsung.android.shealthmonitors
+```
+
 ## 3. Health Platform developer mode (watch)
 
 The watch SHM measures ECG through the Health Tracking SDK. Without Health Platform developer

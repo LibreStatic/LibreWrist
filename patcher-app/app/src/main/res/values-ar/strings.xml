@@ -74,6 +74,7 @@
     <string name="grant_title_ongoing_calls">إدارة المكالمات الجارية</string>
     <string name="grant_title_always_on">إيقاف الشاشة الدائمة التشغيل</string>
     <string name="grant_title_battery">استخدام البطارية دون قيود</string>
+    <string name="grant_title_hidden_api">الوصول إلى المستشعرات في الساعات الأحدث</string>
     <string name="grant_why_calls">الرد على مكالمة أو رفضها من الساعة.</string>
     <string name="grant_why_phone_state">معرفة متى تصل مكالمة أو تنتهي، لتتمكن الساعة من عرضها.</string>
     <string name="grant_why_notifications_phone">إبقاء إشعار صغير ظاهرًا أثناء الاتصال بالساعة.</string>
@@ -94,6 +95,7 @@
     <string name="grant_why_always_on">يمنع الشاشة الدائمة التشغيل من إدخال الساعة في وضع السكون أثناء القياس.</string>
     <string name="grant_why_battery_bridge">إبقاء اتصال Bluetooth قائمًا بينما توفّر الساعة البطارية.</string>
     <string name="grant_why_battery_alarm">الرنين في الوقت المحدد حتى عندما توفّر الساعة البطارية.</string>
+    <string name="grant_why_hidden_api">يتيح لتطبيق الساعة استخدام خدمة مستشعرات Samsung لتخطيط القلب وضغط الدم وانقطاع النفس أثناء النوم. ينطبق على الساعة بأكملها، ولكن على برنامج مستشعرات Samsung فقط.</string>
     <string name="changes_disables">يمكن إيقافه</string>
 
     <!-- Profile -->
@@ -423,6 +425,7 @@
     <string name="grant_setting">إعداد النظام</string>
     <string name="grant_listener">الوصول إلى الإشعارات</string>
     <string name="grant_battery">استثناء البطارية</string>
+    <string name="grant_global_setting">إعداد عام للنظام</string>
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">وضع المطور في Health Platform</string>
@@ -790,6 +793,8 @@
     <string name="revert_action_restore">استعادة</string>
     <string name="revert_setting_label">إعداد العرض الدائم</string>
     <string name="revert_setting_note">هو متوقف الآن؛ ستتم إعادة تشغيله.</string>
+    <string name="revert_exemption_label">استثناء الوصول إلى المستشعرات</string>
+    <string name="revert_exemption_note">ستتم إزالة إدخالنا من قائمة استثناءات المستشعرات في الساعة؛ وتبقى إدخالات التطبيقات الأخرى.</string>
     <string name="revert_enable_note">أوقفه الإعداد؛ ستتم إعادة تشغيله.</string>
     <string name="revert_not_installed">غير مثبّتة، لا شيء للقيام به: %1$s</string>
     <string name="revert_system_apps">تُرك كما هو لأنها تطبيقات نظام: %1$s</string>

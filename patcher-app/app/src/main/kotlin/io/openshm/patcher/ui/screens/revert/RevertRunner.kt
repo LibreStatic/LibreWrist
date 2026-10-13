@@ -1,6 +1,7 @@
 package io.openshm.patcher.ui.screens.revert
 
 import io.openshm.patcher.adb.AdbException
+import io.openshm.patcher.adb.GrantReadback
 import io.openshm.patcher.data.Device
 import io.openshm.patcher.data.OutputApp
 import io.openshm.patcher.data.StockApp
@@ -152,6 +153,15 @@ class RevertRunner(
             Device.Watch, RevertPlan.ALWAYS_ON_KEY, RevertPlan.ALWAYS_ON_KEY, RevertAction.RestoreSetting,
             if (current == "0") Presence.Present else Presence.Absent,
         )
+        val exemptions = when (val r = guarded { watch.globalSetting(RevertPlan.HIDDEN_API_KEY) }) {
+            is Call.Ok ->
+                if (GrantReadback.listContainsEntry(r.value, RevertPlan.HIDDEN_API_ENTRY)) Presence.Present else Presence.Absent
+            is Call.Unreachable -> return null
+            is Call.Error -> Presence.Unknown
+        }
+        items += RevertItem(
+            Device.Watch, RevertPlan.HIDDEN_API_KEY, RevertPlan.HIDDEN_API_KEY, RevertAction.RemoveExemption, exemptions,
+        )
         return items
     }
 
@@ -163,7 +173,7 @@ class RevertRunner(
 
     /**
      * Acts on the actionable [items]: the watch first (it needs the patcher alive), then the phone;
-     * on each device removals, then re-enabling, then the setting. Each step re-checks the device
+     * on each device removals, then re-enabling, then the settings. Each step re-checks the device
      * right before acting, so a package that changed since the probe is handled. [watchCovered] is
      * false when the watch was unreachable or skipped, which keeps the result partial.
      */
@@ -202,6 +212,7 @@ class RevertRunner(
             RevertAction.Uninstall -> uninstall(item)
             RevertAction.Enable -> enable(item)
             RevertAction.RestoreSetting -> restore(item)
+            RevertAction.RemoveExemption -> removeExemption(item)
         }
     } catch (e: Down) {
         if (item.device == Device.Watch) {
@@ -263,6 +274,21 @@ class RevertRunner(
     private suspend fun restore(item: RevertItem): StepOutcome {
         if (guarded { watch.secureSetting(item.pkg) }.get() != "0") return StepOutcome.Skipped(SkipReason.NothingToDo)
         guarded { watch.putSecureSetting(item.pkg, RevertPlan.ALWAYS_ON_DEFAULT) }.get()
+        return StepOutcome.Done
+    }
+
+    private suspend fun removeExemption(item: RevertItem): StepOutcome {
+        val current = guarded { watch.globalSetting(item.pkg) }.get()
+        if (!GrantReadback.listContainsEntry(current, RevertPlan.HIDDEN_API_ENTRY)) return StepOutcome.Skipped(SkipReason.NothingToDo)
+        val rest = GrantReadback.removeListEntry(current, RevertPlan.HIDDEN_API_ENTRY)
+        if (rest == null) {
+            guarded { watch.deleteGlobalSetting(item.pkg) }.get()
+        } else {
+            if (rest.any { it == '\'' || it.isISOControl() }) {
+                return StepOutcome.Failed("The ${item.pkg} list cannot be rewritten safely")
+            }
+            guarded { watch.putGlobalSetting(item.pkg, rest) }.get()
+        }
         return StepOutcome.Done
     }
 

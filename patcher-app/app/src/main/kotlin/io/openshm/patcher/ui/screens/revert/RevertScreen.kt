@@ -171,15 +171,20 @@ private fun RevertRowItem(row: RevertRow, index: Int, count: Int) {
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(
-                    if (item.action == RevertAction.RestoreSetting) stringResource(R.string.revert_setting_label) else item.label,
+                    when (item.action) {
+                        RevertAction.RestoreSetting -> stringResource(R.string.revert_setting_label)
+                        RevertAction.RemoveExemption -> stringResource(R.string.revert_exemption_label)
+                        else -> item.label
+                    },
                     style = MaterialTheme.typography.titleSmall,
                 )
-                if (item.action != RevertAction.RestoreSetting && row.outcome is StepOutcome.Failed) PackageId(item.pkg)
+                if (item.action != RevertAction.RestoreSetting && item.action != RevertAction.RemoveExemption && row.outcome is StepOutcome.Failed) PackageId(item.pkg)
                 val outcome = row.outcome
                 val note = when {
                     outcome != null -> outcomeText(outcome, item.action)
                     item.action == RevertAction.Enable -> stringResource(R.string.revert_enable_note)
                     item.action == RevertAction.RestoreSetting -> stringResource(R.string.revert_setting_note)
+                    item.action == RevertAction.RemoveExemption -> stringResource(R.string.revert_exemption_note)
                     else -> null
                 }
                 note?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
@@ -189,7 +194,7 @@ private fun RevertRowItem(row: RevertRow, index: Int, count: Int) {
                 InfoChip(
                     stringResource(
                         when (item.action) {
-                            RevertAction.Uninstall -> R.string.revert_action_remove
+                            RevertAction.Uninstall, RevertAction.RemoveExemption -> R.string.revert_action_remove
                             RevertAction.Enable -> R.string.revert_action_enable
                             RevertAction.RestoreSetting -> R.string.revert_action_restore
                         },
@@ -215,14 +220,14 @@ private fun outcomeText(outcome: StepOutcome, action: RevertAction): String = wh
         when (action) {
             RevertAction.Uninstall -> R.string.revert_progress_removing
             RevertAction.Enable -> R.string.revert_progress_enabling
-            RevertAction.RestoreSetting -> R.string.revert_progress_restoring
+            RevertAction.RestoreSetting, RevertAction.RemoveExemption -> R.string.revert_progress_restoring
         },
     )
     StepOutcome.Done -> stringResource(
         when (action) {
             RevertAction.Uninstall -> R.string.revert_result_removed
             RevertAction.Enable -> R.string.revert_result_enabled
-            RevertAction.RestoreSetting -> R.string.revert_result_restored
+            RevertAction.RestoreSetting, RevertAction.RemoveExemption -> R.string.revert_result_restored
         },
     )
     is StepOutcome.Skipped -> stringResource(

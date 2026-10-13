@@ -73,7 +73,7 @@ data class StockApp(
     val reason: String,
 )
 
-enum class GrantKind { Permission, AppOp, SecureSetting, NotificationListener, BatteryExemption }
+enum class GrantKind { Permission, AppOp, SecureSetting, GlobalSetting, NotificationListener, BatteryExemption }
 
 /**
  * One entry of `catalogue.json` `grants`. [name] is the short permission/appop/setting/component name;

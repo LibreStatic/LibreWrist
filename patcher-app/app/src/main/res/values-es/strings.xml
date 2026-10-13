@@ -74,6 +74,7 @@
     <string name="grant_title_ongoing_calls">Administrar llamadas en curso</string>
     <string name="grant_title_always_on">Pantalla siempre activa desactivada</string>
     <string name="grant_title_battery">Uso de batería sin restricciones</string>
+    <string name="grant_title_hidden_api">Acceso a sensores en relojes nuevos</string>
     <string name="grant_why_calls">Contestar o rechazar una llamada desde el reloj.</string>
     <string name="grant_why_phone_state">Saber cuándo suena o termina una llamada, para que el reloj la muestre.</string>
     <string name="grant_why_notifications_phone">Mantener una notificación pequeña mientras está conectada al reloj.</string>
@@ -94,6 +95,7 @@
     <string name="grant_why_always_on">Evita que la pantalla siempre activa ponga el reloj en reposo durante una medición.</string>
     <string name="grant_why_battery_bridge">Mantener activo el enlace Bluetooth mientras el reloj ahorra batería.</string>
     <string name="grant_why_battery_alarm">Sonar a tiempo incluso cuando el reloj ahorra batería.</string>
+    <string name="grant_why_hidden_api">Permite que la app del reloj use el servicio de sensores de Samsung para ECG, presión arterial y apnea del sueño. Se aplica a todo el reloj, pero solo al software de sensores de Samsung.</string>
     <string name="changes_disables">Se pueden desactivar</string>
 
     <!-- Profile -->
@@ -399,6 +401,7 @@
     <string name="grant_setting">Ajuste del sistema</string>
     <string name="grant_listener">Acceso a notificaciones</string>
     <string name="grant_battery">Exclusión de batería</string>
+    <string name="grant_global_setting">Ajuste global del sistema</string>
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Modo desarrollador de Health Platform</string>
@@ -758,6 +761,8 @@
     <string name="revert_action_restore">Restaurar</string>
     <string name="revert_setting_label">Ajuste de pantalla siempre activa</string>
     <string name="revert_setting_note">Ahora está desactivado; se volverá a activar.</string>
+    <string name="revert_exemption_label">Excepción de acceso a sensores</string>
+    <string name="revert_exemption_note">Se quitará nuestra entrada de la lista de excepciones de sensores del reloj; las entradas de otras apps se conservan.</string>
     <string name="revert_enable_note">La configuración lo desactivó; se volverá a activar.</string>
     <string name="revert_not_installed">No instaladas, nada que hacer: %1$s</string>
     <string name="revert_system_apps">Se dejan como están por ser apps del sistema: %1$s</string>

@@ -76,6 +76,112 @@ class GrantCommandBuilderTest {
     }
 
     @Test
+    fun `global setting build is refused because it needs a read-modify-write`() {
+        try {
+            watch.build(pkg, Grant.GlobalSetting("hidden_api_blacklist_exemptions", "Lcom/samsung/android/hardware/sensormanager/"))
+            fail("expected refusal")
+        } catch (expected: UnsupportedOperationException) {
+            assertTrue(expected.message!!.contains("GrantApplier"))
+        }
+        for (bad in listOf<() -> Unit>(
+            { watch.build(pkg, Grant.GlobalSetting("Bad Key", "Lcom/foo/")) },
+            { watch.build(pkg, Grant.GlobalSetting("some_key", "Lcom/foo bar/")) },
+            { watch.build(pkg, Grant.GlobalSetting("some_key", "Lcom/foo/;id")) },
+            { watch.build(pkg, Grant.GlobalSetting("some_key", "Lcom/foo/'")) },
+            { watch.build(pkg, Grant.GlobalSetting("some_key", "com/foo/")) },
+            { watch.build(pkg, Grant.GlobalSetting("some_key", "")) },
+        )) {
+            try {
+                bad()
+                fail("expected rejection")
+            } catch (expected: UnsafeGrantValueException) {
+                assertTrue(expected.message!!.startsWith("Unsafe"))
+            }
+        }
+    }
+
+    @Test
+    fun `applier appends a global setting entry, preserving foreign entries, then force-stops`() = runBlocking {
+        val ran = mutableListOf<String>()
+        val client = AdbClient(scriptedTransport(shell = { cmd ->
+            ran += cmd
+            when (cmd) {
+                "settings get global hidden_api_blacklist_exemptions" -> ok("Lother/thing/\n")
+                else -> ok()
+            }
+        }))
+        val grant = Grant.GlobalSetting("hidden_api_blacklist_exemptions", "Lcom/samsung/android/hardware/sensormanager/")
+        val report = GrantApplier(client, GrantTarget.WATCH).apply(pkg, listOf(grant))
+        assertTrue(report.ok)
+        assertEquals(
+            listOf(
+                "settings get global hidden_api_blacklist_exemptions",
+                "settings put global hidden_api_blacklist_exemptions 'Lother/thing/,Lcom/samsung/android/hardware/sensormanager/'",
+                "am force-stop io.example.app",
+            ),
+            ran,
+        )
+    }
+
+    @Test
+    fun `applier refuses to rewrite a global setting whose foreign entries are not quotable`() = runBlocking {
+        val grant = Grant.GlobalSetting("hidden_api_blacklist_exemptions", "Lcom/samsung/android/hardware/sensormanager/")
+        for (current in listOf("Lother/it's/\n", "Lfirst/\nLsecond/\n")) {
+            val ran = mutableListOf<String>()
+            val client = AdbClient(scriptedTransport(shell = { cmd ->
+                ran += cmd
+                if (cmd.startsWith("settings get")) ok(current) else ok()
+            }))
+            val report = GrantApplier(client, GrantTarget.WATCH).apply(pkg, listOf(grant))
+            assertFalse(report.ok)
+            assertEquals(listOf("settings get global hidden_api_blacklist_exemptions"), ran)
+        }
+    }
+
+    @Test
+    fun `applier writes a global setting alone when unset and skips the write when already present`() = runBlocking {
+        val grant = Grant.GlobalSetting("hidden_api_blacklist_exemptions", "Lcom/samsung/android/hardware/sensormanager/")
+
+        val unsetRan = mutableListOf<String>()
+        val unsetClient = AdbClient(scriptedTransport(shell = { cmd ->
+            unsetRan += cmd
+            if (cmd.startsWith("settings get")) ok("null\n") else ok()
+        }))
+        assertTrue(GrantApplier(unsetClient, GrantTarget.WATCH).apply(pkg, listOf(grant)).ok)
+        assertEquals(
+            listOf(
+                "settings get global hidden_api_blacklist_exemptions",
+                "settings put global hidden_api_blacklist_exemptions 'Lcom/samsung/android/hardware/sensormanager/'",
+                "am force-stop io.example.app",
+            ),
+            unsetRan,
+        )
+
+        val presentRan = mutableListOf<String>()
+        val presentClient = AdbClient(scriptedTransport(shell = { cmd ->
+            presentRan += cmd
+            if (cmd.startsWith("settings get")) ok("Lother/,Lcom/samsung/android/hardware/sensormanager/\n") else ok()
+        }))
+        assertTrue(GrantApplier(presentClient, GrantTarget.WATCH).apply(pkg, listOf(grant)).ok)
+        assertEquals(listOf("settings get global hidden_api_blacklist_exemptions"), presentRan)
+    }
+
+    @Test
+    fun `applier validates a global setting before running any command`() = runBlocking {
+        val ran = mutableListOf<String>()
+        val client = AdbClient(scriptedTransport(shell = { ran += it; ok() }))
+        try {
+            GrantApplier(client, GrantTarget.WATCH).apply(
+                pkg,
+                listOf(Grant.DeviceIdleWhitelist(), Grant.GlobalSetting("some_key", "Lcom/foo bar/")),
+            )
+            fail("expected rejection")
+        } catch (expected: UnsafeGrantValueException) {
+            assertTrue(ran.isEmpty())
+        }
+    }
+
+    @Test
     fun `applier skips failed optional grants and stops at a failed required one`() = runBlocking {
         val ran = mutableListOf<String>()
         val transport = scriptedTransport(shell = { cmd ->

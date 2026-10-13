@@ -61,6 +61,37 @@ object GrantReadback {
         output.lineSequence().map { it.trim() }.firstOrNull { it.isNotEmpty() }?.takeIf { it != "null" }
 
     /**
+     * True when [value] is an exact comma-separated entry of [setting] (the value of a
+     * list-valued setting, or null when unset). A longer entry that merely contains [value]
+     * as a prefix or substring does not count.
+     */
+    fun listContainsEntry(setting: String?, value: String): Boolean {
+        if (setting.isNullOrBlank() || setting == "null") return false
+        return setting.split(',').any { it.trim() == value }
+    }
+
+    /**
+     * [setting] with [value] appended as a comma-separated entry: just [value] when the
+     * setting is unset (`null`, empty or the literal `null`), [setting] unchanged when the
+     * entry is already present, and foreign entries preserved verbatim otherwise.
+     */
+    fun appendListEntry(setting: String?, value: String): String {
+        if (setting.isNullOrBlank() || setting == "null") return value
+        if (listContainsEntry(setting, value)) return setting
+        return "$setting,$value"
+    }
+
+    /**
+     * [setting] with every exact (trimmed) occurrence of [value] removed, the other entries kept
+     * verbatim and in order; null when nothing remains (unset, blank, the literal `null`, or only [value]).
+     */
+    fun removeListEntry(setting: String?, value: String): String? {
+        if (setting.isNullOrBlank() || setting == "null") return null
+        val kept = setting.split(',').filter { it.trim() != value }
+        return kept.joinToString(",").takeIf { it.isNotBlank() }
+    }
+
+    /**
      * True when [component] of [pkg] is in the `enabled_notification_listeners` setting
      * (`pkg/pkg.Class:pkg2/.Class2`). [component] may be written `.Class` (relative to the package)
      * or as a full class name; the system stores either form.
@@ -136,6 +167,18 @@ class GrantChecker(private val shell: suspend (String) -> ShellResult) {
                     } else {
                         val value = GrantReadback.settingValue(result.stdout)
                         GrantCheck(grant, if (value == grant.value) GrantState.Granted else GrantState.Missing, value ?: "unset")
+                    }
+                }
+                is Grant.GlobalSetting -> {
+                    require(GrantCommandBuilder.SETTING_KEY.matches(grant.key)) { "Unsafe setting key" }
+                    require(GrantCommandBuilder.GLOBAL_SETTING_VALUE.matches(grant.value)) { "Unsafe global setting value" }
+                    val result = shell("settings get global ${grant.key}")
+                    if (!result.isSuccess) {
+                        GrantCheck(grant, GrantState.Unknown, "settings failed")
+                    } else {
+                        val value = GrantReadback.settingValue(result.stdout)
+                        val granted = GrantReadback.listContainsEntry(value, grant.value)
+                        GrantCheck(grant, if (granted) GrantState.Granted else GrantState.Missing, value ?: "unset")
                     }
                 }
                 is Grant.NotificationListener -> {

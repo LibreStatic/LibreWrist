@@ -114,6 +114,7 @@ class Catalogue private constructor(
         private val APPOP_RE = Regex("^[A-Z][A-Z0-9_]*$")
         private val SETTING_KEY_RE = Regex("^[a-z][a-z0-9_]*$")
         private val SETTING_VALUE_RE = Regex("^\\w[\\w.-]{0,63}$")
+        private val GLOBAL_SETTING_VALUE_RE = Regex("^L[a-zA-Z0-9_/\$-]{0,127}\$")
         private val COMPONENT_RE = Regex("^(\\.[A-Za-z]\\w*)+$|^[A-Za-z]\\w*(\\.[A-Za-z]\\w*)+$")
         private val NOTE_RE = Regex("^[^\\u0000-\\u001f\\u007f]{1,300}$")
         private val ALLOW_RE = Regex("^allow$")
@@ -125,6 +126,7 @@ class Catalogue private constructor(
             "notificationListener" to mapOf("component" to COMPONENT_RE),
             "deviceIdleWhitelist" to emptyMap(),
             "secureSetting" to mapOf("key" to SETTING_KEY_RE, "value" to SETTING_VALUE_RE),
+            "globalSetting" to mapOf("key" to SETTING_KEY_RE, "value" to GLOBAL_SETTING_VALUE_RE),
         )
 
         private val PLACEHOLDER = Regex("\\$\\{([^\\}]*)\\}")

@@ -74,6 +74,7 @@
     <string name="grant_title_ongoing_calls">Laufende Anrufe verwalten</string>
     <string name="grant_title_always_on">Always-on-Display aus</string>
     <string name="grant_title_battery">Uneingeschränkte Akkunutzung</string>
+    <string name="grant_title_hidden_api">Sensorzugriff auf neueren Uhren</string>
     <string name="grant_why_calls">Einen Anruf von der Uhr aus annehmen oder abweisen.</string>
     <string name="grant_why_phone_state">Erkennen, wann ein Anruf klingelt oder endet, damit die Uhr ihn anzeigen kann.</string>
     <string name="grant_why_notifications_phone">Eine kleine Benachrichtigung anzeigen, solange die App mit der Uhr verbunden ist.</string>
@@ -94,6 +95,7 @@
     <string name="grant_why_always_on">Verhindert, dass das Always-on-Display die Uhr während einer Messung in den Ruhemodus schickt.</string>
     <string name="grant_why_battery_bridge">Die Bluetooth-Verbindung aufrechterhalten, während die Uhr Akku spart.</string>
     <string name="grant_why_battery_alarm">Pünktlich klingeln, auch wenn die Uhr Akku spart.</string>
+    <string name="grant_why_hidden_api">Erlaubt der Uhren-App, Samsungs Sensordienst für EKG, Blutdruck und Schlafapnoe zu nutzen. Gilt für die ganze Uhr, aber nur für Samsungs Sensorsoftware.</string>
     <string name="changes_disables">Kann deaktiviert werden</string>
 
     <!-- Profile -->
@@ -399,6 +401,7 @@
     <string name="grant_setting">Systemeinstellung</string>
     <string name="grant_listener">Benachrichtigungszugriff</string>
     <string name="grant_battery">Akku-Ausnahme</string>
+    <string name="grant_global_setting">Globale Systemeinstellung</string>
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Entwicklermodus der Health Platform</string>
@@ -758,6 +761,8 @@
     <string name="revert_action_restore">Wiederherstellen</string>
     <string name="revert_setting_label">Einstellung für das Always-on-Display</string>
     <string name="revert_setting_note">Sie ist jetzt ausgeschaltet und wird wieder eingeschaltet.</string>
+    <string name="revert_exemption_label">Ausnahme für den Sensorzugriff</string>
+    <string name="revert_exemption_note">Unser Eintrag in der Sensor-Ausnahmeliste der Uhr wird entfernt; Einträge anderer Apps bleiben bestehen.</string>
     <string name="revert_enable_note">Die Einrichtung hat sie ausgeschaltet; sie wird wieder eingeschaltet.</string>
     <string name="revert_not_installed">Nicht installiert, nichts zu tun: %1$s</string>
     <string name="revert_system_apps">Unberührt, weil es System-Apps sind: %1$s</string>

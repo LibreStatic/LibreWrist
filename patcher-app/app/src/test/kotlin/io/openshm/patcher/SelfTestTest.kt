@@ -122,6 +122,11 @@ private class World(val catalogue: LoadedCatalogue) {
             words[0] == "appops" -> ok("${words[3]}: allow\n")
             command == "settings get secure enabled_notification_listeners" ->
                 ok(watchInstalled.keys.joinToString(":") { "$it/$it.SamsungAlarmListener" })
+            command.startsWith("settings get global ") ->
+                ok(
+                    catalogue.grants.values.flatten().firstOrNull { it.engine?.kind == "globalSetting" }
+                        ?.engine?.fields?.get("value")?.plus("\n") ?: "null\n",
+                )
             words[0] == "settings" -> ok("0\n")
             else -> fail()
         }

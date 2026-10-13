@@ -74,6 +74,7 @@
     <string name="grant_title_ongoing_calls">管理進行中的通話</string>
     <string name="grant_title_always_on">關閉螢幕常亮顯示</string>
     <string name="grant_title_battery">不受限制</string>
+    <string name="grant_title_hidden_api">較新手錶上的感測器存取</string>
     <string name="grant_why_calls">在手錶上接聽或拒接來電。</string>
     <string name="grant_why_phone_state">得知來電響鈴或通話結束，以便手錶顯示。</string>
     <string name="grant_why_notifications_phone">與手錶連線期間，保留一則小通知。</string>
@@ -94,6 +95,7 @@
     <string name="grant_why_always_on">避免螢幕常亮顯示在測量期間讓手錶進入休眠。</string>
     <string name="grant_why_battery_bridge">在手錶節電時，保持藍牙連線不中斷。</string>
     <string name="grant_why_battery_alarm">在手錶節電時，也能準時響鈴。</string>
+    <string name="grant_why_hidden_api">讓手錶應用程式使用 Samsung 的感測器服務進行心電圖、血壓和睡眠呼吸中止測量。此設定作用於整支手錶，但僅限 Samsung 的感測器軟體。</string>
     <string name="changes_disables">可以關閉</string>
 
     <!-- Profile -->
@@ -393,6 +395,7 @@
     <string name="grant_setting">系統設定</string>
     <string name="grant_listener">通知存取權</string>
     <string name="grant_battery">電池最佳化豁免</string>
+    <string name="grant_global_setting">全域系統設定</string>
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Health Platform 開發人員模式</string>
@@ -750,6 +753,8 @@
     <string name="revert_action_restore">還原</string>
     <string name="revert_setting_label">螢幕常亮顯示設定</string>
     <string name="revert_setting_note">目前為關閉狀態，將還原為開啟。</string>
+    <string name="revert_exemption_label">感測器存取例外</string>
+    <string name="revert_exemption_note">將從手錶的感測器例外清單中移除我們的項目；其他應用程式的項目維持不變。</string>
     <string name="revert_enable_note">設定過程中將其關閉，將重新開啟。</string>
     <string name="revert_not_installed">未安裝，無需處理：%1$s</string>
     <string name="revert_system_apps">因為是系統應用程式而保持不變：%1$s</string>

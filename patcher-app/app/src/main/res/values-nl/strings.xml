@@ -74,6 +74,7 @@
     <string name="grant_title_ongoing_calls">Lopende gesprekken beheren</string>
     <string name="grant_title_always_on">Always-on display uit</string>
     <string name="grant_title_battery">Onbeperkt batterijgebruik</string>
+    <string name="grant_title_hidden_api">Sensortoegang op nieuwere horloges</string>
     <string name="grant_why_calls">Een gesprek beantwoorden of weigeren vanaf het horloge.</string>
     <string name="grant_why_phone_state">Weten wanneer een gesprek overgaat of eindigt, zodat het horloge het kan tonen.</string>
     <string name="grant_why_notifications_phone">Een kleine melding tonen zolang de app met het horloge is verbonden.</string>
@@ -94,6 +95,7 @@
     <string name="grant_why_always_on">Voorkomt dat het always-on display het horloge tijdens een meting in slaap brengt.</string>
     <string name="grant_why_battery_bridge">De Bluetooth-verbinding actief houden terwijl het horloge batterij bespaart.</string>
     <string name="grant_why_battery_alarm">Op tijd afgaan, ook als het horloge batterij bespaart.</string>
+    <string name="grant_why_hidden_api">Laat de horloge-app de sensorservice van Samsung gebruiken voor ECG, bloeddruk en slaapapneu. Geldt voor het hele horloge, maar alleen voor de sensorsoftware van Samsung.</string>
     <string name="changes_disables">Kan worden uitgezet</string>
 
     <!-- Profile -->
@@ -399,6 +401,7 @@
     <string name="grant_setting">Systeeminstelling</string>
     <string name="grant_listener">Toegang tot meldingen</string>
     <string name="grant_battery">Accu-uitzondering</string>
+    <string name="grant_global_setting">Globale systeeminstelling</string>
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Ontwikkelaarsmodus van Health Platform</string>
@@ -758,6 +761,8 @@
     <string name="revert_action_restore">Herstellen</string>
     <string name="revert_setting_label">Instelling voor altijd-aan-scherm</string>
     <string name="revert_setting_note">Staat nu uit; wordt weer aangezet.</string>
+    <string name="revert_exemption_label">Uitzondering voor sensortoegang</string>
+    <string name="revert_exemption_note">Onze vermelding in de sensoruitzonderingslijst van het horloge wordt verwijderd; vermeldingen van andere apps blijven staan.</string>
     <string name="revert_enable_note">De installatie heeft het uitgezet; het wordt weer ingeschakeld.</string>
     <string name="revert_not_installed">Niet geïnstalleerd, niets te doen: %1$s</string>
     <string name="revert_system_apps">Met rust gelaten omdat het systeem-apps zijn: %1$s</string>

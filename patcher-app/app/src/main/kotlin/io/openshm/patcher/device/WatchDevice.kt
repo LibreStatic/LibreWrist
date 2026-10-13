@@ -66,6 +66,19 @@ interface WatchDevice {
         throw UnsupportedOperationException("putSecureSetting is not supported")
     }
 
+    /** The value of the global setting [key] (`settings get global`), or null when it is unset. */
+    suspend fun globalSetting(key: String): String? = null
+
+    /** `settings put global [key] '[value]'`. The revert is the only caller. */
+    suspend fun putGlobalSetting(key: String, value: String) {
+        throw UnsupportedOperationException("putGlobalSetting is not supported")
+    }
+
+    /** `settings delete global [key]`. The revert is the only caller. */
+    suspend fun deleteGlobalSetting(key: String) {
+        throw UnsupportedOperationException("deleteGlobalSetting is not supported")
+    }
+
     /** Every package installed on the watch (`pm list packages`). */
     suspend fun listPackages(): List<String> = emptyList()
 
@@ -157,6 +170,23 @@ class AdbWatchDevice(private val link: WatchLink) : WatchDevice {
     override suspend fun putSecureSetting(key: String, value: String) {
         require(value.matches(SETTING_VALUE)) { "Not a valid setting value" }
         val command = "settings put secure ${requireSettingKey(key)} $value"
+        link.client().shell(command).requireSuccess(command)
+    }
+
+    override suspend fun globalSetting(key: String): String? {
+        val command = "settings get global ${requireSettingKey(key)}"
+        val out = link.client().shell(command).requireSuccess(command).stdout.trim()
+        return out.takeIf { it.isNotEmpty() && it != "null" }
+    }
+
+    override suspend fun putGlobalSetting(key: String, value: String) {
+        require(value.isNotEmpty() && value.none { it == '\'' || it.isISOControl() }) { "Not a valid setting value" }
+        val command = "settings put global ${requireSettingKey(key)} '$value'"
+        link.client().shell(command).requireSuccess(command)
+    }
+
+    override suspend fun deleteGlobalSetting(key: String) {
+        val command = "settings delete global ${requireSettingKey(key)}"
         link.client().shell(command).requireSuccess(command)
     }
 

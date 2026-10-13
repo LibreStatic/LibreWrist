@@ -255,7 +255,7 @@ internal class SelfTestRunner(
         }
         // Settings and the Doze list cannot be read by another app: those rows are left out.
         val rows = catalogue.grants[out.id].orEmpty()
-            .filter { it.kind != GrantKind.SecureSetting && it.kind != GrantKind.BatteryExemption }
+            .filter { it.kind != GrantKind.SecureSetting && it.kind != GrantKind.GlobalSetting && it.kind != GrantKind.BatteryExemption }
             .map { GrantRow(it, CheckStatus.Pending) }
         val refreshed = withContext(io) { phoneGrants.refresh(pkg, rows) }
         val missing = refreshed.filter { it.status != CheckStatus.Passed && it.status != CheckStatus.Warning }.map { it.grant.name }

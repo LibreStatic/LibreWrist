@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "serial": 25,
-  "minAppVersion": 15,
+  "serial": 28,
+  "minAppVersion": 27,
   "inputs": [
     {
       "id": "shm-phone",
@@ -145,6 +145,7 @@
           "watch-min-age-22-to-16",
           "watch-ecg-sensor-adapter",
           "watch-sensor-unregister-compat",
+          "watch-bp-attribute-guard",
           "watch-apnea-country",
           "watch-apnea-reeval-not-supported"
         ]
@@ -866,6 +867,37 @@
           "old": "invoke-virtual {v4, v1, v2}, Lcom/samsung/android/hardware/sensormanager/SemSensorManager;->unregisterListener(Lcom/samsung/android/hardware/sensormanager/SemSensorListener;I)V",
           "new": "invoke-static {v4, v1, v2}, L${PKG_PATH}/watch/WatchOverrides;->unregisterListener(Ljava/lang/Object;Lcom/samsung/android/hardware/sensormanager/SemSensorListener;I)V",
           "expect": 1
+        }
+      ]
+    },
+    "watch-bp-attribute-guard": {
+      "families": [
+        "shm-watch"
+      ],
+      "title": "BP sensor attribute guard",
+      "description": "Watch: in the BP calibration path (sl.g), the SemHrSensorAttribute construction goes through WatchOverrides.makeHrSensorAttribute, which returns null when hidden-API enforcement denies the constructor; the setType/setDuration/setAttribute/registerListener calls that follow are skipped when it is null, so SHM takes its normal sensor-error path instead of dying on the uncaught NoSuchMethodError",
+      "optional": false,
+      "ops": [
+        {
+          "op": "replaceInClass",
+          "className": "sl",
+          "old": [
+            "    new-instance v2, Lcom/samsung/android/hardware/sensormanager/SemHrSensorAttribute;",
+            "",
+            "    invoke-direct {v2}, Lcom/samsung/android/hardware/sensormanager/SemHrSensorAttribute;-><init>()V",
+            ""
+          ],
+          "new": [
+            "    invoke-static {}, L${PKG_PATH}/watch/WatchOverrides;->makeHrSensorAttribute()Ljava/lang/Object;",
+            "",
+            "    move-result-object v2",
+            "",
+            "    check-cast v2, Lcom/samsung/android/hardware/sensormanager/SemHrSensorAttribute;",
+            "",
+            "    if-eqz v2, :goto_0",
+            ""
+          ],
+          "count": 1
         }
       ]
     },
@@ -2697,6 +2729,12 @@
         "op": "SCHEDULE_EXACT_ALARM",
         "mode": "allow",
         "note": "SCHEDULE_EXACT_ALARM is declared in the watch manifest and is revocable, so it is granted as an appop."
+      },
+      {
+        "kind": "globalSetting",
+        "key": "hidden_api_blacklist_exemptions",
+        "value": "Lcom/samsung/android/hardware/sensormanager/",
+        "note": "One UI 8 Watch (Android 16) denies the watch app's sensor-manager calls as blocked hidden API; this exemption lets it use them for ECG, blood pressure and sleep apnea."
       }
     ],
     "bridge-watch": [

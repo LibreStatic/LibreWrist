@@ -35,6 +35,7 @@ _PERMISSION_RE = re.compile(r'^[a-zA-Z][\w.]*$', re.ASCII)
 _APPOP_RE = re.compile(r'^[A-Z][A-Z0-9_]*$', re.ASCII)
 _SETTING_KEY_RE = re.compile(r'^[a-z][a-z0-9_]*$', re.ASCII)
 _SETTING_VALUE_RE = re.compile(r'^\w[\w.-]{0,63}$', re.ASCII)   # no leading '-': it would be an option
+_GLOBAL_SETTING_VALUE_RE = re.compile(r'^L[a-zA-Z0-9_/$-]{0,127}$', re.ASCII)
 _COMPONENT_RE = re.compile(r'^(\.[A-Za-z]\w*)+$|^[A-Za-z]\w*(\.[A-Za-z]\w*)+$', re.ASCII)
 _NOTE_RE = re.compile(r'^[^\x00-\x1f\x7f]{1,300}$', re.ASCII)
 _INSTALL_STEPS = ('userOnboarding',)   # values allowed in installOrder[].then
@@ -46,6 +47,7 @@ _GRANT_KINDS = {
     'notificationListener': {'component': _COMPONENT_RE},
     'deviceIdleWhitelist': {},
     'secureSetting': {'key': _SETTING_KEY_RE, 'value': _SETTING_VALUE_RE},
+    'globalSetting': {'key': _SETTING_KEY_RE, 'value': _GLOBAL_SETTING_VALUE_RE},
 }
 
 

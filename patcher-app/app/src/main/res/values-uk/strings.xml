@@ -74,6 +74,7 @@
     <string name="grant_title_ongoing_calls">Керування поточними дзвінками</string>
     <string name="grant_title_always_on">Always-on display вимкнено</string>
     <string name="grant_title_battery">Без обмежень</string>
+    <string name="grant_title_hidden_api">Доступ до датчиків на новіших годинниках</string>
     <string name="grant_why_calls">Відповідати на дзвінок або відхиляти його з годинника.</string>
     <string name="grant_why_phone_state">Знати, коли дзвінок надходить або завершується, щоб годинник міг це показати.</string>
     <string name="grant_why_notifications_phone">Показувати невелике сповіщення, поки є зв’язок із годинником.</string>
@@ -94,6 +95,7 @@
     <string name="grant_why_always_on">Не дає завжди ввімкненому екрану присипляти годинник під час вимірювання.</string>
     <string name="grant_why_battery_bridge">Підтримувати зв’язок через Bluetooth, поки годинник економить заряд.</string>
     <string name="grant_why_battery_alarm">Дзвонити вчасно, навіть коли годинник економить заряд.</string>
+    <string name="grant_why_hidden_api">Дозволяє застосунку годинника використовувати сервіс датчиків Samsung для ЕКГ, тиску та апное уві сні. Діє для всього годинника, але лише для ПЗ датчиків Samsung.</string>
     <string name="changes_disables">Можна вимкнути</string>
 
     <!-- Profile -->
@@ -411,6 +413,7 @@
     <string name="grant_setting">Системне налаштування</string>
     <string name="grant_listener">Доступ до сповіщень</string>
     <string name="grant_battery">Виняток для економії заряду</string>
+    <string name="grant_global_setting">Глобальне системне налаштування</string>
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Режим розробника Health Platform</string>
@@ -774,6 +777,8 @@
     <string name="revert_action_restore">Відновити</string>
     <string name="revert_setting_label">Налаштування завжди ввімкненого екрана</string>
     <string name="revert_setting_note">Зараз воно вимкнене; його буде ввімкнено знову.</string>
+    <string name="revert_exemption_label">Виняток для доступу до датчиків</string>
+    <string name="revert_exemption_note">Наш запис у списку винятків датчиків годинника буде видалено; записи інших застосунків залишаться.</string>
     <string name="revert_enable_note">Його вимкнуло налаштування; його буде ввімкнено знову.</string>
     <string name="revert_not_installed">Не встановлені, робити нічого: %1$s</string>
     <string name="revert_system_apps">Не чіпали, бо це системні застосунки: %1$s</string>

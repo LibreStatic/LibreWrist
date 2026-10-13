@@ -114,6 +114,25 @@ internal class FakeWatch(
         settings[key] = value
     }
 
+    val globals = mutableMapOf<String, String>()
+
+    override suspend fun globalSetting(key: String): String? {
+        check()
+        return globals[key]
+    }
+
+    override suspend fun putGlobalSetting(key: String, value: String) {
+        check()
+        calls += "putGlobal:$key=$value"
+        globals[key] = value
+    }
+
+    override suspend fun deleteGlobalSetting(key: String) {
+        check()
+        calls += "deleteGlobal:$key"
+        globals.remove(key)
+    }
+
     val associations = mutableListOf<CompanionAssociation>()
     var disassociateThrows: RuntimeException? = null
     var listThrows: RuntimeException? = null

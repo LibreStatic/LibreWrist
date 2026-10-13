@@ -74,6 +74,7 @@
     <string name="grant_title_ongoing_calls">Gerenciar chamadas em andamento</string>
     <string name="grant_title_always_on">Tela sempre ativa desligada</string>
     <string name="grant_title_battery">Uso irrestrito da bateria</string>
+    <string name="grant_title_hidden_api">Acesso aos sensores em relógios mais novos</string>
     <string name="grant_why_calls">Atender ou recusar uma chamada pelo relógio.</string>
     <string name="grant_why_phone_state">Saber quando uma chamada toca ou termina, para o relógio mostrá-la.</string>
     <string name="grant_why_notifications_phone">Manter uma notificação pequena enquanto estiver conectado ao relógio.</string>
@@ -94,6 +95,7 @@
     <string name="grant_why_always_on">Impede que a tela sempre ativa coloque o relógio em repouso durante uma medição.</string>
     <string name="grant_why_battery_bridge">Manter o link Bluetooth ativo enquanto o relógio economiza bateria.</string>
     <string name="grant_why_battery_alarm">Tocar na hora certa mesmo enquanto o relógio economiza bateria.</string>
+    <string name="grant_why_hidden_api">Permite que o app do relógio use o serviço de sensores da Samsung para ECG, pressão arterial e apneia do sono. Vale para o relógio inteiro, mas só para o software de sensores da Samsung.</string>
     <string name="changes_disables">Pode ser desativado</string>
 
     <!-- Profile -->
@@ -399,6 +401,7 @@
     <string name="grant_setting">Configuração do sistema</string>
     <string name="grant_listener">Acesso às notificações</string>
     <string name="grant_battery">Isenção de bateria</string>
+    <string name="grant_global_setting">Configuração global do sistema</string>
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Modo desenvolvedor do Health Platform</string>
@@ -758,6 +761,8 @@
     <string name="revert_action_restore">Repor</string>
     <string name="revert_setting_label">Definição do ecrã sempre ligado</string>
     <string name="revert_setting_note">Está desligada neste momento; será reposta como ligada.</string>
+    <string name="revert_exemption_label">Exceção de acesso aos sensores</string>
+    <string name="revert_exemption_note">A nossa entrada na lista de exceções de sensores do relógio será removida; as entradas de outras aplicações mantêm-se.</string>
     <string name="revert_enable_note">A configuração desligou-a; será reativada.</string>
     <string name="revert_not_installed">Não instaladas, nada a fazer: %1$s</string>
     <string name="revert_system_apps">Deixadas como estão por serem apps do sistema: %1$s</string>

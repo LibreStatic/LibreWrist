@@ -74,6 +74,7 @@
     <string name="grant_title_ongoing_calls">Süren aramaları yönet</string>
     <string name="grant_title_always_on">Her zaman açık ekran kapalı</string>
     <string name="grant_title_battery">Kısıtlamasız pil kullanımı</string>
+    <string name="grant_title_hidden_api">Yeni saatlerde sensör erişimi</string>
     <string name="grant_why_calls">Aramayı saatten yanıtlamak veya reddetmek.</string>
     <string name="grant_why_phone_state">Bir arama çaldığında veya bittiğinde bilmek, böylece saat bunu gösterebilir.</string>
     <string name="grant_why_notifications_phone">Saate bağlıyken küçük bir bildirim tutmak.</string>
@@ -94,6 +95,7 @@
     <string name="grant_why_always_on">Her zaman açık ekranın, ölçüm sırasında saati uykuya almasını önler.</string>
     <string name="grant_why_battery_bridge">Saat pil tasarrufu yaparken Bluetooth bağlantısını canlı tutmak.</string>
     <string name="grant_why_battery_alarm">Saat pil tasarrufu yaparken bile zamanında çalmak.</string>
+    <string name="grant_why_hidden_api">Saat uygulamasının EKG, kan basıncı ve uyku apnesi için Samsung\'un sensör hizmetini kullanmasını sağlar. Tüm saat için geçerlidir, ancak yalnızca Samsung\'un sensör yazılımını kapsar.</string>
     <string name="changes_disables">Kapatılabilir</string>
 
     <!-- Profile -->
@@ -399,6 +401,7 @@
     <string name="grant_setting">Sistem ayarı</string>
     <string name="grant_listener">Bildirim erişimi</string>
     <string name="grant_battery">Pil optimizasyonu muafiyeti</string>
+    <string name="grant_global_setting">Genel sistem ayarı</string>
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Health Platform geliştirici modu</string>
@@ -758,6 +761,8 @@
     <string name="revert_action_restore">Geri yükle</string>
     <string name="revert_setting_label">Hep açık ekran ayarı</string>
     <string name="revert_setting_note">Şu an kapalı; yeniden açık yapılacak.</string>
+    <string name="revert_exemption_label">Sensör erişimi istisnası</string>
+    <string name="revert_exemption_note">Saatin sensör istisna listesindeki girdimiz kaldırılacak; diğer uygulamaların girdileri kalır.</string>
     <string name="revert_enable_note">Kurulum onu kapattı; yeniden açılacak.</string>
     <string name="revert_not_installed">Kurulu değil, yapılacak bir şey yok: %1$s</string>
     <string name="revert_system_apps">Sistem uygulaması oldukları için dokunulmadı: %1$s</string>

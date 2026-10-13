@@ -67,7 +67,7 @@ class PhoneGrants(private val probe: PhoneProbe) {
                 null -> row.status
             }
             // Not readable from here: whatever was last applied stands.
-            GrantKind.SecureSetting -> row.status
+            GrantKind.SecureSetting, GrantKind.GlobalSetting -> row.status
         }
     }
 

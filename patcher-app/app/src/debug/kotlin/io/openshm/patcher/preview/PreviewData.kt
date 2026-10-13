@@ -107,6 +107,7 @@ internal object PreviewData {
                 add(revertItem("shm-watch", Device.Watch))
                 add(RevertItem(Device.Watch, stock.label, stock.packageName, RevertAction.Enable))
                 add(RevertItem(Device.Watch, RevertPlan.ALWAYS_ON_KEY, RevertPlan.ALWAYS_ON_KEY, RevertAction.RestoreSetting))
+                add(RevertItem(Device.Watch, RevertPlan.HIDDEN_API_KEY, RevertPlan.HIDDEN_API_KEY, RevertAction.RemoveExemption))
             }
             if (AppCatalogue.current.outputs.any { it.id == "shealth-phone" }) add(revertItem("shealth-phone", Device.Phone))
             add(revertItem("bridge-phone", Device.Phone))

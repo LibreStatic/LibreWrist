@@ -161,6 +161,8 @@ class InstallSection(unittest.TestCase):
             {'kind': 'deviceIdleWhitelist'},
             {'kind': 'secureSetting', 'key': 'doze_always_on', 'value': '0'},
             {'kind': 'secureSetting', 'key': 'k1', 'value': 'a.b-c_9'},
+            {'kind': 'globalSetting', 'key': 'hidden_api_blacklist_exemptions',
+             'value': 'Lcom/samsung/android/hardware/sensormanager/'},
         ]
         for g in good:
             self.cat = copy.deepcopy(C.load_raw())
