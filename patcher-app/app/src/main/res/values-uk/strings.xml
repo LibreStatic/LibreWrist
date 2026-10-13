@@ -462,6 +462,7 @@
     <string name="selftest_grants_title">Доступ: %1$s</string>
     <string name="selftest_stock_title">Вимкнення: %1$s</string>
     <string name="selftest_bridge_link_title">Зв\'язок із годинником через міст</string>
+    <string name="selftest_leftovers_title">Копії мосту від попередньої установки</string>
     <string name="selftest_watch_platform">Health Platform у режимі розробника</string>
     <string name="selftest_gms_title">Годинник підключено до телефона</string>
     <string name="selftest_shm_title">Health Monitor бачить годинник</string>
@@ -492,6 +493,8 @@
     <string name="selftest_detail_stock_still_on">Досі ввімкнено</string>
     <string name="selftest_detail_stock_off">Вимкнено</string>
     <string name="selftest_detail_stock_absent">Немає на годиннику</string>
+    <string name="selftest_detail_leftovers_none">Копій від попередньої установки немає</string>
+    <string name="selftest_detail_leftovers_found">Копії від попередньої установки: %1$s</string>
     <string name="selftest_detail_bridge_missing">Міст не відповідає. Він установлений?</string>
     <string name="selftest_detail_bridge_denied">Міст відхилив запит стану. Його зібрано з іншим ключем</string>
     <string name="selftest_detail_bridge_not_running">Службу мосту не запущено</string>

@@ -441,6 +441,7 @@
     <string name="selftest_grants_title">權限：%1$s</string>
     <string name="selftest_stock_title">停用：%1$s</string>
     <string name="selftest_bridge_link_title">與手錶的橋接連結</string>
+    <string name="selftest_leftovers_title">先前的橋接副本</string>
     <string name="selftest_watch_platform">Health Platform 處於開發人員模式</string>
     <string name="selftest_gms_title">手錶已連線到手機</string>
     <string name="selftest_shm_title">Health Monitor 能看到手錶</string>
@@ -471,6 +472,8 @@
     <string name="selftest_detail_stock_still_on">仍處於開啟狀態</string>
     <string name="selftest_detail_stock_off">已關閉</string>
     <string name="selftest_detail_stock_absent">手錶上沒有</string>
+    <string name="selftest_detail_leftovers_none">沒有先前安裝留下的副本</string>
+    <string name="selftest_detail_leftovers_found">先前安裝留下的副本：%1$s</string>
     <string name="selftest_detail_bridge_missing">橋接應用程式沒有回應。是否已安裝？</string>
     <string name="selftest_detail_bridge_denied">橋接應用程式拒絕了狀態要求。它是用另一個金鑰建置的</string>
     <string name="selftest_detail_bridge_not_running">橋接服務未執行</string>

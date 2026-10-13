@@ -8,8 +8,11 @@ import io.openshm.patcher.adb.InstallResult
 import io.openshm.patcher.adb.SelfAdbState
 import io.openshm.patcher.build.BuiltBuild
 import io.openshm.patcher.data.Device
+import io.openshm.patcher.data.OutputApp
+import io.openshm.patcher.device.PackageKind
 import io.openshm.patcher.device.PhoneGrants
 import io.openshm.patcher.device.PhoneInstaller
+import io.openshm.patcher.device.UninstallResult
 import io.openshm.patcher.ui.components.CheckStatus
 import java.io.File
 import java.io.IOException
@@ -47,6 +50,9 @@ internal class PhoneInstallRunner(
     private val prefix: () -> String,
     private val lockPrefix: () -> Unit,
     private val log: (String) -> Unit = {},
+    /** The catalogue outputs, to recognise bridge copies of an earlier prefix; empty turns the cleanup off. */
+    private val outputs: List<OutputApp> = emptyList(),
+    private val ownPackage: String = "",
 ) {
     private var locked = false
 
@@ -70,11 +76,40 @@ internal class PhoneInstallRunner(
             return
         }
         val files = resolveBuildFiles(state, build(), prefix()) ?: return
+        removeLeftovers()
         for (index in state.value.items.indices) {
             val item = state.value.items[index]
             if (item.status == CheckStatus.Passed) continue
             if (!install(state, index, files.getValue(item.outputId))) return
             startBridge(item)
+        }
+    }
+
+    /**
+     * Removes the bridge copies an earlier prefix left on the phone (found through the notification
+     * listeners, which the phone bridge declares). The system may ask the user to confirm. System
+     * packages are never touched. Failures are only logged, never fail the run.
+     */
+    private suspend fun removeLeftovers() {
+        if (outputs.isEmpty()) return
+        val leftovers = try {
+            LeftoverBridges.find(outputs, Device.Phone, prefix(), installer.notificationListenerPackages(), setOf(ownPackage))
+        } catch (e: RuntimeException) {
+            log("leftover bridges not listed: ${e.javaClass.simpleName}")
+            return
+        }
+        for (pkg in leftovers) {
+            try {
+                if (installer.packageKind(pkg) != PackageKind.User) continue
+                when (val result = installer.uninstall(pkg)) {
+                    UninstallResult.Success -> log("removed leftover bridge $pkg")
+                    is UninstallResult.Failure -> log("leftover bridge $pkg not removed: ${result.message}")
+                }
+            } catch (e: IOException) {
+                log("leftover bridge $pkg not removed: ${e.javaClass.simpleName}")
+            } catch (e: RuntimeException) {
+                log("leftover bridge $pkg not removed: ${e.javaClass.simpleName}")
+            }
         }
     }
 

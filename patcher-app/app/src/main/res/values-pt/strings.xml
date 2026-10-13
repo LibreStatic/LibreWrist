@@ -448,6 +448,7 @@
     <string name="selftest_grants_title">Acesso de %1$s</string>
     <string name="selftest_stock_title">Desativação de %1$s</string>
     <string name="selftest_bridge_link_title">Link da ponte com o relógio</string>
+    <string name="selftest_leftovers_title">Cópias anteriores da ponte</string>
     <string name="selftest_watch_platform">Health Platform em modo desenvolvedor</string>
     <string name="selftest_gms_title">Relógio conectado ao celular</string>
     <string name="selftest_shm_title">O Health Monitor vê o relógio</string>
@@ -478,6 +479,8 @@
     <string name="selftest_detail_stock_still_on">Ainda ativado</string>
     <string name="selftest_detail_stock_off">Desativado</string>
     <string name="selftest_detail_stock_absent">Não está no relógio</string>
+    <string name="selftest_detail_leftovers_none">Não há cópias de uma instalação anterior</string>
+    <string name="selftest_detail_leftovers_found">Cópias de uma instalação anterior: %1$s</string>
     <string name="selftest_detail_bridge_missing">A ponte não responde. Ela está instalada?</string>
     <string name="selftest_detail_bridge_denied">A ponte recusou a solicitação de status. Ela foi compilada com outra chave</string>
     <string name="selftest_detail_bridge_not_running">O serviço da ponte não está em execução</string>

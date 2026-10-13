@@ -70,8 +70,12 @@ private class World(val catalogue: LoadedCatalogue) {
     var stockDisabled = true
     var stockInstalled = true
 
+    val leftoverWatch = mutableListOf<String>()
+    val leftoverPhone = mutableListOf<String>()
+
     val inspector = object : PackageInspector {
         override fun inspect(pkg: String) = installed[pkg]
+        override fun listenerPackages() = listenOf() + leftoverPhone
     }
     val hasher = object : FileHasher {
         override fun sha256(path: String) = phoneFileSha[path]
@@ -102,6 +106,7 @@ private class World(val catalogue: LoadedCatalogue) {
     private fun answer(command: String): ShellResult {
         val words = command.split(' ')
         return when {
+            command == "pm list packages" -> ok((watchInstalled.keys + leftoverWatch + STOCK).joinToString("\n") { "package:$it" })
             command == "pm list packages -d" -> ok(if (stockDisabled) "package:$STOCK\n" else "")
             words[0] == "pm" && words[1] == "path" ->
                 if (words[2] == STOCK) { if (stockInstalled) ok("package:/system/app/Stock/Stock.apk\n") else fail() }
@@ -121,6 +126,8 @@ private class World(val catalogue: LoadedCatalogue) {
             else -> fail()
         }
     }
+
+    private fun listenOf() = listenerOn.toList()
 
     fun runner() = SelfTestRunner(
         catalogue = catalogue,
@@ -156,6 +163,28 @@ class SelfTestRunnerTest {
     }
 
     private fun automated(state: SelfTestUiState) = state.rows().filter { !it.isHuman }
+
+    @Test
+    fun `leftover bridge rows pass when no copy of an earlier prefix is installed`() {
+        val state = run()
+        assertEquals(CheckStatus.Passed, state.row("watch-leftovers").status)
+        assertEquals(CheckStatus.Passed, state.row("phone-leftovers").status)
+    }
+
+    @Test
+    fun `leftover bridge rows fail and list the packages of an earlier prefix`() {
+        world.leftoverWatch += "io.openshm.u98ff48.shmbridge.watch"
+        world.leftoverPhone += "ar.facu.shmbridge.phone"
+        val state = run()
+        val watchRow = state.row("watch-leftovers")
+        val phoneRow = state.row("phone-leftovers")
+        assertEquals(CheckStatus.Failed, watchRow.status)
+        assertEquals(listOf("io.openshm.u98ff48.shmbridge.watch"), watchRow.detail?.args)
+        assertEquals(SelfTestFix.InstallWatch, watchRow.fix)
+        assertEquals(CheckStatus.Failed, phoneRow.status)
+        assertEquals(listOf("ar.facu.shmbridge.phone"), phoneRow.detail?.args)
+        assertEquals(SelfTestFix.InstallPhone, phoneRow.fix)
+    }
 
     @Test
     fun `initial state lists every row waiting, questions included`() {

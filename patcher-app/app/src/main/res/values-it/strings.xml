@@ -448,6 +448,7 @@
     <string name="selftest_grants_title">Accesso di %1$s</string>
     <string name="selftest_stock_title">Disattivazione di %1$s</string>
     <string name="selftest_bridge_link_title">Collegamento del bridge con l\'orologio</string>
+    <string name="selftest_leftovers_title">Copie precedenti del bridge</string>
     <string name="selftest_watch_platform">Health Platform in modalità sviluppatore</string>
     <string name="selftest_gms_title">Orologio connesso al telefono</string>
     <string name="selftest_shm_title">Health Monitor vede l\'orologio</string>
@@ -478,6 +479,8 @@
     <string name="selftest_detail_stock_still_on">Ancora attiva</string>
     <string name="selftest_detail_stock_off">Disattivata</string>
     <string name="selftest_detail_stock_absent">Non presente sull\'orologio</string>
+    <string name="selftest_detail_leftovers_none">Nessuna copia di un\'installazione precedente</string>
+    <string name="selftest_detail_leftovers_found">Copie di un\'installazione precedente: %1$s</string>
     <string name="selftest_detail_bridge_missing">Il bridge non risponde. È installato?</string>
     <string name="selftest_detail_bridge_denied">Il bridge ha rifiutato la richiesta di stato. È stato compilato con un\'altra chiave</string>
     <string name="selftest_detail_bridge_not_running">Il servizio bridge non è in esecuzione</string>

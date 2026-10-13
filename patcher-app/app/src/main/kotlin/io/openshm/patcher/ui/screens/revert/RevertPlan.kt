@@ -105,7 +105,8 @@ object RevertPlan {
         return result
     }
 
-    private fun suffixOf(out: OutputApp): String? {
+    /** What follows the placeholder in [out]'s package template (e.g. `.shmbridge.watch`), or null when the package does not depend on the prefix. */
+    internal fun suffixOf(out: OutputApp): String? {
         val at = out.packageTemplate.indexOf(PLACEHOLDER)
         if (at < 0) return null
         return out.packageTemplate.substring(at + PLACEHOLDER.length).takeIf { it.startsWith(".") }

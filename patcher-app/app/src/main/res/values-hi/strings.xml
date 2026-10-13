@@ -448,6 +448,7 @@
     <string name="selftest_grants_title">ऐक्सेस: %1$s</string>
     <string name="selftest_stock_title">बंद: %1$s</string>
     <string name="selftest_bridge_link_title">घड़ी से ब्रिज लिंक</string>
+    <string name="selftest_leftovers_title">पिछली इंस्टॉलेशन की ब्रिज प्रतियाँ</string>
     <string name="selftest_watch_platform">Health Platform डेवलपर मोड में</string>
     <string name="selftest_gms_title">घड़ी फ़ोन से जुड़ी है</string>
     <string name="selftest_shm_title">Health Monitor को घड़ी दिखती है</string>
@@ -478,6 +479,8 @@
     <string name="selftest_detail_stock_still_on">अब भी चालू है</string>
     <string name="selftest_detail_stock_off">बंद है</string>
     <string name="selftest_detail_stock_absent">घड़ी पर नहीं है</string>
+    <string name="selftest_detail_leftovers_none">पिछली इंस्टॉलेशन की कोई प्रति नहीं है</string>
+    <string name="selftest_detail_leftovers_found">पिछली इंस्टॉलेशन की प्रतियाँ: %1$s</string>
     <string name="selftest_detail_bridge_missing">ब्रिज जवाब नहीं देता। क्या वह इंस्टॉल है?</string>
     <string name="selftest_detail_bridge_denied">ब्रिज ने स्थिति के अनुरोध से इनकार किया। वह दूसरी कुंजी से बना था</string>
     <string name="selftest_detail_bridge_not_running">ब्रिज सेवा नहीं चल रही</string>

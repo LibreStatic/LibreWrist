@@ -7,7 +7,9 @@ import io.openshm.patcher.adb.BridgeStart
 import io.openshm.patcher.adb.InstallResult
 import io.openshm.patcher.build.BuiltBuild
 import io.openshm.patcher.data.Device
+import io.openshm.patcher.data.OutputApp
 import io.openshm.patcher.device.PackageKind
+import io.openshm.patcher.device.UninstallResult
 import io.openshm.patcher.device.WatchDevice
 import io.openshm.patcher.ui.components.CheckStatus
 import java.io.File
@@ -39,6 +41,9 @@ internal class WatchInstallRunner(
     private val lockPrefix: () -> Unit,
     private val log: (String) -> Unit = {},
     private val pause: suspend (Long) -> Unit = { delay(it) },
+    /** The catalogue outputs, to recognise bridge copies of an earlier prefix; empty turns the cleanup off. */
+    private val outputs: List<OutputApp> = emptyList(),
+    private val ownPackage: String = "",
 ) {
     private var locked = false
 
@@ -54,6 +59,7 @@ internal class WatchInstallRunner(
 
     private suspend fun walk(state: MutableStateFlow<InstallUiState>) {
         val files = resolveBuildFiles(state, build(), prefix()) ?: return
+        removeLeftovers()
         for (index in state.value.items.indices) {
             val item = state.value.items[index]
             if (item.status != CheckStatus.Passed) {
@@ -61,6 +67,49 @@ internal class WatchInstallRunner(
             }
             if (!grant(state, index)) return
             startBridge(item)
+        }
+    }
+
+    /**
+     * Removes the bridge copies an earlier prefix left on the watch (they compete with the current
+     * bridge for the phone link): companion associations first, then the package. System packages are
+     * never touched. Failures are only logged, never fail the run.
+     */
+    private suspend fun removeLeftovers() {
+        if (outputs.isEmpty()) return
+        val leftovers = try {
+            LeftoverBridges.find(outputs, Device.Watch, prefix(), device.listPackages(), setOf(ownPackage))
+        } catch (e: IOException) {
+            log("leftover bridges not listed: ${e.javaClass.simpleName}")
+            return
+        } catch (e: UnsupportedOperationException) {
+            return
+        }
+        for (pkg in leftovers) {
+            try {
+                if (device.packageKind(pkg) != PackageKind.User) continue
+                dropAssociations(pkg)
+                when (val result = device.uninstall(pkg)) {
+                    UninstallResult.Success -> log("removed leftover bridge $pkg")
+                    is UninstallResult.Failure -> log("leftover bridge $pkg not removed: ${result.message}")
+                }
+            } catch (e: IOException) {
+                log("leftover bridge $pkg not removed: ${e.javaClass.simpleName}")
+            } catch (e: UnsupportedOperationException) {
+                log("leftover bridge $pkg not removed: unsupported")
+            }
+        }
+    }
+
+    private suspend fun dropAssociations(pkg: String) {
+        try {
+            for (association in device.companionAssociations().filter { it.packageName == pkg }) {
+                device.disassociateCompanion(pkg, association.mac)
+            }
+        } catch (e: IOException) {
+            log("companion associations of $pkg not removed: ${e.javaClass.simpleName}")
+        } catch (e: UnsupportedOperationException) {
+            log("companion associations of $pkg not removed: unsupported")
         }
     }
 

@@ -448,6 +448,7 @@
     <string name="selftest_grants_title">Zugriff für %1$s</string>
     <string name="selftest_stock_title">Deaktivierung von %1$s</string>
     <string name="selftest_bridge_link_title">Bridge-Verbindung zur Uhr</string>
+    <string name="selftest_leftovers_title">Brücken-Kopien einer früheren Installation</string>
     <string name="selftest_watch_platform">Health Platform im Entwicklermodus</string>
     <string name="selftest_gms_title">Uhr mit dem Smartphone verbunden</string>
     <string name="selftest_shm_title">Health Monitor sieht die Uhr</string>
@@ -478,6 +479,8 @@
     <string name="selftest_detail_stock_still_on">Noch aktiviert</string>
     <string name="selftest_detail_stock_off">Deaktiviert</string>
     <string name="selftest_detail_stock_absent">Nicht auf der Uhr</string>
+    <string name="selftest_detail_leftovers_none">Keine Kopien einer früheren Installation</string>
+    <string name="selftest_detail_leftovers_found">Kopien einer früheren Installation: %1$s</string>
     <string name="selftest_detail_bridge_missing">Die Bridge antwortet nicht. Ist sie installiert?</string>
     <string name="selftest_detail_bridge_denied">Die Bridge hat die Statusanfrage abgelehnt. Sie wurde mit einem anderen Schlüssel erstellt</string>
     <string name="selftest_detail_bridge_not_running">Der Bridge-Dienst läuft nicht</string>

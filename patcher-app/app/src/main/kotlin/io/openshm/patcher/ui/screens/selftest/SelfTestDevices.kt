@@ -1,6 +1,7 @@
 package io.openshm.patcher.ui.screens.selftest
 
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import io.openshm.patcher.adb.ShellResult
@@ -25,6 +26,15 @@ class AndroidPackageInspector(context: Context) : PackageInspector {
         InstalledPackage(info.versionName, signers, info.applicationInfo?.sourceDir)
     } catch (e: PackageManager.NameNotFoundException) {
         null
+    }
+
+    @Suppress("DEPRECATION")
+    override fun listenerPackages(): List<String> = try {
+        pm.queryIntentServices(Intent("android.service.notification.NotificationListenerService"), 0)
+            .mapNotNull { it.serviceInfo?.packageName }
+            .distinct()
+    } catch (e: RuntimeException) {
+        emptyList()
     }
 }
 

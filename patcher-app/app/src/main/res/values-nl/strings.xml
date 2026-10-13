@@ -448,6 +448,7 @@
     <string name="selftest_grants_title">Toegang voor %1$s</string>
     <string name="selftest_stock_title">Uitschakeling van %1$s</string>
     <string name="selftest_bridge_link_title">Bridge-verbinding met het horloge</string>
+    <string name="selftest_leftovers_title">Oude kopieën van de brug</string>
     <string name="selftest_watch_platform">Health Platform in ontwikkelaarsmodus</string>
     <string name="selftest_gms_title">Horloge verbonden met de telefoon</string>
     <string name="selftest_shm_title">Health Monitor ziet het horloge</string>
@@ -478,6 +479,8 @@
     <string name="selftest_detail_stock_still_on">Staat nog aan</string>
     <string name="selftest_detail_stock_off">Uitgezet</string>
     <string name="selftest_detail_stock_absent">Niet op het horloge</string>
+    <string name="selftest_detail_leftovers_none">Geen kopieën van een eerdere installatie</string>
+    <string name="selftest_detail_leftovers_found">Kopieën van een eerdere installatie: %1$s</string>
     <string name="selftest_detail_bridge_missing">De bridge reageert niet. Is hij geïnstalleerd?</string>
     <string name="selftest_detail_bridge_denied">De bridge weigerde het statusverzoek. Hij is met een andere sleutel gebouwd</string>
     <string name="selftest_detail_bridge_not_running">De bridge-service draait niet</string>

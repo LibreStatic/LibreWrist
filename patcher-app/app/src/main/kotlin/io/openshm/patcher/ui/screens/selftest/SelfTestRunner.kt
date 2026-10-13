@@ -18,6 +18,7 @@ import io.openshm.patcher.device.PhoneGrants
 import io.openshm.patcher.device.toAdbGrant
 import io.openshm.patcher.ui.components.CheckStatus
 import io.openshm.patcher.ui.screens.install.GrantRow
+import io.openshm.patcher.ui.screens.install.LeftoverBridges
 import java.io.IOException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
@@ -37,6 +38,9 @@ data class InstalledPackage(val versionName: String?, val signerSha256: Set<Stri
 interface PackageInspector {
     /** Null when the package is not installed (or not visible to this app). */
     fun inspect(pkg: String): InstalledPackage?
+
+    /** Packages that declare a notification listener (the phone bridge does); the phone cannot list all packages. */
+    fun listenerPackages(): List<String> = emptyList()
 }
 
 interface FileHasher {
@@ -153,11 +157,17 @@ internal class SelfTestRunner(
                     add(Check(SECTION_PHONE, pendingRow("phone-grants-${out.id}", text(R.string.selftest_grants_title, out.label), SelfTestFix.InstallPhone)) { phoneAccess(out) })
                 }
             }
+            if (hasBridge(Device.Phone)) {
+                add(Check(SECTION_PHONE, pendingRow("phone-leftovers", text(R.string.selftest_leftovers_title), SelfTestFix.InstallPhone)) { phoneLeftovers() })
+            }
             for (out in outputs.filter { it.device == Device.Watch }) {
                 add(Check(SECTION_WATCH, pendingRow("watch-pkg-${out.id}", text(R.string.selftest_package_title, out.label), SelfTestFix.InstallWatch)) { watchPackage(it, out) })
                 if (catalogue.grants[out.id].orEmpty().isNotEmpty()) {
                     add(Check(SECTION_WATCH, pendingRow(watchGrantsRowId(out.id), text(R.string.selftest_grants_title, out.label), SelfTestFix.WatchGrants)) { watchAccess(it, out) })
                 }
+            }
+            if (hasBridge(Device.Watch)) {
+                add(Check(SECTION_WATCH, pendingRow("watch-leftovers", text(R.string.selftest_leftovers_title), SelfTestFix.InstallWatch)) { watchLeftovers(it) })
             }
             for (stock in catalogue.stockAppsToDisable.filter { it.device == Device.Watch }) {
                 add(Check(SECTION_WATCH, pendingRow("watch-stock-${stock.packageName}", text(R.string.selftest_stock_title, stock.label), SelfTestFix.DisableStock)) { watchStock(it, stock.packageName, stock.optional) })
@@ -167,6 +177,8 @@ internal class SelfTestRunner(
             }
         }
     }
+
+    private fun hasBridge(device: Device) = outputs.any { it.device == device && it.packageTemplate.contains(".shmbridge.") }
 
     private fun pendingRow(id: String, title: SelfTestText, fix: SelfTestFix?) = SelfTestRow(id, title, CheckStatus.Pending, fix = fix)
 
@@ -251,6 +263,11 @@ internal class SelfTestRunner(
         return accessOutcome(missing, optional, emptyList(), SelfTestFix.InstallPhone)
     }
 
+    private suspend fun phoneLeftovers(): Outcome {
+        val installed = withContext(io) { packages.listenerPackages() }
+        return leftoversOutcome(LeftoverBridges.find(catalogue.outputs, Device.Phone, prefix, installed), SelfTestFix.InstallPhone)
+    }
+
     private suspend fun bridgeLink(): Outcome {
         val authority = prefix + BRIDGE_STATUS_AUTHORITY_SUFFIX
         return when (val status = withContext(io) { bridge.query(authority) }) {
@@ -274,6 +291,18 @@ internal class SelfTestRunner(
         val result = context.shell("pm path $pkg")
         return if (result.isSuccess) PmParsers.parsePaths(result.stdout).firstOrNull() else null
     }
+
+    private suspend fun watchLeftovers(context: RunContext): Outcome {
+        if (!context.watchAvailable()) return skippedWatch()
+        val listed = context.shell("pm list packages")
+        if (!listed.isSuccess) return Outcome(CheckStatus.Warning, text(R.string.selftest_detail_error))
+        val found = LeftoverBridges.find(catalogue.outputs, Device.Watch, prefix, PmParsers.parsePackageList(listed.stdout))
+        return leftoversOutcome(found, SelfTestFix.InstallWatch)
+    }
+
+    private fun leftoversOutcome(found: List<String>, fix: SelfTestFix): Outcome =
+        if (found.isEmpty()) Outcome(CheckStatus.Passed, text(R.string.selftest_detail_leftovers_none))
+        else Outcome(CheckStatus.Failed, text(R.string.selftest_detail_leftovers_found, found.joinToString(", ")), fix)
 
     private suspend fun watchPackage(context: RunContext, out: OutputApp): Outcome {
         if (!context.watchAvailable()) return skippedWatch()

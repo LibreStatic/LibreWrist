@@ -476,6 +476,7 @@
     <string name="selftest_grants_title">الوصول: %1$s</string>
     <string name="selftest_stock_title">الإيقاف: %1$s</string>
     <string name="selftest_bridge_link_title">رابط الجسر مع الساعة</string>
+    <string name="selftest_leftovers_title">نسخ الجسر من تثبيت سابق</string>
     <string name="selftest_watch_platform">Health Platform في وضع المطور</string>
     <string name="selftest_gms_title">الساعة متصلة بالهاتف</string>
     <string name="selftest_shm_title">Health Monitor يرى الساعة</string>
@@ -506,6 +507,8 @@
     <string name="selftest_detail_stock_still_on">ما زال مفعّلًا</string>
     <string name="selftest_detail_stock_off">متوقف</string>
     <string name="selftest_detail_stock_absent">غير موجود على الساعة</string>
+    <string name="selftest_detail_leftovers_none">لا توجد نسخ من تثبيت سابق</string>
+    <string name="selftest_detail_leftovers_found">نسخ من تثبيت سابق: %1$s</string>
     <string name="selftest_detail_bridge_missing">الجسر لا يستجيب. هل هو مثبَّت؟</string>
     <string name="selftest_detail_bridge_denied">رفض الجسر طلب الحالة. بُني بمفتاح آخر</string>
     <string name="selftest_detail_bridge_not_running">خدمة الجسر لا تعمل</string>

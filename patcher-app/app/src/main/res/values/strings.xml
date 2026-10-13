@@ -555,6 +555,7 @@
     <string name="selftest_grants_title">Access for %1$s</string>
     <string name="selftest_stock_title">%1$s turned off</string>
     <string name="selftest_bridge_link_title">Bridge link to the watch</string>
+    <string name="selftest_leftovers_title">Bridge copies from an earlier install</string>
     <string name="selftest_watch_platform">Health Platform in developer mode</string>
     <string name="selftest_gms_title">Watch connected to the phone</string>
     <string name="selftest_shm_title">Health Monitor sees the watch</string>
@@ -585,6 +586,8 @@
     <string name="selftest_detail_stock_still_on">Still turned on</string>
     <string name="selftest_detail_stock_off">Turned off</string>
     <string name="selftest_detail_stock_absent">Not on the watch</string>
+    <string name="selftest_detail_leftovers_none">No copies from an earlier install</string>
+    <string name="selftest_detail_leftovers_found">Copies from an earlier install: %1$s</string>
     <string name="selftest_detail_bridge_missing">The bridge does not answer. Is it installed?</string>
     <string name="selftest_detail_bridge_denied">The bridge refused the status request. It was built with another key</string>
     <string name="selftest_detail_bridge_not_running">The bridge service is not running</string>

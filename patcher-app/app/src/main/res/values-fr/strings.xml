@@ -455,6 +455,7 @@
     <string name="selftest_grants_title">Accès de %1$s</string>
     <string name="selftest_stock_title">Désactivation de %1$s</string>
     <string name="selftest_bridge_link_title">Liaison du pont avec la montre</string>
+    <string name="selftest_leftovers_title">Copies précédentes du pont</string>
     <string name="selftest_watch_platform">Health Platform en mode développeur</string>
     <string name="selftest_gms_title">Montre connectée au téléphone</string>
     <string name="selftest_shm_title">Health Monitor voit la montre</string>
@@ -485,6 +486,8 @@
     <string name="selftest_detail_stock_still_on">Toujours activée</string>
     <string name="selftest_detail_stock_off">Désactivée</string>
     <string name="selftest_detail_stock_absent">Absente de la montre</string>
+    <string name="selftest_detail_leftovers_none">Aucune copie d\'une installation précédente</string>
+    <string name="selftest_detail_leftovers_found">Copies d\'une installation précédente : %1$s</string>
     <string name="selftest_detail_bridge_missing">Le pont ne répond pas. Est-il installé ?</string>
     <string name="selftest_detail_bridge_denied">Le pont a refusé la demande d\'état. Il a été compilé avec une autre clé</string>
     <string name="selftest_detail_bridge_not_running">Le service du pont n\'est pas en cours d\'exécution</string>

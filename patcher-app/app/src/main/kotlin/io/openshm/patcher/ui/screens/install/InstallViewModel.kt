@@ -90,6 +90,8 @@ class InstallPhoneViewModel(application: Application) : AndroidViewModel(applica
         prefix = { SetupSession.state.value.packagePrefix },
         lockPrefix = { SetupSession.update { it.copy(prefixLocked = true) } },
         log = { Log.w("BridgeStart", it) },
+        outputs = AppCatalogue.current.outputs,
+        ownPackage = application.packageName,
     )
 
     init {
@@ -219,6 +221,8 @@ class InstallWatchViewModel(application: Application) : AndroidViewModel(applica
         prefix = { SetupSession.state.value.packagePrefix },
         lockPrefix = { SetupSession.update { it.copy(prefixLocked = true) } },
         log = { Log.w("BridgeStart", it) },
+        outputs = AppCatalogue.current.outputs,
+        ownPackage = application.packageName,
     )
 
     init {

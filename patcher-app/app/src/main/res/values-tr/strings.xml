@@ -448,6 +448,7 @@
     <string name="selftest_grants_title">Erişim: %1$s</string>
     <string name="selftest_stock_title">Devre dışı: %1$s</string>
     <string name="selftest_bridge_link_title">Saate köprü bağlantısı</string>
+    <string name="selftest_leftovers_title">Önceki kurulumdan köprü kopyaları</string>
     <string name="selftest_watch_platform">Health Platform geliştirici modunda</string>
     <string name="selftest_gms_title">Saat telefona bağlı</string>
     <string name="selftest_shm_title">Health Monitor saati görüyor</string>
@@ -478,6 +479,8 @@
     <string name="selftest_detail_stock_still_on">Hâlâ açık</string>
     <string name="selftest_detail_stock_off">Kapalı</string>
     <string name="selftest_detail_stock_absent">Saatte yok</string>
+    <string name="selftest_detail_leftovers_none">Önceki bir kurulumdan kopya yok</string>
+    <string name="selftest_detail_leftovers_found">Önceki bir kurulumdan kopyalar: %1$s</string>
     <string name="selftest_detail_bridge_missing">Köprü yanıt vermiyor. Kurulu mu?</string>
     <string name="selftest_detail_bridge_denied">Köprü durum isteğini reddetti. Başka bir anahtarla derlenmiş</string>
     <string name="selftest_detail_bridge_not_running">Köprü hizmeti çalışmıyor</string>

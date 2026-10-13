@@ -441,6 +441,7 @@
     <string name="selftest_grants_title">액세스: %1$s</string>
     <string name="selftest_stock_title">사용 중지: %1$s</string>
     <string name="selftest_bridge_link_title">워치와의 브리지 링크</string>
+    <string name="selftest_leftovers_title">이전 브리지 사본</string>
     <string name="selftest_watch_platform">Health Platform 개발자 모드</string>
     <string name="selftest_gms_title">워치가 휴대전화에 연결됨</string>
     <string name="selftest_shm_title">Health Monitor가 워치를 인식함</string>
@@ -471,6 +472,8 @@
     <string name="selftest_detail_stock_still_on">아직 켜져 있습니다</string>
     <string name="selftest_detail_stock_off">꺼져 있습니다</string>
     <string name="selftest_detail_stock_absent">워치에 없습니다</string>
+    <string name="selftest_detail_leftovers_none">이전 설치의 사본이 없습니다</string>
+    <string name="selftest_detail_leftovers_found">이전 설치의 사본: %1$s</string>
     <string name="selftest_detail_bridge_missing">브리지가 응답하지 않습니다. 설치되어 있나요?</string>
     <string name="selftest_detail_bridge_denied">브리지가 상태 요청을 거부했습니다. 다른 키로 빌드되었습니다</string>
     <string name="selftest_detail_bridge_not_running">브리지 서비스가 실행 중이 아닙니다</string>

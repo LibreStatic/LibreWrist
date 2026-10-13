@@ -10,6 +10,7 @@ import io.openshm.patcher.build.BuiltBuild
 import io.openshm.patcher.build.BuiltRecord
 import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.Device
+import io.openshm.patcher.data.OutputApp
 import io.openshm.patcher.data.Grant
 import io.openshm.patcher.data.GrantKind
 import io.openshm.patcher.device.PackageKind
@@ -229,8 +230,16 @@ private class FakePhoneInstaller : PhoneInstaller {
         onProgress(1f)
         return result(packageName)
     }
-    override fun packageKind(packageName: String): PackageKind = PackageKind.System // never offers a removal
-    override suspend fun uninstall(packageName: String): UninstallResult = error("not used here")
+    val listeners = mutableListOf<String>()
+    val kinds = mutableMapOf<String, PackageKind>()
+    val uninstalled = mutableListOf<String>()
+    var uninstallResult: (String) -> UninstallResult = { UninstallResult.Success }
+    override fun notificationListenerPackages(): List<String> = listeners.toList()
+    override fun packageKind(packageName: String): PackageKind = kinds[packageName] ?: PackageKind.System // never offers a removal
+    override suspend fun uninstall(packageName: String): UninstallResult {
+        uninstalled += packageName
+        return uninstallResult(packageName)
+    }
     val started = mutableListOf<Triple<String, String, String>>()
     var startThrows: RuntimeException? = null
     override fun startBridge(packageName: String, receiver: String, action: String) {
@@ -270,6 +279,43 @@ class PhoneInstallRunnerTest {
         PhoneInstallRunner(installer, PhoneGrants(probe), { build }, { currentPrefix }, { locked++ }, { logged += it })
 
     private val logged = mutableListOf<String>()
+
+    private val bridgeOutputs = listOf(
+        OutputApp("bridge-phone", "Bridge", Device.Phone, "\${PKG_PREFIX}.shmbridge.phone", null),
+    )
+    private val old = "io.openshm.u98ff48"
+
+    private fun cleaningRunner(build: BuiltBuild?) =
+        PhoneInstallRunner(installer, PhoneGrants(probe), { build }, { prefix }, { locked++ }, { logged += it }, bridgeOutputs, "io.openshm.patcher")
+
+    @Test
+    fun aBridgeCopyOfAnEarlierPrefixIsUninstalledBeforeInstalling() = runBlocking {
+        installer.listeners += listOf("$old.shmbridge.phone", "$prefix.shmbridge.phone", "com.other.listener")
+        installer.kinds["$old.shmbridge.phone"] = PackageKind.User
+        val s = state()
+        cleaningRunner(built("shm-phone", "bridge-phone")).run(s)
+        assertEquals(listOf("$old.shmbridge.phone"), installer.uninstalled)
+        assertEquals(listOf("$prefix.shm", "$prefix.bridge"), installer.installed)
+    }
+
+    @Test
+    fun aFailedLeftoverUninstallDoesNotFailThePhoneRun() = runBlocking {
+        installer.listeners += "$old.shmbridge.phone"
+        installer.kinds["$old.shmbridge.phone"] = PackageKind.User
+        installer.uninstallResult = { UninstallResult.Failure("STATUS_FAILURE_ABORTED") }
+        val s = state()
+        cleaningRunner(built("shm-phone", "bridge-phone")).run(s)
+        assertNull(s.value.errorRes)
+        assertTrue(s.value.items.all { it.status == CheckStatus.Passed })
+        assertTrue(logged.any { it.contains("$old.shmbridge.phone") })
+    }
+
+    @Test
+    fun aSystemPackageIsNeverUninstalledAsALeftover() = runBlocking {
+        installer.listeners += "$old.shmbridge.phone" // kind defaults to System
+        cleaningRunner(built("shm-phone", "bridge-phone")).run(state())
+        assertTrue(installer.uninstalled.isEmpty())
+    }
 
 
     @Test

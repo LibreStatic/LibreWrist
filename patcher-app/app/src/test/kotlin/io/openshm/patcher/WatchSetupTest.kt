@@ -15,6 +15,7 @@ import io.openshm.patcher.data.Grant
 import io.openshm.patcher.data.GrantKind
 import io.openshm.patcher.data.StockApp
 import io.openshm.patcher.data.Device
+import io.openshm.patcher.data.OutputApp
 import io.openshm.patcher.device.PackageKind
 import io.openshm.patcher.device.UninstallResult
 import io.openshm.patcher.device.UnsupportedGrantException
@@ -199,9 +200,20 @@ private class FakeDevice : WatchDevice {
         return pkg in off
     }
 
-    override suspend fun packageKind(pkg: String): PackageKind = PackageKind.System // never offers a removal
+    val listed = mutableListOf<String>()
+    val kinds = mutableMapOf<String, PackageKind>()
+    val uninstalled = mutableListOf<String>()
+    var uninstallResult: (String) -> UninstallResult = { UninstallResult.Success }
 
-    override suspend fun uninstall(pkg: String): UninstallResult = error("not used here")
+    override suspend fun listPackages(): List<String> = listed.toList()
+
+    override suspend fun packageKind(pkg: String): PackageKind = kinds[pkg] ?: PackageKind.System // never offers a removal
+
+    override suspend fun uninstall(pkg: String): UninstallResult {
+        companionCalls += "uninstall:$pkg"
+        uninstalled += pkg
+        return uninstallResult(pkg)
+    }
 }
 
 class WatchInstallRunnerTest {
@@ -236,6 +248,47 @@ class WatchInstallRunnerTest {
         WatchInstallRunner(device, { build }, { currentPrefix }, { locked++ }, { logged += it }, { pauses += it })
 
     private val pauses = mutableListOf<Long>()
+
+    private val bridgeOutputs = listOf(
+        OutputApp("alarm-fork", "Alarm", Device.Watch, "\${PKG_PREFIX}.shmbridge.alarm", null),
+        OutputApp("bridge-watch", "Bridge", Device.Watch, "\${PKG_PREFIX}.shmbridge.watch", null),
+        OutputApp("shealth", "Health+", Device.Watch, "\${PKG_PREFIX}.shealth", null),
+    )
+
+    private fun cleaningRunner(device: WatchDevice, build: BuiltBuild?) =
+        WatchInstallRunner(device, { build }, { prefix }, { locked++ }, { logged += it }, { pauses += it }, bridgeOutputs, "io.openshm.patcher")
+
+    private val old = "io.openshm.u98ff48"
+
+    @Test
+    fun bridgeCopiesOfAnEarlierPrefixAreDisassociatedThenUninstalledBeforeInstalling() = runBlocking {
+        val device = FakeDevice().apply {
+            listed += listOf("$old.shmbridge.watch", "$old.shmbridge.alarm", "$old.shealth", "$prefix.shmbridge.watch")
+            kinds["$old.shmbridge.watch"] = PackageKind.User
+            kinds["$old.shmbridge.alarm"] = PackageKind.System
+            associations += CompanionAssociation("$old.shmbridge.watch", mac)
+        }
+        val s = state(item("a"))
+        cleaningRunner(device, built("a")).run(s)
+        assertEquals(listOf("disassociate:$old.shmbridge.watch:$mac", "uninstall:$old.shmbridge.watch"), device.companionCalls)
+        assertEquals(listOf("$old.shmbridge.watch"), device.uninstalled)
+        assertEquals(listOf("a.apk"), device.installed)
+        assertTrue(s.value.done)
+    }
+
+    @Test
+    fun aFailedLeftoverUninstallIsLoggedAndTheRunStillPasses() = runBlocking {
+        val device = FakeDevice().apply {
+            listed += "$old.shmbridge.watch"
+            kinds["$old.shmbridge.watch"] = PackageKind.User
+            uninstallResult = { UninstallResult.Failure("DELETE_FAILED_DEVICE_POLICY_MANAGER") }
+        }
+        val s = state(item("a"))
+        cleaningRunner(device, built("a")).run(s)
+        assertTrue(s.value.done)
+        assertNull(s.value.errorRes)
+        assertTrue(logged.any { it.contains("$old.shmbridge.watch") && it.contains("DELETE_FAILED") })
+    }
 
     private val logged = mutableListOf<String>()
 

@@ -441,6 +441,7 @@
     <string name="selftest_grants_title">Akses %1$s</string>
     <string name="selftest_stock_title">Penonaktifan %1$s</string>
     <string name="selftest_bridge_link_title">Tautan bridge ke jam</string>
+    <string name="selftest_leftovers_title">Salinan jembatan dari instalasi sebelumnya</string>
     <string name="selftest_watch_platform">Health Platform dalam mode pengembang</string>
     <string name="selftest_gms_title">Jam terhubung ke ponsel</string>
     <string name="selftest_shm_title">Health Monitor melihat jam</string>
@@ -471,6 +472,8 @@
     <string name="selftest_detail_stock_still_on">Masih menyala</string>
     <string name="selftest_detail_stock_off">Dimatikan</string>
     <string name="selftest_detail_stock_absent">Tidak ada di jam</string>
+    <string name="selftest_detail_leftovers_none">Tidak ada salinan dari instalasi sebelumnya</string>
+    <string name="selftest_detail_leftovers_found">Salinan dari instalasi sebelumnya: %1$s</string>
     <string name="selftest_detail_bridge_missing">Bridge tidak merespons. Apakah sudah terpasang?</string>
     <string name="selftest_detail_bridge_denied">Bridge menolak permintaan status. Dibangun dengan kunci lain</string>
     <string name="selftest_detail_bridge_not_running">Layanan bridge tidak berjalan</string>

@@ -462,6 +462,7 @@
     <string name="selftest_grants_title">Доступ: %1$s</string>
     <string name="selftest_stock_title">Отключение: %1$s</string>
     <string name="selftest_bridge_link_title">Связь с часами через мост</string>
+    <string name="selftest_leftovers_title">Копии моста от прежней установки</string>
     <string name="selftest_watch_platform">Health Platform в режиме разработчика</string>
     <string name="selftest_gms_title">Часы подключены к телефону</string>
     <string name="selftest_shm_title">Health Monitor видит часы</string>
@@ -492,6 +493,8 @@
     <string name="selftest_detail_stock_still_on">Всё ещё включено</string>
     <string name="selftest_detail_stock_off">Отключено</string>
     <string name="selftest_detail_stock_absent">Нет на часах</string>
+    <string name="selftest_detail_leftovers_none">Копий от прежней установки нет</string>
+    <string name="selftest_detail_leftovers_found">Копии от прежней установки: %1$s</string>
     <string name="selftest_detail_bridge_missing">Мост не отвечает. Он установлен?</string>
     <string name="selftest_detail_bridge_denied">Мост отклонил запрос состояния. Он собран с другим ключом</string>
     <string name="selftest_detail_bridge_not_running">Служба моста не запущена</string>

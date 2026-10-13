@@ -257,6 +257,9 @@ Their permissions are granted automatically. Then:
 - **Health Platform developer mode**: tap **Turn it on for me** and keep the watch unlocked and
   nearby; or do it by hand, as shown on screen. Without it, the watch will not take ECG
   measurements with the patched app.
+- **Earlier copies**: watch bridge and alarm copies left by an earlier package prefix are removed
+  first, since they would compete with the current bridge for the link. The phone install step does
+  the same with the phone bridge (Android asks you to confirm). Samsung Health+ is never touched.
 - **Phone bridge link**: the bridge is registered as a companion app of the phone on the watch, so
   it stays connected without an ongoing notification.
 - **Turn off the stock app**: the stock Health Monitor is disabled, not uninstalled, so it does not
@@ -274,6 +277,7 @@ The patcher runs these checks:
 
 - it confirms what is installed on both devices, with which signature;
 - it confirms that permissions are granted;
+- it checks that no bridge copy from an earlier package prefix is left on either device;
 - it checks that the bridge link between the phone and the watch is up.
 
 It then asks you a few questions about what you see on the devices. When every check passes, you

@@ -441,6 +441,7 @@
     <string name="selftest_grants_title">アクセス: %1$s</string>
     <string name="selftest_stock_title">無効化: %1$s</string>
     <string name="selftest_bridge_link_title">ウォッチへのブリッジリンク</string>
+    <string name="selftest_leftovers_title">以前のブリッジのコピー</string>
     <string name="selftest_watch_platform">Health Platformが開発者モード</string>
     <string name="selftest_gms_title">ウォッチがスマートフォンに接続済み</string>
     <string name="selftest_shm_title">Health Monitorがウォッチを認識</string>
@@ -471,6 +472,8 @@
     <string name="selftest_detail_stock_still_on">まだオンです</string>
     <string name="selftest_detail_stock_off">オフです</string>
     <string name="selftest_detail_stock_absent">ウォッチにありません</string>
+    <string name="selftest_detail_leftovers_none">以前のインストールのコピーはありません</string>
+    <string name="selftest_detail_leftovers_found">以前のインストールのコピー: %1$s</string>
     <string name="selftest_detail_bridge_missing">ブリッジが応答しません。インストールされていますか？</string>
     <string name="selftest_detail_bridge_denied">ブリッジがステータス要求を拒否しました。別のキーでビルドされています</string>
     <string name="selftest_detail_bridge_not_running">ブリッジサービスが実行されていません</string>

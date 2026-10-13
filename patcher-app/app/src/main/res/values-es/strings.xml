@@ -448,6 +448,7 @@
     <string name="selftest_grants_title">Acceso de %1$s</string>
     <string name="selftest_stock_title">Desactivación de %1$s</string>
     <string name="selftest_bridge_link_title">Enlace del puente con el reloj</string>
+    <string name="selftest_leftovers_title">Copias anteriores del puente</string>
     <string name="selftest_watch_platform">Health Platform en modo desarrollador</string>
     <string name="selftest_gms_title">Reloj conectado al teléfono</string>
     <string name="selftest_shm_title">Health Monitor ve el reloj</string>
@@ -478,6 +479,8 @@
     <string name="selftest_detail_stock_still_on">Sigue activada</string>
     <string name="selftest_detail_stock_off">Desactivada</string>
     <string name="selftest_detail_stock_absent">No está en el reloj</string>
+    <string name="selftest_detail_leftovers_none">No hay copias de una instalación anterior</string>
+    <string name="selftest_detail_leftovers_found">Copias de una instalación anterior: %1$s</string>
     <string name="selftest_detail_bridge_missing">El puente no responde. ¿Está instalado?</string>
     <string name="selftest_detail_bridge_denied">El puente rechazó la solicitud de estado. Se compiló con otra clave</string>
     <string name="selftest_detail_bridge_not_running">El servicio del puente no se está ejecutando</string>
