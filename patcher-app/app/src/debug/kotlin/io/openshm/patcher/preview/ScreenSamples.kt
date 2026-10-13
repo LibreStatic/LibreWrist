@@ -34,6 +34,8 @@ import io.openshm.patcher.ui.screens.wearable.WearablePairingScreen
 import io.openshm.patcher.ui.screens.wearable.WearablePairingUiState
 import io.openshm.patcher.ui.screens.wearable.TroubleshootUiState
 import io.openshm.patcher.ui.screens.wearable.WearableTroubleshootScreen
+import io.openshm.patcher.ui.screens.devicelogs.DeviceLogsScreen
+import io.openshm.patcher.ui.screens.devicelogs.DeviceLogsUiState
 import io.openshm.patcher.ui.screens.welcome.WelcomeScreen
 import io.openshm.patcher.ui.screens.build.AppIconLoader
 import io.openshm.patcher.ui.screens.build.BuildStage
@@ -45,8 +47,8 @@ import io.openshm.patcher.ui.screens.build.LocalAppIconLoader
  */
 
 @Composable
-internal fun WelcomeSample(sheet: Boolean = false, skip: SkipDialog? = null) =
-    WelcomeScreen(PreviewData.welcome(sheet).copy(skip = skip), {}, {}, {})
+internal fun WelcomeSample(sheet: Boolean = false, skip: SkipDialog? = null, watchReachable: Boolean = false) =
+    WelcomeScreen(PreviewData.welcome(sheet, watchReachable).copy(skip = skip), {}, {}, {})
 
 /** All three first steps passed over: the watch answered and Galaxy Wearable is ready. */
 internal val SampleSkipping = SkipDialog.Skipping(skippableSteps(DetectedWatch(36, "16"), wearableReady = true))
@@ -148,7 +150,10 @@ internal fun SelfTestSample(variant: SelfTestVariant = SelfTestVariant.Passed) =
 internal enum class SelfTestVariant { Passed, Failures, WatchOff }
 
 @Composable
-internal fun AllSetSample() = AllSetScreen(PreviewData.allSet(), {}, {})
+internal fun AllSetSample(watchReachable: Boolean = false) = AllSetScreen(PreviewData.allSet(watchReachable), {}, {})
+
+@Composable
+internal fun DeviceLogsSample(state: DeviceLogsUiState = PreviewData.deviceLogs()) = DeviceLogsScreen(state, {}, {})
 
 @Composable
 internal fun HomeSample(restoreSheet: Boolean = false, menu: Boolean = false, patchesOnly: Boolean = false) =

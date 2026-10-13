@@ -24,6 +24,8 @@ enum class Route(val path: String) {
     SigningKey("signing-key"),
     /** Reached from Home and Welcome; not part of [SetupFlow]. */
     Settings("settings"),
+    /** Reached from Welcome, AllSet and the device logs notification; not part of [SetupFlow]. */
+    DeviceLogs("device-logs"),
     ;
 
     companion object {

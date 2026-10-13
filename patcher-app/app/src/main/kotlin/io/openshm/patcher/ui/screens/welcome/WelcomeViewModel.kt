@@ -7,6 +7,7 @@ import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.Device
 import io.openshm.patcher.data.SetupSession
 import io.openshm.patcher.data.WatchProfile
+import io.openshm.patcher.device.AdbPresence
 import io.openshm.patcher.device.WatchAnnouncements
 import io.openshm.patcher.device.WatchDetection
 import io.openshm.patcher.device.WatchLink
@@ -15,6 +16,8 @@ import io.openshm.patcher.ui.screens.wearable.readWearableFacts
 import io.openshm.patcher.ui.screens.wearable.wearableState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -69,6 +72,12 @@ class WelcomeViewModel(application: Application) : AndroidViewModel(application)
         // Ask a remembered watch for its version now, so it is known by the time the user starts.
         WatchDetection.start(link)
         viewModelScope.launch { preflight.dialog.collect { d -> _state.update { it.copy(skip = d) } } }
+        // The device logs link shows once the watch is known to answer over ADB, now or when it announces itself.
+        viewModelScope.launch {
+            combine(WatchDetection.state, AdbPresence.state) { detection, presence ->
+                detection.watch != null || presence.watchAvailable
+            }.distinctUntilChanged().collect { reachable -> _state.update { it.copy(watchReachable = reachable) } }
+        }
     }
 
     fun onEvent(event: WelcomeEvent) {

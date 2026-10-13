@@ -18,6 +18,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Share
+import androidx.compose.material.icons.rounded.Terminal
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
@@ -37,12 +38,18 @@ import io.openshm.patcher.ui.components.DecorShape
 import io.openshm.patcher.ui.components.InfoChip
 import io.openshm.patcher.ui.components.OutlinedAction
 import io.openshm.patcher.ui.components.PrimaryAction
+import io.openshm.patcher.ui.components.SubtleLink
 import io.openshm.patcher.ui.theme.PatcherTheme
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-data class AllSetUiState(val passed: Int = 0, val total: Int = 0)
+data class AllSetUiState(
+    val passed: Int = 0,
+    val total: Int = 0,
+    /** The watch answered over ADB, so its device logs can be opened. */
+    val watchReachable: Boolean = false,
+)
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -51,6 +58,7 @@ fun AllSetScreen(
     onDone: () -> Unit,
     onShare: () -> Unit,
     modifier: Modifier = Modifier,
+    onDeviceLogs: () -> Unit = {},
 ) {
     val colors = MaterialTheme.colorScheme
     val status = PatcherTheme.status
@@ -106,6 +114,7 @@ fun AllSetScreen(
                 PrimaryAction(stringResource(R.string.action_done), onDone)
                 OutlinedAction(stringResource(R.string.action_share_report), onShare, Icons.Rounded.Share)
             }
+            if (state.watchReachable) SubtleLink(stringResource(R.string.device_logs_link), onDeviceLogs, icon = Icons.Rounded.Terminal)
         }
     }
 }

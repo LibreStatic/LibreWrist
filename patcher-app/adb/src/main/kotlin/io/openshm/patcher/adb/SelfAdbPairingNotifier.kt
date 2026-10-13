@@ -205,7 +205,7 @@ class SelfAdbPairingReceiver : BroadcastReceiver() {
  * would hide the device's own services and leave pairing silently waiting. The addresses the
  * system reports for every network ([ConnectivityManager]) count too.
  */
-internal class AndroidOwnAddresses(context: Context) {
+class AndroidOwnAddresses(context: Context) {
     private val connectivity = context.getSystemService(ConnectivityManager::class.java)
 
     fun contains(host: String): Boolean {

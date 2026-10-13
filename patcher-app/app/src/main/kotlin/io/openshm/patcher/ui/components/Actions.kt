@@ -109,6 +109,27 @@ fun QuietAction(
     }
 }
 
+/** Small, low-emphasis centered link for a side screen reached from the bottom of a step ("View device logs"). */
+@Composable
+fun SubtleLink(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
+) {
+    TextButton(
+        onClick = onClick,
+        modifier = modifier.fillMaxWidth().heightIn(min = 48.dp),
+        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onSurfaceVariant),
+    ) {
+        if (icon != null) {
+            Icon(icon, contentDescription = null, modifier = Modifier.size(16.dp))
+            androidx.compose.foundation.layout.Spacer(Modifier.width(6.dp))
+        }
+        Text(text, style = MaterialTheme.typography.labelMedium)
+    }
+}
+
 /**
  * Text action on a tinted container (primary, secondary or tertiary container): [onColor] is that
  * container's on-colour, so the label keeps its contrast where the default primary would not.

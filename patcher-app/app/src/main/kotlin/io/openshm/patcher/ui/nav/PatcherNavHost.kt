@@ -26,7 +26,13 @@ import androidx.compose.ui.unit.LayoutDirection
 import io.openshm.patcher.ui.theme.LocalReducedMotion
 import androidx.core.content.ContextCompat
 import io.openshm.patcher.build.BuildStorage
+import io.openshm.patcher.device.AdbPresence
+import io.openshm.patcher.device.DeviceLogs
 import io.openshm.patcher.device.WatchAnnouncements
+import io.openshm.patcher.device.WatchDetection
+import io.openshm.patcher.ui.screens.devicelogs.DeviceLogsEvent
+import io.openshm.patcher.ui.screens.devicelogs.DeviceLogsScreen
+import io.openshm.patcher.ui.screens.devicelogs.DeviceLogsViewModel
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -139,6 +145,13 @@ fun PatcherNavHost(
         go(SetupFlow.next(from, StepSkips.routes) ?: return)
     }
     val back: () -> Unit = { navController.popBackStack() }
+    // The device logs notification opens the app on its screen.
+    val pendingRoute by PendingRoute.route.collectAsStateWithLifecycle()
+    LaunchedEffect(pendingRoute) {
+        val target = pendingRoute ?: return@LaunchedEffect
+        PendingRoute.consume()
+        navController.navigate(target.path) { launchSingleTop = true }
+    }
 
     val pages = PageTransitions(
         reducedMotion = LocalReducedMotion.current,
@@ -161,9 +174,20 @@ fun PatcherNavHost(
                 LaunchedEffect(vm) { vm.go.collect { next(Route.Welcome) } }
                 // Listen for the watch's Wi-Fi announcement while shown, so the steps it settles can be passed over.
                 val welcomeContext = LocalContext.current
-                LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { WatchAnnouncements.start(welcomeContext, "welcome") }
-                LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { WatchAnnouncements.stop("welcome") }
-                WelcomeScreen(state, vm::onEvent, onGetStarted = { vm.onEvent(WelcomeEvent.GetStarted) }, onSettings = { navController.navigate(Route.Settings.path) })
+                LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+                    WatchAnnouncements.start(welcomeContext, "welcome")
+                    AdbPresence.start(welcomeContext, "welcome")
+                }
+                LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
+                    WatchAnnouncements.stop("welcome")
+                    AdbPresence.stop("welcome")
+                }
+                WelcomeScreen(
+                    state, vm::onEvent,
+                    onGetStarted = { vm.onEvent(WelcomeEvent.GetStarted) },
+                    onSettings = { navController.navigate(Route.Settings.path) },
+                    onDeviceLogs = { navController.navigate(Route.DeviceLogs.path) },
+                )
             }
             composable(Route.Profile.path) {
                 val vm: ProfileViewModel = viewModel()
@@ -422,10 +446,16 @@ fun PatcherNavHost(
                 val vm: SelfTestViewModel = viewModel(selfTest)
                 val state by vm.state.collectAsStateWithLifecycle()
                 val context = LocalContext.current
+                // The device logs link needs the watch reachable over ADB: the detection already answered or it announces itself now.
+                LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { AdbPresence.start(context, "all-set") }
+                LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { AdbPresence.stop("all-set") }
+                val presence by AdbPresence.state.collectAsStateWithLifecycle()
+                val detection by WatchDetection.state.collectAsStateWithLifecycle()
                 AllSetScreen(
-                    AllSetUiState(state.passedCount, state.totalCount),
+                    AllSetUiState(state.passedCount, state.totalCount, watchReachable = presence.watchAvailable || detection.watch != null),
                     onDone = { next(Route.AllSet) },
                     onShare = { shareReport(context, vm.reportText()) },
+                    onDeviceLogs = { navController.navigate(Route.DeviceLogs.path) },
                 )
             }
             columnComposable(Route.SigningKey.path) {
@@ -469,6 +499,40 @@ fun PatcherNavHost(
                     onAutoCheck = vm::setAutoCheck,
                     onCheckNow = appUpdate::checkNow,
                     onSigningKey = { navController.navigate(Route.SigningKey.path) },
+                    onBack = back,
+                )
+            }
+            columnComposable(Route.DeviceLogs.path) {
+                val vm: DeviceLogsViewModel = viewModel()
+                val state by vm.state.collectAsStateWithLifecycle()
+                val context = LocalContext.current
+                val createDocument = rememberLauncherForActivityResult(
+                    ActivityResultContracts.CreateDocument(TEXT_MIME), vm::export,
+                )
+                LaunchedEffect(vm) {
+                    vm.launches.collect { request ->
+                        try {
+                            context.startActivity(request.intent)
+                        } catch (e: ActivityNotFoundException) {
+                            request.fallback?.let { runCatching { context.startActivity(it) } }
+                        }
+                    }
+                }
+                // The pairing code is typed into a notification.
+                val whenNotificationsAllowed = rememberNotificationGate()
+                DeviceLogsScreen(
+                    state,
+                    onEvent = { event ->
+                        when (event) {
+                            DeviceLogsEvent.Export -> createDocument.launch(DeviceLogs.exportFileName())
+                            DeviceLogsEvent.OpenWatchPair -> {
+                                vm.onEvent(event)
+                                navController.navigate(Route.WatchPair.path)
+                            }
+                            DeviceLogsEvent.PairPhone -> whenNotificationsAllowed { vm.onEvent(event) }
+                            else -> vm.onEvent(event)
+                        }
+                    },
                     onBack = back,
                 )
             }
@@ -556,6 +620,7 @@ private fun shareReport(context: Context, text: String) {
     }
 }
 
+private const val TEXT_MIME = "text/plain"
 private const val PKCS12_MIME = "application/x-pkcs12"
 private const val BACKUP_FILE_NAME = "openshm-signing-key.p12"
 private const val APK_MIME = "application/vnd.android.package-archive"

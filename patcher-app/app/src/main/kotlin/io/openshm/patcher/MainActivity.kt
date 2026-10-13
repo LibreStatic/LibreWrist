@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import io.openshm.patcher.ui.PatcherApp
 import io.openshm.patcher.update.AppUpdateRequests
+import io.openshm.patcher.ui.nav.PendingRoute
 
 /** The only activity: edge to edge, with Navigation Compose inside [PatcherApp]. */
 class MainActivity : ComponentActivity() {
@@ -29,6 +30,7 @@ class MainActivity : ComponentActivity() {
             intent.removeExtra(EXTRA_OPEN_UPDATER)
             AppUpdateRequests.request()
         }
+        PendingRoute.fromIntent(intent)
     }
 
     companion object {

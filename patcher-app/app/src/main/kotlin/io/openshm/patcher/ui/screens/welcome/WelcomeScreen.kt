@@ -55,6 +55,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.Terminal
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material.icons.rounded.Undo
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -81,6 +82,7 @@ import io.openshm.patcher.ui.components.IconAction
 import io.openshm.patcher.ui.components.PackageId
 import io.openshm.patcher.ui.components.PrimaryAction
 import io.openshm.patcher.ui.components.QuietAction
+import io.openshm.patcher.ui.components.SubtleLink
 import io.openshm.patcher.ui.components.WelcomeHero
 
 /** One app the build installs, with the access it is given afterwards (`catalogue.json` `grants`). */
@@ -94,6 +96,8 @@ data class WelcomeUiState(
     val changes: List<DeviceChanges> = emptyList(),
     /** The dialog shown after "Get started" while steps that need nothing are passed over. */
     val skip: SkipDialog? = null,
+    /** The watch answered a probe or announced itself over ADB, so its device logs can be opened. */
+    val watchReachable: Boolean = false,
 )
 
 sealed interface WelcomeEvent {
@@ -112,9 +116,10 @@ fun WelcomeScreen(
     onGetStarted: () -> Unit,
     onSettings: () -> Unit,
     modifier: Modifier = Modifier,
+    onDeviceLogs: () -> Unit = {},
 ) {
     Box(modifier.fillMaxSize()) {
-        WelcomeBody(state, onEvent, onGetStarted, onSettings)
+        WelcomeBody(state, onEvent, onGetStarted, onSettings, onDeviceLogs)
         SkipStepsOverlay(
             state.skip,
             onConfirm = { onEvent(WelcomeEvent.ConfirmSkip) },
@@ -130,6 +135,7 @@ private fun WelcomeBody(
     onEvent: (WelcomeEvent) -> Unit,
     onGetStarted: () -> Unit,
     onSettings: () -> Unit,
+    onDeviceLogs: () -> Unit,
 ) {
     BoxWithConstraints(
         Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing),
@@ -153,7 +159,7 @@ private fun WelcomeBody(
                         WelcomeHero(Modifier.weight(1f).height(260.dp))
                         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(20.dp)) {
                             WelcomeText()
-                            WelcomeActions(onEvent, onGetStarted, Modifier.padding(top = 4.dp))
+                            WelcomeActions(state.watchReachable, onEvent, onGetStarted, onDeviceLogs, Modifier.padding(top = 4.dp))
                         }
                     }
                 }
@@ -169,7 +175,7 @@ private fun WelcomeBody(
                     WelcomeHero(Modifier.fillMaxWidth().height(220.dp))
                     WelcomeText()
                 }
-                WelcomeActions(onEvent, onGetStarted, Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 16.dp))
+                WelcomeActions(state.watchReachable, onEvent, onGetStarted, onDeviceLogs, Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 16.dp))
             }
         }
     }
@@ -214,10 +220,19 @@ private fun WelcomeText() {
 }
 
 @Composable
-private fun WelcomeActions(onEvent: (WelcomeEvent) -> Unit, onGetStarted: () -> Unit, modifier: Modifier = Modifier) {
-    ActionRow(modifier) {
-        PrimaryAction(stringResource(R.string.welcome_get_started), onGetStarted)
-        QuietAction(stringResource(R.string.welcome_what_changes), { onEvent(WelcomeEvent.ShowChanges) })
+private fun WelcomeActions(
+    watchReachable: Boolean,
+    onEvent: (WelcomeEvent) -> Unit,
+    onGetStarted: () -> Unit,
+    onDeviceLogs: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier) {
+        ActionRow {
+            PrimaryAction(stringResource(R.string.welcome_get_started), onGetStarted)
+            QuietAction(stringResource(R.string.welcome_what_changes), { onEvent(WelcomeEvent.ShowChanges) })
+        }
+        if (watchReachable) SubtleLink(stringResource(R.string.device_logs_link), onDeviceLogs, Modifier.padding(top = 4.dp), Icons.Rounded.Terminal)
     }
 }
 

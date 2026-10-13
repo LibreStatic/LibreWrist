@@ -16,6 +16,7 @@ import io.openshm.patcher.adb.AdbException
 import io.openshm.patcher.adb.AdbKeyStore
 import io.openshm.patcher.adb.LibAdbBackend
 import io.openshm.patcher.adb.SelfAdbPairingNotifier
+import io.openshm.patcher.adb.SelfAdbState
 import io.openshm.patcher.adb.SelfAdbTexts
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -64,6 +65,7 @@ class SelfAdbService : Service() {
         job = scope.launch {
             val follow = launch {
                 fresh.session.state.collect {
+                    if (it is SelfAdbState.Connected) SelfAdbTrust.record(this@SelfAdbService)
                     SelfAdbController.onSession(it)
                     Log.i(LOG_TAG, "attempt phase=${SelfAdbController.state.value.phase}")
                 }

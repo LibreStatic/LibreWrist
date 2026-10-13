@@ -35,6 +35,12 @@ import io.openshm.patcher.ui.screens.install.SignatureConflict
 import io.openshm.patcher.ui.screens.install.AdbOutcome
 import io.openshm.patcher.ui.screens.install.InstallUiState
 import io.openshm.patcher.device.DetectedWatch
+import io.openshm.patcher.device.DeviceLogState
+import io.openshm.patcher.device.DeviceLogsState
+import io.openshm.patcher.device.DisconnectReason
+import io.openshm.patcher.device.LogDevice
+import io.openshm.patcher.device.LogLinkStatus
+import io.openshm.patcher.ui.screens.devicelogs.DeviceLogsUiState
 import io.openshm.patcher.ui.screens.profile.PairedCheck
 import io.openshm.patcher.ui.screens.profile.ProfileUiState
 import io.openshm.patcher.ui.screens.profile.WatchModelHint
@@ -74,8 +80,8 @@ internal object PreviewData {
 
     private val session = SessionState(WatchProfile.WearOs5, PREFIX)
 
-    fun welcome(sheet: Boolean = false) =
-        WelcomeUiState(changesSheetVisible = sheet, changes = buildChanges(PREFIX, WatchProfile.WearOs5))
+    fun welcome(sheet: Boolean = false, watchReachable: Boolean = false) =
+        WelcomeUiState(changesSheetVisible = sheet, changes = buildChanges(PREFIX, WatchProfile.WearOs5), watchReachable = watchReachable)
 
     fun profile() = ProfileUiState()
 
@@ -405,7 +411,33 @@ internal object PreviewData {
         )
     }
 
-    fun allSet() = AllSetUiState(passed = 8, total = 8)
+    fun allSet(watchReachable: Boolean = false) = AllSetUiState(passed = 8, total = 8, watchReachable = watchReachable)
+
+    private val logSamples = listOf(
+        "1234  1301 I ActivityManager: Start proc 4821:com.samsung.android.shealthmonitors/u0a123 for service",
+        "4821  4821 D ShmBridge: bridge starting, protocol 3",
+        "4821  4850 I HealthTracking: connected to the sensor service",
+        "4821  4850 W HealthTracking: ECG sensor busy, retrying in 500 ms",
+        "4821  4850 I HealthTracking: ECG tracker ready",
+        "4821  4821 D AlarmBridge: alarm channel opened",
+    )
+
+    /** About 40 threadtime lines, enough to scroll. */
+    fun deviceLogLines(count: Int = 40): List<String> =
+        List(count) { "10-12 09:14:%02d.%03d  %s".format(it / 3, (it * 137) % 1000, logSamples[it % logSamples.size]) }
+
+    fun deviceLogs(tab: LogDevice = LogDevice.Watch, watchStatus: LogLinkStatus = LogLinkStatus.Streaming) = DeviceLogsUiState(
+        logs = DeviceLogsState(
+            capturing = true,
+            watch = DeviceLogState(
+                LogDevice.Watch, watchStatus, lineCount = 1284,
+                packages = listOf("com.samsung.android.shealthmonitors", "$PREFIX.shmbridge.watch", "com.samsung.android.wear.shealth"),
+                tail = deviceLogLines(), deviceLabel = "SM-L320 · Android 15",
+            ),
+            phone = DeviceLogState(LogDevice.Phone, LogLinkStatus.Disconnected(DisconnectReason.WirelessDebuggingOff)),
+        ),
+        tab = tab,
+    )
 
     fun home(update: Boolean = true, restoreSheet: Boolean = false, menu: Boolean = false, patchesOnly: Boolean = false) = HomeUiState(
         status = HomeStatus(CheckStatus.Passed, daysAgo = 2),

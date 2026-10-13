@@ -29,6 +29,8 @@ import io.openshm.patcher.ui.screens.wearable.TroubleshootUiState
 import io.openshm.patcher.ui.screens.welcome.ChangesContent
 import io.openshm.patcher.ui.screens.welcome.buildChanges
 import io.openshm.patcher.data.WatchProfile
+import io.openshm.patcher.device.LogDevice
+import io.openshm.patcher.device.LogLinkStatus
 
 /*
  * Public zero-argument composables for the Compose Driver (tools/compose-driver). They use the
@@ -41,6 +43,28 @@ import io.openshm.patcher.data.WatchProfile
 fun WelcomeDriver() = PreviewHost(ColorMode.Fallback) { WelcomeSample() }
 
 /** Welcome over the floating backdrop, as PatcherApp layers them (still, like every driver). */
+/** Welcome with the watch reachable over ADB: the device logs link shows at the bottom. */
+@Composable
+fun WelcomeWatchDriver() = PreviewHost(ColorMode.Fallback) { WelcomeSample(watchReachable = true) }
+
+/** AllSet with the watch reachable over ADB. */
+@Composable
+fun AllSetWatchDriver() = PreviewHost(ColorMode.Fallback) { AllSetSample(watchReachable = true) }
+
+/** Device logs: the watch tab streaming ~40 lines, the phone tab disconnected. */
+@Composable
+fun DeviceLogsDriver() = PreviewHost(ColorMode.Fallback) { DeviceLogsSample() }
+
+/** Device logs on the phone tab, disconnected because Wireless debugging is off. */
+@Composable
+fun DeviceLogsPhoneDriver() = PreviewHost(ColorMode.Fallback) { DeviceLogsSample(PreviewData.deviceLogs(tab = LogDevice.Phone)) }
+
+/** Device logs on the watch tab while reconnecting. */
+@Composable
+fun DeviceLogsReconnectingDriver() = PreviewHost(ColorMode.Fallback) {
+    DeviceLogsSample(PreviewData.deviceLogs(watchStatus = LogLinkStatus.Reconnecting))
+}
+
 @Composable
 fun WelcomeBackdropDriver() = PreviewHost(ColorMode.Fallback) {
     Box {

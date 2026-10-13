@@ -85,5 +85,14 @@
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="on-device APK build: patching, rebuilding and signing the user's own copies of the apps" />
         </service>
+        <!-- Streams the watch's and the phone's logcat (filtered to the patched apps) in the background. -->
+        <service
+            android:name=".device.DeviceLogService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Streams diagnostic logs from the user's own watch and phone over ADB for troubleshooting" />
+        </service>
     </application>
 </manifest>

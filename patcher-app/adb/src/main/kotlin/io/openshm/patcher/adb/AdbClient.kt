@@ -47,6 +47,25 @@ class AdbClient(
     }
 
     /**
+     * Runs [command] on the legacy `shell:` service (raw text, no framing) and calls [onLine] for
+     * every output line until the stream ends. Meant for long-lived commands such as `logcat`:
+     * there is no overall timeout, and cancelling the coroutine closes the channel, which ends the
+     * read. [onLine] runs on an IO thread. [command] must be built from validated parts only.
+     */
+    suspend fun streamShell(command: String, onLine: (String) -> Unit) {
+        useChannel("shell:$command", Long.MAX_VALUE) { channel ->
+            val splitter = Utf8LineSplitter(onLine)
+            val buf = ByteArray(8192)
+            while (true) {
+                val n = channel.read(buf, 0, buf.size)
+                if (n < 0) break
+                splitter.feed(buf, 0, n)
+            }
+            splitter.finish()
+        }
+    }
+
+    /**
      * Model and serial of the device, validated, so the app can record them at pairing time and
      * compare on later connects (the app owns that policy).
      */
@@ -202,5 +221,45 @@ internal object LegacyShell {
         val code = text.substring(at + marker.length).trim().toIntOrNull()
             ?: throw AdbException.Protocol("Unreadable exit status")
         return ShellResult(code, text.substring(0, at), "")
+    }
+}
+
+/**
+ * Splits a UTF-8 byte stream into lines. Partial lines, and multibyte sequences cut by a read
+ * boundary, are carried over to the next [feed]. A trailing `\r` is dropped from each line.
+ */
+internal class Utf8LineSplitter(private val onLine: (String) -> Unit) {
+    private var pending = ByteArray(256)
+    private var size = 0
+
+    fun feed(bytes: ByteArray, offset: Int, length: Int) {
+        // Splitting on the raw 0x0A byte is safe: it never occurs inside a UTF-8 multibyte sequence.
+        for (i in offset until offset + length) {
+            val b = bytes[i]
+            if (b == NEWLINE) {
+                emit()
+            } else {
+                if (size == pending.size) pending = pending.copyOf(size * 2)
+                pending[size++] = b
+            }
+        }
+    }
+
+    /** Emits the trailing partial line, if any. */
+    fun finish() {
+        if (size > 0) emit()
+    }
+
+    private fun emit() {
+        var end = size
+        if (end > 0 && pending[end - 1] == CR) end--
+        val line = String(pending, 0, end, Charsets.UTF_8)
+        size = 0
+        onLine(line)
+    }
+
+    private companion object {
+        const val NEWLINE = '\n'.code.toByte()
+        const val CR = '\r'.code.toByte()
     }
 }
