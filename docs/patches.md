@@ -70,6 +70,9 @@ scripts/build_shm_watch.sh        # -> $DIST_DIR/shm-watch-1.5.1.022-gms.apk
     `^[a-z][a-z0-9_]*$`, value `^\w[\w.-]{0,63}$` (no leading `-`, which `settings` would read as an option), component `.Class` or `fully.qualified.Class` (no `$`), package
     `^[a-zA-Z]\w*(\.[a-zA-Z]\w*)+$` (after expansion). The `grants` keys are output ids; an
     output without grants has an empty list. Grants are repeated after every reinstall.
+    No grant changes a device-wide user setting: the former optional `secureSetting
+    doze_always_on=0` on `shm-watch` was dropped (serial 22), since the ECG does not need it. The
+    patcher's revert sets `doze_always_on` back to `1` on a watch where it still reads `0`.
   - `stockAppsToDisable`: stock system apps that should be disabled on a device
     (`pm disable-user --user 0 <package>`); `optional` apps are offered, not forced.
 

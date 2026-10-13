@@ -62,7 +62,12 @@ class CatalogueTest {
     }
 
     @Test fun secureSettingValueMayNotStartWithDash() {
-        val text = mutated { it.replaceFirst("\"value\": \"0\"", "\"value\": \"--user\"") }
+        val text = mutated {
+            it.replaceFirst(
+                "\"kind\": \"appop\",\n        \"op\": \"SCHEDULE_EXACT_ALARM\",\n        \"mode\": \"allow\"",
+                "\"kind\": \"secureSetting\",\n        \"key\": \"some_setting\",\n        \"value\": \"--user\"",
+            )
+        }
         assertTrue(text != String(catalogueBytes, Charsets.UTF_8))
         try {
             Catalogue.parse(text)

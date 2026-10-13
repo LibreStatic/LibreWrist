@@ -444,7 +444,7 @@ internal object PreviewData {
                     checkedRow("watch-pkg-shm-watch", t(R.string.selftest_package_title, app("shm-watch")), t(R.string.selftest_detail_watch_ok)),
                     checkedRow(
                         "watch-grants-shm-watch", t(R.string.selftest_grants_title, app("shm-watch")),
-                        t(R.string.selftest_detail_grants_optional, "doze_always_on"), CheckStatus.Warning, SelfTestFix.InstallWatch,
+                        t(R.string.selftest_detail_grants_optional, "SCHEDULE_EXACT_ALARM"), CheckStatus.Warning, SelfTestFix.InstallWatch,
                     ),
                     checkedRow(
                         "watch-stock", t(R.string.selftest_stock_title, "Samsung Health Monitor"),

@@ -69,7 +69,6 @@ private class World(val catalogue: LoadedCatalogue) {
     val watchFileSha = WATCH_OUTPUTS.associate { "/data/app/~~x==/${pkg(it)}-1==/base.apk" to sha(it) }.toMutableMap()
     var stockDisabled = true
     var stockInstalled = true
-    val unsetSettings = mutableSetOf<String>()
 
     val inspector = object : PackageInspector {
         override fun inspect(pkg: String) = installed[pkg]
@@ -118,7 +117,7 @@ private class World(val catalogue: LoadedCatalogue) {
             words[0] == "appops" -> ok("${words[3]}: allow\n")
             command == "settings get secure enabled_notification_listeners" ->
                 ok(watchInstalled.keys.joinToString(":") { "$it/$it.SamsungAlarmListener" })
-            words[0] == "settings" -> ok(if (words[3] in unsetSettings) "null\n" else "0\n")
+            words[0] == "settings" -> ok("0\n")
             else -> fail()
         }
     }
@@ -366,8 +365,8 @@ class SelfTestRunnerTest {
     }
 
     @Test
-    fun `an optional setting that is not set is only a warning`() {
-        world.unsetSettings += "doze_always_on"
+    fun `an optional grant that is missing is only a warning`() {
+        world.missingWatchPermissions += "com.samsung.android.hardware.sensormanager.permission.READ_ADDITIONAL_HEALTH_DATA"
         val row = run().row("watch-grants-shm-watch")
         assertEquals(CheckStatus.Warning, row.status)
         assertEquals(R.string.selftest_detail_grants_optional, row.detail?.res)

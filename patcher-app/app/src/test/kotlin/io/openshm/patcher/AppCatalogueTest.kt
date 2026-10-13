@@ -95,7 +95,7 @@ class AppCatalogueTest {
             listOf("Permission:BODY_SENSORS:false", "Permission:BODY_SENSORS_BACKGROUND:false", "Permission:READ_HEART_RATE:false",
                 "Permission:READ_OXYGEN_SATURATION:false", "Permission:ACTIVITY_RECOGNITION:false", "Permission:BLUETOOTH_CONNECT:false",
                 "Permission:POST_NOTIFICATIONS:false", "Permission:READ_ADDITIONAL_HEALTH_DATA:true",
-                "AppOp:SCHEDULE_EXACT_ALARM:false", "SecureSetting:doze_always_on:true"),
+                "AppOp:SCHEDULE_EXACT_ALARM:false"),
             names("shm-watch"),
         )
         assertEquals(
@@ -137,7 +137,7 @@ class AppCatalogueTest {
     @Test
     fun grantKindsAreAllMapped() {
         assertEquals(
-            setOf(GrantKind.Permission, GrantKind.AppOp, GrantKind.NotificationListener, GrantKind.BatteryExemption, GrantKind.SecureSetting),
+            setOf(GrantKind.Permission, GrantKind.AppOp, GrantKind.NotificationListener, GrantKind.BatteryExemption),
             c.grants.values.flatten().map { it.kind }.toSet(),
         )
     }
