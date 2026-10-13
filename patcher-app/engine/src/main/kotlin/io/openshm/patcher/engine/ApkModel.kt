@@ -66,6 +66,21 @@ interface ResourceTable {
     fun defineNullEntry(type: String, name: String, id: Int)
 }
 
+/** Read access to the entries of an APK, for the ops that work on arbitrary files (e.g. `res/` XML). */
+interface ApkFiles {
+    /** Names of the file entries (no directories), in archive order. */
+    val names: List<String>
+
+    /** The first (at most) [n] bytes of the decompressed entry; fewer if it is shorter. */
+    fun head(name: String, n: Int): ByteArray
+
+    /** The whole decompressed entry. */
+    fun read(name: String): ByteArray
+
+    /** A stream of the decompressed entry, for entries too large to load (e.g. `resources.arsc`). */
+    fun open(name: String): java.io.InputStream
+}
+
 /** What the ops operate on: smali classes, the manifest and the resource table. */
 class PatchContext(
     val smali: SmaliTree,
@@ -76,7 +91,25 @@ class PatchContext(
      * self-check of a rebuilt APK where labels are canonical (see [CanonicalLabelsTree]).
      */
     val canon: (String) -> String = { it },
+    private val filesProvider: (() -> ApkFiles)? = null,
 ) {
+    /** True if the APK entries can be read (not the case for the device-free op tests). */
+    val hasFiles: Boolean get() = filesProvider != null
+
+    val files: ApkFiles by lazy { filesProvider?.invoke() ?: throw PatchFailure("no APK files available") }
+
+    /**
+     * Package-chunk rename (old to new) that [Patcher] applies to `resources.arsc` while writing the
+     * APK, streamed so the table is never loaded whole; set by `manifestRebrand`.
+     */
+    var arscPackageRename: Pair<String, String>? = null
+
+    /**
+     * Entries (by name) that ops replaced; [Patcher] writes them over the originals. Only changed
+     * entries are held, so memory stays proportional to what the ops edited.
+     */
+    val replacedEntries = LinkedHashMap<String, ByteArray>()
+
     val manifest: ManifestDocument by lazy(manifestProvider)
     val resources: ResourceTable by lazy(resourcesProvider)
 }

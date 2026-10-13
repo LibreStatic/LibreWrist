@@ -282,9 +282,9 @@ def validate_catalogue(cat):
     for pid, p in patterns.items():
         where = f'pattern {pid}'
         keys = {'families', 'title', 'description', 'optional', 'ops'}
-        if not isinstance(p, dict) or not keys <= set(p) or set(p) - keys - {'optionGroup'}:
+        if not isinstance(p, dict) or not keys <= set(p) or set(p) - keys - {'optionGroup', 'offByDefault'}:
             problems.append(f'{where}: must have exactly the keys {sorted(keys)} '
-                            '(plus optionally "optionGroup")')
+                            '(plus optionally "optionGroup" and "offByDefault")')
             continue
         fams = p['families']
         if fams != '*' and not (isinstance(fams, list) and fams and
@@ -295,6 +295,11 @@ def validate_catalogue(cat):
                 problems.append(f'{where}: {k} must be a non-empty string')
         if not isinstance(p['optional'], bool):
             problems.append(f'{where}: optional must be a boolean')
+        if 'offByDefault' in p:
+            if not isinstance(p['offByDefault'], bool):
+                problems.append(f'{where}: offByDefault must be a boolean')
+            elif p['offByDefault'] and p['optional'] is not True:
+                problems.append(f'{where}: offByDefault is only allowed on optional patterns')
         if 'optionGroup' in p:
             if not isinstance(p['optionGroup'], str) or not OPTION_GROUP_RE.match(p['optionGroup']):
                 problems.append(f'{where}: optionGroup must be a lowercase kebab-case string')

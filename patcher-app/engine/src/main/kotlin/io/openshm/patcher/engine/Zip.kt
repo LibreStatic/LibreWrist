@@ -173,6 +173,13 @@ class ZipReader(file: File) : Closeable {
     }
 
     private inner class RawStream(private var pos: Long, private var left: Long) : InputStream() {
+        override fun skip(n: Long): Long {
+            val k = n.coerceIn(0L, left)
+            pos += k
+            left -= k
+            return k
+        }
+
         override fun read(): Int {
             val b = ByteArray(1)
             return if (read(b, 0, 1) < 0) -1 else b[0].toInt() and 0xFF
@@ -254,6 +261,42 @@ class ZipWriter(private val out: OutputStream) : Closeable {
         }
         src.copyRaw(e, counting)
         done.add(Done(e, start, e.method, e.flags and ZipFormat.UTF8_FLAG, e.crc, e.compressedSize, e.size))
+    }
+
+    /**
+     * Copies [e] from [src] stored (decompressed), overwriting bytes at the given entry offsets
+     * ([patches], non-overlapping). Streamed in two passes (CRC, then data), so memory stays
+     * bounded for entries of hundreds of MB; the size does not change.
+     */
+    fun addPatchedStored(src: ZipReader, e: ZipEntryInfo, patches: List<Pair<Long, ByteArray>>, align: Int = 1) {
+        checkNew(e.name)
+        val sorted = patches.sortedBy { it.first }
+        val crc = CRC32()
+        var total = 0L
+        copyPatched(src.open(e), sorted) { b, n -> crc.update(b, 0, n); total += n }
+        if (total != e.size) throw IOException("${e.name}: size ${e.size} declared, $total read")
+        val start = offset
+        put(header(e.nameBytes, e.flags, ZipFormat.STORED, e.dosTime, e.dosDate, crc.value, e.size, e.size, align))
+        copyPatched(src.open(e), sorted) { b, n -> out.write(b, 0, n); offset += n }
+        done.add(Done(e, start, ZipFormat.STORED, e.flags and ZipFormat.UTF8_FLAG, crc.value, e.size, e.size))
+    }
+
+    private fun copyPatched(input: InputStream, patches: List<Pair<Long, ByteArray>>, sink: (ByteArray, Int) -> Unit) {
+        val buf = ByteArray(64 * 1024)
+        var pos = 0L
+        input.use { s ->
+            while (true) {
+                val n = s.read(buf)
+                if (n < 0) break
+                for ((off, bytes) in patches) {
+                    val from = maxOf(off, pos)
+                    val to = minOf(off + bytes.size, pos + n)
+                    if (from < to) System.arraycopy(bytes, (from - off).toInt(), buf, (from - pos).toInt(), (to - from).toInt())
+                }
+                sink(buf, n)
+                pos += n
+            }
+        }
     }
 
     /** Adds [data] under [name], stored or deflated; [like] gives the time stamp and attributes. */

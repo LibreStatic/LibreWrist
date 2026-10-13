@@ -33,6 +33,19 @@ class SigningKey(val privateKey: PrivateKey, val certificates: List<X509Certific
     }
 }
 
+/** [ApkFiles] over a [ZipReader]. */
+internal class ZipApkFiles(private val zip: ZipReader) : ApkFiles {
+    override val names: List<String> = zip.entries.filter { !it.isDirectory }.map { it.name }
+
+    private fun entry(name: String) = zip.entry(name) ?: throw PatchFailure("the APK has no entry $name")
+
+    override fun head(name: String, n: Int): ByteArray = zip.open(entry(name)).use { it.readNBytes(n) }
+
+    override fun read(name: String): ByteArray = zip.read(entry(name))
+
+    override fun open(name: String): java.io.InputStream = zip.open(entry(name))
+}
+
 /** One step of a run: its name, outcome, time and details. */
 class PhaseReport(val name: String, val ok: Boolean, val millis: Long, val details: List<String>)
 
@@ -177,7 +190,11 @@ class Patcher(private val catalogue: Catalogue) {
                 if (got != input.sha256) throw PatchFailure("${req.inputApk.name}: sha256 $got is not the expected ${input.sha256} for '${input.id}'")
             }
 
-            ZipReader(req.inputApk).use { zip ->
+            // The build runs in its own (non-inline) lambda so its frame, which holds the input
+            // dex bytes, the dex tree and the rebuilt dex files, is gone before the self-check
+            // loads the output: a renamed Samsung Health rewrites nearly every dex, and keeping
+            // both copies alive does not fit a phone's heap.
+            val build: () -> Built? = { ZipReader(req.inputApk).use { zip ->
                 val state = phase("unpack") { d ->
                     val manifestBytes = zip.read("AndroidManifest.xml")
                     val dexEntries = zip.entries.filter { DEX_RE.matches(it.name) }.sortedBy { dexNumber(it.name) }
@@ -214,7 +231,8 @@ class Patcher(private val catalogue: Catalogue) {
                     d.add("injections: $wanted")
                 }
 
-                val ctx = PatchContext(tree, { manifest }, { tableProvider() })
+                val originalPkg = manifest.root.attr("package")
+                val ctx = PatchContext(tree, { manifest }, { tableProvider() }, filesProvider = { ZipApkFiles(zip) })
                 phase("apply") { d ->
                     try {
                         report.patterns = runner.run(ctx, ids) {
@@ -230,7 +248,16 @@ class Patcher(private val catalogue: Catalogue) {
                 }
                 if (dryRun) {
                     report.ok = true
-                    return report
+                    return@use null
+                }
+
+                // aapt2 names the resources.arsc package after the manifest, and the app resolves
+                // resources by name against its own package: whichever op renamed the manifest
+                // package, the table's package chunk follows it.
+                val finalPkg = manifest.root.attr("package")
+                if (ctx.arscPackageRename == null && originalPkg != null && finalPkg != null && finalPkg != originalPkg && arscEntry != null) {
+                    ArscPackages.encodeName(finalPkg)
+                    ctx.arscPackageRename = originalPkg to finalPkg
                 }
 
                 val injected = wanted.map { req.injections.getValue(it) }
@@ -248,7 +275,8 @@ class Patcher(private val catalogue: Catalogue) {
                         val newManifest = if (manifest.modified) manifest.toBytes() else null
                         val newArsc = arsc?.takeIf { it.modified }?.toBytes()
                         val changedDex = rebuilt.changed.associateBy { it.entryName }
-                        writeApk(zip, unsigned, newManifest, newArsc, changedDex, rebuilt.injected)
+                        writeApk(zip, unsigned, newManifest, newArsc, changedDex, rebuilt.injected, replaced = ctx.replacedEntries, arscRename = ctx.arscPackageRename)
+                        if (ctx.replacedEntries.isNotEmpty()) d.add("${ctx.replacedEntries.size} other entries rewritten")
                         d.add("manifest ${if (newManifest != null) "rewritten" else "unchanged"}, resources.arsc ${if (newArsc != null) "rewritten" else "unchanged"}")
                         d.add("${unsigned.length()} bytes unsigned")
                     }
@@ -264,15 +292,16 @@ class Patcher(private val catalogue: Catalogue) {
                 } finally {
                     unsigned.delete()
                 }
-                // the in-memory trees of the build are not needed any more
-                try {
-                    selfCheck(req, profile, family, ids, wanted, req.injections, runner, report, ::phase)
-                } catch (e: Throwable) {
-                    // never leave a signed APK behind that failed its own checks
-                    req.outputApk!!.delete()
-                    report.outputSha256 = null
-                    throw e
-                }
+                Built(family, ids, wanted)
+            } }
+            val built = build() ?: return report
+            try {
+                selfCheck(req, profile, built.family, built.ids, built.wanted, req.injections, runner, report, ::phase)
+            } catch (e: Throwable) {
+                // never leave a signed APK behind that failed its own checks
+                req.outputApk!!.delete()
+                report.outputSha256 = null
+                throw e
             }
             report.ok = report.error == null
         } catch (e: Stop) {
@@ -280,6 +309,8 @@ class Patcher(private val catalogue: Catalogue) {
         }
         return report
     }
+
+    private class Built(val family: String, val ids: List<String>, val wanted: List<String>)
 
     private class Loaded(val zip: ZipReader, val manifestBytes: ByteArray, val dexEntries: List<ZipEntryInfo>)
 
@@ -319,6 +350,12 @@ class Patcher(private val catalogue: Catalogue) {
                     if (actual != expected) throw PatchFailure("package is '$actual', expected '$expected'")
                     d.add("package $actual")
                 }
+                // resources are resolved by name against the app's own package
+                zip.entry("resources.arsc")?.let { e ->
+                    val names = ArscPackages.packageNames(zip.open(e))
+                    if (actual !in names) throw PatchFailure("resources.arsc package is ${names.joinToString { "'$it'" }}, expected '$actual'")
+                    d.add("resources.arsc package $actual")
+                }
             }
             phase("verify-injections") { d ->
                 var n = 0
@@ -332,6 +369,7 @@ class Patcher(private val catalogue: Catalogue) {
                 val ctx = PatchContext(
                     CanonicalLabelsTree(tree), { manifest }, { resources },
                     canon = SmaliText::canonLabels,
+                    filesProvider = { ZipApkFiles(zip) },
                 )
                 try {
                     report.verification = runner.run(ctx, ids, verify = true)
@@ -353,15 +391,26 @@ class Patcher(private val catalogue: Catalogue) {
             changedDex: Map<String, DexOutput>,
             injected: DexOutput?,
             storeArsc: Boolean = false,
+            /** Other entries to replace by name (keeps each original entry's stored/compressed method). */
+            replaced: Map<String, ByteArray> = emptyMap(),
+            /** Package-chunk rename of `resources.arsc` (old to new), applied to [arsc] or streamed from [zip]. */
+            arscRename: Pair<String, String>? = null,
         ) {
             val lastDex = zip.entries.filter { DEX_RE.matches(it.name) }.maxByOrNull { dexNumber(it.name) }
             ZipWriter(BufferedOutputStream(FileOutputStream(dest), 256 * 1024)).use { w ->
                 for (e in zip.entries) {
                     if (isSignatureFile(e.name)) continue
+                    if (e.name == "resources.arsc" && arsc == null && arscRename != null) {
+                        val patches = ArscPackages.renamePatches(zip.open(e), arscRename.first, arscRename.second)
+                        if (patches.isNotEmpty()) {
+                            w.addPatchedStored(zip, e, patches, 4)
+                            continue
+                        }
+                    }
                     val replacement: ByteArray? = when {
                         e.name == "AndroidManifest.xml" -> manifest
-                        e.name == "resources.arsc" -> arsc
-                        else -> changedDex[e.name]?.bytes
+                        e.name == "resources.arsc" -> arsc?.also { if (arscRename != null) ArscPackages.rename(it, arscRename.first, arscRename.second) }
+                        else -> changedDex[e.name]?.bytes ?: replaced[e.name]
                     }
                     val stored = e.isStored || (storeArsc && e.name == "resources.arsc" && replacement != null)
                     val align = if (stored) (if (e.name.endsWith(".so")) SO_ALIGN else 4) else 1

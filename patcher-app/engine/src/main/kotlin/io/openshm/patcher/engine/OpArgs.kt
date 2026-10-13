@@ -113,10 +113,18 @@ internal fun attrName(name: String): String {
     return name
 }
 
+/**
+ * One `<path>` of an `adaptiveIconBadge` vector: the attributes in the order they were given, as
+ * (key, value) with a [String] value (a number for `strokeWidth`: [Long] or [Double]).
+ */
+class BadgePath(val entries: List<Pair<String, Any>>) {
+    val pathData: String get() = entries.first { it.first == "pathData" }.second as String
+}
+
 /** A `manifestAddChild` element template. */
 class ChildSpec(val tag: String, val attrs: List<Pair<String, String>>, val children: List<ChildSpec>)
 
-internal enum class T { STR, TEXT, INT, STRS, STRMAP, EXPECT, MEXPECT, SELECT, CHILDREN, CHECKS, ENUMFIELDS }
+internal enum class T { STR, TEXT, INT, STRS, STRMAP, EXPECT, MEXPECT, SELECT, CHILDREN, CHECKS, ENUMFIELDS, LAYERS }
 
 internal class P(val json: String, val type: T, val required: Boolean, val default: Any? = null)
 
@@ -145,6 +153,9 @@ internal class Args(private val values: Map<String, Any?>) {
     fun checks(k: String) = values[k] as List<Pair<String, String>>
 
     @Suppress("UNCHECKED_CAST")
+    fun layers(k: String) = values[k] as Map<String, List<BadgePath>>
+
+    @Suppress("UNCHECKED_CAST")
     fun enumFields(k: String) = values[k] as Map<String, Pair<String, String>>?
 
     companion object {
@@ -169,6 +180,52 @@ internal class Args(private val values: Map<String, Any?>) {
                 val kids = c["children"]?.let { children(it, "$what.children") } ?: emptyList()
                 ChildSpec(c["tag"] as String, attrs.toList(), kids)
             }
+        }
+
+        private val BADGE_LAYERS = setOf("foreground", "monochrome")
+        private val BADGE_KEYS = listOf("pathData", "fillColor", "strokeColor", "strokeWidth", "strokeLineCap", "strokeLineJoin")
+        private val BADGE_ENUMS = mapOf(
+            "strokeLineCap" to listOf("butt", "round", "square"),
+            "strokeLineJoin" to listOf("miter", "round", "bevel"),
+        )
+        private val COLOR_RE = Regex("#[0-9A-Fa-f]{8}")
+
+        /** `layers` of `adaptiveIconBadge`: layer name -> path specs (see `_validate_layers`). */
+        private fun layers(v: Any?, what: String): Map<String, List<BadgePath>> {
+            if (v !is Map<*, *> || v.isEmpty() || !v.keys.all { it in BADGE_LAYERS }) {
+                throw OpArgError("$what: must be a non-empty object keyed by ${BADGE_LAYERS.toList()}")
+            }
+            val out = LinkedHashMap<String, List<BadgePath>>()
+            for ((name, specs) in v) {
+                if (specs !is List<*> || specs.isEmpty()) throw OpArgError("$what.$name: must be a non-empty list of path specs")
+                out[name as String] = specs.map { spec ->
+                    if (spec !is Map<*, *> || !spec.keys.all { it in BADGE_KEYS }) {
+                        throw OpArgError("$what.$name: path specs take only $BADGE_KEYS")
+                    }
+                    val pd = spec["pathData"]
+                    if (pd !is String || pd.isEmpty()) throw OpArgError("$what.$name: pathData must be a non-empty string")
+                    val entries = ArrayList<Pair<String, Any>>()
+                    for ((k, x) in spec) {
+                        k as String
+                        when (k) {
+                            "pathData" -> {}
+                            "fillColor", "strokeColor" ->
+                                if (x !is String || !COLOR_RE.matches(x)) throw OpArgError("$what.$name.$k: must be #AARRGGBB")
+                            "strokeWidth" ->
+                                if (!((x is Long && x >= 0) || (x is Double && x >= 0.0))) {
+                                    throw OpArgError("$what.$name.$k: must be a non-negative number")
+                                }
+                            else ->
+                                if (x !is String || x !in BADGE_ENUMS.getValue(k)) {
+                                    throw OpArgError("$what.$name.$k: must be one of ${BADGE_ENUMS.getValue(k)}")
+                                }
+                        }
+                        entries.add(k to x!!)
+                    }
+                    BadgePath(entries)
+                }
+            }
+            return out
         }
 
         /** Checks [value] against the type tag [t] (the equivalent of `_normalise`). */
@@ -202,6 +259,7 @@ internal class Args(private val values: Map<String, Any?>) {
                     Select(value as Map<String, Any?>)
                 }
                 T.CHILDREN -> children(value, what)
+                T.LAYERS -> layers(value, what)
                 T.CHECKS -> {
                     if (value is List<*> && value.isNotEmpty() && value.all {
                             it is Map<*, *> && it.keys == setOf("className", "contains") &&

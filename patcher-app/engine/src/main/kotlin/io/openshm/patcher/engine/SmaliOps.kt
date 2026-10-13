@@ -417,7 +417,8 @@ internal class SweepStringCompareAutoTrue(a: Args) : Op("sweepStringCompareAutoT
 
     override fun verifyApplied(ctx: PatchContext): List<String> {
         val shown = if (!replaceValue.isNullOrEmpty()) replaceValue else constValue
-        val constRe = PyRegex.compile("""const-string ((?:v|p)\d), """ + "\"" + PyRegex.escape(shown) + "\"")
+        // After the rebuild the constant may sit past string index 0xFFFF (const-string/jumbo).
+        val constRe = PyRegex.compile("""const-string(?:/jumbo)? ((?:v|p)\d+), """ + "\"" + PyRegex.escape(shown) + "\"")
         val done = ctx.smali.candidates(ClassFilter(excludePathRegexes = excludeRegex, requireAll = listOf("\"" + shown + "\""))).filter { p ->
             val src = ctx.smali.read(p)
             val m = constRe.matcher(src)
@@ -482,12 +483,12 @@ internal class ReplaceConstStringExact(a: Args) : Op("replaceConstStringExact") 
 
     override fun apply(ctx: PatchContext): List<String> {
         val done = ArrayList<String>()
-        val pat = PyRegex.compile("""const-string ((?:v|p)\d), "${PyRegex.escape(old)}"""")
+        val pat = constPattern(old)
         for (path in ctx.smali.candidates(ClassFilter(requireAll = listOf("\"" + old + "\"")))) {
             val src = ctx.smali.read(path)
             val m = pat.matcher(src)
             if (m.find()) {
-                ctx.smali.write(path, SmaliText.sub(pat, src) { "const-string ${it.group(1)}, \"$new\"" })
+                ctx.smali.write(path, SmaliText.sub(pat, src) { "${it.group(1)} ${it.group(2)}, \"$new\"" })
                 done.add(path)
             }
         }
@@ -496,8 +497,10 @@ internal class ReplaceConstStringExact(a: Args) : Op("replaceConstStringExact") 
     }
 
     override fun verifyApplied(ctx: PatchContext): List<String> {
-        val oldPat = PyRegex.compile("""const-string ((?:v|p)\d), "${PyRegex.escape(old)}"""")
-        val newPat = PyRegex.compile("""const-string ((?:v|p)\d), "${PyRegex.escape(new)}"""")
+        // The rebuilt dex may hold the new string past index 0xFFFF, so it disassembles as
+        // const-string/jumbo: both forms count.
+        val oldPat = constPattern(old)
+        val newPat = constPattern(new)
         val stale = ctx.smali.candidates(ClassFilter(requireAll = listOf("\"" + old + "\"")))
             .filter { oldPat.matcher(ctx.smali.read(it)).find() }
         if (stale.isNotEmpty()) {
@@ -508,6 +511,10 @@ internal class ReplaceConstStringExact(a: Args) : Op("replaceConstStringExact") 
             .filter { newPat.matcher(ctx.smali.read(it)).find() }
         return appliedCount("replaceConstStringExact " + old.take(50), done, expect)
     }
+
+    /** `const-string` or `const-string/jumbo`, any v#/p# register, value exactly [value]. */
+    private fun constPattern(value: String) =
+        PyRegex.compile("""(const-string(?:/jumbo)?) ((?:v|p)\d+), "${PyRegex.escape(value)}"""")
 }
 
 internal class ReplaceAllInFilesWithAnchor(a: Args) : Op("replaceAllInFilesWithAnchor") {

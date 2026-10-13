@@ -227,14 +227,32 @@ internal class ManifestRebrand(a: Args) : Op("manifestRebrand") {
         return changed
     }
 
-    override fun apply(ctx: PatchContext): List<String> =
-        if (rewrite(ctx.manifest.root)) listOf("AndroidManifest.xml :: rebrand $oldPkg -> $newPkg") else emptyList()
+    override fun apply(ctx: PatchContext): List<String> {
+        if (!rewrite(ctx.manifest.root)) return emptyList()
+        val log = arrayListOf("AndroidManifest.xml :: rebrand $oldPkg -> $newPkg")
+        // aapt2 takes the package name of resources.arsc from the manifest, and the app resolves
+        // resources by name against its own package, so the table's package chunk follows the rename.
+        if (oldPkg != newPkg && ctx.hasFiles && "resources.arsc" in ctx.files.names) {
+            ArscPackages.encodeName(newPkg)
+            ctx.arscPackageRename = oldPkg to newPkg
+            log.add("resources.arsc :: package $oldPkg -> $newPkg")
+        }
+        return log
+    }
 
     override fun verifyApplied(ctx: PatchContext): List<String> {
         if (oldPkg == newPkg) return emptyList()
         val pkg = ctx.manifest.root.attr("package")
         if (pkg != newPkg) throw PatchFailure("manifest package is '$pkg', expected '$newPkg'")
-        return listOf("AndroidManifest.xml :: package $newPkg")
+        val log = arrayListOf("AndroidManifest.xml :: package $newPkg")
+        if (ctx.hasFiles && "resources.arsc" in ctx.files.names) {
+            val names = ArscPackages.packageNames(ctx.files.open("resources.arsc"))
+            if (oldPkg in names || newPkg !in names) {
+                throw PatchFailure("resources.arsc package is ${names.joinToString { "'$it'" }}, expected '$newPkg'")
+            }
+            log.add("resources.arsc :: package $newPkg")
+        }
+        return log
     }
 }
 

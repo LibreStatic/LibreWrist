@@ -10,7 +10,7 @@ Contract (the Kotlin engine on Android must implement the same one):
 * JSON argument names are camelCase; the Python parameter is the same name in snake_case
   (``fileRegex`` -> ``file_regex``). The annotation of each parameter is its type tag:
   ``str``, ``text``, ``int``, ``bool``, ``strs`` (list of str), ``strmap`` (str -> str),
-  ``expect``, ``mexpect``, ``select``, ``checks``, ``children``, ``enumfields``.
+  ``expect``, ``mexpect``, ``select``, ``checks``, ``children``, ``enumfields``, ``layers``.
 * ``text``: a string, or a list of strings joined with "\\n" (no trailing newline is added; end
   the list with "" for one). Used for smali snippets: one array element per line.
 * String arguments may contain ``${PKG_PREFIX}`` / ``${PKG_PATH}`` (expanded by the interpreter,
@@ -38,6 +38,7 @@ See docs/patches.md.
 """
 import os
 import re
+from xml.sax.saxutils import escape
 
 
 class OpArgError(ValueError):
@@ -459,15 +460,16 @@ def op_force_const_after_move(tree, anchor: 'str', value: 'str' = '0x1',
 
 
 def op_replace_const_string_exact(tree, old: 'str', new: 'str', expect: 'expect' = 'atLeastOne'):
-    """Replace every `const-string <reg>, "<old>"` (reg is v# or p#) whose value is EXACTLY
-    `old` (the closing quote counts) with `<new>`, in every file. `expect` is checked
-    against the number of changed files."""
+    """Replace every `const-string <reg>, "<old>"` (reg is v# or p#, any number; the
+    `const-string/jumbo` form too, kept as it is) whose value is EXACTLY `old` (the closing
+    quote counts) with `<new>`, in every file. `expect` is checked against the number of
+    changed files."""
     done = []
+    pat = re.compile(r'(const-string(?:/jumbo)?) ((?:v|p)\d+), "' + re.escape(old) + r'"')
     for f in smali_files(tree):
         src = read(f)
-        pat = re.compile(r'const-string ((?:v|p)\d), "' + re.escape(old) + r'"')
         if pat.search(src):
-            src = pat.sub(lambda m: f'const-string {m.group(1)}, "{new}"', src)
+            src = pat.sub(lambda m: f'{m.group(1)} {m.group(2)}, "{new}"', src)
             write(f, src)
             done.append(_rel(tree, f))
     _check_expect('replaceConstStringExact ' + old[:50], len(done), expect)
@@ -486,6 +488,133 @@ def op_replace_all_in_files_with_anchor(tree, file_contains: 'str', old: 'str', 
         write(f, src.replace(old, new))
         done.append(_rel(tree, f) + ' :: ' + old[:50])
     _check_expect('replaceAllInFilesWithAnchor ' + old[:40], len(done), expect)
+    return done
+
+
+def op_res_xml_replace_string(tree, old: 'str', new: 'str', expect: 'expect' = 'atLeastOne'):
+    """In every standalone XML resource under `res/` (every `res/**/*.xml` outside the
+    `res/values*` directories; never AndroidManifest.xml) replace each attribute whose value is
+    EXACTLY `old` (`="<old>"`, XML-escaped) with `new`; a value that merely contains `old` is left
+    alone. `expect` is checked against the number of changed files; one log entry per file. The
+    app engine finds those files by content (binary XML under `res/`, whose paths are obfuscated
+    in a real APK) without loading resources.arsc."""
+    def attr(v):
+        return '="' + escape(v, {'"': '&quot;'}) + '"'
+    needle, repl = attr(old), attr(new)
+    done = []
+    res = os.path.join(tree, 'res')
+    for dirpath, dirnames, fnames in os.walk(res):
+        if dirpath == res:
+            dirnames[:] = sorted(d for d in dirnames if not d.startswith('values'))
+        else:
+            dirnames.sort()
+        for fn in sorted(fnames):
+            if not fn.endswith('.xml'):
+                continue
+            f = os.path.join(dirpath, fn)
+            src = read(f)
+            if needle not in src:
+                continue
+            write(f, src.replace(needle, repl))
+            done.append(_rel(tree, f) + ' :: ' + old[:50])
+    _check_expect('resXmlReplaceString ' + old[:40], len(done), expect)
+    return done
+
+
+def op_adaptive_icon_badge(tree, layers: 'layers', expect: 'expect' = 'atLeastOne'):
+    """Draw a small vector badge over layers of the adaptive launcher icons. Every standalone XML
+    resource under `res/` (outside `res/values*`) whose root element is `adaptive-icon` is a
+    candidate. `layers` maps a layer name (`foreground` / `monochrome`) to a list of path
+    specs; for each layer present as a direct child of the root, its content becomes a
+    `<layer-list>` of two `<item>`s: the original drawable (the `android:drawable` attribute of
+    the layer, or its single inline child element, moved into the first item) and a 108x108dp
+    `<vector>` (viewport 108x108) with one `<path>` per spec. A path spec has `pathData` and
+    optionally `fillColor`, `strokeColor` (`#AARRGGBB`), `strokeWidth` (number), `strokeLineCap`
+    (butt/round/square), `strokeLineJoin` (miter/round/bevel), written in the given order.
+    Layers that are not present are skipped. A layer that has neither a drawable attribute nor
+    exactly one child element, or that already carries this badge, is an error. `expect` is
+    checked against the number of changed files. The app engine finds those files by content
+    (binary XML under `res/`) without loading resources.arsc."""
+    import xml.etree.ElementTree as ET
+    ET.register_namespace('android', _ANDROID_NS)
+    ET.register_namespace('aapt', 'http://schemas.android.com/aapt')
+    ET.register_namespace('app', 'http://schemas.android.com/apk/res-auto')
+    an = lambda name: f'{{{_ANDROID_NS}}}{name}'
+    first_path = {name: specs[0]['pathData'] for name, specs in layers.items()}
+
+    def badge_of(layer):
+        """pathData of the first path of the vector in the last item of a layer-list child."""
+        lists = [c for c in layer if c.tag == 'layer-list']
+        if not lists:
+            return None
+        items = [c for c in lists[0] if c.tag == 'item']
+        if not items:
+            return None
+        vec = [c for c in items[-1] if c.tag == 'vector']
+        paths = [c for c in vec[0] if c.tag == 'path'] if vec else []
+        return paths[0].get(an('pathData')) if paths else None
+
+    def badge(layer_name, layer):
+        label = f'adaptiveIconBadge {layer_name}'
+        drawable = layer.get(an('drawable'))
+        kids = list(layer)
+        if badge_of(layer) == first_path[layer_name]:
+            raise RuntimeError(f'{label}: the layer already carries this badge')
+        if drawable is not None and kids:
+            raise RuntimeError(f'{label}: the layer has both a drawable attribute and a child')
+        if drawable is None and len(kids) != 1:
+            raise RuntimeError(f'{label}: the layer must have an android:drawable attribute '
+                               f'or exactly one child element')
+        item1 = ET.Element('item')
+        if drawable is not None:
+            item1.set(an('drawable'), drawable)
+            del layer.attrib[an('drawable')]
+        else:
+            item1.append(kids[0])
+            layer.remove(kids[0])
+        vector = ET.Element('vector')
+        vector.set(an('width'), '108dp')
+        vector.set(an('height'), '108dp')
+        vector.set(an('viewportWidth'), '108')
+        vector.set(an('viewportHeight'), '108')
+        for spec in layers[layer_name]:
+            path = ET.SubElement(vector, 'path')
+            for k, v in spec.items():
+                path.set(an(k), str(v))
+        item2 = ET.Element('item')
+        item2.append(vector)
+        layer_list = ET.SubElement(layer, 'layer-list')
+        layer_list.append(item1)
+        layer_list.append(item2)
+
+    done = []
+    res = os.path.join(tree, 'res')
+    for dirpath, dirnames, fnames in os.walk(res):
+        if dirpath == res:
+            dirnames[:] = sorted(d for d in dirnames if not d.startswith('values'))
+        else:
+            dirnames.sort()
+        for fn in sorted(fnames):
+            if not fn.endswith('.xml'):
+                continue
+            f = os.path.join(dirpath, fn)
+            if 'adaptive-icon' not in read(f):
+                continue
+            et = ET.parse(f)
+            root = et.getroot()
+            if root.tag != 'adaptive-icon':
+                continue
+            changed = []
+            for name in layers:
+                for layer in [c for c in root if c.tag == name][:1]:
+                    badge(name, layer)
+                    changed.append(name)
+            if not changed:
+                continue
+            ET.indent(et, space='    ')
+            et.write(f, encoding='utf-8', xml_declaration=True)
+            done.append(_rel(tree, f) + ' :: ' + ','.join(changed))
+    _check_expect('adaptiveIconBadge', len(done), expect)
     return done
 
 
@@ -637,6 +766,26 @@ def op_remove_smali_dir(tree, rel: 'str'):
 
 
 # ---------------------------------------------------------------- resources
+
+def op_rename_file(tree, path: 'str', name: 'str'):
+    """Change the extension of the resource file `<tree>/<path>` (`res/<type dir>/<stem>.<ext>`):
+    `name` must be `<stem>.<new ext>`, so the resource keeps its name and id (apktool re-links the
+    table from the file paths). The extension must match the real content: aapt2 rejects e.g. WebP
+    bytes stored as `.png`. RuntimeError if the source is missing or the target exists. The app
+    engine finds the stored (possibly shortened) path through resources.arsc, renames that APK
+    entry's extension and rewrites the path string in the table."""
+    stem = os.path.splitext(os.path.basename(path))[0]
+    if '/' in name or os.path.splitext(name)[0] != stem or not os.path.splitext(name)[1]:
+        raise RuntimeError(f'{path}: name must be {stem}.<ext> (only the extension changes), got {name!r}')
+    src = os.path.join(tree, path)
+    if not os.path.isfile(src):
+        raise RuntimeError(f'{path}: file not found (did the base change? check the anchors)')
+    dst = os.path.join(os.path.dirname(src), name)
+    if os.path.exists(dst):
+        raise RuntimeError(f'{path}: target {name} already exists')
+    os.rename(src, dst)
+    return [f'{path} :: renamed to {name}']
+
 
 def op_add_string_resources(tree, name: 'str', values: 'strmap'):
     """Add `<string name="<name>">` to `res/values<qualifier>/strings.xml`. `values` maps the
@@ -991,6 +1140,9 @@ OPS = {
     'replaceClassMethod': op_replace_class_method,
     'insertInClassMethod': op_insert_in_class_method,
     'removeSmaliDir': op_remove_smali_dir,
+    'renameFile': op_rename_file,
+    'resXmlReplaceString': op_res_xml_replace_string,
+    'adaptiveIconBadge': op_adaptive_icon_badge,
     'addStringResources': op_add_string_resources,
     'defineResourceEntry': op_define_resource_entry,
     'manifestRebrand': op_manifest_rebrand,
@@ -1031,6 +1183,38 @@ def _validate_children(v, what):
             _validate_children(c['children'], what + '.children')
 
 
+_BADGE_LAYERS = ('foreground', 'monochrome')
+_BADGE_ENUMS = {'strokeLineCap': ('butt', 'round', 'square'),
+                'strokeLineJoin': ('miter', 'round', 'bevel')}
+_BADGE_KEYS = ('pathData', 'fillColor', 'strokeColor', 'strokeWidth', 'strokeLineCap', 'strokeLineJoin')
+
+
+def _validate_layers(v, what):
+    """`layers`: {layer name: [path spec, ...]} of `adaptiveIconBadge` (see that op)."""
+    if not isinstance(v, dict) or not v or set(v) - set(_BADGE_LAYERS):
+        raise OpArgError(f'{what}: must be a non-empty object keyed by {list(_BADGE_LAYERS)}')
+    for name, specs in v.items():
+        if not isinstance(specs, list) or not specs:
+            raise OpArgError(f'{what}.{name}: must be a non-empty list of path specs')
+        for spec in specs:
+            if not isinstance(spec, dict) or set(spec) - set(_BADGE_KEYS):
+                raise OpArgError(f'{what}.{name}: path specs take only {list(_BADGE_KEYS)}')
+            if not isinstance(spec.get('pathData'), str) or not spec['pathData']:
+                raise OpArgError(f'{what}.{name}: pathData must be a non-empty string')
+            for k in ('fillColor', 'strokeColor'):
+                if k in spec and not (isinstance(spec[k], str)
+                                      and re.fullmatch(r'#[0-9A-Fa-f]{8}', spec[k])):
+                    raise OpArgError(f'{what}.{name}.{k}: must be #AARRGGBB')
+            if 'strokeWidth' in spec and (isinstance(spec['strokeWidth'], bool)
+                                          or not isinstance(spec['strokeWidth'], (int, float))
+                                          or spec['strokeWidth'] < 0):
+                raise OpArgError(f'{what}.{name}.strokeWidth: must be a non-negative number')
+            for k, allowed in _BADGE_ENUMS.items():
+                if k in spec and spec[k] not in allowed:
+                    raise OpArgError(f'{what}.{name}.{k}: must be one of {list(allowed)}')
+    return v
+
+
 def _normalise(tag, value, what):
     """Check `value` against type tag `tag`; return the value to pass to the function."""
     if tag == 'str' and isinstance(value, str):
@@ -1059,6 +1243,8 @@ def _normalise(tag, value, what):
     elif tag == 'children':
         _validate_children(value, what)
         return value
+    elif tag == 'layers':
+        return _validate_layers(value, what)
     elif tag == 'checks':
         if isinstance(value, list) and value and all(
                 isinstance(c, dict) and set(c) == {'className', 'contains'}

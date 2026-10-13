@@ -459,6 +459,12 @@ class FileOps(Tree):
         self.assertEqual(self.get('smali/a.smali'),
                          'const-string v0, "NEW"\nconst-string v0, "pkg.sub"\n')
 
+    def test_replace_const_string_exact_wide_registers_and_jumbo(self):
+        self.put('smali/b.smali', 'const-string v12, "pkg"\nconst-string/jumbo p3, "pkg"\n')
+        self.op('replaceConstStringExact', old='pkg', new='NEW', expect=1)
+        self.assertEqual(self.get('smali/b.smali'),
+                         'const-string v12, "NEW"\nconst-string/jumbo p3, "NEW"\n')
+
     def test_verify_class_contains(self):
         self.put('smali/a/B.smali', '.class La/B;\n.field m:J\n')
         self.op('verifyClassContains', checks=[{'className': 'a/B', 'contains': ' m:J'}])
@@ -466,6 +472,165 @@ class FileOps(Tree):
             self.op('verifyClassContains', checks=[{'className': 'a/B', 'contains': 'zz'}])
         with self.assertRaisesRegex(RuntimeError, 'not found'):
             self.op('verifyClassContains', checks=[{'className': 'a/C', 'contains': 'zz'}])
+
+
+class RenameFileOp(Tree):
+    def rename(self, path, name):
+        func, kwargs = E.prepare_op('renameFile', {'path': path, 'name': name})
+        return func(self.tree, **kwargs)
+
+    def test_changes_only_the_extension(self):
+        self.put('res/drawable-xxhdpi/x.png', 'webp bytes')
+        self.assertEqual(self.rename('res/drawable-xxhdpi/x.png', 'x.webp'),
+                         ['res/drawable-xxhdpi/x.png :: renamed to x.webp'])
+        self.assertEqual(self.get('res/drawable-xxhdpi/x.webp'), 'webp bytes')
+        with self.assertRaises(RuntimeError):  # the source is gone now
+            self.rename('res/drawable-xxhdpi/x.png', 'x.webp')
+
+    def test_refuses_another_stem_and_existing_target(self):
+        self.put('res/drawable/y.png', 'a')
+        self.put('res/drawable/y.webp', 'b')
+        for bad in ('z.webp', 'y', 'sub/y.webp'):
+            with self.assertRaises(RuntimeError):
+                self.rename('res/drawable/y.png', bad)
+        with self.assertRaises(RuntimeError):
+            self.rename('res/drawable/y.png', 'y.webp')
+        self.assertEqual(self.get('res/drawable/y.png'), 'a')
+
+
+class ResXmlReplaceStringOp(Tree):
+    SYNC = ('<?xml version="1.0" encoding="utf-8"?>\n'
+            '<sync-adapter android:contentAuthority="com.x.datastore" '
+            'android:accountType="com.x.auth" android:other="com.x.datastore.sub"/>\n')
+
+    def run_op(self, old, new, **kw):
+        return self.op('resXmlReplaceString', old=old, new=new, **kw)
+
+    def test_replaces_exact_values_only(self):
+        self.put('res/xml/syncadapter.xml', self.SYNC)
+        self.put('res/xml-v21/other.xml', self.SYNC)
+        self.put('res/xml/untouched.xml', '<a android:b="nothing"/>\n')
+        self.put('res/values/strings.xml', '<resources><string name="a" x="com.x.auth"/></resources>\n')
+        self.put('AndroidManifest.xml', '<manifest a="com.x.auth"/>\n')
+        done = self.run_op('com.x.auth', 'com.y.auth', expect=2)
+        self.assertEqual(sorted(done), ['res/xml-v21/other.xml :: com.x.auth',
+                                        'res/xml/syncadapter.xml :: com.x.auth'])
+        out = self.get('res/xml/syncadapter.xml')
+        self.assertIn('accountType="com.y.auth"', out)
+        self.assertIn('contentAuthority="com.x.datastore"', out)
+        self.assertEqual(self.get('res/xml/untouched.xml'), '<a android:b="nothing"/>\n')
+        self.assertIn('com.x.auth', self.get('res/values/strings.xml'))
+        self.assertEqual(self.get('AndroidManifest.xml'), '<manifest a="com.x.auth"/>\n')
+
+    def test_substring_value_is_not_replaced(self):
+        self.put('res/xml/s.xml', self.SYNC)
+        with self.assertRaisesRegex(RuntimeError, 'matched nothing'):
+            self.run_op('com.x.data', 'com.y.data')
+        self.assertEqual(self.get('res/xml/s.xml'), self.SYNC)
+
+    def test_expect_mismatch_fails_and_escapes(self):
+        self.put('res/xml/s.xml', '<a v="x&amp;y"/>\n')
+        with self.assertRaisesRegex(RuntimeError, 'expected 2'):
+            self.run_op('x&y', 'z', expect=2)
+        self.put('res/xml/s.xml', '<a v="x&amp;y"/>\n')
+        self.run_op('x&y', 'a"b<c', expect=1)
+        self.assertEqual(self.get('res/xml/s.xml'), '<a v="a&quot;b&lt;c"/>\n')
+
+
+class AdaptiveIconBadgeOp(Tree):
+    NS = 'xmlns:android="http://schemas.android.com/apk/res/android"'
+    ICON = ('<?xml version="1.0" encoding="utf-8"?>\n<adaptive-icon %s>\n'
+            '    <background android:drawable="@color/bg" />\n'
+            '    <foreground android:drawable="@mipmap/fg" />\n'
+            '%s</adaptive-icon>\n')
+    MONO = '    <monochrome android:drawable="@mipmap/mono" />\n'
+    LAYERS = {
+        'foreground': [
+            {'pathData': 'M1,1', 'fillColor': '#FF4F5BD5', 'strokeColor': '#FFFFFFFF',
+             'strokeWidth': 1.5},
+            {'pathData': 'M2,2', 'strokeWidth': 1, 'strokeLineCap': 'round',
+             'strokeLineJoin': 'bevel'}],
+        'monochrome': [{'pathData': 'M1,1', 'strokeColor': '#FFFFFFFF'}]}
+
+    def run_op(self, layers=None, **kw):
+        return self.op('adaptiveIconBadge', layers=layers or self.LAYERS, **kw)
+
+    def test_wraps_the_drawable_and_adds_the_vector(self):
+        self.put('res/mipmap-anydpi-v26/ic.xml', self.ICON % (self.NS, self.MONO))
+        self.put('res/mipmap-anydpi-v26/plain.xml', self.ICON % (self.NS, ''))
+        self.put('res/drawable/other.xml', '<vector %s/>\n' % self.NS)
+        done = self.run_op(expect=2)
+        self.assertEqual(done, ['res/mipmap-anydpi-v26/ic.xml :: foreground,monochrome',
+                                'res/mipmap-anydpi-v26/plain.xml :: foreground'])
+        import xml.etree.ElementTree as ET
+        an = '{http://schemas.android.com/apk/res/android}'
+        root = ET.parse(os.path.join(self.tree, 'res/mipmap-anydpi-v26/ic.xml')).getroot()
+        self.assertEqual([c.tag for c in root], ['background', 'foreground', 'monochrome'])
+        self.assertEqual(root.find('background').attrib, {an + 'drawable': '@color/bg'})
+        fg = root.find('foreground')
+        self.assertEqual(fg.attrib, {})
+        items = list(fg.find('layer-list'))
+        self.assertEqual([i.tag for i in items], ['item', 'item'])
+        self.assertEqual(items[0].attrib, {an + 'drawable': '@mipmap/fg'})
+        vector = items[1].find('vector')
+        self.assertEqual(vector.attrib, {an + 'width': '108dp', an + 'height': '108dp',
+                                         an + 'viewportWidth': '108',
+                                         an + 'viewportHeight': '108'})
+        paths = list(vector)
+        self.assertEqual(list(paths[0].attrib.items()), [
+            (an + 'pathData', 'M1,1'), (an + 'fillColor', '#FF4F5BD5'),
+            (an + 'strokeColor', '#FFFFFFFF'), (an + 'strokeWidth', '1.5')])
+        self.assertEqual(list(paths[1].attrib.items()), [
+            (an + 'pathData', 'M2,2'), (an + 'strokeWidth', '1'),
+            (an + 'strokeLineCap', 'round'), (an + 'strokeLineJoin', 'bevel')])
+        mono = list(root.find('monochrome').find('layer-list'))
+        self.assertEqual(mono[0].attrib, {an + 'drawable': '@mipmap/mono'})
+        # the other file was not an adaptive icon
+        self.assertEqual(self.get('res/drawable/other.xml'), '<vector %s/>\n' % self.NS)
+
+    def test_inline_child_moves_into_the_first_item(self):
+        self.put('res/drawable/w.xml', (
+            '<adaptive-icon %s>\n    <foreground>\n'
+            '        <inset android:drawable="@mipmap/fg" android:insetLeft="18dp" />\n'
+            '    </foreground>\n</adaptive-icon>\n') % self.NS)
+        self.run_op({'foreground': [{'pathData': 'M1,1'}]}, expect=1)
+        out = self.get('res/drawable/w.xml')
+        self.assertIn('<item>\n                <inset android:drawable="@mipmap/fg" '
+                      'android:insetLeft="18dp" />\n            </item>', out)
+        self.assertEqual(out.count('<inset'), 1)
+        self.assertEqual(out.count('<layer-list>'), 1)
+
+    def test_missing_layers_and_expect(self):
+        self.put('res/mipmap/ic.xml', self.ICON % (self.NS, ''))
+        with self.assertRaisesRegex(RuntimeError, 'matched nothing'):
+            self.run_op({'monochrome': [{'pathData': 'M1,1'}]})
+        with self.assertRaisesRegex(RuntimeError, 'expected 2'):
+            self.run_op(expect=2)
+
+    def test_already_patched_and_odd_layers_fail(self):
+        self.put('res/mipmap/ic.xml', self.ICON % (self.NS, ''))
+        self.run_op(expect=1)
+        with self.assertRaisesRegex(RuntimeError, 'already carries this badge'):
+            self.run_op()
+        self.put('res/mipmap/ic.xml', (
+            '<adaptive-icon %s><foreground/></adaptive-icon>\n') % self.NS)
+        with self.assertRaisesRegex(RuntimeError, 'exactly one child'):
+            self.run_op()
+
+    def test_arguments_are_validated(self):
+        bad = [{}, {'background': [{'pathData': 'M'}]}, {'foreground': []},
+               {'foreground': [{'fillColor': '#FF000000'}]},
+               {'foreground': [{'pathData': 'M', 'fillColor': '#000000'}]},
+               {'foreground': [{'pathData': 'M', 'strokeLineCap': 'flat'}]},
+               {'foreground': [{'pathData': 'M', 'strokeLineJoin': 'x'}]},
+               {'foreground': [{'pathData': 'M', 'strokeWidth': '1'}]},
+               {'foreground': [{'pathData': 'M', 'strokeWidth': True}]},
+               {'foreground': [{'pathData': 'M', 'opacity': 1}]}]
+        for layers in bad:
+            with self.assertRaises(E.OpArgError, msg=layers):
+                E.prepare_op('adaptiveIconBadge', {'layers': layers})
+        with self.assertRaises(E.OpArgError):
+            E.prepare_op('adaptiveIconBadge', {})
 
 
 class ResourceEntryOps(Tree):

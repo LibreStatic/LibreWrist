@@ -23,6 +23,8 @@ data class CataloguePattern(
     val steps: List<Map<String, Any?>>,
     /** Optional patterns sharing a group are always enabled or disabled together; null when ungrouped. */
     val optionGroup: String? = null,
+    /** Optional pattern switched off unless the user turns it on (builds ship without it by default). */
+    val offByDefault: Boolean = false,
 )
 
 data class CatalogueProfile(
@@ -421,8 +423,10 @@ class Catalogue private constructor(
             for ((pid, p) in patterns) {
                 val where = "pattern $pid"
                 val keys = setOf("families", "title", "description", "optional", "ops")
-                if (p !is Map<*, *> || !p.keys.containsAll(keys) || (p.keys - keys - "optionGroup").isNotEmpty()) {
-                    problems.add("$where: must have exactly the keys ${keys.sorted()} (plus optionally \"optionGroup\")")
+                if (p !is Map<*, *> || !p.keys.containsAll(keys) ||
+                    (p.keys - keys - "optionGroup" - "offByDefault").isNotEmpty()) {
+                    problems.add("$where: must have exactly the keys ${keys.sorted()} " +
+                        "(plus optionally \"optionGroup\" and \"offByDefault\")")
                     continue
                 }
                 val pf = p["families"]
@@ -434,6 +438,13 @@ class Catalogue private constructor(
                     if (v !is String || v.isEmpty()) problems.add("$where: $k must be a non-empty string")
                 }
                 if (p["optional"] !is Boolean) problems.add("$where: optional must be a boolean")
+                if ("offByDefault" in p) {
+                    if (p["offByDefault"] !is Boolean) {
+                        problems.add("$where: offByDefault must be a boolean")
+                    } else if (p["offByDefault"] == true && p["optional"] != true) {
+                        problems.add("$where: offByDefault is only allowed on optional patterns")
+                    }
+                }
                 if ("optionGroup" in p) {
                     val group = p["optionGroup"]
                     if (group !is String || !OPTION_GROUP_RE.matches(group)) {
@@ -527,6 +538,7 @@ class Catalogue private constructor(
                     id = id, families = (p["families"] as? List<String>), title = p["title"] as String,
                     description = p["description"] as String, optional = p["optional"] as Boolean,
                     steps = p["ops"] as List<Map<String, Any?>>, optionGroup = p["optionGroup"] as String?,
+                    offByDefault = p["offByDefault"] as? Boolean ?: false,
                 )
             }
             val profiles = (cat["profiles"] as Map<String, Map<String, Any?>>).mapValues { (name, p) ->

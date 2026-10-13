@@ -124,13 +124,26 @@ class OpArgumentsTest {
     @Test fun unknownOp() { fails<OpArgError> { OpRegistry.prepare("getattr", emptyMap()) } }
 
     @Test fun everyCatalogueOpIsRegistered() {
-        val expected = setOf("addStringResources", "defineResourceEntry", "enumOrdinalsZero", "forceConstAfterMove", "forceInvokeResult",
+        val expected = setOf("adaptiveIconBadge", "addStringResources", "defineResourceEntry", "enumOrdinalsZero", "forceConstAfterMove", "forceInvokeResult",
             "insertAtMethodStart", "insertInClassMethod", "insertInMethodAtMatch", "manifestAddChild",
             "manifestAddQueryPackage", "manifestExpect", "manifestRebrand", "manifestRemove", "manifestRemoveAttr",
-            "manifestSetAttr", "removeSmaliDir", "replaceAllInFilesWithAnchor", "replaceClassMethod",
-            "replaceConstStringExact", "replaceInClass", "returnSingleton", "setMethodBody", "swapConst",
+            "manifestSetAttr", "removeSmaliDir", "renameFile", "replaceAllInFilesWithAnchor", "replaceClassMethod",
+            "replaceConstStringExact", "replaceInClass", "resXmlReplaceString", "returnSingleton", "setMethodBody", "swapConst",
             "sweepStringCompareAutoTrue", "verifyClassContains")
         assertEquals(expected, OpRegistry.names)
+    }
+
+    @Test fun renameFileOnlyChecksItsArguments() {
+        // the app engine never recompiles resources, so the stored file stays as it is
+        val ctx = PatchContext(MemorySmaliTree())
+        val op = OpRegistry.prepare("renameFile", mapOf("path" to "res/drawable-xxhdpi/x.png", "name" to "x.webp"))
+        assertTrue(op.apply(ctx).single().startsWith("res/drawable-xxhdpi/x.png :: kept as stored"))
+        assertTrue(op.verifyApplied(ctx).single().startsWith("res/drawable-xxhdpi/x.png :: kept as stored"))
+        // only the extension may change, and the path must be a resource file
+        fails<OpArgError> { OpRegistry.prepare("renameFile", mapOf("path" to "res/drawable/y.png", "name" to "x.webp")) }
+        fails<OpArgError> { OpRegistry.prepare("renameFile", mapOf("path" to "res/drawable/y.png", "name" to "y")) }
+        fails<OpArgError> { OpRegistry.prepare("renameFile", mapOf("path" to "res/drawable/y.png", "name" to "y.")) }
+        fails<OpArgError> { OpRegistry.prepare("renameFile", mapOf("path" to "assets/y.png", "name" to "y.webp")) }
     }
 
     @Test fun unknownMissingAndMistypedArguments() {
@@ -373,6 +386,20 @@ class FileOpsTest {
         f.apply("replaceConstStringExact", """{"old": "pkg", "new": "NEW", "expect": 1}""")
         assertEquals("const-string v0, \"NEW\"\nconst-string v0, \"pkg.sub\"\n", f.smali.get("smali/a.smali"))
         assertEquals(1, f.verify("replaceConstStringExact", """{"old": "pkg", "new": "NEW", "expect": 1}""").size)
+    }
+
+    @Test fun replaceConstStringExactWideRegistersAndJumbo() {
+        val f = Fixture()
+        f.smali.put("smali/b.smali", "const-string v12, \"pkg\"\nconst-string/jumbo p3, \"pkg\"\n")
+        val args = """{"old": "pkg", "new": "NEW", "expect": 1}"""
+        f.apply("replaceConstStringExact", args)
+        assertEquals("const-string v12, \"NEW\"\nconst-string/jumbo p3, \"NEW\"\n", f.smali.get("smali/b.smali"))
+        // the rebuilt dex can move the new string past index 0xFFFF: the self-check reads it as /jumbo
+        f.smali.put("smali/b.smali", "const-string/jumbo v12, \"NEW\"\n")
+        assertEquals(1, f.verify("replaceConstStringExact", args).size)
+        // a wide-register original left behind is still caught
+        f.smali.put("smali/c.smali", "const-string v10, \"pkg\"\n")
+        fails<PatchFailure> { f.verify("replaceConstStringExact", args) }
     }
 
     @Test fun enumOrdinalsZeroAndForceOps() {
