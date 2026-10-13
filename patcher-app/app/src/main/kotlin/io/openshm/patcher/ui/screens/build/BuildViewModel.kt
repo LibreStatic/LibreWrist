@@ -69,13 +69,12 @@ internal fun BuildRunState.toUiState(patchCount: Int, logVisible: Boolean, curre
 /** The finished build for the current setup, read from the record the build service writes. */
 internal fun builtOutputs(storage: BuildStorage): BuildDoneUiState {
     val session = SetupSession.state.value
-    val profile = session.watchProfile
     val sizes = storage.record.read()?.outputs?.associate { it.outputId to it.sizeBytes }.orEmpty()
     return BuildDoneUiState(
-        outputs = AppCatalogue.current.outputs.filter { it.id in profile.outputIds }.map {
+        outputs = AppCatalogue.current.outputs.filter { it.id in session.outputIds }.map {
             BuiltOutput(it.id, it.label, it.device, it.packageName(session.packagePrefix), sizeBytes = sizes[it.id] ?: 0L)
         },
-        patchCount = AppCatalogue.current.patternCount(profile.inputIds, session.disabledPatches),
+        patchCount = AppCatalogue.current.patternCount(session.inputIds, session.disabledPatches),
     )
 }
 
@@ -86,9 +85,9 @@ internal fun builtOutputs(storage: BuildStorage): BuildDoneUiState {
  */
 class BuildViewModel(application: Application) : AndroidViewModel(application) {
     private val storage = BuildStorage(application)
-    private val patchCount = SetupSession.state.value.let { AppCatalogue.current.patternCount(it.watchProfile.inputIds, it.disabledPatches) }
+    private val patchCount = SetupSession.state.value.let { AppCatalogue.current.patternCount(it.inputIds, it.disabledPatches) }
     private val key = SetupSession.state.value.let {
-        buildKey(AppCatalogue.current.serial, it.packagePrefix, it.watchProfile.outputIds, AppCatalogue.current.effectiveDisabled(it.disabledPatches))
+        buildKey(AppCatalogue.current.serial, it.packagePrefix, it.outputIds, AppCatalogue.current.effectiveDisabled(it.disabledPatches))
     }
     private val logVisible = MutableStateFlow(false)
 

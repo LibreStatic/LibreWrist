@@ -246,6 +246,7 @@
     <string name="patch_phone_rebrand_gms">Da a la app del teléfono el mismo paquete y clave que la app del reloj para que puedan intercambiar datos.</string>
     <string name="patch_watch_rebrand_coexist">Renombra la app del reloj para que conviva con la original.</string>
     <string name="patch_shm_wear_trusted_peers">Hace que las dos apps parcheadas se reconozcan en el enlace con el reloj, en lugar de solo las originales.</string>
+    <string name="patch_shm_launcher_badge">Añade una pequeña insignia de OpenSHM al icono de la app para distinguirla de la original.</string>
     <string name="patch_watch_gms_resources_anchor">Define un recurso que la versión original eliminó, para que el reloj pueda anunciar la app al teléfono.</string>
     <string name="patch_watch_queries_health_service">Permite que la app del reloj vea el servicio de salud.</string>
     <string name="patch_watch_companion_vendor">Acepta cualquier marca de teléfono complementario.</string>
@@ -698,6 +699,19 @@
     <string name="phone_adb_error_message">Es un problema de la app, no algo que hayas hecho mal, y no puedes solucionarlo tú. Aún puedes usar los botones Abrir ajustes de cada fila o continuar de todos modos.</string>
     <string name="phone_adb_success_title">Todo listo</string>
     <string name="phone_adb_success_message">Pasamos al siguiente paso</string>
+    <string name="acquire_shealth_title">Samsung Health (opcional)</string>
+    <string name="acquire_shealth_summary">También crea una copia parcheada de la app Samsung Health del teléfono, \"Samsung Health+\", con las funciones que piden un Galaxy Watch más nuevo desbloqueadas. Se instala junto al Samsung Health de Play, que conservas: ese sigue conectado al reloj y sube los datos a tu cuenta Samsung, y Samsung Health+ descarga esos mismos datos de la nube cuando inicias sesión con la misma cuenta (puede ir un rato atrasado).</string>
+    <string name="output_shealth_phone">Samsung Health+ (parcheado)</string>
+    <string name="change_purpose_shealth_phone">Una copia renombrada de Samsung Health con las funciones de abajo desbloqueadas. Funciona junto al Samsung Health de Play y lee tus datos de la nube de Samsung.</string>
+    <string name="patch_shealth_res_webp">Corrige cuatro imágenes guardadas con la extensión equivocada para poder reconstruir la app (sin cambios visibles).</string>
+    <string name="patch_shealth_feature_dev_ui">Muestra la lista de funciones en Ajustes &gt; Acerca de sin el modo desarrollador de Samsung.</string>
+    <string name="patch_shealth_vitality_tile">Muestra el mosaico de Puntuación de energía sin esperar a que el reloj anuncie la capacidad.</string>
+    <string name="patch_shealth_rename_manifest">Le da a la app su propio nombre de paquete y etiqueta (Samsung Health+) para que se instale junto a la original.</string>
+    <string name="patch_shealth_rename_code">Actualiza las referencias internas de la app al nuevo nombre de paquete.</string>
+    <string name="patch_shealth_rename_account_xml">Le da a la app su propio registro de cuenta y sincronización para que la sincronización con la nube funcione junto a la original.</string>
+    <string name="patch_shealth_capability_gates">Desbloquea Constantes vitales, Carga de entrenamiento y el índice de forma física, que si no requieren un Galaxy Watch8 o Ultra. Se calculan en el teléfono con tu historial sincronizado.</string>
+    <string name="patch_shealth_launcher_badge">Añade una pequeña insignia de OpenSHM al icono de la app para distinguirla de la original.</string>
+    <string name="patch_shealth_oobe_local">Opcional, desactivado por defecto. Omite el requisito de iniciar sesión con la cuenta Samsung y usa la app de forma local, sin sincronización en la nube. Actívalo solo si el inicio de sesión no funciona.</string>
     <string name="device_logs_channel">Registros de dispositivos</string>
     <string name="device_logs_notification_title">Grabando registros de dispositivos</string>
     <string name="device_logs_notification_text">%1$d reloj · %2$d teléfono</string>

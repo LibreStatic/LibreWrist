@@ -246,6 +246,7 @@
     <string name="patch_phone_rebrand_gms">Telefon uygulamasına saat uygulamasıyla aynı paketi ve anahtarı vererek ikisinin veri alışverişi yapmasını sağlar.</string>
     <string name="patch_watch_rebrand_coexist">Saat uygulamasını orijinalinin yanında durması için yeniden adlandırır.</string>
     <string name="patch_shm_wear_trusted_peers">Yamalı iki uygulamanın saat bağlantısında yalnızca orijinal uygulamaları değil birbirini tanımasını sağlar.</string>
+    <string name="patch_shm_launcher_badge">Orijinalinden ayırt edebilmeniz için uygulama simgesine küçük bir OpenSHM rozeti ekler.</string>
     <string name="patch_watch_gms_resources_anchor">Orijinal sürümün kaldırdığı bir kaynağı tanımlar, böylece saat uygulamayı telefona bildirebilir.</string>
     <string name="patch_watch_queries_health_service">Saat uygulamasının sağlık hizmetini görmesini sağlar.</string>
     <string name="patch_watch_companion_vendor">Her marka eşlik eden telefonu kabul eder.</string>
@@ -698,6 +699,19 @@
     <string name="phone_adb_error_message">Bu uygulamadaki bir sorundur, sizin bir hatanız değildir ve kendiniz çözemezsiniz. Her satırdaki Ayarları aç düğmelerini kullanabilir veya yine de devam edebilirsiniz.</string>
     <string name="phone_adb_success_title">Her şey hazır</string>
     <string name="phone_adb_success_message">Sonraki adıma geçiyoruz</string>
+    <string name="acquire_shealth_title">Samsung Health (isteğe bağlı)</string>
+    <string name="acquire_shealth_summary">Ayrıca Samsung Health telefon uygulamasının yamalı bir kopyasını, \"Samsung Health+\", daha yeni bir Galaxy Watch gerektiren özellikleri açık olarak oluşturur. Play\'deki Samsung Health\'in yanına kurulur ve o uygulamayı korursunuz: o, saate bağlı kalır ve verileri Samsung Account hesabınıza yükler; Samsung Health+ ise aynı hesapla oturum açtıktan sonra aynı verileri buluttan indirir (bir süre geriden gelebilir).</string>
+    <string name="output_shealth_phone">Samsung Health+ (yamalı)</string>
+    <string name="change_purpose_shealth_phone">Samsung Health\'in aşağıdaki özellikleri açılmış, yeniden adlandırılmış bir kopyası. Play\'deki Samsung Health\'in yanında çalışır ve verilerinizi Samsung bulutundan okur.</string>
+    <string name="patch_shealth_res_webp">Yanlış dosya uzantısıyla saklanan dört görseli düzeltir, böylece uygulama yeniden derlenebilir (görünür bir değişiklik yok).</string>
+    <string name="patch_shealth_feature_dev_ui">Özellik listesini Samsung geliştirici modu olmadan Ayarlar &gt; Hakkında bölümünde gösterir.</string>
+    <string name="patch_shealth_vitality_tile">Enerji Skoru kutucuğunu, saatin özelliği bildirmesini beklemeden gösterir.</string>
+    <string name="patch_shealth_rename_manifest">Uygulamaya, orijinalinin yanına kurulabilmesi için kendi paket adını ve etiketini (Samsung Health+) verir.</string>
+    <string name="patch_shealth_rename_code">Uygulamanın dahili referanslarını yeni paket adına günceller.</string>
+    <string name="patch_shealth_rename_account_xml">Bulut senkronizasyonunun orijinalin yanında çalışması için uygulamaya kendi hesap ve senkronizasyon kaydını verir.</string>
+    <string name="patch_shealth_capability_gates">Aksi halde Galaxy Watch8 veya Ultra gerektiren Hayati Değerler, Antrenman Yükü ve kondisyon endeksini açar. Bunlar telefonda, senkronize edilmiş geçmişinizden hesaplanır.</string>
+    <string name="patch_shealth_launcher_badge">Orijinalinden ayırt edebilmeniz için uygulama simgesine küçük bir OpenSHM rozeti ekler.</string>
+    <string name="patch_shealth_oobe_local">İsteğe bağlı, varsayılan olarak kapalı. Samsung hesabıyla oturum açma zorunluluğunu atlar ve uygulamayı bulut eşitlemesi olmadan yerel olarak kullanır. Yalnızca oturum açma çalışmıyorsa aç.</string>
     <string name="device_logs_channel">Cihaz günlükleri</string>
     <string name="device_logs_notification_title">Cihaz günlükleri kaydediliyor</string>
     <string name="device_logs_notification_text">%1$d saat · %2$d telefon</string>

@@ -25,6 +25,8 @@ class LoadedCatalogue(val engine: Catalogue, private val resolve: (Int) -> Strin
 
     fun input(id: String): InputApp = inputs.first { it.id == id }
 
+    fun hasInput(id: String): Boolean = inputs.any { it.id == id }
+
     /** The outputs, in the catalogue `installOrder` order. */
     val outputs: List<OutputApp> = engine.installOrder.map { step ->
         mapOutput(engine.outputs.first { it.id == step.output }).copy(userOnboarding = step.then == "userOnboarding")
@@ -145,6 +147,7 @@ class LoadedCatalogue(val engine: Catalogue, private val resolve: (Int) -> Strin
             "bridge-watch" to R.string.output_bridge_watch,
             "alarm-fork" to R.string.output_alarm_fork,
             "bridge-phone" to R.string.output_bridge_phone,
+            "shealth-phone" to R.string.output_shealth_phone,
         )
 
         private val STOCK_LABELS = mapOf<String, Int>(
@@ -177,6 +180,7 @@ class LoadedCatalogue(val engine: Catalogue, private val resolve: (Int) -> Strin
         "phone-rebrand-gms" to R.string.patch_phone_rebrand_gms,
         "watch-rebrand-coexist" to R.string.patch_watch_rebrand_coexist,
         "shm-wear-trusted-peers" to R.string.patch_shm_wear_trusted_peers,
+        "shm-launcher-badge" to R.string.patch_shm_launcher_badge,
         "watch-gms-resources-anchor" to R.string.patch_watch_gms_resources_anchor,
         "watch-queries-health-service" to R.string.patch_watch_queries_health_service,
         "watch-companion-vendor" to R.string.patch_watch_companion_vendor,
@@ -203,6 +207,15 @@ class LoadedCatalogue(val engine: Catalogue, private val resolve: (Int) -> Strin
         "alarm-link-send" to R.string.patch_alarm_link_send,
         "alarm-hide-launcher" to R.string.patch_alarm_hide_launcher,
         "alarm-relabel" to R.string.patch_alarm_relabel,
+        "shealth-res-webp" to R.string.patch_shealth_res_webp,
+        "shealth-feature-dev-ui" to R.string.patch_shealth_feature_dev_ui,
+        "shealth-vitality-tile" to R.string.patch_shealth_vitality_tile,
+        "shealth-rename-manifest" to R.string.patch_shealth_rename_manifest,
+        "shealth-rename-code" to R.string.patch_shealth_rename_code,
+        "shealth-rename-account-xml" to R.string.patch_shealth_rename_account_xml,
+        "shealth-capability-gates" to R.string.patch_shealth_capability_gates,
+        "shealth-launcher-badge" to R.string.patch_shealth_launcher_badge,
+        "shealth-oobe-local" to R.string.patch_shealth_oobe_local,
         )
     }
 }

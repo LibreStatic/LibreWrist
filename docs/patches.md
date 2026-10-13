@@ -31,7 +31,7 @@ scripts/build_shm_watch.sh        # -> $DIST_DIR/shm-watch-1.5.1.022-gms.apk
   "profiles": { "<name>": {"description", "families": {"<family>": ["<pattern id>", ...]},
                            "inject": {"<family>": ["<injection name>", ...]}} },
   "patterns": { "<id>": {"families": [...] | "*", "title", "description", "optional": false,
-                         "optionGroup"?: "<kebab-case group>",
+                         "optionGroup"?: "<kebab-case group>", "offByDefault"?: true,
                          "ops": [ {"op": "<name>", ...args}, ... ]} },
   "outputs", "installOrder", "grants", "stockAppsToDisable": install section, see below }
 ```
@@ -87,8 +87,16 @@ scripts/build_shm_watch.sh        # -> $DIST_DIR/shm-watch-1.5.1.022-gms.apk
   disabled pattern is simply not run (`PatchRequest.disabledPatterns` in the Kotlin engine,
   `--skip <id>` in `scripts/superpatcher.py`); asking to skip a required or unknown id is an error,
   and the patterns that do run keep the "anchor must match, otherwise abort" rule. The optional
-  patterns are `shm-min-age-22-to-16`, `shm-setup-network-gate`, the sleep-apnea group below, and
-  `alarm-force-sound-vibrate`, `alarm-hide-launcher`, `alarm-relabel`.
+  patterns are `shm-min-age-22-to-16`, `shm-setup-network-gate`, the sleep-apnea group below,
+  `alarm-force-sound-vibrate`, `alarm-hide-launcher`, `alarm-relabel`, `shm-launcher-badge`,
+  `shealth-launcher-badge` and `shealth-oobe-local`.
+- **Off-by-default patterns** (`"offByDefault": true`, optional patterns only): the build leaves
+  them out unless the user turns them on — the patcher app switches each one off the first time
+  it sees it (it remembers the optional ids it already knows, so a catalogue update never undoes
+  the user's own choices), and `scripts/build_shealth.sh` skips them unless the environment
+  variable named after the id is `1` (`shealth-oobe-local` -> `SHEALTH_OOBE_LOCAL=1`).
+  Flip the flag to `false` (or drop it) to make the same pattern ship enabled by default. The
+  only user is `shealth-oobe-local` (see "Samsung Health" below).
 - **Option groups** (`"optionGroup": "<name>"`, optional patterns only, at least two members):
   the members are always on or off together, across inputs, so a partial skip is an error. The
   only group is `sleep-apnea`: `shm-sleep-apnea-support` (phone SHM) with `watch-apnea-country` and
@@ -126,6 +134,8 @@ Ops (one line each; the full contract is the docstring):
 | `forceConstAfterMove`, `forceInvokeResult` | force a `const/4` after a `move-result` (before an anchor / after a given invoke) |
 | `replaceConstStringExact`, `replaceAllInFilesWithAnchor` | exact `const-string` replacement; replace text in files that contain an anchor |
 | `verifyClassContains`, `replaceInClass`, `replaceClassMethod`, `insertInClassMethod`, `removeSmaliDir` | class-targeted ops for pinned builds (every one asserts what it found) |
+| `resXmlReplaceString` | replace the XML attribute values that are exactly `old` with `new` in the standalone XML resources under `res/` (never the manifest); `expect` counts changed files. The Python engine walks the decoded `res/**/*.xml` (not `values*`); the app engine finds the compiled XML entries by content (chunk header plus the string in the raw bytes), so it never loads resources.arsc |
+| `adaptiveIconBadge` | `layers` maps `foreground` / `monochrome` to a list of path specs (`pathData` plus optional `fillColor`, `strokeColor` as `#AARRGGBB`, `strokeWidth`, `strokeLineCap`, `strokeLineJoin`). Every standalone XML resource under `res/` whose root is `adaptive-icon` is a candidate; in each listed layer that is present (a direct child of the root) the content becomes a `layer-list` of two items: the original drawable (its `android:drawable` attribute, or its single inline child, moved into the first item) and a 108x108dp `vector` with one `path` per spec, so a small badge is drawn over the launcher icon. Layers that are absent are skipped; a layer that is neither a drawable attribute nor one child, or that already carries the badge, fails; `expect` counts changed files. Both engines write the values with the types aapt2 gives them (dp dimension, float viewport and stroke width, ARGB colours, enums as integers); the app engine finds the compiled XML by content like `resXmlReplaceString`, so it never loads resources.arsc |
 | `addStringResources` | add a `<string>` to `res/values*/strings.xml` |
 | `defineResourceEntry` | define `type/name` at a resource `id` (`0x` + 8 hex digits) with value `@null` in the default config; fails if the type id does not match, the slot is defined in any config, or the name exists |
 | `manifestRebrand`, `manifestAddQueryPackage` | text edits of `AndroidManifest.xml` (exact semantics in the docstrings) |
@@ -184,6 +194,7 @@ Application order (the `#` column is the order in the `gms` profile of the catal
 | 12 | `shm-sleep-apnea-support` | `isPhoneSupportSleepApnea` forced true (const after move-result) | Regional check disabled |
 | 13 | `phone-rebrand-gms` | package -> `com.samsung.android.shealthmonitors` (manifest, permissions, authorities, exact package strings, share URI) | Same package and certificate as the watch app: the GMS Data Layer only delivers between equal AppKeys |
 | 14 | `shm-wear-trusted-peers` | the `wear-trusted-peer-packages` meta-data is removed (see the watch table) | Same reason as on the watch |
+| 15 | `shm-launcher-badge` *(optional)* | `adaptiveIconBadge`: the adaptive launcher icon gets a small OpenSHM badge at the bottom-right of the foreground and monochrome layers | The patched app is told apart from the stock Samsung Health Monitor in the launcher |
 
 Profile: all of them in `gms`. Verified [V]: the decoded result (smali, manifest, resources) is
 identical to the owner-verified `shm-phone-1.4.6.001-stock-mod-gms1` build (24 patched sites).
@@ -263,6 +274,57 @@ Verified [V]: the decoded result matches the previous owner-verified fork build 
 smali, resources and manifest after normalising the previous package marker). Differences:
 patterns 16 and 17 (new), `Link*` (log strings translated to English; d8 numbers the two
 `Link` lambdas in the opposite order), and the signing files. Not verified on a device.
+
+## Samsung Health 7.00.6.011
+
+New target (profile `shealth`, input `shealth-phone`): the full Samsung Health phone app,
+**renamed** to `${PKG_PREFIX}.shealth` (label "Samsung Health+") and re-signed with the local key,
+so it installs next to the stock, Samsung-signed app. Rationale and per-feature analysis:
+[samsung-health-survey.md](samsung-health-survey.md).
+
+```bash
+scripts/build_shealth.sh                # -> $DIST_DIR/shealth-7.00.6.011-shealth.apk
+SHEALTH_OOBE_LOCAL=1 scripts/build_shealth.sh   # include the optional Local-only mode
+```
+
+In the patcher app it is opt-out: the "Samsung Health" switch on the Acquire step adds the input,
+its patterns appear in Customize and the output joins the phone install.
+
+Why two apps: the watch's Samsung Health pins the phone app's certificate
+(`wear-trusted-peer-packages` = `com.sec.android.app.shealth` with Samsung's digest) and silently
+drops GMS traffic from any other signer, and a re-signed watch build is not possible (it needs
+signature|privileged sensor and Health Services permissions). So the **stock** app (from Play)
+keeps the watch connection and uploads to the Samsung cloud, and the **patched** copy signs in to
+the same account and downloads the history from the cloud, where it computes the phone-side
+features the watch model whitelist hides. Cloud identity is signature- and package-agnostic
+(survey, section 1). Data in the patched copy lags by the cloud sync cadence (no SPP push on
+non-Samsung phones). Both apps declare the same Samsung Account redirect
+(`sasdk://samsunghealthhybridweb/login`): signing in to either may show an app chooser; pick the
+app that started the sign-in.
+
+| # | Pattern | What it does | Why |
+|---|---|---|---|
+| 1 | `shealth-res-webp` | renames four drawables whose bytes are WebP/WebP/JPEG but whose stored name ends in `.png` (`element_index_shape`, `coaching_jetlag_index`, `heart_health_sleep_illustration` -> `.webp`; `phr_expanded_chart_image` -> `.jpg`); resources keep name and id | Samsung's pipeline stored them without crunching and aapt2 refuses the mismatched extension, so `apktool b` fails on the stock tree; Android decodes by content, so the rename is invisible at runtime |
+| 2 | `shealth-feature-dev-ui` | `FeatureManager.isEnabled()` returns true, and the Settings ▸ About entry (`HomeSettingsAboutActivity.L1`) no longer requires Samsung developer mode | Exposes the app's built-in feature-flag list (`FeatureListActivity`): ~400 local toggles over `final_feature_list_pref`, editable at runtime; no server writes those prefs |
+| 3 | `shealth-vitality-tile` | default of the `vitality_show_tile_without_capabilities` feature flag -> true | The Energy Score tile and its HRV no-data states otherwise wait for the watch to advertise `tracker_feature.vitality_score`; with the flag the tile renders and the phone-side computation (`VitalityDataGenerateWorker`) feeds it from synced data |
+| 4 | `shealth-rename-manifest` | `manifestRebrand` `com.sec.android.app.shealth` -> `${PKG_PREFIX}.shealth` (package, own-namespace permissions and authorities); the 11 `com.samsung.android.app.shealth.*` authorities -> `${PKG_PREFIX}.shealth.app.*`; the 7 custom permissions outside the package namespace -> `${PKG_PREFIX}.shealth.permission.<NAME>` (declarations and the activity/provider attributes using them); application and launcher label -> "Samsung Health+" (literal: the app engine does not load the 175 MB resource table) | Android refuses a second package that declares the same authority or permission with another certificate |
+| 5 | `shealth-rename-code` | smali: every exact `"com.sec.android.app.shealth"` const-string, every authority literal (bare and `content://` prefix), the OOBE broadcast permission, the account type `com.samsung.health.auth`, the app-settings URI `package:<pkg>` and the `:remote` process name -> the new names | Keeps the code consistent with the renamed manifest (self package checks, content URIs, sync authority, AccountManager type, permission prompts that open the app settings page, remote-process checks) |
+| 6 | `shealth-rename-account-xml` | `resXmlReplaceString`: account type `com.samsung.health.auth` (3 authenticator configs + sync adapter) and sync authority `com.sec.android.app.shealth.datastore` (2 sync adapters) -> the new names | Only one package can register an authenticator type; the sync adapter must point at the renamed datastore provider or cloud sync never runs |
+| 7 | `shealth-capability-gates` *(optional)* | every inlined `service_capability_list` check (`getServiceList` + `List.contains`; 3 sites: Vitals `xvx.J0`, Training load `t950`, fitness index `xao`) is forced true, and the per-sleep Vitals device check `xvx.K0` returns `TRUE` | The watch advertises its service list from `model_service_capability.json`, which only whitelists Galaxy Watch8/Ultra-class models, and the patched copy has no watch at all; these features compute on the phone from synced sleep/exercise history. Heart health score, BP trend and hearing stay off: they need a live connected watch node |
+| 8 | `shealth-launcher-badge` *(optional)* | `adaptiveIconBadge`: the 9 adaptive icons (app icon, 4 widget icons, 4 shortcut icons) get a small OpenSHM badge at the bottom-right of the foreground layer and, for the app icon, of the monochrome (themed) layer | The renamed copy installs next to the stock app and would otherwise look identical in the launcher |
+| 9 | `shealth-oobe-local` *(optional, off by default)* | `SamsungAccountManager.s0` reports `LOG_IN`, so the mandatory sign-in stop state right after OOBE never fires | For running the app without a Samsung Account; the first-run wizard itself has no sign-in step, this only removes the gate after it. Off by default: cloud sign-in is expected to work on the re-signed copy (the code has no signature gate); enable it (or flip `offByDefault` in the catalogue) if sign-in does not work on this device |
+
+Anchors: semantic method names and literals of the official APK (`isEnabled()Z`, `L1()Z`,
+`vitality_show_tile_without_capabilities`) plus two obfuscated names pinned by the input hash:
+`j9v.s0()La11;` (the Samsung Account state getter), `xvx.K0` (per-sleep Vitals check), the
+`getServiceList: size=` log literal of the inlined capability checks and the four drawable names. A new Samsung
+Health version needs those re-anchored; the engines fail instead of guessing.
+
+`renameFile` only changes the extension (`<stem>.<ext>` -> `<stem>.<new ext>`). The Python engine
+renames the file in the apktool tree (apktool paths); the app engine resolves the same
+`res/<type>[-qual]/<name>` through resources.arsc to the stored path, which a release APK may have
+shortened (`res/-0_.png`), renames that zip entry's extension and rewrites the path string in the
+table. Not yet verified on a device.
 
 ## Excluded and why
 

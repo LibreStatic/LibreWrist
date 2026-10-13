@@ -18,6 +18,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -62,7 +63,12 @@ data class AcquireCard(
     val moreWaysExpanded: Boolean = false,
 )
 
-data class AcquireUiState(val cards: List<AcquireCard> = emptyList()) {
+data class AcquireUiState(
+    val cards: List<AcquireCard> = emptyList(),
+    /** The catalogue carries the optional Samsung Health input, so the opt-in card is shown. */
+    val samsungHealthOffered: Boolean = false,
+    val samsungHealth: Boolean = false,
+) {
     val waiting: Int get() = cards.count { it.progress !is AcquireProgress.Verified }
 }
 
@@ -70,6 +76,7 @@ sealed interface AcquireEvent {
     data class OpenMirror(val inputId: String) : AcquireEvent
     data class ToggleMoreWays(val inputId: String) : AcquireEvent
     data class UseFile(val inputId: String) : AcquireEvent
+    data object ToggleSamsungHealth : AcquireEvent
 }
 
 @Composable
@@ -95,6 +102,7 @@ fun AcquireScreen(
         // The cards split across the panes (first half beside the intro); narrow, the same single column.
         secondary = {
             state.cards.drop((state.cards.size + 1) / 2).forEach { AcquireCardView(it, onEvent) }
+            if (state.samsungHealthOffered) SamsungHealthCard(state.samsungHealth, onEvent)
             NoteRow(Icons.Rounded.VerifiedUser, stringResource(R.string.acquire_verify_note))
         },
     ) {
@@ -104,6 +112,23 @@ fun AcquireScreen(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         state.cards.take((state.cards.size + 1) / 2).forEach { AcquireCardView(it, onEvent) }
+    }
+}
+
+@Composable
+private fun SamsungHealthCard(enabled: Boolean, onEvent: (AcquireEvent) -> Unit) {
+    Surface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(28.dp), color = MaterialTheme.colorScheme.surfaceContainerLow) {
+        Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(stringResource(R.string.acquire_shealth_title), style = MaterialTheme.typography.titleSmall)
+                Text(
+                    stringResource(R.string.acquire_shealth_summary),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Switch(checked = enabled, onCheckedChange = { onEvent(AcquireEvent.ToggleSamsungHealth) })
+        }
     }
 }
 

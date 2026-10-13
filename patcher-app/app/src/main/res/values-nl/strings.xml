@@ -246,6 +246,7 @@
     <string name="patch_phone_rebrand_gms">Geeft de telefoon-app hetzelfde pakket en dezelfde sleutel als de horlogeapp zodat ze gegevens kunnen uitwisselen.</string>
     <string name="patch_watch_rebrand_coexist">Hernoemt de horlogeapp zodat hij naast de standaardapp staat.</string>
     <string name="patch_shm_wear_trusted_peers">Laat de twee aangepaste apps elkaar herkennen via de horlogeverbinding, in plaats van alleen de originele apps.</string>
+    <string name="patch_shm_launcher_badge">Voegt een kleine OpenSHM-badge toe aan het app-pictogram, zodat je het van het origineel kunt onderscheiden.</string>
     <string name="patch_watch_gms_resources_anchor">Definieert een resource die de originele build heeft verwijderd, zodat het horloge de app aan de telefoon kan melden.</string>
     <string name="patch_watch_queries_health_service">Laat de horlogeapp de gezondheidsservice zien.</string>
     <string name="patch_watch_companion_vendor">Accepteert elk merk begeleidende telefoon.</string>
@@ -698,6 +699,19 @@
     <string name="phone_adb_error_message">Dit is een probleem in de app, niet iets wat je fout hebt gedaan, en je kunt het niet zelf oplossen. Je kunt nog steeds de knoppen Instellingen openen bij elke rij gebruiken of toch doorgaan.</string>
     <string name="phone_adb_success_title">Alles klaar</string>
     <string name="phone_adb_success_message">Door naar de volgende stap</string>
+    <string name="acquire_shealth_title">Samsung Health (optioneel)</string>
+    <string name="acquire_shealth_summary">Maakt ook een gepatchte kopie van de Samsung Health-app voor de telefoon, \"Samsung Health+\", met ontgrendelde functies die een nieuwere Galaxy Watch vereisen. Ze wordt naast Samsung Health uit Play geïnstalleerd, dat je behoudt: die blijft verbonden met het horloge en uploadt naar je Samsung Account, en Samsung Health+ downloadt dezelfde gegevens uit de cloud nadat je met hetzelfde account inlogt (kan een tijdje achterlopen).</string>
+    <string name="output_shealth_phone">Samsung Health+ (gepatcht)</string>
+    <string name="change_purpose_shealth_phone">Een hernoemde kopie van Samsung Health met de onderstaande functies ontgrendeld. Ze draait naast Samsung Health uit Play en leest je gegevens uit de Samsung-cloud.</string>
+    <string name="patch_shealth_res_webp">Herstelt vier afbeeldingen met de verkeerde bestandsextensie zodat de app opnieuw kan worden gebouwd (geen zichtbare wijziging).</string>
+    <string name="patch_shealth_feature_dev_ui">Toont de functielijst in Instellingen &gt; Over zonder de Samsung-ontwikkelaarsmodus.</string>
+    <string name="patch_shealth_vitality_tile">Toont de tegel Energiescore zonder te wachten tot het horloge de mogelijkheid meldt.</string>
+    <string name="patch_shealth_rename_manifest">Geeft de app een eigen pakketnaam en label (Samsung Health+) zodat ze naast het origineel wordt geïnstalleerd.</string>
+    <string name="patch_shealth_rename_code">Werkt de interne verwijzingen van de app bij naar de nieuwe pakketnaam.</string>
+    <string name="patch_shealth_rename_account_xml">Geeft de app een eigen account- en synchronisatieregistratie zodat cloudsynchronisatie naast het origineel werkt.</string>
+    <string name="patch_shealth_capability_gates">Ontgrendelt Vitale functies, Trainingsbelasting en de fitnessindex, die anders een Galaxy Watch8 of Ultra vereisen. Ze worden op de telefoon berekend uit je gesynchroniseerde geschiedenis.</string>
+    <string name="patch_shealth_launcher_badge">Voegt een kleine OpenSHM-badge toe aan het app-pictogram, zodat je het van het origineel kunt onderscheiden.</string>
+    <string name="patch_shealth_oobe_local">Optioneel, standaard uit. Slaat de verplichte aanmelding met het Samsung-account over en gebruikt de app lokaal zonder cloudsynchronisatie. Zet dit alleen aan als aanmelden niet werkt.</string>
     <string name="device_logs_channel">Apparaatlogboeken</string>
     <string name="device_logs_notification_title">Apparaatlogboeken worden opgenomen</string>
     <string name="device_logs_notification_text">%1$d horloge · %2$d telefoon</string>

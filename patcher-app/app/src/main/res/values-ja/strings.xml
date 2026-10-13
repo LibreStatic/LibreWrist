@@ -243,6 +243,7 @@
     <string name="patch_phone_rebrand_gms">スマートフォンアプリにウォッチアプリと同じパッケージとキーを与え、両者がデータを交換できるようにします。</string>
     <string name="patch_watch_rebrand_coexist">ウォッチアプリの名前を変更し、標準アプリと共存できるようにします。</string>
     <string name="patch_shm_wear_trusted_peers">パッチ済みの 2 つのアプリが、純正アプリだけでなく互いをウォッチとの接続で認識できるようにします。</string>
+    <string name="patch_shm_launcher_badge">アプリのアイコンに小さな OpenSHM バッジを追加し、元のアプリと見分けられるようにします。</string>
     <string name="patch_watch_gms_resources_anchor">純正ビルドで削除されたリソースを定義し、ウォッチがアプリをスマートフォンに通知できるようにします。</string>
     <string name="patch_watch_queries_health_service">ウォッチアプリがヘルスサービスを認識できるようにします。</string>
     <string name="patch_watch_companion_vendor">どのメーカーのコンパニオンスマートフォンも受け入れます。</string>
@@ -690,6 +691,19 @@
     <string name="phone_adb_error_message">これはアプリ側の問題で、あなたの操作ミスではなく、ご自身では解決できません。各行の「設定を開く」ボタンを使うか、そのまま続行できます。</string>
     <string name="phone_adb_success_title">準備完了</string>
     <string name="phone_adb_success_message">次のステップへ進みます</string>
+    <string name="acquire_shealth_title">Samsung Health（任意）</string>
+    <string name="acquire_shealth_summary">新しい Galaxy Watch が必要な機能を有効にした、スマートフォン版 Samsung Health のパッチ適用コピー「Samsung Health+」も作成します。Play の Samsung Health の隣にインストールされ、そちらは残ります。Play 版はウォッチに接続されたまま Samsung Account にデータをアップロードし、Samsung Health+ は同じアカウントでサインインするとクラウドから同じデータをダウンロードします(反映が遅れることがあります)。</string>
+    <string name="output_shealth_phone">Samsung Health+(パッチ適用済み)</string>
+    <string name="change_purpose_shealth_phone">Samsung Health の名前を変えたコピーで、下の機能が有効になっています。Play の Samsung Health の隣で動作し、Samsung クラウドからデータを読み込みます。</string>
+    <string name="patch_shealth_res_webp">誤ったファイル拡張子で保存されている4つの画像を修正し、アプリを再ビルドできるようにします（見た目の変化はありません）。</string>
+    <string name="patch_shealth_feature_dev_ui">Samsung の開発者モードなしで、設定 &gt; 概要に機能一覧を表示します。</string>
+    <string name="patch_shealth_vitality_tile">ウォッチが機能を通知するのを待たずに、エネルギースコアのタイルを表示します。</string>
+    <string name="patch_shealth_rename_manifest">アプリに独自のパッケージ名とラベル(Samsung Health+)を与え、元のアプリの隣にインストールできるようにします。</string>
+    <string name="patch_shealth_rename_code">アプリの内部参照を新しいパッケージ名に更新します。</string>
+    <string name="patch_shealth_rename_account_xml">アプリに独自のアカウントと同期の登録を与え、元のアプリの隣でもクラウド同期が動作するようにします。</string>
+    <string name="patch_shealth_capability_gates">Galaxy Watch8 または Ultra が必要な「バイタル」「トレーニング負荷」と体力指数を有効にします。同期済みの履歴からスマートフォン上で計算されます。</string>
+    <string name="patch_shealth_launcher_badge">アプリのアイコンに小さな OpenSHM バッジを追加し、元のアプリと見分けられるようにします。</string>
+    <string name="patch_shealth_oobe_local">任意、初期設定ではオフ。Samsung アカウントでのサインイン要件を省略し、クラウド同期なしでローカルにアプリを使います。サインインできない場合のみオンにしてください。</string>
     <string name="device_logs_channel">デバイスログ</string>
     <string name="device_logs_notification_title">デバイスログを記録中</string>
     <string name="device_logs_notification_text">ウォッチ %1$d · スマートフォン %2$d</string>

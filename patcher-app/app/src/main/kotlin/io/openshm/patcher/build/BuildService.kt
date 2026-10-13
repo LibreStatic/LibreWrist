@@ -61,7 +61,7 @@ class BuildService : Service() {
         startForeground(NOTIFICATION_ID, progressNotification(BuildController.state.value), ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
         if (job?.isActive == true || BuildController.state.value.phase == BuildRunPhase.Running) return START_NOT_STICKY
         val session = SetupSession.state.value
-        val outputIds = session.watchProfile.outputIds
+        val outputIds = session.outputIds
         val disabled = AppCatalogue.current.effectiveDisabled(session.disabledPatches)
         val key = buildKey(AppCatalogue.current.serial, session.packagePrefix, outputIds, disabled)
         if (!BuildController.tryBegin(key)) return START_NOT_STICKY

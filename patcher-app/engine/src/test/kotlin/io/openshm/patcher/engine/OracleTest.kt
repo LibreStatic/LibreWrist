@@ -13,13 +13,15 @@ import org.w3c.dom.Node
  * Equivalence oracle: the Kotlin engine against the Python pipeline (apktool + superpatcher.py).
  *
  * Opt-in: runs only when SHM_ORACLE_APKS points at a directory with the official APKs
- * (`alarm-watch-1.3.05.5.apk`, `shm-watch-1.5.1.022.apk`, `shm-phone-1.4.6.001.apk`). It needs
+ * (`alarm-watch-1.3.05.5.apk`, `shm-watch-1.5.1.022.apk`, `shm-phone-1.4.6.001.apk`,
+ * `shealth-7.00.6.011.apk`). It needs
  * the tools of the scripts (python3, bash, apktool, Android build tools, javac), takes minutes and
  * several GB of memory (apktool runs one at a time, 4 GB heap). Variables:
  *
  *   SHM_ORACLE_APKS   directory with the official APKs (also gives APKS_DIR to the scripts)
  *   SHM_ORACLE_WORK   scratch directory (default ~/.cache/shm-interop/oracle-kotlin)
- *   SHM_ORACLE_ONLY   comma separated subset of: alarm, watch, phone, bridge-watch, bridge-phone
+ *   SHM_ORACLE_ONLY   comma separated subset of: alarm, watch, phone, shealth, bridge-watch, bridge-phone
+ *   SHM_TEST_HEAP     heap of the test JVM (default 3g); 512m checks that the Kotlin engine fits a phone
  *   SHM_ORACLE_OWNCODE  opt-in Phase 2: the output directory of the app's `ownCodeAssets` Gradle task
  *                     (contains `owncode/` or is that directory: the `injections` and `apps` directories).
  *                     The alarm and watch comparisons then inject `DexInjection(<asset dex>)` on the
@@ -40,7 +42,9 @@ import org.w3c.dom.Node
  * exactly, XML after normalisation). Signatures, the binary encoding and `original/` are not
  * compared. The test fails with the list of differences.
  *
- * Normalisation, deliberately: XML attributes are sorted; the children of resource value files are
+ * Normalisation, deliberately: XML attributes are sorted; namespace declarations are compared by URI
+ * and prefixed names carry the URI instead of the prefix (apktool names the `res-auto` prefix `ns1`,
+ * ARSCLib keeps `app`); the children of resource value files are
  * compared as sets (ARSCLib and apktool order entries differently); `public.xml` ids are ignored
  * (the Python rebuild renumbers resources, the Kotlin engine keeps the input's ids, so the Kotlin
  * output is the faithful one); in apktool.yml the file name, `doNotCompress` and `packageName` are
@@ -55,12 +59,22 @@ class OracleTest {
     }
     private val testDigest = "0123456789abcdef".repeat(4)
 
-    private class Target(val name: String, val apk: String, val inputId: String, val profile: String, val inject: String?)
+    /**
+     * [relaxed]: differences that only come from how each side rewrites what the patches do not
+     * touch are dropped — aapt2 re-crunches PNGs in the Python build, and dexlib2 writes the static
+     * default values (`= false`/`null`/`0x0`) and splits try ranges around non-throwing
+     * instructions of the unpatched classes of a rebuilt dex. Instructions are still compared in order.
+     */
+    private class Target(
+        val name: String, val apk: String, val inputId: String, val profile: String, val inject: String?,
+        val relaxed: Boolean = false,
+    )
 
     private val targets = listOf(
         Target("alarm", "alarm-watch-1.3.05.5.apk", "alarm-watch", "alarm", "alarm-fork"),
         Target("watch", "shm-watch-1.5.1.022.apk", "shm-watch", "gms", "watch-mod"),
         Target("phone", "shm-phone-1.4.6.001.apk", "shm-phone", "gms", null),
+        Target("shealth", "shealth-7.00.6.011.apk", "shealth-phone", "shealth", null, relaxed = true),
         Target("bridge-watch", "", "bridge-watch", "", null),
         Target("bridge-phone", "", "bridge-phone", "", null),
     )
@@ -155,7 +169,12 @@ class OracleTest {
             return "${t.name}: Kotlin engine FAILED after $ms ms: ${report.error}"
         }
 
-        return compareApks(t.name, pyApk, ktApk, dir, env, failures, ms)
+        // renameFile only matters to apktool/aapt2: the Kotlin engine keeps the stored names
+        val renamed = catalogue.patterns.values.flatMap { it.steps }.filter { it["op"] == "renameFile" }.associate {
+            val path = it["path"] as String
+            path.substringBeforeLast('/') + "/" + it["name"] as String to path
+        }
+        return compareApks(t.name, pyApk, ktApk, dir, env, failures, ms, renamed, t.relaxed)
     }
 
     /** Phase 2: the scripts' bridge build against [OwnAppBuilder] on the placeholder asset. */
@@ -181,17 +200,30 @@ class OracleTest {
             failures.add("${t.name}: OwnAppBuilder failed: ${report.error}")
             return "${t.name}: OwnAppBuilder FAILED after $ms ms: ${report.error}"
         }
-        return compareApks(t.name, pyApk, ktApk, dir, env, failures, ms)
+        // renameFile only matters to apktool/aapt2: the Kotlin engine keeps the stored names
+        val renamed = catalogue.patterns.values.flatMap { it.steps }.filter { it["op"] == "renameFile" }.associate {
+            val path = it["path"] as String
+            path.substringBeforeLast('/') + "/" + it["name"] as String to path
+        }
+        return compareApks(t.name, pyApk, ktApk, dir, env, failures, ms, renamed, t.relaxed)
     }
 
-    private fun compareApks(name: String, pyApk: File, ktApk: File, dir: File, env: Map<String, String>, failures: MutableList<String>, ms: Long): String {
+    private fun compareApks(
+        name: String, pyApk: File, ktApk: File, dir: File, env: Map<String, String>, failures: MutableList<String>, ms: Long,
+        renamed: Map<String, String> = emptyMap(), relaxed: Boolean = false,
+    ): String {
         val pyDec = File(dir, "dec-py")
         val ktDec = File(dir, "dec-kotlin")
         for ((a, d) in listOf(pyApk to pyDec, ktApk to ktDec)) {
             sh(repo, env, File(dir, "apktool-${d.name}.log"), "bash", "-c",
                 "source \"\$0/scripts/lib/common.sh\"; apktool d -f \"\$1\" -o \"\$2\"", repo.path, a.path, d.path)
         }
-        val diffs = compareTrees(pyDec, ktDec, loose = name.startsWith("bridge-"))
+        val diffs = compareTrees(pyDec, ktDec, loose = name.startsWith("bridge-"), renamed = renamed, relaxed = relaxed).toMutableList()
+        // The decoded trees do not show the package-chunk name of resources.arsc; compare it directly (streamed).
+        val arscPackages = listOf(pyApk, ktApk).map { apk ->
+            ZipReader(apk).use { z -> z.entry("resources.arsc")?.let { ArscPackages.packageNames(z.open(it)) } }
+        }
+        if (arscPackages[0] != arscPackages[1]) diffs.add("resources.arsc package names differ: python ${arscPackages[0]}, kotlin ${arscPackages[1]}")
         File(dir, "diffs.txt").writeText(diffs.joinToString("\n"))
         diffs.forEach { failures.add("$name: $it") }
         return "$name: Kotlin ${ms} ms, ${diffs.size} difference(s)"
@@ -199,8 +231,11 @@ class OracleTest {
 
     // ------------------------------------------------------------------ tree comparison
 
-    private fun compareTrees(py: File, kt: File, loose: Boolean = false): List<String> {
-        val a = files(py)
+    /** [renamed] maps a file name of the Python tree back to the name the Kotlin engine keeps. */
+    private fun compareTrees(
+        py: File, kt: File, loose: Boolean = false, renamed: Map<String, String> = emptyMap(), relaxed: Boolean = false,
+    ): List<String> {
+        val a = files(py).mapKeys { (p, _) -> renamed[p] ?: p }
         val b = files(kt)
         val diffs = ArrayList<String>()
         if (loose) {
@@ -218,6 +253,8 @@ class OracleTest {
                 loose && p.endsWith(".smali") -> null
                 p.endsWith(".xml") -> compareXml(p, fa, fb)
                 p == "apktool.yml" -> compareLines(yml(fa), yml(fb))
+                relaxed && p.endsWith(".png") -> null
+                relaxed && p.endsWith(".smali") -> compareLines(relaxedSmali(fa), relaxedSmali(fb))
                 p.endsWith(".smali") || p.endsWith(".txt") || p.endsWith(".json") || p.endsWith(".properties") -> compareLines(fa.readLines(), fb.readLines())
                 else -> if (fa.length() != fb.length() || !fa.readBytes().contentEquals(fb.readBytes())) "binary file differs (${fa.length()} vs ${fb.length()} bytes)" else null
             }
@@ -254,6 +291,15 @@ class OracleTest {
         }
         out.values.forEach { it.sort() }
         return out
+    }
+
+    private fun relaxedSmali(f: File): List<String> = f.readLines().mapNotNull { l ->
+        val t = l.trim()
+        when {
+            t.startsWith(":try_") || t.startsWith(".catch ") || t.startsWith(".catchall ") -> null
+            t.startsWith(".field ") -> t.replace(Regex(" = (false|null|0x0)$"), "")
+            else -> l
+        }
     }
 
     /** Relative path -> file, `original/` (the packaged binaries and signatures) excluded. */
@@ -299,13 +345,22 @@ class OracleTest {
         dbf.isNamespaceAware = false
         val doc = dbf.newDocumentBuilder().parse(f)
         val out = ArrayList<String>()
+        val rootAttrs = doc.documentElement.attributes
+        val nsByPrefix = (0 until rootAttrs.length).map { rootAttrs.item(it) }
+            .filter { it.nodeName.startsWith("xmlns:") }.associate { it.nodeName.removePrefix("xmlns:") to it.nodeValue }
+        // A prefixed name is rendered with its namespace URI, so the prefix's spelling does not matter.
+        fun qn(name: String): String {
+            val i = name.indexOf(':')
+            return if (i < 0) name else nsByPrefix[name.substring(0, i)]?.let { "{$it}" + name.substring(i + 1) } ?: name
+        }
         fun walk(n: Node, depth: Int) {
             when (n) {
                 is Element -> {
                     val attrs = (0 until n.attributes.length).map { n.attributes.item(it) }
                         .filterNot { dropIds && it.nodeName == "id" }
-                        .sortedBy { it.nodeName }.joinToString(" ") { "${it.nodeName}=\"${it.nodeValue}\"" }
-                    out.add("  ".repeat(depth) + "<" + n.tagName + (if (attrs.isNotEmpty()) " $attrs" else "") + ">")
+                        .map { if (it.nodeName.startsWith("xmlns:")) "xmlns:*" to it.nodeValue else qn(it.nodeName) to it.nodeValue }
+                        .sortedWith(compareBy({ it.first }, { it.second })).joinToString(" ") { "${it.first}=\"${it.second}\"" }
+                    out.add("  ".repeat(depth) + "<" + qn(n.tagName) + (if (attrs.isNotEmpty()) " $attrs" else "") + ">")
                     if (!sortChildren) {
                         for (i in 0 until n.childNodes.length) walk(n.childNodes.item(i), depth + 1)
                     } else {

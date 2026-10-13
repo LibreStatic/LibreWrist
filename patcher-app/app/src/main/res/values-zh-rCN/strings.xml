@@ -243,6 +243,7 @@
     <string name="patch_phone_rebrand_gms">让手机应用使用与手表应用相同的包名和密钥，以便两者交换数据。</string>
     <string name="patch_watch_rebrand_coexist">重命名手表应用，使其与自带应用并存。</string>
     <string name="patch_shm_wear_trusted_peers">让两个已修补的应用在手表连接中互相识别，而不仅限于原版应用。</string>
+    <string name="patch_shm_launcher_badge">在应用图标上添加一个小的 OpenSHM 角标，方便与原版区分。</string>
     <string name="patch_watch_gms_resources_anchor">定义原版构建中被移除的一项资源，使手表能够向手机通告该应用。</string>
     <string name="patch_watch_queries_health_service">让手表应用能够看到健康服务。</string>
     <string name="patch_watch_companion_vendor">接受任何品牌的配套手机。</string>
@@ -690,6 +691,19 @@
     <string name="phone_adb_error_message">这是应用本身的问题，不是你的操作有误，你也无法自行修复。你仍可以使用每一行的“打开设置”按钮，或选择仍然继续。</string>
     <string name="phone_adb_success_title">全部完成</string>
     <string name="phone_adb_success_message">进入下一步</string>
+    <string name="acquire_shealth_title">Samsung Health（可选）</string>
+    <string name="acquire_shealth_summary">还会构建手机版 Samsung Health 的补丁副本“Samsung Health+”，解锁需要较新 Galaxy Watch 的功能。它安装在 Play 的 Samsung Health 旁边，原应用会保留：原应用继续与手表连接并上传到你的 Samsung Account，Samsung Health+ 在你用同一账号登录后从云端下载相同的数据（可能会滞后一段时间）。</string>
+    <string name="output_shealth_phone">Samsung Health+（已打补丁）</string>
+    <string name="change_purpose_shealth_phone">Samsung Health 的重命名副本，已解锁下列功能。它与 Play 的 Samsung Health 并行运行，并从 Samsung 云端读取你的数据。</string>
+    <string name="patch_shealth_res_webp">修复四张文件扩展名错误的图片，使应用可以重新构建（无可见变化）。</string>
+    <string name="patch_shealth_feature_dev_ui">无需 Samsung 开发者模式，即可在“设置 &gt; 关于”中显示功能列表。</string>
+    <string name="patch_shealth_vitality_tile">无需等待手表声明该能力，即可显示“能量得分”磁贴。</string>
+    <string name="patch_shealth_rename_manifest">为应用提供独立的包名和标签（Samsung Health+），使其可安装在原应用旁边。</string>
+    <string name="patch_shealth_rename_code">将应用的内部引用更新为新的包名。</string>
+    <string name="patch_shealth_rename_account_xml">为应用提供独立的账号和同步注册，使云同步能在原应用旁边正常工作。</string>
+    <string name="patch_shealth_capability_gates">解锁“生命体征”“训练负荷”和体能指数，否则它们需要 Galaxy Watch8 或 Ultra。它们根据你已同步的历史记录在手机上计算。</string>
+    <string name="patch_shealth_launcher_badge">在应用图标上添加一个小的 OpenSHM 角标，方便与原版区分。</string>
+    <string name="patch_shealth_oobe_local">可选，默认关闭。跳过 Samsung 账号登录要求，在本地使用应用，不进行云同步。仅在无法登录时开启。</string>
     <string name="device_logs_channel">设备日志</string>
     <string name="device_logs_notification_title">正在记录设备日志</string>
     <string name="device_logs_notification_text">手表 %1$d · 手机 %2$d</string>

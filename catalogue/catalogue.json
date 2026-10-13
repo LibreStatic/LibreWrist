@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "serial": 15,
-  "minAppVersion": 6,
+  "serial": 24,
+  "minAppVersion": 15,
   "inputs": [
     {
       "id": "shm-phone",
@@ -67,6 +67,30 @@
         "apkmirror": "samsung-electronics-co-ltd/alarm-wear-os",
         "apkmirrorRelease": "alarm-wear-os-1-3-05-5-release"
       }
+    },
+    {
+      "id": "shealth-phone",
+      "file": "shealth-7.00.6.011.apk",
+      "sha256": "e58c39dcdf4856510d487fae30ee52d1514198b58ca388c9be9753828f4fec89",
+      "label": "Samsung Health",
+      "package": "com.sec.android.app.shealth",
+      "versionName": "7.00.6.011",
+      "versionCode": 7006011,
+      "minSdk": 29,
+      "targetSdk": 36,
+      "abis": [
+        "arm64-v8a",
+        "armeabi-v7a"
+      ],
+      "dpi": "nodpi",
+      "format": "apk",
+      "target": "phone",
+      "role": "patched",
+      "obtain": {
+        "note": "APKMirror release (same zip entries as the Galaxy Store install; only the signing block differs)",
+        "apkmirror": "samsung-electronics-co-ltd/s-health",
+        "apkmirrorRelease": "samsung-health-7-00-6-011-release"
+      }
     }
   ],
   "families": [
@@ -82,6 +106,10 @@
     {
       "id": "alarm-watch",
       "package": "com.samsung.android.watch.alarm"
+    },
+    {
+      "id": "shealth-phone",
+      "package": "com.sec.android.app.shealth"
     }
   ],
   "profiles": {
@@ -102,7 +130,8 @@
           "shm-setup-network-gate",
           "shm-sleep-apnea-support",
           "phone-rebrand-gms",
-          "shm-wear-trusted-peers"
+          "shm-wear-trusted-peers",
+          "shm-launcher-badge"
         ],
         "shm-watch": [
           "generic-manufacturer-check",
@@ -154,6 +183,23 @@
           "alarm-fork"
         ]
       }
+    },
+    "shealth": {
+      "description": "Samsung Health+, a renamed copy of Samsung Health (${PKG_PREFIX}.shealth) that installs next to the stock app from Play, which stays connected to the watch. It reads the same data from the Samsung cloud and unlocks the local feature-flag UI, the Energy Score tile, Vitals, Training load and the fitness index. The optional Local-only pattern (off by default) removes the mandatory Samsung Account sign-in; enable it if sign-in does not work on this device.",
+      "families": {
+        "shealth-phone": [
+          "shealth-res-webp",
+          "shealth-feature-dev-ui",
+          "shealth-vitality-tile",
+          "shealth-rename-manifest",
+          "shealth-rename-code",
+          "shealth-rename-account-xml",
+          "shealth-capability-gates",
+          "shealth-launcher-badge",
+          "shealth-oobe-local"
+        ]
+      },
+      "inject": {}
     }
   },
   "patterns": {
@@ -1666,6 +1712,829 @@
           "id": "0x7f010000"
         }
       ]
+    },
+    "shealth-feature-dev-ui": {
+      "families": [
+        "shealth-phone"
+      ],
+      "title": "Feature dev UI",
+      "description": "FeatureManager.isEnabled -> true; the Settings>About feature-list entry no longer requires Samsung developer mode",
+      "optional": false,
+      "ops": [
+        {
+          "op": "setMethodBody",
+          "fileRegex": "/config/FeatureManager\\.smali$",
+          "sigRegex": "public isEnabled\\(\\)Z",
+          "body": [
+            "    .locals 1",
+            "",
+            "    const/4 v0, 0x1",
+            "",
+            "    return v0"
+          ],
+          "expect": 1
+        },
+        {
+          "op": "setMethodBody",
+          "fileRegex": "/HomeSettingsAboutActivity\\.smali$",
+          "sigRegex": "public final L1\\(\\)Z",
+          "body": [
+            "    .locals 2",
+            "",
+            "    invoke-static {}, Lcom/samsung/android/app/shealth/config/FeatureManager;->getInstance()Lcom/samsung/android/app/shealth/config/FeatureManager;",
+            "",
+            "    move-result-object v0",
+            "",
+            "    invoke-virtual {v0}, Lcom/samsung/android/app/shealth/config/FeatureManager;->isEnabled()Z",
+            "",
+            "    move-result v0",
+            "",
+            "    return v0"
+          ],
+          "expect": 1
+        }
+      ]
+    },
+    "shealth-vitality-tile": {
+      "families": [
+        "shealth-phone"
+      ],
+      "title": "Vitality tile",
+      "description": "Default of vitality_show_tile_without_capabilities -> true: the Energy Score tile and its HRV states no longer wait for the watch capability advertisement",
+      "optional": false,
+      "ops": [
+        {
+          "op": "replaceInClass",
+          "old": [
+            "    const-string v4, \"vitality_show_tile_without_capabilities\"",
+            "",
+            "    const-string v6, \"Show Vitality tile without capabilities\"",
+            "",
+            "    invoke-static {v4, v6, v2, v5, v5}, Lgz6;->g(Ljava/lang/String;Ljava/lang/String;Lcom/samsung/android/app/shealth/config/Feature$Type;ZZ)Lcom/samsung/android/app/shealth/config/Feature;"
+          ],
+          "new": [
+            "    const-string v4, \"vitality_show_tile_without_capabilities\"",
+            "",
+            "    const-string v6, \"Show Vitality tile without capabilities\"",
+            "",
+            "    const/4 v5, 0x1",
+            "",
+            "    invoke-static {v4, v6, v2, v5, v5}, Lgz6;->g(Ljava/lang/String;Ljava/lang/String;Lcom/samsung/android/app/shealth/config/Feature$Type;ZZ)Lcom/samsung/android/app/shealth/config/Feature;"
+          ],
+          "count": 1,
+          "className": "com/samsung/android/app/shealth/config/FeatureGroup"
+        }
+      ]
+    },
+    "shealth-oobe-local": {
+      "families": [
+        "shealth-phone"
+      ],
+      "title": "Local-only mode (no Samsung Account)",
+      "description": "SamsungAccountManager.s0 reports LOG_IN, so the mandatory sign-in stop state right after OOBE never fires; the app runs account-less with no cloud sync",
+      "optional": true,
+      "offByDefault": true,
+      "ops": [
+        {
+          "op": "setMethodBody",
+          "fileRegex": "/j9v\\.smali$",
+          "sigRegex": "public final s0\\(\\)La11;",
+          "body": [
+            "    .locals 1",
+            "",
+            "    sget-object v0, Lcom/samsung/android/app/shealth/app/state/SamsungAccountManager$State;->LOG_IN:Lcom/samsung/android/app/shealth/app/state/SamsungAccountManager$State;",
+            "",
+            "    return-object v0"
+          ],
+          "expect": 1
+        }
+      ]
+    },
+    "shealth-res-webp": {
+      "families": [
+        "shealth-phone"
+      ],
+      "title": "Resource formats",
+      "description": "Four drawables store WebP/JPEG bytes under a .png name (aapt2 refuses them): renamed to the extension of their real content; the resources keep name and id",
+      "optional": false,
+      "ops": [
+        {
+          "op": "renameFile",
+          "path": "res/drawable-xxhdpi/element_index_shape.png",
+          "name": "element_index_shape.webp"
+        },
+        {
+          "op": "renameFile",
+          "path": "res/drawable-xxhdpi/coaching_jetlag_index.png",
+          "name": "coaching_jetlag_index.webp"
+        },
+        {
+          "op": "renameFile",
+          "path": "res/drawable/heart_health_sleep_illustration.png",
+          "name": "heart_health_sleep_illustration.webp"
+        },
+        {
+          "op": "renameFile",
+          "path": "res/drawable/phr_expanded_chart_image.png",
+          "name": "phr_expanded_chart_image.jpg"
+        }
+      ]
+    },
+    "shealth-rename-manifest": {
+      "families": [
+        "shealth-phone"
+      ],
+      "title": "Package rename (manifest)",
+      "description": "Manifest: package com.sec.android.app.shealth -> ${PKG_PREFIX}.shealth, every provider authority and custom permission renamed into the new namespace, label \"Samsung Health+\", so the patched copy installs next to the stock app (which keeps the watch connection)",
+      "optional": false,
+      "ops": [
+        {
+          "op": "manifestRebrand",
+          "oldPkg": "com.sec.android.app.shealth",
+          "newPkg": "${PKG_PREFIX}.shealth"
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "application/provider",
+            "attr": {
+              "android:authorities": "com.samsung.android.app.shealth.hearing.VolumeMonitorProvider"
+            }
+          },
+          "attrs": {
+            "android:authorities": "${PKG_PREFIX}.shealth.app.hearing.VolumeMonitorProvider"
+          },
+          "expect": 1
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "application/provider",
+            "attr": {
+              "android:authorities": "com.samsung.android.app.shealth.home"
+            }
+          },
+          "attrs": {
+            "android:authorities": "${PKG_PREFIX}.shealth.app.home"
+          },
+          "expect": 1
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "application/provider",
+            "attr": {
+              "android:authorities": "com.samsung.android.app.shealth.insights.healthcontext"
+            }
+          },
+          "attrs": {
+            "android:authorities": "${PKG_PREFIX}.shealth.app.insights.healthcontext"
+          },
+          "expect": 1
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "application/provider",
+            "attr": {
+              "android:authorities": "com.samsung.android.app.shealth.logfile"
+            }
+          },
+          "attrs": {
+            "android:authorities": "${PKG_PREFIX}.shealth.app.logfile"
+          },
+          "expect": 1
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "application/provider",
+            "attr": {
+              "android:authorities": "com.samsung.android.app.shealth.phr.india.fileprovider"
+            }
+          },
+          "attrs": {
+            "android:authorities": "${PKG_PREFIX}.shealth.app.phr.india.fileprovider"
+          },
+          "expect": 1
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "application/provider",
+            "attr": {
+              "android:authorities": "com.samsung.android.app.shealth.sensor.accessory.service.provider"
+            }
+          },
+          "attrs": {
+            "android:authorities": "${PKG_PREFIX}.shealth.app.sensor.accessory.service.provider"
+          },
+          "expect": 1
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "application/provider",
+            "attr": {
+              "android:authorities": "com.samsung.android.app.shealth.sensor.sdk.fitness.mcf"
+            }
+          },
+          "attrs": {
+            "android:authorities": "${PKG_PREFIX}.shealth.app.sensor.sdk.fitness.mcf"
+          },
+          "expect": 1
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "application/provider",
+            "attr": {
+              "android:authorities": "com.samsung.android.app.shealth.tracker.sport.provider"
+            }
+          },
+          "attrs": {
+            "android:authorities": "${PKG_PREFIX}.shealth.app.tracker.sport.provider"
+          },
+          "expect": 1
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "application/provider",
+            "attr": {
+              "android:authorities": "com.samsung.android.app.shealth.tracker.sport.route.ExerciseFileProvider"
+            }
+          },
+          "attrs": {
+            "android:authorities": "${PKG_PREFIX}.shealth.app.tracker.sport.route.ExerciseFileProvider"
+          },
+          "expect": 1
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "application/provider",
+            "attr": {
+              "android:authorities": "com.samsung.android.app.shealth.util.share.ShareSliceProvider"
+            }
+          },
+          "attrs": {
+            "android:authorities": "${PKG_PREFIX}.shealth.app.util.share.ShareSliceProvider"
+          },
+          "expect": 1
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "application/provider",
+            "attr": {
+              "android:authorities": "com.samsung.android.app.shealth.watch.settings.provider"
+            }
+          },
+          "attrs": {
+            "android:authorities": "${PKG_PREFIX}.shealth.app.watch.settings.provider"
+          },
+          "expect": 1
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "permission",
+            "attr": {
+              "android:name": "com.sec.permission.START_ACTIVITY_SHEALTH"
+            }
+          },
+          "attrs": {
+            "android:name": "${PKG_PREFIX}.shealth.permission.START_ACTIVITY_SHEALTH"
+          },
+          "expect": 1
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "application/activity",
+            "attr": {
+              "android:permission": "com.sec.permission.START_ACTIVITY_SHEALTH"
+            }
+          },
+          "attrs": {
+            "android:permission": "${PKG_PREFIX}.shealth.permission.START_ACTIVITY_SHEALTH"
+          },
+          "expect": 1
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "permission",
+            "attr": {
+              "android:name": "com.sec.android.service.health.permission.SWEIGHTSENSOR"
+            }
+          },
+          "attrs": {
+            "android:name": "${PKG_PREFIX}.shealth.permission.SWEIGHTSENSOR"
+          },
+          "expect": 1
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "uses-permission",
+            "attr": {
+              "android:name": "com.sec.android.service.health.permission.SWEIGHTSENSOR"
+            }
+          },
+          "attrs": {
+            "android:name": "${PKG_PREFIX}.shealth.permission.SWEIGHTSENSOR"
+          },
+          "expect": 1
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "permission",
+            "attr": {
+              "android:name": "com.sec.android.service.health.permission.PEDOMETER"
+            }
+          },
+          "attrs": {
+            "android:name": "${PKG_PREFIX}.shealth.permission.PEDOMETER"
+          },
+          "expect": 1
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "permission",
+            "attr": {
+              "android:name": "com.samsung.android.app.shealth.permission.READ_CONTENT"
+            }
+          },
+          "attrs": {
+            "android:name": "${PKG_PREFIX}.shealth.permission.READ_CONTENT"
+          },
+          "expect": 1
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "application/provider",
+            "attr": {
+              "android:readPermission": "com.samsung.android.app.shealth.permission.READ_CONTENT"
+            }
+          },
+          "attrs": {
+            "android:readPermission": "${PKG_PREFIX}.shealth.permission.READ_CONTENT"
+          },
+          "expect": 1
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "permission",
+            "attr": {
+              "android:name": "com.samsung.android.app.shealth.watch.settings.permission.READ_PERMISSION"
+            }
+          },
+          "attrs": {
+            "android:name": "${PKG_PREFIX}.shealth.permission.READ_PERMISSION"
+          },
+          "expect": 1
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "application/provider",
+            "attr": {
+              "android:readPermission": "com.samsung.android.app.shealth.watch.settings.permission.READ_PERMISSION"
+            }
+          },
+          "attrs": {
+            "android:readPermission": "${PKG_PREFIX}.shealth.permission.READ_PERMISSION"
+          },
+          "expect": 1
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "permission",
+            "attr": {
+              "android:name": "com.samsung.healthcontext.permission.SHEALTH_OOBE_COMPLETED"
+            }
+          },
+          "attrs": {
+            "android:name": "${PKG_PREFIX}.shealth.permission.SHEALTH_OOBE_COMPLETED"
+          },
+          "expect": 1
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "permission",
+            "attr": {
+              "android:name": "com.samsung.android.app.shealth.hearing.permission.SET_VOLUME_DATA"
+            }
+          },
+          "attrs": {
+            "android:name": "${PKG_PREFIX}.shealth.permission.SET_VOLUME_DATA"
+          },
+          "expect": 1
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "application/provider",
+            "attr": {
+              "android:writePermission": "com.samsung.android.app.shealth.hearing.permission.SET_VOLUME_DATA"
+            }
+          },
+          "attrs": {
+            "android:writePermission": "${PKG_PREFIX}.shealth.permission.SET_VOLUME_DATA"
+          },
+          "expect": 1
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "application"
+          },
+          "attrs": {
+            "android:label": "Samsung Health+"
+          },
+          "expect": 1
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "application/activity",
+            "attr": {
+              "android:name": "com.samsung.android.app.shealth.home.HomeMainActivity"
+            }
+          },
+          "attrs": {
+            "android:label": "Samsung Health+"
+          },
+          "expect": 1
+        }
+      ]
+    },
+    "shealth-rename-code": {
+      "families": [
+        "shealth-phone"
+      ],
+      "title": "Package rename (code)",
+      "description": "Smali: the exact package name, provider authorities (bare and content:// URIs), the OOBE broadcast permission, the account type com.samsung.health.auth, the app-settings URI package:<pkg> (permission prompts) and the :remote process name -> the new names",
+      "optional": false,
+      "ops": [
+        {
+          "op": "replaceConstStringExact",
+          "old": "com.sec.android.app.shealth",
+          "new": "${PKG_PREFIX}.shealth",
+          "expect": "atLeastOne"
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "com.sec.android.app.shealth.cloudsync",
+          "new": "${PKG_PREFIX}.shealth.cloudsync",
+          "expect": "atLeastOne"
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "com.sec.android.app.shealth.datastore",
+          "new": "${PKG_PREFIX}.shealth.datastore",
+          "expect": "atLeastOne"
+        },
+        {
+          "op": "replaceAllInFilesWithAnchor",
+          "fileContains": "\"content://",
+          "old": "\"content://com.sec.android.app.shealth.fileprovider",
+          "new": "\"content://${PKG_PREFIX}.shealth.fileprovider",
+          "expect": "atLeastOne"
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "com.sec.android.app.shealth.logfileprovider",
+          "new": "${PKG_PREFIX}.shealth.logfileprovider",
+          "expect": "atLeastOne"
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "com.sec.android.app.shealth.push_init",
+          "new": "${PKG_PREFIX}.shealth.push_init",
+          "expect": "atLeastOne"
+        },
+        {
+          "op": "replaceAllInFilesWithAnchor",
+          "fileContains": "\"content://",
+          "old": "\"content://com.sec.android.app.shealth.push_init",
+          "new": "\"content://${PKG_PREFIX}.shealth.push_init",
+          "expect": "atLeastOne"
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "com.sec.android.app.shealth.shared_preference",
+          "new": "${PKG_PREFIX}.shealth.shared_preference",
+          "expect": "atLeastOne"
+        },
+        {
+          "op": "replaceAllInFilesWithAnchor",
+          "fileContains": "\"content://",
+          "old": "\"content://com.sec.android.app.shealth.shared_preference",
+          "new": "\"content://${PKG_PREFIX}.shealth.shared_preference",
+          "expect": "atLeastOne"
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "com.sec.android.app.shealth.sleepprovider",
+          "new": "${PKG_PREFIX}.shealth.sleepprovider",
+          "expect": "atLeastOne"
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "com.sec.android.app.shealth.smartswitch",
+          "new": "${PKG_PREFIX}.shealth.smartswitch",
+          "expect": "atLeastOne"
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "com.sec.android.app.shealth.tracker.medication.ui.util.fileprovider",
+          "new": "${PKG_PREFIX}.shealth.tracker.medication.ui.util.fileprovider",
+          "expect": "atLeastOne"
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "com.sec.android.app.shealth.webservice.fileprovider",
+          "new": "${PKG_PREFIX}.shealth.webservice.fileprovider",
+          "expect": "atLeastOne"
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "com.sec.android.app.shealth.widgetprovider",
+          "new": "${PKG_PREFIX}.shealth.widgetprovider",
+          "expect": "atLeastOne"
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "com.samsung.android.app.shealth.hearing.VolumeMonitorProvider",
+          "new": "${PKG_PREFIX}.shealth.app.hearing.VolumeMonitorProvider",
+          "expect": "atLeastOne"
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "com.samsung.android.app.shealth.insights.healthcontext",
+          "new": "${PKG_PREFIX}.shealth.app.insights.healthcontext",
+          "expect": "atLeastOne"
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "com.samsung.android.app.shealth.logfile",
+          "new": "${PKG_PREFIX}.shealth.app.logfile",
+          "expect": "atLeastOne"
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "com.samsung.android.app.shealth.sensor.accessory.service.provider",
+          "new": "${PKG_PREFIX}.shealth.app.sensor.accessory.service.provider",
+          "expect": "atLeastOne"
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "com.samsung.android.app.shealth.sensor.sdk.fitness.mcf",
+          "new": "${PKG_PREFIX}.shealth.app.sensor.sdk.fitness.mcf",
+          "expect": "atLeastOne"
+        },
+        {
+          "op": "replaceAllInFilesWithAnchor",
+          "fileContains": "\"content://",
+          "old": "\"content://com.samsung.android.app.shealth.sensor.sdk.fitness.mcf",
+          "new": "\"content://${PKG_PREFIX}.shealth.app.sensor.sdk.fitness.mcf",
+          "expect": "atLeastOne"
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "com.samsung.android.app.shealth.tracker.sport.provider",
+          "new": "${PKG_PREFIX}.shealth.app.tracker.sport.provider",
+          "expect": "atLeastOne"
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "com.samsung.android.app.shealth.tracker.sport.route.ExerciseFileProvider",
+          "new": "${PKG_PREFIX}.shealth.app.tracker.sport.route.ExerciseFileProvider",
+          "expect": "atLeastOne"
+        },
+        {
+          "op": "replaceAllInFilesWithAnchor",
+          "fileContains": "\"content://",
+          "old": "\"content://com.samsung.android.app.shealth.util.share.ShareSliceProvider",
+          "new": "\"content://${PKG_PREFIX}.shealth.app.util.share.ShareSliceProvider",
+          "expect": "atLeastOne"
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "com.samsung.android.app.shealth.watch.settings.provider",
+          "new": "${PKG_PREFIX}.shealth.app.watch.settings.provider",
+          "expect": "atLeastOne"
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "com.samsung.healthcontext.permission.SHEALTH_OOBE_COMPLETED",
+          "new": "${PKG_PREFIX}.shealth.permission.SHEALTH_OOBE_COMPLETED",
+          "expect": "atLeastOne"
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "com.samsung.health.auth",
+          "new": "${PKG_PREFIX}.shealth.auth",
+          "expect": "atLeastOne"
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "package:com.sec.android.app.shealth",
+          "new": "package:${PKG_PREFIX}.shealth",
+          "expect": "atLeastOne"
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "com.sec.android.app.shealth:remote",
+          "new": "${PKG_PREFIX}.shealth:remote",
+          "expect": "atLeastOne"
+        }
+      ]
+    },
+    "shealth-rename-account-xml": {
+      "families": [
+        "shealth-phone"
+      ],
+      "title": "Package rename (account and sync XML)",
+      "description": "Account authenticator and sync adapter XML: account type and datastore authority -> the new names (two packages cannot register the same authenticator type)",
+      "optional": false,
+      "ops": [
+        {
+          "op": "resXmlReplaceString",
+          "old": "com.samsung.health.auth",
+          "new": "${PKG_PREFIX}.shealth.auth",
+          "expect": 4
+        },
+        {
+          "op": "resXmlReplaceString",
+          "old": "com.sec.android.app.shealth.datastore",
+          "new": "${PKG_PREFIX}.shealth.datastore",
+          "expect": 2
+        }
+      ]
+    },
+    "shealth-capability-gates": {
+      "families": [
+        "shealth-phone"
+      ],
+      "title": "Watch capability gates",
+      "description": "Every inlined check of the watch-advertised service list (service_capability_list contains tracker.vitals / tracker.training_load / program.fitness_index) -> true, and the per-sleep Vitals device check (xvx.K0) -> true: Vitals, Training load and the fitness index compute on the phone from the synced history without a Galaxy Watch8/Ultra model whitelist",
+      "optional": true,
+      "ops": [
+        {
+          "op": "insertInMethodAtMatch",
+          "sigRegex": ".+",
+          "bodyAll": [
+            "\"service_capability_list\"",
+            "\"getServiceList: size=\"",
+            "Landroid/content/SharedPreferences;->getStringSet(",
+            "Ljava/util/List;->contains(Ljava/lang/Object;)Z"
+          ],
+          "pattern": "\"getServiceList: size=\"(?:\\n.*){1,40}?\\n\\s*invoke-interface \\{v\\d+, v\\d+\\}, Ljava/util/List;->contains\\(Ljava/lang/Object;\\)Z\\n(?:\\s*\\n)*\\s*move-result (?P<r>v\\d+)\\n(?P<at>)",
+          "insert": [
+            "",
+            "    const/4 {{r}}, 0x1",
+            ""
+          ],
+          "expect": 3
+        },
+        {
+          "op": "setMethodBody",
+          "fileRegex": "/xvx\\.smali$",
+          "sigRegex": "public K0\\(Lcom/samsung/android/app/shealth/sleep/data/SleepItem;Lgc5;\\)Ljava/lang/Object;",
+          "bodyAll": [
+            "\"SHEALTH#Vitals#AvailabilityHelper\"",
+            "\"tracker.vitals\""
+          ],
+          "body": [
+            "    .locals 0",
+            "",
+            "    sget-object p0, Ljava/lang/Boolean;->TRUE:Ljava/lang/Boolean;",
+            "",
+            "    return-object p0"
+          ],
+          "expect": 1
+        }
+      ]
+    },
+    "shealth-launcher-badge": {
+      "families": [
+        "shealth-phone"
+      ],
+      "title": "Launcher icon badge",
+      "description": "Adds a small OpenSHM badge (bottom-right) to the launcher, widget and shortcut icons of the app, in the colour and the monochrome (themed) layers, so it can be told apart from the original Samsung Health",
+      "optional": true,
+      "ops": [
+        {
+          "op": "adaptiveIconBadge",
+          "layers": {
+            "foreground": [
+              {
+                "pathData": "M61.5,71.5a10,10 0,1 1,20 0a10,10 0,1 1,-20 0",
+                "fillColor": "#FF4F5BD5",
+                "strokeColor": "#FFFFFFFF",
+                "strokeWidth": 1.5
+              },
+              {
+                "pathData": "M65.56,71.5a5.94,5.94 0,1 1,11.88 0a5.94,5.94 0,1 1,-11.88 0",
+                "strokeColor": "#FFFFFFFF",
+                "strokeWidth": 1.35
+              },
+              {
+                "pathData": "M67.18,72.04 L69.61,72.04 L70.69,69.34 L72.31,74.74 L73.39,72.04 L75.82,72.04",
+                "strokeColor": "#FFFFFFFF",
+                "strokeWidth": 1.08,
+                "strokeLineCap": "round",
+                "strokeLineJoin": "round"
+              }
+            ],
+            "monochrome": [
+              {
+                "pathData": "M61.5,71.5a10,10 0,1 1,20 0a10,10 0,1 1,-20 0",
+                "strokeColor": "#FFFFFFFF",
+                "strokeWidth": 1.5
+              },
+              {
+                "pathData": "M65.56,71.5a5.94,5.94 0,1 1,11.88 0a5.94,5.94 0,1 1,-11.88 0",
+                "strokeColor": "#FFFFFFFF",
+                "strokeWidth": 1.35
+              },
+              {
+                "pathData": "M67.18,72.04 L69.61,72.04 L70.69,69.34 L72.31,74.74 L73.39,72.04 L75.82,72.04",
+                "strokeColor": "#FFFFFFFF",
+                "strokeWidth": 1.08,
+                "strokeLineCap": "round",
+                "strokeLineJoin": "round"
+              }
+            ]
+          },
+          "expect": 9
+        }
+      ]
+    },
+    "shm-launcher-badge": {
+      "families": [
+        "shm-phone"
+      ],
+      "title": "Launcher icon badge",
+      "description": "Adds a small OpenSHM badge (bottom-right) to the launcher icon of the phone app, in the colour and the monochrome (themed) layers, so it can be told apart from the original Samsung Health Monitor",
+      "optional": true,
+      "ops": [
+        {
+          "op": "adaptiveIconBadge",
+          "layers": {
+            "foreground": [
+              {
+                "pathData": "M61.5,71.5a10,10 0,1 1,20 0a10,10 0,1 1,-20 0",
+                "fillColor": "#FF4F5BD5",
+                "strokeColor": "#FFFFFFFF",
+                "strokeWidth": 1.5
+              },
+              {
+                "pathData": "M65.56,71.5a5.94,5.94 0,1 1,11.88 0a5.94,5.94 0,1 1,-11.88 0",
+                "strokeColor": "#FFFFFFFF",
+                "strokeWidth": 1.35
+              },
+              {
+                "pathData": "M67.18,72.04 L69.61,72.04 L70.69,69.34 L72.31,74.74 L73.39,72.04 L75.82,72.04",
+                "strokeColor": "#FFFFFFFF",
+                "strokeWidth": 1.08,
+                "strokeLineCap": "round",
+                "strokeLineJoin": "round"
+              }
+            ],
+            "monochrome": [
+              {
+                "pathData": "M61.5,71.5a10,10 0,1 1,20 0a10,10 0,1 1,-20 0",
+                "strokeColor": "#FFFFFFFF",
+                "strokeWidth": 1.5
+              },
+              {
+                "pathData": "M65.56,71.5a5.94,5.94 0,1 1,11.88 0a5.94,5.94 0,1 1,-11.88 0",
+                "strokeColor": "#FFFFFFFF",
+                "strokeWidth": 1.35
+              },
+              {
+                "pathData": "M67.18,72.04 L69.61,72.04 L70.69,69.34 L72.31,74.74 L73.39,72.04 L75.82,72.04",
+                "strokeColor": "#FFFFFFFF",
+                "strokeWidth": 1.08,
+                "strokeLineCap": "round",
+                "strokeLineJoin": "round"
+              }
+            ]
+          },
+          "expect": 1
+        }
+      ]
     }
   },
   "outputs": [
@@ -1711,6 +2580,15 @@
       "from": {
         "ownApp": "shm-bridge/phone"
       }
+    },
+    {
+      "id": "shealth-phone",
+      "device": "phone",
+      "package": "${PKG_PREFIX}.shealth",
+      "from": {
+        "input": "shealth-phone",
+        "profile": "shealth"
+      }
     }
   ],
   "installOrder": [
@@ -1729,6 +2607,9 @@
     },
     {
       "output": "bridge-phone"
+    },
+    {
+      "output": "shealth-phone"
     }
   ],
   "grants": {
@@ -1785,13 +2666,6 @@
         "op": "SCHEDULE_EXACT_ALARM",
         "mode": "allow",
         "note": "SCHEDULE_EXACT_ALARM is declared in the watch manifest and is revocable, so it is granted as an appop."
-      },
-      {
-        "kind": "secureSetting",
-        "key": "doze_always_on",
-        "value": "0",
-        "optional": true,
-        "note": "Recommended for measurements: keeps the watch out of the always-on Doze display state."
       }
     ],
     "bridge-watch": [
@@ -1896,6 +2770,12 @@
       {
         "kind": "deviceIdleWhitelist",
         "note": "Battery (Doze) exemption so the link service and its RFCOMM server keep running."
+      }
+    ],
+    "shealth-phone": [
+      {
+        "kind": "permission",
+        "name": "android.permission.POST_NOTIFICATIONS"
       }
     ]
   },

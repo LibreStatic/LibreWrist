@@ -67,6 +67,17 @@ class InstallSection(unittest.TestCase):
         self.cat['outputs'][0]['extra'] = 1
         self.assertRejected('expected exactly id, device, package, from')
 
+    def test_off_by_default_patterns(self):
+        self.cat = copy.deepcopy(C.load_raw())
+        off = self.cat['patterns']['shealth-oobe-local']
+        self.assertTrue(off['optional'])
+        self.assertTrue(off['offByDefault'])
+        self.cat['patterns']['shealth-oobe-local']['offByDefault'] = 5
+        self.assertRejected('offByDefault must be a boolean')
+        self.cat = copy.deepcopy(C.load_raw())
+        self.cat['patterns']['shealth-feature-dev-ui']['offByDefault'] = True
+        self.assertRejected('offByDefault is only allowed on optional patterns')
+
     def test_trailing_newline_and_shell_chars_rejected(self):
         grants = self.cat['grants']['bridge-phone']
         perm = next(g for g in grants if g['kind'] == 'permission')

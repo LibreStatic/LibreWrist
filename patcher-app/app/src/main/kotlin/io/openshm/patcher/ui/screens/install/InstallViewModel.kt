@@ -50,7 +50,7 @@ private val USER_ONLY_ON_PHONE = setOf(GrantKind.Permission, GrantKind.AppOp, Gr
 internal fun installItemsFor(device: Device): List<InstallItem> {
     val session = SetupSession.state.value
     return AppCatalogue.current.outputs
-        .filter { it.device == device && it.id in session.watchProfile.outputIds }
+        .filter { it.device == device && it.id in session.outputIds }
         .map { out ->
             InstallItem(
                 outputId = out.id,

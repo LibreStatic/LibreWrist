@@ -14,7 +14,7 @@ internal fun customizeStateFor(session: SessionState): CustomizeUiState {
     val catalogue = AppCatalogue.current
     val disabled = catalogue.effectiveDisabled(session.disabledPatches)
     return CustomizeUiState(
-        groups = session.watchProfile.inputIds.map { inputId ->
+        groups = session.inputIds.map { inputId ->
             val input = catalogue.input(inputId)
             CustomizeGroup(
                 inputId = inputId,

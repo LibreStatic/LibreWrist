@@ -19,6 +19,7 @@ internal fun outputPurpose(outputId: String): Int? = when (outputId) {
     "bridge-phone" -> R.string.change_purpose_bridge_phone
     "bridge-watch" -> R.string.change_purpose_bridge_watch
     "alarm-fork" -> R.string.change_purpose_alarm_fork
+    "shealth-phone" -> R.string.change_purpose_shealth_phone
     else -> null
 }
 
@@ -47,7 +48,7 @@ internal fun grantTitle(grant: Grant): Int = when (grant.name) {
 /** Why [outputId] needs [grant], or null when the app has no text for it. */
 @StringRes
 internal fun grantReason(outputId: String, grant: Grant): Int? {
-    val watch = outputId != "bridge-phone" && outputId != "shm-phone"
+    val watch = outputId != "bridge-phone" && outputId != "shm-phone" && outputId != "shealth-phone"
     return when (grant.kind) {
         GrantKind.NotificationListener -> if (watch) R.string.grant_why_listener_watch else R.string.grant_why_listener_phone
         GrantKind.BatteryExemption -> if (outputId == "alarm-fork") R.string.grant_why_battery_alarm else R.string.grant_why_battery_bridge

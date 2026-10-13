@@ -44,8 +44,8 @@ class CatalogueTest {
 
     @Test fun committedCatalogueParses() {
         val c = Catalogue.parse(String(catalogueBytes, Charsets.UTF_8))
-        assertEquals(41, c.patterns.size)
-        assertEquals(setOf("gms", "alarm"), c.profiles.keys)
+        assertEquals(51, c.patterns.size)
+        assertEquals(setOf("gms", "alarm", "shealth"), c.profiles.keys)
     }
 
     private fun mutated(edit: (String) -> String) =
@@ -102,6 +102,7 @@ class CatalogueTest {
             setOf(
                 "shm-min-age-22-to-16", "shm-setup-network-gate", "shm-sleep-apnea-support", "watch-apnea-country",
                 "watch-apnea-reeval-not-supported", "alarm-force-sound-vibrate", "alarm-hide-launcher", "alarm-relabel",
+                "shealth-oobe-local", "shealth-capability-gates", "shealth-launcher-badge", "shm-launcher-badge",
             ),
             c.patterns.values.filter { it.optional }.map { it.id }.toSet(),
         )
@@ -109,7 +110,36 @@ class CatalogueTest {
             setOf("shm-sleep-apnea-support", "watch-apnea-country", "watch-apnea-reeval-not-supported"),
             c.patterns.values.filter { it.optionGroup == "sleep-apnea" }.map { it.id }.toSet(),
         )
+        assertEquals(
+            setOf("shealth-oobe-local"),
+            c.patterns.values.filter { it.offByDefault }.map { it.id }.toSet(),
+        )
         c.requireDisablable(c.patterns.values.filter { it.optional }.map { it.id }.toSet())
+    }
+
+    @Test fun offByDefaultFieldIsTypeChecked() {
+        val anchor = "\"offByDefault\": true"
+        assertTrue(mutated { it }.contains(anchor))
+        for ((bad, expected) in listOf(
+            "\"offByDefault\": 5" to "offByDefault must be a boolean",
+        )) {
+            val mutatedText = mutated { it.replaceFirst(anchor, bad) }
+            try {
+                Catalogue.parse(mutatedText)
+                fail(bad)
+            } catch (e: CatalogueException) {
+                assertTrue(e.problems.toString(), e.problems.any { expected in it })
+            }
+        }
+        // offByDefault without optional: rewrite the shealth-oobe-local pattern's optional flag
+        val both = "\"optional\": true,\n      \"offByDefault\": true"
+        val noOptional = mutated { it.replaceFirst(both, "\"optional\": false,\n      \"offByDefault\": true") }
+        try {
+            Catalogue.parse(noOptional)
+            fail(noOptional)
+        } catch (e: CatalogueException) {
+            assertTrue(e.problems.toString(), e.problems.any { "offByDefault is only allowed on optional" in it })
+        }
     }
 
     @Test fun optionGroupFieldIsTypeChecked() {
@@ -133,7 +163,7 @@ class CatalogueTest {
 
     @Test fun parseSignedVerifiesBeforeParsing() {
         val key = CatalogueVerifier.parsePublicKey(pem)
-        assertEquals(41, Catalogue.parseSigned(catalogueBytes, signature, key).patterns.size)
+        assertEquals(51, Catalogue.parseSigned(catalogueBytes, signature, key).patterns.size)
         val tampered = catalogueBytes.copyOf().also { it[100] = (it[100].toInt() xor 1).toByte() }
         try {
             Catalogue.parseSigned(tampered, signature, key)

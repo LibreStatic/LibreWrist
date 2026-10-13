@@ -246,6 +246,7 @@
     <string name="patch_phone_rebrand_gms">Dà all\'app del telefono lo stesso pacchetto e la stessa chiave dell\'app dell\'orologio, così le due possono scambiarsi dati.</string>
     <string name="patch_watch_rebrand_coexist">Rinomina l\'app dell\'orologio per affiancarla a quella originale.</string>
     <string name="patch_shm_wear_trusted_peers">Fa sì che le due app modificate si riconoscano sul collegamento con l\'orologio, invece delle sole app originali.</string>
+    <string name="patch_shm_launcher_badge">Aggiunge un piccolo badge OpenSHM all\'icona dell\'app per distinguerla dall\'originale.</string>
     <string name="patch_watch_gms_resources_anchor">Definisce una risorsa rimossa dalla versione originale, così l\'orologio può annunciare l\'app al telefono.</string>
     <string name="patch_watch_queries_health_service">Permette all\'app dell\'orologio di vedere il servizio salute.</string>
     <string name="patch_watch_companion_vendor">Accetta qualsiasi marca di telefono complementare.</string>
@@ -698,6 +699,19 @@
     <string name="phone_adb_error_message">È un problema dell\'app, non un tuo errore, e non puoi risolverlo da solo. Puoi comunque usare i pulsanti Apri impostazioni di ogni riga o continuare comunque.</string>
     <string name="phone_adb_success_title">Tutto pronto</string>
     <string name="phone_adb_success_message">Passiamo al passo successivo</string>
+    <string name="acquire_shealth_title">Samsung Health (facoltativo)</string>
+    <string name="acquire_shealth_summary">Crea anche una copia modificata dell\'app Samsung Health del telefono, \"Samsung Health+\", con le funzioni che richiedono un Galaxy Watch più recente sbloccate. Si installa accanto a Samsung Health di Play, che conservi: quello resta connesso all\'orologio e carica i dati sul tuo Samsung Account, e Samsung Health+ scarica gli stessi dati dal cloud dopo l\'accesso con lo stesso account (può restare indietro per un po\').</string>
+    <string name="output_shealth_phone">Samsung Health+ (modificato)</string>
+    <string name="change_purpose_shealth_phone">Una copia rinominata di Samsung Health con le funzioni qui sotto sbloccate. Funziona accanto a Samsung Health di Play e legge i tuoi dati dal cloud Samsung.</string>
+    <string name="patch_shealth_res_webp">Corregge quattro immagini salvate con l\'estensione sbagliata per poter ricostruire l\'app (nessuna modifica visibile).</string>
+    <string name="patch_shealth_feature_dev_ui">Mostra l\'elenco delle funzioni in Impostazioni &gt; Info senza la modalità sviluppatore Samsung.</string>
+    <string name="patch_shealth_vitality_tile">Mostra il riquadro Punteggio energia senza aspettare che l\'orologio annunci la funzione.</string>
+    <string name="patch_shealth_rename_manifest">Dà all\'app un proprio nome di pacchetto e un\'etichetta (Samsung Health+) per installarla accanto all\'originale.</string>
+    <string name="patch_shealth_rename_code">Aggiorna i riferimenti interni dell\'app al nuovo nome di pacchetto.</string>
+    <string name="patch_shealth_rename_account_xml">Dà all\'app una propria registrazione di account e sincronizzazione, così la sincronizzazione cloud funziona accanto all\'originale.</string>
+    <string name="patch_shealth_capability_gates">Sblocca Parametri vitali, Carico di allenamento e l\'indice di forma fisica, che altrimenti richiedono un Galaxy Watch8 o Ultra. Vengono calcolati sul telefono dalla cronologia sincronizzata.</string>
+    <string name="patch_shealth_launcher_badge">Aggiunge un piccolo badge OpenSHM all\'icona dell\'app per distinguerla dall\'originale.</string>
+    <string name="patch_shealth_oobe_local">Facoltativo, disattivato per impostazione predefinita. Salta l\'obbligo di accedere con l\'account Samsung e usa l\'app in locale, senza sincronizzazione cloud. Attivalo solo se l\'accesso non funziona.</string>
     <string name="device_logs_channel">Log dei dispositivi</string>
     <string name="device_logs_notification_title">Registrazione dei log dei dispositivi</string>
     <string name="device_logs_notification_text">%1$d orologio · %2$d telefono</string>

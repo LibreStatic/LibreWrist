@@ -97,7 +97,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     /** The parts of Home that depend on the self-test, the loaded catalogue and the last build. */
     private fun snapshot(current: HomeUiState): HomeUiState {
         val session = SetupSession.state.value
-        val outputIds = session.watchProfile.outputIds
+        val outputIds = session.outputIds
         return current.copy(
             status = homeStatusOf(record.last(), System.currentTimeMillis()),
             update = updateOfferFor(AppCatalogue.current, BuildStorage(getApplication()).record.read(), outputIds),

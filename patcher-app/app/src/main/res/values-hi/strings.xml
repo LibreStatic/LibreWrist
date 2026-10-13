@@ -246,6 +246,7 @@
     <string name="patch_phone_rebrand_gms">फ़ोन ऐप को घड़ी ऐप जैसा ही पैकेज और कुंजी देता है ताकि दोनों डेटा का आदान-प्रदान कर सकें।</string>
     <string name="patch_watch_rebrand_coexist">घड़ी ऐप का नाम बदलता है ताकि वह स्टॉक ऐप के साथ रह सके।</string>
     <string name="patch_shm_wear_trusted_peers">दोनों पैच की गई ऐप्स को घड़ी के लिंक पर एक-दूसरे को पहचानने देता है, सिर्फ़ मूल ऐप्स को नहीं।</string>
+    <string name="patch_shm_launcher_badge">ऐप आइकन में एक छोटा OpenSHM बैज जोड़ता है, ताकि आप इसे मूल ऐप से अलग पहचान सकें।</string>
     <string name="patch_watch_gms_resources_anchor">विक्रेता बिल्ड द्वारा हटाया गया एक संसाधन परिभाषित करता है, ताकि घड़ी फ़ोन को ऐप की सूचना दे सके।</string>
     <string name="patch_watch_queries_health_service">घड़ी ऐप को हेल्थ सेवा दिखने देता है।</string>
     <string name="patch_watch_companion_vendor">किसी भी सहयोगी फ़ोन ब्रांड को स्वीकार करता है।</string>
@@ -698,6 +699,19 @@
     <string name="phone_adb_error_message">यह ऐप की समस्या है, आपकी कोई गलती नहीं है, और आप इसे खुद ठीक नहीं कर सकते। आप हर पंक्ति के सेटिंग खोलें बटन इस्तेमाल कर सकते हैं या फिर भी आगे बढ़ सकते हैं।</string>
     <string name="phone_adb_success_title">सब तैयार है</string>
     <string name="phone_adb_success_message">अगले चरण पर चलते हैं</string>
+    <string name="acquire_shealth_title">Samsung Health (वैकल्पिक)</string>
+    <string name="acquire_shealth_summary">फ़ोन के Samsung Health ऐप की पैच की हुई कॉपी \"Samsung Health+\" भी बनाता है, जिसमें नए Galaxy Watch की ज़रूरत वाली सुविधाएँ अनलॉक हैं। यह Play के Samsung Health के बगल में इंस्टॉल होती है, जिसे आप रखते हैं: वह वॉच से जुड़ा रहता है और आपके Samsung Account पर डेटा अपलोड करता है, और Samsung Health+ उसी खाते से साइन इन करने के बाद क्लाउड से वही डेटा डाउनलोड करता है (कुछ देर पीछे रह सकता है).</string>
+    <string name="output_shealth_phone">Samsung Health+ (पैच किया हुआ)</string>
+    <string name="change_purpose_shealth_phone">Samsung Health की नाम बदली हुई कॉपी, जिसमें नीचे की सुविधाएँ अनलॉक हैं। यह Play के Samsung Health के बगल में चलती है और आपका डेटा Samsung क्लाउड से पढ़ती है।</string>
+    <string name="patch_shealth_res_webp">गलत फ़ाइल एक्सटेंशन वाली चार इमेज ठीक करता है ताकि ऐप दोबारा बनाया जा सके (कोई दिखने वाला बदलाव नहीं)।</string>
+    <string name="patch_shealth_feature_dev_ui">Samsung डेवलपर मोड के बिना सेटिंग &gt; के बारे में में सुविधाओं की सूची दिखाता है।</string>
+    <string name="patch_shealth_vitality_tile">वॉच के क्षमता बताने का इंतज़ार किए बिना एनर्जी स्कोर टाइल दिखाता है।</string>
+    <string name="patch_shealth_rename_manifest">ऐप को अपना पैकेज नाम और लेबल (Samsung Health+) देता है ताकि वह मूल ऐप के बगल में इंस्टॉल हो सके।</string>
+    <string name="patch_shealth_rename_code">ऐप के आंतरिक संदर्भों को नए पैकेज नाम पर अपडेट करता है।</string>
+    <string name="patch_shealth_rename_account_xml">ऐप को अपना खाता और सिंक पंजीकरण देता है ताकि क्लाउड सिंक मूल ऐप के बगल में काम करे।</string>
+    <string name="patch_shealth_capability_gates">वाइटल्स, ट्रेनिंग लोड और फ़िटनेस इंडेक्स अनलॉक करता है, जिनके लिए अन्यथा Galaxy Watch8 या Ultra चाहिए। इनकी गणना फ़ोन पर आपके सिंक किए गए इतिहास से होती है।</string>
+    <string name="patch_shealth_launcher_badge">ऐप आइकन में एक छोटा OpenSHM बैज जोड़ता है, ताकि आप इसे मूल ऐप से अलग पहचान सकें।</string>
+    <string name="patch_shealth_oobe_local">वैकल्पिक, डिफ़ॉल्ट रूप से बंद। Samsung खाते से साइन-इन की ज़रूरत छोड़ देता है और क्लाउड सिंक के बिना ऐप को लोकल रूप से इस्तेमाल करता है। केवल तब चालू करें जब साइन-इन काम न करे।</string>
     <string name="device_logs_channel">डिवाइस लॉग</string>
     <string name="device_logs_notification_title">डिवाइस लॉग रिकॉर्ड हो रहे हैं</string>
     <string name="device_logs_notification_text">%1$d वॉच · %2$d फ़ोन</string>

@@ -243,6 +243,7 @@
     <string name="patch_phone_rebrand_gms">讓手機應用程式使用與手錶應用程式相同的套件名稱和金鑰，以便兩者交換資料。</string>
     <string name="patch_watch_rebrand_coexist">重新命名手錶應用程式，使其與內建應用程式並存。</string>
     <string name="patch_shm_wear_trusted_peers">讓兩個已修補的 App 在手錶連線中互相識別，而不僅限於原版 App。</string>
+    <string name="patch_shm_launcher_badge">在應用程式圖示上加入一個小的 OpenSHM 角標，方便與原版區分。</string>
     <string name="patch_watch_gms_resources_anchor">定義原版建置中被移除的一項資源，讓手錶能向手機通告該 App。</string>
     <string name="patch_watch_queries_health_service">讓手錶應用程式能夠看到健康服務。</string>
     <string name="patch_watch_companion_vendor">接受任何品牌的配套手機。</string>
@@ -690,6 +691,19 @@
     <string name="phone_adb_error_message">這是應用程式本身的問題，不是你的操作有誤，你也無法自行修復。你仍可以使用每一列的「開啟設定」按鈕，或選擇仍然繼續。</string>
     <string name="phone_adb_success_title">全部完成</string>
     <string name="phone_adb_success_message">前往下一步</string>
+    <string name="acquire_shealth_title">Samsung Health（選用）</string>
+    <string name="acquire_shealth_summary">還會建置手機版 Samsung Health 的修補副本「Samsung Health+」，解鎖需要較新 Galaxy Watch 的功能。它安裝在 Play 的 Samsung Health 旁邊，原應用程式會保留：原應用程式繼續與手錶連線並上傳至你的 Samsung Account，Samsung Health+ 在你以同一帳號登入後從雲端下載相同的資料（可能會延遲一段時間）。</string>
+    <string name="output_shealth_phone">Samsung Health+（已修補）</string>
+    <string name="change_purpose_shealth_phone">Samsung Health 的重新命名副本，已解鎖下列功能。它與 Play 的 Samsung Health 並行執行，並從 Samsung 雲端讀取你的資料。</string>
+    <string name="patch_shealth_res_webp">修正四張副檔名錯誤的圖片，讓應用程式可以重新建置（無可見變化）。</string>
+    <string name="patch_shealth_feature_dev_ui">無需 Samsung 開發人員模式，即可在「設定 &gt; 關於」中顯示功能清單。</string>
+    <string name="patch_shealth_vitality_tile">無需等待手錶宣告該能力，即可顯示「能量分數」圖磚。</string>
+    <string name="patch_shealth_rename_manifest">為應用程式提供獨立的套件名稱和標籤（Samsung Health+），使其可安裝在原應用程式旁邊。</string>
+    <string name="patch_shealth_rename_code">將應用程式的內部參照更新為新的套件名稱。</string>
+    <string name="patch_shealth_rename_account_xml">為應用程式提供獨立的帳號和同步註冊，使雲端同步能在原應用程式旁邊正常運作。</string>
+    <string name="patch_shealth_capability_gates">解鎖「生命徵象」「訓練負荷」和體能指數，否則它們需要 Galaxy Watch8 或 Ultra。它們會根據你已同步的歷史記錄在手機上計算。</string>
+    <string name="patch_shealth_launcher_badge">在應用程式圖示上加入一個小的 OpenSHM 角標，方便與原版區分。</string>
+    <string name="patch_shealth_oobe_local">選用，預設關閉。略過 Samsung 帳號登入要求，在本機使用應用程式，不進行雲端同步。僅在無法登入時開啟。</string>
     <string name="device_logs_channel">裝置記錄</string>
     <string name="device_logs_notification_title">正在記錄裝置記錄</string>
     <string name="device_logs_notification_text">手錶 %1$d · 手機 %2$d</string>

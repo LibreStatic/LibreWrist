@@ -249,6 +249,7 @@
     <string name="patch_phone_rebrand_gms">Donne à l\'app du téléphone le même paquet et la même clé que l\'app de la montre pour qu\'elles puissent échanger des données.</string>
     <string name="patch_watch_rebrand_coexist">Renomme l\'app de la montre pour qu\'elle cohabite avec celle d\'origine.</string>
     <string name="patch_shm_wear_trusted_peers">Permet aux deux apps modifiées de se reconnaître sur la liaison avec la montre, au lieu des seules apps d\'origine.</string>
+    <string name="patch_shm_launcher_badge">Ajoute un petit badge OpenSHM à l\'icône de l\'app pour la distinguer de l\'originale.</string>
     <string name="patch_watch_gms_resources_anchor">Définit une ressource supprimée par la version d\'origine, pour que la montre puisse annoncer l\'app au téléphone.</string>
     <string name="patch_watch_queries_health_service">Permet à l\'app de la montre de voir le service de santé.</string>
     <string name="patch_watch_companion_vendor">Accepte n\'importe quelle marque de téléphone compagnon.</string>
@@ -706,6 +707,19 @@
     <string name="phone_adb_error_message">C\'est un problème de l\'appli, pas une erreur de votre part, et vous ne pouvez pas le résoudre vous-même. Vous pouvez toujours utiliser les boutons Ouvrir les réglages de chaque ligne ou continuer quand même.</string>
     <string name="phone_adb_success_title">Tout est prêt</string>
     <string name="phone_adb_success_message">Passons à l\'étape suivante</string>
+    <string name="acquire_shealth_title">Samsung Health (facultatif)</string>
+    <string name="acquire_shealth_summary">Crée aussi une copie modifiée de l\'application Samsung Health du téléphone, \"Samsung Health+\", avec les fonctions nécessitant une Galaxy Watch plus récente déverrouillées. Elle s\'installe à côté de Samsung Health de Play, que vous conservez : celui-ci reste connecté à la montre et envoie les données vers votre Samsung Account, et Samsung Health+ télécharge ces mêmes données depuis le cloud après connexion avec le même compte (il peut y avoir du retard).</string>
+    <string name="output_shealth_phone">Samsung Health+ (modifié)</string>
+    <string name="change_purpose_shealth_phone">Une copie renommée de Samsung Health avec les fonctions ci-dessous déverrouillées. Elle fonctionne à côté de Samsung Health de Play et lit vos données depuis le cloud Samsung.</string>
+    <string name="patch_shealth_res_webp">Corrige quatre images enregistrées avec la mauvaise extension pour pouvoir reconstruire l\'appli (aucun changement visible).</string>
+    <string name="patch_shealth_feature_dev_ui">Affiche la liste des fonctions dans Paramètres &gt; À propos sans le mode développeur Samsung.</string>
+    <string name="patch_shealth_vitality_tile">Affiche la tuile Score d\'énergie sans attendre que la montre annonce la capacité.</string>
+    <string name="patch_shealth_rename_manifest">Donne à l\'application son propre nom de paquet et son propre libellé (Samsung Health+) pour qu\'elle s\'installe à côté de l\'original.</string>
+    <string name="patch_shealth_rename_code">Met à jour les références internes de l\'application vers le nouveau nom de paquet.</string>
+    <string name="patch_shealth_rename_account_xml">Donne à l\'application son propre enregistrement de compte et de synchronisation pour que la synchronisation cloud fonctionne à côté de l\'original.</string>
+    <string name="patch_shealth_capability_gates">Déverrouille Signes vitaux, Charge d\'entraînement et l\'indice de forme, qui nécessitent sinon une Galaxy Watch8 ou Ultra. Ils sont calculés sur le téléphone à partir de votre historique synchronisé.</string>
+    <string name="patch_shealth_launcher_badge">Ajoute un petit badge OpenSHM à l\'icône de l\'app pour la distinguer de l\'originale.</string>
+    <string name="patch_shealth_oobe_local">Facultatif, désactivé par défaut. Ignore l\'obligation de se connecter avec le compte Samsung et utilise l\'appli en local, sans synchronisation cloud. À n\'activer que si la connexion ne fonctionne pas.</string>
     <string name="device_logs_channel">Journaux des appareils</string>
     <string name="device_logs_notification_title">Enregistrement des journaux des appareils</string>
     <string name="device_logs_notification_text">%1$d montre · %2$d téléphone</string>

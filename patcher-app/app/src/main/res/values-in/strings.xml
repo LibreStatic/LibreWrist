@@ -243,6 +243,7 @@
     <string name="patch_phone_rebrand_gms">Memberi aplikasi ponsel paket dan kunci yang sama dengan aplikasi jam agar keduanya bisa bertukar data.</string>
     <string name="patch_watch_rebrand_coexist">Mengganti nama aplikasi jam agar berdampingan dengan aplikasi bawaan.</string>
     <string name="patch_shm_wear_trusted_peers">Membuat kedua aplikasi yang ditambal saling mengenali di tautan jam, bukan hanya aplikasi aslinya.</string>
+    <string name="patch_shm_launcher_badge">Menambahkan lencana OpenSHM kecil pada ikon aplikasi agar mudah dibedakan dari aslinya.</string>
     <string name="patch_watch_gms_resources_anchor">Mendefinisikan sumber daya yang dihapus build asli, agar jam dapat mengumumkan aplikasi ke ponsel.</string>
     <string name="patch_watch_queries_health_service">Membuat aplikasi jam bisa melihat layanan kesehatan.</string>
     <string name="patch_watch_companion_vendor">Menerima merek ponsel pendamping apa pun.</string>
@@ -690,6 +691,19 @@
     <string name="phone_adb_error_message">Ini masalah pada aplikasi, bukan kesalahan Anda, dan Anda tidak dapat memperbaikinya sendiri. Anda masih dapat memakai tombol Buka pengaturan di setiap baris atau tetap melanjutkan.</string>
     <string name="phone_adb_success_title">Semua siap</string>
     <string name="phone_adb_success_message">Lanjut ke langkah berikutnya</string>
+    <string name="acquire_shealth_title">Samsung Health (opsional)</string>
+    <string name="acquire_shealth_summary">Juga membuat salinan aplikasi Samsung Health ponsel yang dipatch, \"Samsung Health+\", dengan fitur yang membutuhkan Galaxy Watch lebih baru terbuka. Aplikasi ini dipasang berdampingan dengan Samsung Health dari Play, yang tetap Anda simpan: aplikasi itu tetap terhubung ke jam dan mengunggah ke Samsung Account Anda, dan Samsung Health+ mengunduh data yang sama dari cloud setelah Anda masuk dengan akun yang sama (bisa tertinggal beberapa saat).</string>
+    <string name="output_shealth_phone">Samsung Health+ (dipatch)</string>
+    <string name="change_purpose_shealth_phone">Salinan Samsung Health yang diganti namanya dengan fitur di bawah terbuka. Berjalan berdampingan dengan Samsung Health dari Play dan membaca data Anda dari cloud Samsung.</string>
+    <string name="patch_shealth_res_webp">Memperbaiki empat gambar yang tersimpan dengan ekstensi file yang salah agar aplikasi dapat dibangun ulang (tidak ada perubahan yang terlihat).</string>
+    <string name="patch_shealth_feature_dev_ui">Menampilkan daftar fitur di Pengaturan &gt; Tentang tanpa mode pengembang Samsung.</string>
+    <string name="patch_shealth_vitality_tile">Menampilkan kartu Skor Energi tanpa menunggu jam mengumumkan kemampuannya.</string>
+    <string name="patch_shealth_rename_manifest">Memberi aplikasi nama paket dan label sendiri (Samsung Health+) agar terpasang berdampingan dengan aslinya.</string>
+    <string name="patch_shealth_rename_code">Memperbarui referensi internal aplikasi ke nama paket baru.</string>
+    <string name="patch_shealth_rename_account_xml">Memberi aplikasi registrasi akun dan sinkronisasi sendiri agar sinkronisasi cloud berfungsi berdampingan dengan aslinya.</string>
+    <string name="patch_shealth_capability_gates">Membuka Vital, Beban latihan, dan indeks kebugaran, yang jika tidak memerlukan Galaxy Watch8 atau Ultra. Semuanya dihitung di ponsel dari riwayat yang disinkronkan.</string>
+    <string name="patch_shealth_launcher_badge">Menambahkan lencana OpenSHM kecil pada ikon aplikasi agar mudah dibedakan dari aslinya.</string>
+    <string name="patch_shealth_oobe_local">Opsional, nonaktif secara default. Melewati syarat masuk dengan akun Samsung dan memakai aplikasi secara lokal tanpa sinkronisasi cloud. Aktifkan hanya jika proses masuk tidak berhasil.</string>
     <string name="device_logs_channel">Log perangkat</string>
     <string name="device_logs_notification_title">Merekam log perangkat</string>
     <string name="device_logs_notification_text">%1$d jam tangan · %2$d ponsel</string>

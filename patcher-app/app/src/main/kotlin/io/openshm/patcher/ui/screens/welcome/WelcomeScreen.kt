@@ -14,6 +14,7 @@ import androidx.compose.material.icons.rounded.Fullscreen
 import androidx.compose.material.icons.rounded.Key
 import androidx.compose.material.icons.rounded.Layers
 import androidx.compose.material.icons.rounded.LockOpen
+import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.MonitorHeart
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.NotificationsActive
@@ -421,6 +422,7 @@ private fun DisableCard(stock: StockApp, technical: Boolean) {
 
 private fun appIcon(outputId: String): ImageVector = when (outputId) {
     "shm-phone", "shm-watch" -> Icons.Rounded.MonitorHeart
+    "shealth-phone" -> Icons.Rounded.Favorite
     "alarm-fork" -> Icons.Rounded.Alarm
     else -> Icons.Rounded.SwapHoriz
 }

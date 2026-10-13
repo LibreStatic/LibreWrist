@@ -252,6 +252,7 @@
     <string name="patch_phone_rebrand_gms">Даёт приложению на телефоне тот же пакет и ключ, что и на часах, чтобы они могли обмениваться данными.</string>
     <string name="patch_watch_rebrand_coexist">Переименовывает приложение на часах, чтобы оно стояло рядом с оригинальным.</string>
     <string name="patch_shm_wear_trusted_peers">Позволяет двум изменённым приложениям узнавать друг друга при связи с часами, а не только оригинальным.</string>
+    <string name="patch_shm_launcher_badge">Добавляет на значок приложения небольшой бейдж OpenSHM, чтобы его можно было отличить от оригинала.</string>
     <string name="patch_watch_gms_resources_anchor">Определяет ресурс, удалённый из оригинальной сборки, чтобы часы могли сообщить телефону о приложении.</string>
     <string name="patch_watch_queries_health_service">Позволяет приложению на часах видеть службу здоровья.</string>
     <string name="patch_watch_companion_vendor">Принимает телефон любой марки.</string>
@@ -714,6 +715,19 @@
     <string name="phone_adb_error_message">Это проблема приложения, а не ваша ошибка, и исправить её самостоятельно нельзя. Вы по-прежнему можете использовать кнопки «Открыть настройки» в каждой строке или всё равно продолжить.</string>
     <string name="phone_adb_success_title">Всё готово</string>
     <string name="phone_adb_success_message">Переходим к следующему шагу</string>
+    <string name="acquire_shealth_title">Samsung Health (необязательно)</string>
+    <string name="acquire_shealth_summary">Также создаёт пропатченную копию приложения Samsung Health для телефона, \"Samsung Health+\", с разблокированными функциями, для которых нужны более новые Galaxy Watch. Она устанавливается рядом с Samsung Health из Play, который вы сохраняете: он остаётся подключённым к часам и загружает данные в ваш Samsung Account, а Samsung Health+ скачивает те же данные из облака после входа с той же учётной записью (может отставать).</string>
+    <string name="output_shealth_phone">Samsung Health+ (пропатченное)</string>
+    <string name="change_purpose_shealth_phone">Переименованная копия Samsung Health с разблокированными функциями ниже. Работает рядом с Samsung Health из Play и читает ваши данные из облака Samsung.</string>
+    <string name="patch_shealth_res_webp">Исправляет четыре изображения с неверным расширением файла, чтобы приложение можно было пересобрать (видимых изменений нет).</string>
+    <string name="patch_shealth_feature_dev_ui">Показывает список функций в Настройках &gt; О приложении без режима разработчика Samsung.</string>
+    <string name="patch_shealth_vitality_tile">Показывает плитку «Энергетический балл», не дожидаясь, пока часы сообщат о поддержке.</string>
+    <string name="patch_shealth_rename_manifest">Даёт приложению собственное имя пакета и название (Samsung Health+), чтобы оно устанавливалось рядом с оригиналом.</string>
+    <string name="patch_shealth_rename_code">Обновляет внутренние ссылки приложения на новое имя пакета.</string>
+    <string name="patch_shealth_rename_account_xml">Даёт приложению собственную регистрацию учётной записи и синхронизации, чтобы облачная синхронизация работала рядом с оригиналом.</string>
+    <string name="patch_shealth_capability_gates">Разблокирует «Жизненные показатели», «Тренировочную нагрузку» и индекс физической формы, для которых иначе нужны Galaxy Watch8 или Ultra. Они вычисляются на телефоне по синхронизированной истории.</string>
+    <string name="patch_shealth_launcher_badge">Добавляет на значок приложения небольшой бейдж OpenSHM, чтобы его можно было отличить от оригинала.</string>
+    <string name="patch_shealth_oobe_local">Необязательно, по умолчанию выключено. Пропускает требование входа в аккаунт Samsung и использует приложение локально, без облачной синхронизации. Включайте, только если вход не работает.</string>
     <string name="device_logs_channel">Журналы устройств</string>
     <string name="device_logs_notification_title">Запись журналов устройств</string>
     <string name="device_logs_notification_text">Часы: %1$d · телефон: %2$d</string>

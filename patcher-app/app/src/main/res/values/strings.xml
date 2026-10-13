@@ -353,6 +353,7 @@
     <string name="patch_phone_rebrand_gms">Gives the phone app the same package and key as the watch app so the two can exchange data.</string>
     <string name="patch_watch_rebrand_coexist">Renames the watch app so it sits next to the stock one.</string>
     <string name="patch_shm_wear_trusted_peers">Lets the two patched apps recognise each other on the watch link, instead of only the stock ones.</string>
+    <string name="patch_shm_launcher_badge">Adds a small OpenSHM badge to the app icon so you can tell it apart from the original.</string>
     <string name="patch_watch_gms_resources_anchor">Defines a resource the vendor build removed, so the watch can announce the app to the phone.</string>
     <string name="patch_watch_queries_health_service">Lets the watch app see the health service.</string>
     <string name="patch_watch_companion_vendor">Accepts any companion phone brand.</string>
@@ -700,6 +701,19 @@
     <string name="phone_adb_error_message">This is a problem in the app, not something you did wrong, and you cannot fix it yourself. You can still use the Open settings buttons on each row, or continue anyway.</string>
     <string name="phone_adb_success_title">All set</string>
     <string name="phone_adb_success_message">Moving on to the next step</string>
+    <string name="acquire_shealth_title">Samsung Health (optional)</string>
+    <string name="acquire_shealth_summary">Also build a patched copy of the Samsung Health phone app, \"Samsung Health+\", with the features that need a newer Galaxy Watch unlocked. It installs next to the Samsung Health from Play, which you keep: that one stays connected to the watch and uploads to your Samsung Account, and Samsung Health+ downloads the same data from the cloud after you sign in with the same account (it can lag behind by a while).</string>
+    <string name="output_shealth_phone">Samsung Health+ (patched)</string>
+    <string name="change_purpose_shealth_phone">A renamed copy of Samsung Health with the features below unlocked. It runs next to the Samsung Health from Play and reads your data from the Samsung cloud.</string>
+    <string name="patch_shealth_res_webp">Fixes four images stored with the wrong file extension so the app can be rebuilt (no visible change).</string>
+    <string name="patch_shealth_feature_dev_ui">Shows the feature list in Settings &gt; About without Samsung developer mode.</string>
+    <string name="patch_shealth_vitality_tile">Shows the Energy Score tile without waiting for the watch to advertise the capability.</string>
+    <string name="patch_shealth_rename_manifest">Gives the app its own package name and label (Samsung Health+) so it installs next to the original.</string>
+    <string name="patch_shealth_rename_code">Updates the app\'s internal references to the new package name.</string>
+    <string name="patch_shealth_rename_account_xml">Gives the app its own account and sync registration so cloud sync works next to the original.</string>
+    <string name="patch_shealth_capability_gates">Unlocks Vitals, Training load and the fitness index, which otherwise require a Galaxy Watch8 or Ultra. They are computed on the phone from your synced history.</string>
+    <string name="patch_shealth_launcher_badge">Adds a small OpenSHM badge to the app icon so you can tell it apart from the original.</string>
+    <string name="patch_shealth_oobe_local">Optional, off by default. Skips the Samsung Account sign-in requirement and uses the app locally without cloud sync. Only turn it on if sign-in does not work.</string>
     <string name="device_logs_channel">Device logs</string>
     <string name="device_logs_notification_title">Recording device logs</string>
     <string name="device_logs_notification_text">%1$d watch · %2$d phone</string>

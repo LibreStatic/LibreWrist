@@ -252,6 +252,7 @@
     <string name="patch_phone_rebrand_gms">Nadaje aplikacji na telefonie ten sam pakiet i klucz co aplikacji na zegarku, aby mogły wymieniać dane.</string>
     <string name="patch_watch_rebrand_coexist">Zmienia nazwę aplikacji na zegarku, aby działała obok standardowej.</string>
     <string name="patch_shm_wear_trusted_peers">Sprawia, że obie zmodyfikowane aplikacje rozpoznają się nawzajem w połączeniu z zegarkiem, a nie tylko oryginalne.</string>
+    <string name="patch_shm_launcher_badge">Dodaje małą odznakę OpenSHM do ikony aplikacji, aby można ją było odróżnić od oryginału.</string>
     <string name="patch_watch_gms_resources_anchor">Definiuje zasób usunięty z oryginalnej wersji, aby zegarek mógł zgłosić aplikację telefonowi.</string>
     <string name="patch_watch_queries_health_service">Pozwala aplikacji na zegarku widzieć usługę zdrowia.</string>
     <string name="patch_watch_companion_vendor">Akceptuje telefon dowolnej marki.</string>
@@ -714,6 +715,19 @@
     <string name="phone_adb_error_message">To problem aplikacji, a nie Twój błąd, i nie możesz go naprawić samodzielnie. Nadal możesz użyć przycisków Otwórz ustawienia w każdym wierszu lub mimo to kontynuować.</string>
     <string name="phone_adb_success_title">Wszystko gotowe</string>
     <string name="phone_adb_success_message">Przechodzimy do następnego kroku</string>
+    <string name="acquire_shealth_title">Samsung Health (opcjonalnie)</string>
+    <string name="acquire_shealth_summary">Tworzy też spatchowaną kopię aplikacji Samsung Health na telefon, \"Samsung Health+\", z odblokowanymi funkcjami wymagającymi nowszego Galaxy Watch. Instaluje się obok Samsung Health z Play, który zachowujesz: ten pozostaje połączony z zegarkiem i wysyła dane na Twoje Samsung Account, a Samsung Health+ pobiera te same dane z chmury po zalogowaniu na to samo konto (może się spóźniać).</string>
+    <string name="output_shealth_phone">Samsung Health+ (spatchowany)</string>
+    <string name="change_purpose_shealth_phone">Przemianowana kopia Samsung Health z odblokowanymi funkcjami poniżej. Działa obok Samsung Health z Play i odczytuje Twoje dane z chmury Samsung.</string>
+    <string name="patch_shealth_res_webp">Naprawia cztery obrazy zapisane z błędnym rozszerzeniem, aby można było przebudować aplikację (bez widocznych zmian).</string>
+    <string name="patch_shealth_feature_dev_ui">Pokazuje listę funkcji w Ustawieniach &gt; Informacje bez trybu programisty Samsung.</string>
+    <string name="patch_shealth_vitality_tile">Pokazuje kafelek Wynik energii bez czekania, aż zegarek zgłosi tę możliwość.</string>
+    <string name="patch_shealth_rename_manifest">Nadaje aplikacji własną nazwę pakietu i etykietę (Samsung Health+), aby instalowała się obok oryginału.</string>
+    <string name="patch_shealth_rename_code">Aktualizuje wewnętrzne odwołania aplikacji do nowej nazwy pakietu.</string>
+    <string name="patch_shealth_rename_account_xml">Nadaje aplikacji własną rejestrację konta i synchronizacji, aby synchronizacja z chmurą działała obok oryginału.</string>
+    <string name="patch_shealth_capability_gates">Odblokowuje Parametry życiowe, Obciążenie treningowe i wskaźnik sprawności, które inaczej wymagają Galaxy Watch8 lub Ultra. Są obliczane na telefonie na podstawie zsynchronizowanej historii.</string>
+    <string name="patch_shealth_launcher_badge">Dodaje małą odznakę OpenSHM do ikony aplikacji, aby można ją było odróżnić od oryginału.</string>
+    <string name="patch_shealth_oobe_local">Opcjonalne, domyślnie wyłączone. Pomija wymóg logowania kontem Samsung i używa aplikacji lokalnie, bez synchronizacji z chmurą. Włącz tylko wtedy, gdy logowanie nie działa.</string>
     <string name="device_logs_channel">Dzienniki urządzeń</string>
     <string name="device_logs_notification_title">Zapisywanie dzienników urządzeń</string>
     <string name="device_logs_notification_text">%1$d zegarek · %2$d telefon</string>

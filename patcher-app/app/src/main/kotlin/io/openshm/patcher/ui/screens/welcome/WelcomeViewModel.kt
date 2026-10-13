@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.Device
+import io.openshm.patcher.data.SessionState
 import io.openshm.patcher.data.SetupSession
 import io.openshm.patcher.data.WatchProfile
 import io.openshm.patcher.device.AdbPresence
@@ -29,9 +30,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 /** What the build installs, grants and turns off on each device, from the catalogue and the chosen prefix. */
-internal fun buildChanges(prefix: String, profile: WatchProfile): List<DeviceChanges> {
+internal fun buildChanges(prefix: String, profile: WatchProfile, samsungHealth: Boolean = true): List<DeviceChanges> {
     val catalogue = AppCatalogue.current
-    val outputs = catalogue.outputs.filter { it.id in profile.outputIds }
+    val ids = SessionState(watchProfile = profile, samsungHealth = samsungHealth).outputIds
+    val outputs = catalogue.outputs.filter { it.id in ids }
     return Device.entries.map { device ->
         DeviceChanges(
             device = device,
@@ -45,7 +47,7 @@ internal fun buildChanges(prefix: String, profile: WatchProfile): List<DeviceCha
 
 class WelcomeViewModel(application: Application) : AndroidViewModel(application) {
     private val _state = MutableStateFlow(
-        SetupSession.state.value.let { WelcomeUiState(changes = buildChanges(it.packagePrefix, it.watchProfile)) },
+        SetupSession.state.value.let { WelcomeUiState(changes = buildChanges(it.packagePrefix, it.watchProfile, it.samsungHealth)) },
     )
     val state: StateFlow<WelcomeUiState> = _state.asStateFlow()
     private val link = WatchLink.get(application)

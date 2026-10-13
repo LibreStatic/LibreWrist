@@ -170,9 +170,10 @@ class PhoneInstallItemsTest {
     fun phoneItemsComeInInstallOrderWithOnboardingAndUserOnlyRows() {
         TestCatalogue.install()
         val items = installItemsFor(Device.Phone)
-        assertEquals(listOf("shm-phone", "bridge-phone"), items.map { it.outputId })
-        assertEquals(listOf(true, false), items.map { it.onboarding })
-        val bridge = items.last()
+        // Samsung Health is on by default, so its patched build is installed last
+        assertEquals(listOf("shm-phone", "bridge-phone", "shealth-phone"), items.map { it.outputId })
+        assertEquals(listOf(true, false, false), items.map { it.onboarding })
+        val bridge = items.first { it.outputId == "bridge-phone" }
         assertTrue(bridge.grants.isNotEmpty())
         assertTrue(bridge.grants.all { it.needsUser })
         // Bluetooth for the phone SHM, so it can find the bonded watch.

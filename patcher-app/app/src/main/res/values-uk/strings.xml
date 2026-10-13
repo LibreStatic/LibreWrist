@@ -252,6 +252,7 @@
     <string name="patch_phone_rebrand_gms">Надає застосунку на телефоні той самий пакет і ключ, що й на годиннику, щоб вони могли обмінюватися даними.</string>
     <string name="patch_watch_rebrand_coexist">Перейменовує застосунок на годиннику, щоб він стояв поруч зі стандартним.</string>
     <string name="patch_shm_wear_trusted_peers">Дає змогу двом зміненим застосункам розпізнавати один одного у зв\'язку з годинником, а не лише оригінальним.</string>
+    <string name="patch_shm_launcher_badge">Додає на значок застосунку невеликий бейдж OpenSHM, щоб його можна було відрізнити від оригіналу.</string>
     <string name="patch_watch_gms_resources_anchor">Визначає ресурс, видалений з оригінальної збірки, щоб годинник міг повідомити телефону про застосунок.</string>
     <string name="patch_watch_queries_health_service">Дозволяє застосунку на годиннику бачити службу здоров\'я.</string>
     <string name="patch_watch_companion_vendor">Приймає телефон будь-якої марки.</string>
@@ -714,6 +715,19 @@
     <string name="phone_adb_error_message">Це проблема застосунку, а не ваша помилка, і виправити її самостійно не можна. Ви як і раніше можете скористатися кнопками «Відкрити налаштування» в кожному рядку або все одно продовжити.</string>
     <string name="phone_adb_success_title">Усе готово</string>
     <string name="phone_adb_success_message">Переходимо до наступного кроку</string>
+    <string name="acquire_shealth_title">Samsung Health (необов\'язково)</string>
+    <string name="acquire_shealth_summary">Також створює пропатчену копію застосунку Samsung Health для телефона, \"Samsung Health+\", з розблокованими функціями, яким потрібен новіший Galaxy Watch. Вона встановлюється поруч із Samsung Health з Play, який ви залишаєте: він лишається підключеним до годинника й вивантажує дані до вашого Samsung Account, а Samsung Health+ завантажує ті самі дані з хмари після входу з тим самим обліковим записом (може відставати).</string>
+    <string name="output_shealth_phone">Samsung Health+ (пропатчений)</string>
+    <string name="change_purpose_shealth_phone">Перейменована копія Samsung Health з розблокованими функціями нижче. Працює поруч із Samsung Health з Play і читає ваші дані з хмари Samsung.</string>
+    <string name="patch_shealth_res_webp">Виправляє чотири зображення з помилковим розширенням файлу, щоб застосунок можна було перебудувати (видимих змін немає).</string>
+    <string name="patch_shealth_feature_dev_ui">Показує список функцій у Налаштуваннях &gt; Про застосунок без режиму розробника Samsung.</string>
+    <string name="patch_shealth_vitality_tile">Показує плитку «Показник енергії», не чекаючи, поки годинник повідомить про підтримку.</string>
+    <string name="patch_shealth_rename_manifest">Надає застосунку власну назву пакета й мітку (Samsung Health+), щоб він встановлювався поруч з оригіналом.</string>
+    <string name="patch_shealth_rename_code">Оновлює внутрішні посилання застосунку на нову назву пакета.</string>
+    <string name="patch_shealth_rename_account_xml">Надає застосунку власну реєстрацію облікового запису й синхронізації, щоб хмарна синхронізація працювала поруч з оригіналом.</string>
+    <string name="patch_shealth_capability_gates">Розблоковує «Життєві показники», «Тренувальне навантаження» та індекс фізичної форми, яким інакше потрібен Galaxy Watch8 або Ultra. Їх обчислюють на телефоні із синхронізованої історії.</string>
+    <string name="patch_shealth_launcher_badge">Додає на значок застосунку невеликий бейдж OpenSHM, щоб його можна було відрізнити від оригіналу.</string>
+    <string name="patch_shealth_oobe_local">Необов\'язково, за замовчуванням вимкнено. Пропускає вимогу входу в обліковий запис Samsung і використовує застосунок локально, без хмарної синхронізації. Вмикайте, лише якщо вхід не працює.</string>
     <string name="device_logs_channel">Журнали пристроїв</string>
     <string name="device_logs_notification_title">Запис журналів пристроїв</string>
     <string name="device_logs_notification_text">Годинник: %1$d · телефон: %2$d</string>

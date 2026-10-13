@@ -15,7 +15,7 @@ class AppCatalogueTest {
 
     @Test
     fun serialAndInputs() {
-        assertEquals(15L, c.serial)
+        assertEquals(24L, c.serial)
         assertEquals(
             listOf(
                 listOf("shm-phone", "Samsung Health Monitor (phone)", "1.4.6.001", "Phone",
@@ -27,6 +27,9 @@ class AppCatalogueTest {
                 listOf("alarm-watch", "Alarm (Wear OS)", "1.3.05.5", "Watch",
                     "fdbb5942a3b2a6c5b9c7c1c333a0e5e669732b1dc5a27f8b63e3b9c62c621151", "com.samsung.android.watch.alarm",
                     "samsung-electronics-co-ltd/alarm-wear-os", "[ApkNotBundle, NoDpi, MinAndroid14]"),
+                listOf("shealth-phone", "Samsung Health", "7.00.6.011", "Phone",
+                    "e58c39dcdf4856510d487fae30ee52d1514198b58ca388c9be9753828f4fec89", "com.sec.android.app.shealth",
+                    "samsung-electronics-co-ltd/s-health", "[ApkNotBundle, NoDpi]"),
             ),
             c.inputs.map {
                 listOf(it.id, it.label, it.versionName, it.device.name, it.sha256, it.packageName, it.apkMirrorSlug,
@@ -42,10 +45,11 @@ class AppCatalogueTest {
                 "https://www.apkmirror.com/apk/samsung-electronics-co-ltd/samsung-health-monitor-2/samsung-health-monitor-1-4-6-001-release/",
                 "https://www.apkmirror.com/apk/samsung-electronics-co-ltd/samsung-health-monitor-wear-os/samsung-health-monitor-wear-os-1-5-1-022-release/",
                 "https://www.apkmirror.com/apk/samsung-electronics-co-ltd/alarm-wear-os/alarm-wear-os-1-3-05-5-release/",
+                "https://www.apkmirror.com/apk/samsung-electronics-co-ltd/s-health/samsung-health-7-00-6-011-release/",
             ),
-            c.inputs.map { io.openshm.patcher.data.ApkMirrorGuide.startUrl(it) },
+            c.inputs.filter { it.onApkMirror }.map { io.openshm.patcher.data.ApkMirrorGuide.startUrl(it) },
         )
-        assertEquals(listOf(true, true, true), c.inputs.map { it.onApkMirror })
+        assertEquals(listOf(true, true, true, true), c.inputs.map { it.onApkMirror })
         assertEquals(listOf("arm64-v8a", "armeabi-v7a"), c.input("shm-phone").abis)
     }
 
@@ -58,6 +62,7 @@ class AppCatalogueTest {
                 listOf("bridge-watch", "Bridge for the watch", "Watch", "\${PKG_PREFIX}.shmbridge.watch", "null"),
                 listOf("alarm-fork", "Phone alarms on the watch", "Watch", "\${PKG_PREFIX}.shmbridge.alarm", "alarm-watch"),
                 listOf("bridge-phone", "Bridge for the phone", "Phone", "\${PKG_PREFIX}.shmbridge.phone", "null"),
+                listOf("shealth-phone", "Samsung Health+ (patched)", "Phone", "\${PKG_PREFIX}.shealth", "shealth-phone"),
             ),
             c.outputs.map { listOf(it.id, it.label, it.device.name, it.packageTemplate, it.inputId.toString()) },
         )
@@ -68,7 +73,8 @@ class AppCatalogueTest {
         assertEquals(
             listOf("generic-manufacturer-check", "generic-vendor-check", "shm-min-age-22-to-16", "shm-supported-type-ordinals",
                 "shm-region-supportedtype", "shm-region-countrylist", "shm-root-packagevalidator", "shm-force-update-response",
-                "shm-force-update-pref", "shm-main-gates", "shm-setup-network-gate", "shm-sleep-apnea-support", "phone-rebrand-gms", "shm-wear-trusted-peers"),
+                "shm-force-update-pref", "shm-main-gates", "shm-setup-network-gate", "shm-sleep-apnea-support", "phone-rebrand-gms", "shm-wear-trusted-peers",
+                "shm-launcher-badge"),
             c.patches("shm-phone").map { it.id },
         )
         val watch = c.patches("shm-watch")
@@ -83,7 +89,7 @@ class AppCatalogueTest {
         assertEquals(18, alarm.size)
         assertEquals("alarm-fork", alarm.last().id)
         assertEquals("Alarm link module", alarm.last().title)
-        assertEquals(14 + 12 + 17, c.patternCount(listOf("shm-phone", "shm-watch", "alarm-watch")))
+        assertEquals(15 + 12 + 17, c.patternCount(listOf("shm-phone", "shm-watch", "alarm-watch")))
         assertTrue(c.patchSets.flatMap { it.patches }.all { it.description.isNotBlank() })
     }
 

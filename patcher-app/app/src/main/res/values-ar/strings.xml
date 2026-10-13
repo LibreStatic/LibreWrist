@@ -258,6 +258,7 @@
     <string name="patch_phone_rebrand_gms">يمنح تطبيق الهاتف الحزمة والمفتاح نفسيهما لتطبيق الساعة ليتبادلا البيانات.</string>
     <string name="patch_watch_rebrand_coexist">يعيد تسمية تطبيق الساعة ليتجاور مع التطبيق الأصلي.</string>
     <string name="patch_shm_wear_trusted_peers">يجعل التطبيقين المعدّلين يتعرّف كل منهما على الآخر عبر الاتصال بالساعة، بدلًا من التطبيقين الأصليين فقط.</string>
+    <string name="patch_shm_launcher_badge">يضيف شارة OpenSHM صغيرة إلى أيقونة التطبيق لتتمكن من تمييزه عن الأصلي.</string>
     <string name="patch_watch_gms_resources_anchor">يعرّف مورداً حذفه الإصدار الأصلي، ليتمكن الساعة من الإعلان عن التطبيق للهاتف.</string>
     <string name="patch_watch_queries_health_service">يتيح لتطبيق الساعة رؤية خدمة الصحة.</string>
     <string name="patch_watch_companion_vendor">يقبل أي علامة تجارية لهاتف مرافق.</string>
@@ -730,6 +731,19 @@
     <string name="phone_adb_error_message">هذه مشكلة في التطبيق وليست خطأً منك، ولا يمكنك إصلاحها بنفسك. لا يزال بإمكانك استخدام أزرار فتح الإعدادات في كل صف أو المتابعة على أي حال.</string>
     <string name="phone_adb_success_title">كل شيء جاهز</string>
     <string name="phone_adb_success_message">ننتقل إلى الخطوة التالية</string>
+    <string name="acquire_shealth_title">Samsung Health (اختياري)</string>
+    <string name="acquire_shealth_summary">ينشئ أيضًا نسخة مُعدَّلة من تطبيق Samsung Health للهاتف باسم \"Samsung Health+\"، مع فتح الميزات التي تتطلب Galaxy Watch أحدث. تُثبَّت بجوار Samsung Health من Play الذي تحتفظ به: يبقى ذلك متصلًا بالساعة ويرفع البيانات إلى Samsung Account الخاص بك، وينزّل Samsung Health+ البيانات نفسها من السحابة بعد تسجيل الدخول بالحساب نفسه (قد يتأخر قليلًا).</string>
+    <string name="output_shealth_phone">Samsung Health+ (مُعدَّل)</string>
+    <string name="change_purpose_shealth_phone">نسخة مُعاد تسميتها من Samsung Health مع فتح الميزات أدناه. تعمل بجوار Samsung Health من Play وتقرأ بياناتك من سحابة Samsung.</string>
+    <string name="patch_shealth_res_webp">يصلح أربع صور محفوظة بامتداد ملف خاطئ حتى يمكن إعادة بناء التطبيق (بلا تغيير مرئي).</string>
+    <string name="patch_shealth_feature_dev_ui">يعرض قائمة الميزات في الإعدادات &gt; حول دون وضع المطوّر من Samsung.</string>
+    <string name="patch_shealth_vitality_tile">يعرض بطاقة درجة الطاقة دون انتظار أن تعلن الساعة عن القدرة.</string>
+    <string name="patch_shealth_rename_manifest">تمنح التطبيق اسم حزمة وتسمية خاصين به (Samsung Health+) ليُثبَّت بجوار الأصلي.</string>
+    <string name="patch_shealth_rename_code">تحدّث المراجع الداخلية للتطبيق إلى اسم الحزمة الجديد.</string>
+    <string name="patch_shealth_rename_account_xml">تمنح التطبيق تسجيل حساب ومزامنة خاصًا به لتعمل المزامنة السحابية بجوار الأصلي.</string>
+    <string name="patch_shealth_capability_gates">تفتح المؤشرات الحيوية وحمل التدريب ومؤشر اللياقة، التي تتطلب بخلاف ذلك Galaxy Watch8 أو Ultra. تُحسب على الهاتف من سجلّك المتزامن.</string>
+    <string name="patch_shealth_launcher_badge">يضيف شارة OpenSHM صغيرة إلى أيقونة التطبيق لتتمكن من تمييزه عن الأصلي.</string>
+    <string name="patch_shealth_oobe_local">اختياري ومعطّل افتراضيًا. يتخطى شرط تسجيل الدخول بحساب Samsung ويستخدم التطبيق محليًا دون مزامنة سحابية. فعّله فقط إذا لم يعمل تسجيل الدخول.</string>
     <string name="device_logs_channel">سجلات الأجهزة</string>
     <string name="device_logs_notification_title">جارٍ تسجيل سجلات الأجهزة</string>
     <string name="device_logs_notification_text">%1$d للساعة · %2$d للهاتف</string>

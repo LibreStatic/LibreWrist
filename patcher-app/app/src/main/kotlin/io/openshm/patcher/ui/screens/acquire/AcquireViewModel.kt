@@ -8,8 +8,10 @@ import io.openshm.patcher.R
 import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.DownloadRequest
 import io.openshm.patcher.data.ImportResult
+import io.openshm.patcher.data.InputApp
 import io.openshm.patcher.data.InputStore
 import io.openshm.patcher.data.RejectReason
+import io.openshm.patcher.data.SAMSUNG_HEALTH_INPUT
 import io.openshm.patcher.data.SetupSession
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -27,6 +29,20 @@ internal fun AcquireUiState.reduce(event: AcquireEvent): AcquireUiState = when (
     is AcquireEvent.ToggleMoreWays -> updateCard(event.inputId) { it.copy(moreWaysExpanded = !it.moreWaysExpanded) }
     is AcquireEvent.UseFile -> updateCard(event.inputId) { it.copy(moreWaysExpanded = false) }
     is AcquireEvent.OpenMirror -> this
+    is AcquireEvent.ToggleSamsungHealth -> this
+}
+
+/**
+ * The cards for [inputIds], in order. A card already in [existing] keeps its progress; a new one
+ * starts from [initialProgress].
+ */
+internal fun buildCards(
+    inputIds: List<String>,
+    existing: List<AcquireCard>,
+    inputOf: (String) -> InputApp,
+    initialProgress: (InputApp) -> AcquireProgress,
+): List<AcquireCard> = inputIds.map { id ->
+    existing.firstOrNull { it.input.id == id } ?: inputOf(id).let { AcquireCard(it, initialProgress(it)) }
 }
 
 internal fun RejectReason.messageRes(): Int = when (this) {
@@ -57,14 +73,22 @@ class AcquireViewModel(application: Application) : AndroidViewModel(application)
 
     init {
         _state.value = AcquireUiState(
-            SetupSession.state.value.watchProfile.inputIds.map { id ->
-                val input = AppCatalogue.current.input(id)
-                AcquireCard(input, store.verifiedSize(input)?.let { AcquireProgress.Verified(it) } ?: AcquireProgress.Missing)
-            },
+            cards = cardsFor(emptyList()),
+            samsungHealthOffered = AppCatalogue.current.hasInput(SAMSUNG_HEALTH_INPUT),
+            samsungHealth = SetupSession.state.value.samsungHealth,
         )
     }
 
+    private fun cardsFor(existing: List<AcquireCard>) = buildCards(
+        SetupSession.state.value.inputIds, existing, AppCatalogue.current::input,
+    ) { input -> store.verifiedSize(input)?.let { AcquireProgress.Verified(it) } ?: AcquireProgress.Missing }
+
     fun onEvent(event: AcquireEvent) {
+        if (event is AcquireEvent.ToggleSamsungHealth) {
+            SetupSession.update { it.copy(samsungHealth = !it.samsungHealth) }
+            _state.update { it.copy(cards = cardsFor(it.cards), samsungHealth = SetupSession.state.value.samsungHealth) }
+            return
+        }
         _state.update { it.reduce(event) }
         if (event is AcquireEvent.UseFile) {
             pendingPick = event.inputId

@@ -246,6 +246,7 @@
     <string name="patch_phone_rebrand_gms">Gibt der Smartphone-App dasselbe Paket und denselben Schlüssel wie der Uhren-App, damit beide Daten austauschen können.</string>
     <string name="patch_watch_rebrand_coexist">Benennt die Uhren-App um, damit sie neben der Original-App existiert.</string>
     <string name="patch_shm_wear_trusted_peers">Sorgt dafür, dass sich die beiden angepassten Apps über die Uhrverbindung erkennen statt nur die Original-Apps.</string>
+    <string name="patch_shm_launcher_badge">Fügt dem App-Symbol ein kleines OpenSHM-Abzeichen hinzu, damit du es vom Original unterscheiden kannst.</string>
     <string name="patch_watch_gms_resources_anchor">Definiert eine vom Hersteller entfernte Ressource, damit die Uhr die App dem Telefon melden kann.</string>
     <string name="patch_watch_queries_health_service">Lässt die Uhren-App den Health-Dienst sehen.</string>
     <string name="patch_watch_companion_vendor">Akzeptiert jede Marke eines Begleit-Smartphones.</string>
@@ -698,6 +699,19 @@
     <string name="phone_adb_error_message">Das ist ein Problem der App, nicht etwas, das du falsch gemacht hast, und du kannst es nicht selbst beheben. Du kannst weiterhin die Schaltflächen Einstellungen öffnen in jeder Zeile nutzen oder trotzdem fortfahren.</string>
     <string name="phone_adb_success_title">Alles erledigt</string>
     <string name="phone_adb_success_message">Weiter zum nächsten Schritt</string>
+    <string name="acquire_shealth_title">Samsung Health (optional)</string>
+    <string name="acquire_shealth_summary">Erstellt außerdem eine gepatchte Kopie der Samsung-Health-Telefon-App, „Samsung Health+“, mit freigeschalteten Funktionen, die eine neuere Galaxy Watch erfordern. Sie wird neben dem Samsung Health aus Play installiert, das Sie behalten: Dieses bleibt mit der Uhr verbunden und lädt in Ihr Samsung Account hoch, und Samsung Health+ lädt dieselben Daten nach der Anmeldung mit demselben Konto aus der Cloud herunter (kann eine Weile hinterherhinken).</string>
+    <string name="output_shealth_phone">Samsung Health+ (gepatcht)</string>
+    <string name="change_purpose_shealth_phone">Eine umbenannte Kopie von Samsung Health mit den unten genannten freigeschalteten Funktionen. Sie läuft neben dem Samsung Health aus Play und liest Ihre Daten aus der Samsung-Cloud.</string>
+    <string name="patch_shealth_res_webp">Korrigiert vier Bilder mit falscher Dateiendung, damit die App neu gebaut werden kann (keine sichtbare Änderung).</string>
+    <string name="patch_shealth_feature_dev_ui">Zeigt die Funktionsliste unter Einstellungen &gt; Info ohne den Samsung-Entwicklermodus.</string>
+    <string name="patch_shealth_vitality_tile">Zeigt die Kachel „Energiewert“, ohne darauf zu warten, dass die Uhr die Funktion meldet.</string>
+    <string name="patch_shealth_rename_manifest">Gibt der App einen eigenen Paketnamen und eine eigene Bezeichnung (Samsung Health+), damit sie neben dem Original installiert wird.</string>
+    <string name="patch_shealth_rename_code">Aktualisiert die internen Verweise der App auf den neuen Paketnamen.</string>
+    <string name="patch_shealth_rename_account_xml">Gibt der App eine eigene Konto- und Synchronisierungsregistrierung, damit die Cloud-Synchronisierung neben dem Original funktioniert.</string>
+    <string name="patch_shealth_capability_gates">Schaltet Vitalwerte, Trainingsbelastung und den Fitnessindex frei, die sonst eine Galaxy Watch8 oder Ultra erfordern. Sie werden auf dem Telefon aus Ihrem synchronisierten Verlauf berechnet.</string>
+    <string name="patch_shealth_launcher_badge">Fügt dem App-Symbol ein kleines OpenSHM-Abzeichen hinzu, damit du es vom Original unterscheiden kannst.</string>
+    <string name="patch_shealth_oobe_local">Optional, standardmäßig aus. Überspringt die Pflicht zur Anmeldung mit dem Samsung-Konto und nutzt die App lokal ohne Cloud-Synchronisierung. Nur aktivieren, wenn die Anmeldung nicht funktioniert.</string>
     <string name="device_logs_channel">Geräteprotokolle</string>
     <string name="device_logs_notification_title">Geräteprotokolle werden aufgezeichnet</string>
     <string name="device_logs_notification_text">%1$d Uhr · %2$d Telefon</string>
