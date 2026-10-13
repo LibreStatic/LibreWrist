@@ -15,8 +15,13 @@ import java.lang.reflect.Method;
  * (EcgAdapter) and never gets here.
  *
  * unregisterListener(): replaces every direct SemSensorManager.unregisterListener(listener, int)
- * call (pattern watch-sensor-unregister-compat). That overload is missing from some watch
- * frameworks (Galaxy Watch8), where the direct call throws NoSuchMethodError and closes SHM.
+ * call (pattern watch-sensor-unregister-compat). On One UI 8 Watch, hidden-API enforcement
+ * denies that overload to a re-signed user app (api=blocked): the direct call surfaces as
+ * NoSuchMethodError, and reflection via getMethods() also filters it out.
+ *
+ * makeHrSensorAttribute(): builds a SemHrSensorAttribute by reflection for the BP calibration
+ * path (pattern watch-bp-attribute-guard); returns null when hidden-API enforcement denies
+ * the constructor, so SHM takes its normal sensor-error path instead of dying.
  */
 public final class WatchOverrides {
     public static final String TAG = "ShmInterop";
@@ -30,6 +35,8 @@ public final class WatchOverrides {
     // The unregisterListener overload of this watch's framework, resolved on first use.
     private static volatile Method sUnregister;
     private static volatile boolean sUnregisterResolved;
+
+    private static volatile boolean sHrAttributeFailureLogged;
 
     private WatchOverrides() {}
 
@@ -58,6 +65,23 @@ public final class WatchOverrides {
         } catch (Throwable t) {
             Log.w(TAG, "sensor: unregisterListener(type " + type + ") failed: " + t);
         }
+    }
+
+    /**
+     * Builds a com.samsung.android.hardware.sensormanager.SemHrSensorAttribute by reflection,
+     * with no direct constructor reference, so a denied constructor cannot fail at class-link
+     * time. Returns the instance, or null on any failure (LinkageError included), logged once.
+     * The return type is Object because there is no SemHrSensorAttribute stub in watch-mod/stubs.
+     */
+    public static Object makeHrSensorAttribute() {
+        Object attribute = HrSensorAttributeFactory.newInstance(
+                "com.samsung.android.hardware.sensormanager.SemHrSensorAttribute");
+        if (attribute == null && !sHrAttributeFailureLogged) {
+            sHrAttributeFailureLogged = true;
+            Log.w(TAG, "sensor: SemHrSensorAttribute construction failed (hidden-API enforcement"
+                    + " may deny it on One UI 8 Watch); returning null");
+        }
+        return attribute;
     }
 
     /**

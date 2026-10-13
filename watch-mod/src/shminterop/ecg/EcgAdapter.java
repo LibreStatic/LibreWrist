@@ -68,6 +68,7 @@ public final class EcgAdapter {
     static final Object DELIVERY_LOCK = new Object();
     static final AtomicBoolean running = new AtomicBoolean(false);
     static final AtomicBoolean everReal = new AtomicBoolean(false);
+    static final AtomicBoolean hiddenApiCauseLogged = new AtomicBoolean(false);
     static volatile long lastRealMs;
     static ScheduledExecutorService keepalive;
     static final AtomicInteger seq = new AtomicInteger(0);
@@ -224,7 +225,12 @@ public final class EcgAdapter {
             SemEcgSensorEvent ev = new SemEcgSensorEvent(TYPE_ECG, b);
             l.onEventChanged(ev);
         } catch (Throwable t) {
-            log("deliver failed: " + t);
+            if (t instanceof LinkageError && hiddenApiCauseLogged.compareAndSet(false, true)) {
+                log("deliver failed: hidden-API enforcement on One UI 8 Watch denies the"
+                        + " SemEcgSensorEvent constructor to this app (" + t + ")");
+            } else {
+                log("deliver failed: " + t);
+            }
         }
     }
 
