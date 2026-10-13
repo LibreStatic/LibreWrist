@@ -56,20 +56,22 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      # The SDK packages the build needs, cached so later runs skip the sdkmanager setup (which also
-      # downloads its own command-line tools whenever the runner image ships another version).
-      - name: Restore the Android SDK packages
-        id: sdk-cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            /usr/local/lib/android/sdk/platforms/android-36
-            /usr/local/lib/android/sdk/platforms/android-37.0
-            /usr/local/lib/android/sdk/build-tools/36.0.0
-            /usr/local/lib/android/sdk/build-tools/37.0.0
-          key: android-sdk-${{ runner.os }}-platforms-36-37.0-build-tools-36.0.0-37.0.0
+      # The runner image ships these SDK packages, so the sdkmanager setup (which also downloads its own
+      # command-line tools whenever the image has another version) only runs when one is missing. They
+      # are not cached: the image's directories are root-owned, so restoring over them always failed.
+      - name: Check the Android SDK packages
+        id: sdk
+        run: |
+          missing=false
+          for pkg in platforms/android-36 platforms/android-37.0 build-tools/36.0.0 build-tools/37.0.0; do
+            if [ ! -f "$ANDROID_HOME/$pkg/source.properties" ]; then
+              echo "Missing from the runner image: $pkg"
+              missing=true
+            fi
+          done
+          echo "missing=$missing" >> "$GITHUB_OUTPUT"
 
-      - if: steps.sdk-cache.outputs.cache-hit != 'true'
+      - if: steps.sdk.outputs.missing == 'true'
         uses: android-actions/setup-android@v3
         with:
           packages: "platform-tools platforms;android-36 platforms;android-37.0 build-tools;36.0.0 build-tools;37.0.0"
