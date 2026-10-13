@@ -334,6 +334,10 @@
     <!-- Install -->
     <string name="install_phone_title">安装到这部手机</string>
     <string name="install_phone_intro">Android 会要求你确认每次安装。应用所需的访问权限会在之后检查；缺少的权限需要你在**设置**中开启。</string>
+    <string name="leftover_removing_title">正在移除旧的桥接副本</string>
+    <string name="leftover_removing_body">之前的设置以另一个包名留下了桥接副本，它会与新的桥接争用手表连接。Android 会请你确认卸载，可以放心接受。你的健康数据和本应用不受影响。</string>
+    <string name="leftover_kept_title">已保留旧的桥接副本</string>
+    <string name="leftover_kept_body">它可能干扰手表连接。你可以稍后在 Android 的应用设置中卸载它。</string>
     <string name="install_phone_note">权限、显示在其他应用上层、通知使用权以及受限制的设置，都需要由你自行开启。之后回到此界面，它会重新检查。</string>
     <string name="install_watch_title">安装到你的手表</string>
     <string name="install_watch_intro">通过 Wi-Fi 按以下顺序安装：Health Monitor、桥接应用，然后是手机闹钟。</string>

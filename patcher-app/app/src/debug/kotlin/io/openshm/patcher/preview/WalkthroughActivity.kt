@@ -57,6 +57,8 @@ private fun WalkthroughScreen(name: String) {
         "BuildDoneDriver" -> BuildDoneDriver()
         "InstallPhoneDriver" -> InstallPhoneDriver()
         "InstallPhoneGrantsDriver" -> InstallPhoneGrantsDriver()
+        "InstallPhoneLeftoversDriver" -> InstallPhoneLeftoversDriver()
+        "InstallPhoneLeftoversKeptDriver" -> InstallPhoneLeftoversKeptDriver()
         "WatchInstallDriver" -> WatchInstallDriver()
         "DevModeDriver" -> DevModeDriver()
         "DisableStockDriver" -> DisableStockDriver()

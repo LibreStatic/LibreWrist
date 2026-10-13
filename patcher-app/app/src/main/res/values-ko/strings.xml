@@ -334,6 +334,10 @@
     <!-- Install -->
     <string name="install_phone_title">이 휴대전화에 설치</string>
     <string name="install_phone_intro">Android가 설치할 때마다 확인을 요청합니다. 앱에 필요한 접근 권한은 나중에 확인하며, 부족한 항목은 **설정**에서 켜시면 됩니다.</string>
+    <string name="leftover_removing_title">이전 브리지 사본을 제거하는 중</string>
+    <string name="leftover_removing_body">이전 설정이 다른 패키지 이름으로 브리지 사본을 남겼습니다. 새 브리지와 워치 연결을 두고 충돌합니다. Android가 제거 확인을 요청하면 안전하게 승인하셔도 됩니다. 건강 데이터와 이 앱에는 영향이 없습니다.</string>
+    <string name="leftover_kept_title">이전 브리지 사본을 유지했습니다</string>
+    <string name="leftover_kept_body">워치 연결을 방해할 수 있습니다. 나중에 Android 앱 설정에서 제거하실 수 있습니다.</string>
     <string name="install_phone_note">권한, 다른 앱 위에 표시, 알림 접근, 제한된 설정은 직접 켜셔야 합니다. 나중에 이 화면으로 돌아오면 다시 확인합니다.</string>
     <string name="install_watch_title">워치에 설치</string>
     <string name="install_watch_intro">Wi-Fi를 통해 Health Monitor, 브리지, 휴대전화 알람 순서로 설치합니다.</string>

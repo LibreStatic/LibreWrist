@@ -115,6 +115,16 @@ private fun InstallPhoneGrantsPreview(@PreviewParameter(ColorModeProvider::class
 
 @ScreenPreviews
 @Composable
+private fun InstallPhoneLeftoversPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { InstallPhoneLeftoversSample() }
+
+@ScreenPreviews
+@Composable
+private fun InstallPhoneLeftoversKeptPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
+    PreviewHost(mode) { InstallPhoneLeftoversSample(kept = true) }
+
+@ScreenPreviews
+@Composable
 private fun InstallPhoneConflictPreview(@PreviewParameter(ColorModeProvider::class) mode: ColorMode) =
     PreviewHost(mode) { InstallPhoneConflictSample(confirming = true) }
 

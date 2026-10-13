@@ -352,6 +352,10 @@
     <!-- Install -->
     <string name="install_phone_title">Instalacja na tym telefonie</string>
     <string name="install_phone_intro">Android prosi o potwierdzenie każdej instalacji. Potrzebne aplikacjom uprawnienia są sprawdzane potem; brakujące włączasz w **Ustawieniach**.</string>
+    <string name="leftover_removing_title">Usuwanie starej kopii mostu</string>
+    <string name="leftover_removing_body">Wcześniejsza konfiguracja zostawiła kopię mostu pod inną nazwą pakietu. Rywalizuje ona z nową o połączenie z zegarkiem. Android poprosi o potwierdzenie odinstalowania; możesz je bezpiecznie zaakceptować. Twoje dane zdrowotne i ta aplikacja nie są naruszone.</string>
+    <string name="leftover_kept_title">Stara kopia mostu pozostała</string>
+    <string name="leftover_kept_body">Może zakłócać połączenie z zegarkiem. Możesz ją odinstalować później w ustawieniach aplikacji Androida.</string>
     <string name="install_phone_note">Uprawnienia, wyświetlanie nad innymi aplikacjami, dostęp do powiadomień i ustawienia z ograniczeniami włączasz Ty. Wróć potem na ten ekran, a sprawdzi je ponownie.</string>
     <string name="install_watch_title">Instalacja na zegarku</string>
     <string name="install_watch_intro">Instalacja przez Wi-Fi w tej kolejności: Health Monitor, mostek, a potem alarmy z telefonu.</string>

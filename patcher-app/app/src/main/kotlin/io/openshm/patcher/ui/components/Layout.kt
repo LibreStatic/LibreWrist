@@ -1,5 +1,11 @@
 package io.openshm.patcher.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.snap
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +38,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,6 +54,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.openshm.patcher.R
+import io.openshm.patcher.ui.theme.LocalReducedMotion
 import io.openshm.patcher.ui.theme.PatcherTheme
 
 /** Back / help row shared by the step screens. */
@@ -109,6 +118,9 @@ fun ContentColumn(modifier: Modifier = Modifier, content: @Composable () -> Unit
  * is appended after the primary one in the same scroll. The column is capped at
  * [SinglePaneMaxWidth], or [TwoPaneMaxWidth] when two-pane, and centered.
  *
+ * A [banner] is pinned between the header and the content, outside any scroll, so a notice that
+ * explains something happening right now is visible in every viewport.
+ *
  * The footer sits on an opaque surface band, so its text and buttons never lie over the backdrop.
  */
 @Composable
@@ -121,6 +133,7 @@ fun StepScreenScaffold(
     topTrailing: @Composable () -> Unit = {},
     footer: @Composable ColumnScope.() -> Unit = {},
     secondary: (@Composable ColumnScope.() -> Unit)? = null,
+    banner: (@Composable ColumnScope.() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     BoxWithConstraints(
@@ -138,6 +151,17 @@ fun StepScreenScaffold(
                     if (onHelp != null) HelpAction(onHelp)
                 }
                 StepHeader(step, title, Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
+                val reducedMotion = LocalReducedMotion.current
+                AnimatedVisibility(
+                    visible = banner != null,
+                    enter = if (reducedMotion) fadeIn(snap()) else expandVertically() + fadeIn(),
+                    exit = if (reducedMotion) fadeOut(snap()) else shrinkVertically() + fadeOut(),
+                ) {
+                    // Keeps the last content while the exit animation runs.
+                    val shown = remember { mutableStateOf(banner) }
+                    if (banner != null) shown.value = banner
+                    Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp)) { shown.value?.invoke(this) }
+                }
                 if (twoPane) {
                     Row(
                         modifier = Modifier.weight(1f).fillMaxWidth().padding(horizontal = 16.dp),

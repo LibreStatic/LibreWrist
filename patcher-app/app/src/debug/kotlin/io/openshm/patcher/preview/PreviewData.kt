@@ -333,6 +333,19 @@ internal object PreviewData {
         )
     }
 
+    /** Android is asking to remove a bridge copy of an earlier prefix; the notice is up before its dialog. */
+    fun installPhoneRemovingLeftovers() = InstallUiState(
+        installItems(Device.Phone, { CheckStatus.Pending }) { CheckStatus.Pending },
+        running = true,
+        removingLeftovers = listOf("com.oldprefix.shmbridge.phone"),
+    )
+
+    /** The removal of that copy was declined, so it stays and the notice says how to retry. */
+    fun installPhoneLeftoversKept() = InstallUiState(
+        installItems(Device.Phone, { CheckStatus.Pending }) { CheckStatus.Pending },
+        leftoversKept = listOf("com.oldprefix.shmbridge.phone"),
+    )
+
     fun installWatch() = InstallUiState(
         installItems(Device.Watch, { CheckStatus.Pending }) { i ->
             when (i) {

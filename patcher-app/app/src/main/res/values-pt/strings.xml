@@ -340,6 +340,10 @@
     <!-- Install -->
     <string name="install_phone_title">Instalar neste celular</string>
     <string name="install_phone_intro">O Android pede que você confirme cada instalação. O acesso de que os apps precisam é verificado depois; você ativa o que estiver faltando em **Configurações**.</string>
+    <string name="leftover_removing_title">Removendo uma cópia antiga da ponte</string>
+    <string name="leftover_removing_body">Uma configuração anterior deixou uma cópia da ponte com outro nome de pacote. Ela compete com a nova pelo vínculo com o relógio. O Android vai pedir que você confirme a desinstalação; é seguro aceitar. Seus dados de saúde e este app não são afetados.</string>
+    <string name="leftover_kept_title">Cópia antiga da ponte mantida</string>
+    <string name="leftover_kept_body">Ela pode interferir no vínculo com o relógio. Você pode desinstalá-la depois nas configurações de apps do Android.</string>
     <string name="install_phone_note">Permissões, sobreposição a outros apps, acesso às notificações e configurações restritas são ativados por você. Volte a esta tela depois e ela verifica novamente.</string>
     <string name="install_watch_title">Instalar no seu relógio</string>
     <string name="install_watch_intro">Instalação por Wi-Fi nesta ordem: Health Monitor, a ponte e depois os alarmes do celular.</string>

@@ -340,6 +340,10 @@
     <!-- Install -->
     <string name="install_phone_title">Auf diesem Smartphone installieren</string>
     <string name="install_phone_intro">Android bittet dich, jede Installation zu bestätigen. Der benötigte Zugriff wird danach geprüft; fehlende Berechtigungen aktivierst du in den **Einstellungen**.</string>
+    <string name="leftover_removing_title">Alte Kopie der Brücke wird entfernt</string>
+    <string name="leftover_removing_body">Eine frühere Einrichtung hat eine Kopie der Brücke unter einem anderen Paketnamen hinterlassen. Sie konkurriert mit der neuen um die Verbindung zur Uhr. Android bittet dich, die Deinstallation zu bestätigen; du kannst sie bedenkenlos akzeptieren. Deine Gesundheitsdaten und diese App sind nicht betroffen.</string>
+    <string name="leftover_kept_title">Alte Brücken-Kopie behalten</string>
+    <string name="leftover_kept_body">Sie kann die Verbindung zur Uhr stören. Du kannst sie später in den App-Einstellungen von Android deinstallieren.</string>
     <string name="install_phone_note">Berechtigungen, Anzeige über anderen Apps, Benachrichtigungszugriff und eingeschränkte Einstellungen aktivierst du selbst. Komm danach zu diesem Bildschirm zurück, dann wird erneut geprüft.</string>
     <string name="install_watch_title">Auf deiner Uhr installieren</string>
     <string name="install_watch_intro">Installation über Wi-Fi in dieser Reihenfolge: Health Monitor, die Bridge, dann Smartphone-Wecker.</string>

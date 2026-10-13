@@ -40,6 +40,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import io.openshm.patcher.R
 import io.openshm.patcher.data.Grant
@@ -58,6 +61,7 @@ import io.openshm.patcher.ui.components.SectionTitle
 import io.openshm.patcher.ui.components.SetupStep
 import io.openshm.patcher.ui.components.StatusShape
 import io.openshm.patcher.ui.components.StepScreenScaffold
+import io.openshm.patcher.ui.theme.PatcherTheme
 
 /** A grant applied after an install (permission, app op, setting, listener, battery exemption). */
 data class GrantRow(val grant: Grant, val status: CheckStatus, val manual: Boolean = false) {
@@ -106,6 +110,10 @@ data class InstallUiState(
     val confirmingReinstall: Boolean = false,
     /** How the last Wireless debugging grant run ended, until the screen has shown it; phone screen only. */
     val adbOutcome: AdbOutcome? = null,
+    /** Packages of an earlier prefix's bridge that Android is being asked to remove right now; phone screen only. */
+    val removingLeftovers: List<String> = emptyList(),
+    /** Packages of an earlier prefix's bridge that stayed because the removal was declined or failed. */
+    val leftoversKept: List<String> = emptyList(),
 ) {
     /** Everything is installed but some access is still open: the user may go on without it. */
     val canSkipGrants: Boolean get() = !running && !done && items.isNotEmpty() && items.all { it.status == CheckStatus.Passed }
@@ -209,6 +217,38 @@ private fun WatchUnreachableCard(detail: String?) {
     }
 }
 
+/**
+ * An earlier setup left a copy of the bridge under another package name. While Android asks to
+ * remove it the card explains the system dialog; if the user declined, it says what that leaves.
+ */
+@Composable
+private fun LeftoverRemovalCard(removing: List<String>, kept: List<String>) {
+    val isRemoving = removing.isNotEmpty()
+    val packages = if (isRemoving) removing else kept
+    Surface(
+        shape = MaterialTheme.shapes.large,
+        color = PatcherTheme.status.warningContainer,
+        modifier = Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite },
+    ) {
+        Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
+                StatusShape(CheckStatus.Warning, size = 24.dp)
+                Text(
+                    stringResource(if (isRemoving) R.string.leftover_removing_title else R.string.leftover_kept_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = PatcherTheme.status.onWarningContainer,
+                )
+            }
+            Text(
+                stringResource(if (isRemoving) R.string.leftover_removing_body else R.string.leftover_kept_body),
+                style = MaterialTheme.typography.bodyMedium,
+                color = PatcherTheme.status.onWarningContainer,
+            )
+            packages.forEach { PackageId(it, maxLines = 2) }
+        }
+    }
+}
+
 @Composable
 private fun InstallStep(
     step: SetupStep,
@@ -231,6 +271,9 @@ private fun InstallStep(
         title = title,
         onBack = onBack,
         modifier = modifier,
+        banner = if (phone && (state.removingLeftovers.isNotEmpty() || state.leftoversKept.isNotEmpty())) {
+            { LeftoverRemovalCard(state.removingLeftovers, state.leftoversKept) }
+        } else null,
         footer = {
             if (state.done) {
                 PrimaryAction(stringResource(R.string.action_continue), onContinue, accent = accent)

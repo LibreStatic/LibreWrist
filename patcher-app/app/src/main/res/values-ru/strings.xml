@@ -352,6 +352,10 @@
     <!-- Install -->
     <string name="install_phone_title">Установка на этот телефон</string>
     <string name="install_phone_intro">Android просит подтвердить каждую установку. Нужные приложениям доступы проверяются потом; недостающие вы включаете в **настройках**.</string>
+    <string name="leftover_removing_title">Удаление старой копии моста</string>
+    <string name="leftover_removing_body">Прежняя настройка оставила копию моста под другим именем пакета. Она конкурирует с новой за связь с часами. Android попросит подтвердить удаление; это безопасно. Ваши данные о здоровье и это приложение не затрагиваются.</string>
+    <string name="leftover_kept_title">Старая копия моста сохранена</string>
+    <string name="leftover_kept_body">Она может мешать связи с часами. Вы можете удалить её позже в настройках приложений Android.</string>
     <string name="install_phone_note">Разрешения, показ поверх других приложений, доступ к уведомлениям и ограниченные настройки включаете вы. Вернитесь на этот экран, и проверка пройдёт снова.</string>
     <string name="install_watch_title">Установка на часы</string>
     <string name="install_watch_intro">Установка по Wi-Fi в таком порядке: Health Monitor, мост, затем будильники телефона.</string>

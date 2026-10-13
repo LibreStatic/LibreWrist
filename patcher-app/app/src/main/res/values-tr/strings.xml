@@ -340,6 +340,10 @@
     <!-- Install -->
     <string name="install_phone_title">Bu telefona kur</string>
     <string name="install_phone_intro">Android her kurulumu onaylamanızı ister. Uygulamaların ihtiyaç duyduğu erişimler sonra denetlenir; eksik olanları **Ayarlar**\'dan siz açarsınız.</string>
+    <string name="leftover_removing_title">Köprünün eski bir kopyası kaldırılıyor</string>
+    <string name="leftover_removing_body">Önceki bir kurulum, köprünün bir kopyasını farklı bir paket adıyla bırakmış. Saat bağlantısı için yenisiyle yarışıyor. Android kaldırmayı onaylamanızı isteyecek; güvenle kabul edebilirsiniz. Sağlık verileriniz ve bu uygulama etkilenmez.</string>
+    <string name="leftover_kept_title">Eski köprü kopyası korundu</string>
+    <string name="leftover_kept_body">Saat bağlantısına engel olabilir. Daha sonra Android\'in uygulama ayarlarından kaldırabilirsiniz.</string>
     <string name="install_phone_note">İzinleri, diğer uygulamaların üzerinde görüntülemeyi, bildirim erişimini ve kısıtlı ayarları siz açarsınız. Sonra bu ekrana dönün, yeniden denetlenir.</string>
     <string name="install_watch_title">Saatinize kurun</string>
     <string name="install_watch_intro">Wi-Fi üzerinden şu sırayla kurulur: Health Monitor, köprü, sonra telefon alarmları.</string>

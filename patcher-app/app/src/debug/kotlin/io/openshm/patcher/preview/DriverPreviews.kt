@@ -342,6 +342,12 @@ fun SelfAdbGuideStartDriver() = PreviewHost(ColorMode.Fallback) { SelfAdbGuideSa
 fun InstallPhoneConflictDriver() = PreviewHost(ColorMode.Fallback) { InstallPhoneConflictSample() }
 
 @Composable
+fun InstallPhoneLeftoversDriver() = PreviewHost(ColorMode.Fallback) { InstallPhoneLeftoversSample() }
+
+@Composable
+fun InstallPhoneLeftoversKeptDriver() = PreviewHost(ColorMode.Fallback) { InstallPhoneLeftoversSample(kept = true) }
+
+@Composable
 fun InstallPhoneConflictDialogDriver() = PreviewHost(ColorMode.Fallback) { InstallPhoneConflictSample(confirming = true) }
 
 @Composable

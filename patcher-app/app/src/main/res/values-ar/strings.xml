@@ -364,6 +364,10 @@
     <!-- Install -->
     <string name="install_phone_title">التثبيت على هذا الهاتف</string>
     <string name="install_phone_intro">يطلب منك Android تأكيد كل تثبيت. تُفحص الأذونات التي تحتاجها التطبيقات بعد ذلك؛ وتفعّل ما ينقص من **الإعدادات**.</string>
+    <string name="leftover_removing_title">جارٍ إزالة نسخة قديمة من الجسر</string>
+    <string name="leftover_removing_body">ترك إعداد سابق نسخة من الجسر باسم حزمة مختلف. وهي تنافس الجسر الجديد على الاتصال بالساعة. سيطلب منك Android تأكيد إلغاء التثبيت؛ ويمكنك الموافقة بأمان. لا تتأثر بياناتك الصحية ولا هذا التطبيق.</string>
+    <string name="leftover_kept_title">تم الإبقاء على نسخة الجسر القديمة</string>
+    <string name="leftover_kept_body">قد تتداخل مع الاتصال بالساعة. يمكنك إلغاء تثبيتها لاحقًا من إعدادات التطبيقات في Android.</string>
     <string name="install_phone_note">الأذونات والعرض فوق التطبيقات الأخرى والوصول إلى الإشعارات والإعدادات المقيّدة تفعّلها أنت. عد إلى هذه الشاشة بعد ذلك وستفحص مرة أخرى.</string>
     <string name="install_watch_title">التثبيت على ساعتك</string>
     <string name="install_watch_intro">يُثبَّت عبر Wi-Fi بهذا الترتيب: Health Monitor، ثم الجسر، ثم منبّهات الهاتف.</string>

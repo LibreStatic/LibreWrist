@@ -59,7 +59,10 @@ internal class PhoneInstallRunner(
     suspend fun run(state: MutableStateFlow<InstallUiState>) {
         locked = false
         state.update {
-            it.copy(running = true, errorRes = null, errorDetail = null, needsUnknownSources = false, conflict = null, confirmingReinstall = false)
+            it.copy(
+                running = true, errorRes = null, errorDetail = null, needsUnknownSources = false, conflict = null, confirmingReinstall = false,
+                removingLeftovers = emptyList(), leftoversKept = emptyList(),
+            )
         }
         try {
             walk(state)
@@ -76,7 +79,7 @@ internal class PhoneInstallRunner(
             return
         }
         val files = resolveBuildFiles(state, build(), prefix()) ?: return
-        removeLeftovers()
+        removeLeftovers(state)
         for (index in state.value.items.indices) {
             val item = state.value.items[index]
             if (item.status == CheckStatus.Passed) continue
@@ -90,27 +93,50 @@ internal class PhoneInstallRunner(
      * listeners, which the phone bridge declares). The system may ask the user to confirm. System
      * packages are never touched. Failures are only logged, never fail the run.
      */
-    private suspend fun removeLeftovers() {
+    private suspend fun removeLeftovers(state: MutableStateFlow<InstallUiState>) {
         if (outputs.isEmpty()) return
-        val leftovers = try {
+        val found = try {
             LeftoverBridges.find(outputs, Device.Phone, prefix(), installer.notificationListenerPackages(), setOf(ownPackage))
         } catch (e: RuntimeException) {
             log("leftover bridges not listed: ${e.javaClass.simpleName}")
             return
         }
-        for (pkg in leftovers) {
+        val leftovers = found.filter {
             try {
-                if (installer.packageKind(pkg) != PackageKind.User) continue
-                when (val result = installer.uninstall(pkg)) {
-                    UninstallResult.Success -> log("removed leftover bridge $pkg")
-                    is UninstallResult.Failure -> log("leftover bridge $pkg not removed: ${result.message}")
-                }
-            } catch (e: IOException) {
-                log("leftover bridge $pkg not removed: ${e.javaClass.simpleName}")
+                installer.packageKind(it) == PackageKind.User
             } catch (e: RuntimeException) {
-                log("leftover bridge $pkg not removed: ${e.javaClass.simpleName}")
+                log("leftover bridge $it not checked: ${e.javaClass.simpleName}")
+                false
             }
         }
+        if (leftovers.isEmpty()) return
+        // Shown before the system's confirmation appears, so the user knows what it is about.
+        state.update { it.copy(removingLeftovers = leftovers) }
+        try {
+            for (pkg in leftovers) {
+                try {
+                    when (val result = installer.uninstall(pkg)) {
+                        UninstallResult.Success -> log("removed leftover bridge $pkg")
+                        is UninstallResult.Failure -> {
+                            log("leftover bridge $pkg not removed: ${result.message}")
+                            keep(state, pkg)
+                        }
+                    }
+                } catch (e: IOException) {
+                    log("leftover bridge $pkg not removed: ${e.javaClass.simpleName}")
+                    keep(state, pkg)
+                } catch (e: RuntimeException) {
+                    log("leftover bridge $pkg not removed: ${e.javaClass.simpleName}")
+                    keep(state, pkg)
+                }
+            }
+        } finally {
+            state.update { it.copy(removingLeftovers = emptyList()) }
+        }
+    }
+
+    private fun keep(state: MutableStateFlow<InstallUiState>, pkg: String) {
+        state.update { it.copy(leftoversKept = it.leftoversKept + pkg) }
     }
 
     /**

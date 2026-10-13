@@ -334,6 +334,10 @@
     <!-- Install -->
     <string name="install_phone_title">Pasang di ponsel ini</string>
     <string name="install_phone_intro">Android meminta kamu mengonfirmasi setiap pemasangan. Akses yang dibutuhkan aplikasi diperiksa sesudahnya; kamu mengaktifkan yang kurang di **Setelan**.</string>
+    <string name="leftover_removing_title">Menghapus salinan lama jembatan</string>
+    <string name="leftover_removing_body">Pengaturan sebelumnya meninggalkan salinan jembatan dengan nama paket berbeda. Salinan itu bersaing dengan yang baru untuk koneksi ke jam. Android akan meminta kamu mengonfirmasi penghapusan; aman untuk disetujui. Data kesehatan dan aplikasi ini tidak terpengaruh.</string>
+    <string name="leftover_kept_title">Salinan lama jembatan dipertahankan</string>
+    <string name="leftover_kept_body">Salinan itu dapat mengganggu koneksi ke jam. Kamu bisa mencopotnya nanti lewat setelan aplikasi Android.</string>
     <string name="install_phone_note">Izin, tampilan di atas aplikasi lain, akses notifikasi, dan setelan terbatas diaktifkan oleh kamu sendiri. Kembali ke layar ini sesudahnya dan akan diperiksa lagi.</string>
     <string name="install_watch_title">Pasang di jammu</string>
     <string name="install_watch_intro">Dipasang lewat Wi-Fi dengan urutan ini: Health Monitor, bridge, lalu alarm ponsel.</string>

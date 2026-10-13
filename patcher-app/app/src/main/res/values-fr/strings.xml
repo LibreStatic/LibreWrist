@@ -346,6 +346,10 @@
     <!-- Install -->
     <string name="install_phone_title">Installer sur ce téléphone</string>
     <string name="install_phone_intro">Android vous demande de confirmer chaque installation. Les accès dont les apps ont besoin sont vérifiés ensuite ; vous activez ce qui manque dans les **paramètres**.</string>
+    <string name="leftover_removing_title">Suppression d\'une ancienne copie du pont</string>
+    <string name="leftover_removing_body">Une configuration précédente a laissé une copie du pont sous un autre nom de paquet. Elle entre en concurrence avec la nouvelle pour la liaison avec la montre. Android vous demandera de confirmer la désinstallation ; vous pouvez accepter sans crainte. Vos données de santé et cette application ne sont pas touchées.</string>
+    <string name="leftover_kept_title">Ancienne copie du pont conservée</string>
+    <string name="leftover_kept_body">Elle peut perturber la liaison avec la montre. Vous pourrez la désinstaller plus tard depuis les paramètres des applications d\'Android.</string>
     <string name="install_phone_note">Les autorisations, l\'affichage par-dessus les autres apps, l\'accès aux notifications et les paramètres restreints sont activés par vous. Revenez ensuite sur cet écran et il vérifie à nouveau.</string>
     <string name="install_watch_title">Installer sur votre montre</string>
     <string name="install_watch_intro">Installation via Wi-Fi dans cet ordre : Health Monitor, le pont, puis les alarmes du téléphone.</string>

@@ -340,6 +340,10 @@
     <!-- Install -->
     <string name="install_phone_title">Installeren op deze telefoon</string>
     <string name="install_phone_intro">Android vraagt je elke installatie te bevestigen. De toegang die de apps nodig hebben, wordt daarna gecontroleerd; wat ontbreekt, zet je zelf aan in **Instellingen**.</string>
+    <string name="leftover_removing_title">Een oude kopie van de brug wordt verwijderd</string>
+    <string name="leftover_removing_body">Een eerdere installatie heeft een kopie van de brug achtergelaten onder een andere pakketnaam. Die concurreert met de nieuwe om de verbinding met het horloge. Android vraagt je de verwijdering te bevestigen; je kunt gerust accepteren. Je gezondheidsgegevens en deze app worden niet geraakt.</string>
+    <string name="leftover_kept_title">Oude kopie van de brug behouden</string>
+    <string name="leftover_kept_body">Ze kan de verbinding met het horloge storen. Je kunt haar later verwijderen via de app-instellingen van Android.</string>
     <string name="install_phone_note">Rechten, weergave over andere apps, toegang tot meldingen en beperkte instellingen zet je zelf aan. Kom daarna terug naar dit scherm en het controleert opnieuw.</string>
     <string name="install_watch_title">Installeren op je horloge</string>
     <string name="install_watch_intro">Via Wi-Fi geïnstalleerd in deze volgorde: Health Monitor, de bridge en dan telefoonwekkers.</string>

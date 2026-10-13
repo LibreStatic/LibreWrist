@@ -340,6 +340,10 @@
     <!-- Install -->
     <string name="install_phone_title">Installa su questo telefono</string>
     <string name="install_phone_intro">Android ti chiede di confermare ogni installazione. Gli accessi necessari alle app vengono controllati dopo; attivi ciò che manca nelle **Impostazioni**.</string>
+    <string name="leftover_removing_title">Rimozione di una vecchia copia del bridge</string>
+    <string name="leftover_removing_body">Una configurazione precedente ha lasciato una copia del bridge con un altro nome di pacchetto. Compete con quella nuova per il collegamento con l\'orologio. Android ti chiederà di confermare la disinstallazione; puoi accettare senza problemi. I tuoi dati sulla salute e questa app non sono interessati.</string>
+    <string name="leftover_kept_title">Vecchia copia del bridge conservata</string>
+    <string name="leftover_kept_body">Può interferire con il collegamento con l\'orologio. Puoi disinstallarla più tardi dalle impostazioni delle app di Android.</string>
     <string name="install_phone_note">Permessi, sovrapposizione ad altre app, accesso alle notifiche e impostazioni limitate li attivi tu. Torna a questa schermata dopo e verrà ricontrollato.</string>
     <string name="install_watch_title">Installa sul tuo orologio</string>
     <string name="install_watch_intro">Installazione via Wi-Fi in quest\'ordine: Health Monitor, il bridge, poi le sveglie del telefono.</string>

@@ -234,10 +234,12 @@ private class FakePhoneInstaller : PhoneInstaller {
     val kinds = mutableMapOf<String, PackageKind>()
     val uninstalled = mutableListOf<String>()
     var uninstallResult: (String) -> UninstallResult = { UninstallResult.Success }
+    var onUninstall: (String) -> Unit = {}
     override fun notificationListenerPackages(): List<String> = listeners.toList()
     override fun packageKind(packageName: String): PackageKind = kinds[packageName] ?: PackageKind.System // never offers a removal
     override suspend fun uninstall(packageName: String): UninstallResult {
         uninstalled += packageName
+        onUninstall(packageName)
         return uninstallResult(packageName)
     }
     val started = mutableListOf<Triple<String, String, String>>()
@@ -308,6 +310,45 @@ class PhoneInstallRunnerTest {
         assertNull(s.value.errorRes)
         assertTrue(s.value.items.all { it.status == CheckStatus.Passed })
         assertTrue(logged.any { it.contains("$old.shmbridge.phone") })
+    }
+
+    @Test
+    fun theNoticeIsUpWhileTheSystemAsksToUninstallAndGoneAfterwards() = runBlocking {
+        installer.listeners += "$old.shmbridge.phone"
+        installer.kinds["$old.shmbridge.phone"] = PackageKind.User
+        val s = state()
+        var during: List<String>? = null
+        installer.onUninstall = { during = s.value.removingLeftovers }
+        cleaningRunner(built("shm-phone", "bridge-phone")).run(s)
+        assertEquals(listOf("$old.shmbridge.phone"), during)
+        assertTrue(s.value.removingLeftovers.isEmpty())
+        assertTrue(s.value.leftoversKept.isEmpty())
+    }
+
+    @Test
+    fun aDeclinedLeftoverUninstallIsKeptAndTheInstallsStillRun() = runBlocking {
+        installer.listeners += "$old.shmbridge.phone"
+        installer.kinds["$old.shmbridge.phone"] = PackageKind.User
+        installer.uninstallResult = { UninstallResult.Failure("STATUS_FAILURE_ABORTED") }
+        val s = state()
+        cleaningRunner(built("shm-phone", "bridge-phone")).run(s)
+        assertEquals(listOf("$old.shmbridge.phone"), s.value.leftoversKept)
+        assertTrue(s.value.removingLeftovers.isEmpty())
+        assertEquals(listOf("$prefix.shm", "$prefix.bridge"), installer.installed)
+    }
+
+    @Test
+    fun aNewRunClearsTheKeptLeftoversAndRetriesTheRemoval() = runBlocking {
+        installer.listeners += "$old.shmbridge.phone"
+        installer.kinds["$old.shmbridge.phone"] = PackageKind.User
+        installer.uninstallResult = { UninstallResult.Failure("STATUS_FAILURE_ABORTED") }
+        val s = state()
+        val runner = cleaningRunner(built("shm-phone", "bridge-phone"))
+        runner.run(s)
+        installer.uninstallResult = { UninstallResult.Success }
+        runner.run(s)
+        assertEquals(2, installer.uninstalled.size)
+        assertTrue(s.value.leftoversKept.isEmpty())
     }
 
     @Test

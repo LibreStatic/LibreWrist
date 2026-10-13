@@ -340,6 +340,10 @@
     <!-- Install -->
     <string name="install_phone_title">इस फ़ोन पर इंस्टॉल करें</string>
     <string name="install_phone_intro">Android हर इंस्टॉल की पुष्टि माँगता है। ऐप को जो पहुँच चाहिए, उसे बाद में जाँचा जाता है; जो कम है उसे आप **सेटिंग** में चालू करते हैं।</string>
+    <string name="leftover_removing_title">ब्रिज की पुरानी प्रति हटाई जा रही है</string>
+    <string name="leftover_removing_body">पिछले सेटअप ने ब्रिज की एक प्रति दूसरे पैकेज नाम से छोड़ दी है। वह घड़ी के कनेक्शन के लिए नई प्रति से टकराती है। Android अनइंस्टॉल की पुष्टि माँगेगा; इसे स्वीकार करना सुरक्षित है। आपका स्वास्थ्य डेटा और यह ऐप प्रभावित नहीं होते।</string>
+    <string name="leftover_kept_title">ब्रिज की पुरानी प्रति रखी गई</string>
+    <string name="leftover_kept_body">यह घड़ी के कनेक्शन में बाधा डाल सकती है। आप इसे बाद में Android की ऐप सेटिंग से अनइंस्टॉल कर सकते हैं।</string>
     <string name="install_phone_note">अनुमतियाँ, दूसरे ऐप के ऊपर दिखाना, सूचना की पहुँच और प्रतिबंधित सेटिंग आप खुद चालू करते हैं। बाद में इस स्क्रीन पर लौटें और यह फिर से जाँच करेगी।</string>
     <string name="install_watch_title">अपनी घड़ी पर इंस्टॉल करें</string>
     <string name="install_watch_intro">Wi-Fi पर इस क्रम में इंस्टॉल होता है: Health Monitor, ब्रिज, फिर फ़ोन अलार्म।</string>

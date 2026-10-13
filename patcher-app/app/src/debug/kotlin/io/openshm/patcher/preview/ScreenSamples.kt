@@ -132,6 +132,12 @@ internal fun InstallPhoneConflictSample(confirming: Boolean = false) =
     InstallPhoneScreen(PreviewData.installPhoneConflict(confirming), {}, {}, {})
 
 @Composable
+internal fun InstallPhoneLeftoversSample(kept: Boolean = false) = InstallPhoneScreen(
+    if (kept) PreviewData.installPhoneLeftoversKept() else PreviewData.installPhoneRemovingLeftovers(),
+    {}, {}, {},
+)
+
+@Composable
 internal fun WatchInstallSample(unreachable: Boolean = false) =
     WatchInstallScreen(if (unreachable) PreviewData.installWatchUnreachable() else PreviewData.installWatch(), {}, {}, {})
 
