@@ -407,3 +407,6 @@ fun AppUpdateDownloadingDriver() = PreviewHost(ColorMode.Fallback) {
         io.openshm.patcher.ui.update.AppUpdateUiState.Downloading(SampleAppUpdate, 0.4f), {}, {}, {}, {},
     )
 }
+
+@Composable
+fun SigningKeyImportDriver() = PreviewHost(ColorMode.Fallback) { SigningKeySample(form = SigningKeyForm.Import) }

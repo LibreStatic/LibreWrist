@@ -60,9 +60,8 @@ import io.openshm.patcher.ui.components.FooterHint
 import io.openshm.patcher.ui.components.IconAction
 import io.openshm.patcher.ui.components.InfoChip
 import io.openshm.patcher.ui.components.OutlinedAction
-import io.openshm.patcher.ui.components.PrimaryAction
-import io.openshm.patcher.ui.components.QuietAction
 import io.openshm.patcher.ui.components.TopActions
+import io.openshm.patcher.ui.components.WavyBusyProgress
 import io.openshm.patcher.ui.theme.PatcherTheme
 import kotlinx.coroutines.launch
 
@@ -138,12 +137,13 @@ fun SigningKeyScreen(
                 Icons.Rounded.FileOpen,
             )
             state.localBackup?.let { LocalBackupCard(it, state.busy, onRevealLocalPassword) { onEvent(SigningKeyEvent.ExportLocalBackup) } }
-            when (state.form) {
-                SigningKeyForm.Export -> ExportForm(state, onEvent)
-                SigningKeyForm.Import -> ImportForm(state, onEvent, onPickSavedPassword)
-                SigningKeyForm.None -> Unit
-            }
         }
+    }
+    // The forms open as dialogs so a tap always gives visible feedback; the import one steps aside for its confirmation.
+    when (state.form) {
+        SigningKeyForm.Export -> ExportDialog(state, onEvent)
+        SigningKeyForm.Import -> if (state.confirmation == null) ImportDialog(state, onEvent, onPickSavedPassword)
+        SigningKeyForm.None -> Unit
     }
     state.confirmation?.let { ConfirmDialog(it, state.savedPasswordMismatch, onEvent) }
 }
@@ -265,7 +265,7 @@ private fun FormCard(content: @Composable () -> Unit) {
 
 // The typed passwords live in this composition only (not rememberSaveable), so they never reach a saved Bundle.
 @Composable
-private fun ExportForm(state: SigningKeyUiState, onEvent: (SigningKeyEvent) -> Unit) {
+private fun ExportDialog(state: SigningKeyUiState, onEvent: (SigningKeyEvent) -> Unit) {
     var password by remember { mutableStateOf("") }
     var confirm by remember { mutableStateOf("") }
     var visible by remember { mutableStateOf(false) }
@@ -273,72 +273,101 @@ private fun ExportForm(state: SigningKeyUiState, onEvent: (SigningKeyEvent) -> U
     var confirmLeft by remember { mutableStateOf(false) }
     val problem = ExportPasswordPolicy.shownProblem(password, confirm, passwordLeft, confirmLeft, state.formError)
     val mismatch = problem == R.string.signing_key_error_mismatch
-    FormCard {
-        Text(stringResource(R.string.signing_key_export_hint), style = MaterialTheme.typography.bodyMedium)
-        PasswordField(
-            password, { password = it }, stringResource(R.string.signing_key_password), visible, { visible = !visible },
-            error = if (mismatch) null else problem,
-            modifier = Modifier.onLeave { passwordLeft = true },
-            args = ExportPasswordPolicy.MIN_LENGTH,
-        )
-        PasswordField(
-            confirm, { confirm = it }, stringResource(R.string.signing_key_password_repeat), visible, { visible = !visible },
-            error = if (mismatch) problem else null,
-            modifier = Modifier.onLeave { confirmLeft = true },
-            toggle = false,
-        )
-        ActionRow {
-            PrimaryAction(
-                stringResource(R.string.signing_key_choose_location),
-                { onEvent(SigningKeyEvent.SubmitExport(password.toCharArray(), confirm.toCharArray())) },
+    AlertDialog(
+        onDismissRequest = { if (!state.busy) onEvent(SigningKeyEvent.CloseForm) },
+        icon = { Icon(Icons.Rounded.SaveAlt, contentDescription = null) },
+        title = { Text(stringResource(R.string.signing_key_export)) },
+        text = {
+            Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(stringResource(R.string.signing_key_export_hint), style = MaterialTheme.typography.bodyMedium)
+                PasswordField(
+                    password, { password = it }, stringResource(R.string.signing_key_password), visible, { visible = !visible },
+                    error = if (mismatch) null else problem,
+                    modifier = Modifier.onLeave { passwordLeft = true },
+                    args = ExportPasswordPolicy.MIN_LENGTH,
+                )
+                PasswordField(
+                    confirm, { confirm = it }, stringResource(R.string.signing_key_password_repeat), visible, { visible = !visible },
+                    error = if (mismatch) problem else null,
+                    modifier = Modifier.onLeave { confirmLeft = true },
+                    toggle = false,
+                )
+                DialogStatus(state)
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = { onEvent(SigningKeyEvent.SubmitExport(password.toCharArray(), confirm.toCharArray())) },
                 enabled = !state.busy,
-            )
-            QuietAction(stringResource(R.string.action_cancel), { onEvent(SigningKeyEvent.CloseForm) })
-        }
+            ) { Text(stringResource(R.string.signing_key_choose_location)) }
+        },
+        dismissButton = {
+            TextButton(onClick = { onEvent(SigningKeyEvent.CloseForm) }, enabled = !state.busy) { Text(stringResource(R.string.action_cancel)) }
+        },
+    )
+}
+
+/** Progress and failures while a dialog is open; a failure would otherwise land on the screen behind it. */
+@Composable
+private fun DialogStatus(state: SigningKeyUiState) {
+    // Encrypting or checking the key file takes seconds on slow devices.
+    if (state.busy) WavyBusyProgress()
+    val message = state.message
+    if (message != null && message.isError) {
+        Text(stringResource(message.text), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
     }
 }
 
 @Composable
-private fun ImportForm(state: SigningKeyUiState, onEvent: (SigningKeyEvent) -> Unit, onPickSavedPassword: suspend () -> PickedPassword?) {
+private fun ImportDialog(state: SigningKeyUiState, onEvent: (SigningKeyEvent) -> Unit, onPickSavedPassword: suspend () -> PickedPassword?) {
     var password by remember { mutableStateOf("") }
     var visible by remember { mutableStateOf(false) }
     var noSaved by remember { mutableStateOf(false) }
     var savedId by remember { mutableStateOf<String?>(null) }
     val scope = rememberCoroutineScope()
-    FormCard {
-        Text(stringResource(R.string.signing_key_import_hint), style = MaterialTheme.typography.bodyMedium)
-        OutlinedAction(
-            stringResource(R.string.key_backup_use_saved),
-            {
-                scope.launch {
-                    val saved = onPickSavedPassword()
-                    noSaved = saved == null
-                    if (saved != null) {
-                        password = String(saved.password)
-                        saved.password.fill('\u0000')
-                        savedId = saved.credentialId
-                    }
-                }
-            },
-            Icons.Rounded.Key,
-            enabled = !state.busy,
-        )
-        if (noSaved) Text(stringResource(R.string.key_backup_use_saved_none), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
-        PasswordField(
-            // Typing a different password makes the picked credential irrelevant.
-            password, { password = it; savedId = null }, stringResource(R.string.signing_key_password), visible, { visible = !visible },
-            error = state.formError,
-        )
-        if (state.savedPasswordMismatch) Text(stringResource(R.string.key_backup_wrong_key), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
-        ActionRow {
-            PrimaryAction(
-                stringResource(R.string.signing_key_choose_file),
-                { onEvent(SigningKeyEvent.SubmitImport(password.toCharArray(), savedId)) },
+    AlertDialog(
+        onDismissRequest = { if (!state.busy) onEvent(SigningKeyEvent.CloseForm) },
+        icon = { Icon(Icons.Rounded.FileOpen, contentDescription = null) },
+        title = { Text(stringResource(R.string.signing_key_import)) },
+        text = {
+            Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(stringResource(R.string.signing_key_import_hint), style = MaterialTheme.typography.bodyMedium)
+                OutlinedAction(
+                    stringResource(R.string.key_backup_use_saved),
+                    {
+                        scope.launch {
+                            val saved = onPickSavedPassword()
+                            noSaved = saved == null
+                            if (saved != null) {
+                                password = String(saved.password)
+                                saved.password.fill('\u0000')
+                                savedId = saved.credentialId
+                            }
+                        }
+                    },
+                    Icons.Rounded.Key,
+                    enabled = !state.busy,
+                )
+                if (noSaved) Text(stringResource(R.string.key_backup_use_saved_none), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+                PasswordField(
+                    // Typing a different password makes the picked credential irrelevant.
+                    password, { password = it; savedId = null }, stringResource(R.string.signing_key_password), visible, { visible = !visible },
+                    error = state.formError,
+                )
+                if (state.savedPasswordMismatch) Text(stringResource(R.string.key_backup_wrong_key), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+                DialogStatus(state)
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = { onEvent(SigningKeyEvent.SubmitImport(password.toCharArray(), savedId)) },
                 enabled = !state.busy,
-            )
-            QuietAction(stringResource(R.string.action_cancel), { onEvent(SigningKeyEvent.CloseForm) })
-        }
-    }
+            ) { Text(stringResource(R.string.signing_key_choose_file)) }
+        },
+        dismissButton = {
+            TextButton(onClick = { onEvent(SigningKeyEvent.CloseForm) }, enabled = !state.busy) { Text(stringResource(R.string.action_cancel)) }
+        },
+    )
 }
 
 /** Calls [action] each time the element loses focus it had (not on the first, unfocused report). */

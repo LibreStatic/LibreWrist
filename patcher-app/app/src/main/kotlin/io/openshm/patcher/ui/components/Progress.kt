@@ -3,6 +3,7 @@ package io.openshm.patcher.ui.components
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.TextAutoSize
@@ -46,6 +47,22 @@ fun WavyDownloadProgress(
         color = color,
         trackColor = trackColor,
         waveSpeed = if (reduced) 0.dp else 20.dp,
+    )
+}
+
+/**
+ * Indeterminate wavy linear progress (Material 3 Expressive) for work of unknown length, inset the
+ * same on both sides so the wave never touches the edges of its container. Flat with reduced motion.
+ */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+fun WavyBusyProgress(modifier: Modifier = Modifier) {
+    val reduced = LocalReducedMotion.current
+    LinearWavyProgressIndicator(
+        modifier = modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
+        color = MaterialTheme.colorScheme.primary,
+        trackColor = MaterialTheme.colorScheme.primaryContainer,
+        amplitude = if (reduced) 0f else 1f,
     )
 }
 
