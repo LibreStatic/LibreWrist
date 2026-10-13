@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="shminterop.shmbridge.watch"
-    android:versionCode="14" android:versionName="1.13">
+    android:versionCode="15" android:versionName="1.14">
 
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
@@ -10,6 +10,10 @@
          granted (used by the RFCOMM link) or CHANGE_NETWORK_STATE -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE"/>
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
+    <!-- Companion presence (CompanionLink): CDM binds LinkPresenceService while the associated
+         phone is connected, so the link runs without a foreground service or notification.
+         Association: adb shell cmd companiondevice associate 0 shminterop.shmbridge.watch <phone MAC> -->
+    <uses-permission android:name="android.permission.REQUEST_OBSERVE_COMPANION_DEVICE_PRESENCE"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <!-- BAL exemption: allows startActivity from the background service
          (also requires: adb shell appops set shminterop.shmbridge.watch SYSTEM_ALERT_WINDOW allow) -->
@@ -44,6 +48,16 @@
         <activity android:name=".MainActivity" android:exported="true"/>
         <service android:name=".BridgeService" android:exported="false"
             android:foregroundServiceType="connectedDevice"/>
+        <!-- Link facts for the installer over adb (shell and the app only; checked in code). -->
+        <provider android:name=".LinkInfoProvider"
+            android:authorities="shminterop.shmbridge.watch.link"
+            android:exported="true"/>
+        <service android:name=".LinkPresenceService" android:exported="true"
+            android:permission="android.permission.BIND_COMPANION_DEVICE_SERVICE">
+            <intent-filter>
+                <action android:name="android.companion.CompanionDeviceService"/>
+            </intent-filter>
+        </service>
 
         <!-- /__bridge__/ communications channel (notifications, alarms, calls).
              The receivers are exported but protected with DUMP: only the system, the app

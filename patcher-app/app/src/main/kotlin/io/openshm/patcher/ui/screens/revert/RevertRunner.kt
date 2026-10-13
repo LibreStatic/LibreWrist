@@ -224,10 +224,33 @@ class RevertRunner(
             PackageKind.System -> return StepOutcome.Skipped(SkipReason.SystemApp)
             PackageKind.User -> Unit
         }
+        if (onWatch) dropCompanionAssociations(item.pkg)
         return when (val result = guarded { if (onWatch) watch.uninstall(item.pkg) else phone.uninstall(item.pkg) }.get()) {
             UninstallResult.Success -> StepOutcome.Done
             is UninstallResult.Failure ->
                 if (result.message.startsWith(ABORTED)) StepOutcome.Cancelled else StepOutcome.Failed(result.message)
+        }
+    }
+
+    /**
+     * Removes the watch's companion associations of [pkg] (the bridge's link to the phone) before the
+     * package goes. Errors are only logged, never fail or skip the removal; a lost watch is [Down].
+     */
+    private suspend fun dropCompanionAssociations(pkg: String) {
+        val found = when (val r = guarded { watch.companionAssociations() }) {
+            is Call.Ok -> r.value
+            is Call.Unreachable -> throw Down(r.cause)
+            is Call.Error -> {
+                log("revert: companion associations of $pkg not listed: ${r.message}")
+                return
+            }
+        }
+        for (association in found.filter { it.packageName == pkg }) {
+            when (val r = guarded { watch.disassociateCompanion(pkg, association.mac) }) {
+                is Call.Ok -> Unit
+                is Call.Unreachable -> throw Down(r.cause)
+                is Call.Error -> log("revert: companion association of $pkg not removed: ${r.message}")
+            }
         }
     }
 

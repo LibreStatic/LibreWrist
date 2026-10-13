@@ -9,7 +9,8 @@ import android.content.pm.ServiceInfo;
 import android.os.IBinder;
 
 /**
- * Foreground service that hosts the RFCOMM link to the phone ({@link RfcommLink}).
+ * Foreground service that hosts the RFCOMM link to the phone ({@link RfcommLink}). Fallback for
+ * when the phone is not associated in the Companion Device Manager ({@link CompanionLink}).
  */
 public class BridgeService extends Service {
 
@@ -23,6 +24,12 @@ public class BridgeService extends Service {
         startAsForeground();
         // Reconnects to the phone by itself.
         RfcommLink.start(this);
+        if (CompanionLink.observe(this)) {
+            // Associated since this start was requested: the CDM binding keeps the process alive.
+            stopForeground(STOP_FOREGROUND_REMOVE);
+            stopSelf();
+            return START_NOT_STICKY;
+        }
         return START_STICKY;
     }
 

@@ -25,6 +25,11 @@ public final class RfcommLink {
     private static volatile Thread worker;
     private static volatile boolean running;
     public static volatile String status = "stopped";
+    /** True while the process is kept alive by the companion binding instead of BridgeService. */
+    static volatile boolean companion;
+
+    private static final String PREFS = "link";
+    private static final String K_PHONE_MAC = "phone_mac";
 
     private RfcommLink() {}
 
@@ -83,7 +88,7 @@ public final class RfcommLink {
                     status = "linked (" + dev.getName() + ")";
                     android.util.Log.i("SHMBridge", "rfcomm: ready with " + dev.getName());
                     backoff = 2000;
-                    served = pipeSession(sock, ctx);
+                    served = pipeSession(sock, dev, ctx);
                 } catch (Exception e) {
                     android.util.Log.i("SHMBridge", "rfcomm: " + dev.getName() + ": " + e);
                 }
@@ -102,12 +107,14 @@ public final class RfcommLink {
      * {@link BridgeHub}. Blocks until the RFCOMM dies or desynchronizes.
      * @return true whenever there was a BT link (do not try other devices).
      */
-    private static boolean pipeSession(final BluetoothSocket sock, final Context ctx) {
+    private static boolean pipeSession(final BluetoothSocket sock, final BluetoothDevice dev,
+                                       final Context ctx) {
         try {
             final BridgeHub hub = BridgeHub.get(ctx);
             FrameMux.Listener events = new FrameMux.Listener() {
                 @Override public void onSessionOpen(FrameMux mux) {
                     status = "linked, session open";
+                    rememberPhone(ctx, dev);
                     hub.onSessionOpen(mux);
                 }
                 @Override public void onBridgeFrame(FrameMux mux, String path, byte[] data) {
@@ -132,6 +139,22 @@ public final class RfcommLink {
         } finally {
             try { sock.close(); } catch (Exception ignored) {}
             status = "session closed";
+        }
+    }
+
+    /** Bluetooth address of the device that served the last session, "" if none yet. */
+    static String phoneMac(Context ctx) {
+        return ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(K_PHONE_MAC, "");
+    }
+
+    private static void rememberPhone(Context ctx, BluetoothDevice dev) {
+        try {
+            String mac = dev.getAddress();
+            if (mac != null && !mac.equals(phoneMac(ctx))) {
+                ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putString(K_PHONE_MAC, mac).apply();
+            }
+        } catch (Exception e) {
+            android.util.Log.w("SHMBridge", "rfcomm: phone address: " + e);
         }
     }
 

@@ -76,10 +76,30 @@ adb -s $WATCH shell am broadcast -a shminterop.shmbridge.START -n $W/.BridgeAlar
 adb -s $PHONE shell am broadcast --user 0 -a shminterop.shmbridge.START -n $P/.CommsBootReceiver -f 0x20
 ```
 
-The watch link service (`BridgeService`) starts on that action, after boot and after an upgrade
-(`BridgeAlarmReceiver`, which also re-arms the mirrored alarm); it still starts when
-`am start -n $W/.MainActivity` opens the status screen. The phone service starts on the same
-three triggers (`CommsBootReceiver`).
+The watch link starts on that action, after boot and after an upgrade (`BridgeAlarmReceiver`,
+which also re-arms the mirrored alarm), and when `am start -n $W/.MainActivity` opens the status
+screen. The phone service starts on the same three triggers (`CommsBootReceiver`).
+
+### Companion mode (watch, no notification)
+
+When the phone is associated with the watch bridge in the watch's Companion Device Manager, the
+system binds `LinkPresenceService` while the phone is connected over Bluetooth. That binding keeps
+the process alive (perceptible, never frozen, also in Doze), so the link runs without
+`BridgeService` and without its ongoing notification (`CompanionLink`). Without an association the
+bridge falls back to `BridgeService` (a `connectedDevice` foreground service whose notification has
+its own channel, "Phone connection", which the user can turn off). Needs Android 13+ on the watch.
+
+The patcher creates the association after installing the watch bridge and removes it when it
+reverts the setup. By hand, once the bridge has linked to the phone once (it records the phone's
+Bluetooth address, readable only by the shell):
+
+```sh
+adb -s $WATCH shell content query --uri content://$W.link          # phone_mac=..., companion=0|1
+adb -s $WATCH shell cmd companiondevice associate 0 $W <phone_mac>
+adb -s $WATCH shell am broadcast -a shminterop.shmbridge.START -n $W/.BridgeAlarmReceiver -f 0x20
+adb -s $WATCH shell cmd companiondevice list 0
+adb -s $WATCH shell cmd companiondevice disassociate 0 $W <phone_mac>   # back to notification mode
+```
 
 ## Communications channel `/__bridge__/` (watch)
 
@@ -87,7 +107,7 @@ Phone notifications, alarms and calls mirrored on the watch. The protocol is doc
 comments of `FrameMux`, `BridgeHub` and `NotifCodec` and in
 [../docs/architecture.md](../docs/architecture.md).
 
-- `RfcommLink` (started by `BridgeService`, a `connectedDevice` FGS) connects to the phone's
+- `RfcommLink` (kept alive by the companion binding or by `BridgeService`) connects to the phone's
   RFCOMM server (it tries the bonded devices, reconnects with back-off) and drives `FrameMux`
   (pure Java): it parses `[int len][short pathLen][path][data]` frames in both directions.
   `/__bridge__/*` frames go to `BridgeHub` (in-process); any other frame is dropped (logged once
@@ -209,8 +229,10 @@ shm-bridge/
 ├── watch/            # Wear OS companion (Java, no dependencies)
 │   ├── AndroidManifest.xml
 │   └── src/shminterop/shmbridge/watch/
-│       ├── MainActivity.java     # minimal status screen + start BridgeService
-│       ├── BridgeService.java    # FGS (connectedDevice) hosting the RFCOMM link
+│       ├── MainActivity.java     # minimal status screen + start the link
+│       ├── CompanionLink.java, LinkPresenceService.java # companion mode (no notification)
+│       ├── BridgeService.java    # FGS (connectedDevice): fallback host of the RFCOMM link
+│       ├── LinkInfoProvider.java # shell-only link facts (phone_mac) for the installer
 │       ├── RfcommLink.java       # RFCOMM client session with the phone + FrameMux
 │       ├── FrameMux.java         # frame codec / session loop: RFCOMM <-> BridgeHub (pure Java)
 │       ├── BridgeHub.java        # /__bridge__/ channel: dispatch, hello, send()

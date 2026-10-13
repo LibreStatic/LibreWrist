@@ -12,6 +12,7 @@ import io.openshm.patcher.device.WatchDevice
 import io.openshm.patcher.ui.components.CheckStatus
 import java.io.File
 import java.io.IOException
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
@@ -37,6 +38,7 @@ internal class WatchInstallRunner(
     private val prefix: () -> String,
     private val lockPrefix: () -> Unit,
     private val log: (String) -> Unit = {},
+    private val pause: suspend (Long) -> Unit = { delay(it) },
 ) {
     private var locked = false
 
@@ -69,9 +71,12 @@ internal class WatchInstallRunner(
             device.startBridge(item.packageName, prefix())
         } catch (e: IOException) {
             log("start request for ${item.outputId} failed: ${e.javaClass.simpleName}")
+            return
         } catch (e: IllegalArgumentException) {
             log("start request for ${item.outputId} rejected: ${e.javaClass.simpleName}")
+            return
         }
+        if (item.outputId == BridgeStart.WATCH_OUTPUT) CompanionLinker(device, log, pause).link(item.packageName, prefix())
     }
 
     /** True when the package is installed. */

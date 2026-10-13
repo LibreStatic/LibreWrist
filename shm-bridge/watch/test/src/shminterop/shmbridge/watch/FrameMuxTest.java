@@ -60,6 +60,10 @@ public final class FrameMuxTest {
         final Thread thread;
 
         Session(long hbMs) throws Exception {
+            this(hbMs, FrameMux.SYSTEM_CLOCK);
+        }
+
+        Session(long hbMs, FrameMux.Clock clock) throws Exception {
             ServerSocket ss = new ServerSocket(0, 1, InetAddress.getLoopbackAddress());
             muxSide = new Socket(InetAddress.getLoopbackAddress(), ss.getLocalPort());
             phone = ss.accept();
@@ -71,7 +75,7 @@ public final class FrameMuxTest {
                             logs.add(m);
                             if (VERBOSE) System.out.println("    [mux] " + m);
                         }
-                    }).timings(hbMs);
+                    }).timings(hbMs).clock(clock);
             thread = new Thread(new Runnable() {
                 @Override public void run() { mux.run(); }
             }, "mux-run");
@@ -412,6 +416,39 @@ public final class FrameMuxTest {
         }
     }
 
+    /**
+     * A suspended watch: the heartbeat thread is asleep for far longer than the keepalive period
+     * (its sleep does not advance in suspend) while the wall clock moved on. A frame from the phone
+     * must be answered with our keepalive right away, or the phone's 15 s watchdog drops the link.
+     */
+    static void testPeerFrameAnswersOverdueKeepalive() throws Exception {
+        final long[] now = {1_000_000L};
+        Session s = new Session(60_000, new FrameMux.Clock() {
+            @Override public long now() { synchronized (now) { return now[0]; } }
+        });
+        try {
+            DataInputStream in = new DataInputStream(s.phone.getInputStream());
+            FrameMux.Frame first = FrameMux.readFrame(in); // the initial keepalive (lastRemoteWrite = 0)
+            check(first != null && isKeepalive(first), "initial keepalive");
+            OutputStream po = s.phone.getOutputStream();
+            // Not overdue yet: a phone ping is not answered.
+            po.write(FrameMux.HEARTBEAT);
+            po.flush();
+            sleep(200);
+            check(s.mux.heartbeatsSent == 1, "no early answer (" + s.mux.heartbeatsSent + ")");
+            check(in.available() == 0, "nothing sent before the keepalive is due");
+            synchronized (now) { now[0] += 61_000; } // the CPU slept; the heartbeat thread did not run
+            po.write(FrameMux.HEARTBEAT);
+            po.flush();
+            FrameMux.Frame answer = FrameMux.readFrame(in); // phone socket has a 10 s read timeout
+            check(answer != null && isKeepalive(answer), "keepalive answered on the phone's frame");
+            check(s.mux.heartbeatsSent == 2, "one answer (" + s.mux.heartbeatsSent + ")");
+            check(!s.mux.isClosed(), "alive");
+        } finally {
+            s.close();
+        }
+    }
+
     // ------------------------------------------------------------------ runner
 
     interface T { void run() throws Exception; }
@@ -445,6 +482,7 @@ public final class FrameMuxTest {
         run("RFCOMM death closes the session", FrameMuxTest::testRemoteDeath);
         run("EOF mid-frame closes the session", FrameMuxTest::testEofMidFrame);
         run("idle session is not cut", FrameMuxTest::testIdleSessionStaysUp);
+        run("phone frame answers an overdue keepalive", FrameMuxTest::testPeerFrameAnswersOverdueKeepalive);
         System.out.println();
         System.out.println("FrameMuxTest: " + pass + " PASS, " + fail + " FAIL");
         System.exit(fail == 0 ? 0 : 1);

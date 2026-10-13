@@ -37,6 +37,14 @@ Direct RFCOMM, no PC: the phone `BridgeLink` is the RFCOMM server (UUID
 connects, and its `FrameMux` carries the session. 15 s no-traffic watchdog on the phone (RFCOMM has
 no read timeout); both ends send their own `/__bridge__/ping` keepalive.
 
+What keeps the watch side alive: when the phone is associated with the watch bridge in the watch's
+Companion Device Manager (the patcher does it over adb after installing the bridge, with the phone
+address the bridge records when its first session opens and exposes to the shell through
+`<prefix>.shmbridge.watch.link`), the system binds the bridge's `CompanionDeviceService` while the
+phone is connected, and the process stays perceptible without a notification. Without an
+association the link runs in a `connectedDevice` foreground service with an ongoing notification.
+The patcher's revert removes the association before uninstalling the bridge.
+
 The only configuration is the mirrored capabilities (`caps`), changed through the bridge debug
 receiver (`path=config`); see `shm-bridge/README.md`.
 

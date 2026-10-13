@@ -2,6 +2,7 @@ package io.openshm.patcher
 
 import io.openshm.patcher.adb.AdbException
 import io.openshm.patcher.adb.AdbService
+import io.openshm.patcher.adb.CompanionAssociation
 import io.openshm.patcher.adb.AdbServiceType
 import io.openshm.patcher.adb.GrantOutcome
 import io.openshm.patcher.adb.GrantReport
@@ -158,6 +159,27 @@ private class FakeDevice : WatchDevice {
         startThrows?.let { throw it }
     }
 
+    /** Poll results of [phoneMac]: one per call, the last one repeats. */
+    var macs: List<String?> = listOf(null)
+    var macPolls = 0
+    val associations = mutableListOf<CompanionAssociation>()
+    val companionCalls = mutableListOf<String>()
+    var associateThrows: RuntimeException? = null
+
+    override suspend fun phoneMac(pkg: String): String? = macs[minOf(macPolls++, macs.lastIndex)]
+    override suspend fun companionAssociations(): List<CompanionAssociation> = associations.toList()
+
+    override suspend fun associateCompanion(pkg: String, mac: String) {
+        companionCalls += "associate:$pkg:$mac"
+        associateThrows?.let { throw it }
+        associations += CompanionAssociation(pkg, mac)
+    }
+
+    override suspend fun disassociateCompanion(pkg: String, mac: String) {
+        companionCalls += "disassociate:$pkg:$mac"
+        associations.remove(CompanionAssociation(pkg, mac))
+    }
+
     override suspend fun disable(pkg: String) {
         disableThrows(pkg)?.let { throw it }
         disabled += pkg
@@ -205,7 +227,9 @@ class WatchInstallRunnerTest {
     private fun state(vararg items: InstallItem) = MutableStateFlow(InstallUiState(items.toList()))
 
     private fun runner(device: WatchDevice, build: BuiltBuild?, currentPrefix: String = prefix) =
-        WatchInstallRunner(device, { build }, { currentPrefix }, { locked++ }, { logged += it })
+        WatchInstallRunner(device, { build }, { currentPrefix }, { locked++ }, { logged += it }, { pauses += it })
+
+    private val pauses = mutableListOf<Long>()
 
     private val logged = mutableListOf<String>()
 
@@ -250,6 +274,92 @@ class WatchInstallRunnerTest {
         assertEquals(listOf("$prefix.bridge-watch" to prefix), device.started)
         assertEquals(listOf("$prefix.bridge-watch"), device.grantCalls.map { it.first })
         assertTrue(s.value.done)
+    }
+
+    private val bridge get() = "$prefix.bridge-watch"
+    private val mac = "B8:34:46:0D:88:F4"
+
+    private fun bridgeRun(device: FakeDevice): MutableStateFlow<InstallUiState> {
+        val s = state(item("bridge-watch"))
+        runBlocking { runner(device, built("bridge-watch")).run(s) }
+        return s
+    }
+
+    @Test
+    fun theBridgeIsAssociatedWhenThePhoneMacAppearsAndStartedAgain() {
+        val device = FakeDevice().apply { macs = listOf(null, null, mac.lowercase()) }
+        val s = bridgeRun(device)
+        assertTrue(s.value.done)
+        assertEquals(listOf("associate:$bridge:$mac"), device.companionCalls)
+        assertEquals(listOf(bridge to prefix, bridge to prefix), device.started)
+        assertEquals(listOf(2000L, 2000L), pauses)
+    }
+
+    @Test
+    fun withoutAPhoneMacNothingIsAssociatedAndTheRunPasses() {
+        val device = FakeDevice()
+        val s = bridgeRun(device)
+        assertTrue(s.value.done)
+        assertNull(s.value.errorRes)
+        assertTrue(device.companionCalls.isEmpty())
+        assertEquals(1, device.started.size)
+        assertEquals(10, pauses.size)
+        assertEquals(20_000L, pauses.sum())
+    }
+
+    @Test
+    fun pollingUsesVirtualTime() = kotlinx.coroutines.test.runTest {
+        val device = FakeDevice()
+        val s = state(item("bridge-watch"))
+        WatchInstallRunner(device, { built("bridge-watch") }, { prefix }, { locked++ }, { logged += it }).run(s)
+        assertEquals(20_000L, testScheduler.currentTime)
+        assertTrue(s.value.done)
+    }
+
+    @Test
+    fun anExistingExactAssociationIsLeftAlone() {
+        val device = FakeDevice().apply {
+            macs = listOf(mac)
+            associations += CompanionAssociation(bridge, mac)
+        }
+        bridgeRun(device)
+        assertTrue(device.companionCalls.isEmpty())
+        assertEquals(1, device.started.size)
+    }
+
+    @Test
+    fun anAssociationWithAnOldPhoneIsReplaced() {
+        val device = FakeDevice().apply {
+            macs = listOf(mac)
+            associations += CompanionAssociation(bridge, "11:22:33:44:55:66")
+            associations += CompanionAssociation("other.pkg.x", "11:22:33:44:55:66")
+        }
+        bridgeRun(device)
+        assertEquals(listOf("disassociate:$bridge:11:22:33:44:55:66", "associate:$bridge:$mac"), device.companionCalls)
+        assertEquals(2, device.started.size)
+        assertTrue(CompanionAssociation("other.pkg.x", "11:22:33:44:55:66") in device.associations)
+    }
+
+    @Test
+    fun aFailingAssociationIsLoggedAndTheRunStillPasses() {
+        val device = FakeDevice().apply {
+            macs = listOf(mac)
+            associateThrows = UnsupportedOperationException("no")
+        }
+        val s = bridgeRun(device)
+        assertTrue(s.value.done)
+        assertNull(s.value.errorRes)
+        assertEquals(1, device.started.size)
+        assertEquals(1, logged.size)
+    }
+
+    @Test
+    fun otherItemsAndFailedGrantsNeverGetTheCompanionStep() {
+        val device = FakeDevice().apply { macs = listOf(mac) }
+        val s = state(item("shm-watch"), item("alarm-fork"))
+        runBlocking { runner(device, built("shm-watch", "alarm-fork")).run(s) }
+        assertEquals(0, device.macPolls)
+        assertTrue(device.companionCalls.isEmpty())
     }
 
     @Test

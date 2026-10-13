@@ -4,6 +4,8 @@ import io.openshm.patcher.adb.AdbException
 import io.openshm.patcher.adb.AdbInstaller
 import io.openshm.patcher.adb.ApkSource
 import io.openshm.patcher.adb.BridgeStart
+import io.openshm.patcher.adb.CompanionAssociation
+import io.openshm.patcher.adb.CompanionCommands
 import io.openshm.patcher.adb.Grant as AdbGrant
 import io.openshm.patcher.adb.GrantApplier
 import io.openshm.patcher.adb.GrantReport
@@ -65,6 +67,22 @@ interface WatchDevice {
 
     /** Every package installed on the watch (`pm list packages`). */
     suspend fun listPackages(): List<String> = emptyList()
+
+    /** The phone's Bluetooth MAC as the bridge [pkg] recorded it (its link provider), or null when unknown or the bridge is older. */
+    suspend fun phoneMac(pkg: String): String? = null
+
+    /** The watch's Companion Device Manager associations (user 0). */
+    suspend fun companionAssociations(): List<CompanionAssociation> = emptyList()
+
+    /** Associates [pkg] with the device at [mac] in the watch's Companion Device Manager. */
+    suspend fun associateCompanion(pkg: String, mac: String) {
+        throw UnsupportedOperationException("associateCompanion is not supported")
+    }
+
+    /** Removes the association of [pkg] with [mac]. */
+    suspend fun disassociateCompanion(pkg: String, mac: String) {
+        throw UnsupportedOperationException("disassociateCompanion is not supported")
+    }
 }
 
 class AdbWatchDevice(private val link: WatchLink) : WatchDevice {
@@ -139,6 +157,24 @@ class AdbWatchDevice(private val link: WatchLink) : WatchDevice {
     }
 
     override suspend fun listPackages(): List<String> = RemotePackages(link.client()).listPackages()
+
+    override suspend fun phoneMac(pkg: String): String? {
+        val out = link.client().shell(CompanionCommands.linkInfoCommand(pkg))
+        return if (out.isSuccess) CompanionCommands.parsePhoneMac(out.stdout) else null
+    }
+
+    override suspend fun companionAssociations(): List<CompanionAssociation> =
+        CompanionCommands.parseAssociations(link.client().shell(CompanionCommands.LIST_COMMAND).requireSuccess(CompanionCommands.LIST_COMMAND).stdout)
+
+    override suspend fun associateCompanion(pkg: String, mac: String) {
+        val command = CompanionCommands.associateCommand(pkg, mac)
+        link.client().shell(command).requireSuccess(command)
+    }
+
+    override suspend fun disassociateCompanion(pkg: String, mac: String) {
+        val command = CompanionCommands.disassociateCommand(pkg, mac)
+        link.client().shell(command).requireSuccess(command)
+    }
 
     private fun requireSettingKey(key: String): String {
         require(key.matches(SETTING_KEY)) { "Not a valid setting key" }

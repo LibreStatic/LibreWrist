@@ -1,5 +1,6 @@
 package io.openshm.patcher.revert
 
+import io.openshm.patcher.adb.CompanionAssociation
 import io.openshm.patcher.adb.GrantReport
 import io.openshm.patcher.adb.InstallResult
 import io.openshm.patcher.data.AppCatalogue
@@ -111,6 +112,23 @@ internal class FakeWatch(
         check()
         calls += "put:$key=$value"
         settings[key] = value
+    }
+
+    val associations = mutableListOf<CompanionAssociation>()
+    var disassociateThrows: RuntimeException? = null
+    var listThrows: RuntimeException? = null
+
+    override suspend fun companionAssociations(): List<CompanionAssociation> {
+        check()
+        listThrows?.let { throw it }
+        return associations.toList()
+    }
+
+    override suspend fun disassociateCompanion(pkg: String, mac: String) {
+        check()
+        calls += "disassociate:$pkg:$mac"
+        disassociateThrows?.let { throw it }
+        associations.remove(CompanionAssociation(pkg, mac))
     }
 
     override suspend fun install(apk: File, onProgress: (Float) -> Unit): InstallResult = error("never installs")

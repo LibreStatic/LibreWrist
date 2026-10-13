@@ -133,6 +133,8 @@ public final class FrameMux {
     private final Logger logger;
 
     private volatile long heartbeatMs = 2500;
+    /** Wall clock (it keeps counting while the CPU is suspended); replaceable in tests. */
+    private volatile Clock clock = SYSTEM_CLOCK;
 
     private final Object writeLock = new Object();
     private volatile long lastRemoteWrite;      // 0 = never: the first keepalive goes out right away
@@ -151,6 +153,12 @@ public final class FrameMux {
         this.remoteCloser = remoteCloser;
         this.listener = listener;
         this.logger = logger;
+    }
+
+    /** Time source for the keepalive bookkeeping (tests only). */
+    public FrameMux clock(Clock clock) {
+        this.clock = clock;
+        return this;
     }
 
     public FrameMux timings(long heartbeatMs) {
@@ -174,6 +182,7 @@ public final class FrameMux {
             while (!closed) {
                 Frame f = readFrame(in);
                 if (f == null) break;
+                answerIfDue();
                 if (f.isBridge()) {
                     framesToHub++;
                     try {
@@ -237,13 +246,29 @@ public final class FrameMux {
                 close("RFCOMM write: " + e);
                 throw e;
             }
-            lastRemoteWrite = System.currentTimeMillis();
+            lastRemoteWrite = clock.now();
+        }
+    }
+
+    /**
+     * Sends our keepalive right away when it is overdue. While the watch CPU is suspended the
+     * heartbeat thread's sleep stands still (it runs on the monotonic clock), so the phone would
+     * see no traffic and drop the link; a frame from the phone (its ping every 2.5 s) wakes the
+     * watch, and answering it here keeps the session up through Doze and battery saver.
+     */
+    private void answerIfDue() {
+        if (clock.now() - lastRemoteWrite < heartbeatMs) return;
+        try {
+            writeRemote(HEARTBEAT);
+            heartbeatsSent++;
+        } catch (IOException ignored) {
+            // writeRemote already closed the session; the read loop ends on its own
         }
     }
 
     private void heartbeatLoop() {
         while (!closed) {
-            long idle = System.currentTimeMillis() - lastRemoteWrite;
+            long idle = clock.now() - lastRemoteWrite;
             long hb = heartbeatMs;
             try {
                 if (idle >= hb) {
@@ -259,6 +284,13 @@ public final class FrameMux {
             }
         }
     }
+
+    /** Milliseconds time source. */
+    public interface Clock { long now(); }
+
+    static final Clock SYSTEM_CLOCK = new Clock() {
+        @Override public long now() { return System.currentTimeMillis(); }
+    };
 
     private void log(String m) {
         if (logger != null) try { logger.log(m); } catch (Throwable ignored) {}

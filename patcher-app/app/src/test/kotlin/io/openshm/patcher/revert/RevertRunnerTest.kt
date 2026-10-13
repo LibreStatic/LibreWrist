@@ -45,6 +45,33 @@ class RevertRunnerTest {
     }
 
     @Test
+    fun theBridgeIsDisassociatedBeforeItIsUninstalled() {
+        val (phone, watch) = fullInstall()
+        val bridge = outputPkg("bridge-watch")
+        watch.associations += io.openshm.patcher.adb.CompanionAssociation(bridge, "B8:34:46:0D:88:F4")
+        watch.associations += io.openshm.patcher.adb.CompanionAssociation("other.pkg.x", "B8:34:46:0D:88:F4")
+        val (_, report) = runner(phone, watch).probeAndRun()
+        assertTrue(report.complete)
+        val calls = watch.calls
+        assertTrue(calls.indexOf("disassociate:$bridge:B8:34:46:0D:88:F4") in 0 until calls.indexOf("uninstall:$bridge"))
+        assertEquals(1, calls.count { it.startsWith("disassociate:") })
+        assertEquals(1, watch.associations.size)
+    }
+
+    @Test
+    fun aFailedDisassociationOrListingStillUninstalls() {
+        for (breakIt in listOf<(FakeWatch) -> Unit>({ it.disassociateThrows = IllegalStateException("no") }, { it.listThrows = IllegalStateException("no") })) {
+            val (phone, watch) = fullInstall()
+            val bridge = outputPkg("bridge-watch")
+            watch.associations += io.openshm.patcher.adb.CompanionAssociation(bridge, "B8:34:46:0D:88:F4")
+            breakIt(watch)
+            val (_, report) = runner(phone, watch).probeAndRun()
+            assertTrue(report.complete)
+            assertTrue("uninstall:$bridge" in watch.calls)
+        }
+    }
+
+    @Test
     fun missingPackagesAreSkippedAndReportedAbsent() {
         val phone = FakePhone()
         val watch = FakeWatch()

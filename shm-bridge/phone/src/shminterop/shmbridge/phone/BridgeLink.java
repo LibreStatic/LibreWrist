@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
+import android.os.SystemClock;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
@@ -32,8 +33,9 @@ import java.util.concurrent.TimeUnit;
  * <p>Frame: {@code [int len][short pathLen][path UTF-8][data]} big-endian. The own keepalive
  * is an empty {@code /__bridge__/ping} every 2.5 s; bare heartbeats (len=2, pathLen=0) are
  * not part of the channel and are never sent. Reconnects with back-off; if no frame arrives
- * in 15 s (the peer sends its ping every 2.5 s) the connection is considered dead (watched by
- * the writer: RFCOMM has no read timeout).</p>
+ * in 15 s of awake time (the peer sends its ping every 2.5 s, and answers ours at once when it
+ * was suspended) the connection is considered dead (watched by the writer: RFCOMM has no read
+ * timeout).</p>
  */
 final class BridgeLink {
 
@@ -73,7 +75,7 @@ final class BridgeLink {
     private final Transport transport;
     private volatile boolean running;
     private volatile Conn socket;
-    private volatile long lastRx;
+    private volatile long lastRx;       // SystemClock.uptimeMillis() of the last frame received
     private volatile long lastFrameAt;  // wall clock of the last received frame; 0 = never
     private volatile boolean up;      // socket connected (writable)
     private volatile boolean ready;   // and, in addition, the host has already sent a frame
@@ -205,7 +207,7 @@ final class BridgeLink {
     private boolean serve(Conn s) throws IOException {
         DataInputStream in = new DataInputStream(new BufferedInputStream(s.in()));
         final DataOutputStream out = new DataOutputStream(new BufferedOutputStream(s.out()));
-        lastRx = System.currentTimeMillis();
+        lastRx = SystemClock.uptimeMillis();
         outq.clear();
         Thread writer = new Thread(() -> writeLoop(out), "bridge-comms-writer");
         writer.setDaemon(true);
@@ -231,8 +233,8 @@ final class BridgeLink {
                 in.readFully(pb);
                 byte[] db = new byte[len - 2 - plen];
                 if (db.length > 0) in.readFully(db);
-                lastRx = System.currentTimeMillis();
-                lastFrameAt = lastRx;
+                lastRx = SystemClock.uptimeMillis();
+                lastFrameAt = System.currentTimeMillis();
                 if (!verified) {
                     // the link counts as up only after the first received frame from the peer
                     verified = true;
@@ -294,7 +296,9 @@ final class BridgeLink {
         }
     }
 
-    private long staleSince() { return System.currentTimeMillis() - lastRx; }
+    /** Awake time without a frame from the watch. Uptime stops while this phone is suspended, so
+     *  waking up after a long sleep (e.g. to forward a notification) does not read as a dead link. */
+    private long staleSince() { return SystemClock.uptimeMillis() - lastRx; }
 
     private void closeSocket() {
         Conn s = socket;

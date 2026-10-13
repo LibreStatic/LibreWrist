@@ -57,7 +57,7 @@ public class MainActivity extends Activity {
         start.setText("START BRIDGE");
         start.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
-                startForegroundService(new Intent(MainActivity.this, BridgeService.class));
+                CompanionLink.startLink(MainActivity.this, "activity");
             }
         });
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
@@ -68,7 +68,7 @@ public class MainActivity extends Activity {
 
         setContentView(root);
         // auto-start the bridge if it is not running yet
-        startForegroundService(new Intent(this, BridgeService.class));
+        CompanionLink.startLink(this, "activity");
     }
 
     @Override
