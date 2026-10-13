@@ -36,6 +36,8 @@ import io.openshm.patcher.ui.screens.wearable.TroubleshootUiState
 import io.openshm.patcher.ui.screens.wearable.WearableTroubleshootScreen
 import io.openshm.patcher.ui.screens.devicelogs.DeviceLogsScreen
 import io.openshm.patcher.ui.screens.devicelogs.DeviceLogsUiState
+import io.openshm.patcher.ui.screens.revert.RevertScreen
+import io.openshm.patcher.ui.screens.revert.RevertUiState
 import io.openshm.patcher.ui.screens.welcome.WelcomeScreen
 import io.openshm.patcher.ui.screens.build.AppIconLoader
 import io.openshm.patcher.ui.screens.build.BuildStage
@@ -47,8 +49,11 @@ import io.openshm.patcher.ui.screens.build.LocalAppIconLoader
  */
 
 @Composable
-internal fun WelcomeSample(sheet: Boolean = false, skip: SkipDialog? = null, watchReachable: Boolean = false) =
-    WelcomeScreen(PreviewData.welcome(sheet, watchReachable).copy(skip = skip), {}, {}, {})
+internal fun WelcomeSample(sheet: Boolean = false, skip: SkipDialog? = null, watchReachable: Boolean = false, canRevert: Boolean = false) =
+    WelcomeScreen(PreviewData.welcome(sheet, watchReachable, canRevert).copy(skip = skip), {}, {}, {})
+
+@Composable
+internal fun RevertSample(state: RevertUiState) = RevertScreen(state, {}, {}, {})
 
 /** All three first steps passed over: the watch answered and Galaxy Wearable is ready. */
 internal val SampleSkipping = SkipDialog.Skipping(skippableSteps(DetectedWatch(36, "16"), wearableReady = true))

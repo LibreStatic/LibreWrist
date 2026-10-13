@@ -53,6 +53,12 @@ interface PhoneInstaller {
      * this app; the system then asks once more (through [SessionPhoneInstaller]'s `onUserAction`).
      */
     suspend fun uninstall(packageName: String): UninstallResult
+
+    /**
+     * Packages that declare a notification listener service and are visible to this app (the
+     * manifest `<queries>`); the revert reads the bridge's package prefix from them.
+     */
+    fun notificationListenerPackages(): List<String> = emptyList()
 }
 
 /**
@@ -109,6 +115,16 @@ class SessionPhoneInstaller(
         if (flags and (ApplicationInfo.FLAG_SYSTEM or ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0) PackageKind.System else PackageKind.User
     } catch (e: PackageManager.NameNotFoundException) {
         PackageKind.Missing
+    }
+
+    @Suppress("DEPRECATION")
+    override fun notificationListenerPackages(): List<String> = try {
+        context.packageManager
+            .queryIntentServices(Intent(NOTIFICATION_LISTENER_ACTION), 0)
+            .mapNotNull { it.serviceInfo?.packageName }
+            .distinct()
+    } catch (e: RuntimeException) {
+        emptyList() // a platform quirk must not stop the revert; the stored prefix still counts
     }
 
     override suspend fun uninstall(packageName: String): UninstallResult = withContext(Dispatchers.IO) {
@@ -232,6 +248,7 @@ class SessionPhoneInstaller(
     private companion object {
         const val BUFFER = 64 * 1024
         const val EXTRA_LEGACY_STATUS = "android.content.pm.extra.LEGACY_STATUS"
+        const val NOTIFICATION_LISTENER_ACTION = "android.service.notification.NotificationListenerService"
     }
 }
 

@@ -22,6 +22,9 @@ internal fun SelfTestUiState.result(nowMillis: Long): SelfTestResult? =
 interface SelfTestRecord {
     fun last(): SelfTestResult?
     fun save(result: SelfTestResult)
+
+    /** Forgets the last result (after everything was reverted). */
+    fun clear() {}
 }
 
 /** SharedPreferences `selftest`: timestamp, the three counts and the overall status. */
@@ -46,6 +49,10 @@ class PrefsSelfTestRecord(context: Context) : SelfTestRecord {
             .putInt(KEY_FAILED, result.failed)
             .putString(KEY_OVERALL, result.overall.name)
             .apply()
+    }
+
+    override fun clear() {
+        prefs.edit().clear().apply()
     }
 
     private companion object {

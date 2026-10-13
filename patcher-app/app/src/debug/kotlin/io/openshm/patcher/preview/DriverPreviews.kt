@@ -47,6 +47,34 @@ fun WelcomeDriver() = PreviewHost(ColorMode.Fallback) { WelcomeSample() }
 @Composable
 fun WelcomeWatchDriver() = PreviewHost(ColorMode.Fallback) { WelcomeSample(watchReachable = true) }
 
+/** Welcome after a setup installed something: the "Undo all changes" link shows. */
+@Composable
+fun WelcomeRevertDriver() = PreviewHost(ColorMode.Fallback) { WelcomeSample(canRevert = true) }
+
+/** Undo all changes: checking the devices. */
+@Composable
+fun RevertProbingDriver() = PreviewHost(ColorMode.Fallback) { RevertSample(PreviewData.revertProbing()) }
+
+/** Undo all changes: what will be removed on the watch and the phone, before the user confirms. */
+@Composable
+fun RevertReviewDriver() = PreviewHost(ColorMode.Fallback) { RevertSample(PreviewData.revertReview()) }
+
+/** Undo all changes: the watch could not be reached; retry or skip it. */
+@Composable
+fun RevertWatchUnreachableDriver() = PreviewHost(ColorMode.Fallback) { RevertSample(PreviewData.revertWatchUnreachable()) }
+
+/** Undo all changes: part way through. */
+@Composable
+fun RevertRunningDriver() = PreviewHost(ColorMode.Fallback) { RevertSample(PreviewData.revertRunning()) }
+
+/** Undo all changes: everything undone, with the manual steps and the self-uninstall button. */
+@Composable
+fun RevertDoneCompleteDriver() = PreviewHost(ColorMode.Fallback) { RevertSample(PreviewData.revertDoneComplete()) }
+
+/** Undo all changes: partial (watch lost, one prompt declined). */
+@Composable
+fun RevertDonePartialDriver() = PreviewHost(ColorMode.Fallback) { RevertSample(PreviewData.revertDonePartial()) }
+
 /** AllSet with the watch reachable over ADB. */
 @Composable
 fun AllSetWatchDriver() = PreviewHost(ColorMode.Fallback) { AllSetSample(watchReachable = true) }

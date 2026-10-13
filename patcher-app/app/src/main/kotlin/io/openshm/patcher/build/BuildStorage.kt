@@ -9,4 +9,10 @@ class BuildStorage(context: Context) {
     val outputsDir: File get() = File(context.filesDir, "outputs")
     val workDir: File get() = File(context.cacheDir, "build")
     val record: BuiltOutputs get() = BuiltOutputs(File(context.filesDir, "built-outputs.properties"))
+
+    /** Forgets the finished builds: the record and the signed APKs. The signing key and the downloaded inputs are not touched. */
+    fun clearBuilds() {
+        record.clear()
+        outputsDir.listFiles()?.forEach { it.deleteRecursively() }
+    }
 }

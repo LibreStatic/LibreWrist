@@ -102,6 +102,8 @@ import io.openshm.patcher.ui.screens.wearable.WearablePairingScreen
 import io.openshm.patcher.ui.screens.wearable.WearablePairingViewModel
 import io.openshm.patcher.ui.screens.wearable.WearableTroubleshootScreen
 import io.openshm.patcher.ui.screens.wearable.WearableTroubleshootViewModel
+import io.openshm.patcher.ui.screens.revert.RevertScreen
+import io.openshm.patcher.ui.screens.revert.RevertViewModel
 import io.openshm.patcher.ui.screens.welcome.WelcomeEvent
 import io.openshm.patcher.ui.screens.welcome.WelcomeScreen
 import io.openshm.patcher.ui.screens.welcome.WelcomeViewModel
@@ -187,6 +189,7 @@ fun PatcherNavHost(
                     onGetStarted = { vm.onEvent(WelcomeEvent.GetStarted) },
                     onSettings = { navController.navigate(Route.Settings.path) },
                     onDeviceLogs = { navController.navigate(Route.DeviceLogs.path) },
+                    onRevert = { navController.navigate(Route.Revert.path) },
                 )
             }
             composable(Route.Profile.path) {
@@ -456,6 +459,34 @@ fun PatcherNavHost(
                     onDone = { next(Route.AllSet) },
                     onShare = { shareReport(context, vm.reportText()) },
                     onDeviceLogs = { navController.navigate(Route.DeviceLogs.path) },
+                    onRevert = { navController.navigate(Route.Revert.path) },
+                )
+            }
+            columnComposable(Route.Revert.path) {
+                val vm: RevertViewModel = viewModel()
+                val state by vm.state.collectAsStateWithLifecycle()
+                val context = LocalContext.current
+                // The system's removal confirmations must be started from the activity.
+                LaunchedEffect(vm) {
+                    vm.launches.collect { request ->
+                        try {
+                            context.startActivity(request.intent)
+                        } catch (e: ActivityNotFoundException) {
+                            request.fallback?.let { runCatching { context.startActivity(it) } }
+                        }
+                    }
+                }
+                RevertScreen(
+                    state,
+                    onEvent = vm::onEvent,
+                    onBack = back,
+                    // Back to Welcome; from Home (which replaced the stack) it is opened fresh, as Home's
+                    // builds may be gone now.
+                    onClose = {
+                        if (!navController.popBackStack(Route.Welcome.path, false)) {
+                            navController.navigate(Route.Welcome.path) { popUpTo(navController.graph.id) { inclusive = true } }
+                        }
+                    },
                 )
             }
             columnComposable(Route.SigningKey.path) {
@@ -548,6 +579,7 @@ fun PatcherNavHost(
                         if (event is HomeEvent.NewBuild) navController.navigate(Route.Profile.path)
                         if (event is HomeEvent.RunSelfTest || event is HomeEvent.TestAgain) navController.navigate(Route.SelfTest.path)
                         if (event is HomeEvent.OpenSettings) navController.navigate(Route.Settings.path)
+                        if (event is HomeEvent.Uninstall) navController.navigate(Route.Revert.path)
                         // Inputs whose verified files still match are already Verified on Acquire.
                         if (event is HomeEvent.StartUpdate) navController.navigate(Route.Acquire.path)
                     },

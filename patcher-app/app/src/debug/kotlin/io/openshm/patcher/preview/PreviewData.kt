@@ -63,6 +63,16 @@ import io.openshm.patcher.ui.screens.signingkey.SigningKeyUiState
 import io.openshm.patcher.ui.screens.welcome.WelcomeUiState
 import io.openshm.patcher.ui.screens.welcome.buildChanges
 import io.openshm.patcher.R
+import io.openshm.patcher.ui.screens.revert.Presence
+import io.openshm.patcher.ui.screens.revert.RevertAction
+import io.openshm.patcher.ui.screens.revert.RevertItem
+import io.openshm.patcher.ui.screens.revert.RevertPhase
+import io.openshm.patcher.ui.screens.revert.RevertPlan
+import io.openshm.patcher.ui.screens.revert.RevertRow
+import io.openshm.patcher.ui.screens.revert.RevertUiState
+import io.openshm.patcher.ui.screens.revert.SelfUninstallResult
+import io.openshm.patcher.ui.screens.revert.StepOutcome
+import io.openshm.patcher.ui.screens.revert.WatchStatus
 
 /**
  * Fake UiState for previews and the Compose Driver. Everything structural (inputs, patches,
@@ -80,8 +90,79 @@ internal object PreviewData {
 
     private val session = SessionState(WatchProfile.WearOs5, PREFIX)
 
-    fun welcome(sheet: Boolean = false, watchReachable: Boolean = false) =
-        WelcomeUiState(changesSheetVisible = sheet, changes = buildChanges(PREFIX, WatchProfile.WearOs5), watchReachable = watchReachable)
+    fun welcome(sheet: Boolean = false, watchReachable: Boolean = false, canRevert: Boolean = false) =
+        WelcomeUiState(changesSheetVisible = sheet, changes = buildChanges(PREFIX, WatchProfile.WearOs5), watchReachable = watchReachable, canRevert = canRevert)
+
+    private fun revertItem(outputId: String, device: Device, action: RevertAction = RevertAction.Uninstall) = AppCatalogue.current.output(outputId).let {
+        RevertItem(device, it.label, it.packageName(PREFIX), action)
+    }
+
+    /** What a full install leaves: three watch apps, the stock app turned off, the display setting, three phone apps. */
+    private fun revertRows(outcomes: Map<String, StepOutcome> = emptyMap(), withWatch: Boolean = true): List<RevertRow> {
+        val stock = AppCatalogue.current.stockAppsToDisable.first { it.device == Device.Watch }
+        val items = buildList {
+            if (withWatch) {
+                add(revertItem("bridge-watch", Device.Watch))
+                add(revertItem("alarm-fork", Device.Watch))
+                add(revertItem("shm-watch", Device.Watch))
+                add(RevertItem(Device.Watch, stock.label, stock.packageName, RevertAction.Enable))
+                add(RevertItem(Device.Watch, RevertPlan.ALWAYS_ON_KEY, RevertPlan.ALWAYS_ON_KEY, RevertAction.RestoreSetting))
+            }
+            if (AppCatalogue.current.outputs.any { it.id == "shealth-phone" }) add(revertItem("shealth-phone", Device.Phone))
+            add(revertItem("bridge-phone", Device.Phone))
+            add(revertItem("shm-phone", Device.Phone))
+        }
+        return items.map { RevertRow(it, outcomes[it.key]) }
+    }
+
+    fun revertReview() = RevertUiState(
+        phase = RevertPhase.Review,
+        rows = revertRows(),
+        notInstalled = listOf(RevertItem(Device.Watch, "Alarm", "$PREFIX.shmbridge.alarm.old", RevertAction.Uninstall, Presence.Absent)),
+    )
+
+    fun revertProbing() = RevertUiState(phase = RevertPhase.Probing)
+
+    /** The watch could not be reached: the phone's entries wait for the user to retry or skip the watch. */
+    fun revertWatchUnreachable() = RevertUiState(
+        phase = RevertPhase.Review,
+        rows = revertRows(withWatch = false),
+        watch = WatchStatus.Unreachable,
+        watchErrorRes = R.string.watch_error_unreachable,
+    )
+
+    fun revertRunning(): RevertUiState {
+        val rows = revertRows()
+        val outcomes = mapOf(
+            rows[0].item.key to StepOutcome.Done,
+            rows[1].item.key to StepOutcome.Done,
+            rows[2].item.key to StepOutcome.Running,
+        )
+        return RevertUiState(phase = RevertPhase.Running, rows = revertRows(outcomes))
+    }
+
+    fun revertDoneComplete() = RevertUiState(
+        phase = RevertPhase.Done,
+        complete = true,
+        rows = revertRows(revertRows().associate { it.item.key to StepOutcome.Done }),
+    )
+
+    /** The user declined one phone prompt and the watch dropped out half way. */
+    fun revertDonePartial(): RevertUiState {
+        val rows = revertRows()
+        val outcomes = rows.associate { it.item.key to (StepOutcome.Done as StepOutcome) } + mapOf(
+            rows[3].item.key to StepOutcome.WatchUnreachable("The watch is not reachable"),
+            rows[4].item.key to StepOutcome.WatchUnreachable("The watch is not reachable"),
+            rows[7].item.key to StepOutcome.Cancelled,
+        )
+        return RevertUiState(
+            phase = RevertPhase.Done,
+            complete = false,
+            watch = WatchStatus.Unreachable,
+            rows = revertRows(outcomes),
+            selfUninstall = SelfUninstallResult.Cancelled,
+        )
+    }
 
     fun profile() = ProfileUiState()
 

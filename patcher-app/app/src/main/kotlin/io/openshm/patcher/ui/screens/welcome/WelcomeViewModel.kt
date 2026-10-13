@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
@@ -71,6 +72,11 @@ class WelcomeViewModel(application: Application) : AndroidViewModel(application)
     init {
         // Ask a remembered watch for its version now, so it is known by the time the user starts.
         WatchDetection.start(link)
+        // The undo link shows while the setup has installed something and hides again after a complete revert.
+        viewModelScope.launch {
+            SetupSession.state.map { it.prefixLocked }.distinctUntilChanged()
+                .collect { locked -> _state.update { it.copy(canRevert = locked) } }
+        }
         viewModelScope.launch { preflight.dialog.collect { d -> _state.update { it.copy(skip = d) } } }
         // The device logs link shows once the watch is known to answer over ADB, now or when it announces itself.
         viewModelScope.launch {

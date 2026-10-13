@@ -32,15 +32,23 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.dp
 
 /** Which accent a screen's main action uses: phone steps are primary, watch steps tertiary. */
-enum class Accent { Primary, Tertiary }
+enum class Accent { Primary, Tertiary, Error }
 
 @Composable
 private fun Accent.container(): Color =
-    if (this == Accent.Primary) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary
+    when (this) {
+        Accent.Primary -> MaterialTheme.colorScheme.primary
+        Accent.Tertiary -> MaterialTheme.colorScheme.tertiary
+        Accent.Error -> MaterialTheme.colorScheme.error
+    }
 
 @Composable
 private fun Accent.content(): Color =
-    if (this == Accent.Primary) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onTertiary
+    when (this) {
+        Accent.Primary -> MaterialTheme.colorScheme.onPrimary
+        Accent.Tertiary -> MaterialTheme.colorScheme.onTertiary
+        Accent.Error -> MaterialTheme.colorScheme.onError
+    }
 
 /** 48 dp icon-only button. [description] is the TalkBack label (matches the canvas aria-label). */
 @Composable
@@ -158,13 +166,16 @@ fun OutlinedAction(
     icon: ImageVector,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    /** Tints the label, icon and border (the error colour for a destructive action); unspecified keeps the defaults. */
+    tint: Color = Color.Unspecified,
 ) {
     OutlinedButton(
         onClick = onClick,
         enabled = enabled,
         modifier = modifier.fillMaxWidth().heightIn(min = 48.dp),
         shape = RoundedCornerShape(24.dp),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        colors = if (tint == Color.Unspecified) ButtonDefaults.outlinedButtonColors() else ButtonDefaults.outlinedButtonColors(contentColor = tint),
+        border = BorderStroke(1.dp, if (tint == Color.Unspecified) MaterialTheme.colorScheme.outline else tint),
     ) {
         Icon(icon, contentDescription = null, modifier = Modifier.size(20.dp))
         androidx.compose.foundation.layout.Spacer(Modifier.width(8.dp))

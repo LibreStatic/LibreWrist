@@ -49,6 +49,22 @@ interface WatchDevice {
      * for a package of the current build; the install screens never remove anything otherwise.
      */
     suspend fun uninstall(pkg: String): UninstallResult
+
+    /** `pm enable`: turns [pkg] back on after [disable]. The revert is the only caller. */
+    suspend fun enable(pkg: String) {
+        throw UnsupportedOperationException("enable is not supported")
+    }
+
+    /** The value of the secure setting [key] (`settings get secure`), or null when it is unset. */
+    suspend fun secureSetting(key: String): String? = null
+
+    /** `settings put secure [key] [value]`. The revert is the only caller. */
+    suspend fun putSecureSetting(key: String, value: String) {
+        throw UnsupportedOperationException("putSecureSetting is not supported")
+    }
+
+    /** Every package installed on the watch (`pm list packages`). */
+    suspend fun listPackages(): List<String> = emptyList()
 }
 
 class AdbWatchDevice(private val link: WatchLink) : WatchDevice {
@@ -106,7 +122,32 @@ class AdbWatchDevice(private val link: WatchLink) : WatchDevice {
         }
     }
 
+    override suspend fun enable(pkg: String) {
+        RemotePackages(link.client()).enable(pkg)
+    }
+
+    override suspend fun secureSetting(key: String): String? {
+        val command = "settings get secure ${requireSettingKey(key)}"
+        val out = link.client().shell(command).requireSuccess(command).stdout.trim()
+        return out.takeIf { it.isNotEmpty() && it != "null" }
+    }
+
+    override suspend fun putSecureSetting(key: String, value: String) {
+        require(value.matches(SETTING_VALUE)) { "Not a valid setting value" }
+        val command = "settings put secure ${requireSettingKey(key)} $value"
+        link.client().shell(command).requireSuccess(command)
+    }
+
+    override suspend fun listPackages(): List<String> = RemotePackages(link.client()).listPackages()
+
+    private fun requireSettingKey(key: String): String {
+        require(key.matches(SETTING_KEY)) { "Not a valid setting key" }
+        return key
+    }
+
     private companion object {
+        val SETTING_KEY = Regex("[A-Za-z0-9_]+")
+        val SETTING_VALUE = Regex("[A-Za-z0-9_.-]+")
         const val HASH_TIMEOUT_MS = 60_000L
     }
 }

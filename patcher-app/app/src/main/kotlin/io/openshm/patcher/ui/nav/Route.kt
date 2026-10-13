@@ -26,6 +26,8 @@ enum class Route(val path: String) {
     Settings("settings"),
     /** Reached from Welcome, AllSet and the device logs notification; not part of [SetupFlow]. */
     DeviceLogs("device-logs"),
+    /** "Undo all changes": reached from Welcome, AllSet and Home; not part of [SetupFlow]. */
+    Revert("revert"),
     ;
 
     companion object {

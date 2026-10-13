@@ -19,6 +19,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.Terminal
+import androidx.compose.material.icons.rounded.Undo
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
@@ -59,6 +60,7 @@ fun AllSetScreen(
     onShare: () -> Unit,
     modifier: Modifier = Modifier,
     onDeviceLogs: () -> Unit = {},
+    onRevert: () -> Unit = {},
 ) {
     val colors = MaterialTheme.colorScheme
     val status = PatcherTheme.status
@@ -115,6 +117,7 @@ fun AllSetScreen(
                 OutlinedAction(stringResource(R.string.action_share_report), onShare, Icons.Rounded.Share)
             }
             if (state.watchReachable) SubtleLink(stringResource(R.string.device_logs_link), onDeviceLogs, icon = Icons.Rounded.Terminal)
+            SubtleLink(stringResource(R.string.revert_title), onRevert, icon = Icons.Rounded.Undo)
         }
     }
 }
