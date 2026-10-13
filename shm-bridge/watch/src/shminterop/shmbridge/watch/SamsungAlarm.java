@@ -219,7 +219,7 @@ final class SamsungAlarm {
                 boolean snooze = dt > 0 && dt <= SNOOZE_WINDOW_MS;
                 command(c, snooze);
                 Log.i(BridgeHub.TAG, "samsung: the phone turned off the alarm → "
-                        + (snooze ? "posponer" : "descartar") + " en Samsung");
+                        + (snooze ? "snooze" : "dismiss") + " in Samsung");
             }
         }, DECIDE_MS);
     }

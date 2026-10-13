@@ -45,19 +45,19 @@ public class CommsService extends Service {
         hub.start();
         registerAlarmWatcher(hub);
         registerCallWatcher(hub);
-        Log.i(CommsHub.TAG, "CommsService arriba (" + hub.status() + ")");
+        Log.i(CommsHub.TAG, "CommsService up (" + hub.status() + ")");
     }
 
     private void goForeground() {
         NotificationManager nm = getSystemService(NotificationManager.class);
-        NotificationChannel ch = new NotificationChannel(CHANNEL, "Canal reloj (comunicaciones)",
+        NotificationChannel ch = new NotificationChannel(CHANNEL, CallNotice.str(this, "comms_channel"),
                 NotificationManager.IMPORTANCE_MIN);
         ch.setShowBadge(false);
         nm.createNotificationChannel(ch);
         Notification n = new Notification.Builder(this, CHANNEL)
                 .setSmallIcon(android.R.drawable.stat_sys_data_bluetooth)
-                .setContentTitle("SHM bridge: canal de comunicaciones")
-                .setContentText("Notificaciones, alarmas y llamadas hacia el reloj")
+                .setContentTitle("SHM Bridge")
+                .setContentText(CallNotice.str(this, "comms_text"))
                 .setOngoing(true)
                 .setLocalOnly(true)
                 .build();

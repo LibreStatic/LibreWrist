@@ -38,7 +38,7 @@
                 android:value="Companion link to the owner's smartwatch over a direct Bluetooth link (notifications, alarms, call state)"/>
         </service>
         <service android:name=".BridgeNotificationListener" android:exported="true"
-            android:label="SHM Bridge (reloj)"
+            android:label="@string/listener_label"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService"/>

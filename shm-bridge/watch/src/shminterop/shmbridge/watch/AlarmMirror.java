@@ -48,7 +48,7 @@ public final class AlarmMirror {
             Log.i(BridgeHub.TAG, "alarm/next: no alarm (cancelled)");
             return;
         }
-        Log.i(BridgeHub.TAG, "alarm/next: t=" + t + " (en " + ((t - System.currentTimeMillis()) / 1000) + " s)");
+        Log.i(BridgeHub.TAG, "alarm/next: t=" + t + " (in " + ((t - System.currentTimeMillis()) / 1000) + " s)");
         schedule(c, t);
     }
 

@@ -42,7 +42,7 @@ public class MainActivity extends Activity {
         root.addView(state);
 
         Button refresh = new Button(this);
-        refresh.setText("ACTUALIZAR");
+        refresh.setText("REFRESH");
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) { refresh(); }
         });
@@ -62,11 +62,11 @@ public class MainActivity extends Activity {
         long age = hub == null ? -1 : hub.lastRxAgeMs();
         String peerCaps = hub == null ? "" : hub.peerCapsCsv();
         String caps = hub == null ? "" : hub.capsCsv();
-        state.setText("Servicio: " + (CommsService.running ? "activo" : "detenido")
-                + "\nEnlace con el reloj: " + (hub != null && hub.isLinkUp() ? "conectado" : "sin enlace")
-                + "\nHello del reloj: " + (hub != null && hub.hasPeerHello() ? "recibido" : "no")
-                + "\nCapacidades del reloj: " + (peerCaps.isEmpty() ? "-" : peerCaps)
-                + "\nCapacidades propias: " + (caps.isEmpty() ? "-" : caps)
-                + "\nÚltima trama hace: " + (age < 0 ? "nunca" : age + " ms"));
+        state.setText("Service: " + (CommsService.running ? "running" : "stopped")
+                + "\nWatch link: " + (hub != null && hub.isLinkUp() ? "up" : "down")
+                + "\nWatch hello: " + (hub != null && hub.hasPeerHello() ? "received" : "no")
+                + "\nWatch capabilities: " + (peerCaps.isEmpty() ? "-" : peerCaps)
+                + "\nOwn capabilities: " + (caps.isEmpty() ? "-" : caps)
+                + "\nLast frame: " + (age < 0 ? "never" : age + " ms ago"));
     }
 }

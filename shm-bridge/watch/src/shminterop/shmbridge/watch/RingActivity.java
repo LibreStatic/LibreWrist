@@ -52,14 +52,14 @@ public class RingActivity extends Activity implements AlarmRinger.UiListener {
         root.addView(labelView);
 
         snooze = new Button(this);
-        snooze.setText("Posponer");
+        snooze.setText(CallMirror.str(this, "alarm_snooze"));
         snooze.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) { AlarmRinger.userAction(RingActivity.this, true); }
         });
         root.addView(snooze);
 
         Button dismiss = new Button(this);
-        dismiss.setText("Descartar");
+        dismiss.setText(CallMirror.str(this, "alarm_dismiss"));
         dismiss.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) { AlarmRinger.userAction(RingActivity.this, false); }
         });
@@ -95,7 +95,7 @@ public class RingActivity extends Activity implements AlarmRinger.UiListener {
         }
         String l = AlarmRinger.label;
         labelView.setText((l != null ? l + "\n" : "")
-                + (AlarmRinger.fromPhone ? "Alarma del teléfono" : "Alarma (local)"));
+                + CallMirror.str(this, AlarmRinger.fromPhone ? "alarm_from_phone" : "alarm_local"));
         snooze.setVisibility(AlarmRinger.canSnooze ? View.VISIBLE : View.GONE);
     }
 }

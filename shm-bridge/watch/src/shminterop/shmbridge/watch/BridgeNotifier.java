@@ -58,8 +58,8 @@ public final class BridgeNotifier {
         NotificationManager nm = nm(c);
         CallMirror.ensureChannel(c);
         NotificationChannel alarm = new NotificationChannel(AlarmRinger.CHANNEL,
-                "Alarmas", NotificationManager.IMPORTANCE_HIGH);
-        alarm.setDescription("Alarma espejada del teléfono");
+                CallMirror.str(c, "alarm_channel"), NotificationManager.IMPORTANCE_HIGH);
+        alarm.setDescription(CallMirror.str(c, "alarm_channel_desc"));
         alarm.setSound(null, null);          // sound is handled by AlarmRinger (USAGE_ALARM)
         alarm.enableVibration(false);
         alarm.setBypassDnd(true);
@@ -67,15 +67,20 @@ public final class BridgeNotifier {
     }
 
     private static String channelFor(Context c, String pkg, String app, boolean high) {
-        String safePkg = pkg == null || pkg.isEmpty() ? "desconocido" : pkg;
+        String safePkg = pkg == null || pkg.isEmpty() ? "unknown" : pkg;
         String label = app == null || app.isEmpty() ? safePkg : app;
         String groupId = "brg_" + safePkg;
         String id = "br_" + safePkg + (high ? "_hi" : "");
         NotificationManager nm = nm(c);
-        if (nm.getNotificationChannel(id) == null) {
+        String name = high ? CallMirror.str(c, "notif_channel_urgent", label) : label;
+        NotificationChannel old = nm.getNotificationChannel(id);
+        // Renamed (same id, the system keeps the user's settings) when the name changes, e.g. after
+        // a locale change; only with a real app label, so the package-name fallback cannot flap it.
+        boolean rename = old != null && app != null && !app.isEmpty()
+                && !name.equals(String.valueOf(old.getName()));
+        if (old == null || rename) {
             nm.createNotificationChannelGroup(new NotificationChannelGroup(groupId, label));
-            NotificationChannel ch = new NotificationChannel(id,
-                    high ? label + " (urgentes)" : label,
+            NotificationChannel ch = new NotificationChannel(id, name,
                     high ? NotificationManager.IMPORTANCE_HIGH : NotificationManager.IMPORTANCE_DEFAULT);
             ch.setGroup(groupId);
             nm.createNotificationChannel(ch);

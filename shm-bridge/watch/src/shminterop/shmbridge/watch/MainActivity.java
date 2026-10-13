@@ -23,8 +23,8 @@ public class MainActivity extends Activity {
 
     private final Runnable refresh = new Runnable() {
         @Override public void run() {
-            link.setText("Enlace: " + RfcommLink.status);
-            hello.setText("Hello del teléfono: " + (BridgeHub.get(MainActivity.this).peerHello ? "sí" : "no"));
+            link.setText("Link: " + RfcommLink.status);
+            hello.setText("Phone hello: " + (BridgeHub.get(MainActivity.this).peerHello ? "yes" : "no"));
             handler.postDelayed(this, 2000);
         }
     };
@@ -54,7 +54,7 @@ public class MainActivity extends Activity {
         root.addView(hello);
 
         Button start = new Button(this);
-        start.setText("INICIAR BRIDGE");
+        start.setText("START BRIDGE");
         start.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
                 startForegroundService(new Intent(MainActivity.this, BridgeService.class));

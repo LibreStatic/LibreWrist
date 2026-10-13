@@ -70,10 +70,12 @@ public final class CallMirror {
     static void ensureChannel(Context c) {
         NotificationManager nm = BridgeNotifier.nm(c);
         if (nm.getNotificationChannel(OLD_CHANNEL) != null) nm.deleteNotificationChannel(OLD_CHANNEL);
-        if (nm.getNotificationChannel(CHANNEL) != null) return;
-        NotificationChannel ch = new NotificationChannel(CHANNEL,
-                "Llamadas del teléfono", NotificationManager.IMPORTANCE_HIGH);
-        ch.setDescription("Llamada entrante en el teléfono (sin audio)");
+        String name = str(c, "call_channel");
+        NotificationChannel old = nm.getNotificationChannel(CHANNEL);
+        // Re-created only to refresh the localized name (the system keeps the user's settings).
+        if (old != null && name.equals(String.valueOf(old.getName()))) return;
+        NotificationChannel ch = new NotificationChannel(CHANNEL, name, NotificationManager.IMPORTANCE_HIGH);
+        ch.setDescription(str(c, "call_channel_desc"));
         // Continuous vibration is handled by startVibration(); the channel gives the first alert.
         ch.enableVibration(true);
         ch.setVibrationPattern(new long[]{0, 600, 400, 600});
@@ -127,7 +129,7 @@ public final class CallMirror {
         Notification n = new Notification.Builder(c, CHANNEL)
                 .setSmallIcon(android.R.drawable.sym_call_incoming)
                 .setContentTitle(name)
-                .setContentText("Llamada en el teléfono")
+                .setContentText(str(c, "call_on_phone"))
                 .setCategory(Notification.CATEGORY_CALL)
                 .setStyle(Notification.CallStyle.forIncomingCall(caller, reject, answer))
                 .setFullScreenIntent(fullPi, true)
@@ -221,6 +223,11 @@ public final class CallMirror {
     static String str(Context c, String name) {
         int id = c.getResources().getIdentifier(name, "string", c.getPackageName());
         return id == 0 ? name : c.getString(id);
+    }
+
+    static String str(Context c, String name, Object... args) {
+        int id = c.getResources().getIdentifier(name, "string", c.getPackageName());
+        return id == 0 ? name : c.getString(id, args);
     }
 
     static void cancel(Context c) {

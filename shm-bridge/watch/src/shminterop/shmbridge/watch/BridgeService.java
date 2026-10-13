@@ -28,13 +28,15 @@ public class BridgeService extends Service {
 
     private void startAsForeground() {
         NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        NotificationChannel ch = new NotificationChannel(CH, "SHM Bridge",
+        // Own channel so the user can hide this notification without muting alarms or calls;
+        // the service stays in the foreground either way. Texts in res/values-*/bridge_strings.xml.
+        NotificationChannel ch = new NotificationChannel(CH, CallMirror.str(this, "link_channel"),
                 NotificationManager.IMPORTANCE_LOW);
         nm.createNotificationChannel(ch);
         Notification n = new Notification.Builder(this, CH)
                 .setSmallIcon(android.R.drawable.stat_notify_sync)
                 .setContentTitle("SHM Bridge")
-                .setContentText("Enlace con el teléfono")
+                .setContentText(CallMirror.str(this, "link_text"))
                 .build();
         // connectedDevice and not dataSync: since API 35 dataSync has a 6 h per day cap; once
         // exhausted, startForeground throws ForegroundServiceStartNotAllowedException, the service

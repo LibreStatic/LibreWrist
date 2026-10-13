@@ -217,8 +217,8 @@ public final class AlarmRinger {
             PendingIntent full = activityIntent(c);
             Notification.Builder b = new Notification.Builder(c, CHANNEL)
                     .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
-                    .setContentTitle(label != null ? label : "Alarma")
-                    .setContentText(fromPhone ? "Alarma del teléfono" : "Alarma (local)")
+                    .setContentTitle(label != null ? label : CallMirror.str(c, "alarm_title"))
+                    .setContentText(CallMirror.str(c, fromPhone ? "alarm_from_phone" : "alarm_local"))
                     .setCategory(Notification.CATEGORY_ALARM)
                     .setOngoing(true)
                     .setLocalOnly(true)
@@ -228,11 +228,11 @@ public final class AlarmRinger {
                     .setFullScreenIntent(full, true);
             if (canSnooze) {
                 b.addAction(new Notification.Action.Builder(
-                        Icon.createWithResource(c, android.R.drawable.ic_popup_reminder), "Posponer",
+                        Icon.createWithResource(c, android.R.drawable.ic_popup_reminder), CallMirror.str(c, "alarm_snooze"),
                         alarmBroadcast(c, BridgeAlarmReceiver.ACTION_SNOOZE)).build());
             }
             b.addAction(new Notification.Action.Builder(
-                    Icon.createWithResource(c, android.R.drawable.ic_menu_close_clear_cancel), "Descartar",
+                    Icon.createWithResource(c, android.R.drawable.ic_menu_close_clear_cancel), CallMirror.str(c, "alarm_dismiss"),
                     alarmBroadcast(c, BridgeAlarmReceiver.ACTION_DISMISS)).build());
             Notification n = b.build();
             n.flags |= Notification.FLAG_INSISTENT;

@@ -39,7 +39,7 @@ public class CallActivity extends Activity {
         head.setGravity(Gravity.CENTER);
         head.setTextSize(13f);
         head.setTextColor(Color.LTGRAY);
-        head.setText("Llamada en el teléfono");
+        head.setText(CallMirror.str(this, "call_on_phone"));
         root.addView(head);
 
         nameView = new TextView(this);
@@ -53,7 +53,7 @@ public class CallActivity extends Activity {
         row.setGravity(Gravity.CENTER);
 
         Button reject = new Button(this);
-        reject.setText("Rechazar");
+        reject.setText(CallMirror.str(this, "call_decline"));
         reject.setTextColor(Color.WHITE);
         reject.setBackgroundColor(0xFFC62828);
         reject.setOnClickListener(new View.OnClickListener() {
@@ -65,7 +65,7 @@ public class CallActivity extends Activity {
         row.addView(gap, new LinearLayout.LayoutParams(pad / 2, 1));
 
         Button answer = new Button(this);
-        answer.setText("Contestar");
+        answer.setText(CallMirror.str(this, "call_answer"));
         answer.setTextColor(Color.WHITE);
         answer.setBackgroundColor(0xFF2E7D32);
         answer.setOnClickListener(new View.OnClickListener() {
@@ -110,6 +110,6 @@ public class CallActivity extends Activity {
             return;
         }
         String n = CallMirror.callerName;
-        nameView.setText(n != null ? n : "Llamada entrante");
+        nameView.setText(n != null ? n : CallMirror.str(this, "call_incoming"));
     }
 }

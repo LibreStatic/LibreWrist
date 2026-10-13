@@ -24,7 +24,7 @@ public final class RfcommLink {
 
     private static volatile Thread worker;
     private static volatile boolean running;
-    public static volatile String status = "detenido";
+    public static volatile String status = "stopped";
 
     private RfcommLink() {}
 
@@ -45,7 +45,7 @@ public final class RfcommLink {
         Thread t = worker;
         if (t != null) t.interrupt();
         worker = null;
-        status = "detenido";
+        status = "stopped";
     }
 
     private static void loop(Context ctx) {
@@ -59,14 +59,14 @@ public final class RfcommLink {
                 android.util.Log.w("SHMBridge", "rfcomm: no BT manager: " + e);
             }
             if (adapter == null || !adapter.isEnabled()) {
-                status = "BT apagado";
+                status = "Bluetooth off";
                 sleep(backoff);
                 backoff = Math.min(backoff * 2, 30000);
                 continue;
             }
             java.util.Set<BluetoothDevice> bonded = adapter.getBondedDevices();
             if (bonded == null || bonded.isEmpty()) {
-                status = "sin emparejados";
+                status = "no paired devices";
                 sleep(backoff);
                 backoff = Math.min(backoff * 2, 30000);
                 continue;
@@ -75,12 +75,12 @@ public final class RfcommLink {
             for (BluetoothDevice dev : bonded) {
                 if (!running) return;
                 try {
-                    status = "conectando " + dev.getName();
+                    status = "connecting " + dev.getName();
                     BluetoothSocket sock =
                             dev.createInsecureRfcommSocketToServiceRecord(RFCOMM_UUID);
                     try { adapter.cancelDiscovery(); } catch (Exception ignored) {}
                     sock.connect();
-                    status = "enlazado (" + dev.getName() + ")";
+                    status = "linked (" + dev.getName() + ")";
                     android.util.Log.i("SHMBridge", "rfcomm: ready with " + dev.getName());
                     backoff = 2000;
                     served = pipeSession(sock, ctx);
@@ -90,7 +90,7 @@ public final class RfcommLink {
                 if (served) break; // full session; the outer loop retries the link
             }
             if (!served) {
-                status = "sin servidor (reintentando)";
+                status = "no server (retrying)";
                 sleep(backoff);
                 backoff = Math.min(backoff * 2, 30000);
             }
@@ -107,7 +107,7 @@ public final class RfcommLink {
             final BridgeHub hub = BridgeHub.get(ctx);
             FrameMux.Listener events = new FrameMux.Listener() {
                 @Override public void onSessionOpen(FrameMux mux) {
-                    status = "enlazado, sesión abierta";
+                    status = "linked, session open";
                     hub.onSessionOpen(mux);
                 }
                 @Override public void onBridgeFrame(FrameMux mux, String path, byte[] data) {
@@ -131,7 +131,7 @@ public final class RfcommLink {
             return true; // there was a BT link: do not try other devices
         } finally {
             try { sock.close(); } catch (Exception ignored) {}
-            status = "sesión cerrada";
+            status = "session closed";
         }
     }
 

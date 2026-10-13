@@ -212,7 +212,7 @@
     <string name="customize_prefix_ok">Prefiks baru dibuat untukmu.</string>
     <string name="customize_prefix_locked">Terkunci: aplikasi pembantu sudah terpasang, dan pembaruan memerlukan prefiks yang sama.</string>
     <string name="customize_prefix_regenerate">Buat prefiks baru</string>
-    <string name="customize_build">Build</string>
+    <string name="customize_build">Bangun</string>
     <string name="preset_recommended">Disarankan</string>
     <string name="preset_minimal">Minimal</string>
     <string name="prefix_problem_empty">Masukkan prefiks.</string>

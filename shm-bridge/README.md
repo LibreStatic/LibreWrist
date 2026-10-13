@@ -239,5 +239,5 @@ shm-bridge/
 │       └── LinkActivity.java     # invisible activity to reach the foreground (started)
 └── scripts/
     ├── build-bridge.sh           # Gradle-free build (javac+d8+aapt2+apksigner)
-    └── gen-call-notice-strings.py # generates the call_notice / alarm_label resources
+    └── gen-call-notice-strings.py # generates the call_notice / alarm_label / bridge_strings resources
 ```

@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Generates res/values*/call_notice.xml in shm-bridge/watch and shm-bridge/phone, and
-res/values*/alarm_label.xml (label of the phone alarm in the Samsung alarm app) in watch.
+res/values*/alarm_label.xml (label of the phone alarm in the Samsung alarm app) in watch, and
+res/values*/bridge_strings.xml in both apps (the rest of the UI texts: link service notification,
+alarm and call screens, channel names), whose translations live in bridge-strings.json.
 
 "Call handed over to the phone" notice: the watch dialed over HFP, the phone did not open
 the audio in time (typical: it asks which SIM to use for every call) and the Samsung HFP
@@ -9,6 +11,7 @@ watch system apps. Translations were not reviewed by native speakers.
 
 Usage: python3 shm-bridge/scripts/gen-call-notice-strings.py
 """
+import json
 import os
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -216,6 +219,28 @@ ALIAS = {"he": "iw", "id": "in"}
 
 KEYS = ("call_notice_channel", "call_pulled_title", "call_pulled_text")
 
+# bridge-strings.json: {"_context": {key: note}, "en": {key: text}, "<qualifier>": {...}}.
+# "en" goes to values/ (fallback language); every qualifier of S must be present.
+WATCH_KEYS = ("link_channel", "link_text", "alarm_channel", "alarm_channel_desc", "alarm_title",
+              "alarm_from_phone", "alarm_local", "alarm_snooze", "alarm_dismiss", "call_channel",
+              "call_channel_desc", "call_on_phone", "call_incoming", "call_decline", "call_answer",
+              "notif_channel_urgent")
+PHONE_KEYS = ("comms_channel", "comms_text", "listener_label")
+
+
+def load_bridge_strings():
+    with open(os.path.join(ROOT, "scripts", "bridge-strings.json"), encoding="utf-8") as f:
+        b = json.load(f)
+    b.pop("_context", None)
+    b[""] = b.pop("en")
+    assert set(b) == set(S), sorted(set(b) ^ set(S))
+    for q, v in b.items():
+        assert set(v) == set(WATCH_KEYS + PHONE_KEYS), (q, sorted(set(v) ^ set(WATCH_KEYS + PHONE_KEYS)))
+        assert v["notif_channel_urgent"].count("%1$s") == 1, q
+        assert v["listener_label"].startswith("SHM Bridge"), q
+        assert all(t.strip() and "%" not in t for k, t in v.items() if k != "notif_channel_urgent"), q
+    return b
+
 
 def esc(s):
     s = s.replace("\\", "\\\\").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
@@ -247,6 +272,12 @@ def main():
     for q in list(S) + list(ALIAS):
         write("watch", q, (L[ALIAS.get(q, q)],), ("alarm_phone_label",), "alarm_label.xml")
         n += 1
+    b = load_bridge_strings()
+    for q in list(S) + list(ALIAS):
+        v = b[ALIAS.get(q, q)]
+        for app, keys in (("watch", WATCH_KEYS), ("phone", PHONE_KEYS)):
+            write(app, q, tuple(v[k] for k in keys), keys, "bridge_strings.xml")
+            n += 1
     print(f"{n} files ({len(S) + len(ALIAS)} locales x 2 apps)")
 
 
