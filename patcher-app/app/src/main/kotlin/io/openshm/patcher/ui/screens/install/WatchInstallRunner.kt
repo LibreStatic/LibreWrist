@@ -59,6 +59,10 @@ internal class WatchInstallRunner(
 
     private suspend fun walk(state: MutableStateFlow<InstallUiState>) {
         val files = resolveBuildFiles(state, build(), prefix()) ?: return
+        // Reaching the watch (and the leftover cleanup) takes seconds: show the first pending item as
+        // working right away instead of a screen that seems idle until its upload starts.
+        val first = state.value.items.indexOfFirst { it.status != CheckStatus.Passed }
+        if (first >= 0) state.update { it.updateItem(first) { item -> item.copy(status = CheckStatus.Running, progress = null) } }
         removeLeftovers()
         for (index in state.value.items.indices) {
             val item = state.value.items[index]
@@ -131,7 +135,8 @@ internal class WatchInstallRunner(
     /** True when the package is installed. */
     private suspend fun install(state: MutableStateFlow<InstallUiState>, index: Int, file: File): Boolean {
         val item = state.value.items[index]
-        state.update { it.updateItem(index) { item -> item.copy(status = CheckStatus.Running, progress = 0f) } }
+        // No bar until bytes flow: the up-to-date check and install-create come first.
+        state.update { it.updateItem(index) { item -> item.copy(status = CheckStatus.Running, progress = null) } }
         val upToDate = try {
             device.isUpToDate(item.packageName, file)
         } catch (e: IOException) {

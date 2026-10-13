@@ -201,11 +201,15 @@ private class FakeDevice : WatchDevice {
     }
 
     val listed = mutableListOf<String>()
+    var onList: () -> Unit = {}
     val kinds = mutableMapOf<String, PackageKind>()
     val uninstalled = mutableListOf<String>()
     var uninstallResult: (String) -> UninstallResult = { UninstallResult.Success }
 
-    override suspend fun listPackages(): List<String> = listed.toList()
+    override suspend fun listPackages(): List<String> {
+        onList()
+        return listed.toList()
+    }
 
     override suspend fun packageKind(pkg: String): PackageKind = kinds[pkg] ?: PackageKind.System // never offers a removal
 
@@ -259,6 +263,16 @@ class WatchInstallRunnerTest {
         WatchInstallRunner(device, { build }, { prefix }, { locked++ }, { logged += it }, { pauses += it }, bridgeOutputs, "io.openshm.patcher")
 
     private val old = "io.openshm.u98ff48"
+
+    @Test
+    fun theFirstPendingItemShowsAsRunningWhileTheWatchIsListedForLeftovers() = runBlocking {
+        val s = state(item("alarm-fork"), item("bridge-watch"))
+        var seen: InstallItem? = null
+        val device = FakeDevice().apply { onList = { seen = s.value.items.first() } }
+        cleaningRunner(device, built("alarm-fork", "bridge-watch")).run(s)
+        assertEquals(CheckStatus.Running, seen?.status)
+        assertNull(seen?.progress)
+    }
 
     @Test
     fun bridgeCopiesOfAnEarlierPrefixAreDisassociatedThenUninstalledBeforeInstalling() = runBlocking {
