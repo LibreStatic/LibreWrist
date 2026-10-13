@@ -25,6 +25,10 @@ been tested.
 | Samsung Health Monitor | 1.5.1.022 (watch), 1.4.6.001 (phone) |
 | Phone | Motorola razr fold (non-Samsung) |
 
+The patcher recognizes the watch plugin of every Galaxy Watch family, and includes a fix for the
+watch SHM closing on open on the Galaxy Watch8. The patcher UI is translated into 18 languages, and
+the bridge texts into the same 88 locales as the call notice.
+
 ## Quick start video
 
 Prefer watching to reading? This 90-second video shows the whole setup, step by step. The screens
@@ -44,11 +48,12 @@ The app guides you through these steps:
    watch.
 2. **Inputs**: getting the official APKs (from APKMirror, a file, or pulled from your own watch or
    phone). Each one is checked against the hashes in the catalogue.
-3. **Build**: patching, signing and verifying five APKs with a key that is created on, and stays on,
+3. **Build**: patching, signing and verifying five APKs (six with Samsung Health+) with a key that is created on, and stays on,
    your phone:
    - SHM for the phone and for the watch;
    - the phone and watch bridges;
-   - the Alarm app fork.
+   - the Alarm app fork;
+   - **Samsung Health+**, optional and on by default (see below).
 4. **Install on the phone**: installing the apps and granting their permissions.
 5. **Install on the watch**: installing the apps over Wi-Fi, granting their permissions, turning on
    Health Platform developer mode, and turning off the stock watch SHM. Nothing is uninstalled.
@@ -58,7 +63,8 @@ The patches come from a **signed catalogue** (`catalogue/`), and the app can upd
 repository. The catalogue is data only: the app checks its ECDSA signature and never runs code from
 it.
 
-Export the signing key from the app after the first build. Upgrading the installed apps without
+Export the signing key from the app after the first build (the export and import forms open as
+dialogs; the app also offers an automatic backup right after the first build). Upgrading the installed apps without
 losing data requires the **same key and the same package prefix**.
 
 ## Walkthrough
@@ -250,6 +256,8 @@ Their permissions are granted automatically. Then:
 - **Health Platform developer mode**: tap **Turn it on for me** and keep the watch unlocked and
   nearby; or do it by hand, as shown on screen. Without it, the watch will not take ECG
   measurements with the patched app.
+- **Phone bridge link**: the bridge is registered as a companion app of the phone on the watch, so
+  it stays connected without an ongoing notification.
 - **Turn off the stock app**: the stock Health Monitor is disabled, not uninstalled, so it does not
   compete with the patched one for the sensor. Apps that are already off are marked as done.
 
@@ -305,6 +313,45 @@ To turn this off, open **Settings** (the gear on the first screen, or the Home m
 **Check for updates automatically**; that stops both the startup check and the background one.
 **Check now** in the same screen still works. Local builds without an update repository never check.
 
+#### Device logs
+
+When a paired watch answers over ADB, Welcome and All set show a **View device logs** link. It
+streams logcat from the watch and from the phone (through the phone's own Wireless debugging),
+filtered to the patched apps and the system lines that name them. A foreground service keeps
+capturing in the background, and **Export** writes both logs into one `.txt` file, handy for bug
+reports. Each tab shows whether its device is connected; tap the broken link icon for help, and it
+reconnects by itself once the device shows up on the network again.
+
+#### Undo all changes
+
+Welcome and All set offer **Undo all changes**, and Home's **Uninstall** item opens the same screen.
+It looks for every OpenSHM app on both devices (under the current package prefix and any earlier one
+it finds) and only acts on what is actually there:
+
+- on the watch, it removes the bridge's companion association, uninstalls our apps, turns the stock
+  Health Monitor back on if it was disabled, and restores `doze_always_on` to 1 if it reads 0;
+- on the phone, it uninstalls our apps (Android asks you to confirm each one).
+
+System apps are never touched, and one failing step does not stop the rest. An unreachable watch can
+be retried or skipped; the result is then marked as partial. After a complete revert the package
+prefix is unlocked and the stored builds are cleared. The last step offers to uninstall OpenSHM
+Patcher itself.
+
+### Optional: Samsung Health+
+
+On the **Official apps** step, a switch (on by default) adds **Samsung Health** as an extra input. The patcher
+builds it as **Samsung Health+**: renamed to `<prefix>.shealth` and signed with your key, so it
+installs **next to** the stock Samsung Health from the Play Store instead of replacing it.
+
+- The watch only trusts the Samsung-signed phone app, so the **stock app stays** and keeps syncing
+  the watch and uploading to the Samsung cloud.
+- Samsung Health+ signs in to the same Samsung account, downloads the history, and unlocks the
+  phone-side features hidden on non-Samsung phones (for example the Energy Score tile).
+- Its patches appear on the patches step. Optional ones add a launcher badge (also available for
+  SHM) and a local-only mode, which is off by default.
+
+Turn the switch off if you do not want it. On a PC, `scripts/build_shealth.sh` builds the same target.
+
 ### What to expect when you are done
 
 - **On the watch**, the patched Samsung Health Monitor replaces the stock one in the app list. It
@@ -313,7 +360,11 @@ To turn this off, open **Settings** (the gear on the first screen, or the Home m
 - **On the phone**, Samsung Health Monitor finds the watch as a compatible device. Readings taken
   on the watch appear there and can be exported as PDF.
 - **The bridge** sends phone notifications, incoming calls (answer or decline from the watch) and
-  phone alarms to the watch over Bluetooth, with no Samsung phone involved.
+  phone alarms to the watch over Bluetooth, with no Samsung phone involved. After installing it, the
+  patcher associates the phone with the watch bridge in the watch's Companion Device Manager, so the
+  link stays alive (also in Doze and power saving) **without a permanent notification**. Without the
+  association it falls back to a foreground service with a "Phone connection" notification, which
+  has its own channel so you can hide it without muting alarms or calls.
 - Nothing stock was uninstalled. Galaxy Wearable keeps managing the watch as before.
 
 ### How to check that it works
@@ -357,9 +408,9 @@ Everything runs on the two devices. Details are in [docs/architecture.md](docs/a
 | `superpatcher/`, `scripts/superpatcher.py` | The Python patch engine. It interprets the same catalogue as the app. |
 | `watch-mod/` | Our own code injected into the watch SHM: the ECG adapter, the Health Tracking client and the vendor overrides. |
 | `shm-bridge/` | Our own bridge apps (phone ⇄ watch over direct RFCOMM) and the fork of the watch Alarm app. |
-| `scripts/` | The PC build (`build_all.sh`, `build_shm_*.sh`, `fetch_deps.sh`), catalogue tooling (`catalogue.py`), and shared helpers in `scripts/lib/`. |
+| `scripts/` | The PC build (`build_all.sh`, `build_shm_*.sh`, `build_shealth.sh`, `fetch_deps.sh`), catalogue tooling (`catalogue.py`), and shared helpers in `scripts/lib/`. |
 | `apks/` | Where the official input APKs go for PC builds. They are not versioned; see [apks/README.md](apks/README.md) and `apks/inputs.json`. |
-| `docs/` | [Architecture](docs/architecture.md), [installation runbook](docs/installation.md), [patches](docs/patches.md), [Health Tracking client](docs/health-sdk.md) and [protocol](docs/health-tracking-protocol.md). |
+| `docs/` | [Architecture](docs/architecture.md), [installation runbook](docs/installation.md), [patches](docs/patches.md), [Health Tracking client](docs/health-sdk.md) and [protocol](docs/health-tracking-protocol.md), plus research notes on Samsung Health ([phone survey](docs/samsung-health-survey.md), [watch survey](docs/shealth-watch-survey.md)). |
 
 ## Building on a PC
 
