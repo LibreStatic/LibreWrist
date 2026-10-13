@@ -23,6 +23,7 @@ been tested.
 | Watch | Galaxy Watch5 Pro (SM-R920), One UI 8 Watch, firmware `R920XXS2DZG3` (security patch 2026-08-05) |
 | Health Platform on the watch | 1.7.00.05 |
 | Samsung Health Monitor | 1.5.1.022 (watch), 1.4.6.001 (phone) |
+| Samsung Health (built as Samsung Health+, optional) | 7.00.6.011 (phone) |
 | Phone | Motorola razr fold (non-Samsung) |
 
 The patcher recognizes the watch plugin of every Galaxy Watch family, and includes a fix for the
