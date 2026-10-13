@@ -26,6 +26,7 @@ import io.openshm.patcher.device.WatchKeepAlive
 import io.openshm.patcher.device.WatchLink
 import io.openshm.patcher.ui.components.CheckStatus
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -37,6 +38,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 private const val TAG = "SelfAdb"
+private const val ADB_REREADS = 6
+private const val ADB_REREAD_MS = 500L
 
 /** Phases in which the user has to act in Wireless debugging (the stored pairing did not reconnect). */
 internal val NEEDS_PAIRING_SCREEN = setOf(SelfAdbPhase.WaitingForService, SelfAdbPhase.Ambiguous, SelfAdbPhase.WaitingForCode)
@@ -184,7 +187,15 @@ class InstallPhoneViewModel(application: Application) : AndroidViewModel(applica
                     _state.value.items.forEach { item ->
                         Log.i(TAG, "after refresh ${item.packageName}: ${item.grants.joinToString { "${it.grant.name}=${it.status}" }}")
                     }
-                    val outcome = adbOutcomeOf(ok, _state.value.items, _state.value.errorDetail)
+                    var outcome = adbOutcomeOf(ok, _state.value.items, _state.value.errorDetail)
+                    // The system persists some grants (the notification listener) a moment after the
+                    // shell command returns, so a grant can read as missing right after the run.
+                    var rereads = 0
+                    while (ok && outcome is AdbOutcome.Failure && rereads++ < ADB_REREADS) {
+                        delay(ADB_REREAD_MS)
+                        runner.refresh(_state)
+                        outcome = adbOutcomeOf(ok, _state.value.items, _state.value.errorDetail)
+                    }
                     _state.update { it.copy(adbOutcome = outcome) }
                 } catch (e: RuntimeException) {
                     Log.w(TAG, "grant run failed", e)
