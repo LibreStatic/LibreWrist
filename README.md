@@ -26,7 +26,7 @@ been tested.
 | Phone | Motorola razr fold (non-Samsung) |
 
 The patcher recognizes the watch plugin of every Galaxy Watch family, and includes a fix for the
-watch SHM closing on open on the Galaxy Watch8. The patcher UI is translated into 18 languages, and
+watch SHM closing on open on the Galaxy Watch8. The patcher UI is available in English and 17 other languages, and
 the bridge texts into the same 88 locales as the call notice.
 
 ## Quick start video
