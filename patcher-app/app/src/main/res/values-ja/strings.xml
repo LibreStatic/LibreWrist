@@ -266,7 +266,7 @@
     <string name="patch_alarm_provider_open">アラームのデータをフォークに公開します。</string>
     <string name="patch_alarm_link_components">スマートフォンから送信されたアラームを受け取るレシーバーを追加します。</string>
     <string name="patch_alarm_appfunctions_drop">使われていないベンダー機能のツリーを削除します。</string>
-    <string name="patch_alarm_semgesture_skip">ベンダーのジェスチャーマネージャーをスキップします。</string>
+    <string name="patch_alarm_semgesture_skip">ベンダーのジェスチャーマネージャーをスキップし、ダブルピンチを自前で検出します（スヌーズまたは停止は時計の設定に従います）。</string>
     <string name="patch_alarm_gms_observer_drop">アラームが早く終了しないようにします。</string>
     <string name="patch_alarm_service_stop_on_destroy">音と振動が必ず止まるようにします。</string>
     <string name="patch_alarm_force_sound_vibrate">常に音と振動で知らせます。</string>

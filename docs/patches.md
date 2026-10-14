@@ -302,7 +302,7 @@ included): another build aborts instead of being patched by a heuristic. `<prefi
 | 8 | `alarm-provider-open` | `AlarmProvider` without the vendor read/write permissions |
 | 9 | `alarm-link-components` | Adds the `ALARM_LINK` signature permission, `LinkActivity` (no UI) and `LinkReceiver` (action `<prefix>.shmbridge.alarm.IN`), both protected by that permission |
 | 10 | `alarm-appfunctions-drop` | Removes the `appfunctions_aggregated_deps` smali tree |
-| 11 | `alarm-semgesture-skip` | `w2/k`, `w2/j`: the `sem_gesture` lookup is skipped (not available to a non-system app) and the `pauseGesture` null path falls through |
+| 11 | `alarm-semgesture-skip` | `w2/k`, `w2/j`: the `sem_gesture` lookup is skipped (not available to a non-system app) and the `pauseGesture` null path falls through; `w2/k.onStartCommand` starts our own double pinch detector (`Pinch.start`, only when the quick action setting is on) and `onDestroy` stops it right before `super.onDestroy()` (anchored there, not inserted at the method start, so it does not collide with `alarm-service-stop-on-destroy` in the applied-mode check); the manifest declares `uses-native-library lib_algorithm.gesture.samsung.so` (`required=false`) |
 | 12 | `alarm-gms-observer-drop` | `CAlarmService.onCreate`: the GMS connection observer is removed (it would stop the service before the player exists) |
 | 13 | `alarm-service-stop-on-destroy` | `w2/k.onDestroy` calls `t()` first so sound/vibration is never orphaned |
 | 14 | `alarm-force-sound-vibrate` | `CAlarmService.r()`: play mode is always `0x11` (sound + vibrate); the stream is alarm usage |
@@ -311,8 +311,24 @@ included): another build aborts instead of being patched by a heuristic. `<prefi
 | 17 | `alarm-relabel` | Application and `AlarmMainActivity` label -> new string `interop_app_label`: "Phone alarms" (default), "Alarmas del teléfono" (`values-es`); vendor strings untouched |
 
 Injected smali set (profile `inject`, new `smali_classesN` dir): `alarm-fork` = `Link`,
-`LinkActivity`, `LinkReceiver` from `shm-bridge/alarm-fork/src` (`javac --release 11`, `d8
+`LinkActivity`, `LinkReceiver`, `Pinch` and `NativeWrapper` from `shm-bridge/alarm-fork/src` (`javac --release 11`, `d8
 --min-api 34`; `java_to_smali` in `scripts/lib/common.sh`).
+
+Double pinch (`alarm-semgesture-skip`): SELinux only lets platform and a few vendor domains find
+`sem_gesture_service`, and the re-signed fork runs as `untrusted_app`, so the vendor gesture
+manager is unreachable. Instead `Pinch` loads the public native library
+`lib_algorithm.gesture.samsung.so` (listed in `/system/etc/public.libraries-gesture.samsung.txt`,
+hence the `uses-native-library` entry), feeds it linear acceleration and gyroscope samples and,
+on a double pinch (gesture 256, debounced 1.5 s), calls the app's own `SmartGestureEvent`
+listener with `QUICKACTION`; the app then snoozes or dismisses as set on the watch
+(`setting_gesture_quick_action_alarm_alert`). The library's JNI symbols fix the class name
+`com.samsung.android.lib_algorithm.gesture.samsung.NativeWrapper`, so that one own class lives
+outside the `shminterop` package (the patcher's `DexInjection` allowlists exactly that type).
+The catalogue's `minAppVersion` is 28 because it references `Pinch`, which exists only in patcher
+builds from CI run 28 on; an older app would build a fork that crashes when an alarm rings.
+Known limitations: no off-body pause (stock disconnects the gesture when the watch is off the
+wrist); the system-level `pauseGesture` during the alarm is unavailable; verified on an SM-R920
+only, end to end with a phone-synced alarm (Watch7/8 use model types 1/2, untested).
 
 Verified [V]: the decoded result matches the previous owner-verified fork build (same
 smali, resources and manifest after normalising the previous package marker). Differences:

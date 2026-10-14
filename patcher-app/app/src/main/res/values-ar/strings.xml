@@ -281,7 +281,7 @@
     <string name="patch_alarm_provider_open">يفتح بيانات المنبّه للفرع.</string>
     <string name="patch_alarm_link_components">يضيف المستقبِل للمنبّهات المرسلة من الهاتف.</string>
     <string name="patch_alarm_appfunctions_drop">يزيل شجرة ميزات غير مستخدمة من الجهة المصنِّعة.</string>
-    <string name="patch_alarm_semgesture_skip">يتخطى مدير الإيماءات الخاص بالجهة المصنِّعة.</string>
+    <string name="patch_alarm_semgesture_skip">يتخطى مدير الإيماءات الخاص بالجهة المصنِّعة ويكتشف القرصة المزدوجة بنفسه (غفوة أو إيقاف حسب إعداد الساعة).</string>
     <string name="patch_alarm_gms_observer_drop">يمنع المنبّه من التوقف مبكرًا.</string>
     <string name="patch_alarm_service_stop_on_destroy">يضمن توقف الصوت والاهتزاز دائمًا.</string>
     <string name="patch_alarm_force_sound_vibrate">يرنّ ويهتز دائمًا.</string>

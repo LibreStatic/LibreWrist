@@ -272,7 +272,7 @@
     <string name="patch_alarm_provider_open">Ouvre les données d\'alarmes au fork.</string>
     <string name="patch_alarm_link_components">Ajoute le récepteur des alarmes envoyées depuis le téléphone.</string>
     <string name="patch_alarm_appfunctions_drop">Supprime une arborescence de fonctions du fabricant inutilisée.</string>
-    <string name="patch_alarm_semgesture_skip">Ignore le gestionnaire de gestes du fabricant.</string>
+    <string name="patch_alarm_semgesture_skip">Ignore le gestionnaire de gestes du fabricant et détecte lui-même le double pincement (répétition ou arrêt, selon le réglage de la montre).</string>
     <string name="patch_alarm_gms_observer_drop">Empêche l\'alarme de s\'arrêter trop tôt.</string>
     <string name="patch_alarm_service_stop_on_destroy">Garantit que le son et la vibration s\'arrêtent toujours.</string>
     <string name="patch_alarm_force_sound_vibrate">Sonne et vibre toujours.</string>

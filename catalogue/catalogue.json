@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "serial": 28,
-  "minAppVersion": 27,
+  "serial": 30,
+  "minAppVersion": 28,
   "inputs": [
     {
       "id": "shm-phone",
@@ -1480,7 +1480,7 @@
         "alarm-watch"
       ],
       "title": "Gesture manager",
-      "description": "SemGestureManager: skip the sem_gesture lookup (w2/k, w2/j) and the pauseGesture null path",
+      "description": "SemGestureManager: skip the sem_gesture lookup (w2/k, w2/j) and the pauseGesture null path; start our own double pinch detector (public lib_algorithm.gesture.samsung.so) and stop it before super.onDestroy",
       "optional": false,
       "ops": [
         {
@@ -1497,6 +1497,15 @@
           "new": [
             "    iget-object v7, v1, Lw2/k;->o:Lcom/samsung/android/hardware/gesturemanager/SemGestureManager;",
             "",
+            "    iget-boolean v7, v1, Lw2/k;->s:Z",
+            "",
+            "    if-eqz v7, :interop_pinch_off",
+            "",
+            "    iget-object v7, v1, Lw2/k;->t:Landroidx/picker/widget/f;",
+            "",
+            "    invoke-static {v1, v7}, L${PKG_PATH}/shmbridge/alarm/Pinch;->start(Landroid/content/Context;Ljava/lang/Object;)V",
+            "",
+            "    :interop_pinch_off",
             "    goto :cond_8",
             "",
             "    const-string v7, \"sem_gesture\"",
@@ -1536,6 +1545,33 @@
             "    const-string p1, \"sem_gesture\"",
             ""
           ]
+        },
+        {
+          "op": "replaceInClass",
+          "className": "w2/k",
+          "old": [
+            "    :cond_8",
+            "    invoke-super {p0}, Landroid/app/Service;->onDestroy()V",
+            ""
+          ],
+          "new": [
+            "    :cond_8",
+            "    invoke-static {}, L${PKG_PATH}/shmbridge/alarm/Pinch;->stop()V",
+            "",
+            "    invoke-super {p0}, Landroid/app/Service;->onDestroy()V",
+            ""
+          ]
+        },
+        {
+          "op": "manifestAddChild",
+          "parent": {
+            "path": "application"
+          },
+          "tag": "uses-native-library",
+          "attrs": {
+            "android:name": "lib_algorithm.gesture.samsung.so",
+            "android:required": "false"
+          }
         }
       ]
     },

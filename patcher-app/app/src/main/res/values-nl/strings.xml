@@ -269,7 +269,7 @@
     <string name="patch_alarm_provider_open">Opent de wekkergegevens voor de fork.</string>
     <string name="patch_alarm_link_components">Voegt de ontvanger toe voor wekkers die vanaf de telefoon worden gestuurd.</string>
     <string name="patch_alarm_appfunctions_drop">Verwijdert een ongebruikte functieboom van de fabrikant.</string>
-    <string name="patch_alarm_semgesture_skip">Slaat de gebarenbeheerder van de fabrikant over.</string>
+    <string name="patch_alarm_semgesture_skip">Slaat de gebarenbeheerder van de fabrikant over en herkent de dubbele knijp zelf (sluimeren of uitzetten, zoals op het horloge ingesteld).</string>
     <string name="patch_alarm_gms_observer_drop">Voorkomt dat de wekker te vroeg stopt.</string>
     <string name="patch_alarm_service_stop_on_destroy">Zorgt dat geluid en trillen altijd stoppen.</string>
     <string name="patch_alarm_force_sound_vibrate">Gaat altijd over en trilt.</string>

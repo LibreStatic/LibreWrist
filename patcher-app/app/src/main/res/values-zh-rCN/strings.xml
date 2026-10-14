@@ -266,7 +266,7 @@
     <string name="patch_alarm_provider_open">向该分支版本开放闹钟数据。</string>
     <string name="patch_alarm_link_components">添加用于接收手机所发闹钟的接收器。</string>
     <string name="patch_alarm_appfunctions_drop">移除未使用的厂商功能树。</string>
-    <string name="patch_alarm_semgesture_skip">跳过厂商手势管理器。</string>
+    <string name="patch_alarm_semgesture_skip">跳过厂商手势管理器，并自行检测双指捏合（按手表上的设置贪睡或关闭）。</string>
     <string name="patch_alarm_gms_observer_drop">防止闹钟提前结束。</string>
     <string name="patch_alarm_service_stop_on_destroy">确保声音和振动始终会停止。</string>
     <string name="patch_alarm_force_sound_vibrate">始终响铃并振动。</string>

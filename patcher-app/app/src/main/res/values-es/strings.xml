@@ -269,7 +269,7 @@
     <string name="patch_alarm_provider_open">Abre los datos de alarmas al fork.</string>
     <string name="patch_alarm_link_components">Agrega el receptor de las alarmas enviadas desde el teléfono.</string>
     <string name="patch_alarm_appfunctions_drop">Quita un árbol de funciones del fabricante que no se usa.</string>
-    <string name="patch_alarm_semgesture_skip">Omite el administrador de gestos del fabricante.</string>
+    <string name="patch_alarm_semgesture_skip">Omite el administrador de gestos del fabricante y detecta el doble pellizco por sí mismo (posponer o descartar, según lo ajustado en el reloj).</string>
     <string name="patch_alarm_gms_observer_drop">Evita que la alarma termine antes de tiempo.</string>
     <string name="patch_alarm_service_stop_on_destroy">Garantiza que el sonido y la vibración siempre se detengan.</string>
     <string name="patch_alarm_force_sound_vibrate">Siempre suena y vibra.</string>

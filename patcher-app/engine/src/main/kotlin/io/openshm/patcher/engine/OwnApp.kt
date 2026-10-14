@@ -12,7 +12,7 @@ import java.io.IOException
  * Our own injected code in compiled form: one placeholder `classes.dex` (every class in
  * `shminterop/`), disassembled and staged to [prefix] on use, like [StagedInjection] does for
  * smali sources. Refuses a dex with no classes or with classes outside the placeholder package,
- * so an injection can only ever add our own code.
+ * except for the exact types in [OUTSIDE_PLACEHOLDER], so an injection can only ever add our own code.
  */
 class DexInjection(private val dexBytes: ByteArray, prefix: String) : InjectionSource {
     private val stager = PrefixStager(prefix)
@@ -27,6 +27,10 @@ class DexInjection(private val dexBytes: ByteArray, prefix: String) : InjectionS
         val files = LinkedHashMap<String, String>()
         for (def in dex.classes) {
             val type = def.type
+            if (type in OUTSIDE_PLACEHOLDER) {
+                files[type.substring(1, type.length - 1) + ".smali"] = DexTree.disassembleClass(options, def)
+                continue
+            }
             if (!type.startsWith("L${PrefixStager.PLACEHOLDER}/") || !type.endsWith(";")) {
                 throw PatchFailure("injection: class $type is outside ${PrefixStager.PLACEHOLDER}/")
             }
@@ -36,9 +40,17 @@ class DexInjection(private val dexBytes: ByteArray, prefix: String) : InjectionS
         return stager.stage(files, compiled = true)
     }
 
-    private companion object {
+    companion object {
         /** Highest API the reader should accept; the host tree assembles at its own level. */
-        const val READ_API = 34
+        private const val READ_API = 34
+
+        /**
+         * Exact types allowed outside the placeholder package. The JNI symbol names exported by the
+         * device gesture library fix this class name; it is still our own compiled code, and its
+         * path is not prefix-rewritten.
+         */
+        val OUTSIDE_PLACEHOLDER: Set<String> =
+            setOf("Lcom/samsung/android/lib_algorithm/gesture/samsung/NativeWrapper;")
     }
 }
 

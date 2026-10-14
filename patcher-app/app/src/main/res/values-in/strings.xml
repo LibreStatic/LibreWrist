@@ -266,7 +266,7 @@
     <string name="patch_alarm_provider_open">Membuka data alarm untuk fork.</string>
     <string name="patch_alarm_link_components">Menambahkan penerima untuk alarm yang dikirim dari ponsel.</string>
     <string name="patch_alarm_appfunctions_drop">Menghapus pohon fitur vendor yang tidak terpakai.</string>
-    <string name="patch_alarm_semgesture_skip">Melewati pengelola gestur vendor.</string>
+    <string name="patch_alarm_semgesture_skip">Melewati pengelola gestur vendor dan mendeteksi cubitan ganda sendiri (tunda atau matikan sesuai pengaturan di jam).</string>
     <string name="patch_alarm_gms_observer_drop">Mencegah alarm berhenti lebih awal.</string>
     <string name="patch_alarm_service_stop_on_destroy">Memastikan suara dan getaran selalu berhenti.</string>
     <string name="patch_alarm_force_sound_vibrate">Selalu berbunyi dan bergetar.</string>

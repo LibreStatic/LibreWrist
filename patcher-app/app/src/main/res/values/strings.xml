@@ -376,7 +376,7 @@
     <string name="patch_alarm_provider_open">Opens the alarm data to the fork.</string>
     <string name="patch_alarm_link_components">Adds the receiver for alarms sent from the phone.</string>
     <string name="patch_alarm_appfunctions_drop">Removes an unused vendor feature tree.</string>
-    <string name="patch_alarm_semgesture_skip">Skips the vendor gesture manager.</string>
+    <string name="patch_alarm_semgesture_skip">Skips the vendor gesture manager and detects the double pinch itself (snooze or dismiss as set on the watch).</string>
     <string name="patch_alarm_gms_observer_drop">Stops the alarm from ending early.</string>
     <string name="patch_alarm_service_stop_on_destroy">Makes sure sound and vibration always stop.</string>
     <string name="patch_alarm_force_sound_vibrate">Always rings and vibrates.</string>

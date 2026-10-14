@@ -12,6 +12,11 @@ No vendor code is stored in this repo.
   `/w_alarm/*` messages go out as broadcasts to the watch bridge.
 - `LinkReceiver` — `BroadcastReceiver` for the bridge's events (stopped/muted/snoozeChanged).
 - `LinkActivity` — invisible activity used to reach the foreground (started).
+- `Pinch` — double pinch detector: feeds the sensors to the public device library
+  `lib_algorithm.gesture.samsung.so` and calls the app's gesture listener (the vendor gesture
+  manager is not reachable for the re-signed fork).
+- `NativeWrapper` (`src/com/samsung/android/lib_algorithm/gesture/samsung/`) — our clean-room JNI
+  binding for that library; its class name is fixed by the library's exported symbols.
 
 Bridge and fork talk through broadcasts protected by the signature permission
 `shminterop.shmbridge.permission.ALARM_LINK` (declared by the watch bridge, used by the fork),

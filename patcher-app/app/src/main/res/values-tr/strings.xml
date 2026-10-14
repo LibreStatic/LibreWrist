@@ -269,7 +269,7 @@
     <string name="patch_alarm_provider_open">Alarm verilerini çatala açar.</string>
     <string name="patch_alarm_link_components">Telefondan gönderilen alarmlar için alıcıyı ekler.</string>
     <string name="patch_alarm_appfunctions_drop">Kullanılmayan bir üretici özellik ağacını kaldırır.</string>
-    <string name="patch_alarm_semgesture_skip">Üretici hareket yöneticisini atlar.</string>
+    <string name="patch_alarm_semgesture_skip">Üretici hareket yöneticisini atlar ve çift tutma hareketini kendisi algılar (ertele veya kapat, saatteki ayara göre).</string>
     <string name="patch_alarm_gms_observer_drop">Alarmın erken bitmesini engeller.</string>
     <string name="patch_alarm_service_stop_on_destroy">Ses ve titreşimin her zaman durmasını sağlar.</string>
     <string name="patch_alarm_force_sound_vibrate">Her zaman çalar ve titrer.</string>

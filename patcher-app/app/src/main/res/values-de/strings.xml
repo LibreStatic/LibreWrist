@@ -269,7 +269,7 @@
     <string name="patch_alarm_provider_open">Öffnet die Wecker-Daten für den Fork.</string>
     <string name="patch_alarm_link_components">Fügt den Empfänger für vom Smartphone gesendete Wecker hinzu.</string>
     <string name="patch_alarm_appfunctions_drop">Entfernt einen ungenutzten Funktionsbaum des Herstellers.</string>
-    <string name="patch_alarm_semgesture_skip">Überspringt den Gestenmanager des Herstellers.</string>
+    <string name="patch_alarm_semgesture_skip">Überspringt den Gestenmanager des Herstellers und erkennt das doppelte Zusammentippen selbst (Schlummern oder Beenden, je nach Einstellung der Uhr).</string>
     <string name="patch_alarm_gms_observer_drop">Verhindert, dass der Wecker vorzeitig endet.</string>
     <string name="patch_alarm_service_stop_on_destroy">Stellt sicher, dass Ton und Vibration immer stoppen.</string>
     <string name="patch_alarm_force_sound_vibrate">Klingelt und vibriert immer.</string>

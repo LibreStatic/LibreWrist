@@ -275,7 +275,7 @@
     <string name="patch_alarm_provider_open">Открывает данные будильников для форка.</string>
     <string name="patch_alarm_link_components">Добавляет приёмник для будильников, отправленных с телефона.</string>
     <string name="patch_alarm_appfunctions_drop">Убирает неиспользуемую ветку функций производителя.</string>
-    <string name="patch_alarm_semgesture_skip">Пропускает менеджер жестов производителя.</string>
+    <string name="patch_alarm_semgesture_skip">Пропускает менеджер жестов производителя и сам распознаёт двойной щипок (отложить или отключить, как настроено на часах).</string>
     <string name="patch_alarm_gms_observer_drop">Не даёт будильнику завершаться раньше времени.</string>
     <string name="patch_alarm_service_stop_on_destroy">Гарантирует, что звук и вибрация всегда останавливаются.</string>
     <string name="patch_alarm_force_sound_vibrate">Всегда звонит и вибрирует.</string>

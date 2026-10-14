@@ -269,7 +269,7 @@
     <string name="patch_alarm_provider_open">Apre i dati delle sveglie al fork.</string>
     <string name="patch_alarm_link_components">Aggiunge il ricevitore per le sveglie inviate dal telefono.</string>
     <string name="patch_alarm_appfunctions_drop">Rimuove un albero di funzioni del produttore inutilizzato.</string>
-    <string name="patch_alarm_semgesture_skip">Salta il gestore dei gesti del produttore.</string>
+    <string name="patch_alarm_semgesture_skip">Salta il gestore dei gesti del produttore e rileva da solo il doppio pizzico (posticipa o chiudi, come impostato sull\'orologio).</string>
     <string name="patch_alarm_gms_observer_drop">Impedisce che la sveglia termini in anticipo.</string>
     <string name="patch_alarm_service_stop_on_destroy">Garantisce che suono e vibrazione si fermino sempre.</string>
     <string name="patch_alarm_force_sound_vibrate">Suona e vibra sempre.</string>

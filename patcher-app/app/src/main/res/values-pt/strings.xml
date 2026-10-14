@@ -269,7 +269,7 @@
     <string name="patch_alarm_provider_open">Abre os dados de alarmes para o fork.</string>
     <string name="patch_alarm_link_components">Adiciona o receptor dos alarmes enviados pelo celular.</string>
     <string name="patch_alarm_appfunctions_drop">Remove uma árvore de recursos do fabricante sem uso.</string>
-    <string name="patch_alarm_semgesture_skip">Ignora o gerenciador de gestos do fabricante.</string>
+    <string name="patch_alarm_semgesture_skip">Ignora o gerenciador de gestos do fabricante e detecta o duplo beliscão por conta própria (soneca ou dispensar, conforme definido no relógio).</string>
     <string name="patch_alarm_gms_observer_drop">Impede que o alarme termine antes da hora.</string>
     <string name="patch_alarm_service_stop_on_destroy">Garante que o som e a vibração sempre parem.</string>
     <string name="patch_alarm_force_sound_vibrate">Sempre toca e vibra.</string>

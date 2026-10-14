@@ -266,7 +266,7 @@
     <string name="patch_alarm_provider_open">알람 데이터를 포크에 공개합니다.</string>
     <string name="patch_alarm_link_components">휴대전화에서 보낸 알람을 받는 수신기를 추가합니다.</string>
     <string name="patch_alarm_appfunctions_drop">사용하지 않는 제조사 기능 트리를 제거합니다.</string>
-    <string name="patch_alarm_semgesture_skip">제조사 제스처 관리자를 건너뜁니다.</string>
+    <string name="patch_alarm_semgesture_skip">제조사 제스처 관리자를 건너뛰고 더블 핀치를 직접 감지합니다(다시 알림 또는 해제는 워치 설정에 따름).</string>
     <string name="patch_alarm_gms_observer_drop">알람이 일찍 종료되지 않게 합니다.</string>
     <string name="patch_alarm_service_stop_on_destroy">소리와 진동이 항상 멈추도록 합니다.</string>
     <string name="patch_alarm_force_sound_vibrate">항상 소리와 진동으로 알립니다.</string>

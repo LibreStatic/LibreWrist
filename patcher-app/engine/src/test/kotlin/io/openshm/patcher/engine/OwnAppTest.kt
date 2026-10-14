@@ -97,6 +97,20 @@ class OwnAppTest {
         assertEquals(setOf("Lorg/test/shmbridge/phone/Main;", "Lorg/test/shmbridge/phone/Helper;"), dex.classes.map { it.type }.toSet())
     }
 
+    @Test fun dexInjectionAcceptsTheAllowlistedClassOutsideThePlaceholder() {
+        val nwSmali = ".class public Lcom/samsung/android/lib_algorithm/gesture/samsung/NativeWrapper;\n.super Ljava/lang/Object;\n"
+        val path = "com/samsung/android/lib_algorithm/gesture/samsung/NativeWrapper.smali"
+        val out = DexInjection(DexTree.buildDex(classes + (path to nwSmali), api), prefix).classes()
+        assertEquals(setOf(path, "org/test/shmbridge/phone/Main.smali", "org/test/shmbridge/phone/Helper.smali"), out.keys)
+        assertTrue(".class public Lcom/samsung/android/lib_algorithm/gesture/samsung/NativeWrapper;" in out.getValue(path))
+    }
+
+    @Test fun dexInjectionStillRefusesOtherClassesOutsideThePlaceholder() {
+        val other = ".class public Lcom/samsung/android/lib_algorithm/gesture/samsung/Other;\n.super Ljava/lang/Object;\n"
+        val dex = DexTree.buildDex(classes + ("com/samsung/android/lib_algorithm/gesture/samsung/Other.smali" to other), api)
+        assertFailure("outside") { DexInjection(dex, prefix).classes() }
+    }
+
     @Test fun dexInjectionRefusesForeignClassesAndEmptyDex() {
         val foreign = DexTree.buildDex(classes + ("com/other/Lib.smali" to libSmali), api)
         assertFailure("outside") { DexInjection(foreign, prefix).classes() }

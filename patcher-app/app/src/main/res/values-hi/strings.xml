@@ -269,7 +269,7 @@
     <string name="patch_alarm_provider_open">अलार्म डेटा फ़ोर्क के लिए खोलता है।</string>
     <string name="patch_alarm_link_components">फ़ोन से भेजे गए अलार्म के लिए रिसीवर जोड़ता है।</string>
     <string name="patch_alarm_appfunctions_drop">विक्रेता की एक अनुपयोगी फ़ीचर ट्री हटाता है।</string>
-    <string name="patch_alarm_semgesture_skip">विक्रेता का जेस्चर मैनेजर छोड़ देता है।</string>
+    <string name="patch_alarm_semgesture_skip">विक्रेता का जेस्चर मैनेजर छोड़ देता है और डबल पिंच खुद पहचानता है (घड़ी की सेटिंग के अनुसार स्नूज़ या बंद)।</string>
     <string name="patch_alarm_gms_observer_drop">अलार्म को जल्दी बंद होने से रोकता है।</string>
     <string name="patch_alarm_service_stop_on_destroy">पक्का करता है कि आवाज़ और कंपन हमेशा बंद हों।</string>
     <string name="patch_alarm_force_sound_vibrate">हमेशा बजता है और कंपन करता है।</string>

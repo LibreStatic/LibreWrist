@@ -275,7 +275,7 @@
     <string name="patch_alarm_provider_open">Udostępnia dane alarmów forkowi.</string>
     <string name="patch_alarm_link_components">Dodaje odbiornik alarmów wysyłanych z telefonu.</string>
     <string name="patch_alarm_appfunctions_drop">Usuwa nieużywane drzewo funkcji producenta.</string>
-    <string name="patch_alarm_semgesture_skip">Pomija menedżera gestów producenta.</string>
+    <string name="patch_alarm_semgesture_skip">Pomija menedżera gestów producenta i sam wykrywa podwójne uszczypnięcie (drzemka lub wyłączenie, zgodnie z ustawieniem zegarka).</string>
     <string name="patch_alarm_gms_observer_drop">Zapobiega przedwczesnemu kończeniu alarmu.</string>
     <string name="patch_alarm_service_stop_on_destroy">Gwarantuje, że dźwięk i wibracje zawsze się zatrzymają.</string>
     <string name="patch_alarm_force_sound_vibrate">Zawsze dzwoni i wibruje.</string>
