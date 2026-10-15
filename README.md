@@ -32,22 +32,6 @@ The patcher recognizes the watch plugin of every Galaxy Watch family, and includ
 watch SHM closing on open on the Galaxy Watch8. The patcher UI is available in English and 17 other languages, and
 the bridge texts into the same 88 locales as the call notice.
 
-## New since 0.3.7
-
-These changes are on `main` and come with the next release (0.3.8). Unless a row says otherwise,
-they were verified on the tested setup above (SM-R920).
-
-| Feature | Up to 0.3.7 | Now |
-|---|---|---|
-| **Blood pressure calibration** on the watch | Did not work. A re-signed SHM cannot use the privileged BP sensor, so calibration stopped with a sensor error. | Works. Our own adapter feeds the BP code from the Health Tracking PPG green channel. Calibration completes end to end. |
-| **Double pinch** on a ringing phone alarm | Did nothing. The Alarm fork cannot reach Samsung's gesture service. | Snoozes or dismisses, as set on the watch. It uses the watch's public gesture library. Detection pauses while the watch is off the wrist. Tested on the Galaxy Watch5 Pro only; Watch7 and Watch8 are untested. |
-| **Rebuilding** after a change | Every build patched all the apps again. | Apps whose inputs, patches, key and engine did not change are reused as they are. Turning off one optional patch rebuilds only that app, and the install step skips the apps that are already installed. Tested on emulators. |
-| **Home: one app at a time** | Rebuild and restore applied to the whole setup. | Each app row has its own **Rebuild**, which opens the patches focused on that app, and **Restore**, which removes only that app. **Restore watch** in the Home menu undoes only the watch side. |
-| **Texts and translations** | Some texts were wrong or misleading, for example claiming that restore keeps data. | The English texts were corrected. All 17 translations were reviewed, using the official Android and One UI Watch setting names. |
-
-The updated catalogue needs this patcher release or a newer one (`minAppVersion` 28). The BP
-adapter and the pinch detector ship inside the app, not with the catalogue.
-
 ## Quick start video
 
 Prefer watching to reading? This 90-second video shows the whole setup, step by step. The screens
