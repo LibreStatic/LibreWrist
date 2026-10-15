@@ -468,7 +468,15 @@ fun PatcherNavHost(
                     vm.startWatching()
                     onStopOrDispose { vm.stopWatching() }
                 }
-                DevModeScreen(state, vm::onEvent, onContinue = { next(Route.DevMode) }, onBack = back)
+                DevModeScreen(
+                    state,
+                    vm::onEvent,
+                    onContinue = {
+                        vm.onContinue()
+                        next(Route.DevMode)
+                    },
+                    onBack = back,
+                )
             }
             composable(Route.DisableStock.path) {
                 val vm: DisableStockViewModel = viewModel()

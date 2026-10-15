@@ -24,10 +24,27 @@ class HealthPlatformDevMode(private val platform: HealthPlatform, private val cl
     }
 
     /** Whether a Health Platform screen is the one in front on the watch. */
-    suspend fun settingsInFront(): Boolean {
-        val out = client().shell("dumpsys activity activities 2>/dev/null | grep topResumedActivity").stdout
-        return isHealthPlatformInFront(out, platform)
+    suspend fun settingsInFront(): Boolean = isHealthPlatformInFront(topResumed(), platform)
+
+    /** The activity in front on the watch ("package/class"), or null when none is reported. */
+    suspend fun frontActivity(): String? = parseTopResumed(topResumed())
+
+    /**
+     * Leaves the Health Platform screens if they are still in front, with BACK presses, so the watch
+     * goes back to what was in front before [openSettings]. Stops as soon as another screen is in
+     * front; returns whether the Health Platform screens are gone.
+     */
+    suspend fun leaveSettings(): Boolean {
+        repeat(MAX_BACKS) {
+            if (!settingsInFront()) return true
+            client().shell("input keyevent KEYCODE_BACK")
+            delay(BACK_SETTLE_MS)
+        }
+        return !settingsInFront()
     }
+
+    private suspend fun topResumed(): String =
+        client().shell("dumpsys activity activities 2>/dev/null | grep topResumedActivity").stdout
 
     /**
      * Reads the settings screen's view hierarchy from `dumpsys activity top`. Not a UI Automator
@@ -63,12 +80,22 @@ class HealthPlatformDevMode(private val platform: HealthPlatform, private val cl
         private const val DUMP_TIMEOUT_MS = 15_000L
         private const val TAP_TIMEOUT_MS = 30_000L
         private const val SETTLE_MS = 1_500L
+        private const val BACK_SETTLE_MS = 700L
+
+        /** BACK presses at most: the settings screen, plus Health Platform screens left under it. */
+        private const val MAX_BACKS = 4
 
         /** A view line: indent, class{hash FLAGS flags2 l,t-r,b [#hex id]} (the flags' first letter is V, I or G). */
         private val VIEW = Regex("""^(\s*)\S+\{[0-9a-f]+ ([VIG])\S* \S+ (-?\d+),(-?\d+)-(-?\d+),(-?\d+)(?: #[0-9a-f]+ ([^\s}]+))?""")
 
+        private val TOP_RESUMED = Regex("""topResumedActivity=ActivityRecord\{\S+ \S+ (\S+/\S+)""")
+
         internal fun isHealthPlatformInFront(dumpsys: String, platform: HealthPlatform): Boolean =
             dumpsys.lineSequence().any { "topResumedActivity" in it && " ${platform.packageName}/" in it }
+
+        /** The "package/class" of the first `topResumedActivity` line, or null. */
+        internal fun parseTopResumed(dumpsys: String): String? =
+            dumpsys.lineSequence().firstNotNullOfOrNull { TOP_RESUMED.find(it)?.groupValues?.get(1) }
 
         /**
          * Finds the title and the developer-mode subtitle in the Health Platform activity's part of

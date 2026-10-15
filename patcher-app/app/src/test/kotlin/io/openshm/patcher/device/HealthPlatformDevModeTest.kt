@@ -32,6 +32,17 @@ class HealthPlatformDevModeTest {
     }
 
     @Test
+    fun frontActivityReadFromTopResumed() {
+        val out = "    topResumedActivity=ActivityRecord{232446917 u0 " +
+            "com.samsung.android.mediacontroller/.view.control.MediaControlActivity t8365}\n"
+        assertEquals(
+            "com.samsung.android.mediacontroller/.view.control.MediaControlActivity",
+            HealthPlatformDevMode.parseTopResumed(out),
+        )
+        assertNull(HealthPlatformDevMode.parseTopResumed(""))
+    }
+
+    @Test
     fun devModeShownAndTitleFoundByViewId() {
         val screen = HealthPlatformDevMode.parseSettingsScreen(TOP_ON, platform)
         assertTrue(screen.devModeShown)
