@@ -421,6 +421,30 @@ Turn the switch off if you do not want it. On a PC, `scripts/build_shealth.sh` b
    - a missing permission;
    - the watch disconnected from Galaxy Wearable.
 
+## Known issues
+
+These come from user reports. Each one links to its GitHub issue, where progress is tracked.
+
+:construction: fix in progress · :hourglass_flowing_sand: fix released, waiting for user confirmation
+
+- :construction: **Irregular heart rhythm notifications fire too often, and they cannot be cleared from the
+  watch** ([#5](https://github.com/LibreStatic/LibreWrist/issues/5)). The vendor software denies
+  the feature access to the sensor, the sensor returns negative values, and Samsung Health Monitor
+  treats each failed reading as an alert. These are false alarms, not a health finding. A custom
+  sensor translation layer is in progress. Until it ships, turn irregular heart rhythm
+  notifications off in the phone app.
+- :construction: **Sleep apnea detection is not available yet**
+  ([#3](https://github.com/LibreStatic/LibreWrist/issues/3)). It needs calibration patterns baked
+  into Samsung's firmware, which are being extracted and tested against a custom driver. The same
+  applies to a persistent SpO2 unlock. The irregular heartbeat toggle from that report works since
+  0.4.0, and feature level 1.3 is the highest one available, so there is nothing newer to upgrade
+  to.
+- :hourglass_flowing_sand: **Blood pressure calibration stuck at 0% with the PPG LEDs off**
+  ([#2](https://github.com/LibreStatic/LibreWrist/issues/2)), reported on a Galaxy Watch4 Classic
+  (SM-R890) with One UI Watch 8 and patcher 0.3.7. The bug is confirmed and a fix shipped in
+  0.3.8: update the patcher and run the patches again. We are still waiting for an affected user to
+  report that calibration now completes on their watch.
+
 ## How it works
 
 1. The watch is paired with the phone through the stock Galaxy Wearable flow, which creates the GMS
