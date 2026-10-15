@@ -210,6 +210,7 @@
     <!-- Customize -->
     <string name="customize_title">패치 선택</string>
     <string name="customize_intro">자물쇠가 있는 패치는 기기에서 앱이 작동하는 데 필요합니다. 나머지는 선택 사항이며 끌 수 있습니다.</string>
+    <string name="customize_rebuild_note">%1$s만 다시 빌드합니다. 다른 앱은 그대로 유지됩니다.</string>
     <string name="customize_required">필수, 항상 켜짐</string>
     <string name="customize_advanced">고급</string>
     <string name="customize_prefix_label">도우미 앱의 패키지 접두사</string>
@@ -531,6 +532,10 @@
     <string name="restore_title">원래 앱을 복원할까요?</string>
     <string name="restore_body">패치된 앱과 그 데이터가 제거되고 기본 앱이 다시 켜집니다.</string>
     <string name="restore_confirm">복원</string>
+    <string name="restore_app_title">%1$s을(를) 제거할까요?</string>
+    <string name="restore_app_body_phone">데이터와 함께 휴대전화에서 제거됩니다. 나머지 설정은 그대로 유지됩니다.</string>
+    <string name="restore_app_body_watch">데이터와 함께 워치에서 제거됩니다. 나머지 설정은 그대로 유지됩니다.</string>
+    <string name="restore_app_confirm">제거</string>
 
     <!-- Signing key -->
     <string name="signing_key_title">서명 키</string>
@@ -785,6 +790,18 @@
     <string name="revert_done_complete_body">앱이 휴대전화와 워치에서 사라졌고 설정도 원래대로 돌아왔습니다.</string>
     <string name="revert_done_partial_title">일부 변경 사항이 남아 있습니다</string>
     <string name="revert_done_partial_body">모두 되돌리지 못했습니다. 표시된 문제를 해결한 후 다시 확인하세요. 설정 정보는 그대로 보관되므로 이어서 마칠 수 있습니다.</string>
+    <string name="revert_title_watch">워치 복원</string>
+    <string name="revert_intro_watch">OpenSHM Patcher가 워치에 설치한 항목을 제거하고 그곳에서 바꾼 내용을 되돌립니다. 휴대전화는 그대로 유지됩니다.</string>
+    <string name="revert_title_app">%1$s 제거</string>
+    <string name="revert_intro_app">이 앱만 제거됩니다. 나머지 설정은 그대로 유지됩니다.</string>
+    <string name="revert_start_watch">워치 복원</string>
+    <string name="revert_confirm_title_watch">워치를 복원할까요?</string>
+    <string name="revert_confirm_body_watch">목록의 앱이 데이터와 함께 워치에서 제거되고 설정이 원래대로 돌아갑니다. 나중에 새 빌드로 다시 설치할 수 있습니다.</string>
+    <string name="revert_confirm_action_watch">복원</string>
+    <string name="revert_start_app">제거</string>
+    <string name="revert_done_scoped_title">복원됨</string>
+    <string name="revert_done_watch_body">앱이 워치에서 사라졌고 설정도 원래대로 돌아왔습니다. 휴대전화는 그대로 유지됩니다.</string>
+    <string name="revert_done_app_body">%1$s 앱이 제거되었습니다. 나머지 설정은 그대로 유지됩니다.</string>
     <string name="revert_check_again">다시 확인</string>
     <string name="revert_manual_title">직접 해야 할 일</string>
     <string name="revert_manual_devmode">Health Platform의 개발자 모드를 켰다면 끄세요.</string>

@@ -213,6 +213,7 @@
     <!-- Customize -->
     <string name="customize_title">Виберіть патчі</string>
     <string name="customize_intro">Патчі із замком потрібні, щоб застосунки працювали на ваших пристроях. Інші необов\'язкові, їх можна вимкнути.</string>
+    <string name="customize_rebuild_note">Перезбирається лише %1$s. Решта ваших застосунків залишаються без змін.</string>
     <string name="customize_required">Обов\'язково, завжди ввімкнено</string>
     <string name="customize_advanced">Додатково</string>
     <string name="customize_prefix_label">Префікс пакета для допоміжних застосунків</string>
@@ -555,6 +556,10 @@
     <string name="restore_title">Відновити оригінальний застосунок?</string>
     <string name="restore_body">Пропатчений застосунок і його дані буде видалено, а стандартний знову ввімкнено.</string>
     <string name="restore_confirm">Відновити</string>
+    <string name="restore_app_title">Видалити %1$s?</string>
+    <string name="restore_app_body_phone">Застосунок буде видалено з телефона разом з даними. Решта налаштування залишається як є.</string>
+    <string name="restore_app_body_watch">Застосунок буде видалено з годинника разом з даними. Решта налаштування залишається як є.</string>
+    <string name="restore_app_confirm">Видалити</string>
 
     <!-- Signing key -->
     <string name="signing_key_title">Ключ підпису</string>
@@ -809,6 +814,18 @@
     <string name="revert_done_complete_body">Застосунків більше немає на телефоні та годиннику, а налаштування повернулися до попередніх.</string>
     <string name="revert_done_partial_title">Деякі зміни залишилися</string>
     <string name="revert_done_partial_body">Скасувати вдалося не все. Усуньте зазначені причини й перевірте знову; дані налаштування збережено, щоб ви могли завершити.</string>
+    <string name="revert_title_watch">Відновити годинник</string>
+    <string name="revert_intro_watch">Буде видалено все, що OpenSHM Patcher встановив на годинник, і повернуто все, що він там змінив. Телефон залишається як є.</string>
+    <string name="revert_title_app">Видалити %1$s</string>
+    <string name="revert_intro_app">Видаляється лише цей застосунок. Решта налаштування залишається як є.</string>
+    <string name="revert_start_watch">Відновити годинник</string>
+    <string name="revert_confirm_title_watch">Відновити годинник?</string>
+    <string name="revert_confirm_body_watch">Застосунки зі списку буде видалено з годинника разом з даними, а його налаштування повернуто. Пізніше їх можна встановити знову з нової збірки.</string>
+    <string name="revert_confirm_action_watch">Відновити</string>
+    <string name="revert_start_app">Видалити</string>
+    <string name="revert_done_scoped_title">Відновлено</string>
+    <string name="revert_done_watch_body">Застосунків на годиннику більше немає, а його налаштування повернулися до попереднього стану. Телефон залишається як є.</string>
+    <string name="revert_done_app_body">%1$s видалено. Решта налаштування залишається як є.</string>
     <string name="revert_check_again">Перевірити знову</string>
     <string name="revert_manual_title">Залишилося зробити вручну</string>
     <string name="revert_manual_devmode">Вимкніть режим розробника в Health Platform, якщо ви його вмикали.</string>

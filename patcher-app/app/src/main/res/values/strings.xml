@@ -318,6 +318,7 @@
     <!-- Customize -->
     <string name="customize_title">Choose your patches</string>
     <string name="customize_intro">Patches with a lock are needed for the apps to work on your devices. The others are optional: you can switch them off.</string>
+    <string name="customize_rebuild_note">Only %1$s is rebuilt. Your other apps stay as they are.</string>
     <string name="customize_required">Required, always on</string>
     <string name="customize_advanced">Advanced</string>
     <string name="customize_prefix_label">Package prefix for helper apps</string>
@@ -646,6 +647,10 @@
     <string name="restore_title">Restore the original app?</string>
     <string name="restore_body">The patched app and its data are removed, and the stock one is turned back on.</string>
     <string name="restore_confirm">Restore</string>
+    <string name="restore_app_title">Remove %1$s?</string>
+    <string name="restore_app_body_phone">It is uninstalled from your phone together with its data. The rest of your setup stays as it is.</string>
+    <string name="restore_app_body_watch">It is uninstalled from your watch together with its data. The rest of your setup stays as it is.</string>
+    <string name="restore_app_confirm">Remove</string>
 
     <!-- Signing key -->
     <string name="signing_key_title">Signing key</string>
@@ -795,6 +800,18 @@
     <string name="revert_done_complete_body">The apps are gone from your phone and your watch, and the settings are back as they were.</string>
     <string name="revert_done_partial_title">Some changes are still in place</string>
     <string name="revert_done_partial_body">Not everything could be undone. Fix what is listed and check again; the setup information is kept so you can finish.</string>
+    <string name="revert_title_watch">Restore the watch</string>
+    <string name="revert_intro_watch">This removes what OpenSHM Patcher installed on your watch and puts back what it changed there. Your phone stays as it is.</string>
+    <string name="revert_title_app">Remove %1$s</string>
+    <string name="revert_intro_app">Only this app is removed. The rest of your setup stays as it is.</string>
+    <string name="revert_start_watch">Restore the watch</string>
+    <string name="revert_confirm_title_watch">Restore the watch?</string>
+    <string name="revert_confirm_body_watch">The listed apps are removed from the watch together with their data, and its settings are put back. You can install them again later with a new build.</string>
+    <string name="revert_confirm_action_watch">Restore</string>
+    <string name="revert_start_app">Remove</string>
+    <string name="revert_done_scoped_title">Restored</string>
+    <string name="revert_done_watch_body">The apps are gone from your watch and its settings are back as they were. Your phone stays as it is.</string>
+    <string name="revert_done_app_body">%1$s is gone. The rest of your setup stays as it is.</string>
     <string name="revert_check_again">Check again</string>
     <string name="revert_manual_title">Still to do by hand</string>
     <string name="revert_manual_devmode">Turn off the developer mode of Health Platform if you switched it on.</string>

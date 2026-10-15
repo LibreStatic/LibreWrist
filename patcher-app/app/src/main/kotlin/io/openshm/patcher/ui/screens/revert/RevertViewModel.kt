@@ -3,9 +3,11 @@ package io.openshm.patcher.ui.screens.revert
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import io.openshm.patcher.build.BuildStorage
 import io.openshm.patcher.data.AppCatalogue
+import io.openshm.patcher.data.Device
 import io.openshm.patcher.data.SetupSession
 import io.openshm.patcher.device.AdbWatchDevice
 import io.openshm.patcher.device.LaunchRequest
@@ -13,6 +15,7 @@ import io.openshm.patcher.device.SessionPhoneInstaller
 import io.openshm.patcher.device.UninstallResult
 import io.openshm.patcher.device.WatchKeepAlive
 import io.openshm.patcher.device.WatchLink
+import io.openshm.patcher.ui.nav.Route
 import io.openshm.patcher.ui.screens.install.watchErrorRes
 import io.openshm.patcher.ui.screens.selftest.PrefsSelfTestRecord
 import java.io.IOException
@@ -28,11 +31,16 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
- * Drives the revert: probes both devices, runs [RevertRunner] and keeps [RevertUiState] with the pure
+ * Drives the revert: probes the devices the scope involves (from the nav arguments in [savedState]), runs [RevertRunner] and keeps [RevertUiState] with the pure
  * reducer. The removal confirmations of the phone are launched through [launches] like the install screen does.
  */
-class RevertViewModel(application: Application) : AndroidViewModel(application) {
-    private val _state = MutableStateFlow(RevertUiState())
+class RevertViewModel(application: Application, savedState: SavedStateHandle) : AndroidViewModel(application) {
+    private val scope = RevertScope.parse(savedState.get<String>(Route.REVERT_SCOPE_ARG))
+
+    /** Set when the user already confirmed on Home: the run starts by itself after the first probe. */
+    private var autoStart = savedState.get<String>(Route.REVERT_CONFIRMED_ARG) == "true" && scope is RevertScope.Output
+
+    private val _state = MutableStateFlow(RevertUiState(scope = scope))
     val state: StateFlow<RevertUiState> = _state.asStateFlow()
 
     private val outgoing = Channel<LaunchRequest>(Channel.BUFFERED)
@@ -49,6 +57,7 @@ class RevertViewModel(application: Application) : AndroidViewModel(application) 
         stockApps = AppCatalogue.current.stockAppsToDisable,
         storedPrefix = SetupSession.state.value.packagePrefix,
         ownPackage = application.packageName,
+        scope = scope,
         log = { Log.i(TAG, it) },
     )
 
@@ -65,6 +74,7 @@ class RevertViewModel(application: Application) : AndroidViewModel(application) 
             RevertEvent.Reprobe -> {
                 if (_state.value.phase == RevertPhase.Running) return
                 skipWatch = false
+                cleaned = false
                 _state.update { it.reduce(event) }
                 probe()
             }
@@ -80,18 +90,23 @@ class RevertViewModel(application: Application) : AndroidViewModel(application) 
 
     private fun reduce(event: RevertEvent) {
         _state.update { it.reduce(event) }
-        forgetSetupWhenComplete()
+        finishWhenDone()
     }
 
     private fun probe() {
         viewModelScope.launch(Dispatchers.IO) {
-            if (!skipWatch && !keepAlive.isRunning) {
+            if (scope.involvesWatch(AppCatalogue.current.outputs) && !skipWatch && !keepAlive.isRunning) {
                 startedKeepAlive = true
                 keepAlive.start()
             }
             val result = runner.probe(includeWatch = !skipWatch)
             val error = (result.watch as? WatchReach.Unreachable)?.let { watchErrorRes(it.cause) }
             reduce(RevertEvent.Probed(result, error))
+            // Only the first probe may start the run; an unreachable watch leaves the decision to the user.
+            if (autoStart) {
+                autoStart = false
+                if (_state.value.canRevert) start()
+            }
         }
     }
 
@@ -99,7 +114,7 @@ class RevertViewModel(application: Application) : AndroidViewModel(application) 
         val current = _state.value
         if (current.phase != RevertPhase.Review || current.rows.isEmpty()) return
         val items = current.rows.map { it.item }
-        val covered = current.watch == WatchStatus.Reached
+        val covered = current.watch == WatchStatus.Reached || current.watch == WatchStatus.NotNeeded
         reduce(RevertEvent.Start)
         viewModelScope.launch(Dispatchers.IO) {
             val report = try {
@@ -138,18 +153,55 @@ class RevertViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     /**
-     * After a complete revert the setup starts over: the prefix is unlocked and the build record and
-     * the self-test result go. The signing key, the downloaded inputs and the prefix stay.
+     * When the run is Done. The whole setup (scope [RevertScope.All], or a scoped run that left no active
+     * output) starts over once complete: see [forgetSetup]. A scoped run only records the outputs it
+     * removed in [SetupSession] and clears the self-test result, which is stale now; the build record
+     * and the prefix lock stay so the user can install the apps again.
      */
     @Synchronized
-    private fun forgetSetupWhenComplete() {
+    private fun finishWhenDone() {
         val s = _state.value
-        if (cleaned || s.phase != RevertPhase.Done || !s.complete) return
+        if (cleaned || s.phase != RevertPhase.Done) return
+        if (scope == RevertScope.All) {
+            if (s.complete) forgetSetup()
+            return
+        }
         cleaned = true
-        SetupSession.update { it.copy(prefixLocked = false) }
+        val restored = restoredOutputs(s)
+        SetupSession.update { it.copy(restoredOutputs = it.restoredOutputs + restored) }
+        clearStored(builds = false)
+        if (SetupSession.state.value.activeOutputIds.isEmpty()) forgetSetup()
+    }
+
+    /** The outputs of the scope that are gone: none of their uninstall rows is left unsettled. */
+    private fun restoredOutputs(s: RevertUiState): Set<String> {
+        val inScope = when (scope) {
+            RevertScope.All -> emptyList()
+            RevertScope.Watch -> AppCatalogue.current.outputs
+                .filter { it.device == Device.Watch && it.id in SetupSession.state.value.outputIds }.map { it.id }
+            is RevertScope.Output -> listOf(scope.outputId)
+        }
+        val unsettled = s.rows
+            .filter { it.item.action == RevertAction.Uninstall && it.outcome?.settled != true }
+            .mapNotNullTo(mutableSetOf()) { it.item.outputId }
+        return inScope.filter { it !in unsettled }.toSet()
+    }
+
+    /**
+     * The setup starts over: the prefix is unlocked and the build record and the self-test result go.
+     * The signing key, the downloaded inputs and the prefix stay.
+     */
+    private fun forgetSetup() {
+        cleaned = true
+        SetupSession.update { it.copy(prefixLocked = false, restoredOutputs = emptySet()) }
+        clearStored(builds = true)
+        _state.update { it.copy(setupForgotten = true) }
+    }
+
+    private fun clearStored(builds: Boolean) {
         val app = getApplication<Application>()
         try {
-            BuildStorage(app).clearBuilds()
+            if (builds) BuildStorage(app).clearBuilds()
             PrefsSelfTestRecord(app).clear()
         } catch (e: IOException) {
             Log.w(TAG, "could not clear the stored builds: ${e.javaClass.simpleName}")

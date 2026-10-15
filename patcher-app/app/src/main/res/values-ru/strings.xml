@@ -213,6 +213,7 @@
     <!-- Customize -->
     <string name="customize_title">Выберите патчи</string>
     <string name="customize_intro">Патчи с замком нужны, чтобы приложения работали на ваших устройствах. Остальные необязательны, их можно отключить.</string>
+    <string name="customize_rebuild_note">Пересобирается только %1$s. Остальные приложения остаются как есть.</string>
     <string name="customize_required">Обязательно, всегда включено</string>
     <string name="customize_advanced">Дополнительно</string>
     <string name="customize_prefix_label">Префикс пакета для вспомогательных приложений</string>
@@ -555,6 +556,10 @@
     <string name="restore_title">Восстановить оригинальное приложение?</string>
     <string name="restore_body">Пропатченное приложение и его данные будут удалены, а оригинальное снова включено.</string>
     <string name="restore_confirm">Восстановить</string>
+    <string name="restore_app_title">Удалить %1$s?</string>
+    <string name="restore_app_body_phone">Приложение будет удалено с телефона вместе с данными. Остальная настройка остаётся как есть.</string>
+    <string name="restore_app_body_watch">Приложение будет удалено с часов вместе с данными. Остальная настройка остаётся как есть.</string>
+    <string name="restore_app_confirm">Удалить</string>
 
     <!-- Signing key -->
     <string name="signing_key_title">Ключ подписи</string>
@@ -809,6 +814,18 @@
     <string name="revert_done_complete_body">Приложений больше нет на телефоне и часах, а настройки вернулись к прежним.</string>
     <string name="revert_done_partial_title">Некоторые изменения остались</string>
     <string name="revert_done_partial_body">Отменить удалось не всё. Устраните указанные причины и проверьте снова; данные настройки сохранены, чтобы вы могли закончить.</string>
+    <string name="revert_title_watch">Восстановить часы</string>
+    <string name="revert_intro_watch">Будет удалено всё, что OpenSHM Patcher установил на часы, и возвращено всё, что он там изменил. Телефон остаётся как есть.</string>
+    <string name="revert_title_app">Удалить %1$s</string>
+    <string name="revert_intro_app">Удаляется только это приложение. Остальная настройка остаётся как есть.</string>
+    <string name="revert_start_watch">Восстановить часы</string>
+    <string name="revert_confirm_title_watch">Восстановить часы?</string>
+    <string name="revert_confirm_body_watch">Приложения из списка будут удалены с часов вместе с данными, а настройки возвращены. Позже их можно установить снова из новой сборки.</string>
+    <string name="revert_confirm_action_watch">Восстановить</string>
+    <string name="revert_start_app">Удалить</string>
+    <string name="revert_done_scoped_title">Восстановлено</string>
+    <string name="revert_done_watch_body">Приложений на часах больше нет, а их настройки вернулись в прежнее состояние. Телефон остаётся как есть.</string>
+    <string name="revert_done_app_body">%1$s удалено. Остальная настройка остаётся как есть.</string>
     <string name="revert_check_again">Проверить снова</string>
     <string name="revert_manual_title">Осталось сделать вручную</string>
     <string name="revert_manual_devmode">Выключите режим разработчика в Health Platform, если вы его включали.</string>

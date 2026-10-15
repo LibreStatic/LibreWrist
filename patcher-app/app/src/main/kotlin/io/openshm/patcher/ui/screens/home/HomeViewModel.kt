@@ -7,6 +7,7 @@ import io.openshm.patcher.R
 import io.openshm.patcher.build.BuildStorage
 import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.CatalogueUpdates
+import io.openshm.patcher.data.RebuildScope
 import io.openshm.patcher.data.UpdateResult
 import io.openshm.patcher.data.SetupSession
 import io.openshm.patcher.ui.components.CheckStatus
@@ -23,8 +24,8 @@ import kotlinx.coroutines.withContext
 
 internal fun HomeUiState.reduce(event: HomeEvent): HomeUiState = when (event) {
     HomeEvent.ToggleMenu -> copy(menuOpen = !menuOpen)
-    is HomeEvent.AskRestore -> copy(restoreSheetVisible = true)
-    HomeEvent.ConfirmRestore, HomeEvent.DismissRestore -> copy(restoreSheetVisible = false)
+    is HomeEvent.AskRestore -> copy(restoreTarget = builds.firstOrNull { it.id == event.buildId })
+    HomeEvent.ConfirmRestore, HomeEvent.DismissRestore -> copy(restoreTarget = null)
     HomeEvent.NewBuild, HomeEvent.CheckCatalogue, HomeEvent.RunSelfTest, HomeEvent.RestoreWatch, HomeEvent.Uninstall, HomeEvent.OpenSettings -> copy(menuOpen = false)
     HomeEvent.MessageShown -> copy(catalogueMessage = null)
     else -> this
@@ -53,10 +54,12 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /**
-     * Called when Home is shown: adopts an accepted catalogue when no build runs, re-reads the
+     * Called when Home is shown: ends a per-app rebuild, adopts an accepted catalogue when no build runs, re-reads the
      * self-test and the update offer, and starts the daily catalogue check.
      */
     fun refresh() {
+        // Arriving on Home ends any per-app rebuild.
+        RebuildScope.clear()
         CatalogueUpdates.adoptPendingIfIdle(getApplication())
         _state.update { snapshot(it) }
         checkCatalogue(force = false)
@@ -97,7 +100,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     /** The parts of Home that depend on the self-test, the loaded catalogue and the last build. */
     private fun snapshot(current: HomeUiState): HomeUiState {
         val session = SetupSession.state.value
-        val outputIds = session.outputIds
+        val outputIds = session.activeOutputIds
         return current.copy(
             status = homeStatusOf(record.last(), System.currentTimeMillis()),
             update = updateOfferFor(AppCatalogue.current, BuildStorage(getApplication()).record.read(), outputIds),

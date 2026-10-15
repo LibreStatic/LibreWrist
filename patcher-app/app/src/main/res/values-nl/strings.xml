@@ -211,6 +211,7 @@
     <!-- Customize -->
     <string name="customize_title">Kies je patches</string>
     <string name="customize_intro">Patches met een slotje zijn nodig om de apps op je apparaten te laten werken. De andere zijn optioneel en kun je uitzetten.</string>
+    <string name="customize_rebuild_note">Alleen %1$s wordt opnieuw gebouwd. Je andere apps blijven zoals ze zijn.</string>
     <string name="customize_required">Vereist, altijd aan</string>
     <string name="customize_advanced">Geavanceerd</string>
     <string name="customize_prefix_label">Pakketvoorvoegsel voor hulp-apps</string>
@@ -539,6 +540,10 @@
     <string name="restore_title">De originele app herstellen?</string>
     <string name="restore_body">De gepatchte app en zijn gegevens worden verwijderd, en de originele wordt weer ingeschakeld.</string>
     <string name="restore_confirm">Herstellen</string>
+    <string name="restore_app_title">%1$s verwijderen?</string>
+    <string name="restore_app_body_phone">De app wordt met zijn gegevens van je telefoon gedeïnstalleerd. De rest van je instellingen blijft zoals het is.</string>
+    <string name="restore_app_body_watch">De app wordt met zijn gegevens van je horloge gedeïnstalleerd. De rest van je instellingen blijft zoals het is.</string>
+    <string name="restore_app_confirm">Verwijderen</string>
 
     <!-- Signing key -->
     <string name="signing_key_title">Ondertekeningssleutel</string>
@@ -793,6 +798,18 @@
     <string name="revert_done_complete_body">De apps zijn van je telefoon en horloge verdwenen en de instellingen staan weer zoals ze waren.</string>
     <string name="revert_done_partial_title">Sommige wijzigingen zijn nog actief</string>
     <string name="revert_done_partial_body">Niet alles kon ongedaan worden gemaakt. Los op wat vermeld staat en controleer opnieuw; de configuratiegegevens blijven bewaard zodat je kunt afronden.</string>
+    <string name="revert_title_watch">Horloge herstellen</string>
+    <string name="revert_intro_watch">Dit verwijdert wat OpenSHM Patcher op je horloge heeft geïnstalleerd en zet terug wat het daar heeft gewijzigd. Je telefoon blijft zoals hij is.</string>
+    <string name="revert_title_app">%1$s verwijderen</string>
+    <string name="revert_intro_app">Alleen deze app wordt verwijderd. De rest van je instellingen blijft zoals het is.</string>
+    <string name="revert_start_watch">Horloge herstellen</string>
+    <string name="revert_confirm_title_watch">Horloge herstellen?</string>
+    <string name="revert_confirm_body_watch">De genoemde apps worden met hun gegevens van het horloge verwijderd en de instellingen worden teruggezet. Je kunt ze later opnieuw installeren met een nieuwe build.</string>
+    <string name="revert_confirm_action_watch">Herstellen</string>
+    <string name="revert_start_app">Verwijderen</string>
+    <string name="revert_done_scoped_title">Hersteld</string>
+    <string name="revert_done_watch_body">De apps zijn van je horloge verdwenen en de instellingen zijn terug zoals ze waren. Je telefoon blijft zoals hij is.</string>
+    <string name="revert_done_app_body">%1$s is verwijderd. De rest van je instellingen blijft zoals het is.</string>
     <string name="revert_check_again">Opnieuw controleren</string>
     <string name="revert_manual_title">Nog handmatig te doen</string>
     <string name="revert_manual_devmode">Schakel de ontwikkelaarsmodus van Health Platform uit als je die hebt ingeschakeld.</string>

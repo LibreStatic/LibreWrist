@@ -213,6 +213,7 @@
     <!-- Customize -->
     <string name="customize_title">Wybierz łatki</string>
     <string name="customize_intro">Poprawki z kłódką są potrzebne, by aplikacje działały na Twoich urządzeniach. Pozostałe są opcjonalne i można je wyłączyć.</string>
+    <string name="customize_rebuild_note">Przebudowywana jest tylko aplikacja %1$s. Pozostałe aplikacje zostają bez zmian.</string>
     <string name="customize_required">Wymagane, zawsze włączone</string>
     <string name="customize_advanced">Zaawansowane</string>
     <string name="customize_prefix_label">Prefiks pakietu aplikacji pomocniczych</string>
@@ -555,6 +556,10 @@
     <string name="restore_title">Przywrócić oryginalną aplikację?</string>
     <string name="restore_body">Zmodyfikowana aplikacja i jej dane zostaną usunięte, a standardowa zostanie ponownie włączona.</string>
     <string name="restore_confirm">Przywróć</string>
+    <string name="restore_app_title">Usunąć %1$s?</string>
+    <string name="restore_app_body_phone">Aplikacja zostanie odinstalowana z telefonu razem z danymi. Reszta konfiguracji pozostaje bez zmian.</string>
+    <string name="restore_app_body_watch">Aplikacja zostanie odinstalowana z zegarka razem z danymi. Reszta konfiguracji pozostaje bez zmian.</string>
+    <string name="restore_app_confirm">Usuń</string>
 
     <!-- Signing key -->
     <string name="signing_key_title">Klucz podpisu</string>
@@ -809,6 +814,18 @@
     <string name="revert_done_complete_body">Aplikacji nie ma już na telefonie ani na zegarku, a ustawienia wróciły do poprzednich.</string>
     <string name="revert_done_partial_title">Niektóre zmiany nadal obowiązują</string>
     <string name="revert_done_partial_body">Nie udało się cofnąć wszystkiego. Usuń wymienione przyczyny i sprawdź ponownie; dane konfiguracji zostają zachowane, abyś mógł dokończyć.</string>
+    <string name="revert_title_watch">Przywróć zegarek</string>
+    <string name="revert_intro_watch">Usuwa to wszystko, co OpenSHM Patcher zainstalował na zegarku, i przywraca zmienione tam ustawienia. Telefon pozostaje bez zmian.</string>
+    <string name="revert_title_app">Usuń %1$s</string>
+    <string name="revert_intro_app">Usunięta zostanie tylko ta aplikacja. Reszta konfiguracji pozostaje bez zmian.</string>
+    <string name="revert_start_watch">Przywróć zegarek</string>
+    <string name="revert_confirm_title_watch">Przywrócić zegarek?</string>
+    <string name="revert_confirm_body_watch">Wymienione aplikacje zostaną usunięte z zegarka razem z danymi, a jego ustawienia zostaną przywrócone. Możesz je później zainstalować ponownie z nowej kompilacji.</string>
+    <string name="revert_confirm_action_watch">Przywróć</string>
+    <string name="revert_start_app">Usuń</string>
+    <string name="revert_done_scoped_title">Przywrócono</string>
+    <string name="revert_done_watch_body">Aplikacje zniknęły z zegarka, a jego ustawienia wróciły do poprzedniego stanu. Telefon pozostaje bez zmian.</string>
+    <string name="revert_done_app_body">Aplikacja %1$s została usunięta. Reszta konfiguracji pozostaje bez zmian.</string>
     <string name="revert_check_again">Sprawdź ponownie</string>
     <string name="revert_manual_title">Do zrobienia ręcznie</string>
     <string name="revert_manual_devmode">Wyłącz tryb programisty w Health Platform, jeśli go włączono.</string>

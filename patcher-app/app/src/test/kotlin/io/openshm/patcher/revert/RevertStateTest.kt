@@ -8,6 +8,7 @@ import io.openshm.patcher.ui.screens.revert.RevertItem
 import io.openshm.patcher.ui.screens.revert.RevertPhase
 import io.openshm.patcher.ui.screens.revert.RevertProbe
 import io.openshm.patcher.ui.screens.revert.RevertReport
+import io.openshm.patcher.ui.screens.revert.RevertScope
 import io.openshm.patcher.ui.screens.revert.RevertUiState
 import io.openshm.patcher.ui.screens.revert.SelfUninstallResult
 import io.openshm.patcher.ui.screens.revert.StepOutcome
@@ -112,5 +113,33 @@ class RevertStateTest {
     fun reprobeGoesBackToProbing() {
         val s = probed(phoneApp).reduce(RevertEvent.Reprobe)
         assertEquals(RevertPhase.Probing, s.phase)
+    }
+
+    @Test
+    fun aWatchNotNeededCountsAsCompleteWhenThereIsNothingToDo() {
+        val s = RevertUiState(scope = RevertScope.Output("bridge-phone"))
+            .reduce(RevertEvent.Probed(RevertProbe(emptyList(), WatchReach.NotNeeded), null))
+        assertEquals(WatchStatus.NotNeeded, s.watch)
+        assertEquals(RevertPhase.Done, s.phase)
+        assertTrue(s.complete)
+    }
+
+    @Test
+    fun aWatchNotNeededDoesNotBlockTheRevert() {
+        val s = RevertUiState(scope = RevertScope.Output("bridge-phone"))
+            .reduce(RevertEvent.Probed(RevertProbe(listOf(phoneApp), WatchReach.NotNeeded), null))
+        assertTrue(s.canRevert)
+        assertFalse(s.watchNeedsDecision)
+    }
+
+    @Test
+    fun theWatchCannotBeSkippedInAScopedRun() {
+        for (scope in listOf(RevertScope.Watch, RevertScope.Output("shm-watch"))) {
+            val s = RevertUiState(scope = scope)
+                .reduce(RevertEvent.Probed(RevertProbe(listOf(watchApp), WatchReach.Unreachable(IOException("off"))), null))
+            assertFalse(s.canSkipWatch)
+            assertEquals(s, s.reduce(RevertEvent.SkipWatch))
+        }
+        assertTrue(RevertUiState().canSkipWatch)
     }
 }

@@ -211,6 +211,7 @@
     <!-- Customize -->
     <string name="customize_title">Patches auswählen</string>
     <string name="customize_intro">Patches mit Schloss sind nötig, damit die Apps auf deinen Geräten funktionieren. Die anderen sind optional und lassen sich ausschalten.</string>
+    <string name="customize_rebuild_note">Nur %1$s wird neu gebaut. Deine anderen Apps bleiben unverändert.</string>
     <string name="customize_required">Erforderlich, immer aktiv</string>
     <string name="customize_advanced">Erweitert</string>
     <string name="customize_prefix_label">Paketpräfix für Hilfs-Apps</string>
@@ -539,6 +540,10 @@
     <string name="restore_title">Original-App wiederherstellen?</string>
     <string name="restore_body">Die gepatchte App und ihre Daten werden entfernt, und die Original-App wird wieder eingeschaltet.</string>
     <string name="restore_confirm">Wiederherstellen</string>
+    <string name="restore_app_title">%1$s entfernen?</string>
+    <string name="restore_app_body_phone">Die App wird samt ihren Daten von deinem Smartphone deinstalliert. Der Rest deiner Einrichtung bleibt unverändert.</string>
+    <string name="restore_app_body_watch">Die App wird samt ihren Daten von deiner Uhr deinstalliert. Der Rest deiner Einrichtung bleibt unverändert.</string>
+    <string name="restore_app_confirm">Entfernen</string>
 
     <!-- Signing key -->
     <string name="signing_key_title">Signaturschlüssel</string>
@@ -793,6 +798,18 @@
     <string name="revert_done_complete_body">Die Apps sind von deinem Smartphone und deiner Uhr verschwunden, und die Einstellungen sind wieder wie vorher.</string>
     <string name="revert_done_partial_title">Einige Änderungen bestehen noch</string>
     <string name="revert_done_partial_body">Nicht alles ließ sich rückgängig machen. Behebe das Aufgeführte und prüfe erneut; die Einrichtungsdaten bleiben erhalten, damit du fortfahren kannst.</string>
+    <string name="revert_title_watch">Uhr wiederherstellen</string>
+    <string name="revert_intro_watch">Dadurch wird entfernt, was OpenSHM Patcher auf deiner Uhr installiert hat, und zurückgesetzt, was dort geändert wurde. Dein Smartphone bleibt unverändert.</string>
+    <string name="revert_title_app">%1$s entfernen</string>
+    <string name="revert_intro_app">Nur diese App wird entfernt. Der Rest deiner Einrichtung bleibt unverändert.</string>
+    <string name="revert_start_watch">Uhr wiederherstellen</string>
+    <string name="revert_confirm_title_watch">Uhr wiederherstellen?</string>
+    <string name="revert_confirm_body_watch">Die aufgeführten Apps werden samt ihren Daten von der Uhr entfernt und ihre Einstellungen zurückgesetzt. Du kannst sie später mit einem neuen Build wieder installieren.</string>
+    <string name="revert_confirm_action_watch">Wiederherstellen</string>
+    <string name="revert_start_app">Entfernen</string>
+    <string name="revert_done_scoped_title">Wiederhergestellt</string>
+    <string name="revert_done_watch_body">Die Apps sind von deiner Uhr verschwunden und ihre Einstellungen sind wieder wie vorher. Dein Smartphone bleibt unverändert.</string>
+    <string name="revert_done_app_body">%1$s wurde entfernt. Der Rest deiner Einrichtung bleibt unverändert.</string>
     <string name="revert_check_again">Erneut prüfen</string>
     <string name="revert_manual_title">Noch von Hand zu erledigen</string>
     <string name="revert_manual_devmode">Schalte den Entwicklermodus von Health Platform aus, falls du ihn eingeschaltet hast.</string>

@@ -44,6 +44,8 @@ internal class WatchInstallRunner(
     /** The catalogue outputs, to recognise bridge copies of an earlier prefix; empty turns the cleanup off. */
     private val outputs: List<OutputApp> = emptyList(),
     private val ownPackage: String = "",
+    /** Called with the output id once that output is installed (Home's restored outputs forget it). */
+    private val onInstalled: (String) -> Unit = {},
 ) {
     private var locked = false
 
@@ -182,6 +184,7 @@ internal class WatchInstallRunner(
             locked = true
             lockPrefix()
         }
+        onInstalled(state.value.items[index].outputId)
         return true
     }
 

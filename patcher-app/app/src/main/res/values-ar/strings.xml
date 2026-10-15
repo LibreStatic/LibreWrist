@@ -215,6 +215,7 @@
     <!-- Customize -->
     <string name="customize_title">اختر تصحيحاتك</string>
     <string name="customize_intro">التصحيحات التي عليها قفل ضرورية لعمل التطبيقات على أجهزتك. أما البقية فاختيارية ويمكنك إيقافها.</string>
+    <string name="customize_rebuild_note">تتم إعادة بناء %1$s فقط. تبقى تطبيقاتك الأخرى كما هي.</string>
     <string name="customize_required">مطلوب، مفعّل دائمًا</string>
     <string name="customize_advanced">متقدم</string>
     <string name="customize_prefix_label">بادئة الحزمة للتطبيقات المساعدة</string>
@@ -571,6 +572,10 @@
     <string name="restore_title">استعادة التطبيق الأصلي؟</string>
     <string name="restore_body">يُزال التطبيق المُصحَّح وبياناته، ويُعاد تشغيل التطبيق الأصلي.</string>
     <string name="restore_confirm">استعادة</string>
+    <string name="restore_app_title">إزالة %1$s؟</string>
+    <string name="restore_app_body_phone">تتم إزالته من هاتفك مع بياناته. يبقى باقي الإعداد كما هو.</string>
+    <string name="restore_app_body_watch">تتم إزالته من ساعتك مع بياناته. يبقى باقي الإعداد كما هو.</string>
+    <string name="restore_app_confirm">إزالة</string>
 
     <!-- Signing key -->
     <string name="signing_key_title">مفتاح التوقيع</string>
@@ -825,6 +830,18 @@
     <string name="revert_done_complete_body">لم تعد التطبيقات على هاتفك وساعتك، وعادت الإعدادات كما كانت.</string>
     <string name="revert_done_partial_title">لا تزال بعض التغييرات قائمة</string>
     <string name="revert_done_partial_body">تعذّر التراجع عن كل شيء. عالج ما هو مذكور ثم افحص مرة أخرى؛ تُحفظ معلومات الإعداد لتتمكن من الإنهاء.</string>
+    <string name="revert_title_watch">استعادة الساعة</string>
+    <string name="revert_intro_watch">يؤدي هذا إلى إزالة ما ثبّته OpenSHM Patcher على ساعتك وإعادة ما غيّره هناك. يبقى هاتفك كما هو.</string>
+    <string name="revert_title_app">إزالة %1$s</string>
+    <string name="revert_intro_app">تتم إزالة هذا التطبيق فقط. يبقى باقي الإعداد كما هو.</string>
+    <string name="revert_start_watch">استعادة الساعة</string>
+    <string name="revert_confirm_title_watch">استعادة الساعة؟</string>
+    <string name="revert_confirm_body_watch">تتم إزالة التطبيقات المدرجة من الساعة مع بياناتها وإعادة إعداداتها. يمكنك تثبيتها مجددًا لاحقًا ببناء جديد.</string>
+    <string name="revert_confirm_action_watch">استعادة</string>
+    <string name="revert_start_app">إزالة</string>
+    <string name="revert_done_scoped_title">تمت الاستعادة</string>
+    <string name="revert_done_watch_body">اختفت التطبيقات من ساعتك وعادت إعداداتها كما كانت. يبقى هاتفك كما هو.</string>
+    <string name="revert_done_app_body">تمت إزالة %1$s. يبقى باقي الإعداد كما هو.</string>
     <string name="revert_check_again">افحص مرة أخرى</string>
     <string name="revert_manual_title">ما يزال عليك فعله يدويًا</string>
     <string name="revert_manual_devmode">أوقف وضع المطوّر في Health Platform إذا كنت قد فعّلته.</string>

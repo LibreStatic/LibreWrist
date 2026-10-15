@@ -9,6 +9,7 @@ import io.openshm.patcher.ui.screens.revert.RevertAction
 import io.openshm.patcher.ui.screens.revert.RevertItem
 import io.openshm.patcher.ui.screens.revert.RevertReport
 import io.openshm.patcher.ui.screens.revert.RevertRunner
+import io.openshm.patcher.ui.screens.revert.RevertScope
 import io.openshm.patcher.ui.screens.revert.SkipReason
 import io.openshm.patcher.ui.screens.revert.StepOutcome
 import io.openshm.patcher.ui.screens.revert.WatchReach
@@ -26,7 +27,7 @@ class RevertRunnerTest {
 
     private fun RevertRunner.probeAndRun(skipWatch: Boolean = false): Pair<io.openshm.patcher.ui.screens.revert.RevertProbe, RevertReport> = runBlocking {
         val probe = probe(includeWatch = !skipWatch)
-        probe to run(probe.items, probe.watch == WatchReach.Reached) { _, _ -> }
+        probe to run(probe.items, probe.watch == WatchReach.Reached || probe.watch == WatchReach.NotNeeded) { _, _ -> }
     }
 
     private fun RevertReport.outcomeOf(item: RevertItem) = outcomes.getValue(item.key)
@@ -295,5 +296,62 @@ class RevertRunnerTest {
         phone.kinds[OWN] = PackageKind.User
         runner(phone, watch).probeAndRun()
         assertFalse(phone.calls.contains("uninstall:$OWN"))
+    }
+
+    @Test
+    fun theWatchScopeNeverAsksThePhoneAndKeepsTheWatchExtras() {
+        val (phone, watch) = fullInstall()
+        watch.globals[key] = ours
+        val (probe, report) = runner(phone, watch, scope = RevertScope.Watch).probeAndRun()
+        assertEquals(WatchReach.Reached, probe.watch)
+        assertTrue(probe.items.none { it.device == Device.Phone })
+        assertTrue(phone.calls.isEmpty() && phone.reads.isEmpty())
+        assertEquals(
+            setOf("uninstall:${outputPkg("bridge-watch")}", "uninstall:${outputPkg("alarm-fork")}", "uninstall:${outputPkg("shm-watch")}", "enable:$STOCK_HM", "put:doze_always_on=1", "deleteGlobal:$key"),
+            watch.calls.toSet(),
+        )
+        assertTrue(report.complete)
+    }
+
+    @Test
+    fun aPhoneAppScopeNeverContactsTheWatchAndIsComplete() {
+        val (phone, watch) = fullInstall()
+        watch.down = IOException("must not be asked")
+        val (probe, report) = runner(phone, watch, scope = RevertScope.Output("bridge-phone")).probeAndRun()
+        assertEquals(WatchReach.NotNeeded, probe.watch)
+        assertEquals(listOf("uninstall:${outputPkg("bridge-phone")}"), phone.calls)
+        assertTrue(watch.calls.isEmpty())
+        assertTrue(report.complete)
+    }
+
+    @Test
+    fun theWatchMonitorScopeAlsoTurnsTheStockAppBackOn() {
+        val (phone, watch) = fullInstall()
+        watch.globals[key] = ours
+        val (_, report) = runner(phone, watch, scope = RevertScope.Output("shm-watch")).probeAndRun()
+        assertEquals(setOf("uninstall:${outputPkg("shm-watch")}", "enable:$STOCK_HM", "put:doze_always_on=1", "deleteGlobal:$key"), watch.calls.toSet())
+        assertTrue(phone.calls.isEmpty())
+        assertTrue(report.complete)
+    }
+
+    @Test
+    fun anotherWatchAppScopeLeavesTheStockAppAndSettingsAlone() {
+        val (phone, watch) = fullInstall()
+        watch.globals[key] = ours
+        val (probe, _) = runner(phone, watch, scope = RevertScope.Output("alarm-fork")).probeAndRun()
+        assertTrue(probe.items.all { it.action == RevertAction.Uninstall })
+        assertEquals(listOf("uninstall:${outputPkg("alarm-fork")}"), watch.calls)
+        assertEquals(ours, watch.globals[key])
+    }
+
+    @Test
+    fun aScopedRunStillFindsAnInstallUnderAnEarlierPrefix() {
+        val old = "io.openshm.uabcdef"
+        val phone = FakePhone(kinds = mutableMapOf(outputPkg("bridge-phone", old) to PackageKind.User), listeners = listOf(outputPkg("bridge-phone", old)))
+        val watch = FakeWatch(kinds = mutableMapOf(outputPkg("bridge-watch", old) to PackageKind.User, outputPkg("alarm-fork", old) to PackageKind.User))
+        runner(phone, watch, scope = RevertScope.Output("bridge-phone")).probeAndRun()
+        assertEquals(listOf("uninstall:${outputPkg("bridge-phone", old)}"), phone.calls)
+        runner(phone, watch, scope = RevertScope.Output("bridge-watch")).probeAndRun()
+        assertEquals(listOf("uninstall:${outputPkg("bridge-watch", old)}"), watch.calls)
     }
 }

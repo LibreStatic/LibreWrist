@@ -71,6 +71,14 @@ fun RevertRunningDriver() = PreviewHost(ColorMode.Fallback) { RevertSample(Previ
 @Composable
 fun RevertDoneCompleteDriver() = PreviewHost(ColorMode.Fallback) { RevertSample(PreviewData.revertDoneComplete()) }
 
+/** Restore the watch, waiting for the confirmation. */
+@Composable
+fun RevertWatchReviewDriver() = PreviewHost(ColorMode.Fallback) { RevertSample(PreviewData.revertWatchReview()) }
+
+/** One phone app removed from Home: done. */
+@Composable
+fun RevertOutputDoneDriver() = PreviewHost(ColorMode.Fallback) { RevertSample(PreviewData.revertOutputDone()) }
+
 /** Undo all changes: partial (watch lost, one prompt declined). */
 @Composable
 fun RevertDonePartialDriver() = PreviewHost(ColorMode.Fallback) { RevertSample(PreviewData.revertDonePartial()) }
@@ -272,6 +280,10 @@ fun GuidedBrowserStep3Driver() = PreviewHost(ColorMode.Fallback) { GuidedBrowser
 @Composable
 fun CustomizeDriver() = PreviewHost(ColorMode.Fallback) { CustomizeSample() }
 
+/** Focus mode of a per-app rebuild: only the Health Monitor watch app's patches show. */
+@Composable
+fun CustomizeRebuildDriver() = PreviewHost(ColorMode.Fallback) { CustomizeSample(setOf("shm-watch")) }
+
 @Composable
 fun BuildDriver() = PreviewHost(ColorMode.Fallback) { BuildSample() }
 
@@ -385,6 +397,12 @@ fun HomePatchesUpdateDriver() = PreviewHost(ColorMode.Fallback) { HomeSample(pat
 
 @Composable
 fun HomeRestoreDriver() = PreviewHost(ColorMode.Fallback) { HomeSample(restoreSheet = true) }
+
+@Composable
+fun HomeRestoreAppDriver() = PreviewHost(ColorMode.Fallback) { HomeSample(restoreSheet = true, restoreOf = "bridge-watch") }
+
+@Composable
+fun HomeMenuDriver() = PreviewHost(ColorMode.Fallback) { HomeSample(menu = true) }
 
 @Composable
 fun SigningKeyDriver() = PreviewHost(ColorMode.Fallback) { SigningKeySample() }

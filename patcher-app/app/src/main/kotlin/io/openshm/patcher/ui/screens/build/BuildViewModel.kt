@@ -11,6 +11,7 @@ import io.openshm.patcher.build.BuildStorage
 import io.openshm.patcher.build.buildKey
 import io.openshm.patcher.build.currentFingerprints
 import io.openshm.patcher.data.AppCatalogue
+import io.openshm.patcher.data.RebuildScope
 import io.openshm.patcher.data.SetupSession
 import io.openshm.patcher.ui.components.CheckStatus
 import kotlinx.coroutines.Dispatchers
@@ -74,7 +75,7 @@ internal fun builtOutputs(storage: BuildStorage): BuildDoneUiState {
     val session = SetupSession.state.value
     val records = storage.record.read()?.outputs?.associateBy { it.outputId }.orEmpty()
     return BuildDoneUiState(
-        outputs = AppCatalogue.current.outputs.filter { it.id in session.outputIds }.map {
+        outputs = AppCatalogue.current.outputs.filter { it.id in session.outputIds && RebuildScope.includes(it.id) }.map {
             BuiltOutput(it.id, it.label, it.device, it.packageName(session.packagePrefix), sizeBytes = records[it.id]?.sizeBytes ?: 0L, reused = records[it.id]?.reused == true)
         },
         patchCount = AppCatalogue.current.patternCount(session.inputIds, session.disabledPatches),

@@ -210,6 +210,7 @@
     <!-- Customize -->
     <string name="customize_title">Pilih patch Anda</string>
     <string name="customize_intro">Patch dengan gembok diperlukan agar aplikasi berfungsi di perangkat Anda. Patch lainnya opsional dan dapat dinonaktifkan.</string>
+    <string name="customize_rebuild_note">Hanya %1$s yang dibangun ulang. Aplikasi Anda yang lain tetap seperti semula.</string>
     <string name="customize_required">Wajib, selalu aktif</string>
     <string name="customize_advanced">Lanjutan</string>
     <string name="customize_prefix_label">Prefiks paket untuk aplikasi pembantu</string>
@@ -531,6 +532,10 @@
     <string name="restore_title">Pulihkan aplikasi asli?</string>
     <string name="restore_body">Aplikasi yang dipatch dan datanya dihapus, dan aplikasi aslinya diaktifkan kembali.</string>
     <string name="restore_confirm">Pulihkan</string>
+    <string name="restore_app_title">Hapus %1$s?</string>
+    <string name="restore_app_body_phone">Aplikasi dicopot dari ponsel Anda beserta datanya. Pengaturan Anda yang lain tetap seperti semula.</string>
+    <string name="restore_app_body_watch">Aplikasi dicopot dari jam tangan Anda beserta datanya. Pengaturan Anda yang lain tetap seperti semula.</string>
+    <string name="restore_app_confirm">Hapus</string>
 
     <!-- Signing key -->
     <string name="signing_key_title">Kunci penandatanganan</string>
@@ -785,6 +790,18 @@
     <string name="revert_done_complete_body">Aplikasi sudah tidak ada di ponsel dan jam Anda, dan setelan kembali seperti semula.</string>
     <string name="revert_done_partial_title">Beberapa perubahan masih ada</string>
     <string name="revert_done_partial_body">Tidak semuanya dapat diurungkan. Perbaiki yang tercantum, lalu periksa lagi; informasi penyiapan disimpan agar Anda dapat menyelesaikannya.</string>
+    <string name="revert_title_watch">Pulihkan jam tangan</string>
+    <string name="revert_intro_watch">Ini menghapus apa yang dipasang OpenSHM Patcher di jam tangan Anda dan mengembalikan apa yang diubahnya di sana. Ponsel Anda tetap seperti semula.</string>
+    <string name="revert_title_app">Hapus %1$s</string>
+    <string name="revert_intro_app">Hanya aplikasi ini yang dihapus. Pengaturan Anda yang lain tetap seperti semula.</string>
+    <string name="revert_start_watch">Pulihkan jam tangan</string>
+    <string name="revert_confirm_title_watch">Pulihkan jam tangan?</string>
+    <string name="revert_confirm_body_watch">Aplikasi yang tercantum dihapus dari jam tangan beserta datanya, dan pengaturannya dikembalikan. Anda bisa memasangnya lagi nanti dengan build baru.</string>
+    <string name="revert_confirm_action_watch">Pulihkan</string>
+    <string name="revert_start_app">Hapus</string>
+    <string name="revert_done_scoped_title">Dipulihkan</string>
+    <string name="revert_done_watch_body">Aplikasi sudah tidak ada di jam tangan Anda dan pengaturannya kembali seperti semula. Ponsel Anda tetap seperti semula.</string>
+    <string name="revert_done_app_body">%1$s telah dihapus. Pengaturan Anda yang lain tetap seperti semula.</string>
     <string name="revert_check_again">Periksa lagi</string>
     <string name="revert_manual_title">Masih harus dilakukan manual</string>
     <string name="revert_manual_devmode">Nonaktifkan mode pengembang Health Platform jika Anda mengaktifkannya.</string>

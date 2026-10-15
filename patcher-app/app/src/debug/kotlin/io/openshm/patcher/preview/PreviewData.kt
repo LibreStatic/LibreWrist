@@ -69,6 +69,7 @@ import io.openshm.patcher.ui.screens.revert.RevertItem
 import io.openshm.patcher.ui.screens.revert.RevertPhase
 import io.openshm.patcher.ui.screens.revert.RevertPlan
 import io.openshm.patcher.ui.screens.revert.RevertRow
+import io.openshm.patcher.ui.screens.revert.RevertScope
 import io.openshm.patcher.ui.screens.revert.RevertUiState
 import io.openshm.patcher.ui.screens.revert.SelfUninstallResult
 import io.openshm.patcher.ui.screens.revert.StepOutcome
@@ -98,7 +99,7 @@ internal object PreviewData {
     }
 
     /** What a full install leaves: three watch apps, the stock app turned off, the display setting, three phone apps. */
-    private fun revertRows(outcomes: Map<String, StepOutcome> = emptyMap(), withWatch: Boolean = true): List<RevertRow> {
+    private fun revertRows(outcomes: Map<String, StepOutcome> = emptyMap(), withWatch: Boolean = true, withPhone: Boolean = true): List<RevertRow> {
         val stock = AppCatalogue.current.stockAppsToDisable.first { it.device == Device.Watch }
         val items = buildList {
             if (withWatch) {
@@ -109,9 +110,11 @@ internal object PreviewData {
                 add(RevertItem(Device.Watch, RevertPlan.ALWAYS_ON_KEY, RevertPlan.ALWAYS_ON_KEY, RevertAction.RestoreSetting))
                 add(RevertItem(Device.Watch, RevertPlan.HIDDEN_API_KEY, RevertPlan.HIDDEN_API_KEY, RevertAction.RemoveExemption))
             }
-            if (AppCatalogue.current.outputs.any { it.id == "shealth-phone" }) add(revertItem("shealth-phone", Device.Phone))
-            add(revertItem("bridge-phone", Device.Phone))
-            add(revertItem("shm-phone", Device.Phone))
+            if (withPhone) {
+                if (AppCatalogue.current.outputs.any { it.id == "shealth-phone" }) add(revertItem("shealth-phone", Device.Phone))
+                add(revertItem("bridge-phone", Device.Phone))
+                add(revertItem("shm-phone", Device.Phone))
+            }
         }
         return items.map { RevertRow(it, outcomes[it.key]) }
     }
@@ -149,6 +152,27 @@ internal object PreviewData {
     )
 
     /** The user declined one phone prompt and the watch dropped out half way. */
+    private fun scopedRevertItem(outputId: String, device: Device) = revertItem(outputId, device).copy(outputId = outputId)
+
+    /** "Restore the watch" waiting for the confirmation: the watch apps and the settings it changed. */
+    fun revertWatchReview() = RevertUiState(
+        scope = RevertScope.Watch,
+        phase = RevertPhase.Review,
+        rows = revertRows(withPhone = false),
+    )
+
+    /** One phone app removed from Home: the phone is the only device involved. */
+    fun revertOutputDone(): RevertUiState {
+        val item = scopedRevertItem("bridge-phone", Device.Phone)
+        return RevertUiState(
+            scope = RevertScope.Output("bridge-phone"),
+            phase = RevertPhase.Done,
+            complete = true,
+            watch = WatchStatus.NotNeeded,
+            rows = listOf(RevertRow(item, StepOutcome.Done)),
+        )
+    }
+
     fun revertDonePartial(): RevertUiState {
         val rows = revertRows()
         val outcomes = rows.associate { it.item.key to (StepOutcome.Done as StepOutcome) } + mapOf(
@@ -251,7 +275,7 @@ internal object PreviewData {
         )
     }
 
-    fun customize(): CustomizeUiState = customizeStateFor(session)
+    fun customize(focusInputIds: Set<String>? = null): CustomizeUiState = customizeStateFor(session, focusInputIds)
 
     /** A running build at output [number] (1-based) of [total]; the log has a few live lines. */
     fun build(stage: BuildStage = BuildStage.Apply, number: Int = 2, total: Int = 5) =
@@ -534,17 +558,21 @@ internal object PreviewData {
         tab = tab,
     )
 
-    fun home(update: Boolean = true, restoreSheet: Boolean = false, menu: Boolean = false, patchesOnly: Boolean = false) = HomeUiState(
-        status = HomeStatus(CheckStatus.Passed, daysAgo = 2),
-        update = when {
-            !update -> null
-            patchesOnly -> UpdateOffer(AppCatalogue.current.input("shm-watch").label, "1.5.1.022", "1.5.1.022", patchesOnly = true)
-            else -> UpdateOffer(AppCatalogue.current.input("shm-watch").label, "1.5.1.022", "1.5.2.004")
-        },
-        builds = AppCatalogue.current.outputs.map { InstalledBuild(it.id, it.label, it.packageName(PREFIX), it.device) },
-        menuOpen = menu,
-        restoreSheetVisible = restoreSheet,
-    )
+    /** [restoreSheet] opens the restore sheet for the build [restoreOf] (the watch Health Monitor by default). */
+    fun home(update: Boolean = true, restoreSheet: Boolean = false, menu: Boolean = false, patchesOnly: Boolean = false, restoreOf: String = "shm-watch"): HomeUiState {
+        val builds = AppCatalogue.current.outputs.map { InstalledBuild(it.id, it.label, it.packageName(PREFIX), it.device) }
+        return HomeUiState(
+            status = HomeStatus(CheckStatus.Passed, daysAgo = 2),
+            update = when {
+                !update -> null
+                patchesOnly -> UpdateOffer(AppCatalogue.current.input("shm-watch").label, "1.5.1.022", "1.5.1.022", patchesOnly = true)
+                else -> UpdateOffer(AppCatalogue.current.input("shm-watch").label, "1.5.1.022", "1.5.2.004")
+            },
+            builds = builds,
+            menuOpen = menu,
+            restoreTarget = if (restoreSheet) builds.first { it.id == restoreOf } else null,
+        )
+    }
 
     private const val SAMPLE_SHA = "dc277d5d75f361b48da0bff95496463c464ad303419d8f19da38a990d8239d99"
     private const val OTHER_SHA = "3b9a0c41e2d57f86a1c4d09be7f2538a64d1e0c97b35f82a46de10b9c78f5a02"

@@ -210,6 +210,7 @@
     <!-- Customize -->
     <string name="customize_title">选择补丁</string>
     <string name="customize_intro">带锁的补丁是应用在你的设备上运行所必需的。其他补丁为可选，可以关闭。</string>
+    <string name="customize_rebuild_note">仅重新构建 %1$s。你的其他应用保持不变。</string>
     <string name="customize_required">必需，始终开启</string>
     <string name="customize_advanced">高级</string>
     <string name="customize_prefix_label">辅助应用的包名前缀</string>
@@ -531,6 +532,10 @@
     <string name="restore_title">还原原始应用？</string>
     <string name="restore_body">将移除已打补丁的应用及其数据，并重新开启自带的应用。</string>
     <string name="restore_confirm">还原</string>
+    <string name="restore_app_title">移除 %1$s？</string>
+    <string name="restore_app_body_phone">将连同其数据从手机中卸载。其余设置保持不变。</string>
+    <string name="restore_app_body_watch">将连同其数据从手表中卸载。其余设置保持不变。</string>
+    <string name="restore_app_confirm">移除</string>
 
     <!-- Signing key -->
     <string name="signing_key_title">签名密钥</string>
@@ -785,6 +790,18 @@
     <string name="revert_done_complete_body">这些应用已从你的手机和手表中移除，设置也已还原。</string>
     <string name="revert_done_partial_title">仍有部分更改未撤销</string>
     <string name="revert_done_partial_body">并非所有内容都能撤销。请解决列出的问题后重新检查；设置信息已保留，你可以继续完成。</string>
+    <string name="revert_title_watch">恢复手表</string>
+    <string name="revert_intro_watch">这会移除 OpenSHM Patcher 安装在手表上的内容，并还原它在手表上更改的设置。手机保持不变。</string>
+    <string name="revert_title_app">移除 %1$s</string>
+    <string name="revert_intro_app">仅移除此应用。其余设置保持不变。</string>
+    <string name="revert_start_watch">恢复手表</string>
+    <string name="revert_confirm_title_watch">恢复手表？</string>
+    <string name="revert_confirm_body_watch">列出的应用将连同其数据从手表中移除，并还原其设置。之后可以用新的构建重新安装。</string>
+    <string name="revert_confirm_action_watch">恢复</string>
+    <string name="revert_start_app">移除</string>
+    <string name="revert_done_scoped_title">已恢复</string>
+    <string name="revert_done_watch_body">这些应用已从手表中移除，手表设置已还原。手机保持不变。</string>
+    <string name="revert_done_app_body">%1$s 已移除。其余设置保持不变。</string>
     <string name="revert_check_again">重新检查</string>
     <string name="revert_manual_title">仍需手动完成</string>
     <string name="revert_manual_devmode">如果你开启过 Health Platform 的开发者模式，请将其关闭。</string>

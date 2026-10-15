@@ -10,6 +10,7 @@ import io.openshm.patcher.device.PhoneInstaller
 import io.openshm.patcher.device.UninstallResult
 import io.openshm.patcher.device.WatchDevice
 import io.openshm.patcher.ui.screens.revert.RevertRunner
+import io.openshm.patcher.ui.screens.revert.RevertScope
 import java.io.File
 import java.io.IOException
 import io.openshm.patcher.adb.Grant as AdbGrant
@@ -34,13 +35,21 @@ internal class FakePhone(
     val calls = mutableListOf<String>()
     val results = mutableMapOf<String, UninstallResult>()
     val throwing = mutableMapOf<String, RuntimeException>()
+    /** Every read the runner made: package kinds and the notification listeners. */
+    val reads = mutableListOf<String>()
 
     override fun canInstallPackages() = true
     override fun isUpToDate(apk: File, packageName: String) = false
     override fun startBridge(packageName: String, receiver: String, action: String) {}
     override suspend fun install(apk: File, packageName: String, onProgress: (Float) -> Unit): InstallResult = error("never installs")
-    override fun packageKind(packageName: String) = kinds[packageName] ?: PackageKind.Missing
-    override fun notificationListenerPackages() = listeners
+    override fun packageKind(packageName: String): PackageKind {
+        reads += "kind:$packageName"
+        return kinds[packageName] ?: PackageKind.Missing
+    }
+    override fun notificationListenerPackages(): List<String> {
+        reads += "listeners"
+        return listeners
+    }
 
     override suspend fun uninstall(packageName: String): UninstallResult {
         calls += "uninstall:$packageName"
@@ -161,6 +170,7 @@ internal fun runner(
     phone: FakePhone,
     watch: FakeWatch,
     stored: String? = PREFIX,
+    scope: RevertScope = RevertScope.All,
 ) = RevertRunner(
     phone = phone,
     watch = watch,
@@ -168,6 +178,7 @@ internal fun runner(
     stockApps = AppCatalogue.current.stockAppsToDisable,
     storedPrefix = stored,
     ownPackage = OWN,
+    scope = scope,
 )
 
 /** A phone and a watch as a full install under [PREFIX] leaves them (stock Health Monitor turned off, always-on display off). */

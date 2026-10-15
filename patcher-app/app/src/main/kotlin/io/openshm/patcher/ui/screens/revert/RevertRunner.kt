@@ -21,6 +21,9 @@ sealed interface WatchReach {
 
     /** The user chose to leave the watch alone. */
     data object Skipped : WatchReach
+
+    /** The scope leaves the watch alone (a phone app only): it is neither contacted nor reported on. */
+    data object NotNeeded : WatchReach
 }
 
 /** What the probe found: the entries to show and whether the watch answered. */
@@ -64,6 +67,7 @@ class RevertRunner(
     private val stockApps: List<StockApp>,
     private val storedPrefix: String?,
     private val ownPackage: String,
+    private val scope: RevertScope = RevertScope.All,
     private val log: (String) -> Unit = {},
 ) {
     private sealed interface Call<out T> {
@@ -85,25 +89,28 @@ class RevertRunner(
     }
 
     /**
-     * Asks both devices what is there. With [includeWatch] false the watch is not contacted at all
-     * (the user skipped it). An unreachable watch leaves its entries out and the phone's in.
+     * Asks the devices the [scope] involves what is there. With [includeWatch] false the watch is not
+     * contacted at all (the user skipped it). An unreachable watch leaves its entries out and the
+     * phone's in. The prefixes are always looked for among every catalogue output, so an install made
+     * under an earlier prefix is found in a scoped run too.
      */
     suspend fun probe(includeWatch: Boolean = true): RevertProbe {
-        var reach: WatchReach = WatchReach.Skipped
+        val watchInvolved = scope.involvesWatch(outputs)
+        var reach: WatchReach = if (watchInvolved) WatchReach.Skipped else WatchReach.NotNeeded
         var watchPackages: List<String> = emptyList()
-        if (includeWatch) {
+        if (watchInvolved && includeWatch) {
             when (val listed = guarded { watch.listPackages() }) {
                 is Call.Ok -> { watchPackages = listed.value; reach = WatchReach.Reached }
                 is Call.Unreachable -> reach = WatchReach.Unreachable(listed.cause)
                 is Call.Error -> reach = WatchReach.Unreachable(IOException(listed.message))
             }
         }
-        val listeners = when (val r = guarded { phone.notificationListenerPackages() }) {
+        val listeners = if (!scope.involvesPhone(outputs)) emptyList() else when (val r = guarded { phone.notificationListenerPackages() }) {
             is Call.Ok -> r.value
             else -> emptyList()
         }
         val prefixes = RevertPlan.prefixes(storedPrefix, outputs, watchPackages, listeners)
-        val candidates = RevertPlan.candidates(outputs, prefixes, exclude = setOf(ownPackage))
+        val candidates = RevertPlan.candidates(outputs, prefixes, exclude = setOf(ownPackage)).filter(scope::includes)
 
         val items = ArrayList<RevertItem>()
         for (c in candidates.filter { it.device == Device.Phone }) {
@@ -111,7 +118,7 @@ class RevertRunner(
                 is Call.Ok -> presenceOf(r.value)
                 else -> Presence.Unknown
             }
-            items += RevertItem(Device.Phone, c.label, c.pkg, RevertAction.Uninstall, presence)
+            items += RevertItem(Device.Phone, c.label, c.pkg, RevertAction.Uninstall, presence, c.outputId)
         }
         if (reach == WatchReach.Reached) {
             val watchItems = probeWatch(candidates.filter { it.device == Device.Watch })
@@ -131,8 +138,9 @@ class RevertRunner(
                 is Call.Unreachable -> return null
                 is Call.Error -> Presence.Unknown
             }
-            items += RevertItem(Device.Watch, c.label, c.pkg, RevertAction.Uninstall, presence)
+            items += RevertItem(Device.Watch, c.label, c.pkg, RevertAction.Uninstall, presence, c.outputId)
         }
+        if (!scope.includesWatchExtras) return items
         for (stock in stockApps.filter { it.device == Device.Watch }) {
             val disabled = when (val r = guarded { watch.isDisabled(stock.packageName) }) {
                 is Call.Ok -> r.value

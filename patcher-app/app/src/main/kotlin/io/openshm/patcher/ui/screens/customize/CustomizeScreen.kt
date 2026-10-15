@@ -76,13 +76,19 @@ data class CustomizeUiState(
     val prefixLocked: Boolean = false,
     val prefixProblem: PackagePrefix.Problem? = null,
     val advancedExpanded: Boolean = false,
+    /** While a single app is rebuilt, the inputs whose groups are shown; null shows every group. All groups stay in [groups]. */
+    val focusInputIds: Set<String>? = null,
 ) {
-    val optionalCount: Int get() = groups.sumOf { g -> g.patches.count { !it.required } }
+    /** The groups on screen: the focused ones during a rebuild, otherwise all. */
+    val visibleGroups: List<CustomizeGroup>
+        get() = focusInputIds?.let { focus -> groups.filter { it.inputId in focus } } ?: groups
+
+    val optionalCount: Int get() = visibleGroups.sumOf { g -> g.patches.count { !it.required } }
 
     /** The preset the current switches amount to, or null after a mixed manual choice. */
     val preset: Preset?
         get() {
-            val optional = groups.flatMap { g -> g.patches.filter { !it.required } }
+            val optional = visibleGroups.flatMap { g -> g.patches.filter { !it.required } }
             return when {
                 optional.all { it.enabled } -> Preset.Recommended
                 optional.none { it.enabled } -> Preset.Minimal
@@ -96,8 +102,8 @@ data class CustomizeUiState(
 
     /** Presets only make sense when the user can actually switch something. */
     val showPresets: Boolean get() = optionalCount > 0
-    val enabledPatchCount: Int get() = groups.sumOf { g -> g.patches.count { it.required || it.enabled } }
-    val appCount: Int get() = groups.size
+    val enabledPatchCount: Int get() = visibleGroups.sumOf { g -> g.patches.count { it.required || it.enabled } }
+    val appCount: Int get() = visibleGroups.size
     val canBuild: Boolean get() = prefixProblem == null && enabledPatchCount > 0
 }
 
@@ -134,7 +140,7 @@ fun CustomizeScreen(
         },
         secondary = {
             // Narrow, the primary pane already shows every group whole.
-            if (LocalTwoPane.current) splitRows(state.groups).second.forEach { PatchGroup(it, onEvent) }
+            if (LocalTwoPane.current) splitRows(state.visibleGroups).second.forEach { PatchGroup(it, onEvent) }
             AdvancedCard(state, onEvent)
         },
     ) {
@@ -143,8 +149,15 @@ fun CustomizeScreen(
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+        if (state.focusInputIds != null) {
+            Text(
+                stringResource(R.string.customize_rebuild_note, state.visibleGroups.joinToString { it.label }),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
         if (state.showPresets) PresetRow(state.preset) { onEvent(CustomizeEvent.SelectPreset(it)) }
-        val slices = if (LocalTwoPane.current) splitRows(state.groups).first else state.groups.map { PatchSlice(it, it.patches) }
+        val slices = if (LocalTwoPane.current) splitRows(state.visibleGroups).first else state.visibleGroups.map { PatchSlice(it, it.patches) }
         slices.forEach { PatchGroup(it, onEvent) }
     }
 }

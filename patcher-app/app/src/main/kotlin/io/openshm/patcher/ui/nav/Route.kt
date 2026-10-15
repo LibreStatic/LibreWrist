@@ -1,5 +1,7 @@
 package io.openshm.patcher.ui.nav
 
+import io.openshm.patcher.ui.screens.revert.RevertScope
+
 /** Every destination of the single activity. [path] is the Navigation Compose route. */
 enum class Route(val path: String) {
     Welcome("welcome"),
@@ -26,7 +28,10 @@ enum class Route(val path: String) {
     Settings("settings"),
     /** Reached from Welcome, AllSet and the device logs notification; not part of [SetupFlow]. */
     DeviceLogs("device-logs"),
-    /** "Undo all changes": reached from Welcome, AllSet and Home; not part of [SetupFlow]. */
+    /**
+     * "Undo all changes", also the scoped restores from Home; not part of [SetupFlow]. [path] alone
+     * means the whole setup; the nav graph registers [REVERT_PATTERN] with its optional arguments.
+     */
     Revert("revert"),
     ;
 
@@ -34,6 +39,16 @@ enum class Route(val path: String) {
         const val INPUT_ID_ARG = "inputId"
 
         fun guidedBrowser(inputId: String) = "guided-browser/$inputId"
+
+        const val REVERT_SCOPE_ARG = "scope"
+        const val REVERT_CONFIRMED_ARG = "confirmed"
+
+        /** The Revert route as registered, with both arguments optional. */
+        const val REVERT_PATTERN = "revert?$REVERT_SCOPE_ARG={$REVERT_SCOPE_ARG}&$REVERT_CONFIRMED_ARG={$REVERT_CONFIRMED_ARG}"
+
+        /** Revert for [scope]; [confirmed] starts the run without asking again (the user already confirmed on Home). */
+        fun revert(scope: RevertScope, confirmed: Boolean = false) =
+            "revert?$REVERT_SCOPE_ARG=${scope.encoded}&$REVERT_CONFIRMED_ARG=$confirmed"
     }
 }
 

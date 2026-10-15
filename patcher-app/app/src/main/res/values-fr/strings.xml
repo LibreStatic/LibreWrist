@@ -212,6 +212,7 @@
     <!-- Customize -->
     <string name="customize_title">Choisissez vos correctifs</string>
     <string name="customize_intro">Les correctifs avec un cadenas sont nécessaires au fonctionnement des apps sur vos appareils. Les autres sont facultatifs : vous pouvez les désactiver.</string>
+    <string name="customize_rebuild_note">Seul %1$s est reconstruit. Vos autres applications restent telles quelles.</string>
     <string name="customize_required">Obligatoire, toujours activé</string>
     <string name="customize_advanced">Avancé</string>
     <string name="customize_prefix_label">Préfixe de paquet pour les apps auxiliaires</string>
@@ -547,6 +548,10 @@
     <string name="restore_title">Restaurer l\'app d\'origine ?</string>
     <string name="restore_body">L\'app modifiée et ses données sont supprimées, et celle d\'origine est réactivée.</string>
     <string name="restore_confirm">Restaurer</string>
+    <string name="restore_app_title">Supprimer %1$s ?</string>
+    <string name="restore_app_body_phone">Elle est désinstallée de votre téléphone avec ses données. Le reste de votre configuration reste tel quel.</string>
+    <string name="restore_app_body_watch">Elle est désinstallée de votre montre avec ses données. Le reste de votre configuration reste tel quel.</string>
+    <string name="restore_app_confirm">Supprimer</string>
 
     <!-- Signing key -->
     <string name="signing_key_title">Clé de signature</string>
@@ -801,6 +806,18 @@
     <string name="revert_done_complete_body">Les apps ont disparu de votre téléphone et de votre montre, et les paramètres sont revenus comme avant.</string>
     <string name="revert_done_partial_title">Certaines modifications sont toujours en place</string>
     <string name="revert_done_partial_body">Tout n\'a pas pu être annulé. Corrigez ce qui est indiqué et vérifiez à nouveau ; les informations de configuration sont conservées pour que vous puissiez terminer.</string>
+    <string name="revert_title_watch">Restaurer la montre</string>
+    <string name="revert_intro_watch">Cela supprime ce qu\'OpenSHM Patcher a installé sur votre montre et rétablit ce qu\'il y a modifié. Votre téléphone reste tel quel.</string>
+    <string name="revert_title_app">Supprimer %1$s</string>
+    <string name="revert_intro_app">Seule cette application est supprimée. Le reste de votre configuration reste tel quel.</string>
+    <string name="revert_start_watch">Restaurer la montre</string>
+    <string name="revert_confirm_title_watch">Restaurer la montre ?</string>
+    <string name="revert_confirm_body_watch">Les applications listées sont supprimées de la montre avec leurs données, et ses réglages sont rétablis. Vous pourrez les réinstaller plus tard avec une nouvelle compilation.</string>
+    <string name="revert_confirm_action_watch">Restaurer</string>
+    <string name="revert_start_app">Supprimer</string>
+    <string name="revert_done_scoped_title">Restaurée</string>
+    <string name="revert_done_watch_body">Les applications ont disparu de votre montre et ses réglages sont revenus comme avant. Votre téléphone reste tel quel.</string>
+    <string name="revert_done_app_body">%1$s est supprimée. Le reste de votre configuration reste tel quel.</string>
     <string name="revert_check_again">Vérifier à nouveau</string>
     <string name="revert_manual_title">Reste à faire à la main</string>
     <string name="revert_manual_devmode">Désactivez le mode développeur de Health Platform si vous l\'aviez activé.</string>

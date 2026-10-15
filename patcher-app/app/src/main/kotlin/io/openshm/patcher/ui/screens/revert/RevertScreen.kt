@@ -38,6 +38,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.openshm.patcher.R
+import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.Device
 import io.openshm.patcher.ui.components.Accent
 import io.openshm.patcher.ui.components.ActionRow
@@ -76,7 +77,11 @@ fun RevertScreen(
         // Same height while running, so the title does not jump when the back arrow goes away.
         if (running) Spacer(Modifier.padding(top = 8.dp).height(48.dp)) else TopActions(onBack = onBack, modifier = Modifier.padding(top = 8.dp))
         Text(
-            stringResource(R.string.revert_title),
+            when (val scope = state.scope) {
+                RevertScope.All -> stringResource(R.string.revert_title)
+                RevertScope.Watch -> stringResource(R.string.revert_title_watch)
+                is RevertScope.Output -> stringResource(R.string.revert_title_app, scope.appLabel())
+            },
             style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp).semantics { heading() },
         )
@@ -95,7 +100,7 @@ fun RevertScreen(
             }
         }
     }
-    if (state.confirming) RevertConfirmDialog(onConfirm = { onEvent(RevertEvent.Start) }, onDismiss = { onEvent(RevertEvent.DismissRevert) })
+    if (state.confirming) RevertConfirmDialog(state.scope, onConfirm = { onEvent(RevertEvent.Start) }, onDismiss = { onEvent(RevertEvent.DismissRevert) })
     if (state.confirmingSelfUninstall) {
         SelfUninstallDialog(state.partial, onConfirm = { onEvent(RevertEvent.ConfirmSelfUninstall) }, onDismiss = { onEvent(RevertEvent.DismissSelfUninstall) })
     }
@@ -104,7 +109,14 @@ fun RevertScreen(
 @Composable
 private fun RevertBody(state: RevertUiState) {
     if (state.phase == RevertPhase.Done) DoneHeader(state)
-    else Text(stringResource(R.string.revert_intro), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    else Text(
+        when (state.scope) {
+            RevertScope.All -> stringResource(R.string.revert_intro)
+            RevertScope.Watch -> stringResource(R.string.revert_intro_watch)
+            is RevertScope.Output -> stringResource(R.string.revert_intro_app)
+        },
+        style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
 
     if (state.phase == RevertPhase.Probing) {
         Text(stringResource(R.string.revert_probing), style = MaterialTheme.typography.bodyMedium)
@@ -129,7 +141,7 @@ private fun RevertBody(state: RevertUiState) {
     if (state.systemApps.isNotEmpty()) {
         NoteRow(Icons.Rounded.Info, stringResource(R.string.revert_system_apps, state.systemApps.map { it.label }.distinct().joinToString(", ")))
     }
-    if (state.phase == RevertPhase.Done) ManualSteps()
+    if (state.phase == RevertPhase.Done && state.scope == RevertScope.All) ManualSteps()
 }
 
 @Composable
@@ -137,13 +149,26 @@ private fun DoneHeader(state: RevertUiState) {
     Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
         StatusShape(if (state.complete) CheckStatus.Passed else CheckStatus.Warning, size = 40.dp)
         Text(
-            stringResource(if (state.complete) R.string.revert_done_complete_title else R.string.revert_done_partial_title),
+            stringResource(
+                when {
+                    !state.complete -> R.string.revert_done_partial_title
+                    state.scope == RevertScope.All -> R.string.revert_done_complete_title
+                    else -> R.string.revert_done_scoped_title
+                },
+            ),
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.semantics { heading() },
         )
     }
     Text(
-        stringResource(if (state.complete) R.string.revert_done_complete_body else R.string.revert_done_partial_body),
+        when {
+            !state.complete -> stringResource(R.string.revert_done_partial_body)
+            else -> when (val scope = state.scope) {
+                RevertScope.All -> stringResource(R.string.revert_done_complete_body)
+                RevertScope.Watch -> stringResource(R.string.revert_done_watch_body)
+                is RevertScope.Output -> stringResource(R.string.revert_done_app_body, scope.appLabel())
+            }
+        },
         style = MaterialTheme.typography.bodyLarge,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
@@ -260,10 +285,22 @@ private fun RevertFooter(state: RevertUiState, onEvent: (RevertEvent) -> Unit, o
             RevertPhase.Review -> if (state.watchNeedsDecision) {
                 ActionRow {
                     PrimaryAction(stringResource(R.string.revert_watch_retry), { onEvent(RevertEvent.Reprobe) })
-                    QuietAction(stringResource(R.string.revert_watch_skip), { onEvent(RevertEvent.SkipWatch) })
+                    if (state.canSkipWatch) QuietAction(stringResource(R.string.revert_watch_skip), { onEvent(RevertEvent.SkipWatch) })
                 }
             } else {
-                PrimaryAction(stringResource(R.string.revert_start), { onEvent(RevertEvent.AskRevert) }, enabled = state.canRevert, accent = Accent.Error)
+                PrimaryAction(
+                    stringResource(
+                        when (state.scope) {
+                            RevertScope.All -> R.string.revert_start
+                            RevertScope.Watch -> R.string.revert_start_watch
+                            is RevertScope.Output -> R.string.revert_start_app
+                        },
+                    ),
+                    // One app was already confirmed on Home: no second question.
+                    { onEvent(if (state.scope is RevertScope.Output) RevertEvent.Start else RevertEvent.AskRevert) },
+                    enabled = state.canRevert,
+                    accent = Accent.Error,
+                )
             }
             RevertPhase.Running -> PrimaryAction(stringResource(R.string.revert_running), {}, enabled = false)
             RevertPhase.Done -> {
@@ -277,9 +314,13 @@ private fun RevertFooter(state: RevertUiState, onEvent: (RevertEvent) -> Unit, o
                         color = if (it is SelfUninstallResult.Failed) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
-                ActionRow {
+                if (state.scope == RevertScope.All) {
+                    ActionRow {
+                        PrimaryAction(stringResource(R.string.action_done), onClose)
+                        OutlinedAction(stringResource(R.string.revert_self_action), { onEvent(RevertEvent.AskSelfUninstall) }, Icons.Rounded.Delete, tint = MaterialTheme.colorScheme.error)
+                    }
+                } else {
                     PrimaryAction(stringResource(R.string.action_done), onClose)
-                    OutlinedAction(stringResource(R.string.revert_self_action), { onEvent(RevertEvent.AskSelfUninstall) }, Icons.Rounded.Delete, tint = MaterialTheme.colorScheme.error)
                 }
                 if (state.partial) QuietAction(stringResource(R.string.revert_check_again), { onEvent(RevertEvent.Reprobe) })
             }
@@ -289,14 +330,15 @@ private fun RevertFooter(state: RevertUiState, onEvent: (RevertEvent) -> Unit, o
 
 /** Asks before anything is removed: the apps lose their data and this cannot be undone. */
 @Composable
-internal fun RevertConfirmDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
+internal fun RevertConfirmDialog(scope: RevertScope, onConfirm: () -> Unit, onDismiss: () -> Unit) {
+    val watch = scope == RevertScope.Watch
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.revert_confirm_title)) },
-        text = { Text(stringResource(R.string.revert_confirm_body)) },
+        title = { Text(stringResource(if (watch) R.string.revert_confirm_title_watch else R.string.revert_confirm_title)) },
+        text = { Text(stringResource(if (watch) R.string.revert_confirm_body_watch else R.string.revert_confirm_body)) },
         confirmButton = {
             TextButton(onClick = onConfirm, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)) {
-                Text(stringResource(R.string.revert_confirm_action))
+                Text(stringResource(if (watch) R.string.revert_confirm_action_watch else R.string.revert_confirm_action))
             }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },
@@ -323,3 +365,7 @@ internal fun SelfUninstallDialog(partial: Boolean, onConfirm: () -> Unit, onDism
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },
     )
 }
+
+/** The catalogue label of the app this scope removes. */
+private fun RevertScope.Output.appLabel(): String =
+    AppCatalogue.current.outputs.firstOrNull { it.id == outputId }?.label ?: outputId

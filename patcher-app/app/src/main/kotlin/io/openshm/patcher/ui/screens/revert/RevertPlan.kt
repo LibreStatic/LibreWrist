@@ -41,6 +41,8 @@ data class RevertItem(
     val pkg: String,
     val action: RevertAction,
     val presence: Presence = Presence.Present,
+    /** The catalogue output the package belongs to; null for the stock app, the secure setting and the exemption. */
+    val outputId: String? = null,
 ) {
     /** Identifies the item across probes and progress updates (the presence is not part of it). */
     val key: String get() = "${device.name}:${action.name}:$pkg"
@@ -50,7 +52,7 @@ data class RevertItem(
 }
 
 /** A package the revert may remove, before the device was asked about it. */
-data class RevertCandidate(val device: Device, val label: String, val pkg: String)
+data class RevertCandidate(val device: Device, val label: String, val pkg: String, val outputId: String? = null)
 
 /**
  * The pure part of the revert: which prefixes our builds may have used, and which packages that
@@ -64,6 +66,12 @@ object RevertPlan {
     /** The global setting and the entry the `shm-watch` globalSetting grant appends to it. */
     const val HIDDEN_API_KEY = "hidden_api_blacklist_exemptions"
     const val HIDDEN_API_ENTRY = "Lcom/samsung/android/hardware/sensormanager/"
+
+    /**
+     * The watch Health Monitor output. The stock-app, always-on and hidden-API entries undo what its
+     * install changed: the stock app it replaces, its globalSetting grant and the old always-on change.
+     */
+    const val SHM_WATCH_OUTPUT = "shm-watch"
 
     private const val PLACEHOLDER = "\${PKG_PREFIX}"
 
@@ -106,7 +114,7 @@ object RevertPlan {
             val names = if (out.packageTemplate.contains(PLACEHOLDER)) prefixes.map { out.packageName(it) } else listOf(out.packageTemplate)
             for (name in names) {
                 if (name in exclude) continue
-                if (seen.add(out.device to name)) result += RevertCandidate(out.device, out.label, name)
+                if (seen.add(out.device to name)) result += RevertCandidate(out.device, out.label, name, out.id)
             }
         }
         return result

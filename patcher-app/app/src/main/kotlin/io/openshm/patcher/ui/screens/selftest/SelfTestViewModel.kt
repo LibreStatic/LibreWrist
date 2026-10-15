@@ -35,7 +35,7 @@ class SelfTestViewModel(application: Application) : AndroidViewModel(application
 
     private val runner = SelfTestRunner(
         catalogue = catalogue,
-        outputIds = session.outputIds,
+        outputIds = session.activeOutputIds,
         prefix = session.packagePrefix,
         build = { BuildStorage(application).record.read() },
         signingCertSha256 = { signingCertificateOrNull(application) },
@@ -127,7 +127,7 @@ class SelfTestViewModel(application: Application) : AndroidViewModel(application
             appVersion = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
             catalogueSerial = catalogue.serial,
             inputs = catalogue.inputs.filter { it.id in session.inputIds }.map { "${it.id} ${it.label} ${it.versionName}" },
-            packages = catalogue.outputs.filter { it.id in session.outputIds }.map { "${it.id} ${it.packageName(session.packagePrefix)}" },
+            packages = catalogue.outputs.filter { it.id in session.activeOutputIds }.map { "${it.id} ${it.packageName(session.packagePrefix)}" },
         )
         return buildSelfTestReport(
             header, _state.value,

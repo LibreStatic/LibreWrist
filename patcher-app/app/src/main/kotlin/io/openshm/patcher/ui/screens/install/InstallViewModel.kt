@@ -20,6 +20,7 @@ import io.openshm.patcher.device.SelfAdbSnapshot
 import io.openshm.patcher.device.SessionPhoneInstaller
 import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.Device
+import io.openshm.patcher.data.RebuildScope
 import io.openshm.patcher.data.SetupSession
 import io.openshm.patcher.device.AdbWatchDevice
 import io.openshm.patcher.device.WatchKeepAlive
@@ -53,7 +54,9 @@ private val USER_ONLY_ON_PHONE = setOf(GrantKind.Permission, GrantKind.AppOp, Gr
 internal fun installItemsFor(device: Device): List<InstallItem> {
     val session = SetupSession.state.value
     return AppCatalogue.current.outputs
-        .filter { it.device == device && it.id in session.outputIds }
+        .filter { it.device == device && it.id in session.outputIds && RebuildScope.includes(it.id) }
+        // A rebuild leaves out the outputs restored from Home: they stay out until installed again.
+        .filter { RebuildScope.scope == null || it.id !in session.restoredOutputs }
         .map { out ->
             InstallItem(
                 outputId = out.id,
@@ -89,6 +92,7 @@ class InstallPhoneViewModel(application: Application) : AndroidViewModel(applica
         build = { BuildStorage(application).record.read() },
         prefix = { SetupSession.state.value.packagePrefix },
         lockPrefix = { SetupSession.update { it.copy(prefixLocked = true) } },
+        onInstalled = { id -> SetupSession.update { it.copy(restoredOutputs = it.restoredOutputs - id) } },
         log = { Log.w("BridgeStart", it) },
         outputs = AppCatalogue.current.outputs,
         ownPackage = application.packageName,
@@ -220,6 +224,7 @@ class InstallWatchViewModel(application: Application) : AndroidViewModel(applica
         build = { BuildStorage(application).record.read() },
         prefix = { SetupSession.state.value.packagePrefix },
         lockPrefix = { SetupSession.update { it.copy(prefixLocked = true) } },
+        onInstalled = { id -> SetupSession.update { it.copy(restoredOutputs = it.restoredOutputs - id) } },
         log = { Log.w("BridgeStart", it) },
         outputs = AppCatalogue.current.outputs,
         ownPackage = application.packageName,

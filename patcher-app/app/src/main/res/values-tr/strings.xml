@@ -211,6 +211,7 @@
     <!-- Customize -->
     <string name="customize_title">Yamalarınızı seçin</string>
     <string name="customize_intro">Kilitli yamalar, uygulamaların cihazlarınızda çalışması için gereklidir. Diğerleri isteğe bağlıdır ve kapatılabilir.</string>
+    <string name="customize_rebuild_note">Yalnızca %1$s yeniden derlenir. Diğer uygulamaların olduğu gibi kalır.</string>
     <string name="customize_required">Gerekli, her zaman açık</string>
     <string name="customize_advanced">Gelişmiş</string>
     <string name="customize_prefix_label">Yardımcı uygulamalar için paket öneki</string>
@@ -539,6 +540,10 @@
     <string name="restore_title">Orijinal uygulama geri yüklensin mi?</string>
     <string name="restore_body">Yamalı uygulama ve verileri kaldırılır, orijinal uygulama yeniden açılır.</string>
     <string name="restore_confirm">Geri yükle</string>
+    <string name="restore_app_title">%1$s kaldırılsın mı?</string>
+    <string name="restore_app_body_phone">Verileriyle birlikte telefonunuzdan kaldırılır. Kurulumunuzun geri kalanı olduğu gibi kalır.</string>
+    <string name="restore_app_body_watch">Verileriyle birlikte saatinizden kaldırılır. Kurulumunuzun geri kalanı olduğu gibi kalır.</string>
+    <string name="restore_app_confirm">Kaldır</string>
 
     <!-- Signing key -->
     <string name="signing_key_title">İmza anahtarı</string>
@@ -793,6 +798,18 @@
     <string name="revert_done_complete_body">Uygulamalar telefonunuzdan ve saatinizden kalktı, ayarlar eski haline döndü.</string>
     <string name="revert_done_partial_title">Bazı değişiklikler hâlâ yerinde</string>
     <string name="revert_done_partial_body">Her şey geri alınamadı. Listelenenleri düzeltip yeniden denetleyin; kurulum bilgileri korunur, böylece tamamlayabilirsiniz.</string>
+    <string name="revert_title_watch">Saati geri yükle</string>
+    <string name="revert_intro_watch">Bu işlem, OpenSHM Patcher\'ın saatinize kurduklarını kaldırır ve orada değiştirdiklerini geri alır. Telefonunuz olduğu gibi kalır.</string>
+    <string name="revert_title_app">%1$s uygulamasını kaldır</string>
+    <string name="revert_intro_app">Yalnızca bu uygulama kaldırılır. Kurulumunuzun geri kalanı olduğu gibi kalır.</string>
+    <string name="revert_start_watch">Saati geri yükle</string>
+    <string name="revert_confirm_title_watch">Saat geri yüklensin mi?</string>
+    <string name="revert_confirm_body_watch">Listelenen uygulamalar verileriyle birlikte saatten kaldırılır ve ayarları geri alınır. Daha sonra yeni bir derlemeyle yeniden kurabilirsiniz.</string>
+    <string name="revert_confirm_action_watch">Geri yükle</string>
+    <string name="revert_start_app">Kaldır</string>
+    <string name="revert_done_scoped_title">Geri yüklendi</string>
+    <string name="revert_done_watch_body">Uygulamalar saatinizden kalktı ve ayarları eski haline döndü. Telefonunuz olduğu gibi kalır.</string>
+    <string name="revert_done_app_body">%1$s kaldırıldı. Kurulumunuzun geri kalanı olduğu gibi kalır.</string>
     <string name="revert_check_again">Yeniden denetle</string>
     <string name="revert_manual_title">Elle yapılacaklar</string>
     <string name="revert_manual_devmode">Açtıysanız Health Platform\'un geliştirici modunu kapatın.</string>

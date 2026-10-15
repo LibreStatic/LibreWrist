@@ -211,6 +211,7 @@
     <!-- Customize -->
     <string name="customize_title">Elige tus parches</string>
     <string name="customize_intro">Los parches con candado son necesarios para que las apps funcionen en tus dispositivos. Los demás son opcionales y puedes desactivarlos.</string>
+    <string name="customize_rebuild_note">Solo se reconstruye %1$s. Tus otras apps se quedan como están.</string>
     <string name="customize_required">Obligatorio, siempre activado</string>
     <string name="customize_advanced">Avanzado</string>
     <string name="customize_prefix_label">Prefijo de paquete para las apps auxiliares</string>
@@ -539,6 +540,10 @@
     <string name="restore_title">¿Restaurar la app original?</string>
     <string name="restore_body">La app parcheada y sus datos se quitan, y la original se vuelve a activar.</string>
     <string name="restore_confirm">Restaurar</string>
+    <string name="restore_app_title">¿Quitar %1$s?</string>
+    <string name="restore_app_body_phone">Se desinstala de tu teléfono junto con sus datos. El resto de tu configuración no cambia.</string>
+    <string name="restore_app_body_watch">Se desinstala de tu reloj junto con sus datos. El resto de tu configuración no cambia.</string>
+    <string name="restore_app_confirm">Quitar</string>
 
     <!-- Signing key -->
     <string name="signing_key_title">Clave de firma</string>
@@ -793,6 +798,18 @@
     <string name="revert_done_complete_body">Las apps ya no están en tu teléfono ni en tu reloj, y los ajustes han vuelto a como estaban.</string>
     <string name="revert_done_partial_title">Quedan cambios sin deshacer</string>
     <string name="revert_done_partial_body">No se pudo deshacer todo. Corrige lo indicado y vuelve a comprobar; la información de la configuración se conserva para que puedas terminar.</string>
+    <string name="revert_title_watch">Restaurar el reloj</string>
+    <string name="revert_intro_watch">Esto elimina lo que OpenSHM Patcher instaló en tu reloj y devuelve lo que cambió allí. Tu teléfono no se toca.</string>
+    <string name="revert_title_app">Quitar %1$s</string>
+    <string name="revert_intro_app">Solo se quita esta app. El resto de tu configuración no cambia.</string>
+    <string name="revert_start_watch">Restaurar el reloj</string>
+    <string name="revert_confirm_title_watch">¿Restaurar el reloj?</string>
+    <string name="revert_confirm_body_watch">Las apps de la lista se quitan del reloj junto con sus datos y sus ajustes se restablecen. Puedes volver a instalarlas más tarde con una nueva compilación.</string>
+    <string name="revert_confirm_action_watch">Restaurar</string>
+    <string name="revert_start_app">Quitar</string>
+    <string name="revert_done_scoped_title">Restaurado</string>
+    <string name="revert_done_watch_body">Las apps ya no están en tu reloj y sus ajustes volvieron a como estaban. Tu teléfono no se toca.</string>
+    <string name="revert_done_app_body">%1$s ya no está. El resto de tu configuración no cambia.</string>
     <string name="revert_check_again">Comprobar de nuevo</string>
     <string name="revert_manual_title">Falta hacer a mano</string>
     <string name="revert_manual_devmode">Desactiva el modo de desarrollador de Health Platform si lo activaste.</string>

@@ -53,6 +53,7 @@ private fun WalkthroughScreen(name: String) {
         "AcquireDriver" -> AcquireDriver()
         "GuidedBrowserDriver" -> GuidedBrowserDriver()
         "CustomizeDriver" -> CustomizeDriver()
+        "CustomizeRebuildDriver" -> CustomizeRebuildDriver()
         "BuildDriver" -> BuildDriver()
         "BuildDoneDriver" -> BuildDoneDriver()
         "InstallPhoneDriver" -> InstallPhoneDriver()

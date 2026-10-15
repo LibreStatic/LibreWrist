@@ -15,6 +15,7 @@ import io.openshm.patcher.MainActivity
 import io.openshm.patcher.R
 import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.InputStore
+import io.openshm.patcher.data.RebuildScope
 import io.openshm.patcher.data.SetupSession
 import io.openshm.patcher.data.signingKeyStore
 import io.openshm.patcher.device.WatchKeepAlive
@@ -151,6 +152,8 @@ class BuildService : Service() {
             storage.record.write(
                 BuiltBuild(key, prefix, catalogue.serial, System.currentTimeMillis(), records, buildFacts(catalogue, outputIds)),
             )
+            // A rebuild from Home also installs every app this run patched again instead of reusing it.
+            RebuildScope.addRebuilt(records.filterNot { it.reused }.map { it.outputId })
             BuildController.succeed()
         } else {
             writePartialRecord(storage, prefix, catalogue.serial, records)

@@ -40,12 +40,17 @@ data class SessionState(
     val disabledPatches: Set<String> = emptySet(),
     /** Also patch Samsung Health (on by default, opt-out on the Acquire screen): it replaces the installed copy. */
     val samsungHealth: Boolean = true,
+    /** Ids of the outputs the user restored (removed) from Home; they stay out of Home and the self-test until installed again. */
+    val restoredOutputs: Set<String> = emptySet(),
 ) {
     /** The official apps this setup needs: the watch's, plus Samsung Health when chosen. */
     val inputIds: List<String>
         get() = watchProfile.inputIds + listOfNotNull(SAMSUNG_HEALTH_INPUT.takeIf { samsungHealth })
 
     val outputIds: List<String> get() = outputIdsFor(inputIds)
+
+    /** [outputIds] without the ones the user restored from Home: they are left out until installed again. */
+    val activeOutputIds: List<String> get() = outputIds.filter { it !in restoredOutputs }
 }
 
 /**
@@ -74,6 +79,7 @@ object SetupSession {
     private const val KEY_DISABLED = "disabledPatches"
     private const val KEY_KNOWN_OPTIONAL = "knownOptionalPatches"
     private const val KEY_SAMSUNG_HEALTH = "includeSamsungHealth"
+    private const val KEY_RESTORED = "restoredOutputs"
 
     private val _state = MutableStateFlow(SessionState())
     val state: StateFlow<SessionState> = _state.asStateFlow()
@@ -101,6 +107,7 @@ object SetupSession {
             prefixLocked = locked && stored != null,
             disabledPatches = disabled,
             samsungHealth = p.getBoolean(KEY_SAMSUNG_HEALTH, true),
+            restoredOutputs = p.getStringSet(KEY_RESTORED, null)?.toSet().orEmpty(),
         )
         prefs = p
         _state.value = loaded
@@ -122,6 +129,7 @@ object SetupSession {
             .putStringSet(KEY_DISABLED, s.disabledPatches.toSet())
             .putStringSet(KEY_KNOWN_OPTIONAL, knownOptional)
             .putBoolean(KEY_SAMSUNG_HEALTH, s.samsungHealth)
+            .putStringSet(KEY_RESTORED, s.restoredOutputs.toSet())
             .apply()
     }
 }

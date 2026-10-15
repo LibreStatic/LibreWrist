@@ -210,6 +210,7 @@
     <!-- Customize -->
     <string name="customize_title">パッチを選ぶ</string>
     <string name="customize_intro">鍵マークのパッチは、デバイスでアプリを動かすために必要です。その他は任意で、オフにできます。</string>
+    <string name="customize_rebuild_note">再ビルドされるのは %1$s のみです。ほかのアプリはそのままです。</string>
     <string name="customize_required">必須、常にオン</string>
     <string name="customize_advanced">詳細設定</string>
     <string name="customize_prefix_label">ヘルパーアプリのパッケージプレフィックス</string>
@@ -531,6 +532,10 @@
     <string name="restore_title">元のアプリを復元しますか？</string>
     <string name="restore_body">パッチ適用済みのアプリとそのデータが削除され、標準アプリがオンに戻ります。</string>
     <string name="restore_confirm">復元</string>
+    <string name="restore_app_title">%1$s を削除しますか？</string>
+    <string name="restore_app_body_phone">データごとスマートフォンからアンインストールされます。ほかのセットアップはそのままです。</string>
+    <string name="restore_app_body_watch">データごとウォッチからアンインストールされます。ほかのセットアップはそのままです。</string>
+    <string name="restore_app_confirm">削除</string>
 
     <!-- Signing key -->
     <string name="signing_key_title">署名キー</string>
@@ -785,6 +790,18 @@
     <string name="revert_done_complete_body">アプリはスマートフォンとウォッチから削除され、設定も元の状態に戻りました。</string>
     <string name="revert_done_partial_title">一部の変更が残っています</string>
     <string name="revert_done_partial_body">すべてを元に戻せませんでした。表示された内容を解決して、もう一度確認してください。セットアップの情報は保持されているので、続きから完了できます。</string>
+    <string name="revert_title_watch">ウォッチを復元</string>
+    <string name="revert_intro_watch">OpenSHM Patcher がウォッチにインストールしたものを削除し、そこで変更した内容を元に戻します。スマートフォンはそのままです。</string>
+    <string name="revert_title_app">%1$s を削除</string>
+    <string name="revert_intro_app">このアプリだけを削除します。ほかのセットアップはそのままです。</string>
+    <string name="revert_start_watch">ウォッチを復元</string>
+    <string name="revert_confirm_title_watch">ウォッチを復元しますか？</string>
+    <string name="revert_confirm_body_watch">一覧のアプリをデータごとウォッチから削除し、設定を元に戻します。あとで新しいビルドから再インストールできます。</string>
+    <string name="revert_confirm_action_watch">復元</string>
+    <string name="revert_start_app">削除</string>
+    <string name="revert_done_scoped_title">復元しました</string>
+    <string name="revert_done_watch_body">アプリはウォッチから削除され、設定も元に戻りました。スマートフォンはそのままです。</string>
+    <string name="revert_done_app_body">%1$s を削除しました。ほかのセットアップはそのままです。</string>
     <string name="revert_check_again">もう一度確認</string>
     <string name="revert_manual_title">手動で行うこと</string>
     <string name="revert_manual_devmode">Health Platform の開発者モードをオンにしている場合は、オフにしてください。</string>

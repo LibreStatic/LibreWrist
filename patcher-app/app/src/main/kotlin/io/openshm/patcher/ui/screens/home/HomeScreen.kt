@@ -52,6 +52,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.openshm.patcher.R
+import io.openshm.patcher.ui.screens.revert.RevertPlan
 import io.openshm.patcher.data.Device
 import io.openshm.patcher.ui.components.CheckStatus
 import io.openshm.patcher.ui.components.GroupedItem
@@ -74,6 +75,9 @@ data class UpdateOffer(val appLabel: String, val fromVersion: String, val toVers
 /** A line shown once after a catalogue check; [id] makes a repeated identical message show again. */
 data class CatalogueMessage(@StringRes val textRes: Int, val serial: Long? = null, val id: Long = 0L)
 
+/** The watch Health Monitor build: its restore sheet speaks of the whole watch. */
+private const val WATCH_MONITOR_ID = RevertPlan.SHM_WATCH_OUTPUT
+
 data class InstalledBuild(val id: String, val label: String, val packageName: String, val device: Device)
 
 data class HomeUiState(
@@ -81,10 +85,13 @@ data class HomeUiState(
     val update: UpdateOffer? = null,
     val builds: List<InstalledBuild> = emptyList(),
     val menuOpen: Boolean = false,
-    val restoreSheetVisible: Boolean = false,
+    /** The build the restore sheet asks about; null while the sheet is closed. */
+    val restoreTarget: InstalledBuild? = null,
     val catalogueMessage: CatalogueMessage? = null,
     val checkingCatalogue: Boolean = false,
-)
+) {
+    val restoreSheetVisible: Boolean get() = restoreTarget != null
+}
 
 sealed interface HomeEvent {
     data object TestAgain : HomeEvent
@@ -174,7 +181,7 @@ fun HomeScreen(
             }
         }
     }
-    if (state.restoreSheetVisible) RestoreSheet(onEvent)
+    state.restoreTarget?.let { RestoreSheet(it, onEvent) }
     state.catalogueMessage?.let { message ->
         val text = if (message.serial != null) stringResource(message.textRes, message.serial) else stringResource(message.textRes)
         LaunchedEffect(message) {
@@ -271,20 +278,30 @@ private fun BuildRow(index: Int, count: Int, build: InstalledBuild, onEvent: (Ho
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun RestoreSheet(onEvent: (HomeEvent) -> Unit) {
+private fun RestoreSheet(target: InstalledBuild, onEvent: (HomeEvent) -> Unit) {
+    val watchMonitor = target.id == WATCH_MONITOR_ID
     ModalBottomSheet(
         onDismissRequest = { onEvent(HomeEvent.DismissRestore) },
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
     ) {
         Column(Modifier.padding(horizontal = 24.dp).padding(bottom = 24.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text(
-                stringResource(R.string.restore_title),
+                if (watchMonitor) stringResource(R.string.restore_title) else stringResource(R.string.restore_app_title, target.label),
                 style = MaterialTheme.typography.headlineSmallEmphasized,
                 modifier = Modifier.semantics { heading() },
             )
-            Text(stringResource(R.string.restore_body), style = MaterialTheme.typography.bodyMedium)
+            Text(
+                stringResource(
+                    when {
+                        watchMonitor -> R.string.restore_body
+                        target.device == Device.Watch -> R.string.restore_app_body_watch
+                        else -> R.string.restore_app_body_phone
+                    },
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+            )
             ActionRow {
-                PrimaryAction(stringResource(R.string.restore_confirm), { onEvent(HomeEvent.ConfirmRestore) })
+                PrimaryAction(stringResource(if (watchMonitor) R.string.restore_confirm else R.string.restore_app_confirm), { onEvent(HomeEvent.ConfirmRestore) })
                 QuietAction(stringResource(R.string.action_cancel), { onEvent(HomeEvent.DismissRestore) })
             }
         }

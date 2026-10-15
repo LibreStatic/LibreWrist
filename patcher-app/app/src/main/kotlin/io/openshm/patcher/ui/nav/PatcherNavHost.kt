@@ -53,6 +53,10 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import io.openshm.patcher.R
 import io.openshm.patcher.data.AppCatalogue
+import io.openshm.patcher.data.InputStore
+import io.openshm.patcher.data.RebuildScope
+import io.openshm.patcher.data.SetupSession
+import io.openshm.patcher.data.requestedRebuildScope
 import io.openshm.patcher.ui.screens.settings.SettingsScreen
 import io.openshm.patcher.ui.screens.settings.SettingsViewModel
 import io.openshm.patcher.ui.update.AppUpdateViewModel
@@ -101,6 +105,7 @@ import io.openshm.patcher.ui.screens.wearable.WearablePairingScreen
 import io.openshm.patcher.ui.screens.wearable.WearablePairingViewModel
 import io.openshm.patcher.ui.screens.wearable.WearableTroubleshootScreen
 import io.openshm.patcher.ui.screens.wearable.WearableTroubleshootViewModel
+import io.openshm.patcher.ui.screens.revert.RevertScope
 import io.openshm.patcher.ui.screens.revert.RevertScreen
 import io.openshm.patcher.ui.screens.revert.RevertViewModel
 import io.openshm.patcher.ui.screens.welcome.WelcomeEvent
@@ -131,8 +136,15 @@ fun PatcherNavHost(
     navController: NavHostController = rememberNavController(),
 ) {
     fun go(target: Route) = navController.navigate(target.path) {
-        // Home is the end of the guided setup: it replaces the whole stack.
-        if (target == Route.Home) popUpTo(Route.Welcome.path) { inclusive = true }
+        // Home is the end of the guided setup: it replaces the whole stack. Welcome may already be gone
+        // (a returning user lands on Home from it, and a rebuild starts on Home), so pop the whole graph.
+        if (target == Route.Home) popUpTo(navController.graph.id) { inclusive = true }
+    }
+    // Routes passed over silently: the announced skips plus, during a per-app rebuild, what it does not need.
+    fun passedOver(): Set<Route> {
+        val session = SetupSession.state.value
+        val scope = RebuildScope.scope?.minus(session.restoredOutputs)
+        return StepSkips.routes + rebuildSkippedRoutes(AppCatalogue.current.outputs, scope)
     }
     // A run of skipped steps right after the current one, announced before it is passed over. The
     // welcome screen announces its own run (together with the watch check), so it never lands here.
@@ -143,7 +155,7 @@ fun PatcherNavHost(
             announcing = from to run
             return
         }
-        go(SetupFlow.next(from, StepSkips.routes) ?: return)
+        go(SetupFlow.next(from, passedOver()) ?: return)
     }
     val back: () -> Unit = { navController.popBackStack() }
     // The device logs notification opens the app on its screen.
@@ -456,7 +468,13 @@ fun PatcherNavHost(
                     onRevert = { navController.navigate(Route.Revert.path) },
                 )
             }
-            columnComposable(Route.Revert.path) {
+            columnComposable(
+                Route.REVERT_PATTERN,
+                arguments = listOf(
+                    navArgument(Route.REVERT_SCOPE_ARG) { type = NavType.StringType; defaultValue = RevertScope.All.encoded },
+                    navArgument(Route.REVERT_CONFIRMED_ARG) { type = NavType.StringType; defaultValue = "false" },
+                ),
+            ) {
                 val vm: RevertViewModel = viewModel()
                 val state by vm.state.collectAsStateWithLifecycle()
                 val context = LocalContext.current
@@ -474,10 +492,13 @@ fun PatcherNavHost(
                     state,
                     onEvent = vm::onEvent,
                     onBack = back,
-                    // Back to Welcome; from Home (which replaced the stack) it is opened fresh, as Home's
-                    // builds may be gone now.
+                    // A scoped run goes back to Home, unless it forgot the whole setup. Otherwise back to
+                    // Welcome; from Home (which replaced the stack) it is opened fresh, as Home's builds
+                    // may be gone now.
                     onClose = {
-                        if (!navController.popBackStack(Route.Welcome.path, false)) {
+                        if (state.scope != RevertScope.All && !state.setupForgotten) {
+                            navController.popBackStack(Route.Home.path, false)
+                        } else if (!navController.popBackStack(Route.Welcome.path, false)) {
                             navController.navigate(Route.Welcome.path) { popUpTo(navController.graph.id) { inclusive = true } }
                         }
                     },
@@ -564,18 +585,28 @@ fun PatcherNavHost(
             columnComposable(Route.Home.path) {
                 val vm: HomeViewModel = viewModel()
                 val state by vm.state.collectAsStateWithLifecycle()
+                val context = LocalContext.current
                 // The self-test may have finished since Home was last shown.
                 LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { vm.refresh() }
                 HomeScreen(
                     state,
                     onEvent = { event ->
+                        // The sheet's target is cleared by the reducer: read it first.
+                        val restoring = state.restoreTarget
                         vm.onEvent(event)
+                        if (event is HomeEvent.ConfirmRestore && restoring != null) {
+                            navController.navigate(Route.revert(RevertScope.Output(restoring.id), confirmed = true))
+                        }
+                        if (event is HomeEvent.RestoreWatch) navController.navigate(Route.revert(RevertScope.Watch))
                         if (event is HomeEvent.NewBuild) navController.navigate(Route.Profile.path)
                         if (event is HomeEvent.RunSelfTest || event is HomeEvent.TestAgain) navController.navigate(Route.SelfTest.path)
                         if (event is HomeEvent.OpenSettings) navController.navigate(Route.Settings.path)
                         if (event is HomeEvent.Uninstall) navController.navigate(Route.Revert.path)
                         // Inputs whose verified files still match are already Verified on Acquire.
                         if (event is HomeEvent.StartUpdate) navController.navigate(Route.Acquire.path)
+                        if (event is HomeEvent.Rebuild) {
+                            rebuildStartRoute(event.buildId, InputStore(context))?.let { navController.navigate(it.path) }
+                        }
                     },
                 )
             }
@@ -585,7 +616,7 @@ fun PatcherNavHost(
             onConfirm = {
                 val from = announcing?.first
                 announcing = null
-                if (from != null) SetupFlow.next(from, StepSkips.routes)?.let(::go)
+                if (from != null) SetupFlow.next(from, passedOver())?.let(::go)
             },
             onCancel = { announcing = null },
             onManual = {
@@ -619,6 +650,21 @@ private fun GuidedBrowserDestination(entry: NavBackStackEntry, navController: Na
         },
         onClose = { navController.popBackStack() },
     )
+}
+
+/**
+ * Starts the per-app rebuild of [outputId] and returns where it begins: Acquire when its input is not
+ * verified, else Customize (its patches), or Build for a bridge, which has nothing to customize. The
+ * scope is every session output built from the same input, restored ones included: their builds must
+ * match the patches too, and the install steps leave them out again.
+ */
+private fun rebuildStartRoute(outputId: String, inputs: InputStore): Route? {
+    val catalogue = AppCatalogue.current
+    val session = SetupSession.state.value
+    if (catalogue.outputs.none { it.id == outputId }) return null
+    RebuildScope.begin(requestedRebuildScope(catalogue.outputs, outputId, session.outputIds))
+    val inputId = catalogue.output(outputId).inputId ?: return Route.Build
+    return if (inputs.verifiedSize(catalogue.input(inputId)) == null) Route.Acquire else Route.Customize
 }
 
 /** The screen a self-test fix button opens. */

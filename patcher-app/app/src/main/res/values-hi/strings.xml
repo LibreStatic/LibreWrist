@@ -211,6 +211,7 @@
     <!-- Customize -->
     <string name="customize_title">अपने पैच चुनें</string>
     <string name="customize_intro">ताले वाले पैच आपके डिवाइस पर ऐप्स चलाने के लिए ज़रूरी हैं। बाकी वैकल्पिक हैं और आप उन्हें बंद कर सकते हैं।</string>
+    <string name="customize_rebuild_note">केवल %1$s को दोबारा बनाया जाएगा। आपके दूसरे ऐप जैसे हैं वैसे ही रहेंगे।</string>
     <string name="customize_required">ज़रूरी, हमेशा चालू</string>
     <string name="customize_advanced">उन्नत</string>
     <string name="customize_prefix_label">सहायक ऐप के लिए पैकेज प्रीफ़िक्स</string>
@@ -539,6 +540,10 @@
     <string name="restore_title">मूल ऐप बहाल करें?</string>
     <string name="restore_body">पैच किया गया ऐप और उसका डेटा हटा दिया जाता है, और स्टॉक ऐप फिर से चालू हो जाता है।</string>
     <string name="restore_confirm">बहाल करें</string>
+    <string name="restore_app_title">%1$s हटाएँ?</string>
+    <string name="restore_app_body_phone">इसे आपके फ़ोन से उसके डेटा के साथ अनइंस्टॉल कर दिया जाता है। आपका बाकी सेटअप जैसा है वैसा ही रहता है।</string>
+    <string name="restore_app_body_watch">इसे आपकी घड़ी से उसके डेटा के साथ अनइंस्टॉल कर दिया जाता है। आपका बाकी सेटअप जैसा है वैसा ही रहता है।</string>
+    <string name="restore_app_confirm">हटाएँ</string>
 
     <!-- Signing key -->
     <string name="signing_key_title">साइनिंग कुंजी</string>
@@ -793,6 +798,18 @@
     <string name="revert_done_complete_body">ऐप आपके फ़ोन और घड़ी से हट गए हैं, और सेटिंग पहले जैसी हो गई हैं।</string>
     <string name="revert_done_partial_title">कुछ बदलाव अब भी मौजूद हैं</string>
     <string name="revert_done_partial_body">सब कुछ वापस नहीं हो सका। सूची में बताई समस्याएँ ठीक करके दोबारा जाँचें; सेटअप की जानकारी सहेजी हुई है ताकि आप पूरा कर सकें।</string>
+    <string name="revert_title_watch">घड़ी को पुनर्स्थापित करें</string>
+    <string name="revert_intro_watch">यह OpenSHM Patcher द्वारा आपकी घड़ी पर इंस्टॉल की गई चीज़ों को हटाता है और वहाँ बदली गई चीज़ों को वापस कर देता है। आपका फ़ोन जैसा है वैसा ही रहता है।</string>
+    <string name="revert_title_app">%1$s हटाएँ</string>
+    <string name="revert_intro_app">केवल यह ऐप हटाया जाता है। आपका बाकी सेटअप जैसा है वैसा ही रहता है।</string>
+    <string name="revert_start_watch">घड़ी को पुनर्स्थापित करें</string>
+    <string name="revert_confirm_title_watch">घड़ी को पुनर्स्थापित करें?</string>
+    <string name="revert_confirm_body_watch">सूची के ऐप उनके डेटा के साथ घड़ी से हटा दिए जाते हैं और उसकी सेटिंग वापस कर दी जाती हैं। आप बाद में नए बिल्ड से उन्हें फिर इंस्टॉल कर सकते हैं।</string>
+    <string name="revert_confirm_action_watch">पुनर्स्थापित करें</string>
+    <string name="revert_start_app">हटाएँ</string>
+    <string name="revert_done_scoped_title">पुनर्स्थापित हो गया</string>
+    <string name="revert_done_watch_body">ऐप आपकी घड़ी से हट गए हैं और उसकी सेटिंग पहले जैसी हो गई हैं। आपका फ़ोन जैसा है वैसा ही रहता है।</string>
+    <string name="revert_done_app_body">%1$s हट गया है। आपका बाकी सेटअप जैसा है वैसा ही रहता है।</string>
     <string name="revert_check_again">दोबारा जाँचें</string>
     <string name="revert_manual_title">हाथ से करना बाकी</string>
     <string name="revert_manual_devmode">अगर आपने Health Platform का डेवलपर मोड चालू किया था तो उसे बंद करें।</string>

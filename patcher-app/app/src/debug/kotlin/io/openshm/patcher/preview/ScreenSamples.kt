@@ -93,7 +93,8 @@ internal fun GuidedBrowserSample(step: Int = 2, wrongVersion: Boolean = false) =
     GuidedBrowserScreen(PreviewData.guidedBrowser(step, wrongVersion), {})
 
 @Composable
-internal fun CustomizeSample() = CustomizeScreen(PreviewData.customize(), {}, {}, {})
+internal fun CustomizeSample(focusInputIds: Set<String>? = null) =
+    CustomizeScreen(PreviewData.customize(focusInputIds), {}, {}, {})
 
 @Composable
 internal fun BuildSample(logSheet: Boolean = false, almostDone: Boolean = false, cancelled: Boolean = false, selfCheck: Boolean = false): Unit {
@@ -168,8 +169,8 @@ internal fun AllSetSample(logsAvailable: Boolean = false) = AllSetScreen(Preview
 internal fun DeviceLogsSample(state: DeviceLogsUiState = PreviewData.deviceLogs()) = DeviceLogsScreen(state, {}, {})
 
 @Composable
-internal fun HomeSample(restoreSheet: Boolean = false, menu: Boolean = false, patchesOnly: Boolean = false) =
-    HomeScreen(PreviewData.home(restoreSheet = restoreSheet, menu = menu, patchesOnly = patchesOnly), {})
+internal fun HomeSample(restoreSheet: Boolean = false, menu: Boolean = false, patchesOnly: Boolean = false, restoreOf: String = "shm-watch") =
+    HomeScreen(PreviewData.home(restoreSheet = restoreSheet, menu = menu, patchesOnly = patchesOnly, restoreOf = restoreOf), {})
 
 @Composable
 internal fun SigningKeySample(

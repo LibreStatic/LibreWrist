@@ -2,6 +2,8 @@ package io.openshm.patcher.ui.nav
 
 import androidx.annotation.StringRes
 import io.openshm.patcher.R
+import io.openshm.patcher.data.Device
+import io.openshm.patcher.data.OutputApp
 import io.openshm.patcher.device.DetectedWatch
 
 /** A setup step passed over because what it asks for is already true; [watch] fills the reason when it is about the watch. */
@@ -32,6 +34,25 @@ internal fun skippedRunAfter(route: Route, skipped: List<SkippedStep>): List<Ski
         val step = skipped.firstOrNull { it.route == target } ?: break
         add(step)
         target = SetupFlow.next(target)
+    }
+}
+
+/**
+ * The steps a per-app rebuild of [scope] passes over without a word (nothing is announced): the phone
+ * install without a phone output, the watch install without a watch output, and the developer-mode and
+ * stock-app steps unless the Health Monitor on the watch ("shm-watch") is rebuilt. Empty outside a
+ * rebuild (null [scope]).
+ */
+internal fun rebuildSkippedRoutes(outputs: List<OutputApp>, scope: Set<String>?): Set<Route> {
+    if (scope == null) return emptySet()
+    val inScope = outputs.filter { it.id in scope }
+    return buildSet {
+        if (inScope.none { it.device == Device.Phone }) add(Route.InstallPhone)
+        if (inScope.none { it.device == Device.Watch }) add(Route.WatchInstall)
+        if ("shm-watch" !in scope) {
+            add(Route.DevMode)
+            add(Route.DisableStock)
+        }
     }
 }
 

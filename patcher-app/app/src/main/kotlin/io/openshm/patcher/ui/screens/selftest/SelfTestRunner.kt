@@ -169,7 +169,9 @@ internal class SelfTestRunner(
             if (hasBridge(Device.Watch)) {
                 add(Check(SECTION_WATCH, pendingRow("watch-leftovers", text(R.string.selftest_leftovers_title), SelfTestFix.InstallWatch)) { watchLeftovers(it) })
             }
-            for (stock in catalogue.stockAppsToDisable.filter { it.device == Device.Watch }) {
+            // The stock apps are turned off for the watch Health Monitor: not checked once it was restored.
+            val stockApps = if (outputs.any { it.id == SHM_WATCH }) catalogue.stockAppsToDisable.filter { it.device == Device.Watch } else emptyList()
+            for (stock in stockApps) {
                 add(Check(SECTION_WATCH, pendingRow("watch-stock-${stock.packageName}", text(R.string.selftest_stock_title, stock.label), SelfTestFix.DisableStock)) { watchStock(it, stock.packageName, stock.optional) })
             }
             if (outputs.any { it.id == BRIDGE_PHONE }) {
@@ -377,6 +379,7 @@ internal class SelfTestRunner(
 
     private companion object {
         const val BRIDGE_PHONE = "bridge-phone"
+        const val SHM_WATCH = "shm-watch"
     }
 }
 

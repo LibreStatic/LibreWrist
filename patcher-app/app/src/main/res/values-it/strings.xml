@@ -211,6 +211,7 @@
     <!-- Customize -->
     <string name="customize_title">Scegli le tue patch</string>
     <string name="customize_intro">Le patch con il lucchetto servono perché le app funzionino sui tuoi dispositivi. Le altre sono facoltative e puoi disattivarle.</string>
+    <string name="customize_rebuild_note">Viene ricostruita solo %1$s. Le altre tue app restano come sono.</string>
     <string name="customize_required">Obbligatorio, sempre attivo</string>
     <string name="customize_advanced">Avanzate</string>
     <string name="customize_prefix_label">Prefisso del pacchetto per le app di supporto</string>
@@ -539,6 +540,10 @@
     <string name="restore_title">Ripristinare l\'app originale?</string>
     <string name="restore_body">L\'app modificata e i suoi dati vengono rimossi, e quella originale viene riattivata.</string>
     <string name="restore_confirm">Ripristina</string>
+    <string name="restore_app_title">Rimuovere %1$s?</string>
+    <string name="restore_app_body_phone">Viene disinstallata dal telefono insieme ai suoi dati. Il resto della configurazione resta com\'è.</string>
+    <string name="restore_app_body_watch">Viene disinstallata dall\'orologio insieme ai suoi dati. Il resto della configurazione resta com\'è.</string>
+    <string name="restore_app_confirm">Rimuovi</string>
 
     <!-- Signing key -->
     <string name="signing_key_title">Chiave di firma</string>
@@ -793,6 +798,18 @@
     <string name="revert_done_complete_body">Le app non ci sono più sul telefono e sull\'orologio e le impostazioni sono tornate com\'erano.</string>
     <string name="revert_done_partial_title">Alcune modifiche sono ancora presenti</string>
     <string name="revert_done_partial_body">Non è stato possibile annullare tutto. Risolvi quanto indicato e ricontrolla; le informazioni della configurazione vengono conservate così puoi finire.</string>
+    <string name="revert_title_watch">Ripristina l\'orologio</string>
+    <string name="revert_intro_watch">Questo rimuove ciò che OpenSHM Patcher ha installato sul tuo orologio e ripristina ciò che vi ha modificato. Il telefono resta com\'è.</string>
+    <string name="revert_title_app">Rimuovi %1$s</string>
+    <string name="revert_intro_app">Viene rimossa solo questa app. Il resto della configurazione resta com\'è.</string>
+    <string name="revert_start_watch">Ripristina l\'orologio</string>
+    <string name="revert_confirm_title_watch">Ripristinare l\'orologio?</string>
+    <string name="revert_confirm_body_watch">Le app elencate vengono rimosse dall\'orologio insieme ai loro dati e le sue impostazioni vengono ripristinate. Potrai reinstallarle più tardi con una nuova build.</string>
+    <string name="revert_confirm_action_watch">Ripristina</string>
+    <string name="revert_start_app">Rimuovi</string>
+    <string name="revert_done_scoped_title">Ripristinato</string>
+    <string name="revert_done_watch_body">Le app non sono più sul tuo orologio e le sue impostazioni sono tornate com\'erano. Il telefono resta com\'è.</string>
+    <string name="revert_done_app_body">%1$s è stata rimossa. Il resto della configurazione resta com\'è.</string>
     <string name="revert_check_again">Ricontrolla</string>
     <string name="revert_manual_title">Resta da fare a mano</string>
     <string name="revert_manual_devmode">Disattiva la modalità sviluppatore di Health Platform se l\'avevi attivata.</string>
