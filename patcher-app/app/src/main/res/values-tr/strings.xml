@@ -4,7 +4,7 @@
     <string name="action_back">Geri</string>
     <string name="action_help">Yardım</string>
     <string name="action_next">İleri</string>
-    <string name="action_previous">Geri</string>
+    <string name="action_previous">Önceki</string>
     <string name="action_close">Kapat</string>
     <string name="action_settings">Ayarlar</string>
     <string name="action_more_options">Diğer seçenekler</string>
@@ -45,12 +45,12 @@
     <!-- Welcome -->
     <string name="welcome_title">Uygulamalarınız, saatiniz, sizin kurallarınız</string>
     <string name="welcome_promise_download">Resmi uygulamaları kendiniz edinirsiniz; burada hiçbiri paketlenmiş gelmez.</string>
-    <string name="welcome_promise_patch">Yamalar, Samsung Health Monitor\'ün Samsung olmayan bir telefonda çalışmasını ve saatteki orijinal uygulamayla yan yana durmasını sağlar.</string>
-    <string name="welcome_promise_undo">Her değişiklik geri alınabilir ve orijinal uygulamalar yerinde kalır.</string>
+    <string name="welcome_promise_patch">Yamalar, Samsung Health Monitor\'ün Samsung yapımı olmayan bir telefonda çalışmasını sağlar; yamalı saat uygulaması da orijinalinin yanına kurulur.</string>
+    <string name="welcome_promise_undo">Her değişiklik geri alınabilir ve orijinal uygulamalar hiçbir zaman kaldırılmaz.</string>
     <string name="welcome_get_started">Başla</string>
     <string name="welcome_what_changes">Cihazlarımda neler değişecek?</string>
     <string name="changes_title">Neler değişecek</string>
-    <string name="changes_intro">Kurulan her uygulama, ne işe yaradığı ve nelere izin verildiği. Hiçbir şey silinmez ve hepsi geri alınabilir.</string>
+    <string name="changes_intro">Kurulan her uygulama, ne işe yaradığı ve neler yapmasına izin verildiği. Size sormadan hiçbir şey silinmez ve hepsi geri alınabilir.</string>
     <string name="changes_on_phone">Bu telefonda</string>
     <string name="changes_on_watch">Saatinizde</string>
     <string name="changes_allowed_to">İzin verilenler</string>
@@ -80,6 +80,8 @@
     <string name="grant_why_notifications_phone">Saate bağlıyken küçük bir bildirim tutmak.</string>
     <string name="grant_why_notifications_watch">Telefonunuzun bildirimlerini saatte göstermek.</string>
     <string name="grant_why_notifications_alarm">Alarmı çalarken göstermek.</string>
+    <string name="grant_why_notifications_shm">Health Monitor bildirimlerini göstermek.</string>
+    <string name="grant_why_notifications_shealth">Samsung Health+ bildirimlerini göstermek.</string>
     <string name="grant_why_bluetooth_phone">Saate Bluetooth ile bağlanmak.</string>
     <string name="grant_why_bluetooth_watch">Telefona Bluetooth ile bağlanmak.</string>
     <string name="grant_why_restricted">Android, mağaza dışından yüklenen uygulamalar için bazı ayarları engeller. Bu, köprü için bildirim erişimini açmanızı sağlar.</string>
@@ -94,22 +96,23 @@
     <string name="grant_why_ongoing_calls">Saatte süren aramayı göstermek ve yönetmek.</string>
     <string name="grant_why_always_on">Her zaman açık ekranın, ölçüm sırasında saati uykuya almasını önler.</string>
     <string name="grant_why_battery_bridge">Saat pil tasarrufu yaparken Bluetooth bağlantısını canlı tutmak.</string>
+    <string name="grant_why_battery_bridge_phone">Telefon pil tasarrufu yaparken Bluetooth bağlantısını canlı tutmak.</string>
     <string name="grant_why_battery_alarm">Saat pil tasarrufu yaparken bile zamanında çalmak.</string>
-    <string name="grant_why_hidden_api">Saat uygulamasının EKG, kan basıncı ve uyku apnesi için Samsung\'un sensör hizmetini kullanmasını sağlar. Tüm saat için geçerlidir, ancak yalnızca Samsung\'un sensör yazılımını kapsar.</string>
-    <string name="changes_disables">Kapatılabilir</string>
+    <string name="grant_why_hidden_api">Yeni saatler (One UI 8 Watch), saat uygulamasının EKG, tansiyon ve uyku apnesi için ihtiyaç duyduğu Samsung sensör yöneticisine erişimini engeller. İstisna saatteki tüm uygulamaları kapsar, ancak yalnızca Samsung sensör yöneticisi için geçerlidir.</string>
+    <string name="changes_disables">Kurulum sırasında kapatılır</string>
 
     <!-- Profile -->
     <string name="profile_title">Hangi saate sahipsiniz?</string>
-    <string name="profile_intro">Hangi resmi uygulamaları getirmeniz gerektiği buna bağlıdır.</string>
+    <string name="profile_intro">Hangi resmi uygulamaları edinmeniz gerektiği buna bağlıdır.</string>
     <string name="profile_wear5_title">Wear OS 5 veya üzeri</string>
     <string name="profile_wear5_summary">Saatte Health Monitor ve telefon alarmları.</string>
-    <string name="profile_wear5_apps">3 resmi uygulama</string>
+    <string name="profile_wear5_apps">3 resmi uygulama veya Samsung Health ile 4</string>
     <string name="profile_wear3_title">Wear OS 3 veya 4</string>
-    <string name="profile_wear3_summary">Yalnızca Health Monitor. Alarm uygulaması için saatte Android 14 gerekir.</string>
-    <string name="profile_wear3_apps">2 resmi uygulama</string>
+    <string name="profile_wear3_summary">Health Monitor ve köprü, telefon alarmları olmadan. Alarm uygulaması saatte Android 14 gerektirir.</string>
+    <string name="profile_wear3_apps">2 resmi uygulama veya Samsung Health ile 3</string>
     <string name="profile_detected">Saatinizde denetlendi: Android %1$s (%2$s)</string>
     <string name="profile_check_paired">Eşlenmiş saatleri denetle</string>
-    <string name="profile_detected_network">Saatiniz (%1$s) Wi-Fi üzerinden Android API %2$s olarak bildirdi (%3$s)</string>
+    <string name="profile_detected_network">Saatiniz (%1$s) Wi-Fi üzerinden Android API düzeyi %2$s bildirdi: %3$s</string>
     <string name="profile_paired_certain">Her zaman Wear OS 5 veya daha yenisini çalıştırır, bu yüzden bu seçenek seçildi.</string>
     <string name="profile_paired_depends">Güncellemelerine bağlı olarak iki sürümden birini çalıştırabilir.</string>
     <string name="profile_tip_wireless">Emin olmak için saatte Kablosuz hata ayıklamayı açın: bu ekran sürümü Wi-Fi üzerinden okur.</string>
@@ -144,16 +147,16 @@
     <string name="wearable_recheck">Tekrar denetle</string>
 
     <!-- Watch pairing over Wi-Fi -->
-    <string name="watchpair_correct_older">Saatiniz Android %1$s çalıştırıyor, bu yüzden alarm uygulaması atlanır: 3 yerine 2 resmi uygulama gerekir.</string>
-    <string name="watchpair_correct_newer">Saatiniz Android %1$s çalıştırıyor, bu yüzden alarm uygulaması dahil edilir: 2 yerine 3 resmi uygulama gerekir.</string>
+    <string name="watchpair_correct_older">Saatinizde Android %1$s çalışıyor, bu yüzden alarm uygulaması atlanır: bir resmi uygulama daha az gerekir.</string>
+    <string name="watchpair_correct_newer">Saatinizde Android %1$s çalışıyor, bu yüzden alarm uygulaması dahil edilir: bir resmi uygulama daha gerekir.</string>
     <string name="watchpair_paired">Saat eşlendi</string>
     <string name="watchpair_title">Saatinize bağlanın</string>
     <string name="watchpair_intro">Saat, kısa bir kodla eşlendikten sonra Wi-Fi üzerinden kurulumu kabul eder.</string>
     <string name="watchpair_found">Saat ağınızda bulundu</string>
-    <string name="watchpair_reconnecting">Saatine yeniden bağlanılıyor…</string>
-    <string name="watchpair_reconnected">Saatine yeniden bağlanıldı</string>
-    <string name="watchpair_reconnected_model">Saatine yeniden bağlanıldı (%1$s)</string>
-    <string name="watchpair_remembered_hint">Bu saati daha önce eşleştirdiysen, üzerinde Kablosuz hata ayıklamayı aç; kendiliğinden yeniden bağlanır.</string>
+    <string name="watchpair_reconnecting">Saatinize yeniden bağlanılıyor…</string>
+    <string name="watchpair_reconnected">Saatinize yeniden bağlanıldı</string>
+    <string name="watchpair_reconnected_model">Saatinize yeniden bağlanıldı (%1$s)</string>
+    <string name="watchpair_remembered_hint">Bu saati daha önce eşlediyseniz üzerinde Kablosuz hata ayıklamayı açın; kendiliğinden yeniden bağlanır.</string>
     <string name="watchpair_searching">Saatiniz aranıyor…</string>
     <string name="watchpair_code_label">Eşleme kodu</string>
     <string name="watchpair_hint">Eşlemek için 6 haneyi de girin</string>
@@ -167,8 +170,8 @@
     <string name="watchpair_error_other">Eşleme başarısız oldu. Saatte eşleme kodu ekranını yeniden açıp tekrar deneyin.</string>
 
     <!-- Acquire -->
-    <string name="acquire_title">Resmi uygulamaları getirin</string>
-    <string name="acquire_intro">Her uygulamayı güvendiğiniz bir kaynaktan kendiniz indirin. Yama aracı onları asla saklamaz veya dağıtmaz.</string>
+    <string name="acquire_title">Resmi uygulamaları edinin</string>
+    <string name="acquire_intro">Her uygulamayı güvendiğiniz bir kaynaktan kendiniz indirin. Yama aracı onları asla pakete eklemez veya paylaşmaz.</string>
     <string name="acquire_open_mirror">APKMirror\'da aç</string>
     <string name="acquire_more_ways">Bu uygulamayı edinmenin diğer yolları</string>
     <string name="acquire_use_file">Elimdeki dosyayı kullan</string>
@@ -211,8 +214,8 @@
     <string name="customize_required">Gerekli, her zaman açık</string>
     <string name="customize_advanced">Gelişmiş</string>
     <string name="customize_prefix_label">Yardımcı uygulamalar için paket öneki</string>
-    <string name="customize_prefix_explainer">Köprü uygulamalarını ve alarm uygulamasını adlandırır. İki Samsung Health Monitor uygulaması, birbirleriyle konuşabilmek için kendi paketini korur.</string>
-    <string name="customize_prefix_ok">Sizin için yeni bir önek oluşturulur.</string>
+    <string name="customize_prefix_explainer">Köprü uygulamalarını, alarm uygulamasını ve Samsung Health+\'ı adlandırır. İki Samsung Health Monitor uygulaması ise birbiriyle konuşabilmek için sabit, ortak bir paket adı kullanır.</string>
+    <string name="customize_prefix_ok">Geçerli her önek çalışır; başlangıç için rastgele bir önek doldurulur.</string>
     <string name="customize_prefix_locked">Kilitli: yardımcı uygulamalar kurulu ve güncellemeler aynı öneki gerektirir.</string>
     <string name="customize_prefix_regenerate">Yeni önek oluştur</string>
     <string name="customize_build">Derle</string>
@@ -234,16 +237,17 @@
 
     <!-- Patch descriptions (titles come from the catalogue) -->
     <string name="patch_generic_manufacturer_check">Samsung üretimi olmayan telefonu kabul eder.</string>
-    <string name="patch_generic_vendor_check">Samsung SDK\'sı olmayan telefonu kabul eder.</string>
+    <string name="patch_generic_vendor_check">Üretici olarak Samsung bildirmeyen bir telefonu kabul eder (üretici geçersiz kılma).</string>
     <string name="patch_shm_min_age_22_to_16">Asgari yaşı 22\'den 16\'ya düşürür.</string>
+    <string name="patch_watch_min_age_22_to_16">Tüm özelliklerin alt yaş sınırını (22 veya uyku apnesi için 18) 16\'ya düşürür.</string>
     <string name="patch_shm_supported_type_ordinals">Her bölgeyi desteklenen sayar.</string>
-    <string name="patch_shm_region_supportedtype">Bölge denetiminin geçmesini sağlar.</string>
-    <string name="patch_shm_region_countrylist">Desteklenenler listesindeki her ülkeyi kabul eder.</string>
-    <string name="patch_shm_root_packagevalidator">Üretici sertifika doğrulamasını atlar.</string>
+    <string name="patch_shm_region_supportedtype">Bölge kontrolünü devre dışı bırakır.</string>
+    <string name="patch_shm_region_countrylist">Her ülkeyi destekleniyor olarak kabul eder (bölge kontrolü devre dışı).</string>
+    <string name="patch_shm_root_packagevalidator">Yeniden imzalanmış uygulamanın artık geçemediği Samsung sertifika kontrolünü devre dışı bırakır.</string>
     <string name="patch_shm_force_update_response">Başarısız veya zorunlu güncelleme yanıtını yok sayar.</string>
     <string name="patch_shm_force_update_pref">Kayıtlı zorunlu güncelleme bayrağını yok sayar.</string>
-    <string name="patch_shm_main_gates">Diğer telefonları engelleyen açılış denetimlerini atlar.</string>
-    <string name="patch_shm_setup_network_gate">Kurulum sırasındaki SIM ve bölge denetimini atlar.</string>
+    <string name="patch_shm_main_gates">Başlangıçtaki sistem ve güncelleme kontrollerini atlar ve ekran kilidini ayarlanmış olarak bildirir.</string>
+    <string name="patch_shm_setup_network_gate">Kurulum sırasında SIM ve bölge kontrolünü devre dışı bırakır.</string>
     <string name="patch_shm_sleep_apnea_support">Uyku apnesini destekleniyor olarak bildirir.</string>
     <string name="patch_phone_rebrand_gms">Telefon uygulamasına saat uygulamasıyla aynı paketi ve anahtarı vererek ikisinin veri alışverişi yapmasını sağlar.</string>
     <string name="patch_watch_rebrand_coexist">Saat uygulamasını orijinalinin yanında durması için yeniden adlandırır.</string>
@@ -254,11 +258,11 @@
     <string name="patch_watch_companion_vendor">Her marka eşlik eden telefonu kabul eder.</string>
     <string name="patch_watch_alarm_system_app">Sistem ayrıcalıkları olmadan tam zamanlı alarm kurar.</string>
     <string name="patch_watch_mobile_installed">Telefon uygulamasını kurulu olarak bildirir.</string>
-    <string name="patch_watch_ecg_sensor_adapter">EKG sensörünü Health Tracking hizmeti üzerinden okur.</string>
+    <string name="patch_watch_ecg_sensor_adapter">EKG sensörünü Health Tracking hizmeti üzerinden okur ve düzensiz kalp ritmi ile SpO2 sensörlerini kullanılabilir olarak kabul eder.</string>
     <string name="patch_watch_bp_sensor_adapter">Saat, yeniden imzalanmış bir uygulamanın tansiyon sensörünü doğrudan kullanmasına izin vermediği için sensörü Health Tracking hizmeti üzerinden okur.</string>
     <string name="patch_watch_sensor_unregister_compat">Galaxy Watch8 gibi farklı sensör altyapısına sahip saatlerde sensörler durdurulurken uygulamanın kapanmasını önler.</string>
     <string name="patch_watch_bp_attribute_guard">Kullandığı sensör kurulumunu engelleyen saatlerde (One UI 8 Watch) tansiyon kalibrasyonunun uygulamayı kapatmasını önler. Uygulama bunun yerine normal sensör hatasını gösterir.</string>
-    <string name="patch_watch_apnea_country">Apne ülke denetimini atlar.</string>
+    <string name="patch_watch_apnea_country">Uyku apnesi için bölge kontrolünü devre dışı bırakır.</string>
     <string name="patch_watch_apnea_reeval_not_supported">Desteklenmiyor olarak kaydedilmiş apne desteğini yeniden denetler.</string>
     <string name="patch_watch_mod">Health Tracking hizmetiyle konuşan modülü ekler.</string>
     <string name="patch_alarm_verify_symbols">Alarm uygulamasında bağlantının gerek duyduğu parçaların olduğunu denetler.</string>
@@ -271,7 +275,7 @@
     <string name="patch_alarm_provider_open">Alarm verilerini çatala açar.</string>
     <string name="patch_alarm_link_components">Telefondan gönderilen alarmlar için alıcıyı ekler.</string>
     <string name="patch_alarm_appfunctions_drop">Kullanılmayan bir üretici özellik ağacını kaldırır.</string>
-    <string name="patch_alarm_semgesture_skip">Üretici hareket yöneticisini atlar ve çift tutma hareketini kendisi algılar (ertele veya kapat, saatteki ayara göre).</string>
+    <string name="patch_alarm_semgesture_skip">Üretici hareket yöneticisini atlar ve çift sıkıştırma hareketini kendisi algılar (saatteki ayara göre erteleme veya kapatma).</string>
     <string name="patch_alarm_gms_observer_drop">Alarmın erken bitmesini engeller.</string>
     <string name="patch_alarm_service_stop_on_destroy">Ses ve titreşimin her zaman durmasını sağlar.</string>
     <string name="patch_alarm_force_sound_vibrate">Her zaman çalar ve titrer.</string>
@@ -285,7 +289,7 @@
     <string name="output_alarm_fork">Saatte telefon alarmları</string>
     <string name="output_bridge_phone">Telefon için köprü</string>
     <string name="stock_label_shm">Samsung Health Monitor (orijinal)</string>
-    <string name="stock_reason_shm">Uygulamanın iki kopyası aynı sensör için çakışır.</string>
+    <string name="stock_reason_shm">Orijinal saat uygulaması bölge hatasını göstermeye devam eder ve artık gerekli değildir. Yamalı kopya onun yerini alır.</string>
 
     <!-- Build -->
     <string name="build_title">Uygulamalarınız derleniyor</string>
@@ -305,17 +309,17 @@
     <string name="build_cancelled">Derleme iptal edildi</string>
     <string name="build_restart">Yeniden derle</string>
     <string name="build_cancel_title">Derleme iptal edilsin mi?</string>
-    <string name="build_cancel_body">Şu ana kadar derlenen uygulamalar silinir. İstediğin zaman yeniden başlayabilirsin.</string>
+    <string name="build_cancel_body">Şu ana kadar derlenen uygulamalar silinir. İstediğiniz zaman yeniden başlayabilirsiniz.</string>
     <string name="build_cancel_keep">Derlemeye devam et</string>
     <string name="build_app_position">Uygulama %1$d / %2$d</string>
     <string-array name="build_almost_done">
-        <item>Neredeyse bitti, ayrılma</item>
+        <item>Neredeyse bitti, ayrılmayın</item>
         <item>Son rötuşlar…</item>
-        <item>Az kaldı, biraz daha sabret</item>
+        <item>Az kaldı, biraz daha sabredin</item>
         <item>İmzalıyor ve kontrol ediyoruz, neredeyse bitti</item>
         <item>Bir an daha</item>
-        <item>Uygulamaların şekilleniyor</item>
-        <item>Son düzlük, dayan</item>
+        <item>Uygulamalarınız şekilleniyor</item>
+        <item>Son düzlük, az kaldı</item>
         <item>Her şeyi bir kez daha kontrol ediyoruz</item>
     </string-array>
     <string name="build_channel_name">Derleme ilerlemesi</string>
@@ -348,14 +352,14 @@
     <string name="leftover_removing_body">Önceki bir kurulum, köprünün bir kopyasını farklı bir paket adıyla bırakmış. Saat bağlantısı için yenisiyle yarışıyor. Android kaldırmayı onaylamanızı isteyecek; güvenle kabul edebilirsiniz. Sağlık verileriniz ve bu uygulama etkilenmez.</string>
     <string name="leftover_kept_title">Eski köprü kopyası korundu</string>
     <string name="leftover_kept_body">Saat bağlantısına engel olabilir. Daha sonra Android\'in uygulama ayarlarından kaldırabilirsiniz.</string>
-    <string name="install_phone_note">İzinleri, diğer uygulamaların üzerinde görüntülemeyi, bildirim erişimini ve kısıtlı ayarları siz açarsınız. Sonra bu ekrana dönün, yeniden denetlenir.</string>
+    <string name="install_phone_note">İzinleri, diğer uygulamaların üzerinde göstermeyi, bildirim erişimini, kısıtlamasız pil kullanımını ve kısıtlanmış ayarları siz açarsınız. Ardından bu ekrana dönün, yeniden kontrol edilir.</string>
     <string name="install_watch_title">Saatinize kurun</string>
     <string name="install_watch_intro">Wi-Fi üzerinden şu sırayla kurulur: Health Monitor, köprü, sonra telefon alarmları.</string>
-    <string name="install_watch_note">Bu sürerken saat açık ve bağlı kalır.</string>
+    <string name="install_watch_note">Bu işlem sürerken saatin ekranını açık ve saati Wi-Fi\'ye bağlı tutun.</string>
     <string name="install_start">Kurulumu başlat</string>
     <string name="install_error_build_missing">Derleme yok veya bu kurulumla uyuşmuyor. Yeniden derleyin, sonra kurun.</string>
-    <string name="install_error_failed">Saat kurulumu reddetti.</string>
-    <string name="install_error_signature">Saatte farklı bir anahtarla imzalanmış bir kopya zaten var. Hiçbir şey kaldırılmadı. O kopyayı kendiniz kaldırın, sonra tekrar deneyin.</string>
+    <string name="install_error_failed">Kurulum reddedildi.</string>
+    <string name="install_error_signature">Farklı bir anahtarla imzalanmış bir kopya zaten kurulu. Hiçbir şey kaldırılmadı. O kopyayı kendiniz kaldırın, sonra tekrar deneyin.</string>
     <string name="install_error_grant">Bir erişim ayarı uygulanamadı.</string>
     <string name="action_open">Aç</string>
     <string name="action_allow_installing">Uygulama kurulumuna izin ver</string>
@@ -365,9 +369,9 @@
     <string name="install_error_unknown_sources">Bu uygulamanın henüz uygulama kurma izni yok. İzin verip yeniden başlayın.</string>
     <string name="install_error_notifications">Önce bu uygulamaya bildirim izni verin: eşleme kodu bildirime yazılır.</string>
     <string name="phone_adb_title">Hepsine tek seferde izin ver</string>
-    <string name="phone_adb_intro">Anahtarlar işinize engel oluyorsa bu telefon, **Kablosuz hata ayıklama** üzerinden bunları kendine verebilir. Wi-Fi\'de olmanız gerekir. Bir bildirim sizden eşleştirme kodunu isteyecek.</string>
+    <string name="phone_adb_intro">Bunları tek tek elle açmak yerine bu telefon, **Kablosuz hata ayıklama** üzerinden hepsini kendine verebilir. Wi-Fi\'de olmanız gerekir. Bir bildirim sizden eşleme kodunu isteyecek.</string>
     <string name="phone_adb_action">Kablosuz hata ayıklamayla hepsine izin ver</string>
-    <string name="phone_adb_waiting_service">1. **Kablosuz hata ayıklama**\'yı açın.\n2. **Cihazı eşleme koduyla eşle**\'ye dokunun.\n3. Kodu o ekrandan çıkmadan yazabileceğiniz bir bildirim görünecek.</string>
+    <string name="phone_adb_waiting_service">1. **Kablosuz hata ayıklama**\'yı açın.\n2. **Cihazı eşleme kodu ile eşle**\'ye dokunun.\n3. Kodu o ekrandan çıkmadan yazabileceğiniz bir bildirim görünecek.</string>
     <string name="phone_adb_waiting_code">Eşleme ekranındaki altı haneli kodu burada veya bildirimde yazın.</string>
     <string name="phone_adb_wrong_code">Kod işe yaramadı. Eşleme ekranını kontrol edip tekrar deneyin.</string>
     <string name="phone_adb_ambiguous">Bu telefonda birden fazla **Kablosuz hata ayıklama** hizmeti bulundu. **Kablosuz hata ayıklama**\'yı kapatıp açın, sonra tekrar deneyin.</string>
@@ -379,7 +383,7 @@
     <string name="phone_adb_submit">Eşle</string>
     <string name="selfadb_channel">Bu telefonla eşleme</string>
     <string name="selfadb_code_channel">Eşleme kodu</string>
-    <string name="selfadb_waiting_service">Kablosuz hata ayıklamada Cihazı eşleme koduyla eşle\'ye dokunun</string>
+    <string name="selfadb_waiting_service">Kablosuz hata ayıklamada Cihazı eşleme kodu ile eşle\'ye dokunun</string>
     <string name="selfadb_enter_code_title">Eşleme kodunu girin</string>
     <string name="selfadb_enter_code_body">Eşleme ekranındaki altı haneli kodu yazın.</string>
     <string name="selfadb_reply_label">Eşleme kodu</string>
@@ -397,7 +401,7 @@
     <string name="watch_error_unreachable">Saate ulaşılamıyor. Kablosuz hata ayıklamanın açık olduğunu ve iki cihazın aynı Wi-Fi ağında bulunduğunu kontrol edin.</string>
     <string name="watch_error_pairing">Saat artık bu telefona güvenmiyor. Geri dönüp yeniden eşleyin.</string>
     <string name="watch_unreachable_title">Saat bulunamadı</string>
-    <string name="watch_unreachable_body">Saati uyandır, bu telefonla aynı Wi-Fi ağında olduğundan emin ol ve kablosuz hata ayıklamayı yeniden aç (Ayarlar › Geliştirici seçenekleri › Kablosuz hata ayıklama). Sonra tekrar dene.</string>
+    <string name="watch_unreachable_body">Saati uyandırın, bu telefonla aynı Wi-Fi ağında olduğundan emin olun ve kablosuz hata ayıklamayı yeniden açın (Ayarlar › Geliştirici seçenekleri › Kablosuz hata ayıklama). Sonra tekrar deneyin.</string>
     <string name="grant_permission">İzin</string>
     <string name="grant_appop">Uygulama işlemi</string>
     <string name="grant_setting">Sistem ayarı</string>
@@ -407,7 +411,7 @@
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Health Platform geliştirici modu</string>
-    <string name="devmode_intro">Health Tracking hizmeti, değiştirilmiş uygulamayla yalnızca geliştirici modunda konuşur. Patcher bunu saatin ekranı üzerinden açabilir: saati kilitsiz ve yakında tut.</string>
+    <string name="devmode_intro">Health Tracking hizmeti yamalı uygulamayla yalnızca geliştirici modunda konuşur. Yama aracı bunu saatin ekranı üzerinden açabilir: saatin kilidini açık ve ekranını açık tutun.</string>
     <string name="devmode_step_settings">Saatte **Ayarlar**\'ı açın.</string>
     <string name="devmode_step_apps">**Uygulamalar**\'a gidin.</string>
     <string name="devmode_step_health_platform">**Health Platform**\'u seçin.</string>
@@ -420,14 +424,14 @@
     <string name="devmode_manual_header">Ya da saatte elle</string>
     <string name="devmode_skip">Şimdilik atla</string>
     <string name="devmode_watch_unreachable">Saate ulaşılamıyor, yeniden deneniyor</string>
-    <string name="devmode_look_title">Saatine bak</string>
-    <string name="devmode_look_message">Saatte Health Platform ayarları açıldı. [Dev mode] görünene kadar başlığa tekrar tekrar dokun. Bu ekran bunu kendiliğinden fark eder.</string>
+    <string name="devmode_look_title">Saatinize bakın</string>
+    <string name="devmode_look_message">Saatte Health Platform ayarları açıldı. [Dev mode] görünene kadar başlığa tekrar tekrar dokunun. Bu ekran bunu kendiliğinden fark eder.</string>
     <string name="devmode_not_yet_title">Kendiliğinden açılamadı</string>
-    <string name="devmode_not_yet_message">Saatteki Health Platform ayarlarında [Dev mode] görünmedi. Saatin kilidini açıp yeniden dene ya da başlığa art arda 10 kez kendin dokun.</string>
+    <string name="devmode_not_yet_message">Saatteki Health Platform ayarlarında [Dev mode] görünmedi. Saatin kilidini açıp yeniden deneyin ya da başlığa art arda 10 kez kendiniz dokunun.</string>
     <string name="devmode_unreachable_title">Saate ulaşılamıyor</string>
-    <string name="devmode_unreachable_message">Saatin açık olduğunu, bu telefonla aynı Wi-Fi ağında olduğunu ve kablosuz hata ayıklamanın hâlâ açık olduğunu kontrol et.</string>
+    <string name="devmode_unreachable_message">Saatin açık olduğunu, bu telefonla aynı Wi-Fi ağında olduğunu ve kablosuz hata ayıklamanın hâlâ açık olduğunu kontrol edin.</string>
     <string name="devmode_success_title">Geliştirici modu açık</string>
-    <string name="devmode_success_message">Health Platform artık değiştirilmiş uygulamayı kabul ediyor. Sonraki adıma geçiliyor.</string>
+    <string name="devmode_success_message">Health Platform artık yamalı uygulamayı kabul ediyor. Sonraki adıma geçiliyor.</string>
 
     <!-- Disable stock apps -->
     <string name="disable_title">Orijinal uygulamayı kapatın</string>
@@ -463,7 +467,7 @@
     <string name="selftest_shm_title">Health Monitor saati görüyor</string>
     <string name="selftest_ecg_title">EKG telefona ulaşıyor</string>
     <string name="selftest_platform_question">Saatte Health Platform geliştirici modunda mı?</string>
-    <string name="selftest_gms_question">Telefondaki Wear OS uygulaması saati bağlı olarak gösteriyor mu?</string>
+    <string name="selftest_gms_question">Telefondaki Galaxy Wearable uygulaması saati bağlı olarak gösteriyor mu?</string>
     <string name="selftest_shm_question">Telefondaki Samsung Health Monitor saati bağlı olarak gösteriyor mu?</string>
     <string name="selftest_ecg_question">Saatte bir EKG çekin. Telefonda görünüyor mu?</string>
     <string name="selftest_detail_answered_no">Hayır yanıtını verdiniz</string>
@@ -530,9 +534,9 @@
     <string name="home_menu_new_build">Yeni derleme</string>
     <string name="home_menu_self_test">Kendi kendine sınamayı çalıştır</string>
     <string name="home_menu_restore_watch">Saati geri yükle</string>
-    <string name="home_menu_uninstall">Kaldır</string>
+    <string name="home_menu_uninstall">Tüm değişiklikleri geri al</string>
     <string name="restore_title">Orijinal uygulama geri yüklensin mi?</string>
-    <string name="restore_body">Yamalı uygulama kaldırılır ve orijinali yeniden açılır. Saatteki verileriniz kalır.</string>
+    <string name="restore_body">Yamalı uygulama ve verileri kaldırılır, orijinal uygulama yeniden açılır.</string>
     <string name="restore_confirm">Geri yükle</string>
 
     <!-- Signing key -->
@@ -615,7 +619,7 @@
     <string name="watchpair_error_bad_host">Saatin IP adresini girin, örneğin 192.168.1.20.</string>
     <string name="watchpair_error_bad_port">1 ile 65535 arasında bir bağlantı noktası girin.</string>
     <string name="watchpair_guide_title">Saatinizde eşlemeyi açın</string>
-    <string name="watchpair_guide_3">1. Saati telefonla aynı Wi-Fi ağına bağlayın.\n2. **Ayarlar** › **Bağlantılar** › **Wi-Fi**.</string>
+    <string name="watchpair_guide_3">1. Saatte **Ayarlar** › **Bağlantılar** › **Wi-Fi**\'ı açın.\n2. Bu telefonla aynı Wi-Fi ağına bağlanın.</string>
     <string name="watchpair_guide_5">1. **Yeni cihaz eşle**\'ye dokunun.\n2. Saat 6 haneli bir kod ve bir adres gösterir.\n3. Bu uygulama adresi kendisi bulur; siz yalnızca kodu yazarsınız.</string>
     <string name="watchpair_guide_again">Bana tekrar göster</string>
     <string name="watchpair_manual">Atla ve elle yap</string>
@@ -658,72 +662,72 @@
     <string name="watch_ui_connected">Bağlandı</string>
     <string name="watch_ui_allow_prompt">Bu ağda kablosuz hata ayıklamaya izin verilsin mi?</string>
     <string name="watch_ui_allow">İzin ver</string>
-    <string name="troubleshoot_open">Eşleştirmede sorun mu var?</string>
-    <string name="troubleshoot_title">Eşleştirmede sorun mu var?</string>
-    <string name="troubleshoot_intro">Galaxy Wearable saatinizin eşleştirmesini tamamlayamıyorsa şunları sırayla deneyin.</string>
+    <string name="troubleshoot_open">Eşlemede sorun mu var?</string>
+    <string name="troubleshoot_title">Eşlemede sorun mu var?</string>
+    <string name="troubleshoot_intro">Galaxy Wearable saatinizin eşlemesini tamamlayamıyorsa şunları sırayla deneyin.</string>
     <string name="troubleshoot_fixes_title">Hızlı çözümler</string>
     <string name="troubleshoot_fix_1">Telefonda ve saatte Bluetooth\'u açın ve ikisini birbirine yakın tutun.</string>
     <string name="troubleshoot_fix_2">Telefonu ve saati yeniden başlatın.</string>
     <string name="troubleshoot_fix_3">Galaxy Wearable\'ı, saat eklentisini ve Google Play Hizmetleri\'ni mağazadan güncelleyin.</string>
-    <string name="troubleshoot_fix_4">Saati bu telefonun Bluetooth cihazlarından ve Galaxy Wearable\'dan kaldırın, sonra Galaxy Wearable üzerinden yeniden eşleştirin.</string>
+    <string name="troubleshoot_fix_4">Saati bu telefonun Bluetooth cihazlarından ve Galaxy Wearable\'dan kaldırın, sonra Galaxy Wearable üzerinden yeniden eşleyin.</string>
     <string name="troubleshoot_gms_title">Google Play Hizmetleri takıldı</string>
-    <string name="troubleshoot_gms_intro">Saat daha önce eşleştirildiyse veya bu telefonda Google Play Hizmetleri çalışmayı bıraktıysa eşleştirme hiç tamamlanmayabilir. Google Play Hizmetleri verilerini temizlemek onu sıfırlar.</string>
+    <string name="troubleshoot_gms_intro">Saat daha önce eşlendiyse veya bu telefonda Google Play Hizmetleri çalışmayı bıraktıysa eşleme hiç tamamlanmayabilir. Google Play Hizmetleri verilerini temizlemek onu sıfırlar.</string>
     <string name="troubleshoot_gms_warning">Temizlemek, bu telefondaki tüm Google hesaplarınızın oturumunu kapatabilir. Yeniden oturum açmanız gerekebilir.</string>
     <string name="troubleshoot_manual_title">Kendiniz yapın</string>
     <string name="troubleshoot_manual_steps">1. **Google Play Hizmetleri** ayarlarını açın.\n2. **Depolama**\'ya dokunun.\n3. **Alanı yönet**\'e dokunun.\n4. **Tüm verileri temizle**\'ye dokunun.</string>
     <string name="troubleshoot_manual_open">Google Play Hizmetleri ayarlarını aç</string>
     <string name="troubleshoot_auto_title">Uygulama yapsın</string>
     <string name="troubleshoot_auto_intro">Bu uygulama komutu bu telefonun kendi Kablosuz hata ayıklama özelliği üzerinden gönderebilir. Wi-Fi\'ye bağlı olmanız gerekir.</string>
-    <string name="troubleshoot_adb_pair">Bu telefonun ADB\'siyle eşleştir</string>
-    <string name="troubleshoot_adb_retry">Eşleştirmeyi yeniden dene</string>
-    <string name="troubleshoot_adb_paired">Bu telefonun ADB\'siyle eşleştirildi. Sonraki adım için kod gerekmez.</string>
-    <string name="troubleshoot_adb_busy">Başka bir Kablosuz hata ayıklama eşleştirmesi zaten sürüyor. Önce onu bitirin veya iptal edin.</string>
+    <string name="troubleshoot_adb_pair">Bu telefonun ADB\'siyle eşle</string>
+    <string name="troubleshoot_adb_retry">Eşlemeyi yeniden dene</string>
+    <string name="troubleshoot_adb_paired">Bu telefonun ADB\'siyle eşlendi. Sonraki adım için kod gerekmez.</string>
+    <string name="troubleshoot_adb_busy">Başka bir Kablosuz hata ayıklama eşlemesi zaten sürüyor. Önce onu bitirin veya iptal edin.</string>
     <string name="troubleshoot_clear_action">Google Play Hizmetleri verilerini temizle</string>
     <string name="troubleshoot_clear_waiting">Onaylandı. Telefonla bağlantı bekleniyor, ardından Google Play Hizmetleri verileri temizlenecek.</string>
     <string name="troubleshoot_clear_running">Google Play Hizmetleri verileri temizleniyor...</string>
-    <string name="troubleshoot_clear_done">Tamam. Android isterse Google hesaplarınızda yeniden oturum açın. Sonra Galaxy Wearable\'ı açıp saati yeniden eşleştirin.</string>
+    <string name="troubleshoot_clear_done">Tamam. Android isterse Google hesaplarınızda yeniden oturum açın. Sonra Galaxy Wearable\'ı açıp saati yeniden eşleyin.</string>
     <string name="troubleshoot_clear_failed">Google Play Hizmetleri verileri temizlenmedi.</string>
     <string name="troubleshoot_dialog_title">Google Play Hizmetleri verileri temizlensin mi?</string>
     <string name="troubleshoot_dialog_body">Bu, bu telefondaki Google Play Hizmetleri\'ni sıfırlar. Bu telefondaki tüm Google hesaplarınıza erişimi kaybedebilir ve yeniden oturum açmanız gerekebilir.\n\nGoogle Cüzdan kartları, Cihazımı Bul ve yedekleme ayarları gibi Google Play Hizmetleri\'ne bağlı bazı hizmetlerin yeniden kurulması gerekebilir.\n\nSaatiniz değişmez.</string>
     <string name="troubleshoot_dialog_confirm">Verileri temizle</string>
-    <string name="troubleshoot_back_to_check">Eşleştirme kontrolüne dön</string>
+    <string name="troubleshoot_back_to_check">Eşleme kontrolüne dön</string>
     <string name="skip_title">Bunu atlayalım</string>
-    <string name="skip_body">Bunu otomatik olarak algılamak için yeterli bilgimiz var.</string>
+    <string name="skip_body">Bu zaten yapılmış, bu yüzden ileri geçebilirsiniz.</string>
     <string name="skip_checking">Cihazlarınız kontrol ediliyor…</string>
     <string name="skip_card_step">Adım %1$d · %2$s</string>
     <string name="skip_reason_profile">Bağlı saatte Android %1$s (%2$s) algılandı.</string>
-    <string name="skip_reason_profile_network">Saatiniz (%1$s) Wi-Fi üzerinden Android API %2$s olarak bildirdi (%3$s).</string>
+    <string name="skip_reason_profile_network">Saatiniz (%1$s) Wi-Fi üzerinden Android API düzeyi %2$s bildirdi: %3$s.</string>
     <string name="skip_reason_wearable">Saatiniz zaten Galaxy Wearable ile eşlenmiş.</string>
     <string name="skip_reason_watchpair">Saatiniz zaten kablosuz hata ayıklama ile bağlı.</string>
     <string name="skip_confirm">Anladım</string>
     <string name="skip_manual">Elle ayarla</string>
-    <string name="selfadb_guide_title">Bu telefonla eşleştirme nasıl çalışır</string>
+    <string name="selfadb_guide_title">Bu telefonla eşleme nasıl çalışır</string>
     <string name="selfadb_guide_sub_1">Aşağıdaki düğmeye dokunun</string>
     <string name="selfadb_guide_sub_2">Geliştirici seçenekleri bölümünde Kablosuz hata ayıklamayı açın</string>
-    <string name="selfadb_guide_sub_3">Eşleştirme koduyla cihaz eşleştir seçeneğine dokunun</string>
+    <string name="selfadb_guide_sub_3">Cihazı eşleme kodu ile eşle seçeneğine dokunun</string>
     <string name="selfadb_guide_sub_4">Altı haneyi OpenSHM bildiriminde veya burada, bu ekranda yazın</string>
-    <string name="selfadb_guide_already">Daha önce eşleştirdiyseniz kendiliğinden bağlanır.</string>
-    <string name="selfadb_guide_ui_pair_code">Eşleştirme koduyla cihaz eşleştir</string>
-    <string name="selfadb_guide_ui_paired">Eşleştirilmiş cihazlar</string>
+    <string name="selfadb_guide_already">Daha önce eşlediyseniz kendiliğinden bağlanır.</string>
+    <string name="selfadb_guide_ui_pair_code">Cihazı eşleme kodu ile eşle</string>
+    <string name="selfadb_guide_ui_paired">Eşlenen cihazlar</string>
     <string name="selfadb_open_wireless">Kablosuz hata ayıklamayı açın</string>
     <string name="outcome_acknowledge">Anladım</string>
-    <string name="phone_adb_error_title">Bu uygulamadaki bir sorun</string>
-    <string name="phone_adb_error_message">Bu uygulamadaki bir sorundur, sizin bir hatanız değildir ve kendiniz çözemezsiniz. Her satırdaki Ayarları aç düğmelerini kullanabilir veya yine de devam edebilirsiniz.</string>
+    <string name="phone_adb_error_title">Erişim otomatik olarak verilemedi</string>
+    <string name="phone_adb_error_message">Erişim ayarları Kablosuz hata ayıklama üzerinden uygulanamadı. Her satırdaki Ayarları aç düğmesini yine de kullanabilir veya yine de devam edebilirsiniz.</string>
     <string name="phone_adb_success_title">Her şey hazır</string>
     <string name="phone_adb_success_message">Sonraki adıma geçiyoruz</string>
     <string name="acquire_shealth_title">Samsung Health (isteğe bağlı)</string>
-    <string name="acquire_shealth_summary">Ayrıca Samsung Health telefon uygulamasının yamalı bir kopyasını, \"Samsung Health+\", daha yeni bir Galaxy Watch gerektiren özellikleri açık olarak oluşturur. Play\'deki Samsung Health\'in yanına kurulur ve o uygulamayı korursunuz: o, saate bağlı kalır ve verileri Samsung Account hesabınıza yükler; Samsung Health+ ise aynı hesapla oturum açtıktan sonra aynı verileri buluttan indirir (bir süre geriden gelebilir).</string>
+    <string name="acquire_shealth_summary">Ayrıca Samsung Health telefon uygulamasının, aksi halde daha yeni bir Galaxy Watch gerektiren özellikleri açılmış yamalı bir kopyasını, \"Samsung Health+\"\'ı oluşturur. Bu kopya, sakladığınız Google Play\'deki Samsung Health uygulamasının yanına kurulur: o uygulama saate bağlı kalır ve verileri Samsung hesabınıza yükler; Samsung Health+ ise aynı hesapla oturum açtıktan sonra aynı verileri buluttan indirir (bir süre geriden gelebilir).</string>
     <string name="output_shealth_phone">Samsung Health+ (yamalı)</string>
-    <string name="change_purpose_shealth_phone">Samsung Health\'in aşağıdaki özellikleri açılmış, yeniden adlandırılmış bir kopyası. Play\'deki Samsung Health\'in yanında çalışır ve verilerinizi Samsung bulutundan okur.</string>
+    <string name="change_purpose_shealth_phone">Enerji Puanı kutucuğu ve isteğe bağlı olarak Hayati Değerler, Antrenman Yükü ve kondisyon endeksi açılmış, yeniden adlandırılmış bir Samsung Health kopyası. Google Play\'deki Samsung Health uygulamasının yanında çalışır ve verilerinizi Samsung bulutundan okur.</string>
     <string name="patch_shealth_res_webp">Yanlış dosya uzantısıyla saklanan dört görseli düzeltir, böylece uygulama yeniden derlenebilir (görünür bir değişiklik yok).</string>
     <string name="patch_shealth_feature_dev_ui">Özellik listesini Samsung geliştirici modu olmadan Ayarlar &gt; Hakkında bölümünde gösterir.</string>
     <string name="patch_shealth_vitality_tile">Enerji Skoru kutucuğunu, saatin özelliği bildirmesini beklemeden gösterir.</string>
     <string name="patch_shealth_rename_manifest">Uygulamaya, orijinalinin yanına kurulabilmesi için kendi paket adını ve etiketini (Samsung Health+) verir.</string>
     <string name="patch_shealth_rename_code">Uygulamanın dahili referanslarını yeni paket adına günceller.</string>
     <string name="patch_shealth_rename_account_xml">Bulut senkronizasyonunun orijinalin yanında çalışması için uygulamaya kendi hesap ve senkronizasyon kaydını verir.</string>
-    <string name="patch_shealth_capability_gates">Aksi halde Galaxy Watch8 veya Ultra gerektiren Hayati Değerler, Antrenman Yükü ve kondisyon endeksini açar. Bunlar telefonda, senkronize edilmiş geçmişinizden hesaplanır.</string>
+    <string name="patch_shealth_capability_gates">Aksi halde Galaxy Watch8 veya Ultra gerektiren Hayati Değerler, Antrenman Yükü ve kondisyon endeksini açar. Bunlar telefonda, eşitlenmiş geçmişinizden hesaplanır.</string>
     <string name="patch_shealth_launcher_badge">Orijinalinden ayırt edebilmeniz için uygulama simgesine küçük bir OpenSHM rozeti ekler.</string>
-    <string name="patch_shealth_oobe_local">İsteğe bağlı, varsayılan olarak kapalı. Samsung hesabıyla oturum açma zorunluluğunu atlar ve uygulamayı bulut eşitlemesi olmadan yerel olarak kullanır. Yalnızca oturum açma çalışmıyorsa aç.</string>
+    <string name="patch_shealth_oobe_local">Varsayılan olarak kapalı. Samsung hesabıyla oturum açma zorunluluğunu atlar ve uygulamayı bulut eşitlemesi olmadan yerel olarak çalıştırır; bu yüzden Google Play\'deki Samsung Health uygulamasının yüklediği verileri almaz. Yalnızca oturum açma çalışmıyorsa açın.</string>
     <string name="device_logs_channel">Cihaz günlükleri</string>
     <string name="device_logs_notification_title">Cihaz günlükleri kaydediliyor</string>
     <string name="device_logs_notification_text">%1$d saat · %2$d telefon</string>
@@ -739,7 +743,7 @@
     <string name="device_logs_lines">%1$d satır</string>
     <string name="device_logs_monitored">İzlenen uygulamalar</string>
     <string name="device_logs_no_apps">Yüklü izlenen uygulama yok</string>
-    <string name="device_logs_empty">Henüz günlük satırı yok. Yamalanmış uygulamaların satırları kaydedildikçe burada görünür.</string>
+    <string name="device_logs_empty">Henüz günlük satırı yok. Yamalı uygulamaların satırları kaydedildikçe burada görünür.</string>
     <string name="device_logs_export">.txt olarak dışa aktar</string>
     <string name="device_logs_stop">Kaydı durdur</string>
     <string name="device_logs_resume">Kaydı sürdür</string>
@@ -748,12 +752,12 @@
     <string name="device_logs_export_failed">Günlükler dışa aktarılamadı</string>
     <string name="device_logs_sheet_watch_title">Saat bağlı değil</string>
     <string name="device_logs_sheet_watch_off">Saatte kablosuz hata ayıklamayı açın (Ayarlar › Geliştirici seçenekleri › Kablosuz hata ayıklama) ve saati bu telefonla aynı Wi-Fi ağında tutun. Saat göründüğü anda günlük kendiliğinden bağlanır.</string>
-    <string name="device_logs_sheet_watch_not_paired">Bu saat patcher ile hiç eşlenmedi. Önce eşleyin, sonra günlüklerini görmek için geri dönün.</string>
+    <string name="device_logs_sheet_watch_not_paired">Bu saat yama aracıyla hiç eşlenmedi. Önce eşleyin, sonra günlüklerini görmek için geri dönün.</string>
     <string name="device_logs_sheet_watch_pair">Saati eşle</string>
     <string name="device_logs_sheet_phone_title">Telefon bağlı değil</string>
     <string name="device_logs_sheet_phone_off">Bu telefonda kablosuz hata ayıklamayı açın (Ayarlar › Geliştirici seçenekleri › Kablosuz hata ayıklama) ve tekrar deneyin.</string>
     <string name="device_logs_sheet_phone_open">Geliştirici seçeneklerini aç</string>
-    <string name="device_logs_sheet_phone_untrusted">Kablosuz hata ayıklama açık, ancak bu telefon patcher\'a henüz güvenmiyor. Eşle\'ye dokunun ve görünen bildirime eşleme kodunu yazın.</string>
+    <string name="device_logs_sheet_phone_untrusted">Kablosuz hata ayıklama açık, ancak bu telefon yama aracına henüz güvenmiyor. Eşle\'ye dokunun ve görünen bildirime eşleme kodunu yazın.</string>
     <string name="device_logs_sheet_phone_pair">Bu telefonu eşle</string>
     <string name="revert_title">Tüm değişiklikleri geri al</string>
     <string name="revert_intro">OpenSHM Patcher\'ın telefonunuza ve saatinize kurduklarını kaldırır ve değiştirdiği ayarları geri alır. Yalnızca gerçekten kurulu olanlara dokunulur; sistem uygulamaları asla kaldırılmaz.</string>
@@ -761,10 +765,10 @@
     <string name="revert_action_remove">Kaldır</string>
     <string name="revert_action_enable">Yeniden aç</string>
     <string name="revert_action_restore">Geri yükle</string>
-    <string name="revert_setting_label">Hep açık ekran ayarı</string>
-    <string name="revert_setting_note">Şu an kapalı; yeniden açık yapılacak.</string>
+    <string name="revert_setting_label">Her zaman açık ekran ayarı</string>
+    <string name="revert_setting_note">Yama aracının önceki bir sürümü bunu kapattı; yeniden açılacak.</string>
     <string name="revert_exemption_label">Sensör erişimi istisnası</string>
-    <string name="revert_exemption_note">Saatin sensör istisna listesindeki girdimiz kaldırılacak; diğer uygulamaların girdileri kalır.</string>
+    <string name="revert_exemption_note">Saatin gizli API istisna listesindeki girdimiz kaldırılacak; diğer uygulamaların girdileri kalır.</string>
     <string name="revert_enable_note">Kurulum onu kapattı; yeniden açılacak.</string>
     <string name="revert_not_installed">Kurulu değil, yapılacak bir şey yok: %1$s</string>
     <string name="revert_system_apps">Sistem uygulaması oldukları için dokunulmadı: %1$s</string>
@@ -792,7 +796,7 @@
     <string name="revert_manual_title">Elle yapılacaklar</string>
     <string name="revert_manual_devmode">Açtıysanız Health Platform\'un geliştirici modunu kapatın.</string>
     <string name="revert_manual_adb">Hata ayıklama yetkisini iptal edin ve saatte ile bu telefonda kablosuz hata ayıklamayı kapatın.</string>
-    <string name="revert_manual_keys">İmza anahtarınızın yedekleri (Belgeler/OpenSHM) ve kayıtlı parola kalır. Artık gerekmiyorsa Dosyalar\'dan veya parola yöneticinizden silin.</string>
+    <string name="revert_manual_keys">İmza anahtarınızın yedekleri (Documents/OpenSHM) ve kayıtlı parola kalır. Artık gerekmiyorsa Dosyalar\'dan veya parola yöneticinizden silin.</string>
     <string name="revert_self_action">OpenSHM Patcher\'ı kaldır</string>
     <string name="revert_self_title">OpenSHM Patcher kaldırılsın mı?</string>
     <string name="revert_self_body">Android onayınızı ister. Uygulama ve içindeki imza anahtarı dahil saklanan verileri kaldırılır. Başka yere kaydettiğiniz yedekler kalır.</string>

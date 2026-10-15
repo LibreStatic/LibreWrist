@@ -4,7 +4,7 @@
     <string name="action_back">Indietro</string>
     <string name="action_help">Aiuto</string>
     <string name="action_next">Avanti</string>
-    <string name="action_previous">Indietro</string>
+    <string name="action_previous">Precedente</string>
     <string name="action_close">Chiudi</string>
     <string name="action_settings">Impostazioni</string>
     <string name="action_more_options">Altre opzioni</string>
@@ -45,20 +45,20 @@
     <!-- Welcome -->
     <string name="welcome_title">Le tue app, il tuo orologio, a modo tuo</string>
     <string name="welcome_promise_download">Le app ufficiali le scarichi tu; qui non è incluso nulla.</string>
-    <string name="welcome_promise_patch">Le patch fanno funzionare Samsung Health Monitor su un telefono che non è Samsung e lo affiancano all\'app originale dell\'orologio.</string>
-    <string name="welcome_promise_undo">Ogni modifica può essere annullata e le app originali restano al loro posto.</string>
+    <string name="welcome_promise_patch">Le patch permettono a Samsung Health Monitor di funzionare su un telefono non prodotto da Samsung, e l\'app modificata per l\'orologio si installa accanto a quella originale.</string>
+    <string name="welcome_promise_undo">Ogni modifica si può annullare, e le app originali non vengono mai disinstallate.</string>
     <string name="welcome_get_started">Inizia</string>
     <string name="welcome_what_changes">Cosa cambierà sui miei dispositivi?</string>
     <string name="changes_title">Cosa cambierà</string>
-    <string name="changes_intro">Ogni app che viene installata, a cosa serve e cosa può fare. Non viene cancellato nulla e tutto può essere annullato.</string>
+    <string name="changes_intro">Ogni app che viene installata, a cosa serve e cosa le è consentito fare. Non viene cancellato nulla senza prima chiedertelo, e tutto si può annullare.</string>
     <string name="changes_on_phone">Su questo telefono</string>
     <string name="changes_on_watch">Sul tuo orologio</string>
     <string name="changes_allowed_to">Può</string>
     <string name="changes_optional">Facoltativo</string>
     <string name="changes_disable_undo">Resta sull\'orologio e può essere riattivata in qualsiasi momento.</string>
     <string name="changes_technical">Mostra i nomi tecnici</string>
-    <string name="change_purpose_shm_phone">L\'app Samsung che mostra sul telefono le tue misurazioni di ECG e pressione sanguigna, adattata per funzionare con questo telefono.</string>
-    <string name="change_purpose_shm_watch">L\'app Samsung che esegue sull\'orologio le misurazioni di ECG e pressione sanguigna, adattata per funzionare con questo telefono.</string>
+    <string name="change_purpose_shm_phone">L\'app Samsung che mostra sul telefono le tue misurazioni di ECG e pressione arteriosa, adattata per funzionare con questo telefono.</string>
+    <string name="change_purpose_shm_watch">L\'app Samsung che esegue sull\'orologio le misurazioni di ECG e pressione arteriosa, adattata per funzionare con questo telefono.</string>
     <string name="change_purpose_bridge_phone">La nostra app che invia all\'orologio, tramite Bluetooth, le tue notifiche, chiamate e sveglie.</string>
     <string name="change_purpose_bridge_watch">La nostra app che mostra sull\'orologio le notifiche, le chiamate e le sveglie del tuo telefono.</string>
     <string name="change_purpose_alarm_fork">Una copia dell\'app Sveglia dell\'orologio che resta sincronizzata con le sveglie del tuo telefono. L\'originale resta installata.</string>
@@ -80,6 +80,8 @@
     <string name="grant_why_notifications_phone">Mantenere una piccola notifica mentre è connessa all\'orologio.</string>
     <string name="grant_why_notifications_watch">Mostrare sull\'orologio le notifiche del tuo telefono.</string>
     <string name="grant_why_notifications_alarm">Mostrare la sveglia mentre suona.</string>
+    <string name="grant_why_notifications_shm">Mostrare le notifiche di Health Monitor.</string>
+    <string name="grant_why_notifications_shealth">Mostrare le notifiche di Samsung Health+.</string>
     <string name="grant_why_bluetooth_phone">Connettersi all\'orologio tramite Bluetooth.</string>
     <string name="grant_why_bluetooth_watch">Connettersi al telefono tramite Bluetooth.</string>
     <string name="grant_why_restricted">Android blocca alcune impostazioni per le app installate da fuori uno store. Così puoi attivare l\'accesso alle notifiche per il bridge.</string>
@@ -94,29 +96,30 @@
     <string name="grant_why_ongoing_calls">Mostrare e controllare sull\'orologio la chiamata in corso.</string>
     <string name="grant_why_always_on">Evita che l\'always-on display metta l\'orologio in sospensione durante una misurazione.</string>
     <string name="grant_why_battery_bridge">Mantenere attivo il collegamento Bluetooth mentre l\'orologio risparmia batteria.</string>
+    <string name="grant_why_battery_bridge_phone">Mantenere attivo il collegamento Bluetooth mentre il telefono risparmia batteria.</string>
     <string name="grant_why_battery_alarm">Suonare in orario anche mentre l\'orologio risparmia batteria.</string>
-    <string name="grant_why_hidden_api">Consente all\'app dell\'orologio di usare il servizio sensori di Samsung per ECG, pressione arteriosa e apnea notturna. Vale per tutto l\'orologio, ma solo per il software dei sensori di Samsung.</string>
-    <string name="changes_disables">Può essere disattivato</string>
+    <string name="grant_why_hidden_api">Gli orologi più recenti (One UI 8 Watch) impediscono all\'app dell\'orologio di accedere al gestore dei sensori di Samsung, che le serve per ECG, pressione arteriosa e apnea notturna. L\'eccezione vale per tutte le app dell\'orologio, ma solo per il gestore dei sensori di Samsung.</string>
+    <string name="changes_disables">Disattivata durante la configurazione</string>
 
     <!-- Profile -->
     <string name="profile_title">Che orologio hai?</string>
     <string name="profile_intro">Questo decide quali app ufficiali ti servono.</string>
     <string name="profile_wear5_title">Wear OS 5 o successivo</string>
     <string name="profile_wear5_summary">Health Monitor più le sveglie del telefono sull\'orologio.</string>
-    <string name="profile_wear5_apps">3 app ufficiali</string>
+    <string name="profile_wear5_apps">3 app ufficiali, o 4 con Samsung Health</string>
     <string name="profile_wear3_title">Wear OS 3 o 4</string>
-    <string name="profile_wear3_summary">Solo Health Monitor. L\'app delle sveglie richiede Android 14 sull\'orologio.</string>
-    <string name="profile_wear3_apps">2 app ufficiali</string>
+    <string name="profile_wear3_summary">Health Monitor e il bridge, senza le sveglie del telefono. L\'app delle sveglie richiede Android 14 sull\'orologio.</string>
+    <string name="profile_wear3_apps">2 app ufficiali, o 3 con Samsung Health</string>
     <string name="profile_detected">Verificato sul tuo orologio: Android %1$s (%2$s)</string>
     <string name="profile_check_paired">Controlla gli orologi associati</string>
-    <string name="profile_detected_network">Il tuo orologio (%1$s) ha annunciato Android API %2$s tramite Wi-Fi (%3$s)</string>
+    <string name="profile_detected_network">Il tuo orologio (%1$s) ha indicato il livello API Android %2$s tramite Wi-Fi: %3$s</string>
     <string name="profile_paired_certain">Usa sempre Wear OS 5 o successivo, quindi questa opzione è selezionata.</string>
     <string name="profile_paired_depends">Può usare una delle due versioni, a seconda degli aggiornamenti.</string>
     <string name="profile_tip_wireless">Per saperlo con certezza, attiva il debug wireless sull\'orologio: questa schermata legge la versione tramite Wi-Fi.</string>
     <string name="profile_scanning">Ricerca dell\'orologio sul Wi-Fi…</string>
     <string name="profile_allow">Consenti</string>
-    <string name="profile_check_none">Nessun Galaxy Watch associato trovato. Scegli un\'opzione oppure lascia che l\'app verifichi al passo 3.</string>
-    <string name="profile_check_denied">L\'accesso al Bluetooth non è stato consentito, quindi non si possono controllare gli orologi associati. Scegli un\'opzione oppure lascia che l\'app verifichi al passo 3.</string>
+    <string name="profile_check_none">Nessun Galaxy Watch associato trovato. Scegli un\'opzione oppure lascia che l\'app verifichi al passaggio 3.</string>
+    <string name="profile_check_denied">L\'accesso al Bluetooth non è stato consentito, quindi non si possono controllare gli orologi associati. Scegli un\'opzione oppure lascia che l\'app verifichi al passaggio 3.</string>
     <string name="profile_howto_button">Come capire quale versione ho</string>
     <string name="howto_title">Quale versione ha il mio orologio?</string>
     <string name="howto_progress">%1$d di %2$d</string>
@@ -137,15 +140,15 @@
     <string name="watch_ui_android">Versione Android</string>
     <string name="profile_howto_phone">La stessa schermata si trova nell\'app Galaxy Wearable sul telefono: **Impostazioni dell\'orologio** › **Informazioni sull\'orologio** › **Informazioni sul software**.</string>
     <string name="profile_howto_models">Galaxy Watch7, Watch Ultra e successivi sono sempre idonei. Watch4, Watch5, Watch6 e Watch FE lo sono solo dopo l\'aggiornamento a One UI 6 Watch.</string>
-    <string name="profile_howto_unsure">Non sei sicuro? Scegli una qualsiasi: l\'app controlla da sola il tuo orologio una volta connesso (passo 3) e corregge la scelta prima di scaricare qualsiasi cosa.</string>
+    <string name="profile_howto_unsure">Non sei sicuro? Scegli una qualsiasi: l\'app controlla da sola il tuo orologio una volta connesso (passaggio 3) e corregge la scelta prima di scaricare qualsiasi cosa.</string>
 
     <!-- Galaxy Wearable pairing check -->
     <string name="wearable_title">Il tuo orologio è associato?</string>
     <string name="wearable_recheck">Controlla di nuovo</string>
 
     <!-- Watch pairing over Wi-Fi -->
-    <string name="watchpair_correct_older">Il tuo orologio usa Android %1$s, quindi l\'app delle sveglie viene saltata: ti servono 2 app ufficiali invece di 3.</string>
-    <string name="watchpair_correct_newer">Il tuo orologio usa Android %1$s, quindi l\'app delle sveglie è inclusa: ti servono 3 app ufficiali invece di 2.</string>
+    <string name="watchpair_correct_older">Il tuo orologio ha Android %1$s, quindi l\'app delle sveglie viene esclusa: ti serve un\'app ufficiale in meno.</string>
+    <string name="watchpair_correct_newer">Il tuo orologio ha Android %1$s, quindi l\'app delle sveglie viene inclusa: ti serve un\'app ufficiale in più.</string>
     <string name="watchpair_paired">Orologio associato</string>
     <string name="watchpair_title">Connettiti al tuo orologio</string>
     <string name="watchpair_intro">L\'orologio accetta installazioni via Wi-Fi una volta associato con un breve codice.</string>
@@ -168,7 +171,7 @@
 
     <!-- Acquire -->
     <string name="acquire_title">Procurati le app ufficiali</string>
-    <string name="acquire_intro">Scarica ogni app tu stesso, da una fonte di cui ti fidi. Il patcher non le conserva né le distribuisce mai.</string>
+    <string name="acquire_intro">Scarica tu ogni app, da una fonte di cui ti fidi. Il patcher non le include e non le condivide mai.</string>
     <string name="acquire_open_mirror">Apri su APKMirror</string>
     <string name="acquire_more_ways">Altri modi per ottenere questa app</string>
     <string name="acquire_use_file">Usa un file che ho già</string>
@@ -211,8 +214,8 @@
     <string name="customize_required">Obbligatorio, sempre attivo</string>
     <string name="customize_advanced">Avanzate</string>
     <string name="customize_prefix_label">Prefisso del pacchetto per le app di supporto</string>
-    <string name="customize_prefix_explainer">Dà il nome alle app bridge e all\'app delle sveglie. Le due app Samsung Health Monitor mantengono il proprio pacchetto per poter comunicare tra loro.</string>
-    <string name="customize_prefix_ok">Viene generato un nuovo prefisso per te.</string>
+    <string name="customize_prefix_explainer">Dà il nome alle app bridge, all\'app delle sveglie e a Samsung Health+. Le due app Samsung Health Monitor usano invece un nome di pacchetto fisso e condiviso, per poter comunicare tra loro.</string>
+    <string name="customize_prefix_ok">Va bene qualsiasi prefisso valido; per iniziare ne viene inserito uno casuale.</string>
     <string name="customize_prefix_locked">Bloccato: le app di supporto sono installate e gli aggiornamenti richiedono lo stesso prefisso.</string>
     <string name="customize_prefix_regenerate">Genera un nuovo prefisso</string>
     <string name="customize_build">Compila</string>
@@ -234,16 +237,17 @@
 
     <!-- Patch descriptions (titles come from the catalogue) -->
     <string name="patch_generic_manufacturer_check">Accetta un telefono non prodotto da Samsung.</string>
-    <string name="patch_generic_vendor_check">Accetta un telefono senza l\'SDK Samsung.</string>
+    <string name="patch_generic_vendor_check">Accetta un telefono che non indica Samsung come produttore (override del produttore).</string>
     <string name="patch_shm_min_age_22_to_16">Abbassa l\'età minima da 22 a 16 anni.</string>
+    <string name="patch_watch_min_age_22_to_16">Abbassa a 16 anni l\'età minima di tutte le funzioni (22, o 18 per l\'apnea notturna).</string>
     <string name="patch_shm_supported_type_ordinals">Considera supportata ogni regione.</string>
-    <string name="patch_shm_region_supportedtype">Fa passare il controllo della regione.</string>
-    <string name="patch_shm_region_countrylist">Accetta qualsiasi paese nell\'elenco dei supportati.</string>
-    <string name="patch_shm_root_packagevalidator">Salta la convalida del certificato del produttore.</string>
+    <string name="patch_shm_region_supportedtype">Disattiva il controllo regionale.</string>
+    <string name="patch_shm_region_countrylist">Considera supportato qualsiasi paese (controllo regionale disattivato).</string>
+    <string name="patch_shm_root_packagevalidator">Disattiva il controllo del certificato Samsung, che l\'app rifirmata non supera più.</string>
     <string name="patch_shm_force_update_response">Ignora una risposta di aggiornamento fallita o forzata.</string>
     <string name="patch_shm_force_update_pref">Ignora il flag di aggiornamento forzato memorizzato.</string>
-    <string name="patch_shm_main_gates">Salta i controlli all\'avvio che bloccano altri telefoni.</string>
-    <string name="patch_shm_setup_network_gate">Salta il controllo di SIM e regione durante la configurazione.</string>
+    <string name="patch_shm_main_gates">Salta i controlli di sistema e degli aggiornamenti all\'avvio, e indica che il blocco schermo è impostato.</string>
+    <string name="patch_shm_setup_network_gate">Disattiva il controllo della SIM e quello regionale durante la configurazione.</string>
     <string name="patch_shm_sleep_apnea_support">Segnala l\'apnea notturna come supportata.</string>
     <string name="patch_phone_rebrand_gms">Dà all\'app del telefono lo stesso pacchetto e la stessa chiave dell\'app dell\'orologio, così le due possono scambiarsi dati.</string>
     <string name="patch_watch_rebrand_coexist">Rinomina l\'app dell\'orologio per affiancarla a quella originale.</string>
@@ -254,11 +258,11 @@
     <string name="patch_watch_companion_vendor">Accetta qualsiasi marca di telefono complementare.</string>
     <string name="patch_watch_alarm_system_app">Pianifica sveglie esatte senza privilegi di sistema.</string>
     <string name="patch_watch_mobile_installed">Segnala l\'app del telefono come installata.</string>
-    <string name="patch_watch_ecg_sensor_adapter">Legge il sensore ECG tramite il servizio Health Tracking.</string>
+    <string name="patch_watch_ecg_sensor_adapter">Legge il sensore ECG tramite il servizio Health Tracking e considera disponibili i sensori del ritmo cardiaco irregolare e della SpO2.</string>
     <string name="patch_watch_bp_sensor_adapter">Legge il sensore della pressione arteriosa tramite il servizio Health Tracking, perché l\'orologio non consente a un\'app rifirmata di usarlo direttamente.</string>
     <string name="patch_watch_sensor_unregister_compat">Evita che l\'app si chiuda all\'arresto dei sensori sugli orologi con un framework dei sensori diverso, come il Galaxy Watch8.</string>
     <string name="patch_watch_bp_attribute_guard">Impedisce che la calibrazione della pressione arteriosa chiuda l\'app sugli orologi che bloccano la configurazione del sensore che usa (One UI 8 Watch). L\'app mostra invece il suo normale errore del sensore.</string>
-    <string name="patch_watch_apnea_country">Salta il controllo del paese per l\'apnea.</string>
+    <string name="patch_watch_apnea_country">Disattiva il controllo regionale per l\'apnea notturna.</string>
     <string name="patch_watch_apnea_reeval_not_supported">Ricontrolla il supporto all\'apnea memorizzato come non supportato.</string>
     <string name="patch_watch_mod">Aggiunge il modulo che comunica con il servizio Health Tracking.</string>
     <string name="patch_alarm_verify_symbols">Controlla che l\'app delle sveglie abbia le parti necessarie al collegamento.</string>
@@ -279,13 +283,13 @@
     <string name="patch_alarm_hide_launcher">Nasconde l\'icona extra nel launcher.</string>
     <string name="patch_alarm_relabel">Chiama il fork \"Sveglie del telefono\".</string>
     <string name="patch_alarm_fork">Aggiunge il modulo che collega le sveglie al telefono.</string>
-    <string name="output_shm_phone">Samsung Health Monitor (con patch)</string>
-    <string name="output_shm_watch">Samsung Health Monitor per Wear OS (con patch)</string>
+    <string name="output_shm_phone">Samsung Health Monitor (modificato)</string>
+    <string name="output_shm_watch">Samsung Health Monitor per Wear OS (modificato)</string>
     <string name="output_bridge_watch">Bridge per l\'orologio</string>
     <string name="output_alarm_fork">Sveglie del telefono sull\'orologio</string>
     <string name="output_bridge_phone">Bridge per il telefono</string>
     <string name="stock_label_shm">Samsung Health Monitor (originale)</string>
-    <string name="stock_reason_shm">Due copie dell\'app si contenderebbero lo stesso sensore.</string>
+    <string name="stock_reason_shm">L\'app originale dell\'orologio continua a mostrare il suo errore regionale e non serve più. La copia modificata la sostituisce.</string>
 
     <!-- Build -->
     <string name="build_title">Compilazione delle tue app</string>
@@ -348,14 +352,14 @@
     <string name="leftover_removing_body">Una configurazione precedente ha lasciato una copia del bridge con un altro nome di pacchetto. Compete con quella nuova per il collegamento con l\'orologio. Android ti chiederà di confermare la disinstallazione; puoi accettare senza problemi. I tuoi dati sulla salute e questa app non sono interessati.</string>
     <string name="leftover_kept_title">Vecchia copia del bridge conservata</string>
     <string name="leftover_kept_body">Può interferire con il collegamento con l\'orologio. Puoi disinstallarla più tardi dalle impostazioni delle app di Android.</string>
-    <string name="install_phone_note">Permessi, sovrapposizione ad altre app, accesso alle notifiche e impostazioni limitate li attivi tu. Torna a questa schermata dopo e verrà ricontrollato.</string>
+    <string name="install_phone_note">Le autorizzazioni, la visualizzazione sopra altre app, l\'accesso alle notifiche, l\'uso della batteria senza limitazioni e le impostazioni con restrizioni li attivi tu. Poi torna a questa schermata e verrà ricontrollato tutto.</string>
     <string name="install_watch_title">Installa sul tuo orologio</string>
     <string name="install_watch_intro">Installazione via Wi-Fi in quest\'ordine: Health Monitor, il bridge, poi le sveglie del telefono.</string>
-    <string name="install_watch_note">L\'orologio resta acceso e connesso durante l\'operazione.</string>
+    <string name="install_watch_note">Tieni l\'orologio con lo schermo acceso e connesso al Wi-Fi mentre l\'operazione è in corso.</string>
     <string name="install_start">Avvia l\'installazione</string>
     <string name="install_error_build_missing">La build manca o non corrisponde a questa configurazione. Compila di nuovo, poi installa.</string>
-    <string name="install_error_failed">L\'orologio ha rifiutato l\'installazione.</string>
-    <string name="install_error_signature">Sull\'orologio c\'è già una copia firmata con un\'altra chiave. Non è stato rimosso nulla. Disinstalla tu quella copia, poi riprova.</string>
+    <string name="install_error_failed">L\'installazione è stata rifiutata.</string>
+    <string name="install_error_signature">È già installata una copia firmata con una chiave diversa. Non è stato rimosso nulla. Disinstalla tu quella copia, poi riprova.</string>
     <string name="install_error_grant">Non è stato possibile applicare un\'impostazione di accesso.</string>
     <string name="action_open">Apri</string>
     <string name="action_allow_installing">Consenti l\'installazione di app</string>
@@ -365,7 +369,7 @@
     <string name="install_error_unknown_sources">Questa app non è ancora autorizzata a installare app. Consentilo, poi ricomincia.</string>
     <string name="install_error_notifications">Consenti prima le notifiche per questa app: il codice di associazione si digita in una notifica.</string>
     <string name="phone_adb_title">Concedi tutto in una volta</string>
-    <string name="phone_adb_intro">Se gli interruttori ti sono d\'intralcio, questo telefono può concederseli da solo tramite il **debug wireless**. Devi essere connesso al Wi-Fi. Una notifica ti chiederà il codice di associazione.</string>
+    <string name="phone_adb_intro">Invece di attivarli uno per uno a mano, questo telefono può concederseli tutti da solo tramite il **Debug wireless**. Devi essere connesso al Wi-Fi. Una notifica ti chiederà il codice di associazione.</string>
     <string name="phone_adb_action">Concedi tutto con il debug wireless</string>
     <string name="phone_adb_waiting_service">1. In **Debug wireless**, attivalo.\n2. Tocca **Associa dispositivo con codice di associazione**.\n3. Comparirà una notifica in cui digitare il codice senza lasciare quella schermata.</string>
     <string name="phone_adb_waiting_code">Digita il codice di sei cifre mostrato nella schermata di associazione, qui o nella notifica.</string>
@@ -407,7 +411,7 @@
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Modalità sviluppatore di Health Platform</string>
-    <string name="devmode_intro">Il servizio Health Tracking comunica con l\'app modificata solo in modalità sviluppatore. Il patcher può attivarla tramite lo schermo dell\'orologio: tieni l\'orologio sbloccato e vicino.</string>
+    <string name="devmode_intro">Il servizio Health Tracking comunica con l\'app modificata solo in modalità sviluppatore. Il patcher può attivarla tramite lo schermo dell\'orologio: tieni l\'orologio sbloccato e con lo schermo acceso.</string>
     <string name="devmode_step_settings">Apri **Impostazioni** sull\'orologio.</string>
     <string name="devmode_step_apps">Vai su **App**.</string>
     <string name="devmode_step_health_platform">Scegli **Health Platform**.</string>
@@ -436,7 +440,7 @@
     <string name="disable_chip_wear">Wear OS</string>
     <string name="disable_chip_not_installed">Non installata</string>
     <string name="disable_chip_already_off">Già disattivata</string>
-    <string name="disable_error_some">Alcune app non si sono potute disattivare. Riprova oppure salta questo passo.</string>
+    <string name="disable_error_some">Alcune app non si sono potute disattivare. Riprova oppure salta questo passaggio.</string>
     <plurals name="disable_action">
         <item quantity="one">Disattiva %1$d app</item>
         <item quantity="other">Disattiva %1$d app</item>
@@ -463,7 +467,7 @@
     <string name="selftest_shm_title">Health Monitor vede l\'orologio</string>
     <string name="selftest_ecg_title">L\'ECG arriva sul telefono</string>
     <string name="selftest_platform_question">Sull\'orologio, Health Platform è in modalità sviluppatore?</string>
-    <string name="selftest_gms_question">L\'app Wear OS sul telefono mostra l\'orologio come connesso?</string>
+    <string name="selftest_gms_question">L\'app Galaxy Wearable sul telefono mostra l\'orologio come connesso?</string>
     <string name="selftest_shm_question">Samsung Health Monitor sul telefono mostra l\'orologio come connesso?</string>
     <string name="selftest_ecg_question">Fai un ECG sull\'orologio. Compare sul telefono?</string>
     <string name="selftest_detail_answered_no">Hai risposto no</string>
@@ -530,9 +534,9 @@
     <string name="home_menu_new_build">Nuova build</string>
     <string name="home_menu_self_test">Esegui l\'autotest</string>
     <string name="home_menu_restore_watch">Ripristina l\'orologio</string>
-    <string name="home_menu_uninstall">Disinstalla</string>
+    <string name="home_menu_uninstall">Annulla tutte le modifiche</string>
     <string name="restore_title">Ripristinare l\'app originale?</string>
-    <string name="restore_body">L\'app con patch viene rimossa e quella originale viene riattivata. I tuoi dati sull\'orologio restano.</string>
+    <string name="restore_body">L\'app modificata e i suoi dati vengono rimossi, e quella originale viene riattivata.</string>
     <string name="restore_confirm">Ripristina</string>
 
     <!-- Signing key -->
@@ -615,7 +619,7 @@
     <string name="watchpair_error_bad_host">Inserisci l\'indirizzo IP dell\'orologio, ad esempio 192.168.1.20.</string>
     <string name="watchpair_error_bad_port">Inserisci una porta da 1 a 65535.</string>
     <string name="watchpair_guide_title">Attiva l\'associazione sul tuo orologio</string>
-    <string name="watchpair_guide_3">1. Collega l\'orologio allo stesso Wi-Fi di questo telefono.\n2. **Impostazioni** › **Connessioni** › **Wi-Fi**.</string>
+    <string name="watchpair_guide_3">1. Sull\'orologio, apri **Impostazioni** › **Connessioni** › **Wi-Fi**.\n2. Connettiti alla stessa rete Wi-Fi di questo telefono.</string>
     <string name="watchpair_guide_5">1. Tocca **Associa nuovo dispositivo**.\n2. L\'orologio mostra un codice a 6 cifre e un indirizzo.\n3. Questa app trova l\'indirizzo da sola; tu inserisci solo il codice.</string>
     <string name="watchpair_guide_again">Mostrami di nuovo come fare</string>
     <string name="watchpair_manual">Salta e procedi manualmente</string>
@@ -687,12 +691,12 @@
     <string name="troubleshoot_dialog_body">Questo reimposta Google Play Services su questo telefono. Potresti perdere l\'accesso a tutti i tuoi account Google su questo telefono e dover accedere di nuovo.\n\nAlcuni servizi che dipendono da Google Play Services, come le carte di Google Wallet, Trova il mio dispositivo e le impostazioni di backup, potrebbero dover essere configurati di nuovo.\n\nIl tuo orologio non viene modificato.</string>
     <string name="troubleshoot_dialog_confirm">Cancella dati</string>
     <string name="troubleshoot_back_to_check">Torna al controllo dell\'associazione</string>
-    <string name="skip_title">Saltiamo questo</string>
-    <string name="skip_body">Abbiamo abbastanza informazioni per rilevarlo automaticamente.</string>
+    <string name="skip_title">Saltiamo questo passaggio</string>
+    <string name="skip_body">Questo passaggio è già fatto, quindi puoi andare avanti.</string>
     <string name="skip_checking">Controllo dei dispositivi…</string>
     <string name="skip_card_step">Passaggio %1$d · %2$s</string>
     <string name="skip_reason_profile">Rilevato Android %1$s (%2$s) sull\'orologio collegato.</string>
-    <string name="skip_reason_profile_network">Il tuo orologio (%1$s) ha annunciato Android API %2$s tramite Wi-Fi (%3$s).</string>
+    <string name="skip_reason_profile_network">Il tuo orologio (%1$s) ha indicato il livello API Android %2$s tramite Wi-Fi: %3$s.</string>
     <string name="skip_reason_wearable">L\'orologio è già associato a Galaxy Wearable.</string>
     <string name="skip_reason_watchpair">L\'orologio è già connesso tramite debug wireless.</string>
     <string name="skip_confirm">Ho capito</string>
@@ -707,23 +711,23 @@
     <string name="selfadb_guide_ui_paired">Dispositivi associati</string>
     <string name="selfadb_open_wireless">Apri il debug wireless</string>
     <string name="outcome_acknowledge">Ho capito</string>
-    <string name="phone_adb_error_title">È un problema dell\'app</string>
-    <string name="phone_adb_error_message">È un problema dell\'app, non un tuo errore, e non puoi risolverlo da solo. Puoi comunque usare i pulsanti Apri impostazioni di ogni riga o continuare comunque.</string>
+    <string name="phone_adb_error_title">Non è stato possibile concedere l\'accesso automaticamente</string>
+    <string name="phone_adb_error_message">Non è stato possibile applicare le impostazioni di accesso tramite il Debug wireless. Puoi comunque usare il pulsante Apri le impostazioni di ogni riga, oppure continuare lo stesso.</string>
     <string name="phone_adb_success_title">Tutto pronto</string>
-    <string name="phone_adb_success_message">Passiamo al passo successivo</string>
+    <string name="phone_adb_success_message">Passiamo al passaggio successivo</string>
     <string name="acquire_shealth_title">Samsung Health (facoltativo)</string>
-    <string name="acquire_shealth_summary">Crea anche una copia modificata dell\'app Samsung Health del telefono, \"Samsung Health+\", con le funzioni che richiedono un Galaxy Watch più recente sbloccate. Si installa accanto a Samsung Health di Play, che conservi: quello resta connesso all\'orologio e carica i dati sul tuo Samsung Account, e Samsung Health+ scarica gli stessi dati dal cloud dopo l\'accesso con lo stesso account (può restare indietro per un po\').</string>
+    <string name="acquire_shealth_summary">Crea anche una copia modificata dell\'app Samsung Health per telefono, \"Samsung Health+\", con funzioni attivate che altrimenti richiedono un Galaxy Watch più recente. Si installa accanto all\'app Samsung Health di Google Play, che tieni: quella resta connessa all\'orologio e carica i dati sul tuo account Samsung, e Samsung Health+ scarica gli stessi dati dal cloud dopo che accedi con lo stesso account (può essere in ritardo di un po\').</string>
     <string name="output_shealth_phone">Samsung Health+ (modificato)</string>
-    <string name="change_purpose_shealth_phone">Una copia rinominata di Samsung Health con le funzioni qui sotto sbloccate. Funziona accanto a Samsung Health di Play e legge i tuoi dati dal cloud Samsung.</string>
+    <string name="change_purpose_shealth_phone">Una copia rinominata di Samsung Health con il riquadro Punteggio energia e, facoltativamente, Parametri vitali, Carico di allenamento e l\'indice di forma fisica attivati. Funziona accanto all\'app Samsung Health di Google Play e legge i tuoi dati dal cloud Samsung.</string>
     <string name="patch_shealth_res_webp">Corregge quattro immagini salvate con l\'estensione sbagliata per poter ricostruire l\'app (nessuna modifica visibile).</string>
     <string name="patch_shealth_feature_dev_ui">Mostra l\'elenco delle funzioni in Impostazioni &gt; Info senza la modalità sviluppatore Samsung.</string>
     <string name="patch_shealth_vitality_tile">Mostra il riquadro Punteggio energia senza aspettare che l\'orologio annunci la funzione.</string>
     <string name="patch_shealth_rename_manifest">Dà all\'app un proprio nome di pacchetto e un\'etichetta (Samsung Health+) per installarla accanto all\'originale.</string>
     <string name="patch_shealth_rename_code">Aggiorna i riferimenti interni dell\'app al nuovo nome di pacchetto.</string>
     <string name="patch_shealth_rename_account_xml">Dà all\'app una propria registrazione di account e sincronizzazione, così la sincronizzazione cloud funziona accanto all\'originale.</string>
-    <string name="patch_shealth_capability_gates">Sblocca Parametri vitali, Carico di allenamento e l\'indice di forma fisica, che altrimenti richiedono un Galaxy Watch8 o Ultra. Vengono calcolati sul telefono dalla cronologia sincronizzata.</string>
+    <string name="patch_shealth_capability_gates">Attiva Parametri vitali, Carico di allenamento e l\'indice di forma fisica, che altrimenti richiedono un Galaxy Watch8 o Ultra. Vengono calcolati sul telefono dalla tua cronologia sincronizzata.</string>
     <string name="patch_shealth_launcher_badge">Aggiunge un piccolo badge OpenSHM all\'icona dell\'app per distinguerla dall\'originale.</string>
-    <string name="patch_shealth_oobe_local">Facoltativo, disattivato per impostazione predefinita. Salta l\'obbligo di accedere con l\'account Samsung e usa l\'app in locale, senza sincronizzazione cloud. Attivalo solo se l\'accesso non funziona.</string>
+    <string name="patch_shealth_oobe_local">Disattivato per impostazione predefinita. Salta l\'obbligo di accedere con l\'account Samsung ed esegue l\'app in locale senza sincronizzazione cloud, quindi non riceve i dati che carica l\'app Samsung Health di Google Play. Attivalo solo se l\'accesso non funziona.</string>
     <string name="device_logs_channel">Log dei dispositivi</string>
     <string name="device_logs_notification_title">Registrazione dei log dei dispositivi</string>
     <string name="device_logs_notification_text">%1$d orologio · %2$d telefono</string>
@@ -756,28 +760,28 @@
     <string name="device_logs_sheet_phone_untrusted">Il debug wireless è attivo, ma questo telefono non si fida ancora del patcher. Tocca Associa, poi digita il codice di associazione nella notifica che compare.</string>
     <string name="device_logs_sheet_phone_pair">Associa questo telefono</string>
     <string name="revert_title">Annulla tutte le modifiche</string>
-    <string name="revert_intro">Rimuove ciò che OpenSHM Patcher ha installato sul telefono e sull’orologio e ripristina ciò che ha modificato. Viene toccato solo ciò che è davvero installato e le app di sistema non vengono mai rimosse.</string>
+    <string name="revert_intro">Rimuove ciò che OpenSHM Patcher ha installato sul telefono e sull\'orologio e ripristina ciò che ha modificato. Viene toccato solo ciò che è davvero installato e le app di sistema non vengono mai rimosse.</string>
     <string name="revert_probing">Controllo di ciò che è installato…</string>
     <string name="revert_action_remove">Rimuovi</string>
     <string name="revert_action_enable">Riattiva</string>
     <string name="revert_action_restore">Ripristina</string>
-    <string name="revert_setting_label">Impostazione del display sempre attivo</string>
-    <string name="revert_setting_note">Ora è disattivata; verrà riattivata.</string>
-    <string name="revert_exemption_label">Eccezione per l’accesso ai sensori</string>
-    <string name="revert_exemption_note">La nostra voce nell’elenco delle eccezioni dei sensori dell’orologio verrà rimossa; quelle di altre app restano.</string>
-    <string name="revert_enable_note">La configurazione l’ha disattivata; verrà riattivata.</string>
+    <string name="revert_setting_label">Impostazione Always-on display</string>
+    <string name="revert_setting_note">Una versione precedente del patcher l\'ha disattivata; verrà riattivata.</string>
+    <string name="revert_exemption_label">Eccezione per l\'accesso ai sensori</string>
+    <string name="revert_exemption_note">La nostra voce nell\'elenco delle eccezioni per le API nascoste dell\'orologio verrà rimossa; quelle di altre app restano.</string>
+    <string name="revert_enable_note">La configurazione l\'ha disattivata; verrà riattivata.</string>
     <string name="revert_not_installed">Non installate, niente da fare: %1$s</string>
     <string name="revert_system_apps">Lasciate intatte perché sono app di sistema: %1$s</string>
-    <string name="revert_watch_unreachable_title">L’orologio non è raggiungibile</string>
-    <string name="revert_watch_unreachable_body">Al momento le app dell’orologio non possono essere controllate né rimosse. Puoi riprovare, oppure ripristinare solo il telefono e tornare all’orologio più tardi.</string>
-    <string name="revert_watch_retry">Riprova con l’orologio</string>
-    <string name="revert_watch_skip">Salta l’orologio</string>
-    <string name="revert_watch_skipped">L’orologio è stato saltato. Le sue app restano come sono.</string>
-    <string name="revert_start">Annulla tutto</string>
-    <string name="revert_confirm_title">Annullare tutto?</string>
+    <string name="revert_watch_unreachable_title">L\'orologio non è raggiungibile</string>
+    <string name="revert_watch_unreachable_body">Al momento le app dell\'orologio non possono essere controllate né rimosse. Puoi riprovare, oppure ripristinare solo il telefono e tornare all\'orologio più tardi.</string>
+    <string name="revert_watch_retry">Riprova con l\'orologio</string>
+    <string name="revert_watch_skip">Salta l\'orologio</string>
+    <string name="revert_watch_skipped">L\'orologio è stato saltato. Le sue app restano come sono.</string>
+    <string name="revert_start">Ripristina tutto</string>
+    <string name="revert_confirm_title">Ripristinare tutto?</string>
     <string name="revert_confirm_body">Le app elencate vengono rimosse insieme ai loro dati e le impostazioni vengono ripristinate. Android ti chiede di confermare ogni rimozione su questo telefono. Potrai rifare la configurazione in seguito.</string>
-    <string name="revert_confirm_action">Annulla</string>
-    <string name="revert_running">Annullamento in corso…</string>
+    <string name="revert_confirm_action">Ripristina</string>
+    <string name="revert_running">Ripristino in corso…</string>
     <string name="revert_result_gone">Già rimossa</string>
     <string name="revert_result_system">App di sistema, lasciata intatta</string>
     <string name="revert_result_unchanged">Niente da modificare</string>
@@ -785,20 +789,20 @@
     <string name="revert_result_failed">Non riuscito: %1$s</string>
     <string name="revert_result_watch">Orologio non raggiunto</string>
     <string name="revert_done_complete_title">Tutto annullato</string>
-    <string name="revert_done_complete_body">Le app non ci sono più sul telefono e sull’orologio e le impostazioni sono tornate com’erano.</string>
+    <string name="revert_done_complete_body">Le app non ci sono più sul telefono e sull\'orologio e le impostazioni sono tornate com\'erano.</string>
     <string name="revert_done_partial_title">Alcune modifiche sono ancora presenti</string>
     <string name="revert_done_partial_body">Non è stato possibile annullare tutto. Risolvi quanto indicato e ricontrolla; le informazioni della configurazione vengono conservate così puoi finire.</string>
     <string name="revert_check_again">Ricontrolla</string>
     <string name="revert_manual_title">Resta da fare a mano</string>
-    <string name="revert_manual_devmode">Disattiva la modalità sviluppatore di Health Platform se l’avevi attivata.</string>
-    <string name="revert_manual_adb">Revoca l’autorizzazione al debug e disattiva il debug wireless sull’orologio e su questo telefono.</string>
-    <string name="revert_manual_keys">Le copie di backup della chiave di firma (Documenti/OpenSHM) e la password salvata restano. Eliminale da File o dal tuo gestore di password se non ti servono più.</string>
+    <string name="revert_manual_devmode">Disattiva la modalità sviluppatore di Health Platform se l\'avevi attivata.</string>
+    <string name="revert_manual_adb">Revoca l\'autorizzazione al debug e disattiva il debug wireless sull\'orologio e su questo telefono.</string>
+    <string name="revert_manual_keys">Le copie di backup della chiave di firma (Documents/OpenSHM) e la password salvata restano. Eliminale da File o dal tuo gestore di password se non ti servono più.</string>
     <string name="revert_self_action">Disinstalla OpenSHM Patcher</string>
     <string name="revert_self_title">Disinstallare OpenSHM Patcher?</string>
-    <string name="revert_self_body">Android ti chiederà di confermare. L’app e i suoi dati, compresa la chiave di firma conservata al suo interno, vengono rimossi. I backup salvati altrove restano.</string>
+    <string name="revert_self_body">Android ti chiederà di confermare. L\'app e i suoi dati, compresa la chiave di firma conservata al suo interno, vengono rimossi. I backup salvati altrove restano.</string>
     <string name="revert_self_body_partial">Non tutto è stato annullato. Senza questa app dovresti reinstallarla per finire.</string>
-    <string name="revert_self_cancelled">Disinstallazione annullata. L’app è ancora installata.</string>
-    <string name="revert_self_failed">Android non è riuscito a disinstallare l’app: %1$s</string>
+    <string name="revert_self_cancelled">Disinstallazione annullata. L\'app è ancora installata.</string>
+    <string name="revert_self_failed">Android non è riuscito a disinstallare l\'app: %1$s</string>
     <string name="revert_result_removed">Rimossa</string>
     <string name="revert_result_enabled">Riattivata</string>
     <string name="revert_result_restored">Ripristinato</string>

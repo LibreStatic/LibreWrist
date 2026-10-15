@@ -45,12 +45,12 @@
     <!-- Welcome -->
     <string name="welcome_title">आपके ऐप, आपकी घड़ी, आपका तरीका</string>
     <string name="welcome_promise_download">आधिकारिक ऐप आप खुद डाउनलोड करते हैं; यहाँ कुछ भी साथ नहीं आता।</string>
-    <string name="welcome_promise_patch">पैच Samsung Health Monitor को गैर-Samsung फ़ोन पर चलाते हैं और उसे स्टॉक घड़ी ऐप के साथ रहने देते हैं।</string>
-    <string name="welcome_promise_undo">हर बदलाव को वापस किया जा सकता है, और स्टॉक ऐप जस के तस रहते हैं।</string>
+    <string name="welcome_promise_patch">पैच Samsung Health Monitor को ऐसे फ़ोन पर चलने देते हैं जो Samsung का बना नहीं है, और पैच किया गया घड़ी ऐप स्टॉक ऐप के बगल में इंस्टॉल होता है।</string>
+    <string name="welcome_promise_undo">हर बदलाव को वापस किया जा सकता है, और स्टॉक ऐप कभी अनइंस्टॉल नहीं किए जाते।</string>
     <string name="welcome_get_started">शुरू करें</string>
     <string name="welcome_what_changes">मेरे डिवाइस पर क्या बदलेगा?</string>
     <string name="changes_title">क्या बदलेगा</string>
-    <string name="changes_intro">इंस्टॉल होने वाला हर ऐप, वह किस काम का है और उसे क्या करने की अनुमति है। कुछ भी मिटाया नहीं जाता, और यह सब पहले जैसा किया जा सकता है।</string>
+    <string name="changes_intro">इंस्टॉल होने वाला हर ऐप, वह किस काम का है और उसे क्या करने की अनुमति है। आपसे पूछे बिना कुछ भी मिटाया नहीं जाता, और यह सब वापस किया जा सकता है।</string>
     <string name="changes_on_phone">इस फ़ोन पर</string>
     <string name="changes_on_watch">आपकी घड़ी पर</string>
     <string name="changes_allowed_to">उसे इसकी अनुमति है</string>
@@ -80,6 +80,8 @@
     <string name="grant_why_notifications_phone">घड़ी से जुड़े रहने के दौरान एक छोटी सूचना बनाए रखना।</string>
     <string name="grant_why_notifications_watch">आपके फ़ोन की सूचनाएँ घड़ी पर दिखाना।</string>
     <string name="grant_why_notifications_alarm">अलार्म बजते समय उसे दिखाना।</string>
+    <string name="grant_why_notifications_shm">Health Monitor की सूचनाएँ दिखाना।</string>
+    <string name="grant_why_notifications_shealth">Samsung Health+ की सूचनाएँ दिखाना।</string>
     <string name="grant_why_bluetooth_phone">ब्लूटूथ से घड़ी से जुड़ना।</string>
     <string name="grant_why_bluetooth_watch">ब्लूटूथ से फ़ोन से जुड़ना।</string>
     <string name="grant_why_restricted">Android स्टोर के बाहर से इंस्टॉल किए गए ऐप्स की कुछ सेटिंग रोक देता है। इससे आप ब्रिज के लिए सूचना एक्सेस चालू कर सकते हैं।</string>
@@ -94,22 +96,23 @@
     <string name="grant_why_ongoing_calls">घड़ी पर चालू कॉल दिखाना और उसे कंट्रोल करना।</string>
     <string name="grant_why_always_on">माप के दौरान Always-on स्क्रीन को घड़ी को स्लीप में जाने से रोकता है।</string>
     <string name="grant_why_battery_bridge">घड़ी के बैटरी बचाने पर भी ब्लूटूथ कनेक्शन बनाए रखना।</string>
+    <string name="grant_why_battery_bridge_phone">फ़ोन के बैटरी बचाने पर भी ब्लूटूथ कनेक्शन बनाए रखना।</string>
     <string name="grant_why_battery_alarm">घड़ी के बैटरी बचाने पर भी समय पर बजना।</string>
-    <string name="grant_why_hidden_api">घड़ी के ऐप को ECG, ब्लड प्रेशर और स्लीप एपनिया के लिए Samsung की सेंसर सेवा इस्तेमाल करने देता है। यह पूरी घड़ी पर लागू होता है, लेकिन सिर्फ़ Samsung के सेंसर सॉफ़्टवेयर के लिए।</string>
-    <string name="changes_disables">बंद किए जा सकते हैं</string>
+    <string name="grant_why_hidden_api">नई घड़ियाँ (One UI 8 Watch) घड़ी ऐप को Samsung के सेंसर मैनेजर तक पहुँचने से रोकती हैं, जिसकी उसे ECG, ब्लड प्रेशर और स्लीप एपनिया के लिए ज़रूरत होती है। यह छूट घड़ी के हर ऐप पर लागू होती है, लेकिन सिर्फ़ Samsung के सेंसर मैनेजर के लिए।</string>
+    <string name="changes_disables">सेटअप के दौरान बंद किए जाते हैं</string>
 
     <!-- Profile -->
     <string name="profile_title">आपके पास कौन सी घड़ी है?</string>
     <string name="profile_intro">इससे तय होता है कि आपको कौन से आधिकारिक ऐप लाने होंगे।</string>
     <string name="profile_wear5_title">Wear OS 5 या नया</string>
     <string name="profile_wear5_summary">Health Monitor और घड़ी पर फ़ोन के अलार्म।</string>
-    <string name="profile_wear5_apps">3 आधिकारिक ऐप</string>
+    <string name="profile_wear5_apps">3 आधिकारिक ऐप, या Samsung Health के साथ 4</string>
     <string name="profile_wear3_title">Wear OS 3 या 4</string>
-    <string name="profile_wear3_summary">सिर्फ़ Health Monitor। अलार्म ऐप के लिए घड़ी पर Android 14 चाहिए।</string>
-    <string name="profile_wear3_apps">2 आधिकारिक ऐप</string>
+    <string name="profile_wear3_summary">Health Monitor और ब्रिज, फ़ोन अलार्म के बिना। अलार्म ऐप के लिए घड़ी पर Android 14 चाहिए।</string>
+    <string name="profile_wear3_apps">2 आधिकारिक ऐप, या Samsung Health के साथ 3</string>
     <string name="profile_detected">आपकी घड़ी पर जाँचा गया: Android %1$s (%2$s)</string>
     <string name="profile_check_paired">पेयर की गई घड़ियाँ जाँचें</string>
-    <string name="profile_detected_network">आपकी घड़ी (%1$s) ने Wi-Fi पर Android API %2$s बताया (%3$s)</string>
+    <string name="profile_detected_network">आपकी घड़ी (%1$s) ने Wi-Fi पर Android API लेवल %2$s बताया: %3$s</string>
     <string name="profile_paired_certain">हमेशा Wear OS 5 या नए पर चलती है, इसलिए वह विकल्प चुना गया है।</string>
     <string name="profile_paired_depends">अपडेट के आधार पर दोनों में से कोई भी वर्शन हो सकता है।</string>
     <string name="profile_tip_wireless">पक्का जानने के लिए घड़ी पर वायरलेस डीबगिंग चालू करें: यह स्क्रीन Wi-Fi पर वर्शन पढ़ती है।</string>
@@ -144,8 +147,8 @@
     <string name="wearable_recheck">दोबारा जाँचें</string>
 
     <!-- Watch pairing over Wi-Fi -->
-    <string name="watchpair_correct_older">आपकी घड़ी Android %1$s चलाती है, इसलिए अलार्म ऐप छोड़ दिया गया है: आपको 3 की जगह 2 आधिकारिक ऐप चाहिए।</string>
-    <string name="watchpair_correct_newer">आपकी घड़ी Android %1$s चलाती है, इसलिए अलार्म ऐप शामिल है: आपको 2 की जगह 3 आधिकारिक ऐप चाहिए।</string>
+    <string name="watchpair_correct_older">आपकी घड़ी Android %1$s चलाती है, इसलिए अलार्म ऐप छोड़ दिया गया है: आपको एक आधिकारिक ऐप कम चाहिए।</string>
+    <string name="watchpair_correct_newer">आपकी घड़ी Android %1$s चलाती है, इसलिए अलार्म ऐप शामिल है: आपको एक आधिकारिक ऐप और चाहिए।</string>
     <string name="watchpair_paired">घड़ी पेयर हो गई</string>
     <string name="watchpair_title">अपनी घड़ी से जुड़ें</string>
     <string name="watchpair_intro">छोटे कोड से पेयर करने के बाद घड़ी Wi-Fi पर इंस्टॉल स्वीकार करती है।</string>
@@ -168,7 +171,7 @@
 
     <!-- Acquire -->
     <string name="acquire_title">आधिकारिक ऐप लाएँ</string>
-    <string name="acquire_intro">हर ऐप खुद डाउनलोड करें, किसी भरोसेमंद स्रोत से। पैचर इन्हें न कभी सहेजता है, न साथ देता है।</string>
+    <string name="acquire_intro">हर ऐप खुद किसी भरोसेमंद स्रोत से डाउनलोड करें। पैचर इन्हें न कभी अपने साथ रखता है, न किसी से साझा करता है।</string>
     <string name="acquire_open_mirror">APKMirror पर खोलें</string>
     <string name="acquire_more_ways">यह ऐप पाने के और तरीके</string>
     <string name="acquire_use_file">मेरे पास पहले से मौजूद फ़ाइल इस्तेमाल करें</string>
@@ -211,8 +214,8 @@
     <string name="customize_required">ज़रूरी, हमेशा चालू</string>
     <string name="customize_advanced">उन्नत</string>
     <string name="customize_prefix_label">सहायक ऐप के लिए पैकेज प्रीफ़िक्स</string>
-    <string name="customize_prefix_explainer">ब्रिज ऐप और अलार्म ऐप का नाम तय करता है। दोनों Samsung Health Monitor ऐप अपना पैकेज रखते हैं ताकि वे आपस में बात कर सकें।</string>
-    <string name="customize_prefix_ok">आपके लिए नया प्रीफ़िक्स बनाया जाता है।</string>
+    <string name="customize_prefix_explainer">ब्रिज ऐप, अलार्म ऐप और Samsung Health+ के नाम तय करता है। दोनों Samsung Health Monitor ऐप इसके बजाय एक तय साझा पैकेज नाम इस्तेमाल करते हैं, ताकि वे आपस में बात कर सकें।</string>
+    <string name="customize_prefix_ok">कोई भी मान्य प्रीफ़िक्स चलेगा; शुरुआत के लिए एक रैंडम प्रीफ़िक्स भर दिया गया है।</string>
     <string name="customize_prefix_locked">लॉक: सहायक ऐप इंस्टॉल हैं, और अपडेट के लिए वही प्रीफ़िक्स चाहिए।</string>
     <string name="customize_prefix_regenerate">नया प्रीफ़िक्स बनाएँ</string>
     <string name="customize_build">बिल्ड करें</string>
@@ -234,31 +237,32 @@
 
     <!-- Patch descriptions (titles come from the catalogue) -->
     <string name="patch_generic_manufacturer_check">Samsung के न बने फ़ोन को स्वीकार करता है।</string>
-    <string name="patch_generic_vendor_check">Samsung SDK के बिना फ़ोन को स्वीकार करता है।</string>
+    <string name="patch_generic_vendor_check">ऐसे फ़ोन को स्वीकार करता है जो अपना निर्माता Samsung नहीं बताता (निर्माता ओवरराइड)।</string>
     <string name="patch_shm_min_age_22_to_16">न्यूनतम आयु 22 से घटाकर 16 करता है।</string>
+    <string name="patch_watch_min_age_22_to_16">हर सुविधा की न्यूनतम आयु (22, या स्लीप एपनिया के लिए 18) घटाकर 16 कर देता है।</string>
     <string name="patch_shm_supported_type_ordinals">हर क्षेत्र को समर्थित मानता है।</string>
-    <string name="patch_shm_region_supportedtype">क्षेत्र की जाँच पास होने देता है।</string>
-    <string name="patch_shm_region_countrylist">समर्थित सूची में किसी भी देश को स्वीकार करता है।</string>
-    <string name="patch_shm_root_packagevalidator">विक्रेता प्रमाणपत्र की जाँच छोड़ देता है।</string>
+    <string name="patch_shm_region_supportedtype">क्षेत्र की जाँच बंद करता है।</string>
+    <string name="patch_shm_region_countrylist">किसी भी देश को समर्थित मानता है (क्षेत्र की जाँच बंद)।</string>
+    <string name="patch_shm_root_packagevalidator">Samsung प्रमाणपत्र की जाँच बंद करता है, जिसे दोबारा साइन किया गया ऐप अब पास नहीं करता।</string>
     <string name="patch_shm_force_update_response">विफल या ज़बरदस्ती अपडेट के जवाब को अनदेखा करता है।</string>
     <string name="patch_shm_force_update_pref">सहेजे गए ज़बरदस्ती-अपडेट फ़्लैग को अनदेखा करता है।</string>
-    <string name="patch_shm_main_gates">दूसरे फ़ोन को रोकने वाली स्टार्ट-अप जाँचें छोड़ देता है।</string>
-    <string name="patch_shm_setup_network_gate">सेटअप के दौरान SIM और क्षेत्र की जाँच छोड़ देता है।</string>
+    <string name="patch_shm_main_gates">स्टार्ट-अप पर सिस्टम और अपडेट की जाँचें छोड़ देता है, और स्क्रीन लॉक को सेट बताता है।</string>
+    <string name="patch_shm_setup_network_gate">सेटअप के दौरान SIM और क्षेत्र की जाँच बंद करता है।</string>
     <string name="patch_shm_sleep_apnea_support">स्लीप एपनिया को समर्थित बताता है।</string>
     <string name="patch_phone_rebrand_gms">फ़ोन ऐप को घड़ी ऐप जैसा ही पैकेज और कुंजी देता है ताकि दोनों डेटा का आदान-प्रदान कर सकें।</string>
     <string name="patch_watch_rebrand_coexist">घड़ी ऐप का नाम बदलता है ताकि वह स्टॉक ऐप के साथ रह सके।</string>
-    <string name="patch_shm_wear_trusted_peers">दोनों पैच की गई ऐप्स को घड़ी के लिंक पर एक-दूसरे को पहचानने देता है, सिर्फ़ मूल ऐप्स को नहीं।</string>
+    <string name="patch_shm_wear_trusted_peers">दोनों पैच किए गए ऐप को घड़ी के लिंक पर एक-दूसरे को पहचानने देता है, सिर्फ़ स्टॉक ऐप को नहीं।</string>
     <string name="patch_shm_launcher_badge">ऐप आइकन में एक छोटा OpenSHM बैज जोड़ता है, ताकि आप इसे मूल ऐप से अलग पहचान सकें।</string>
-    <string name="patch_watch_gms_resources_anchor">विक्रेता बिल्ड द्वारा हटाया गया एक संसाधन परिभाषित करता है, ताकि घड़ी फ़ोन को ऐप की सूचना दे सके।</string>
+    <string name="patch_watch_gms_resources_anchor">निर्माता बिल्ड द्वारा हटाया गया एक संसाधन परिभाषित करता है, ताकि घड़ी फ़ोन को ऐप की सूचना दे सके।</string>
     <string name="patch_watch_queries_health_service">घड़ी ऐप को हेल्थ सेवा दिखने देता है।</string>
     <string name="patch_watch_companion_vendor">किसी भी सहयोगी फ़ोन ब्रांड को स्वीकार करता है।</string>
     <string name="patch_watch_alarm_system_app">सिस्टम विशेषाधिकार के बिना सटीक अलार्म शेड्यूल करता है।</string>
     <string name="patch_watch_mobile_installed">फ़ोन ऐप को इंस्टॉल बताता है।</string>
-    <string name="patch_watch_ecg_sensor_adapter">Health Tracking सेवा के ज़रिए ECG सेंसर पढ़ता है।</string>
+    <string name="patch_watch_ecg_sensor_adapter">Health Tracking सेवा के ज़रिए ECG सेंसर पढ़ता है और अनियमित हृदय गति तथा SpO2 सेंसर को उपलब्ध मानता है।</string>
     <string name="patch_watch_bp_sensor_adapter">Health Tracking सेवा के ज़रिए ब्लड प्रेशर सेंसर पढ़ता है, क्योंकि घड़ी दोबारा साइन किए गए ऐप को इसे सीधे इस्तेमाल नहीं करने देती।</string>
     <string name="patch_watch_sensor_unregister_compat">Galaxy Watch8 जैसी अलग सेंसर फ़्रेमवर्क वाली घड़ियों पर सेंसर बंद करते समय ऐप को बंद होने से रोकता है।</string>
     <string name="patch_watch_bp_attribute_guard">जो घड़ियाँ ब्लड प्रेशर कैलिब्रेशन का इस्तेमाल किया जाने वाला सेंसर सेटअप ब्लॉक करती हैं (One UI 8 Watch), उन पर कैलिब्रेशन को ऐप बंद करने से रोकता है। इसके बजाय ऐप अपनी सामान्य सेंसर त्रुटि दिखाता है।</string>
-    <string name="patch_watch_apnea_country">एपनिया की देश जाँच छोड़ देता है।</string>
+    <string name="patch_watch_apnea_country">स्लीप एपनिया के लिए क्षेत्र की जाँच बंद करता है।</string>
     <string name="patch_watch_apnea_reeval_not_supported">जो एपनिया समर्थन असमर्थित के रूप में सहेजा गया था, उसे दोबारा जाँचता है।</string>
     <string name="patch_watch_mod">Health Tracking सेवा से बात करने वाला मॉड्यूल जोड़ता है।</string>
     <string name="patch_alarm_verify_symbols">जाँचता है कि अलार्म ऐप में लिंक के लिए ज़रूरी हिस्से हैं।</string>
@@ -267,11 +271,11 @@
     <string name="patch_alarm_permissions_prune">सिर्फ़ सिस्टम ऐप को मिलने वाली अनुमतियाँ हटाता है।</string>
     <string name="patch_alarm_notification_permissions">सूचना और फ़ुल-स्क्रीन अलार्म की अनुमतियाँ जोड़ता है।</string>
     <string name="patch_alarm_queries_libs">फ़ोर्क को जो लुकअप और लाइब्रेरी नहीं चाहिए, उन्हें हटाता है।</string>
-    <string name="patch_alarm_components_prune">फ़ोर्क को जो विक्रेता कंपोनेंट नहीं चाहिए, उन्हें हटाता है।</string>
+    <string name="patch_alarm_components_prune">फ़ोर्क को जो निर्माता कंपोनेंट नहीं चाहिए, उन्हें हटाता है।</string>
     <string name="patch_alarm_provider_open">अलार्म डेटा फ़ोर्क के लिए खोलता है।</string>
     <string name="patch_alarm_link_components">फ़ोन से भेजे गए अलार्म के लिए रिसीवर जोड़ता है।</string>
-    <string name="patch_alarm_appfunctions_drop">विक्रेता की एक अनुपयोगी फ़ीचर ट्री हटाता है।</string>
-    <string name="patch_alarm_semgesture_skip">विक्रेता का जेस्चर मैनेजर छोड़ देता है और डबल पिंच खुद पहचानता है (घड़ी की सेटिंग के अनुसार स्नूज़ या बंद)।</string>
+    <string name="patch_alarm_appfunctions_drop">निर्माता की एक अनुपयोगी फ़ीचर ट्री हटाता है।</string>
+    <string name="patch_alarm_semgesture_skip">निर्माता का जेस्चर मैनेजर छोड़ देता है और डबल पिंच खुद पहचानता है (घड़ी की सेटिंग के अनुसार स्नूज़ या बंद)।</string>
     <string name="patch_alarm_gms_observer_drop">अलार्म को जल्दी बंद होने से रोकता है।</string>
     <string name="patch_alarm_service_stop_on_destroy">पक्का करता है कि आवाज़ और कंपन हमेशा बंद हों।</string>
     <string name="patch_alarm_force_sound_vibrate">हमेशा बजता है और कंपन करता है।</string>
@@ -285,12 +289,12 @@
     <string name="output_alarm_fork">घड़ी पर फ़ोन अलार्म</string>
     <string name="output_bridge_phone">फ़ोन के लिए ब्रिज</string>
     <string name="stock_label_shm">Samsung Health Monitor (स्टॉक)</string>
-    <string name="stock_reason_shm">ऐप की दो प्रतियाँ एक ही सेंसर के लिए होड़ करेंगी।</string>
+    <string name="stock_reason_shm">स्टॉक घड़ी ऐप लगातार क्षेत्र वाली त्रुटि दिखाता है और अब उसकी ज़रूरत नहीं है। पैच की गई कॉपी उसकी जगह लेती है।</string>
 
     <!-- Build -->
     <string name="build_title">आपके ऐप बनाए जा रहे हैं</string>
     <string name="build_caption_idle">तैयारी हो रही है</string>
-    <string name="build_stage_unpack">खोलना</string>
+    <string name="build_stage_unpack">अनपैक करना</string>
     <string name="build_stage_fingerprints">पैच फ़िंगरप्रिंट जाँचना</string>
     <string name="build_stage_apply_short">पैच लगाना</string>
     <plurals name="build_stage_apply">
@@ -305,17 +309,17 @@
     <string name="build_cancelled">बिल्ड रद्द हो गया</string>
     <string name="build_restart">फिर से बिल्ड करें</string>
     <string name="build_cancel_title">बिल्ड रद्द करें?</string>
-    <string name="build_cancel_body">अब तक बने ऐप हटा दिए जाएँगे। तुम जब चाहो फिर से शुरू कर सकते हो।</string>
+    <string name="build_cancel_body">अब तक बने ऐप हटा दिए जाएँगे। आप जब चाहें फिर से शुरू कर सकते हैं।</string>
     <string name="build_cancel_keep">बिल्ड जारी रखें</string>
     <string name="build_app_position">ऐप %1$d / %2$d</string>
     <string-array name="build_almost_done">
-        <item>बस होने ही वाला है, कहीं मत जाओ</item>
+        <item>बस होने ही वाला है, कहीं न जाएँ</item>
         <item>आख़िरी बारीकियाँ…</item>
-        <item>लगभग तैयार, थोड़ा और रुको</item>
+        <item>लगभग तैयार, थोड़ा और रुकें</item>
         <item>साइन और जाँच हो रही है, बस अब हो गया</item>
         <item>बस एक पल और</item>
-        <item>तुम्हारे ऐप आकार ले रहे हैं</item>
-        <item>आख़िरी पड़ाव, थोड़ा और धैर्य रखो</item>
+        <item>आपके ऐप आकार ले रहे हैं</item>
+        <item>आख़िरी पड़ाव, थोड़ा और धैर्य रखें</item>
         <item>एक बार फिर सब कुछ जाँचा जा रहा है</item>
     </string-array>
     <string name="build_channel_name">बिल्ड की प्रगति</string>
@@ -348,14 +352,14 @@
     <string name="leftover_removing_body">पिछले सेटअप ने ब्रिज की एक प्रति दूसरे पैकेज नाम से छोड़ दी है। वह घड़ी के कनेक्शन के लिए नई प्रति से टकराती है। Android अनइंस्टॉल की पुष्टि माँगेगा; इसे स्वीकार करना सुरक्षित है। आपका स्वास्थ्य डेटा और यह ऐप प्रभावित नहीं होते।</string>
     <string name="leftover_kept_title">ब्रिज की पुरानी प्रति रखी गई</string>
     <string name="leftover_kept_body">यह घड़ी के कनेक्शन में बाधा डाल सकती है। आप इसे बाद में Android की ऐप सेटिंग से अनइंस्टॉल कर सकते हैं।</string>
-    <string name="install_phone_note">अनुमतियाँ, दूसरे ऐप के ऊपर दिखाना, सूचना की पहुँच और प्रतिबंधित सेटिंग आप खुद चालू करते हैं। बाद में इस स्क्रीन पर लौटें और यह फिर से जाँच करेगी।</string>
+    <string name="install_phone_note">अनुमतियाँ, दूसरे ऐप के ऊपर दिखाना, सूचना एक्सेस, बैटरी का बिना पाबंदी उपयोग और प्रतिबंधित सेटिंग आप खुद चालू करते हैं। बाद में इस स्क्रीन पर लौटें, यह फिर से जाँच करेगी।</string>
     <string name="install_watch_title">अपनी घड़ी पर इंस्टॉल करें</string>
     <string name="install_watch_intro">Wi-Fi पर इस क्रम में इंस्टॉल होता है: Health Monitor, ब्रिज, फिर फ़ोन अलार्म।</string>
-    <string name="install_watch_note">यह चलते समय घड़ी चालू और जुड़ी रहती है।</string>
+    <string name="install_watch_note">जब तक यह चल रहा है, घड़ी को जगाए रखें और Wi-Fi पर रखें।</string>
     <string name="install_start">इंस्टॉल शुरू करें</string>
     <string name="install_error_build_missing">बिल्ड मौजूद नहीं है या इस सेटअप से मेल नहीं खाता। दोबारा बिल्ड करें, फिर इंस्टॉल करें।</string>
-    <string name="install_error_failed">घड़ी ने इंस्टॉल से इनकार कर दिया।</string>
-    <string name="install_error_signature">दूसरी कुंजी से साइन की गई एक प्रति पहले से घड़ी पर है। कुछ भी हटाया नहीं गया। उस प्रति को खुद अनइंस्टॉल करें, फिर कोशिश करें।</string>
+    <string name="install_error_failed">इंस्टॉल अस्वीकार कर दिया गया।</string>
+    <string name="install_error_signature">दूसरी कुंजी से साइन की गई एक कॉपी पहले से इंस्टॉल है। कुछ भी हटाया नहीं गया। उस कॉपी को खुद अनइंस्टॉल करें, फिर दोबारा कोशिश करें।</string>
     <string name="install_error_grant">एक पहुँच सेटिंग लागू नहीं हो सकी।</string>
     <string name="action_open">खोलें</string>
     <string name="action_allow_installing">ऐप इंस्टॉल करने की अनुमति दें</string>
@@ -365,7 +369,7 @@
     <string name="install_error_unknown_sources">इस ऐप को अभी ऐप इंस्टॉल करने की अनुमति नहीं है। अनुमति दें, फिर दोबारा शुरू करें।</string>
     <string name="install_error_notifications">पहले इस ऐप के लिए सूचनाओं की अनुमति दें: पेयरिंग कोड सूचना में टाइप किया जाता है।</string>
     <string name="phone_adb_title">सब कुछ एक साथ दें</string>
-    <string name="phone_adb_intro">अगर स्विच रास्ते में आएँ, तो यह फ़ोन **वायरलेस डीबगिंग** के ज़रिए खुद उन्हें दे सकता है। आपका Wi-Fi पर होना ज़रूरी है। एक सूचना आपसे पेयरिंग कोड माँगेगी।</string>
+    <string name="phone_adb_intro">हर एक को हाथ से चालू करने के बजाय, यह फ़ोन **वायरलेस डीबगिंग** के ज़रिए ये सब खुद को दे सकता है। आपका Wi-Fi पर होना ज़रूरी है। एक सूचना आपसे पेयरिंग कोड माँगेगी।</string>
     <string name="phone_adb_action">वायरलेस डीबगिंग से सब कुछ दें</string>
     <string name="phone_adb_waiting_service">1. **वायरलेस डीबगिंग** में उसे चालू करें।\n2. **पेयरिंग कोड से डिवाइस पेयर करें** पर टैप करें।\n3. एक सूचना आएगी जिसमें आप उस स्क्रीन को छोड़े बिना कोड टाइप कर सकते हैं।</string>
     <string name="phone_adb_waiting_code">पेयरिंग स्क्रीन पर दिखा छह अंकों का कोड यहाँ या सूचना में टाइप करें।</string>
@@ -397,7 +401,7 @@
     <string name="watch_error_unreachable">घड़ी तक नहीं पहुँचा जा सका। जाँचें कि वायरलेस डीबगिंग चालू है और दोनों डिवाइस एक ही Wi-Fi पर हैं।</string>
     <string name="watch_error_pairing">घड़ी अब इस फ़ोन पर भरोसा नहीं करती। वापस जाकर फिर से पेयर करें।</string>
     <string name="watch_unreachable_title">घड़ी नहीं मिल रही</string>
-    <string name="watch_unreachable_body">घड़ी को जगाओ, देखो कि वह इस फ़ोन के उसी Wi-Fi पर है, और वायरलेस डीबगिंग फिर से चालू करो (सेटिंग › डेवलपर विकल्प › वायरलेस डीबगिंग)। फिर दोबारा कोशिश करो।</string>
+    <string name="watch_unreachable_body">घड़ी को जगाएँ, देख लें कि वह इस फ़ोन वाले Wi-Fi पर ही है, और वायरलेस डीबगिंग फिर से चालू करें (सेटिंग › डेवलपर विकल्प › वायरलेस डीबगिंग)। फिर दोबारा कोशिश करें।</string>
     <string name="grant_permission">अनुमति</string>
     <string name="grant_appop">ऐप ऑपरेशन</string>
     <string name="grant_setting">सिस्टम सेटिंग</string>
@@ -407,7 +411,7 @@
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Health Platform डेवलपर मोड</string>
-    <string name="devmode_intro">Health Tracking सेवा बदले गए ऐप से सिर्फ़ डेवलपर मोड में बात करती है। पैचर इसे घड़ी की स्क्रीन के ज़रिए चालू कर सकता है: घड़ी अनलॉक और पास रखें।</string>
+    <string name="devmode_intro">Health Tracking सेवा पैच किए गए ऐप से सिर्फ़ डेवलपर मोड में बात करती है। पैचर इसे घड़ी की स्क्रीन के ज़रिए चालू कर सकता है: घड़ी को अनलॉक और जागी हुई रखें।</string>
     <string name="devmode_step_settings">घड़ी पर **सेटिंग** खोलें।</string>
     <string name="devmode_step_apps">**ऐप** में जाएँ।</string>
     <string name="devmode_step_health_platform">**Health Platform** चुनें।</string>
@@ -421,13 +425,13 @@
     <string name="devmode_skip">अभी छोड़ें</string>
     <string name="devmode_watch_unreachable">घड़ी तक नहीं पहुँच पा रहे, फिर से कोशिश कर रहे हैं</string>
     <string name="devmode_look_title">अपनी घड़ी देखें</string>
-    <string name="devmode_look_message">घड़ी पर Health Platform सेटिंग्स खुल गई हैं। [Dev mode] दिखने तक शीर्षक पर बार-बार टैप करें। यह स्क्रीन इसे अपने-आप पहचान लेगी।</string>
+    <string name="devmode_look_message">घड़ी पर Health Platform सेटिंग खुल गई हैं। [Dev mode] दिखने तक शीर्षक पर बार-बार टैप करें। यह स्क्रीन इसे अपने-आप पहचान लेगी।</string>
     <string name="devmode_not_yet_title">अपने-आप चालू नहीं हो सका</string>
-    <string name="devmode_not_yet_message">घड़ी पर Health Platform सेटिंग्स में [Dev mode] नहीं दिखा। घड़ी अनलॉक करके फिर कोशिश करें, या खुद शीर्षक पर लगातार 10 बार टैप करें।</string>
+    <string name="devmode_not_yet_message">घड़ी पर Health Platform सेटिंग में [Dev mode] नहीं दिखा। घड़ी अनलॉक करके फिर कोशिश करें, या खुद शीर्षक पर लगातार 10 बार टैप करें।</string>
     <string name="devmode_unreachable_title">घड़ी तक नहीं पहुँच पा रहे</string>
     <string name="devmode_unreachable_message">जाँचें कि घड़ी चालू है, इस फ़ोन वाले ही Wi-Fi पर है, और वायरलेस डीबगिंग अब भी चालू है।</string>
     <string name="devmode_success_title">डेवलपर मोड चालू है</string>
-    <string name="devmode_success_message">Health Platform अब बदले गए ऐप को स्वीकार करता है। अगले चरण पर चल रहे हैं।</string>
+    <string name="devmode_success_message">Health Platform अब पैच किए गए ऐप को स्वीकार करता है। अगले चरण पर चल रहे हैं।</string>
 
     <!-- Disable stock apps -->
     <string name="disable_title">स्टॉक ऐप बंद करें</string>
@@ -463,10 +467,10 @@
     <string name="selftest_shm_title">Health Monitor को घड़ी दिखती है</string>
     <string name="selftest_ecg_title">ECG फ़ोन तक पहुँचता है</string>
     <string name="selftest_platform_question">घड़ी पर, क्या Health Platform डेवलपर मोड में है?</string>
-    <string name="selftest_gms_question">क्या फ़ोन पर Wear OS ऐप घड़ी को जुड़ी हुई दिखाता है?</string>
+    <string name="selftest_gms_question">क्या फ़ोन पर Galaxy Wearable ऐप घड़ी को कनेक्टेड दिखाता है?</string>
     <string name="selftest_shm_question">क्या फ़ोन पर Samsung Health Monitor घड़ी को जुड़ी हुई दिखाता है?</string>
     <string name="selftest_ecg_question">घड़ी पर ECG लें। क्या वह फ़ोन पर दिखता है?</string>
-    <string name="selftest_detail_answered_no">आपने नहीं कहा</string>
+    <string name="selftest_detail_answered_no">आपका जवाब: नहीं</string>
 
     <string name="selftest_detail_package_ok">संस्करण %1$s, आपकी कुंजी से साइन किया हुआ, बिल्ड वाली ही फ़ाइल</string>
     <string name="selftest_detail_package_ok_no_version">आपकी कुंजी से साइन किया हुआ, बिल्ड वाली ही फ़ाइल</string>
@@ -530,9 +534,9 @@
     <string name="home_menu_new_build">नया बिल्ड</string>
     <string name="home_menu_self_test">स्व-परीक्षण चलाएँ</string>
     <string name="home_menu_restore_watch">घड़ी बहाल करें</string>
-    <string name="home_menu_uninstall">अनइंस्टॉल करें</string>
+    <string name="home_menu_uninstall">सभी बदलाव वापस लें</string>
     <string name="restore_title">मूल ऐप बहाल करें?</string>
-    <string name="restore_body">पैच किया ऐप हटा दिया जाता है और स्टॉक ऐप फिर चालू हो जाता है। घड़ी पर आपका डेटा बना रहता है।</string>
+    <string name="restore_body">पैच किया गया ऐप और उसका डेटा हटा दिया जाता है, और स्टॉक ऐप फिर से चालू हो जाता है।</string>
     <string name="restore_confirm">बहाल करें</string>
 
     <!-- Signing key -->
@@ -615,7 +619,7 @@
     <string name="watchpair_error_bad_host">घड़ी का IP पता डालें, जैसे 192.168.1.20।</string>
     <string name="watchpair_error_bad_port">1 से 65535 के बीच पोर्ट डालें।</string>
     <string name="watchpair_guide_title">अपनी घड़ी पर पेयरिंग चालू करें</string>
-    <string name="watchpair_guide_3">1. घड़ी को इस फ़ोन वाले Wi-Fi से जोड़ें।\n2. **सेटिंग** › **कनेक्शन** › **Wi-Fi**।</string>
+    <string name="watchpair_guide_3">1. घड़ी पर **सेटिंग** › **कनेक्शन** › **Wi-Fi** खोलें।\n2. इस फ़ोन वाले Wi-Fi से ही कनेक्ट करें।</string>
     <string name="watchpair_guide_5">1. **नया डिवाइस पेयर करें** पर टैप करें।\n2. घड़ी 6 अंकों का कोड और एक पता दिखाती है।\n3. यह ऐप पता अपने आप ढूँढ लेता है; आपको सिर्फ़ कोड डालना है।</string>
     <string name="watchpair_guide_again">दोबारा दिखाएँ</string>
     <string name="watchpair_manual">छोड़ें और खुद करें</string>
@@ -664,35 +668,35 @@
     <string name="troubleshoot_fixes_title">त्वरित उपाय</string>
     <string name="troubleshoot_fix_1">फ़ोन और घड़ी दोनों पर Bluetooth चालू करें और उन्हें पास-पास रखें।</string>
     <string name="troubleshoot_fix_2">फ़ोन और घड़ी को रीस्टार्ट करें।</string>
-    <string name="troubleshoot_fix_3">स्टोर से Galaxy Wearable, उसके घड़ी प्लग-इन और Google Play services को अपडेट करें।</string>
+    <string name="troubleshoot_fix_3">स्टोर से Galaxy Wearable, उसका घड़ी प्लग-इन और Google Play सेवाएँ अपडेट करें।</string>
     <string name="troubleshoot_fix_4">घड़ी को इस फ़ोन के Bluetooth डिवाइस और Galaxy Wearable से हटाएँ, फिर Galaxy Wearable से दोबारा पेयर करें।</string>
-    <string name="troubleshoot_gms_title">Google Play services अटकी हुई है</string>
-    <string name="troubleshoot_gms_intro">अगर घड़ी पहले पेयर की गई थी, या इस फ़ोन पर Google Play services काम करना बंद कर चुकी है, तो पेयरिंग कभी पूरी नहीं हो सकती। Google Play services का डेटा मिटाने से वह रीसेट हो जाती है।</string>
+    <string name="troubleshoot_gms_title">Google Play सेवाएँ अटकी हुई हैं</string>
+    <string name="troubleshoot_gms_intro">अगर घड़ी पहले पेयर की गई थी, या इस फ़ोन पर Google Play सेवाओं ने काम करना बंद कर दिया है, तो पेयरिंग शायद कभी पूरी न हो। Google Play सेवाओं का डेटा मिटाने से वे रीसेट हो जाती हैं।</string>
     <string name="troubleshoot_gms_warning">इसे मिटाने से आप इस फ़ोन पर अपने सभी Google खातों से साइन आउट हो सकते हैं। आपको दोबारा साइन इन करना पड़ सकता है।</string>
     <string name="troubleshoot_manual_title">खुद करें</string>
-    <string name="troubleshoot_manual_steps">1. **Google Play services** की सेटिंग खोलें।\n2. **स्टोरेज** पर टैप करें।\n3. **जगह प्रबंधित करें** पर टैप करें।\n4. **सारा डेटा मिटाएँ** पर टैप करें।</string>
-    <string name="troubleshoot_manual_open">Google Play services की सेटिंग खोलें</string>
+    <string name="troubleshoot_manual_steps">1. **Google Play सेवाएँ** की सेटिंग खोलें।\n2. **स्टोरेज** पर टैप करें।\n3. **जगह प्रबंधित करें** पर टैप करें।\n4. **सारा डेटा मिटाएँ** पर टैप करें।</string>
+    <string name="troubleshoot_manual_open">Google Play सेवाओं की सेटिंग खोलें</string>
     <string name="troubleshoot_auto_title">यह ऐप कर दे</string>
     <string name="troubleshoot_auto_intro">यह ऐप इस फ़ोन की अपनी वायरलेस डीबगिंग के ज़रिए कमांड भेज सकता है। आपका Wi-Fi पर होना ज़रूरी है।</string>
     <string name="troubleshoot_adb_pair">इस फ़ोन के ADB से पेयर करें</string>
     <string name="troubleshoot_adb_retry">दोबारा पेयर करने की कोशिश करें</string>
     <string name="troubleshoot_adb_paired">इस फ़ोन के ADB से पेयर हो गया। अगले चरण में कोड की ज़रूरत नहीं है।</string>
     <string name="troubleshoot_adb_busy">वायरलेस डीबगिंग की एक और पेयरिंग पहले से जारी है। पहले उसे पूरा करें या रद्द करें।</string>
-    <string name="troubleshoot_clear_action">Google Play services का डेटा मिटाएँ</string>
-    <string name="troubleshoot_clear_waiting">पुष्टि हो गई। इस फ़ोन से कनेक्शन का इंतज़ार है, फिर Google Play services का डेटा मिटाया जाएगा।</string>
-    <string name="troubleshoot_clear_running">Google Play services का डेटा मिटाया जा रहा है...</string>
+    <string name="troubleshoot_clear_action">Google Play सेवाओं का डेटा मिटाएँ</string>
+    <string name="troubleshoot_clear_waiting">पुष्टि हो गई। इस फ़ोन से कनेक्शन का इंतज़ार है, फिर Google Play सेवाओं का डेटा मिटाया जाएगा।</string>
+    <string name="troubleshoot_clear_running">Google Play सेवाओं का डेटा मिटाया जा रहा है...</string>
     <string name="troubleshoot_clear_done">हो गया। अगर Android कहे, तो अपने Google खातों में दोबारा साइन इन करें। फिर Galaxy Wearable खोलें और घड़ी को दोबारा पेयर करें।</string>
-    <string name="troubleshoot_clear_failed">Google Play services का डेटा नहीं मिटाया गया।</string>
-    <string name="troubleshoot_dialog_title">Google Play services का डेटा मिटाएँ?</string>
-    <string name="troubleshoot_dialog_body">इससे इस फ़ोन पर Google Play services रीसेट हो जाती है। इस फ़ोन पर आप अपने सभी Google खातों की पहुँच खो सकते हैं और आपको दोबारा साइन इन करना पड़ सकता है।\n\nGoogle Play services पर निर्भर कुछ सेवाएँ, जैसे Google Wallet कार्ड, मेरा डिवाइस ढूंढें और बैकअप सेटिंग, दोबारा सेट करनी पड़ सकती हैं।\n\nआपकी घड़ी में कोई बदलाव नहीं होता।</string>
+    <string name="troubleshoot_clear_failed">Google Play सेवाओं का डेटा नहीं मिटाया गया।</string>
+    <string name="troubleshoot_dialog_title">Google Play सेवाओं का डेटा मिटाएँ?</string>
+    <string name="troubleshoot_dialog_body">इससे इस फ़ोन पर Google Play सेवाएँ रीसेट हो जाती हैं। इस फ़ोन पर आप अपने सभी Google खातों की पहुँच खो सकते हैं और आपको उनमें दोबारा साइन इन करना पड़ सकता है।\n\nGoogle Play सेवाओं पर निर्भर कुछ सेवाएँ, जैसे Google Wallet कार्ड, मेरा डिवाइस ढूंढें और बैकअप सेटिंग, दोबारा सेट करनी पड़ सकती हैं।\n\nआपकी घड़ी में कोई बदलाव नहीं होता।</string>
     <string name="troubleshoot_dialog_confirm">डेटा मिटाएँ</string>
     <string name="troubleshoot_back_to_check">पेयरिंग जाँच पर वापस जाएँ</string>
     <string name="skip_title">चलिए इसे छोड़ते हैं</string>
-    <string name="skip_body">इसे अपने-आप पहचानने के लिए हमारे पास पर्याप्त जानकारी है।</string>
+    <string name="skip_body">यह पहले ही हो चुका है, इसलिए आप आगे बढ़ सकते हैं।</string>
     <string name="skip_checking">आपके डिवाइस जाँचे जा रहे हैं…</string>
     <string name="skip_card_step">चरण %1$d · %2$s</string>
     <string name="skip_reason_profile">कनेक्ट की गई घड़ी पर Android %1$s (%2$s) मिला।</string>
-    <string name="skip_reason_profile_network">आपकी घड़ी (%1$s) ने Wi-Fi पर Android API %2$s बताया (%3$s)।</string>
+    <string name="skip_reason_profile_network">आपकी घड़ी (%1$s) ने Wi-Fi पर Android API लेवल %2$s बताया: %3$s।</string>
     <string name="skip_reason_wearable">आपकी घड़ी पहले से Galaxy Wearable से जुड़ी है।</string>
     <string name="skip_reason_watchpair">आपकी घड़ी पहले से वायरलेस डीबगिंग से कनेक्ट है।</string>
     <string name="skip_confirm">समझ गया</string>
@@ -707,26 +711,26 @@
     <string name="selfadb_guide_ui_paired">पेयर किए गए डिवाइस</string>
     <string name="selfadb_open_wireless">वायरलेस डीबगिंग खोलें</string>
     <string name="outcome_acknowledge">समझ गया</string>
-    <string name="phone_adb_error_title">यह ऐप की समस्या है</string>
-    <string name="phone_adb_error_message">यह ऐप की समस्या है, आपकी कोई गलती नहीं है, और आप इसे खुद ठीक नहीं कर सकते। आप हर पंक्ति के सेटिंग खोलें बटन इस्तेमाल कर सकते हैं या फिर भी आगे बढ़ सकते हैं।</string>
+    <string name="phone_adb_error_title">पहुँच अपने-आप नहीं दी जा सकी</string>
+    <string name="phone_adb_error_message">वायरलेस डीबगिंग के ज़रिए पहुँच की सेटिंग लागू नहीं हो सकीं। आप अब भी हर पंक्ति का सेटिंग खोलें बटन इस्तेमाल कर सकते हैं, या फिर भी आगे बढ़ सकते हैं।</string>
     <string name="phone_adb_success_title">सब तैयार है</string>
     <string name="phone_adb_success_message">अगले चरण पर चलते हैं</string>
     <string name="acquire_shealth_title">Samsung Health (वैकल्पिक)</string>
-    <string name="acquire_shealth_summary">फ़ोन के Samsung Health ऐप की पैच की हुई कॉपी \"Samsung Health+\" भी बनाता है, जिसमें नए Galaxy Watch की ज़रूरत वाली सुविधाएँ अनलॉक हैं। यह Play के Samsung Health के बगल में इंस्टॉल होती है, जिसे आप रखते हैं: वह वॉच से जुड़ा रहता है और आपके Samsung Account पर डेटा अपलोड करता है, और Samsung Health+ उसी खाते से साइन इन करने के बाद क्लाउड से वही डेटा डाउनलोड करता है (कुछ देर पीछे रह सकता है).</string>
+    <string name="acquire_shealth_summary">फ़ोन के Samsung Health ऐप की एक पैच की गई कॉपी \"Samsung Health+\" भी बनाएँ, जिसमें वे सुविधाएँ चालू हैं जिनके लिए वरना नई Galaxy Watch चाहिए। यह Google Play वाले Samsung Health ऐप के बगल में इंस्टॉल होती है, जिसे आप रखते हैं: वह घड़ी से जुड़ा रहता है और आपके Samsung Account पर डेटा अपलोड करता है, और उसी खाते से साइन इन करने के बाद Samsung Health+ क्लाउड से वही डेटा डाउनलोड करता है (यह कुछ समय पीछे रह सकता है)।</string>
     <string name="output_shealth_phone">Samsung Health+ (पैच किया हुआ)</string>
-    <string name="change_purpose_shealth_phone">Samsung Health की नाम बदली हुई कॉपी, जिसमें नीचे की सुविधाएँ अनलॉक हैं। यह Play के Samsung Health के बगल में चलती है और आपका डेटा Samsung क्लाउड से पढ़ती है।</string>
+    <string name="change_purpose_shealth_phone">Samsung Health की नाम बदली हुई कॉपी, जिसमें एनर्जी स्कोर टाइल और, चाहें तो, वाइटल्स, ट्रेनिंग लोड और फ़िटनेस इंडेक्स चालू हैं। यह Google Play वाले Samsung Health ऐप के बगल में चलती है और आपका डेटा Samsung क्लाउड से पढ़ती है।</string>
     <string name="patch_shealth_res_webp">गलत फ़ाइल एक्सटेंशन वाली चार इमेज ठीक करता है ताकि ऐप दोबारा बनाया जा सके (कोई दिखने वाला बदलाव नहीं)।</string>
     <string name="patch_shealth_feature_dev_ui">Samsung डेवलपर मोड के बिना सेटिंग &gt; के बारे में में सुविधाओं की सूची दिखाता है।</string>
-    <string name="patch_shealth_vitality_tile">वॉच के क्षमता बताने का इंतज़ार किए बिना एनर्जी स्कोर टाइल दिखाता है।</string>
+    <string name="patch_shealth_vitality_tile">घड़ी के क्षमता बताने का इंतज़ार किए बिना एनर्जी स्कोर टाइल दिखाता है।</string>
     <string name="patch_shealth_rename_manifest">ऐप को अपना पैकेज नाम और लेबल (Samsung Health+) देता है ताकि वह मूल ऐप के बगल में इंस्टॉल हो सके।</string>
     <string name="patch_shealth_rename_code">ऐप के आंतरिक संदर्भों को नए पैकेज नाम पर अपडेट करता है।</string>
     <string name="patch_shealth_rename_account_xml">ऐप को अपना खाता और सिंक पंजीकरण देता है ताकि क्लाउड सिंक मूल ऐप के बगल में काम करे।</string>
-    <string name="patch_shealth_capability_gates">वाइटल्स, ट्रेनिंग लोड और फ़िटनेस इंडेक्स अनलॉक करता है, जिनके लिए अन्यथा Galaxy Watch8 या Ultra चाहिए। इनकी गणना फ़ोन पर आपके सिंक किए गए इतिहास से होती है।</string>
+    <string name="patch_shealth_capability_gates">वाइटल्स, ट्रेनिंग लोड और फ़िटनेस इंडेक्स चालू करता है, जिनके लिए वरना Galaxy Watch8 या Ultra चाहिए। इनकी गणना फ़ोन पर आपके सिंक किए गए इतिहास से होती है।</string>
     <string name="patch_shealth_launcher_badge">ऐप आइकन में एक छोटा OpenSHM बैज जोड़ता है, ताकि आप इसे मूल ऐप से अलग पहचान सकें।</string>
-    <string name="patch_shealth_oobe_local">वैकल्पिक, डिफ़ॉल्ट रूप से बंद। Samsung खाते से साइन-इन की ज़रूरत छोड़ देता है और क्लाउड सिंक के बिना ऐप को लोकल रूप से इस्तेमाल करता है। केवल तब चालू करें जब साइन-इन काम न करे।</string>
+    <string name="patch_shealth_oobe_local">डिफ़ॉल्ट रूप से बंद। Samsung Account से साइन इन की ज़रूरत छोड़ देता है और ऐप को क्लाउड सिंक के बिना लोकल रूप से चलाता है, इसलिए उसे वह डेटा नहीं मिलता जो Google Play वाला Samsung Health ऐप अपलोड करता है। इसे तभी चालू करें जब साइन इन काम न करे।</string>
     <string name="device_logs_channel">डिवाइस लॉग</string>
     <string name="device_logs_notification_title">डिवाइस लॉग रिकॉर्ड हो रहे हैं</string>
-    <string name="device_logs_notification_text">%1$d वॉच · %2$d फ़ोन</string>
+    <string name="device_logs_notification_text">%1$d घड़ी · %2$d फ़ोन</string>
     <string name="device_logs_action_stop">रोकें</string>
     <string name="device_logs_action_open">खोलें</string>
     <string name="device_logs_title">डिवाइस लॉग</string>
@@ -746,10 +750,10 @@
     <string name="device_logs_clear">साफ़ करें</string>
     <string name="device_logs_exported">लॉग एक्सपोर्ट हो गए</string>
     <string name="device_logs_export_failed">लॉग एक्सपोर्ट नहीं हो सके</string>
-    <string name="device_logs_sheet_watch_title">वॉच कनेक्ट नहीं है</string>
-    <string name="device_logs_sheet_watch_off">वॉच पर वायरलेस डीबगिंग चालू करें (सेटिंग › डेवलपर विकल्प › वायरलेस डीबगिंग) और उसे इस फ़ोन के साथ उसी Wi-Fi पर रखें। वॉच दिखते ही लॉग अपने आप कनेक्ट हो जाता है।</string>
-    <string name="device_logs_sheet_watch_not_paired">यह वॉच कभी पैचर के साथ पेयर नहीं हुई। पहले इसे पेयर करें, फिर इसके लॉग देखने के लिए वापस आएँ।</string>
-    <string name="device_logs_sheet_watch_pair">वॉच पेयर करें</string>
+    <string name="device_logs_sheet_watch_title">घड़ी कनेक्ट नहीं है</string>
+    <string name="device_logs_sheet_watch_off">घड़ी पर वायरलेस डीबगिंग चालू करें (सेटिंग › डेवलपर विकल्प › वायरलेस डीबगिंग) और उसे इस फ़ोन के साथ उसी Wi-Fi पर रखें। घड़ी दिखते ही लॉग अपने आप कनेक्ट हो जाता है।</string>
+    <string name="device_logs_sheet_watch_not_paired">यह घड़ी कभी पैचर के साथ पेयर नहीं हुई। पहले इसे पेयर करें, फिर इसके लॉग देखने के लिए वापस आएँ।</string>
+    <string name="device_logs_sheet_watch_pair">घड़ी पेयर करें</string>
     <string name="device_logs_sheet_phone_title">फ़ोन कनेक्ट नहीं है</string>
     <string name="device_logs_sheet_phone_off">इस फ़ोन पर वायरलेस डीबगिंग चालू करें (सेटिंग › डेवलपर विकल्प › वायरलेस डीबगिंग) और फिर कोशिश करें।</string>
     <string name="device_logs_sheet_phone_open">डेवलपर विकल्प खोलें</string>
@@ -762,9 +766,9 @@
     <string name="revert_action_enable">फिर से चालू करें</string>
     <string name="revert_action_restore">पहले जैसा करें</string>
     <string name="revert_setting_label">हमेशा चालू डिस्प्ले की सेटिंग</string>
-    <string name="revert_setting_note">अभी यह बंद है; इसे फिर से चालू किया जाएगा।</string>
+    <string name="revert_setting_note">पैचर के पिछले संस्करण ने इसे बंद किया था; इसे फिर से चालू किया जाएगा।</string>
     <string name="revert_exemption_label">सेंसर एक्सेस छूट</string>
-    <string name="revert_exemption_note">घड़ी की सेंसर छूट सूची से हमारी प्रविष्टि हटाई जाएगी; अन्य ऐप की प्रविष्टियाँ बनी रहेंगी।</string>
+    <string name="revert_exemption_note">घड़ी की छिपे हुए API की छूट सूची से हमारी प्रविष्टि हटा दी जाएगी; दूसरे ऐप की प्रविष्टियाँ बनी रहेंगी।</string>
     <string name="revert_enable_note">सेटअप ने इसे बंद किया था; इसे फिर से चालू किया जाएगा।</string>
     <string name="revert_not_installed">इंस्टॉल नहीं हैं, कुछ करने की ज़रूरत नहीं: %1$s</string>
     <string name="revert_system_apps">सिस्टम ऐप होने के कारण नहीं छेड़े गए: %1$s</string>

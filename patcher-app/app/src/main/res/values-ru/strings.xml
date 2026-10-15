@@ -45,12 +45,12 @@
     <!-- Welcome -->
     <string name="welcome_title">Ваши приложения, ваши часы, ваши правила</string>
     <string name="welcome_promise_download">Официальные приложения вы получаете сами: здесь ничего не встроено.</string>
-    <string name="welcome_promise_patch">Патчи позволяют Samsung Health Monitor работать на телефоне не от Samsung и устанавливаться рядом с оригинальным приложением на часах.</string>
-    <string name="welcome_promise_undo">Любое изменение можно отменить, а оригинальные приложения остаются на месте.</string>
+    <string name="welcome_promise_patch">Патчи позволяют Samsung Health Monitor работать на телефоне не от Samsung, а пропатченное приложение для часов устанавливается рядом с оригинальным.</string>
+    <string name="welcome_promise_undo">Любое изменение можно отменить, а оригинальные приложения никогда не удаляются.</string>
     <string name="welcome_get_started">Начать</string>
     <string name="welcome_what_changes">Что изменится на моих устройствах?</string>
     <string name="changes_title">Что изменится</string>
-    <string name="changes_intro">Каждое устанавливаемое приложение, для чего оно нужно и что ему разрешено. Ничего не удаляется, и всё можно отменить.</string>
+    <string name="changes_intro">Каждое устанавливаемое приложение, для чего оно нужно и что ему разрешено. Ничего не удаляется без вашего согласия, и всё можно отменить.</string>
     <string name="changes_on_phone">На этом телефоне</string>
     <string name="changes_on_watch">На часах</string>
     <string name="changes_allowed_to">Ему разрешено</string>
@@ -73,13 +73,15 @@
     <string name="grant_title_full_screen">Оповещения на весь экран</string>
     <string name="grant_title_ongoing_calls">Управление текущими звонками</string>
     <string name="grant_title_always_on">Always-on display выключен</string>
-    <string name="grant_title_battery">Без ограничений</string>
+    <string name="grant_title_battery">Использование батареи без ограничений</string>
     <string name="grant_title_hidden_api">Доступ к датчикам на новых часах</string>
     <string name="grant_why_calls">Отвечать на звонок или отклонять его с часов.</string>
     <string name="grant_why_phone_state">Знать, когда звонок поступает или завершается, чтобы часы могли это показать.</string>
     <string name="grant_why_notifications_phone">Показывать небольшое уведомление, пока есть связь с часами.</string>
     <string name="grant_why_notifications_watch">Показывать на часах уведомления с телефона.</string>
     <string name="grant_why_notifications_alarm">Показывать будильник, пока он звонит.</string>
+    <string name="grant_why_notifications_shm">Показывать уведомления от Health Monitor.</string>
+    <string name="grant_why_notifications_shealth">Показывать уведомления от Samsung Health+.</string>
     <string name="grant_why_bluetooth_phone">Подключаться к часам по Bluetooth.</string>
     <string name="grant_why_bluetooth_watch">Подключаться к телефону по Bluetooth.</string>
     <string name="grant_why_restricted">Android блокирует некоторые настройки для приложений, установленных не из магазина. Это позволяет включить доступ к уведомлениям для моста.</string>
@@ -94,25 +96,26 @@
     <string name="grant_why_ongoing_calls">Показывать на часах текущий звонок и управлять им.</string>
     <string name="grant_why_always_on">Не даёт всегда включённому экрану усыплять часы во время измерения.</string>
     <string name="grant_why_battery_bridge">Поддерживать связь по Bluetooth, пока часы экономят заряд.</string>
+    <string name="grant_why_battery_bridge_phone">Поддерживать связь по Bluetooth, пока телефон экономит заряд.</string>
     <string name="grant_why_battery_alarm">Звонить вовремя, даже когда часы экономят заряд.</string>
-    <string name="grant_why_hidden_api">Позволяет приложению часов использовать сервис датчиков Samsung для ЭКГ, давления и апноэ во сне. Действует для всех часов, но только для ПО датчиков Samsung.</string>
-    <string name="changes_disables">Можно отключить</string>
+    <string name="grant_why_hidden_api">Новые часы (One UI 8 Watch) закрывают приложению часов доступ к диспетчеру датчиков Samsung, который нужен ему для ЭКГ, давления и апноэ во сне. Исключение действует для всех приложений на часах, но только для диспетчера датчиков Samsung.</string>
+    <string name="changes_disables">Отключаются при настройке</string>
 
     <!-- Profile -->
     <string name="profile_title">Какие у вас часы?</string>
     <string name="profile_intro">От этого зависит, какие официальные приложения вам понадобятся.</string>
     <string name="profile_wear5_title">Wear OS 5 или новее</string>
     <string name="profile_wear5_summary">Health Monitor и будильники с телефона на часах.</string>
-    <string name="profile_wear5_apps">3 официальных приложения</string>
+    <string name="profile_wear5_apps">3 официальных приложения или 4 с Samsung Health</string>
     <string name="profile_wear3_title">Wear OS 3 или 4</string>
-    <string name="profile_wear3_summary">Только Health Monitor. Для приложения будильников на часах нужен Android 14.</string>
-    <string name="profile_wear3_apps">2 официальных приложения</string>
+    <string name="profile_wear3_summary">Health Monitor и мост, без будильников телефона. Для приложения будильников на часах нужен Android 14.</string>
+    <string name="profile_wear3_apps">2 официальных приложения или 3 с Samsung Health</string>
     <string name="profile_detected">Проверено на часах: Android %1$s (%2$s)</string>
     <string name="profile_check_paired">Проверить сопряжённые часы</string>
-    <string name="profile_detected_network">Ваши часы (%1$s) сообщили по Wi-Fi: Android API %2$s (%3$s)</string>
+    <string name="profile_detected_network">Ваши часы (%1$s) сообщили по Wi-Fi уровень Android API %2$s: %3$s</string>
     <string name="profile_paired_certain">Всегда работают на Wear OS 5 или новее, поэтому выбран этот вариант.</string>
     <string name="profile_paired_depends">Могут работать на любой из версий в зависимости от обновлений.</string>
-    <string name="profile_tip_wireless">Чтобы узнать точно, включите на часах отладку по беспроводной сети: этот экран считывает версию по Wi-Fi.</string>
+    <string name="profile_tip_wireless">Чтобы узнать точно, включите на часах отладку по Wi-Fi: этот экран считывает версию по Wi-Fi.</string>
     <string name="profile_scanning">Ищем ваши часы в сети Wi-Fi…</string>
     <string name="profile_allow">Разрешить</string>
     <string name="profile_check_none">Сопряжённых Galaxy Watch не найдено. Выберите вариант или позвольте приложению проверить на шаге 3.</string>
@@ -123,7 +126,7 @@
     <string name="howto_step_panel">На часах проведите вниз от верхнего края циферблата и нажмите шестерёнку, чтобы открыть **Настройки**.</string>
     <string name="howto_step_settings">Прокрутите **Настройки** вниз и нажмите **О часах**.</string>
     <string name="howto_step_about">Нажмите **Сведения о ПО**.</string>
-    <string name="howto_step_software">Найдите «Версия Wear OS» или «Версия Android». Wear OS 5 и новее, One UI 6 Watch и новее или Android 14 и новее — это первый вариант; всё старше — второй.</string>
+    <string name="howto_step_software">Найдите «Версия Wear OS» или «Версия Android». Wear OS 5 и новее, One UI 6 Watch и новее или Android 14 и новее означает первый вариант; всё более раннее — второй.</string>
     <string name="watch_ui_settings">Настройки</string>
     <string name="watch_ui_notifications">Уведомления</string>
     <string name="watch_ui_display">Экран</string>
@@ -144,8 +147,8 @@
     <string name="wearable_recheck">Проверить снова</string>
 
     <!-- Watch pairing over Wi-Fi -->
-    <string name="watchpair_correct_older">На ваших часах Android %1$s, поэтому приложение будильников пропускается: нужно 2 официальных приложения вместо 3.</string>
-    <string name="watchpair_correct_newer">На ваших часах Android %1$s, поэтому приложение будильников включено: нужно 3 официальных приложения вместо 2.</string>
+    <string name="watchpair_correct_older">На ваших часах Android %1$s, поэтому приложение будильников пропускается: нужно на одно официальное приложение меньше.</string>
+    <string name="watchpair_correct_newer">На ваших часах Android %1$s, поэтому приложение будильников включено: нужно на одно официальное приложение больше.</string>
     <string name="watchpair_paired">Часы сопряжены</string>
     <string name="watchpair_title">Подключение к часам</string>
     <string name="watchpair_intro">Часы принимают установку по Wi-Fi после сопряжения по короткому коду.</string>
@@ -153,7 +156,7 @@
     <string name="watchpair_reconnecting">Повторное подключение к часам…</string>
     <string name="watchpair_reconnected">Часы снова подключены</string>
     <string name="watchpair_reconnected_model">Часы снова подключены (%1$s)</string>
-    <string name="watchpair_remembered_hint">Если вы уже связали эти часы, включите на них беспроводную отладку, и они подключатся снова сами.</string>
+    <string name="watchpair_remembered_hint">Если сопряжение с этими часами уже выполнялось, включите на них отладку по Wi-Fi, и они подключатся снова сами.</string>
     <string name="watchpair_searching">Поиск часов…</string>
     <string name="watchpair_code_label">Код сопряжения</string>
     <string name="watchpair_hint">Введите все 6 цифр для сопряжения</string>
@@ -168,14 +171,14 @@
 
     <!-- Acquire -->
     <string name="acquire_title">Получите официальные приложения</string>
-    <string name="acquire_intro">Скачайте каждое приложение сами, из надёжного источника. Патчер их не хранит и не распространяет.</string>
+    <string name="acquire_intro">Скачайте каждое приложение сами, из источника, которому доверяете. Патчер никогда не содержит и не распространяет их.</string>
     <string name="acquire_open_mirror">Открыть на APKMirror</string>
     <string name="acquire_more_ways">Другие способы получить это приложение</string>
     <string name="acquire_use_file">Использовать имеющийся файл</string>
     <string name="acquire_downloading">Загрузка…  %1$d%% · %2$d из %3$d МБ</string>
     <string name="acquire_verified">Совпадает с ожидаемым файлом · %1$d МБ</string>
     <string name="acquire_rejected_wrong_app">Этот файл относится к другому приложению. Выберите указанное выше.</string>
-    <string name="acquire_rejected_wrong_version">Этот файл — другая версия приложения, не ожидаемая.</string>
+    <string name="acquire_rejected_wrong_version">Версия приложения в этом файле не совпадает с ожидаемой.</string>
     <string name="acquire_rejected_not_expected">Этот файл не соответствует ожидаемой сборке (другой вариант или повреждён). Скачайте его снова.</string>
     <string name="acquire_rejected_unreadable">Не удалось прочитать файл.</string>
     <string name="acquire_rejected_download_failed">Загрузка не завершилась. Проверьте подключение и повторите.</string>
@@ -213,8 +216,8 @@
     <string name="customize_required">Обязательно, всегда включено</string>
     <string name="customize_advanced">Дополнительно</string>
     <string name="customize_prefix_label">Префикс пакета для вспомогательных приложений</string>
-    <string name="customize_prefix_explainer">Задаёт имена приложений-мостов и приложения будильников. Два приложения Samsung Health Monitor сохраняют свой пакет, чтобы обмениваться данными.</string>
-    <string name="customize_prefix_ok">Новый префикс создаётся автоматически.</string>
+    <string name="customize_prefix_explainer">Задаёт имена приложений-мостов, приложения будильников и Samsung Health+. Два приложения Samsung Health Monitor вместо этого используют одно фиксированное общее имя пакета, чтобы обмениваться данными.</string>
+    <string name="customize_prefix_ok">Подойдёт любой допустимый префикс; для начала подставлен случайный.</string>
     <string name="customize_prefix_locked">Заблокировано: вспомогательные приложения установлены, а для обновлений нужен тот же префикс.</string>
     <string name="customize_prefix_regenerate">Создать новый префикс</string>
     <string name="customize_build">Собрать</string>
@@ -224,7 +227,7 @@
     <string name="prefix_problem_short">Используйте минимум две части, например io.example.</string>
     <string name="prefix_problem_long">Префикс слишком длинный.</string>
     <string name="prefix_problem_segment">Используйте строчные буквы, цифры и подчёркивания; каждая часть начинается с буквы.</string>
-    <string name="prefix_problem_reserved">Это пространство имён принадлежит другому.</string>
+    <string name="prefix_problem_reserved">Это пространство имён принадлежит кому-то другому.</string>
     <plurals name="customize_summary_patches">
         <item quantity="one">%1$d патч включён</item>
         <item quantity="few">%1$d патча включено</item>
@@ -240,31 +243,32 @@
 
     <!-- Patch descriptions (titles come from the catalogue) -->
     <string name="patch_generic_manufacturer_check">Принимает телефон не от Samsung.</string>
-    <string name="patch_generic_vendor_check">Принимает телефон без Samsung SDK.</string>
+    <string name="patch_generic_vendor_check">Принимает телефон, который не указывает Samsung в качестве производителя (замена производителя).</string>
     <string name="patch_shm_min_age_22_to_16">Снижает минимальный возраст с 22 до 16 лет.</string>
+    <string name="patch_watch_min_age_22_to_16">Снижает минимальный возраст для всех функций (22 года, для апноэ во сне 18 лет) до 16 лет.</string>
     <string name="patch_shm_supported_type_ordinals">Считает поддерживаемым любой регион.</string>
-    <string name="patch_shm_region_supportedtype">Пропускает проверку региона.</string>
-    <string name="patch_shm_region_countrylist">Принимает любую страну из списка поддерживаемых.</string>
-    <string name="patch_shm_root_packagevalidator">Пропускает проверку сертификата производителя.</string>
+    <string name="patch_shm_region_supportedtype">Отключает проверку региона.</string>
+    <string name="patch_shm_region_countrylist">Считает любую страну поддерживаемой (проверка региона отключена).</string>
+    <string name="patch_shm_root_packagevalidator">Отключает проверку сертификата Samsung, которую переподписанное приложение больше не проходит.</string>
     <string name="patch_shm_force_update_response">Игнорирует неудачный или принудительный ответ об обновлении.</string>
     <string name="patch_shm_force_update_pref">Игнорирует сохранённый флаг принудительного обновления.</string>
-    <string name="patch_shm_main_gates">Пропускает проверки при запуске, блокирующие другие телефоны.</string>
-    <string name="patch_shm_setup_network_gate">Пропускает проверку SIM и региона при настройке.</string>
+    <string name="patch_shm_main_gates">Пропускает проверки системы и обновлений при запуске и сообщает, что блокировка экрана настроена.</string>
+    <string name="patch_shm_setup_network_gate">Отключает проверку SIM и региона при настройке.</string>
     <string name="patch_shm_sleep_apnea_support">Сообщает, что апноэ во сне поддерживается.</string>
     <string name="patch_phone_rebrand_gms">Даёт приложению на телефоне тот же пакет и ключ, что и на часах, чтобы они могли обмениваться данными.</string>
     <string name="patch_watch_rebrand_coexist">Переименовывает приложение на часах, чтобы оно стояло рядом с оригинальным.</string>
-    <string name="patch_shm_wear_trusted_peers">Позволяет двум изменённым приложениям узнавать друг друга при связи с часами, а не только оригинальным.</string>
+    <string name="patch_shm_wear_trusted_peers">Позволяет двум пропатченным приложениям узнавать друг друга при связи с часами, а не только оригинальным.</string>
     <string name="patch_shm_launcher_badge">Добавляет на значок приложения небольшой бейдж OpenSHM, чтобы его можно было отличить от оригинала.</string>
     <string name="patch_watch_gms_resources_anchor">Определяет ресурс, удалённый из оригинальной сборки, чтобы часы могли сообщить телефону о приложении.</string>
     <string name="patch_watch_queries_health_service">Позволяет приложению на часах видеть службу здоровья.</string>
     <string name="patch_watch_companion_vendor">Принимает телефон любой марки.</string>
     <string name="patch_watch_alarm_system_app">Ставит точные будильники без системных привилегий.</string>
     <string name="patch_watch_mobile_installed">Сообщает, что приложение на телефоне установлено.</string>
-    <string name="patch_watch_ecg_sensor_adapter">Читает датчик ЭКГ через службу Health Tracking.</string>
+    <string name="patch_watch_ecg_sensor_adapter">Считывает датчик ЭКГ через службу Health Tracking и считает датчики нерегулярного сердечного ритма и SpO2 доступными.</string>
     <string name="patch_watch_bp_sensor_adapter">Считывает датчик давления через службу Health Tracking, потому что часы не дают переподписанному приложению использовать его напрямую.</string>
     <string name="patch_watch_sensor_unregister_compat">Не даёт приложению закрываться при остановке датчиков на часах с другим фреймворком датчиков, например Galaxy Watch8.</string>
     <string name="patch_watch_bp_attribute_guard">Не даёт калибровке давления закрывать приложение на часах, которые блокируют используемую ею настройку датчика (One UI 8 Watch). Вместо этого приложение показывает свою обычную ошибку датчика.</string>
-    <string name="patch_watch_apnea_country">Пропускает проверку страны для апноэ.</string>
+    <string name="patch_watch_apnea_country">Отключает проверку региона для апноэ во сне.</string>
     <string name="patch_watch_apnea_reeval_not_supported">Повторно проверяет поддержку апноэ, сохранённую как неподдерживаемую.</string>
     <string name="patch_watch_mod">Добавляет модуль для связи со службой Health Tracking.</string>
     <string name="patch_alarm_verify_symbols">Проверяет, что в приложении будильников есть всё нужное для связи.</string>
@@ -291,7 +295,7 @@
     <string name="output_alarm_fork">Будильники телефона на часах</string>
     <string name="output_bridge_phone">Мост для телефона</string>
     <string name="stock_label_shm">Samsung Health Monitor (оригинал)</string>
-    <string name="stock_reason_shm">Две копии приложения будут конкурировать за один датчик.</string>
+    <string name="stock_reason_shm">Оригинальное приложение на часах продолжает показывать ошибку региона и больше не нужно. Его заменяет пропатченная копия.</string>
 
     <!-- Build -->
     <string name="build_title">Сборка приложений</string>
@@ -313,17 +317,17 @@
     <string name="build_cancelled">Сборка отменена</string>
     <string name="build_restart">Собрать снова</string>
     <string name="build_cancel_title">Отменить сборку?</string>
-    <string name="build_cancel_body">Уже собранные приложения будут удалены. Ты можешь начать заново в любой момент.</string>
+    <string name="build_cancel_body">Уже собранные приложения будут удалены. Вы можете начать заново в любой момент.</string>
     <string name="build_cancel_keep">Продолжить сборку</string>
     <string name="build_app_position">Приложение %1$d из %2$d</string>
     <string-array name="build_almost_done">
-        <item>Уже почти готово, не уходи</item>
+        <item>Уже почти готово, не уходите</item>
         <item>Последние штрихи…</item>
-        <item>Почти готово, потерпи ещё немного</item>
+        <item>Почти готово, ещё немного терпения</item>
         <item>Подписываем и проверяем, осталось совсем чуть-чуть</item>
         <item>Ещё мгновение</item>
-        <item>Твои приложения обретают форму</item>
-        <item>Финишная прямая, держись</item>
+        <item>Ваши приложения обретают форму</item>
+        <item>Финишная прямая, ещё чуть-чуть</item>
         <item>Ещё раз всё проверяем</item>
     </string-array>
     <string name="build_channel_name">Ход сборки</string>
@@ -360,14 +364,14 @@
     <string name="leftover_removing_body">Прежняя настройка оставила копию моста под другим именем пакета. Она конкурирует с новой за связь с часами. Android попросит подтвердить удаление; это безопасно. Ваши данные о здоровье и это приложение не затрагиваются.</string>
     <string name="leftover_kept_title">Старая копия моста сохранена</string>
     <string name="leftover_kept_body">Она может мешать связи с часами. Вы можете удалить её позже в настройках приложений Android.</string>
-    <string name="install_phone_note">Разрешения, показ поверх других приложений, доступ к уведомлениям и ограниченные настройки включаете вы. Вернитесь на этот экран, и проверка пройдёт снова.</string>
+    <string name="install_phone_note">Разрешения, показ поверх других приложений, доступ к уведомлениям, использование батареи без ограничений и ограниченные настройки включаете вы. Вернитесь потом на этот экран, и он проверит всё снова.</string>
     <string name="install_watch_title">Установка на часы</string>
     <string name="install_watch_intro">Установка по Wi-Fi в таком порядке: Health Monitor, мост, затем будильники телефона.</string>
-    <string name="install_watch_note">Часы остаются включёнными и подключёнными, пока это выполняется.</string>
+    <string name="install_watch_note">Пока это выполняется, не давайте часам заснуть и держите их в сети Wi-Fi.</string>
     <string name="install_start">Начать установку</string>
     <string name="install_error_build_missing">Сборка отсутствует или не соответствует этой настройке. Соберите заново, затем установите.</string>
-    <string name="install_error_failed">Часы отклонили установку.</string>
-    <string name="install_error_signature">На часах уже есть копия, подписанная другим ключом. Ничего не удалено. Удалите эту копию сами и повторите.</string>
+    <string name="install_error_failed">Установка отклонена.</string>
+    <string name="install_error_signature">Уже установлена копия, подписанная другим ключом. Ничего не удалено. Удалите эту копию сами и повторите попытку.</string>
     <string name="install_error_grant">Не удалось применить настройку доступа.</string>
     <string name="action_open">Открыть</string>
     <string name="action_allow_installing">Разрешить установку приложений</string>
@@ -377,21 +381,21 @@
     <string name="install_error_unknown_sources">Этому приложению ещё не разрешено устанавливать приложения. Разрешите и начните снова.</string>
     <string name="install_error_notifications">Сначала разрешите уведомления для этого приложения: код сопряжения вводится в уведомлении.</string>
     <string name="phone_adb_title">Выдать всё сразу</string>
-    <string name="phone_adb_intro">Если мешают переключатели, телефон может выдать их себе сам через **Беспроводную отладку**. Нужно быть в сети Wi-Fi. Уведомление запросит код подключения.</string>
-    <string name="phone_adb_action">Выдать всё через Беспроводную отладку</string>
-    <string name="phone_adb_waiting_service">1. В разделе **Беспроводная отладка** включите её.\n2. Нажмите **Подключить устройство с помощью кода подключения**.\n3. Появится уведомление, где можно ввести код, не покидая этот экран.</string>
+    <string name="phone_adb_intro">Вместо того чтобы включать каждое вручную, этот телефон может выдать себе всё сразу через **Отладку по Wi-Fi**. Нужно быть в сети Wi-Fi. Код сопряжения запросит уведомление.</string>
+    <string name="phone_adb_action">Выдать всё через отладку по Wi-Fi</string>
+    <string name="phone_adb_waiting_service">1. В разделе **Отладка по Wi-Fi** включите её.\n2. Нажмите **Подключить устройство с помощью кода подключения**.\n3. Появится уведомление, где можно ввести код, не покидая этот экран.</string>
     <string name="phone_adb_waiting_code">Введите шестизначный код с экрана сопряжения здесь или в уведомлении.</string>
     <string name="phone_adb_wrong_code">Код не подошёл. Проверьте экран сопряжения и повторите.</string>
-    <string name="phone_adb_ambiguous">На этом телефоне найдено несколько служб **Беспроводной отладки**. Выключите и снова включите **Беспроводную отладку**, затем повторите.</string>
+    <string name="phone_adb_ambiguous">На этом телефоне найдено несколько служб **Отладки по Wi-Fi**. Выключите и снова включите **Отладку по Wi-Fi**, затем повторите.</string>
     <string name="phone_adb_connecting">Подключение к этому телефону...</string>
     <string name="phone_adb_reconnecting">Повторное подключение к этому телефону...</string>
     <string name="phone_adb_granting">Подключено. Выдача доступов...</string>
-    <string name="phone_adb_failed">Не удалось подключиться к Беспроводной отладке этого телефона.</string>
+    <string name="phone_adb_failed">Не удалось подключиться к отладке по Wi-Fi этого телефона.</string>
     <string name="phone_adb_code_label">Код сопряжения</string>
     <string name="phone_adb_submit">Сопрячь</string>
     <string name="selfadb_channel">Сопряжение с этим телефоном</string>
     <string name="selfadb_code_channel">Код сопряжения</string>
-    <string name="selfadb_waiting_service">В разделе «Беспроводная отладка» нажмите «Подключить устройство с помощью кода подключения»</string>
+    <string name="selfadb_waiting_service">В разделе «Отладка по Wi-Fi» нажмите «Подключить устройство с помощью кода подключения»</string>
     <string name="selfadb_enter_code_title">Введите код сопряжения</string>
     <string name="selfadb_enter_code_body">Введите шестизначный код с экрана сопряжения.</string>
     <string name="selfadb_reply_label">Код сопряжения</string>
@@ -399,17 +403,17 @@
     <string name="selfadb_wrong_code">Код не подошёл. Проверьте экран сопряжения и повторите.</string>
     <string name="selfadb_pairing">Сопряжение...</string>
     <string name="selfadb_connecting">Подключение...</string>
-    <string name="selfadb_connected">Подключено к Беспроводной отладке этого телефона</string>
-    <string name="selfadb_ambiguous">На этом телефоне найдено несколько служб Беспроводной отладки. Выключите и снова включите Беспроводную отладку, затем повторите.</string>
+    <string name="selfadb_connected">Подключено к отладке по Wi-Fi этого телефона</string>
+    <string name="selfadb_ambiguous">На этом телефоне найдено несколько служб отладки по Wi-Fi. Выключите и снова включите отладку по Wi-Fi, затем повторите.</string>
     <string name="selfadb_failed">Не удалось подключиться</string>
-    <string name="selfadb_service_channel">Беспроводная отладка</string>
-    <string name="selfadb_service_title">Подключение к Беспроводной отладке этого телефона</string>
+    <string name="selfadb_service_channel">Отладка по Wi-Fi</string>
+    <string name="selfadb_service_title">Подключение к отладке по Wi-Fi этого телефона</string>
     <string name="phone_adb_timeout">Сопряжение заняло слишком много времени и было остановлено.</string>
     <string name="phone_adb_interrupted">Сопряжение прервано.</string>
-    <string name="watch_error_unreachable">Часы недоступны. Проверьте, что Беспроводная отладка включена и оба устройства в одной сети Wi-Fi.</string>
+    <string name="watch_error_unreachable">Часы недоступны. Проверьте, что отладка по Wi-Fi включена и оба устройства в одной сети Wi-Fi.</string>
     <string name="watch_error_pairing">Часы больше не доверяют этому телефону. Вернитесь и выполните сопряжение снова.</string>
     <string name="watch_unreachable_title">Часы не найдены</string>
-    <string name="watch_unreachable_body">Разбуди часы, убедись, что они в той же сети Wi-Fi, что и этот телефон, и снова включи беспроводную отладку (Настройки › Для разработчиков › Отладка по Wi-Fi). Затем попробуй ещё раз.</string>
+    <string name="watch_unreachable_body">Разбудите часы, убедитесь, что они в той же сети Wi-Fi, что и этот телефон, и снова включите отладку по Wi-Fi (Настройки › Параметры разработчика › Отладка по Wi-Fi). Затем повторите попытку.</string>
     <string name="grant_permission">Разрешение</string>
     <string name="grant_appop">Операция приложения</string>
     <string name="grant_setting">Системная настройка</string>
@@ -419,7 +423,7 @@
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Режим разработчика Health Platform</string>
-    <string name="devmode_intro">Служба Health Tracking работает с изменённым приложением только в режиме разработчика. Патчер может включить его через экран часов: держите часы разблокированными и рядом.</string>
+    <string name="devmode_intro">Служба Health Tracking работает с пропатченным приложением только в режиме разработчика. Патчер может включить его через экран часов: держите часы разблокированными и не давайте им заснуть.</string>
     <string name="devmode_step_settings">Откройте **Настройки** на часах.</string>
     <string name="devmode_step_apps">Перейдите в **Приложения**.</string>
     <string name="devmode_step_health_platform">Выберите **Health Platform**.</string>
@@ -439,7 +443,7 @@
     <string name="devmode_unreachable_title">Часы недоступны</string>
     <string name="devmode_unreachable_message">Убедитесь, что часы включены, подключены к той же сети Wi-Fi, что и этот телефон, и что отладка по Wi-Fi всё ещё включена.</string>
     <string name="devmode_success_title">Режим разработчика включён</string>
-    <string name="devmode_success_message">Health Platform теперь принимает изменённое приложение. Переходим к следующему шагу.</string>
+    <string name="devmode_success_message">Health Platform теперь принимает пропатченное приложение. Переходим к следующему шагу.</string>
 
     <!-- Disable stock apps -->
     <string name="disable_title">Отключите оригинальное приложение</string>
@@ -477,7 +481,7 @@
     <string name="selftest_shm_title">Health Monitor видит часы</string>
     <string name="selftest_ecg_title">ЭКГ доходит до телефона</string>
     <string name="selftest_platform_question">Находится ли Health Platform на часах в режиме разработчика?</string>
-    <string name="selftest_gms_question">Показывает ли приложение Wear OS на телефоне, что часы подключены?</string>
+    <string name="selftest_gms_question">Показывает ли приложение Galaxy Wearable на телефоне, что часы подключены?</string>
     <string name="selftest_shm_question">Показывает ли Samsung Health Monitor на телефоне, что часы подключены?</string>
     <string name="selftest_ecg_question">Снимите ЭКГ на часах. Появляется ли она на телефоне?</string>
     <string name="selftest_detail_answered_no">Вы ответили «нет»</string>
@@ -546,9 +550,9 @@
     <string name="home_menu_new_build">Новая сборка</string>
     <string name="home_menu_self_test">Запустить самотест</string>
     <string name="home_menu_restore_watch">Восстановить часы</string>
-    <string name="home_menu_uninstall">Удалить</string>
+    <string name="home_menu_uninstall">Отменить все изменения</string>
     <string name="restore_title">Восстановить оригинальное приложение?</string>
-    <string name="restore_body">Приложение с патчами будет удалено, а оригинальное снова включено. Ваши данные на часах сохранятся.</string>
+    <string name="restore_body">Пропатченное приложение и его данные будут удалены, а оригинальное снова включено.</string>
     <string name="restore_confirm">Восстановить</string>
 
     <!-- Signing key -->
@@ -602,7 +606,7 @@
     <string name="watch_ui_devmode_on">Режим разработчика включен</string>
     <string name="watch_ui_developer">Параметры разработчика</string>
     <string name="watch_ui_adb">Отладка по ADB</string>
-    <string name="watch_ui_wireless">Беспроводная отладка</string>
+    <string name="watch_ui_wireless">Отладка по Wi-Fi</string>
     <string name="watch_ui_connections">Подключения</string>
     <string name="watch_ui_wifi">Wi-Fi</string>
     <string name="watch_ui_bluetooth">Bluetooth</string>
@@ -631,7 +635,7 @@
     <string name="watchpair_error_bad_host">Введите IP-адрес часов, например 192.168.1.20.</string>
     <string name="watchpair_error_bad_port">Введите порт от 1 до 65535.</string>
     <string name="watchpair_guide_title">Включите сопряжение на часах</string>
-    <string name="watchpair_guide_3">1. Подключите часы к той же сети Wi-Fi, что и телефон.\n2. **Настройки** › **Подключения** › **Wi-Fi**.</string>
+    <string name="watchpair_guide_3">1. На часах откройте **Настройки** › **Подключения** › **Wi-Fi**.\n2. Подключитесь к той же сети Wi-Fi, что и этот телефон.</string>
     <string name="watchpair_guide_5">1. Нажмите **Подключить новое устройство**.\n2. Часы покажут 6-значный код и адрес.\n3. Приложение найдёт адрес само; вам нужно ввести только код.</string>
     <string name="watchpair_guide_again">Показать ещё раз</string>
     <string name="watchpair_manual">Пропустить и сделать вручную</string>
@@ -647,8 +651,8 @@
     <string name="browser_coach_no_mirror_body">Версии %1$s нет на APKMirror. Закройте этот экран, выберите **Другие способы получить это приложение** и укажите файл, который у вас уже есть.</string>
     <string name="acquire_not_on_mirror">Версии %1$s нет на APKMirror. Используйте файл, который у вас уже есть.</string>
     <string name="watchpair_guide_1">1. На часах откройте **Настройки**, прокрутите вниз, откройте **О часах**, затем **Сведения о ПО**.\n2. Нажмите **Версия ПО** 5–7 раз, пока часы не покажут **Режим разработчика включен**.</string>
-    <string name="watchpair_guide_wireless">1. Вернитесь в **Настройки**, прокрутите вниз и откройте **Параметры разработчика**.\n2. Включите **Беспроводная отладка** и разрешите её.</string>
-    <string name="watchpair_guide_wireless_older">На старых часах, если **Беспроводная отладка** не включается, сначала включите **Отладка по ADB**.</string>
+    <string name="watchpair_guide_wireless">1. Вернитесь в **Настройки**, прокрутите вниз и откройте **Параметры разработчика**.\n2. Включите **Отладка по Wi-Fi** и разрешите её.</string>
+    <string name="watchpair_guide_wireless_older">На старых часах, если **Отладка по Wi-Fi** не включается, сначала включите **Отладка по ADB**.</string>
     <string name="watchpair_dev_line">%1$d. %2$s</string>
     <string name="watchpair_dev_chip">Шаг %1$d из %2$d</string>
     <string name="watchpair_dev_1">Проведите вниз от верхнего края и нажмите на шестерёнку.</string>
@@ -663,83 +667,83 @@
     <string name="watchpair_wifi_5">Часы показывают **Подключено**.</string>
     <string name="watchpair_wl_1">Вернувшись в **Настройки**, прокрутите в самый низ.</string>
     <string name="watchpair_wl_2">Нажмите **Параметры разработчика**.</string>
-    <string name="watchpair_wl_3">Нажмите **Беспроводная отладка**.</string>
+    <string name="watchpair_wl_3">Нажмите **Отладка по Wi-Fi**.</string>
     <string name="watchpair_wl_4">Нажмите **Разрешить**.</string>
-    <string name="watchpair_wl_5">**Беспроводная отладка** включена.</string>
+    <string name="watchpair_wl_5">**Отладка по Wi-Fi** включена.</string>
     <string name="watch_ui_apps">Приложения</string>
     <string name="watch_ui_security">Безопасность</string>
     <string name="watch_ui_network_home">Домашний Wi-Fi</string>
     <string name="watch_ui_network_guest">Гостевая сеть</string>
     <string name="watch_ui_same_network">Та же, что у телефона</string>
     <string name="watch_ui_connected">Подключено</string>
-    <string name="watch_ui_allow_prompt">Разрешить беспроводную отладку в этой сети?</string>
+    <string name="watch_ui_allow_prompt">Разрешить отладку по Wi-Fi в этой сети?</string>
     <string name="watch_ui_allow">Разрешить</string>
-    <string name="troubleshoot_open">Не удаётся подключить?</string>
-    <string name="troubleshoot_title">Не удаётся подключить?</string>
-    <string name="troubleshoot_intro">Если Galaxy Wearable не может завершить подключение часов, попробуйте по порядку следующее.</string>
+    <string name="troubleshoot_open">Проблемы с сопряжением?</string>
+    <string name="troubleshoot_title">Проблемы с сопряжением?</string>
+    <string name="troubleshoot_intro">Если Galaxy Wearable не удаётся завершить сопряжение с часами, попробуйте по порядку следующее.</string>
     <string name="troubleshoot_fixes_title">Быстрые решения</string>
     <string name="troubleshoot_fix_1">Включите Bluetooth на телефоне и часах и держите их рядом.</string>
     <string name="troubleshoot_fix_2">Перезапустите телефон и часы.</string>
     <string name="troubleshoot_fix_3">Обновите Galaxy Wearable, его плагин для часов и Сервисы Google Play в магазине приложений.</string>
-    <string name="troubleshoot_fix_4">Удалите часы из списка Bluetooth-устройств этого телефона и из Galaxy Wearable, затем снова подключите их через Galaxy Wearable.</string>
+    <string name="troubleshoot_fix_4">Удалите часы из списка Bluetooth-устройств этого телефона и из Galaxy Wearable, затем снова выполните сопряжение через Galaxy Wearable.</string>
     <string name="troubleshoot_gms_title">Сервисы Google Play зависли</string>
-    <string name="troubleshoot_gms_intro">Если часы подключались раньше или Сервисы Google Play на этом телефоне перестали работать, подключение может не завершиться. Очистка данных Сервисов Google Play сбрасывает их.</string>
-    <string name="troubleshoot_gms_warning">Очистка может выйти из всех аккаунтов Google на этом телефоне. Возможно, придётся войти снова.</string>
+    <string name="troubleshoot_gms_intro">Если часы уже были сопряжены раньше или Сервисы Google Play на этом телефоне перестали работать, сопряжение может так и не завершиться. Очистка данных Сервисов Google Play сбрасывает их.</string>
+    <string name="troubleshoot_gms_warning">После очистки может произойти выход из всех аккаунтов Google на этом телефоне. Возможно, придётся войти снова.</string>
     <string name="troubleshoot_manual_title">Сделать самому</string>
     <string name="troubleshoot_manual_steps">1. Откройте настройки **Сервисов Google Play**.\n2. Нажмите **Хранилище**.\n3. Нажмите **Управление местом**.\n4. Нажмите **Удалить все данные**.</string>
     <string name="troubleshoot_manual_open">Открыть настройки Сервисов Google Play</string>
     <string name="troubleshoot_auto_title">Пусть приложение сделает это</string>
-    <string name="troubleshoot_auto_intro">Приложение может отправить команду через беспроводную отладку этого телефона. Нужно быть в сети Wi-Fi.</string>
-    <string name="troubleshoot_adb_pair">Подключиться к ADB этого телефона</string>
-    <string name="troubleshoot_adb_retry">Повторить подключение</string>
-    <string name="troubleshoot_adb_paired">Подключено к ADB этого телефона. Следующему шагу код не нужен.</string>
-    <string name="troubleshoot_adb_busy">Другое подключение по беспроводной отладке уже выполняется. Завершите или отмените его.</string>
+    <string name="troubleshoot_auto_intro">Приложение может отправить команду через отладку по Wi-Fi этого телефона. Нужно быть в сети Wi-Fi.</string>
+    <string name="troubleshoot_adb_pair">Выполнить сопряжение с ADB этого телефона</string>
+    <string name="troubleshoot_adb_retry">Повторить сопряжение</string>
+    <string name="troubleshoot_adb_paired">Сопряжение с ADB этого телефона выполнено. Для следующего шага код не нужен.</string>
+    <string name="troubleshoot_adb_busy">Другое сопряжение через отладку по Wi-Fi уже выполняется. Сначала завершите или отмените его.</string>
     <string name="troubleshoot_clear_action">Очистить данные Сервисов Google Play</string>
     <string name="troubleshoot_clear_waiting">Подтверждено. Ожидание подключения к телефону, затем данные Сервисов Google Play будут очищены.</string>
     <string name="troubleshoot_clear_running">Очистка данных Сервисов Google Play...</string>
-    <string name="troubleshoot_clear_done">Готово. Если Android попросит, снова войдите в аккаунты Google. Затем откройте Galaxy Wearable и снова подключите часы.</string>
+    <string name="troubleshoot_clear_done">Готово. Если Android попросит, снова войдите в аккаунты Google. Затем откройте Galaxy Wearable и снова выполните сопряжение с часами.</string>
     <string name="troubleshoot_clear_failed">Данные Сервисов Google Play не очищены.</string>
     <string name="troubleshoot_dialog_title">Очистить данные Сервисов Google Play?</string>
-    <string name="troubleshoot_dialog_body">Это сбросит Сервисы Google Play на этом телефоне. Вы можете потерять доступ ко всем аккаунтам Google на этом телефоне и понадобится войти снова.\n\nНекоторые сервисы, зависящие от Сервисов Google Play, например карты Google Кошелька, «Найти устройство» и настройки резервного копирования, возможно, придётся настроить заново.\n\nЧасы не затрагиваются.</string>
+    <string name="troubleshoot_dialog_body">Это сбросит Сервисы Google Play на этом телефоне. Вы можете потерять доступ ко всем аккаунтам Google на этом телефоне, и, возможно, придётся войти в них снова.\n\nНекоторые сервисы, зависящие от Сервисов Google Play, например карты Google Кошелька, «Найти устройство» и настройки резервного копирования, возможно, придётся настроить заново.\n\nЧасы не затрагиваются.</string>
     <string name="troubleshoot_dialog_confirm">Очистить данные</string>
-    <string name="troubleshoot_back_to_check">Назад к проверке подключения</string>
+    <string name="troubleshoot_back_to_check">Назад к проверке сопряжения</string>
     <string name="skip_title">Пропустим это</string>
-    <string name="skip_body">У нас достаточно данных, чтобы определить это автоматически.</string>
+    <string name="skip_body">Это уже сделано, поэтому шаг можно пропустить.</string>
     <string name="skip_checking">Проверяем ваши устройства…</string>
     <string name="skip_card_step">Шаг %1$d · %2$s</string>
     <string name="skip_reason_profile">На подключённых часах обнаружена Android %1$s (%2$s).</string>
-    <string name="skip_reason_profile_network">Ваши часы (%1$s) сообщили по Wi-Fi: Android API %2$s (%3$s).</string>
+    <string name="skip_reason_profile_network">Ваши часы (%1$s) сообщили по Wi-Fi уровень Android API %2$s: %3$s.</string>
     <string name="skip_reason_wearable">Часы уже сопряжены с Galaxy Wearable.</string>
-    <string name="skip_reason_watchpair">Часы уже подключены по беспроводной отладке.</string>
+    <string name="skip_reason_watchpair">Часы уже подключены через отладку по Wi-Fi.</string>
     <string name="skip_confirm">Понятно</string>
     <string name="skip_manual">Настроить вручную</string>
     <string name="selfadb_guide_title">Как работает сопряжение с этим телефоном</string>
     <string name="selfadb_guide_sub_1">Нажмите кнопку ниже</string>
-    <string name="selfadb_guide_sub_2">В параметрах разработчика включите беспроводную отладку</string>
-    <string name="selfadb_guide_sub_3">Нажмите «Подключить устройство по коду подключения»</string>
+    <string name="selfadb_guide_sub_2">В разделе «Для разработчиков» включите отладку по Wi-Fi</string>
+    <string name="selfadb_guide_sub_3">Нажмите «Подключить устройство с помощью кода подключения»</string>
     <string name="selfadb_guide_sub_4">Введите шесть цифр в уведомлении OpenSHM или здесь, на этом экране</string>
-    <string name="selfadb_guide_already">Если вы уже подключали ранее, соединение произойдёт само.</string>
-    <string name="selfadb_guide_ui_pair_code">Подключить устройство по коду подключения</string>
+    <string name="selfadb_guide_already">Если сопряжение уже выполнялось раньше, подключение произойдёт само.</string>
+    <string name="selfadb_guide_ui_pair_code">Подключить устройство с помощью кода подключения</string>
     <string name="selfadb_guide_ui_paired">Подключённые устройства</string>
-    <string name="selfadb_open_wireless">Открыть беспроводную отладку</string>
+    <string name="selfadb_open_wireless">Открыть отладку по Wi-Fi</string>
     <string name="outcome_acknowledge">Понятно</string>
-    <string name="phone_adb_error_title">Это проблема приложения</string>
-    <string name="phone_adb_error_message">Это проблема приложения, а не ваша ошибка, и исправить её самостоятельно нельзя. Вы по-прежнему можете использовать кнопки «Открыть настройки» в каждой строке или всё равно продолжить.</string>
+    <string name="phone_adb_error_title">Не удалось выдать доступ автоматически</string>
+    <string name="phone_adb_error_message">Не удалось применить настройки доступа через отладку по Wi-Fi. Вы по-прежнему можете нажать кнопку «Открыть настройки» в каждой строке или всё равно продолжить.</string>
     <string name="phone_adb_success_title">Всё готово</string>
     <string name="phone_adb_success_message">Переходим к следующему шагу</string>
     <string name="acquire_shealth_title">Samsung Health (необязательно)</string>
-    <string name="acquire_shealth_summary">Также создаёт пропатченную копию приложения Samsung Health для телефона, \"Samsung Health+\", с разблокированными функциями, для которых нужны более новые Galaxy Watch. Она устанавливается рядом с Samsung Health из Play, который вы сохраняете: он остаётся подключённым к часам и загружает данные в ваш Samsung Account, а Samsung Health+ скачивает те же данные из облака после входа с той же учётной записью (может отставать).</string>
-    <string name="output_shealth_phone">Samsung Health+ (пропатченное)</string>
-    <string name="change_purpose_shealth_phone">Переименованная копия Samsung Health с разблокированными функциями ниже. Работает рядом с Samsung Health из Play и читает ваши данные из облака Samsung.</string>
+    <string name="acquire_shealth_summary">Также собрать пропатченную копию приложения Samsung Health для телефона, «Samsung Health+», с включёнными функциями, для которых иначе нужны более новые Galaxy Watch. Она устанавливается рядом с приложением Samsung Health из Google Play, которое остаётся у вас: оно по-прежнему подключено к часам и загружает данные в ваш Samsung Account, а Samsung Health+ скачивает те же данные из облака после входа в тот же аккаунт (с некоторой задержкой).</string>
+    <string name="output_shealth_phone">Samsung Health+ (с патчами)</string>
+    <string name="change_purpose_shealth_phone">Переименованная копия Samsung Health с включённой плиткой «Энергетический балл» и, по желанию, «Жизненными показателями», «Тренировочной нагрузкой» и индексом физической формы. Работает рядом с приложением Samsung Health из Google Play и читает ваши данные из облака Samsung.</string>
     <string name="patch_shealth_res_webp">Исправляет четыре изображения с неверным расширением файла, чтобы приложение можно было пересобрать (видимых изменений нет).</string>
     <string name="patch_shealth_feature_dev_ui">Показывает список функций в Настройках &gt; О приложении без режима разработчика Samsung.</string>
     <string name="patch_shealth_vitality_tile">Показывает плитку «Энергетический балл», не дожидаясь, пока часы сообщат о поддержке.</string>
     <string name="patch_shealth_rename_manifest">Даёт приложению собственное имя пакета и название (Samsung Health+), чтобы оно устанавливалось рядом с оригиналом.</string>
     <string name="patch_shealth_rename_code">Обновляет внутренние ссылки приложения на новое имя пакета.</string>
     <string name="patch_shealth_rename_account_xml">Даёт приложению собственную регистрацию учётной записи и синхронизации, чтобы облачная синхронизация работала рядом с оригиналом.</string>
-    <string name="patch_shealth_capability_gates">Разблокирует «Жизненные показатели», «Тренировочную нагрузку» и индекс физической формы, для которых иначе нужны Galaxy Watch8 или Ultra. Они вычисляются на телефоне по синхронизированной истории.</string>
+    <string name="patch_shealth_capability_gates">Включает «Жизненные показатели», «Тренировочную нагрузку» и индекс физической формы, для которых иначе нужны Galaxy Watch8 или Ultra. Они вычисляются на телефоне по синхронизированной истории.</string>
     <string name="patch_shealth_launcher_badge">Добавляет на значок приложения небольшой бейдж OpenSHM, чтобы его можно было отличить от оригинала.</string>
-    <string name="patch_shealth_oobe_local">Необязательно, по умолчанию выключено. Пропускает требование входа в аккаунт Samsung и использует приложение локально, без облачной синхронизации. Включайте, только если вход не работает.</string>
+    <string name="patch_shealth_oobe_local">По умолчанию выключено. Пропускает обязательный вход в Samsung Account и запускает приложение локально, без облачной синхронизации, поэтому оно не получает данные, которые загружает приложение Samsung Health из Google Play. Включайте, только если вход не работает.</string>
     <string name="device_logs_channel">Журналы устройств</string>
     <string name="device_logs_notification_title">Запись журналов устройств</string>
     <string name="device_logs_notification_text">Часы: %1$d · телефон: %2$d</string>
@@ -763,13 +767,13 @@
     <string name="device_logs_exported">Журналы экспортированы</string>
     <string name="device_logs_export_failed">Не удалось экспортировать журналы</string>
     <string name="device_logs_sheet_watch_title">Часы не подключены</string>
-    <string name="device_logs_sheet_watch_off">Включите беспроводную отладку на часах (Настройки › Параметры разработчика › Беспроводная отладка) и держите их в той же сети Wi-Fi, что и этот телефон. Журнал подключится сам, как только часы появятся.</string>
+    <string name="device_logs_sheet_watch_off">Включите отладку по Wi-Fi на часах (Настройки › Параметры разработчика › Отладка по Wi-Fi) и держите их в той же сети Wi-Fi, что и этот телефон. Журнал подключится сам, как только часы появятся в сети.</string>
     <string name="device_logs_sheet_watch_not_paired">Эти часы ещё не были сопряжены с патчером. Сначала выполните сопряжение, затем вернитесь, чтобы увидеть их журналы.</string>
     <string name="device_logs_sheet_watch_pair">Сопрячь часы</string>
     <string name="device_logs_sheet_phone_title">Телефон не подключён</string>
-    <string name="device_logs_sheet_phone_off">Включите беспроводную отладку на этом телефоне (Настройки › Параметры разработчика › Беспроводная отладка) и повторите попытку.</string>
-    <string name="device_logs_sheet_phone_open">Открыть параметры разработчика</string>
-    <string name="device_logs_sheet_phone_untrusted">Беспроводная отладка включена, но этот телефон ещё не доверяет патчеру. Нажмите «Сопрячь» и введите код сопряжения в появившемся уведомлении.</string>
+    <string name="device_logs_sheet_phone_off">Включите отладку по Wi-Fi на этом телефоне (Настройки › Для разработчиков › Отладка по Wi-Fi) и повторите попытку.</string>
+    <string name="device_logs_sheet_phone_open">Открыть раздел «Для разработчиков»</string>
+    <string name="device_logs_sheet_phone_untrusted">Отладка по Wi-Fi включена, но этот телефон ещё не доверяет патчеру. Нажмите «Сопрячь» и введите код сопряжения в появившемся уведомлении.</string>
     <string name="device_logs_sheet_phone_pair">Сопрячь этот телефон</string>
     <string name="revert_title">Отменить все изменения</string>
     <string name="revert_intro">Удаляет то, что OpenSHM Patcher установил на телефон и часы, и возвращает изменённые настройки. Затрагивается только то, что действительно установлено, а системные приложения никогда не удаляются.</string>
@@ -778,9 +782,9 @@
     <string name="revert_action_enable">Включить снова</string>
     <string name="revert_action_restore">Восстановить</string>
     <string name="revert_setting_label">Настройка всегда включённого экрана</string>
-    <string name="revert_setting_note">Сейчас она выключена; будет включена снова.</string>
+    <string name="revert_setting_note">Её отключила одна из прошлых версий патчера; она будет снова включена.</string>
     <string name="revert_exemption_label">Исключение для доступа к датчикам</string>
-    <string name="revert_exemption_note">Наша запись в списке исключений датчиков часов будет удалена; записи других приложений останутся.</string>
+    <string name="revert_exemption_note">Наша запись в списке исключений скрытых API на часах будет удалена; записи других приложений останутся.</string>
     <string name="revert_enable_note">Её выключила настройка; будет включена снова.</string>
     <string name="revert_not_installed">Не установлены, делать нечего: %1$s</string>
     <string name="revert_system_apps">Не тронуты, так как это системные приложения: %1$s</string>

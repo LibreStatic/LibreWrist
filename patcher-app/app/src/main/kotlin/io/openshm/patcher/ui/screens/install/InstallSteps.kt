@@ -109,7 +109,10 @@ internal suspend fun uninstallConflict(
     }
     return try {
         when (kind(pkg)) {
-            PackageKind.System -> failed(R.string.install_error_signature, null)
+            PackageKind.System -> failed(
+                if (conflict.device == Device.Phone) R.string.reinstall_error_phone else R.string.reinstall_error_watch,
+                null,
+            )
             PackageKind.Missing -> true
             PackageKind.User -> when (val result = uninstall(pkg)) {
                 UninstallResult.Success -> true

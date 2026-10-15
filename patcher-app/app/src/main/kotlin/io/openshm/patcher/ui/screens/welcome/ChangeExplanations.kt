@@ -52,7 +52,11 @@ internal fun grantReason(outputId: String, grant: Grant): Int? {
     val watch = outputId != "bridge-phone" && outputId != "shm-phone" && outputId != "shealth-phone"
     return when (grant.kind) {
         GrantKind.NotificationListener -> if (watch) R.string.grant_why_listener_watch else R.string.grant_why_listener_phone
-        GrantKind.BatteryExemption -> if (outputId == "alarm-fork") R.string.grant_why_battery_alarm else R.string.grant_why_battery_bridge
+        GrantKind.BatteryExemption -> when (outputId) {
+            "alarm-fork" -> R.string.grant_why_battery_alarm
+            "bridge-phone" -> R.string.grant_why_battery_bridge_phone
+            else -> R.string.grant_why_battery_bridge
+        }
         GrantKind.GlobalSetting -> R.string.grant_why_hidden_api
         else -> when (grant.name) {
             "ANSWER_PHONE_CALLS" -> R.string.grant_why_calls
@@ -60,6 +64,8 @@ internal fun grantReason(outputId: String, grant: Grant): Int? {
             "POST_NOTIFICATIONS" -> when (outputId) {
                 "bridge-phone" -> R.string.grant_why_notifications_phone
                 "alarm-fork" -> R.string.grant_why_notifications_alarm
+                "shm-watch", "shm-phone" -> R.string.grant_why_notifications_shm
+                "shealth-phone" -> R.string.grant_why_notifications_shealth
                 else -> R.string.grant_why_notifications_watch
             }
             "BLUETOOTH_CONNECT" -> if (watch) R.string.grant_why_bluetooth_watch else R.string.grant_why_bluetooth_phone

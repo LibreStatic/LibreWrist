@@ -235,7 +235,7 @@ class PhoneReinstallTest {
         s.value = s.value.copy(conflict = SignatureConflict("shm-phone", "$PREFIX.shm", Device.Phone))
         runner().reinstall(s)
         assertTrue(installer.calls.isEmpty())
-        assertEquals(R.string.install_error_signature, s.value.errorRes)
+        assertEquals(R.string.reinstall_error_phone, s.value.errorRes)
     }
 
     @Test

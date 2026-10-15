@@ -47,12 +47,12 @@
     <!-- Welcome -->
     <string name="welcome_title">Your apps, your watch, your way</string>
     <string name="welcome_promise_download">You get the official apps yourself; nothing is bundled here.</string>
-    <string name="welcome_promise_patch">Patches make Samsung Health Monitor work on a phone that is not a Samsung and sit next to the stock watch app.</string>
-    <string name="welcome_promise_undo">Every change can be undone, and the stock apps stay put.</string>
+    <string name="welcome_promise_patch">The patches let Samsung Health Monitor work on a phone that is not made by Samsung, and the patched watch app installs next to the stock one.</string>
+    <string name="welcome_promise_undo">Every change can be undone, and the original apps are never uninstalled.</string>
     <string name="welcome_get_started">Get started</string>
     <string name="welcome_what_changes">What will change on my devices?</string>
     <string name="changes_title">What will change</string>
-    <string name="changes_intro">Every app that gets installed, what it is for and what it is allowed to do. Nothing is erased, and all of it can be undone.</string>
+    <string name="changes_intro">Every app that gets installed, what it is for and what it is allowed to do. Nothing is erased without asking you first, and all of it can be undone.</string>
     <string name="changes_on_phone">On this phone</string>
     <string name="changes_on_watch">On your watch</string>
     <string name="changes_allowed_to">It is allowed to</string>
@@ -82,6 +82,8 @@
     <string name="grant_why_notifications_phone">Keep a small notification while it is connected to the watch.</string>
     <string name="grant_why_notifications_watch">Show your phone\'s notifications on the watch.</string>
     <string name="grant_why_notifications_alarm">Show the alarm while it rings.</string>
+    <string name="grant_why_notifications_shm">Show notifications from Health Monitor.</string>
+    <string name="grant_why_notifications_shealth">Show notifications from Samsung Health+.</string>
     <string name="grant_why_bluetooth_phone">Connect to the watch over Bluetooth.</string>
     <string name="grant_why_bluetooth_watch">Connect to the phone over Bluetooth.</string>
     <string name="grant_why_restricted">Android blocks some settings for apps installed from outside a store. This lets you turn on notification access for the bridge.</string>
@@ -96,22 +98,23 @@
     <string name="grant_why_ongoing_calls">Show and control the call in progress on the watch.</string>
     <string name="grant_why_always_on">Keeps the always-on screen from putting the watch to sleep during a measurement.</string>
     <string name="grant_why_battery_bridge">Keep the Bluetooth link alive while the watch saves battery.</string>
+    <string name="grant_why_battery_bridge_phone">Keep the Bluetooth link alive while the phone saves battery.</string>
     <string name="grant_why_battery_alarm">Ring on time even while the watch saves battery.</string>
-    <string name="grant_why_hidden_api">Lets the watch app use Samsung\'s sensor service for ECG, blood pressure and sleep apnea. It applies to the whole watch, only for Samsung\'s sensor software.</string>
-    <string name="changes_disables">Can be turned off</string>
+    <string name="grant_why_hidden_api">Newer watches (One UI 8 Watch) block the watch app from Samsung\'s sensor manager, which it needs for ECG, blood pressure and sleep apnea. The exemption covers every app on the watch, but only for Samsung\'s sensor manager.</string>
+    <string name="changes_disables">Turned off during setup</string>
 
     <!-- Profile -->
     <string name="profile_title">Which watch do you have?</string>
     <string name="profile_intro">This decides which official apps you need to bring.</string>
     <string name="profile_wear5_title">Wear OS 5 or newer</string>
     <string name="profile_wear5_summary">Health Monitor plus phone alarms on the watch.</string>
-    <string name="profile_wear5_apps">3 official apps</string>
+    <string name="profile_wear5_apps">3 official apps, or 4 with Samsung Health</string>
     <string name="profile_wear3_title">Wear OS 3 or 4</string>
-    <string name="profile_wear3_summary">Health Monitor only. The alarm app needs Android 14 on the watch.</string>
-    <string name="profile_wear3_apps">2 official apps</string>
+    <string name="profile_wear3_summary">Health Monitor and the bridge, without phone alarms. The alarm app needs Android 14 on the watch.</string>
+    <string name="profile_wear3_apps">2 official apps, or 3 with Samsung Health</string>
     <string name="profile_detected">Checked on your watch: Android %1$s (%2$s)</string>
     <string name="profile_check_paired">Check paired watches</string>
-    <string name="profile_detected_network">Your watch (%1$s) announced Android API %2$s over Wi-Fi (%3$s)</string>
+    <string name="profile_detected_network">Your watch (%1$s) reported Android API level %2$s over Wi-Fi: %3$s</string>
     <string name="profile_paired_certain">Always runs Wear OS 5 or newer, so that option is selected.</string>
     <string name="profile_paired_depends">Can run either version, depending on its updates.</string>
     <string name="profile_tip_wireless">To know for sure, turn on Wireless debugging on the watch: this screen reads the version over Wi-Fi.</string>
@@ -213,8 +216,8 @@
     <string name="wearable_note_back">Come back here when you are done: the checks run again by themselves.</string>
 
     <!-- Watch pairing over Wi-Fi -->
-    <string name="watchpair_correct_older">Your watch runs Android %1$s, so the alarm app is skipped: you need 2 official apps instead of 3.</string>
-    <string name="watchpair_correct_newer">Your watch runs Android %1$s, so the alarm app is included: you need 3 official apps instead of 2.</string>
+    <string name="watchpair_correct_older">Your watch runs Android %1$s, so the alarm app is skipped: you need one official app fewer.</string>
+    <string name="watchpair_correct_newer">Your watch runs Android %1$s, so the alarm app is included: you need one more official app.</string>
     <string name="watchpair_paired">Watch paired</string>
     <string name="watchpair_title">Connect to your watch</string>
     <string name="watchpair_intro">The watch accepts installs over Wi-Fi once you pair it with a short code.</string>
@@ -234,7 +237,7 @@
     <string name="watchpair_error_bad_port">Enter a port from 1 to 65535.</string>
     <string name="watchpair_guide_title">Turn on pairing on your watch</string>
     <string name="watchpair_guide_1">1. On the watch, open **Settings**, scroll to the bottom and open **About watch**, then **Software information**.\n2. Tap **Software version** 5 to 7 times, until the watch says **Developer mode turned on**.</string>
-    <string name="watchpair_guide_3">1. Connect the watch to the same Wi-Fi as this phone.\n2. **Settings** › **Connections** › **Wi-Fi**.</string>
+    <string name="watchpair_guide_3">1. On the watch, open **Settings** › **Connections** › **Wi-Fi**.\n2. Connect to the same Wi-Fi as this phone.</string>
     <string name="watchpair_guide_5">1. Tap **Pair new device**.\n2. The watch shows a 6-digit code and an address.\n3. This app finds the address by itself; you only type the code.</string>
     <string name="watchpair_guide_wireless">1. Go back to **Settings**, scroll to the bottom and open **Developer options**.\n2. Turn on **Wireless debugging** and allow it.</string>
     <string name="watchpair_guide_wireless_older">On older watches, if **Wireless debugging** cannot be turned on, turn on **ADB debugging** first.</string>
@@ -269,7 +272,7 @@
 
     <!-- Acquire -->
     <string name="acquire_title">Bring the official apps</string>
-    <string name="acquire_intro">Download each app yourself, from a source you trust. The patcher never stores or ships them.</string>
+    <string name="acquire_intro">Download each app yourself, from a source you trust. The patcher never bundles or shares them.</string>
     <string name="acquire_open_mirror">Open on APKMirror</string>
     <string name="acquire_more_ways">More ways to get this app</string>
     <string name="acquire_use_file">Use a file I already have</string>
@@ -318,8 +321,8 @@
     <string name="customize_required">Required, always on</string>
     <string name="customize_advanced">Advanced</string>
     <string name="customize_prefix_label">Package prefix for helper apps</string>
-    <string name="customize_prefix_explainer">Names the bridge apps and the alarm app. The two Samsung Health Monitor apps keep their own package so they can talk to each other.</string>
-    <string name="customize_prefix_ok">A new prefix is generated for you.</string>
+    <string name="customize_prefix_explainer">Names the bridge apps, the alarm app and Samsung Health+. The two Samsung Health Monitor apps use one fixed shared package name instead, so they can talk to each other.</string>
+    <string name="customize_prefix_ok">Any valid prefix works; a random one is filled in to start with.</string>
     <string name="customize_prefix_locked">Locked: helper apps are installed, and updates need the same prefix.</string>
     <string name="customize_prefix_regenerate">Generate a new prefix</string>
     <string name="customize_build">Build</string>
@@ -341,34 +344,35 @@
 
     <!-- Patch descriptions (titles come from the catalogue) -->
     <string name="patch_generic_manufacturer_check">Accepts a phone that is not made by Samsung.</string>
-    <string name="patch_generic_vendor_check">Accepts a phone without the Samsung SDK.</string>
+    <string name="patch_generic_vendor_check">Accepts a phone that does not report Samsung as its vendor (vendor override).</string>
     <string name="patch_shm_min_age_22_to_16">Lowers the minimum age from 22 to 16.</string>
+    <string name="patch_watch_min_age_22_to_16">Lowers the minimum age of every feature (22, or 18 for sleep apnea) to 16.</string>
     <string name="patch_shm_supported_type_ordinals">Treats every region as supported.</string>
-    <string name="patch_shm_region_supportedtype">Lets the region check pass.</string>
-    <string name="patch_shm_region_countrylist">Accepts any country in the supported list.</string>
-    <string name="patch_shm_root_packagevalidator">Skips the vendor certificate validation.</string>
+    <string name="patch_shm_region_supportedtype">Disables the regional check.</string>
+    <string name="patch_shm_region_countrylist">Treats any country as supported (regional check disabled).</string>
+    <string name="patch_shm_root_packagevalidator">Disables the Samsung certificate check, which the re-signed app no longer passes.</string>
     <string name="patch_shm_force_update_response">Ignores a failed or forced update answer.</string>
     <string name="patch_shm_force_update_pref">Ignores the stored forced-update flag.</string>
-    <string name="patch_shm_main_gates">Skips the start-up checks that block other phones.</string>
-    <string name="patch_shm_setup_network_gate">Skips the SIM and region gate during setup.</string>
+    <string name="patch_shm_main_gates">Skips the start-up system and update checks, and reports the screen lock as set.</string>
+    <string name="patch_shm_setup_network_gate">Disables the SIM and regional check during setup.</string>
     <string name="patch_shm_sleep_apnea_support">Reports sleep apnea as supported.</string>
     <string name="patch_phone_rebrand_gms">Gives the phone app the same package and key as the watch app so the two can exchange data.</string>
     <string name="patch_watch_rebrand_coexist">Renames the watch app so it sits next to the stock one.</string>
-    <string name="patch_shm_wear_trusted_peers">Lets the two patched apps recognise each other on the watch link, instead of only the stock ones.</string>
+    <string name="patch_shm_wear_trusted_peers">Lets the two patched apps recognize each other on the watch link, instead of only the stock ones.</string>
     <string name="patch_shm_launcher_badge">Adds a small OpenSHM badge to the app icon so you can tell it apart from the original.</string>
     <string name="patch_watch_gms_resources_anchor">Defines a resource the vendor build removed, so the watch can announce the app to the phone.</string>
     <string name="patch_watch_queries_health_service">Lets the watch app see the health service.</string>
     <string name="patch_watch_companion_vendor">Accepts any companion phone brand.</string>
     <string name="patch_watch_alarm_system_app">Schedules exact alarms without system privileges.</string>
     <string name="patch_watch_mobile_installed">Reports the phone app as installed.</string>
-    <string name="patch_watch_ecg_sensor_adapter">Reads the ECG sensor through the Health Tracking service.</string>
+    <string name="patch_watch_ecg_sensor_adapter">Reads the ECG sensor through the Health Tracking service and treats the irregular heart rhythm and SpO2 sensors as available.</string>
     <string name="patch_watch_bp_sensor_adapter">Reads the blood pressure sensor through the Health Tracking service, because the watch does not let a re-signed app use it directly.</string>
     <string name="patch_watch_sensor_unregister_compat">Stops sensor clean-up from closing the app on watches with a different sensor framework, such as the Galaxy Watch8.</string>
     <string name="patch_watch_bp_attribute_guard">Stops blood pressure calibration from closing the app on watches that block the sensor setup it uses (One UI 8 Watch). The app shows its normal sensor error instead.</string>
-    <string name="patch_watch_apnea_country">Skips the apnea country check.</string>
+    <string name="patch_watch_apnea_country">Disables the regional check for sleep apnea.</string>
     <string name="patch_watch_apnea_reeval_not_supported">Re-checks apnea support that was stored as unsupported.</string>
     <string name="patch_watch_mod">Adds the module that talks to the Health Tracking service.</string>
-    <string name="patch_alarm_verify_symbols">Checks the alarm app has the parts the link needs.</string>
+    <string name="patch_alarm_verify_symbols">Checks that the alarm app has the parts the link needs.</string>
     <string name="patch_alarm_rebrand_manifest">Renames the alarm app so it installs next to the stock one.</string>
     <string name="patch_alarm_rebrand_code">Updates the alarm app\'s code to the new name.</string>
     <string name="patch_alarm_permissions_prune">Drops permissions only system apps can hold.</string>
@@ -392,7 +396,7 @@
     <string name="output_alarm_fork">Phone alarms on the watch</string>
     <string name="output_bridge_phone">Bridge for the phone</string>
     <string name="stock_label_shm">Samsung Health Monitor (stock)</string>
-    <string name="stock_reason_shm">Two copies of the app would compete for the same sensor.</string>
+    <string name="stock_reason_shm">The stock watch app keeps showing its regional error and is no longer needed. The patched copy replaces it.</string>
 
     <!-- Build -->
     <string name="build_title">Building your apps</string>
@@ -455,14 +459,14 @@
     <string name="leftover_removing_body">A previous setup left a copy of the bridge under a different package name. It competes with the new one for the watch link. Android will ask you to confirm the uninstall; it is safe to accept. Your health data and this app are not affected.</string>
     <string name="leftover_kept_title">Old bridge copy kept</string>
     <string name="leftover_kept_body">It may interfere with the watch link. You can uninstall it later from Android\'s app settings.</string>
-    <string name="install_phone_note">Permissions, display over other apps, notification access and restricted settings are switched on by you. Come back to this screen afterwards and it checks again.</string>
+    <string name="install_phone_note">Permissions, display over other apps, notification access, unrestricted battery use and restricted settings are switched on by you. Come back to this screen afterwards and it checks again.</string>
     <string name="install_watch_title">Install on your watch</string>
     <string name="install_watch_intro">Installed over Wi-Fi in this order: Health Monitor, the bridge, then phone alarms.</string>
-    <string name="install_watch_note">The watch stays on and connected while this runs.</string>
+    <string name="install_watch_note">Keep the watch awake and on Wi-Fi while this runs.</string>
     <string name="install_start">Start installing</string>
     <string name="install_error_build_missing">The build is missing or does not match this setup. Build again, then install.</string>
-    <string name="install_error_failed">The watch refused the install.</string>
-    <string name="install_error_signature">A copy signed with a different key is already on the watch. Nothing was removed. Uninstall that copy yourself, then try again.</string>
+    <string name="install_error_failed">The install was refused.</string>
+    <string name="install_error_signature">A copy signed with a different key is already installed. Nothing was removed. Uninstall that copy yourself, then try again.</string>
     <string name="install_error_grant">An access setting could not be applied.</string>
     <string name="action_open">Open</string>
     <string name="action_allow_installing">Allow installing apps</string>
@@ -472,7 +476,7 @@
     <string name="install_error_unknown_sources">This app is not allowed to install apps yet. Allow it, then start again.</string>
     <string name="install_error_notifications">Allow notifications for this app first: the pairing code is typed into a notification.</string>
     <string name="phone_adb_title">Grant everything at once</string>
-    <string name="phone_adb_intro">If the switches are in the way, this phone can grant them to itself over **Wireless debugging**. You need to be on Wi-Fi. A notification will ask you for the pairing code.</string>
+    <string name="phone_adb_intro">Instead of turning each one on by hand, this phone can grant them all to itself over **Wireless debugging**. You need to be on Wi-Fi. A notification will ask you for the pairing code.</string>
     <string name="phone_adb_action">Grant everything with Wireless debugging</string>
     <string name="phone_adb_waiting_service">1. In **Wireless debugging**, turn it on.\n2. Tap **Pair device with pairing code**.\n3. A notification will pop up where you can type the code without leaving that screen.</string>
     <string name="phone_adb_waiting_code">Type the six-digit code shown on the pairing screen, here or in the notification.</string>
@@ -514,7 +518,7 @@
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Health Platform developer mode</string>
-    <string name="devmode_intro">The Health Tracking service only talks to the patched app in developer mode. The patcher can turn it on through the watch\'s screen: keep the watch unlocked and nearby.</string>
+    <string name="devmode_intro">The Health Tracking service only talks to the patched app in developer mode. The patcher can turn it on through the watch\'s screen: keep the watch unlocked and awake.</string>
     <string name="devmode_step_settings">Open **Settings** on the watch.</string>
     <string name="devmode_step_apps">Go to **Apps**.</string>
     <string name="devmode_step_health_platform">Choose **Health Platform**.</string>
@@ -570,7 +574,7 @@
     <string name="selftest_shm_title">Health Monitor sees the watch</string>
     <string name="selftest_ecg_title">ECG reaches the phone</string>
     <string name="selftest_platform_question">On the watch, is Health Platform in developer mode?</string>
-    <string name="selftest_gms_question">Does the Wear OS app on the phone show the watch as connected?</string>
+    <string name="selftest_gms_question">Does the Galaxy Wearable app on the phone show the watch as connected?</string>
     <string name="selftest_shm_question">Does Samsung Health Monitor on the phone show the watch as connected?</string>
     <string name="selftest_ecg_question">Take an ECG on the watch. Does it appear on the phone?</string>
     <string name="selftest_detail_answered_no">You answered no</string>
@@ -598,7 +602,7 @@
     <string name="selftest_detail_leftovers_none">No copies from an earlier install</string>
     <string name="selftest_detail_leftovers_found">Copies from an earlier install: %1$s</string>
     <string name="selftest_detail_bridge_missing">The bridge does not answer. Is it installed?</string>
-    <string name="selftest_detail_bridge_denied">The bridge refused the status request. It was built with another key</string>
+    <string name="selftest_detail_bridge_denied">The bridge refused the status request. It was built with another key.</string>
     <string name="selftest_detail_bridge_not_running">The bridge service is not running</string>
     <string name="selftest_detail_bridge_link_down">The link to the watch is down</string>
     <string name="selftest_detail_bridge_no_hello">The link is up, but the watch has not said hello yet</string>
@@ -637,9 +641,9 @@
     <string name="home_menu_new_build">New build</string>
     <string name="home_menu_self_test">Run self-test</string>
     <string name="home_menu_restore_watch">Restore watch</string>
-    <string name="home_menu_uninstall">Uninstall</string>
+    <string name="home_menu_uninstall">Undo all changes</string>
     <string name="restore_title">Restore the original app?</string>
-    <string name="restore_body">The patched app is removed and the stock one is turned back on. Your data on the watch stays.</string>
+    <string name="restore_body">The patched app and its data are removed, and the stock one is turned back on.</string>
     <string name="restore_confirm">Restore</string>
 
     <!-- Signing key -->
@@ -690,11 +694,11 @@
     <string name="signing_key_nudge_action">Back up</string>
     <string name="home_menu_signing_key">Signing key</string>
     <string name="skip_title">Let\'s skip this</string>
-    <string name="skip_body">We have enough information to detect it automatically.</string>
+    <string name="skip_body">This is already done, so you can skip ahead.</string>
     <string name="skip_checking">Checking your devices…</string>
     <string name="skip_card_step">Step %1$d · %2$s</string>
     <string name="skip_reason_profile">We detected Android %1$s (%2$s) on the connected watch.</string>
-    <string name="skip_reason_profile_network">Your watch (%1$s) announced Android API %2$s over Wi-Fi (%3$s).</string>
+    <string name="skip_reason_profile_network">Your watch (%1$s) reported Android API level %2$s over Wi-Fi: %3$s.</string>
     <string name="skip_reason_wearable">Your watch is already paired with Galaxy Wearable.</string>
     <string name="skip_reason_watchpair">Your watch is already connected over Wireless debugging.</string>
     <string name="skip_confirm">Got it</string>
@@ -709,23 +713,23 @@
     <string name="selfadb_guide_ui_paired">Paired devices</string>
     <string name="selfadb_open_wireless">Open Wireless debugging</string>
     <string name="outcome_acknowledge">Got it</string>
-    <string name="phone_adb_error_title">This is a problem in the app</string>
-    <string name="phone_adb_error_message">This is a problem in the app, not something you did wrong, and you cannot fix it yourself. You can still use the Open settings buttons on each row, or continue anyway.</string>
+    <string name="phone_adb_error_title">Access could not be granted automatically</string>
+    <string name="phone_adb_error_message">The access settings could not be applied over Wireless debugging. You can still use the Open settings button on each row, or continue anyway.</string>
     <string name="phone_adb_success_title">All set</string>
     <string name="phone_adb_success_message">Moving on to the next step</string>
     <string name="acquire_shealth_title">Samsung Health (optional)</string>
-    <string name="acquire_shealth_summary">Also build a patched copy of the Samsung Health phone app, \"Samsung Health+\", with the features that need a newer Galaxy Watch unlocked. It installs next to the Samsung Health from Play, which you keep: that one stays connected to the watch and uploads to your Samsung Account, and Samsung Health+ downloads the same data from the cloud after you sign in with the same account (it can lag behind by a while).</string>
+    <string name="acquire_shealth_summary">Also build a patched copy of the Samsung Health phone app, \"Samsung Health+\", with features turned on that otherwise need a newer Galaxy Watch. It installs next to the Samsung Health app from Google Play, which you keep: that one stays connected to the watch and uploads to your Samsung Account, and Samsung Health+ downloads the same data from the cloud after you sign in with the same account (it can lag behind by a while).</string>
     <string name="output_shealth_phone">Samsung Health+ (patched)</string>
-    <string name="change_purpose_shealth_phone">A renamed copy of Samsung Health with the features below unlocked. It runs next to the Samsung Health from Play and reads your data from the Samsung cloud.</string>
+    <string name="change_purpose_shealth_phone">A renamed copy of Samsung Health with the Energy Score tile and, optionally, Vitals, Training load and the fitness index turned on. It runs next to the Samsung Health app from Google Play and reads your data from the Samsung cloud.</string>
     <string name="patch_shealth_res_webp">Fixes four images stored with the wrong file extension so the app can be rebuilt (no visible change).</string>
     <string name="patch_shealth_feature_dev_ui">Shows the feature list in Settings &gt; About without Samsung developer mode.</string>
     <string name="patch_shealth_vitality_tile">Shows the Energy Score tile without waiting for the watch to advertise the capability.</string>
     <string name="patch_shealth_rename_manifest">Gives the app its own package name and label (Samsung Health+) so it installs next to the original.</string>
     <string name="patch_shealth_rename_code">Updates the app\'s internal references to the new package name.</string>
     <string name="patch_shealth_rename_account_xml">Gives the app its own account and sync registration so cloud sync works next to the original.</string>
-    <string name="patch_shealth_capability_gates">Unlocks Vitals, Training load and the fitness index, which otherwise require a Galaxy Watch8 or Ultra. They are computed on the phone from your synced history.</string>
+    <string name="patch_shealth_capability_gates">Turns on Vitals, Training load and the fitness index, which otherwise require a Galaxy Watch8 or Ultra. They are computed on the phone from your synced history.</string>
     <string name="patch_shealth_launcher_badge">Adds a small OpenSHM badge to the app icon so you can tell it apart from the original.</string>
-    <string name="patch_shealth_oobe_local">Optional, off by default. Skips the Samsung Account sign-in requirement and uses the app locally without cloud sync. Only turn it on if sign-in does not work.</string>
+    <string name="patch_shealth_oobe_local">Off by default. Skips the Samsung Account sign-in requirement and runs the app locally without cloud sync, so it does not get the data that the Samsung Health app from Google Play uploads. Only turn it on if sign-in does not work.</string>
     <string name="device_logs_channel">Device logs</string>
     <string name="device_logs_notification_title">Recording device logs</string>
     <string name="device_logs_notification_text">%1$d watch · %2$d phone</string>
@@ -764,9 +768,9 @@
     <string name="revert_action_enable">Turn back on</string>
     <string name="revert_action_restore">Restore</string>
     <string name="revert_setting_label">Always-on display setting</string>
-    <string name="revert_setting_note">It is switched off now; it will be set back to on.</string>
+    <string name="revert_setting_note">An earlier version of the patcher turned it off; it will be turned back on.</string>
     <string name="revert_exemption_label">Sensor access exemption</string>
-    <string name="revert_exemption_note">Our entry in the watch\'s sensor exemption list will be removed; entries from other apps stay.</string>
+    <string name="revert_exemption_note">Our entry in the watch\'s hidden-API exemption list will be removed; entries from other apps stay.</string>
     <string name="revert_enable_note">The setup turned it off; it will be turned back on.</string>
     <string name="revert_not_installed">Not installed, nothing to do: %1$s</string>
     <string name="revert_system_apps">Left alone because they are system apps: %1$s</string>

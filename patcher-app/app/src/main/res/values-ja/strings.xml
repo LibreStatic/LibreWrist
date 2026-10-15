@@ -45,12 +45,12 @@
     <!-- Welcome -->
     <string name="welcome_title">あなたのアプリ、あなたのウォッチ、あなたの使い方で</string>
     <string name="welcome_promise_download">公式アプリはご自身で入手します。このアプリには何も同梱されていません。</string>
-    <string name="welcome_promise_patch">パッチにより、Samsung Health Monitor がSamsung以外のスマートフォンでも動作し、標準のウォッチアプリと共存できるようになります。</string>
-    <string name="welcome_promise_undo">すべての変更は元に戻せます。標準アプリはそのまま残ります。</string>
+    <string name="welcome_promise_patch">パッチにより、Samsung Health Monitor がSamsung製以外のスマートフォンでも動作し、パッチ適用済みのウォッチアプリは標準アプリと並べてインストールされます。</string>
+    <string name="welcome_promise_undo">すべての変更は元に戻せます。元のアプリがアンインストールされることはありません。</string>
     <string name="welcome_get_started">始める</string>
     <string name="welcome_what_changes">デバイスには何が変わりますか？</string>
     <string name="changes_title">変更される内容</string>
-    <string name="changes_intro">インストールされるアプリと、その用途、許可される操作をすべて表示します。何も消去されず、すべて元に戻せます。</string>
+    <string name="changes_intro">インストールされるすべてのアプリと、その用途、許可される操作を表示します。事前の確認なしに消去されるものはなく、すべて元に戻せます。</string>
     <string name="changes_on_phone">このスマートフォン</string>
     <string name="changes_on_watch">ウォッチ</string>
     <string name="changes_allowed_to">許可される操作</string>
@@ -58,9 +58,9 @@
     <string name="changes_disable_undo">ウォッチに残るので、いつでもオンに戻せます。</string>
     <string name="changes_technical">技術名を表示</string>
     <string name="change_purpose_shm_phone">スマートフォンでECGと血圧の測定結果を表示するSamsungのアプリです。このスマートフォンで動くように調整されています。</string>
-    <string name="change_purpose_shm_watch">ウォッチでECGと血圧を測定するSamsungのアプリです。このスマートフォンで動くように調整されています。</string>
-    <string name="change_purpose_bridge_phone">通知、通話、アラームをBluetoothでウォッチに送る当社のアプリです。</string>
-    <string name="change_purpose_bridge_watch">スマートフォンの通知、通話、アラームをウォッチに表示する当社のアプリです。</string>
+    <string name="change_purpose_shm_watch">ウォッチでECGと血圧を測定するSamsungのアプリです。このスマートフォンと連携できるように調整されています。</string>
+    <string name="change_purpose_bridge_phone">通知、通話、アラームをBluetoothでウォッチに送るOpenSHMのアプリです。</string>
+    <string name="change_purpose_bridge_watch">スマートフォンの通知、通話、アラームをウォッチに表示するOpenSHMのアプリです。</string>
     <string name="change_purpose_alarm_fork">ウォッチのアラームアプリのコピーで、スマートフォンのアラームと同期します。元のアプリもそのまま残ります。</string>
     <string name="grant_title_calls">通話に応答</string>
     <string name="grant_title_phone_state">電話の状態</string>
@@ -72,14 +72,16 @@
     <string name="grant_title_exact_alarm">アラームとリマインダー</string>
     <string name="grant_title_full_screen">全画面通知</string>
     <string name="grant_title_ongoing_calls">進行中の通話を管理</string>
-    <string name="grant_title_always_on">常時表示ディスプレイをオフ</string>
-    <string name="grant_title_battery">制限なし</string>
+    <string name="grant_title_always_on">常時表示をオフ</string>
+    <string name="grant_title_battery">バッテリー使用量：制限なし</string>
     <string name="grant_title_hidden_api">新しいウォッチでのセンサーアクセス</string>
     <string name="grant_why_calls">ウォッチから通話に応答または拒否します。</string>
     <string name="grant_why_phone_state">着信や通話終了を検知して、ウォッチに表示します。</string>
     <string name="grant_why_notifications_phone">ウォッチとの接続中、小さな通知を表示し続けます。</string>
     <string name="grant_why_notifications_watch">スマートフォンの通知をウォッチに表示します。</string>
     <string name="grant_why_notifications_alarm">アラームが鳴っている間、アラームを表示します。</string>
+    <string name="grant_why_notifications_shm">Health Monitorからの通知を表示します。</string>
+    <string name="grant_why_notifications_shealth">Samsung Health+からの通知を表示します。</string>
     <string name="grant_why_bluetooth_phone">Bluetoothでウォッチに接続します。</string>
     <string name="grant_why_bluetooth_watch">Bluetoothでスマートフォンに接続します。</string>
     <string name="grant_why_restricted">Androidは、ストア以外からインストールしたアプリの一部の設定をブロックします。これにより、ブリッジの通知へのアクセスをオンにできます。</string>
@@ -93,23 +95,24 @@
     <string name="grant_why_full_screen_alarm">アラームを全画面で表示します。</string>
     <string name="grant_why_ongoing_calls">ウォッチで通話中の内容を表示し、操作します。</string>
     <string name="grant_why_always_on">測定中に常時表示画面でウォッチがスリープしないようにします。</string>
-    <string name="grant_why_battery_bridge">ウォッチが電池を節約している間も、Bluetooth接続を維持します。</string>
-    <string name="grant_why_battery_alarm">ウォッチが電池を節約している間も、時間どおりに鳴らします。</string>
-    <string name="grant_why_hidden_api">ウォッチのアプリが、心電図、血圧、睡眠時無呼吸のためにSamsungのセンサーサービスを使えるようにします。ウォッチ全体に適用されますが、対象はSamsungのセンサーソフトウェアだけです。</string>
-    <string name="changes_disables">オフにできるもの</string>
+    <string name="grant_why_battery_bridge">ウォッチがバッテリーを節約している間も、Bluetooth接続を維持します。</string>
+    <string name="grant_why_battery_bridge_phone">スマートフォンがバッテリーを節約している間も、Bluetooth接続を維持します。</string>
+    <string name="grant_why_battery_alarm">ウォッチがバッテリーを節約している間も、時間どおりに鳴らします。</string>
+    <string name="grant_why_hidden_api">新しいウォッチ（One UI 8 Watch）では、ウォッチアプリからSamsungのセンサーマネージャーへのアクセスがブロックされます。ECG、血圧、睡眠時無呼吸の測定にはこれが必要です。この例外はウォッチ上のすべてのアプリに適用されますが、対象はSamsungのセンサーマネージャーだけです。</string>
+    <string name="changes_disables">セットアップ中にオフにするもの</string>
 
     <!-- Profile -->
     <string name="profile_title">お持ちのウォッチはどれですか？</string>
     <string name="profile_intro">これにより、用意する公式アプリが決まります。</string>
     <string name="profile_wear5_title">Wear OS 5以降</string>
     <string name="profile_wear5_summary">ウォッチ上のHealth Monitorとスマートフォンのアラーム。</string>
-    <string name="profile_wear5_apps">公式アプリ3つ</string>
+    <string name="profile_wear5_apps">公式アプリ3つ（Samsung Healthを含めると4つ）</string>
     <string name="profile_wear3_title">Wear OS 3または4</string>
-    <string name="profile_wear3_summary">Health Monitorのみ。アラームアプリにはウォッチ側でAndroid 14が必要です。</string>
-    <string name="profile_wear3_apps">公式アプリ2つ</string>
+    <string name="profile_wear3_summary">Health Monitorとブリッジのみで、スマートフォンのアラームは含まれません。アラームアプリにはウォッチ側でAndroid 14が必要です。</string>
+    <string name="profile_wear3_apps">公式アプリ2つ（Samsung Healthを含めると3つ）</string>
     <string name="profile_detected">ウォッチで確認済み：Android %1$s（%2$s）</string>
     <string name="profile_check_paired">ペア設定済みのウォッチを確認</string>
-    <string name="profile_detected_network">お使いのウォッチ（%1$s）が Wi-Fi 経由で Android API %2$s を通知しました（%3$s）</string>
+    <string name="profile_detected_network">お使いのウォッチ（%1$s）が Wi-Fi 経由で Android API レベル %2$s を報告しました：%3$s</string>
     <string name="profile_paired_certain">常に Wear OS 5 以降で動作するため、このオプションを選択しました。</string>
     <string name="profile_paired_depends">アップデート状況により、どちらのバージョンの場合もあります。</string>
     <string name="profile_tip_wireless">確実に知るには、ウォッチでワイヤレスデバッグをオンにしてください。この画面が Wi-Fi 経由でバージョンを読み取ります。</string>
@@ -144,8 +147,8 @@
     <string name="wearable_recheck">再確認</string>
 
     <!-- Watch pairing over Wi-Fi -->
-    <string name="watchpair_correct_older">お使いのウォッチはAndroid %1$sで動作しているため、アラームアプリは省略されます。公式アプリは3つではなく2つ必要です。</string>
-    <string name="watchpair_correct_newer">お使いのウォッチはAndroid %1$sで動作しているため、アラームアプリが含まれます。公式アプリは2つではなく3つ必要です。</string>
+    <string name="watchpair_correct_older">お使いのウォッチはAndroid %1$sで動作しているため、アラームアプリは省略されます。必要な公式アプリが1つ少なくなります。</string>
+    <string name="watchpair_correct_newer">お使いのウォッチはAndroid %1$sで動作しているため、アラームアプリが含まれます。必要な公式アプリが1つ多くなります。</string>
     <string name="watchpair_paired">ウォッチをペア設定しました</string>
     <string name="watchpair_title">ウォッチに接続</string>
     <string name="watchpair_intro">短いコードでペア設定すると、ウォッチはWi-Fi経由のインストールを受け付けます。</string>
@@ -153,7 +156,7 @@
     <string name="watchpair_reconnecting">ウォッチに再接続しています…</string>
     <string name="watchpair_reconnected">ウォッチに再接続しました</string>
     <string name="watchpair_reconnected_model">ウォッチに再接続しました（%1$s）</string>
-    <string name="watchpair_remembered_hint">すでにこのウォッチをペアリング済みの場合は、ウォッチでワイヤレスデバッグをオンにすると自動的に再接続されます。</string>
+    <string name="watchpair_remembered_hint">すでにこのウォッチをペア設定済みの場合は、ウォッチでワイヤレスデバッグをオンにすると自動的に再接続されます。</string>
     <string name="watchpair_searching">ウォッチを探しています…</string>
     <string name="watchpair_code_label">ペア設定コード</string>
     <string name="watchpair_hint">6桁すべて入力するとペア設定できます</string>
@@ -168,7 +171,7 @@
 
     <!-- Acquire -->
     <string name="acquire_title">公式アプリを用意する</string>
-    <string name="acquire_intro">各アプリは、信頼できる入手元からご自身でダウンロードしてください。パッチャーがアプリを保存したり配布したりすることはありません。</string>
+    <string name="acquire_intro">各アプリは、信頼できる入手元からご自身でダウンロードしてください。パッチャーがアプリを同梱したり共有したりすることはありません。</string>
     <string name="acquire_open_mirror">APKMirrorで開く</string>
     <string name="acquire_more_ways">このアプリの他の入手方法</string>
     <string name="acquire_use_file">すでにあるファイルを使う</string>
@@ -210,8 +213,8 @@
     <string name="customize_required">必須、常にオン</string>
     <string name="customize_advanced">詳細設定</string>
     <string name="customize_prefix_label">ヘルパーアプリのパッケージプレフィックス</string>
-    <string name="customize_prefix_explainer">ブリッジアプリとアラームアプリの名前になります。2つのSamsung Health Monitorアプリは、相互に通信できるよう独自のパッケージを維持します。</string>
-    <string name="customize_prefix_ok">新しいプレフィックスが自動生成されます。</string>
+    <string name="customize_prefix_explainer">ブリッジアプリ、アラームアプリ、Samsung Health+の名前に使われます。2つのSamsung Health Monitorアプリは、相互に通信できるよう、代わりに共通の固定パッケージ名を使用します。</string>
+    <string name="customize_prefix_ok">有効なプレフィックスであれば何でも使用できます。最初はランダムなプレフィックスが入力されています。</string>
     <string name="customize_prefix_locked">ロック中：ヘルパーアプリがインストール済みで、アップデートには同じプレフィックスが必要です。</string>
     <string name="customize_prefix_regenerate">新しいプレフィックスを生成</string>
     <string name="customize_build">ビルド</string>
@@ -231,16 +234,17 @@
 
     <!-- Patch descriptions (titles come from the catalogue) -->
     <string name="patch_generic_manufacturer_check">Samsung製ではないスマートフォンを受け入れます。</string>
-    <string name="patch_generic_vendor_check">Samsung SDKのないスマートフォンを受け入れます。</string>
+    <string name="patch_generic_vendor_check">ベンダーとしてSamsungを報告しないスマートフォンを受け入れます（ベンダーオーバーライド）。</string>
     <string name="patch_shm_min_age_22_to_16">最低年齢を22歳から16歳に引き下げます。</string>
+    <string name="patch_watch_min_age_22_to_16">すべての機能の最低年齢（22歳、睡眠時無呼吸は18歳）を16歳に引き下げます。</string>
     <string name="patch_shm_supported_type_ordinals">すべての地域を対応地域として扱います。</string>
-    <string name="patch_shm_region_supportedtype">地域チェックを通過させます。</string>
-    <string name="patch_shm_region_countrylist">対応リスト内のどの国も受け入れます。</string>
-    <string name="patch_shm_root_packagevalidator">ベンダー証明書の検証をスキップします。</string>
+    <string name="patch_shm_region_supportedtype">地域チェックを無効にします。</string>
+    <string name="patch_shm_region_countrylist">すべての国を対応国として扱います（地域チェック無効）。</string>
+    <string name="patch_shm_root_packagevalidator">再署名したアプリでは通らなくなるSamsungの証明書チェックを無効にします。</string>
     <string name="patch_shm_force_update_response">失敗した、または強制のアップデート応答を無視します。</string>
     <string name="patch_shm_force_update_pref">保存されている強制アップデートのフラグを無視します。</string>
-    <string name="patch_shm_main_gates">他のスマートフォンをブロックする起動時のチェックをスキップします。</string>
-    <string name="patch_shm_setup_network_gate">セットアップ中のSIMと地域のチェックをスキップします。</string>
+    <string name="patch_shm_main_gates">起動時のシステムチェックとアップデートチェックをスキップし、画面ロックが設定済みであると報告します。</string>
+    <string name="patch_shm_setup_network_gate">セットアップ中のSIMチェックと地域チェックを無効にします。</string>
     <string name="patch_shm_sleep_apnea_support">睡眠時無呼吸に対応していると報告します。</string>
     <string name="patch_phone_rebrand_gms">スマートフォンアプリにウォッチアプリと同じパッケージとキーを与え、両者がデータを交換できるようにします。</string>
     <string name="patch_watch_rebrand_coexist">ウォッチアプリの名前を変更し、標準アプリと共存できるようにします。</string>
@@ -251,11 +255,11 @@
     <string name="patch_watch_companion_vendor">どのメーカーのコンパニオンスマートフォンも受け入れます。</string>
     <string name="patch_watch_alarm_system_app">システム権限なしで正確なアラームをスケジュールします。</string>
     <string name="patch_watch_mobile_installed">スマートフォンアプリがインストール済みと報告します。</string>
-    <string name="patch_watch_ecg_sensor_adapter">Health Trackingサービス経由でECGセンサーを読み取ります。</string>
+    <string name="patch_watch_ecg_sensor_adapter">Health Trackingサービス経由でECGセンサーを読み取り、不規則な心拍リズムとSpO2のセンサーを利用可能として扱います。</string>
     <string name="patch_watch_bp_sensor_adapter">ウォッチでは再署名したアプリが血圧センサーを直接使用できないため、Health Trackingサービス経由で読み取ります。</string>
     <string name="patch_watch_sensor_unregister_compat">Galaxy Watch8 など、センサーフレームワークが異なるウォッチでセンサー停止時にアプリが終了しないようにします。</string>
     <string name="patch_watch_bp_attribute_guard">使用するセンサー設定がブロックされているウォッチ（One UI 8 Watch）で、血圧のキャリブレーション中にアプリが終了しないようにします。代わりに通常のセンサーエラーが表示されます。</string>
-    <string name="patch_watch_apnea_country">無呼吸の国チェックをスキップします。</string>
+    <string name="patch_watch_apnea_country">睡眠時無呼吸の地域チェックを無効にします。</string>
     <string name="patch_watch_apnea_reeval_not_supported">非対応として保存されていた無呼吸の対応状況を再確認します。</string>
     <string name="patch_watch_mod">Health Trackingサービスと通信するモジュールを追加します。</string>
     <string name="patch_alarm_verify_symbols">アラームアプリに、リンクに必要な部品があるか確認します。</string>
@@ -268,7 +272,7 @@
     <string name="patch_alarm_provider_open">アラームのデータをフォークに公開します。</string>
     <string name="patch_alarm_link_components">スマートフォンから送信されたアラームを受け取るレシーバーを追加します。</string>
     <string name="patch_alarm_appfunctions_drop">使われていないベンダー機能のツリーを削除します。</string>
-    <string name="patch_alarm_semgesture_skip">ベンダーのジェスチャーマネージャーをスキップし、ダブルピンチを自前で検出します（スヌーズまたは停止は時計の設定に従います）。</string>
+    <string name="patch_alarm_semgesture_skip">ベンダーのジェスチャーマネージャーをスキップし、ダブルピンチを自前で検出します（スヌーズまたは停止はウォッチの設定に従います）。</string>
     <string name="patch_alarm_gms_observer_drop">アラームが早く終了しないようにします。</string>
     <string name="patch_alarm_service_stop_on_destroy">音と振動が必ず止まるようにします。</string>
     <string name="patch_alarm_force_sound_vibrate">常に音と振動で知らせます。</string>
@@ -282,7 +286,7 @@
     <string name="output_alarm_fork">ウォッチのスマートフォンアラーム</string>
     <string name="output_bridge_phone">スマートフォン用ブリッジ</string>
     <string name="stock_label_shm">Samsung Health Monitor（標準）</string>
-    <string name="stock_reason_shm">アプリが2つあると、同じセンサーを取り合ってしまいます。</string>
+    <string name="stock_reason_shm">標準のウォッチアプリは地域エラーを表示し続けるため、もう必要ありません。パッチ適用済みのコピーがその代わりになります。</string>
 
     <!-- Build -->
     <string name="build_title">アプリをビルド中</string>
@@ -339,17 +343,17 @@
     <string name="install_phone_title">このスマートフォンにインストール</string>
     <string name="install_phone_intro">Androidがインストールごとに確認を求めます。アプリに必要なアクセス権はその後で確認されます。不足しているものは**設定**でオンにしてください。</string>
     <string name="leftover_removing_title">古いブリッジのコピーを削除しています</string>
-    <string name="leftover_removing_body">以前のセットアップが、別のパッケージ名でブリッジのコピーを残しています。新しいブリッジと時計との接続を取り合ってしまいます。Androidがアンインストールの確認を求めますが、そのまま承認して問題ありません。健康データとこのアプリには影響しません。</string>
+    <string name="leftover_removing_body">以前のセットアップが、別のパッケージ名でブリッジのコピーを残しています。新しいブリッジとウォッチとの接続を取り合ってしまいます。Androidがアンインストールの確認を求めますが、そのまま承認して問題ありません。健康データとこのアプリには影響しません。</string>
     <string name="leftover_kept_title">古いブリッジのコピーを残しました</string>
-    <string name="leftover_kept_body">時計との接続の妨げになる可能性があります。後でAndroidのアプリ設定からアンインストールできます。</string>
-    <string name="install_phone_note">権限、他のアプリの上に重ねて表示、通知へのアクセス、制限された設定は、ご自身でオンにしていただきます。その後この画面に戻ると、再確認されます。</string>
+    <string name="leftover_kept_body">ウォッチとの接続の妨げになる可能性があります。後でAndroidのアプリ設定からアンインストールできます。</string>
+    <string name="install_phone_note">権限、他のアプリの上に重ねて表示、通知へのアクセス、バッテリー使用量の制限なし、制限付き設定は、ご自身でオンにしてください。その後この画面に戻ると、再確認されます。</string>
     <string name="install_watch_title">ウォッチにインストール</string>
     <string name="install_watch_intro">Wi-Fi経由で、Health Monitor、ブリッジ、スマートフォンアラームの順にインストールします。</string>
-    <string name="install_watch_note">実行中はウォッチの電源を入れたまま、接続を維持してください。</string>
+    <string name="install_watch_note">実行中は、ウォッチをスリープさせず、Wi-Fiに接続したままにしてください。</string>
     <string name="install_start">インストールを開始</string>
     <string name="install_error_build_missing">ビルドが見つからないか、このセットアップと一致しません。もう一度ビルドしてからインストールしてください。</string>
-    <string name="install_error_failed">ウォッチがインストールを拒否しました。</string>
-    <string name="install_error_signature">別のキーで署名されたコピーがすでにウォッチにあります。何も削除していません。そのコピーをご自身でアンインストールしてから、もう一度お試しください。</string>
+    <string name="install_error_failed">インストールが拒否されました。</string>
+    <string name="install_error_signature">別のキーで署名されたコピーがすでにインストールされています。何も削除していません。そのコピーをご自身でアンインストールしてから、もう一度お試しください。</string>
     <string name="install_error_grant">アクセス設定を適用できませんでした。</string>
     <string name="action_open">開く</string>
     <string name="action_allow_installing">アプリのインストールを許可</string>
@@ -359,7 +363,7 @@
     <string name="install_error_unknown_sources">このアプリにはまだアプリのインストールが許可されていません。許可してから、もう一度開始してください。</string>
     <string name="install_error_notifications">先にこのアプリの通知を許可してください。ペア設定コードは通知内で入力します。</string>
     <string name="phone_adb_title">まとめて許可する</string>
-    <string name="phone_adb_intro">スイッチが邪魔な場合は、このスマートフォンが**ワイヤレスデバッグ**経由で自分自身に許可を与えることができます。Wi-Fiに接続している必要があります。 通知でペア設定コードの入力を求められます。</string>
+    <string name="phone_adb_intro">1つずつ手動でオンにする代わりに、このスマートフォンが**ワイヤレスデバッグ**経由で自身にすべてを許可できます。Wi-Fiに接続している必要があります。通知でペア設定コードの入力を求められます。</string>
     <string name="phone_adb_action">ワイヤレスデバッグですべて許可</string>
     <string name="phone_adb_waiting_service">1. **ワイヤレスデバッグ**をオンにします。\n2. **ペア設定コードによるデバイスのペア設定**をタップします。\n3. 通知が表示され、その画面を離れずにコードを入力できます。</string>
     <string name="phone_adb_waiting_code">ペア設定画面に表示されている6桁のコードを、ここまたは通知で入力してください。</string>
@@ -396,12 +400,12 @@
     <string name="grant_appop">アプリ操作</string>
     <string name="grant_setting">システム設定</string>
     <string name="grant_listener">通知へのアクセス</string>
-    <string name="grant_battery">電池の最適化の除外</string>
+    <string name="grant_battery">バッテリーの最適化の除外</string>
     <string name="grant_global_setting">グローバルなシステム設定</string>
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Health Platformの開発者モード</string>
-    <string name="devmode_intro">Health Tracking サービスは、デベロッパー モードのときだけ変更済みアプリと通信します。パッチャーはウォッチの画面からオンにできます。ウォッチのロックを解除し、近くに置いてください。</string>
+    <string name="devmode_intro">Health Tracking サービスは、開発者モードのときだけパッチ適用済みのアプリと通信します。パッチャーはウォッチの画面を操作してオンにできます。ウォッチのロックを解除し、スリープさせないでください。</string>
     <string name="devmode_step_settings">ウォッチで**設定**を開きます。</string>
     <string name="devmode_step_apps">**アプリ**に進みます。</string>
     <string name="devmode_step_health_platform">**Health Platform**を選びます。</string>
@@ -419,9 +423,9 @@
     <string name="devmode_not_yet_title">自動でオンにできませんでした</string>
     <string name="devmode_not_yet_message">ウォッチの Health Platform 設定に [Dev mode] が表示されませんでした。ウォッチのロックを解除してもう一度お試しいただくか、ご自身でタイトルを続けて 10 回タップしてください。</string>
     <string name="devmode_unreachable_title">ウォッチに接続できません</string>
-    <string name="devmode_unreachable_message">ウォッチの電源が入っていて、このスマートフォンと同じ Wi-Fi に接続され、ワイヤレス デバッグがオンのままか確認してください。</string>
-    <string name="devmode_success_title">デベロッパー モードがオンです</string>
-    <string name="devmode_success_message">Health Platform が変更済みのアプリを受け入れるようになりました。次のステップに進みます。</string>
+    <string name="devmode_unreachable_message">ウォッチの電源が入っていて、このスマートフォンと同じ Wi-Fi に接続され、ワイヤレスデバッグがオンのままか確認してください。</string>
+    <string name="devmode_success_title">開発者モードがオンです</string>
+    <string name="devmode_success_message">Health Platform がパッチ適用済みのアプリを受け入れるようになりました。次のステップに進みます。</string>
 
     <!-- Disable stock apps -->
     <string name="disable_title">標準アプリをオフにする</string>
@@ -446,9 +450,9 @@
     <string name="selftest_share_subject">OpenSHM Patcher セルフテスト</string>
 
     <!-- Self-test rows: %1$s is an app name or a list of access names -->
-    <string name="selftest_package_title">インストール: %1$s</string>
+    <string name="selftest_package_title">%1$sはインストール済み</string>
     <string name="selftest_grants_title">アクセス: %1$s</string>
-    <string name="selftest_stock_title">無効化: %1$s</string>
+    <string name="selftest_stock_title">%1$sはオフ</string>
     <string name="selftest_bridge_link_title">ウォッチへのブリッジリンク</string>
     <string name="selftest_leftovers_title">以前のブリッジのコピー</string>
     <string name="selftest_watch_platform">Health Platformが開発者モード</string>
@@ -456,15 +460,15 @@
     <string name="selftest_shm_title">Health Monitorがウォッチを認識</string>
     <string name="selftest_ecg_title">ECGがスマートフォンに届く</string>
     <string name="selftest_platform_question">ウォッチで、Health Platformは開発者モードになっていますか？</string>
-    <string name="selftest_gms_question">スマートフォンのWear OSアプリで、ウォッチは接続済みと表示されていますか？</string>
+    <string name="selftest_gms_question">スマートフォンのGalaxy Wearableアプリで、ウォッチが接続済みと表示されていますか？</string>
     <string name="selftest_shm_question">スマートフォンのSamsung Health Monitorで、ウォッチは接続済みと表示されていますか？</string>
     <string name="selftest_ecg_question">ウォッチでECGを測定してください。スマートフォンに表示されますか？</string>
     <string name="selftest_detail_answered_no">「いいえ」と回答しました</string>
 
-    <string name="selftest_detail_package_ok">バージョン %1$s、お客様のキーで署名済み、ビルドと同じファイル</string>
-    <string name="selftest_detail_package_ok_no_version">お客様のキーで署名済み、ビルドと同じファイル</string>
+    <string name="selftest_detail_package_ok">バージョン %1$s、ご自身のキーで署名済み、ビルドと同じファイル</string>
+    <string name="selftest_detail_package_ok_no_version">ご自身のキーで署名済み、ビルドと同じファイル</string>
     <string name="selftest_detail_not_installed">未インストール</string>
-    <string name="selftest_detail_wrong_cert">お客様とは別のキーで署名されています</string>
+    <string name="selftest_detail_wrong_cert">ご自身のものとは別のキーで署名されています</string>
     <string name="selftest_detail_cert_unavailable">署名キーを読み取れませんでした</string>
     <string name="selftest_detail_no_build">比較するビルドがありません</string>
     <string name="selftest_detail_hash_mismatch">インストール済みのファイルが前回のビルドと異なります</string>
@@ -522,9 +526,9 @@
     <string name="home_menu_new_build">新しいビルド</string>
     <string name="home_menu_self_test">セルフテストを実行</string>
     <string name="home_menu_restore_watch">ウォッチを復元</string>
-    <string name="home_menu_uninstall">アンインストール</string>
+    <string name="home_menu_uninstall">すべての変更を元に戻す</string>
     <string name="restore_title">元のアプリを復元しますか？</string>
-    <string name="restore_body">パッチ適用済みのアプリが削除され、標準アプリがオンに戻ります。ウォッチ上のデータは残ります。</string>
+    <string name="restore_body">パッチ適用済みのアプリとそのデータが削除され、標準アプリがオンに戻ります。</string>
     <string name="restore_confirm">復元</string>
 
     <!-- Signing key -->
@@ -574,7 +578,7 @@
     <string name="signing_key_nudge_body">バックアップがないと、インストール済みのアプリはアップデートできず、再インストールのみになります。</string>
     <string name="signing_key_nudge_action">バックアップ</string>
     <string name="home_menu_signing_key">署名キー</string>
-    <string name="watch_ui_software_version">ソフトウェア情報</string>
+    <string name="watch_ui_software_version">ソフトウェアバージョン</string>
     <string name="watch_ui_devmode_on">開発者モードがオンになりました</string>
     <string name="watch_ui_developer">開発者向けオプション</string>
     <string name="watch_ui_adb">ADBデバッグ</string>
@@ -582,9 +586,9 @@
     <string name="watch_ui_connections">接続</string>
     <string name="watch_ui_wifi">Wi-Fi</string>
     <string name="watch_ui_bluetooth">Bluetooth</string>
-    <string name="watch_ui_pair_new">新しいデバイスをペアリング</string>
-    <string name="wearable_intro_galaxy">ウォッチは、まずSamsung公式のGalaxy Wearableアプリでこのスマートフォンとペアリングする必要があります。ここでの確認は見るだけで、何も変更しません。</string>
-    <string name="wearable_howto_title">ペアリングの手順</string>
+    <string name="watch_ui_pair_new">新しいデバイスとペア設定</string>
+    <string name="wearable_intro_galaxy">ウォッチは、まずSamsung公式のGalaxy Wearableアプリでこのスマートフォンとペア設定する必要があります。ここでの確認は見るだけで、何も変更しません。</string>
+    <string name="wearable_howto_title">ペア設定の手順</string>
     <string name="wearable_howto_1">Galaxy Wearableアプリをインストールします。</string>
     <string name="wearable_howto_2">アプリを開いて**開始**をタップします。</string>
     <string name="wearable_howto_3">一覧からお使いのウォッチを選びます。</string>
@@ -593,36 +597,36 @@
     <string name="wearable_open_app">Galaxy Wearableを開く</string>
     <string name="wearable_get_app">Galaxy Wearableを入手</string>
     <string name="wearable_check_gw">Galaxy Wearableがインストール済み</string>
-    <string name="wearable_check_gw_ok">ウォッチのペアリングと管理を行うSamsungのアプリが、このスマートフォンに入っています。</string>
+    <string name="wearable_check_gw_ok">ウォッチのペア設定と管理を行うSamsungのアプリが、このスマートフォンに入っています。</string>
     <string name="wearable_check_gw_missing">見つかりません。インストールしてから、ここに戻ってください。</string>
     <string name="wearable_check_plugin">ウォッチ用プラグインがインストール済み</string>
     <string name="wearable_check_plugin_ok">Galaxy Wearableがお使いのウォッチ用プラグインを追加しました。</string>
-    <string name="wearable_check_plugin_missing">見つかりません。Galaxy Wearableはウォッチをペアリングするときにインストールします。</string>
-    <string name="wearable_check_bonded">ウォッチがBluetoothでペアリング済み</string>
-    <string name="wearable_check_bonded_ok">ウォッチがこのスマートフォンとペアリングされています。</string>
-    <string name="wearable_check_bonded_missing">ペアリング済みのウォッチが見つかりません。Galaxy Wearableでペアリングを完了してください。</string>
-    <string name="wearable_check_bonded_denied">このアプリがウォッチのペアリング状況を確認できるよう、付近のデバイスへのアクセスを許可してください。ペアリング済みデバイスの一覧を読み取るだけです。</string>
+    <string name="wearable_check_plugin_missing">見つかりません。Galaxy Wearableはウォッチをペア設定するときにインストールします。</string>
+    <string name="wearable_check_bonded">ウォッチがBluetoothでペア設定済み</string>
+    <string name="wearable_check_bonded_ok">ウォッチがこのスマートフォンとペア設定されています。</string>
+    <string name="wearable_check_bonded_missing">ペア設定済みのウォッチが見つかりません。Galaxy Wearableでペア設定を完了してください。</string>
+    <string name="wearable_check_bonded_denied">このアプリがウォッチのペア設定の状態を確認できるよう、付近のデバイスへのアクセスを許可してください。ペア設定済みデバイスの一覧を読み取るだけです。</string>
     <string name="wearable_allow">許可</string>
     <string name="wearable_note_back">終わったらここに戻ってください。確認は自動的にやり直されます。</string>
     <string name="watchpair_error_bad_host">ウォッチのIPアドレスを入力してください（例：192.168.1.20）。</string>
     <string name="watchpair_error_bad_port">1～65535のポート番号を入力してください。</string>
-    <string name="watchpair_guide_title">ウォッチでペアリングをオンにする</string>
-    <string name="watchpair_guide_3">1. ウォッチをこのスマートフォンと同じWi-Fiに接続します。\n2. **設定** › **接続** › **Wi-Fi**。</string>
-    <string name="watchpair_guide_5">1. **新しいデバイスをペアリング**をタップします。\n2. ウォッチに6桁のコードとアドレスが表示されます。\n3. アドレスはこのアプリが自動で見つけるので、コードだけ入力してください。</string>
+    <string name="watchpair_guide_title">ウォッチでペア設定をオンにする</string>
+    <string name="watchpair_guide_3">1. ウォッチで**設定** › **接続** › **Wi-Fi**を開きます。\n2. このスマートフォンと同じWi-Fiに接続します。</string>
+    <string name="watchpair_guide_5">1. **新しいデバイスとペア設定**をタップします。\n2. ウォッチに6桁のコードとアドレスが表示されます。\n3. アドレスはこのアプリが自動で見つけるので、コードだけ入力してください。</string>
     <string name="watchpair_guide_again">もう一度やり方を見る</string>
     <string name="watchpair_manual">スキップして手動で行う</string>
     <string name="watchpair_automatic">ウォッチを自動で探す</string>
-    <string name="watchpair_manual_intro">ウォッチで**新しいデバイスをペアリング**をタップし、表示されたIPアドレス、ポート、6桁のコードを入力してください。</string>
+    <string name="watchpair_manual_intro">ウォッチで**新しいデバイスとペア設定**をタップし、表示されたIPアドレス、ポート、6桁のコードを入力してください。</string>
     <string name="watchpair_host_label">IPアドレス</string>
     <string name="watchpair_port_label">ポート</string>
-    <string name="watchpair_pairing">ウォッチとペアリング中…</string>
+    <string name="watchpair_pairing">ウォッチとペア設定中…</string>
     <string name="browser_target_line">探しているもの：%1$s</string>
     <string name="browser_coach_1_body_version">アプリのバージョン%1$sを開きます。</string>
     <string name="browser_coach_2_body_version">バリアント表で、バージョン%1$sのnodpiと表示されたAPK（BUNDLEではないもの）を選びます。</string>
     <string name="browser_coach_no_mirror_title">APKMirrorにありません</string>
-    <string name="browser_coach_no_mirror_body">バージョン%1$sはAPKMirrorで公開されていません。この画面を閉じ、**このアプリを入手するその他の方法**から、すでにお持ちのファイルを選んでください。</string>
+    <string name="browser_coach_no_mirror_body">バージョン%1$sはAPKMirrorで公開されていません。この画面を閉じ、**このアプリの他の入手方法**から、すでにお持ちのファイルを選んでください。</string>
     <string name="acquire_not_on_mirror">バージョン%1$sはAPKMirrorにありません。すでにお持ちのファイルを使ってください。</string>
-    <string name="watchpair_guide_1">1. ウォッチで**設定**を開き、一番下までスクロールして**ウォッチ情報**、**ソフトウェア情報**の順にタップします。\n2. **開発者モードがオンになりました**と表示されるまで、**ソフトウェア情報**を5～7回タップします。</string>
+    <string name="watchpair_guide_1">1. ウォッチで**設定**を開き、一番下までスクロールして**ウォッチ情報**、**ソフトウェア情報**の順にタップします。\n2. **開発者モードがオンになりました**と表示されるまで、**ソフトウェアバージョン**を5～7回タップします。</string>
     <string name="watchpair_guide_wireless">1. **設定**に戻り、一番下までスクロールして**開発者向けオプション**を開きます。\n2. **ワイヤレスデバッグ**をオンにして許可します。</string>
     <string name="watchpair_guide_wireless_older">古いウォッチで**ワイヤレスデバッグ**をオンにできない場合は、先に**ADBデバッグ**をオンにしてください。</string>
     <string name="watchpair_dev_line">%1$d. %2$s</string>
@@ -630,7 +634,7 @@
     <string name="watchpair_dev_1">画面の上から下にスワイプし、歯車をタップします。</string>
     <string name="watchpair_dev_2">一番下までスクロールして**ウォッチ情報**をタップします。</string>
     <string name="watchpair_dev_3">**ソフトウェア情報**をタップします。</string>
-    <string name="watchpair_dev_4">ウォッチが反応するまで**ソフトウェア情報**をタップします。</string>
+    <string name="watchpair_dev_4">ウォッチが反応するまで**ソフトウェアバージョン**をタップします。</string>
     <string name="watchpair_dev_5">ウォッチに**開発者モードがオンになりました**と表示されます。</string>
     <string name="watchpair_dev_6">**設定**の一番下に**開発者向けオプション**が表示されます。</string>
     <string name="watchpair_wifi_2">**接続**をタップします。</string>
@@ -650,41 +654,41 @@
     <string name="watch_ui_connected">接続済み</string>
     <string name="watch_ui_allow_prompt">このネットワークでワイヤレスデバッグを許可しますか？</string>
     <string name="watch_ui_allow">許可</string>
-    <string name="troubleshoot_open">ペアリングできない場合</string>
-    <string name="troubleshoot_title">ペアリングできない場合</string>
-    <string name="troubleshoot_intro">Galaxy Wearableでウォッチのペアリングを完了できない場合は、次の方法を順に試してください。</string>
+    <string name="troubleshoot_open">ペア設定できない場合</string>
+    <string name="troubleshoot_title">ペア設定できない場合</string>
+    <string name="troubleshoot_intro">Galaxy Wearableでウォッチのペア設定を完了できない場合は、次の方法を順に試してください。</string>
     <string name="troubleshoot_fixes_title">簡単な対処法</string>
     <string name="troubleshoot_fix_1">スマートフォンとウォッチのBluetoothをオンにして、近づけておきます。</string>
     <string name="troubleshoot_fix_2">スマートフォンとウォッチを再起動します。</string>
     <string name="troubleshoot_fix_3">Galaxy Wearable、そのウォッチ用プラグイン、Google Play 開発者サービスをストアで更新します。</string>
-    <string name="troubleshoot_fix_4">このスマートフォンのBluetoothデバイスとGalaxy Wearableからウォッチを削除し、Galaxy Wearableでもう一度ペアリングします。</string>
+    <string name="troubleshoot_fix_4">このスマートフォンのBluetoothデバイスとGalaxy Wearableからウォッチを削除し、Galaxy Wearableでもう一度ペア設定します。</string>
     <string name="troubleshoot_gms_title">Google Play 開発者サービスが動作しない</string>
-    <string name="troubleshoot_gms_intro">以前にウォッチをペアリングしたことがある場合や、このスマートフォンのGoogle Play 開発者サービスが動作しなくなった場合、ペアリングが完了しないことがあります。Google Play 開発者サービスのデータを消去すると、リセットされます。</string>
+    <string name="troubleshoot_gms_intro">以前にウォッチをペア設定したことがある場合や、このスマートフォンのGoogle Play 開発者サービスが動作しなくなった場合、ペア設定が完了しないことがあります。Google Play 開発者サービスのデータを消去すると、リセットされます。</string>
     <string name="troubleshoot_gms_warning">消去すると、このスマートフォンのすべてのGoogleアカウントからログアウトされる場合があります。再度ログインが必要になることがあります。</string>
     <string name="troubleshoot_manual_title">自分で行う</string>
     <string name="troubleshoot_manual_steps">1. **Google Play 開発者サービス**の設定を開きます。\n2. **ストレージ**をタップします。\n3. **スペースを管理**をタップします。\n4. **すべてのデータを消去**をタップします。</string>
     <string name="troubleshoot_manual_open">Google Play 開発者サービスの設定を開く</string>
     <string name="troubleshoot_auto_title">アプリに任せる</string>
     <string name="troubleshoot_auto_intro">このアプリは、このスマートフォン自身のワイヤレスデバッグ経由でコマンドを送信できます。Wi-Fiに接続している必要があります。</string>
-    <string name="troubleshoot_adb_pair">このスマートフォンのADBとペアリング</string>
-    <string name="troubleshoot_adb_retry">もう一度ペアリングする</string>
-    <string name="troubleshoot_adb_paired">このスマートフォンのADBとペアリングしました。次のステップではコードは不要です。</string>
-    <string name="troubleshoot_adb_busy">別のワイヤレスデバッグのペアリングがすでに進行中です。先にそれを完了するか、キャンセルしてください。</string>
+    <string name="troubleshoot_adb_pair">このスマートフォンのADBとペア設定</string>
+    <string name="troubleshoot_adb_retry">もう一度ペア設定する</string>
+    <string name="troubleshoot_adb_paired">このスマートフォンのADBとペア設定しました。次のステップではコードは不要です。</string>
+    <string name="troubleshoot_adb_busy">別のワイヤレスデバッグのペア設定がすでに進行中です。先にそれを完了するか、キャンセルしてください。</string>
     <string name="troubleshoot_clear_action">Google Play 開発者サービスのデータを消去</string>
     <string name="troubleshoot_clear_waiting">確認しました。このスマートフォンへの接続を待っています。接続後、Google Play 開発者サービスのデータが消去されます。</string>
     <string name="troubleshoot_clear_running">Google Play 開発者サービスのデータを消去しています...</string>
-    <string name="troubleshoot_clear_done">完了しました。Androidから求められたら、Googleアカウントに再度ログインしてください。その後、Galaxy Wearableを開いてウォッチをもう一度ペアリングします。</string>
+    <string name="troubleshoot_clear_done">完了しました。Androidから求められたら、Googleアカウントに再度ログインしてください。その後、Galaxy Wearableを開いてウォッチをもう一度ペア設定します。</string>
     <string name="troubleshoot_clear_failed">Google Play 開発者サービスのデータを消去できませんでした。</string>
     <string name="troubleshoot_dialog_title">Google Play 開発者サービスのデータを消去しますか？</string>
     <string name="troubleshoot_dialog_body">このスマートフォンのGoogle Play 開発者サービスがリセットされます。このスマートフォンのすべてのGoogleアカウントにアクセスできなくなり、再度ログインが必要になる場合があります。\n\nGoogle ウォレットのカード、デバイスを探す、バックアップ設定など、Google Play 開発者サービスを利用する一部のサービスは、再設定が必要になる場合があります。\n\nウォッチは変更されません。</string>
     <string name="troubleshoot_dialog_confirm">データを消去</string>
-    <string name="troubleshoot_back_to_check">ペアリング確認に戻る</string>
+    <string name="troubleshoot_back_to_check">ペア設定の確認に戻る</string>
     <string name="skip_title">ここはスキップします</string>
-    <string name="skip_body">自動で判別するのに十分な情報があります。</string>
+    <string name="skip_body">この手順はすでに完了しているため、スキップできます。</string>
     <string name="skip_checking">デバイスを確認しています…</string>
     <string name="skip_card_step">ステップ %1$d · %2$s</string>
     <string name="skip_reason_profile">接続中のウォッチで Android %1$s（%2$s）を検出しました。</string>
-    <string name="skip_reason_profile_network">お使いのウォッチ（%1$s）が Wi-Fi 経由で Android API %2$s を通知しました（%3$s）。</string>
+    <string name="skip_reason_profile_network">お使いのウォッチ（%1$s）が Wi-Fi 経由で Android API レベル %2$s を報告しました：%3$s。</string>
     <string name="skip_reason_wearable">ウォッチはすでに Galaxy Wearable とペア設定されています。</string>
     <string name="skip_reason_watchpair">ウォッチはすでにワイヤレスデバッグで接続されています。</string>
     <string name="skip_confirm">OK</string>
@@ -699,23 +703,23 @@
     <string name="selfadb_guide_ui_paired">ペア設定済みのデバイス</string>
     <string name="selfadb_open_wireless">ワイヤレスデバッグを開く</string>
     <string name="outcome_acknowledge">了解</string>
-    <string name="phone_adb_error_title">アプリ側の問題です</string>
-    <string name="phone_adb_error_message">これはアプリ側の問題で、あなたの操作ミスではなく、ご自身では解決できません。各行の「設定を開く」ボタンを使うか、そのまま続行できます。</string>
+    <string name="phone_adb_error_title">アクセスを自動で許可できませんでした</string>
+    <string name="phone_adb_error_message">ワイヤレスデバッグ経由でアクセス設定を適用できませんでした。各行の「設定を開く」ボタンを使うか、そのまま続行することもできます。</string>
     <string name="phone_adb_success_title">準備完了</string>
     <string name="phone_adb_success_message">次のステップへ進みます</string>
     <string name="acquire_shealth_title">Samsung Health（任意）</string>
-    <string name="acquire_shealth_summary">新しい Galaxy Watch が必要な機能を有効にした、スマートフォン版 Samsung Health のパッチ適用コピー「Samsung Health+」も作成します。Play の Samsung Health の隣にインストールされ、そちらは残ります。Play 版はウォッチに接続されたまま Samsung Account にデータをアップロードし、Samsung Health+ は同じアカウントでサインインするとクラウドから同じデータをダウンロードします(反映が遅れることがあります)。</string>
+    <string name="acquire_shealth_summary">スマートフォン版 Samsung Health のパッチ適用済みコピー「Samsung Health+」も作成します。通常は新しい Galaxy Watch が必要な機能が有効になります。Google Play の Samsung Health アプリの隣にインストールされ、そちらはそのまま使い続けます。Google Play 版はウォッチと接続したまま Samsung アカウントにデータをアップロードし、Samsung Health+ は同じアカウントでサインインすると、クラウドから同じデータをダウンロードします（反映がしばらく遅れることがあります）。</string>
     <string name="output_shealth_phone">Samsung Health+(パッチ適用済み)</string>
-    <string name="change_purpose_shealth_phone">Samsung Health の名前を変えたコピーで、下の機能が有効になっています。Play の Samsung Health の隣で動作し、Samsung クラウドからデータを読み込みます。</string>
+    <string name="change_purpose_shealth_phone">Samsung Health の名前を変えたコピーで、「エナジースコア」のタイルと、オプションで「バイタル」「トレーニング負荷」と体力指数が有効になっています。Google Play の Samsung Health アプリの隣で動作し、Samsung クラウドからデータを読み込みます。</string>
     <string name="patch_shealth_res_webp">誤ったファイル拡張子で保存されている4つの画像を修正し、アプリを再ビルドできるようにします（見た目の変化はありません）。</string>
     <string name="patch_shealth_feature_dev_ui">Samsung の開発者モードなしで、設定 &gt; 概要に機能一覧を表示します。</string>
     <string name="patch_shealth_vitality_tile">ウォッチが機能を通知するのを待たずに、エネルギースコアのタイルを表示します。</string>
-    <string name="patch_shealth_rename_manifest">アプリに独自のパッケージ名とラベル(Samsung Health+)を与え、元のアプリの隣にインストールできるようにします。</string>
+    <string name="patch_shealth_rename_manifest">アプリに独自のパッケージ名とラベル（Samsung Health+）を与え、元のアプリの隣にインストールできるようにします。</string>
     <string name="patch_shealth_rename_code">アプリの内部参照を新しいパッケージ名に更新します。</string>
     <string name="patch_shealth_rename_account_xml">アプリに独自のアカウントと同期の登録を与え、元のアプリの隣でもクラウド同期が動作するようにします。</string>
-    <string name="patch_shealth_capability_gates">Galaxy Watch8 または Ultra が必要な「バイタル」「トレーニング負荷」と体力指数を有効にします。同期済みの履歴からスマートフォン上で計算されます。</string>
+    <string name="patch_shealth_capability_gates">通常は Galaxy Watch8 または Ultra が必要な「バイタル」「トレーニング負荷」と体力指数を有効にします。同期済みの履歴からスマートフォン上で計算されます。</string>
     <string name="patch_shealth_launcher_badge">アプリのアイコンに小さな OpenSHM バッジを追加し、元のアプリと見分けられるようにします。</string>
-    <string name="patch_shealth_oobe_local">任意、初期設定ではオフ。Samsung アカウントでのサインイン要件を省略し、クラウド同期なしでローカルにアプリを使います。サインインできない場合のみオンにしてください。</string>
+    <string name="patch_shealth_oobe_local">初期設定ではオフ。Samsung アカウントでのサインイン要件を省略し、クラウド同期なしでアプリをローカルで実行します。そのため、Google Play の Samsung Health アプリがアップロードしたデータは取得されません。サインインできない場合のみオンにしてください。</string>
     <string name="device_logs_channel">デバイスログ</string>
     <string name="device_logs_notification_title">デバイスログを記録中</string>
     <string name="device_logs_notification_text">ウォッチ %1$d · スマートフォン %2$d</string>
@@ -753,10 +757,10 @@
     <string name="revert_action_remove">削除</string>
     <string name="revert_action_enable">再び有効にする</string>
     <string name="revert_action_restore">復元</string>
-    <string name="revert_setting_label">常時表示ディスプレイの設定</string>
-    <string name="revert_setting_note">現在オフです。オンに戻します。</string>
+    <string name="revert_setting_label">常時表示の設定</string>
+    <string name="revert_setting_note">以前のバージョンのパッチャーがオフにしました。オンに戻します。</string>
     <string name="revert_exemption_label">センサーアクセスの例外</string>
-    <string name="revert_exemption_note">ウォッチのセンサー例外リストから当アプリの項目を削除します。他のアプリの項目はそのまま残ります。</string>
+    <string name="revert_exemption_note">ウォッチの非公開API例外リストからOpenSHMの項目を削除します。他のアプリの項目はそのまま残ります。</string>
     <string name="revert_enable_note">セットアップでオフにされました。オンに戻します。</string>
     <string name="revert_not_installed">未インストールのため対応不要: %1$s</string>
     <string name="revert_system_apps">システムアプリのため変更しません: %1$s</string>
@@ -783,8 +787,8 @@
     <string name="revert_check_again">もう一度確認</string>
     <string name="revert_manual_title">手動で行うこと</string>
     <string name="revert_manual_devmode">Health Platform の開発者モードをオンにしている場合は、オフにしてください。</string>
-    <string name="revert_manual_adb">デバッグの承認を取り消し、ウォッチとこのスマートフォンでワイヤレス デバッグをオフにしてください。</string>
-    <string name="revert_manual_keys">署名キーのバックアップ（ドキュメント/OpenSHM）と保存したパスワードは残ります。不要な場合は、ファイルアプリまたはパスワード マネージャーから削除してください。</string>
+    <string name="revert_manual_adb">デバッグの承認を取り消し、ウォッチとこのスマートフォンでワイヤレスデバッグをオフにしてください。</string>
+    <string name="revert_manual_keys">署名キーのバックアップ（Documents/OpenSHM）と保存したパスワードは残ります。不要な場合は、ファイルアプリまたはパスワードマネージャーから削除してください。</string>
     <string name="revert_self_action">OpenSHM Patcher をアンインストール</string>
     <string name="revert_self_title">OpenSHM Patcher をアンインストールしますか？</string>
     <string name="revert_self_body">Android が確認を求めます。アプリと保存されたデータ（アプリ内に保管された署名キーを含む）が削除されます。別の場所に保存したバックアップは残ります。</string>

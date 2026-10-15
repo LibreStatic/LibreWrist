@@ -45,12 +45,12 @@
     <!-- Welcome -->
     <string name="welcome_title">Jouw apps, jouw horloge, op jouw manier</string>
     <string name="welcome_promise_download">Je haalt de officiële apps zelf op; hier wordt niets meegeleverd.</string>
-    <string name="welcome_promise_patch">Patches laten Samsung Health Monitor werken op een niet-Samsung-telefoon en naast de standaard horlogeapp staan.</string>
-    <string name="welcome_promise_undo">Elke wijziging kan ongedaan worden gemaakt en de standaardapps blijven staan.</string>
+    <string name="welcome_promise_patch">Met de patches werkt Samsung Health Monitor op een telefoon die niet van Samsung is, en de gepatchte horloge-app wordt naast de originele geïnstalleerd.</string>
+    <string name="welcome_promise_undo">Elke wijziging kan ongedaan worden gemaakt, en de originele apps worden nooit verwijderd.</string>
     <string name="welcome_get_started">Aan de slag</string>
     <string name="welcome_what_changes">Wat verandert er op mijn apparaten?</string>
     <string name="changes_title">Wat verandert er</string>
-    <string name="changes_intro">Elke app die wordt geïnstalleerd, waar ze voor dient en wat ze mag doen. Er wordt niets gewist en alles kan ongedaan worden gemaakt.</string>
+    <string name="changes_intro">Elke app die wordt geïnstalleerd, waarvoor die dient en wat die mag doen. Er wordt niets gewist zonder het je eerst te vragen, en alles kan ongedaan worden gemaakt.</string>
     <string name="changes_on_phone">Op deze telefoon</string>
     <string name="changes_on_watch">Op je horloge</string>
     <string name="changes_allowed_to">Het mag</string>
@@ -80,6 +80,8 @@
     <string name="grant_why_notifications_phone">Een kleine melding tonen zolang de app met het horloge is verbonden.</string>
     <string name="grant_why_notifications_watch">De meldingen van je telefoon op het horloge tonen.</string>
     <string name="grant_why_notifications_alarm">De wekker tonen terwijl hij afgaat.</string>
+    <string name="grant_why_notifications_shm">Meldingen van Health Monitor tonen.</string>
+    <string name="grant_why_notifications_shealth">Meldingen van Samsung Health+ tonen.</string>
     <string name="grant_why_bluetooth_phone">Via Bluetooth verbinden met het horloge.</string>
     <string name="grant_why_bluetooth_watch">Via Bluetooth verbinden met de telefoon.</string>
     <string name="grant_why_restricted">Android blokkeert sommige instellingen voor apps die niet uit een store komen. Hiermee kun je toegang tot meldingen voor de bridge inschakelen.</string>
@@ -94,26 +96,27 @@
     <string name="grant_why_ongoing_calls">Het lopende gesprek op het horloge tonen en bedienen.</string>
     <string name="grant_why_always_on">Voorkomt dat het always-on display het horloge tijdens een meting in slaap brengt.</string>
     <string name="grant_why_battery_bridge">De Bluetooth-verbinding actief houden terwijl het horloge batterij bespaart.</string>
+    <string name="grant_why_battery_bridge_phone">De Bluetooth-verbinding actief houden terwijl de telefoon batterij bespaart.</string>
     <string name="grant_why_battery_alarm">Op tijd afgaan, ook als het horloge batterij bespaart.</string>
-    <string name="grant_why_hidden_api">Laat de horloge-app de sensorservice van Samsung gebruiken voor ECG, bloeddruk en slaapapneu. Geldt voor het hele horloge, maar alleen voor de sensorsoftware van Samsung.</string>
-    <string name="changes_disables">Kan worden uitgezet</string>
+    <string name="grant_why_hidden_api">Nieuwere horloges (One UI 8 Watch) blokkeren de toegang van de horloge-app tot de sensorbeheerder van Samsung, die de app nodig heeft voor ecg, bloeddruk en slaapapneu. De uitzondering geldt voor alle apps op het horloge, maar alleen voor de sensorbeheerder van Samsung.</string>
+    <string name="changes_disables">Uitgezet tijdens de configuratie</string>
 
     <!-- Profile -->
     <string name="profile_title">Welk horloge heb je?</string>
     <string name="profile_intro">Dit bepaalt welke officiële apps je moet meebrengen.</string>
     <string name="profile_wear5_title">Wear OS 5 of nieuwer</string>
     <string name="profile_wear5_summary">Health Monitor plus telefoonwekkers op het horloge.</string>
-    <string name="profile_wear5_apps">3 officiële apps</string>
+    <string name="profile_wear5_apps">3 officiële apps, of 4 met Samsung Health</string>
     <string name="profile_wear3_title">Wear OS 3 of 4</string>
-    <string name="profile_wear3_summary">Alleen Health Monitor. De wekker-app vereist Android 14 op het horloge.</string>
-    <string name="profile_wear3_apps">2 officiële apps</string>
+    <string name="profile_wear3_summary">Health Monitor en de bridge, zonder telefoonwekkers. De wekker-app heeft Android 14 op het horloge nodig.</string>
+    <string name="profile_wear3_apps">2 officiële apps, of 3 met Samsung Health</string>
     <string name="profile_detected">Gecontroleerd op je horloge: Android %1$s (%2$s)</string>
     <string name="profile_check_paired">Gekoppelde horloges controleren</string>
-    <string name="profile_detected_network">Je horloge (%1$s) meldde Android API %2$s via wifi (%3$s)</string>
+    <string name="profile_detected_network">Je horloge (%1$s) meldde Android API-niveau %2$s via Wi-Fi: %3$s</string>
     <string name="profile_paired_certain">Draait altijd Wear OS 5 of nieuwer, dus die optie is geselecteerd.</string>
     <string name="profile_paired_depends">Kan beide versies draaien, afhankelijk van de updates.</string>
-    <string name="profile_tip_wireless">Zet voor zekerheid draadloos foutopsporen aan op het horloge: dit scherm leest de versie via wifi.</string>
-    <string name="profile_scanning">Je horloge zoeken op wifi…</string>
+    <string name="profile_tip_wireless">Zet voor zekerheid draadloze foutopsporing aan op het horloge: dit scherm leest de versie via Wi-Fi.</string>
+    <string name="profile_scanning">Je horloge zoeken op Wi-Fi…</string>
     <string name="profile_allow">Toestaan</string>
     <string name="profile_check_none">Geen gekoppelde Galaxy Watch gevonden. Kies een optie of laat de app het controleren in stap 3.</string>
     <string name="profile_check_denied">Bluetooth-toegang is niet toegestaan, dus gekoppelde horloges kunnen niet worden gecontroleerd. Kies een optie of laat de app het controleren in stap 3.</string>
@@ -144,8 +147,8 @@
     <string name="wearable_recheck">Opnieuw controleren</string>
 
     <!-- Watch pairing over Wi-Fi -->
-    <string name="watchpair_correct_older">Je horloge draait Android %1$s, dus de wekker-app wordt overgeslagen: je hebt 2 officiële apps nodig in plaats van 3.</string>
-    <string name="watchpair_correct_newer">Je horloge draait Android %1$s, dus de wekker-app is inbegrepen: je hebt 3 officiële apps nodig in plaats van 2.</string>
+    <string name="watchpair_correct_older">Op je horloge draait Android %1$s, dus de wekker-app wordt overgeslagen: je hebt één officiële app minder nodig.</string>
+    <string name="watchpair_correct_newer">Op je horloge draait Android %1$s, dus de wekker-app wordt meegenomen: je hebt één officiële app meer nodig.</string>
     <string name="watchpair_paired">Horloge gekoppeld</string>
     <string name="watchpair_title">Verbinden met je horloge</string>
     <string name="watchpair_intro">Het horloge accepteert installaties via Wi-Fi zodra je het koppelt met een korte code.</string>
@@ -168,7 +171,7 @@
 
     <!-- Acquire -->
     <string name="acquire_title">Haal de officiële apps op</string>
-    <string name="acquire_intro">Download elke app zelf, van een bron die je vertrouwt. De patcher slaat ze nooit op en levert ze nooit mee.</string>
+    <string name="acquire_intro">Download elke app zelf, van een bron die je vertrouwt. De patcher bundelt of deelt ze nooit.</string>
     <string name="acquire_open_mirror">Openen op APKMirror</string>
     <string name="acquire_more_ways">Meer manieren om deze app te krijgen</string>
     <string name="acquire_use_file">Een bestand gebruiken dat ik al heb</string>
@@ -211,8 +214,8 @@
     <string name="customize_required">Vereist, altijd aan</string>
     <string name="customize_advanced">Geavanceerd</string>
     <string name="customize_prefix_label">Pakketvoorvoegsel voor hulp-apps</string>
-    <string name="customize_prefix_explainer">Geeft de bridge-apps en de wekker-app hun naam. De twee Samsung Health Monitor-apps behouden hun eigen pakket zodat ze met elkaar kunnen praten.</string>
-    <string name="customize_prefix_ok">Er wordt een nieuw voorvoegsel voor je gemaakt.</string>
+    <string name="customize_prefix_explainer">Geeft de bridge-apps, de wekker-app en Samsung Health+ een naam. De twee Samsung Health Monitor-apps gebruiken in plaats daarvan één vaste, gedeelde pakketnaam, zodat ze met elkaar kunnen communiceren.</string>
+    <string name="customize_prefix_ok">Elk geldig voorvoegsel werkt; om te beginnen wordt er een willekeurig ingevuld.</string>
     <string name="customize_prefix_locked">Vergrendeld: hulp-apps zijn geïnstalleerd en updates vereisen hetzelfde voorvoegsel.</string>
     <string name="customize_prefix_regenerate">Nieuw voorvoegsel maken</string>
     <string name="customize_build">Bouwen</string>
@@ -234,16 +237,17 @@
 
     <!-- Patch descriptions (titles come from the catalogue) -->
     <string name="patch_generic_manufacturer_check">Accepteert een telefoon die niet door Samsung is gemaakt.</string>
-    <string name="patch_generic_vendor_check">Accepteert een telefoon zonder de Samsung SDK.</string>
+    <string name="patch_generic_vendor_check">Accepteert een telefoon die Samsung niet als fabrikant meldt (fabrikantoverschrijving).</string>
     <string name="patch_shm_min_age_22_to_16">Verlaagt de minimumleeftijd van 22 naar 16.</string>
+    <string name="patch_watch_min_age_22_to_16">Verlaagt de minimumleeftijd van alle functies (22, of 18 voor slaapapneu) naar 16.</string>
     <string name="patch_shm_supported_type_ordinals">Behandelt elke regio als ondersteund.</string>
-    <string name="patch_shm_region_supportedtype">Laat de regiocontrole slagen.</string>
-    <string name="patch_shm_region_countrylist">Accepteert elk land in de lijst met ondersteunde landen.</string>
-    <string name="patch_shm_root_packagevalidator">Slaat de certificaatvalidatie van de fabrikant over.</string>
+    <string name="patch_shm_region_supportedtype">Schakelt de regiocontrole uit.</string>
+    <string name="patch_shm_region_countrylist">Behandelt elk land als ondersteund (regiocontrole uitgeschakeld).</string>
+    <string name="patch_shm_root_packagevalidator">Schakelt de controle van het Samsung-certificaat uit, waar de opnieuw ondertekende app niet meer doorheen komt.</string>
     <string name="patch_shm_force_update_response">Negeert een mislukt of afgedwongen updateantwoord.</string>
     <string name="patch_shm_force_update_pref">Negeert de opgeslagen markering voor afgedwongen updates.</string>
-    <string name="patch_shm_main_gates">Slaat de opstartcontroles over die andere telefoons blokkeren.</string>
-    <string name="patch_shm_setup_network_gate">Slaat de SIM- en regiocontrole tijdens de installatie over.</string>
+    <string name="patch_shm_main_gates">Slaat de systeem- en updatecontroles bij het opstarten over en meldt de schermvergrendeling als ingesteld.</string>
+    <string name="patch_shm_setup_network_gate">Schakelt de SIM- en regiocontrole tijdens de configuratie uit.</string>
     <string name="patch_shm_sleep_apnea_support">Meldt slaapapneu als ondersteund.</string>
     <string name="patch_phone_rebrand_gms">Geeft de telefoon-app hetzelfde pakket en dezelfde sleutel als de horlogeapp zodat ze gegevens kunnen uitwisselen.</string>
     <string name="patch_watch_rebrand_coexist">Hernoemt de horlogeapp zodat hij naast de standaardapp staat.</string>
@@ -254,11 +258,11 @@
     <string name="patch_watch_companion_vendor">Accepteert elk merk begeleidende telefoon.</string>
     <string name="patch_watch_alarm_system_app">Plant exacte wekkers zonder systeemrechten.</string>
     <string name="patch_watch_mobile_installed">Meldt de telefoon-app als geïnstalleerd.</string>
-    <string name="patch_watch_ecg_sensor_adapter">Leest de ECG-sensor uit via de Health Tracking-service.</string>
+    <string name="patch_watch_ecg_sensor_adapter">Leest de ecg-sensor uit via de Health Tracking-service en behandelt de sensoren voor onregelmatig hartritme en SpO2 als beschikbaar.</string>
     <string name="patch_watch_bp_sensor_adapter">Leest de bloeddruksensor uit via de Health Tracking-service, omdat het horloge een opnieuw ondertekende app er niet rechtstreeks gebruik van laat maken.</string>
     <string name="patch_watch_sensor_unregister_compat">Voorkomt dat de app sluit bij het stoppen van sensoren op horloges met een ander sensorframework, zoals de Galaxy Watch8.</string>
     <string name="patch_watch_bp_attribute_guard">Voorkomt dat de bloeddrukkalibratie de app sluit op horloges die de sensorinstelling blokkeren die de app gebruikt (One UI 8 Watch). De app toont in plaats daarvan zijn normale sensorfout.</string>
-    <string name="patch_watch_apnea_country">Slaat de landcontrole voor apneu over.</string>
+    <string name="patch_watch_apnea_country">Schakelt de regiocontrole voor slaapapneu uit.</string>
     <string name="patch_watch_apnea_reeval_not_supported">Controleert apneu-ondersteuning opnieuw die als niet ondersteund was opgeslagen.</string>
     <string name="patch_watch_mod">Voegt de module toe die met de Health Tracking-service praat.</string>
     <string name="patch_alarm_verify_symbols">Controleert of de wekker-app de onderdelen heeft die de koppeling nodig heeft.</string>
@@ -285,7 +289,7 @@
     <string name="output_alarm_fork">Telefoonwekkers op het horloge</string>
     <string name="output_bridge_phone">Bridge voor de telefoon</string>
     <string name="stock_label_shm">Samsung Health Monitor (standaard)</string>
-    <string name="stock_reason_shm">Twee exemplaren van de app zouden om dezelfde sensor strijden.</string>
+    <string name="stock_reason_shm">De originele horloge-app blijft zijn regiofout tonen en is niet meer nodig. De gepatchte kopie vervangt hem.</string>
 
     <!-- Build -->
     <string name="build_title">Je apps worden gebouwd</string>
@@ -325,8 +329,8 @@
     <string name="build_notification_done">Je apps zijn gebouwd en ondertekend.</string>
     <string name="build_notification_failed">De build is mislukt. Open de app om te zien waarom.</string>
     <string name="build_error_title">De build is niet voltooid</string>
-    <string name="build_show_log">Logboek tonen</string>
-    <string name="build_log_title">Buildlogboek</string>
+    <string name="build_show_log">Log tonen</string>
+    <string name="build_log_title">Buildlog</string>
     <string name="build_log_empty">Nog niets gelogd.</string>
     <string name="build_done_title">Gebouwd en ondertekend</string>
     <string name="build_done_ready">klaar om te installeren</string>
@@ -344,28 +348,28 @@
     <!-- Install -->
     <string name="install_phone_title">Installeren op deze telefoon</string>
     <string name="install_phone_intro">Android vraagt je elke installatie te bevestigen. De toegang die de apps nodig hebben, wordt daarna gecontroleerd; wat ontbreekt, zet je zelf aan in **Instellingen**.</string>
-    <string name="leftover_removing_title">Een oude kopie van de brug wordt verwijderd</string>
-    <string name="leftover_removing_body">Een eerdere installatie heeft een kopie van de brug achtergelaten onder een andere pakketnaam. Die concurreert met de nieuwe om de verbinding met het horloge. Android vraagt je de verwijdering te bevestigen; je kunt gerust accepteren. Je gezondheidsgegevens en deze app worden niet geraakt.</string>
-    <string name="leftover_kept_title">Oude kopie van de brug behouden</string>
+    <string name="leftover_removing_title">Een oude kopie van de bridge wordt verwijderd</string>
+    <string name="leftover_removing_body">Een eerdere configuratie heeft een kopie van de bridge achtergelaten onder een andere pakketnaam. Die concurreert met de nieuwe om de verbinding met het horloge. Android vraagt je de verwijdering te bevestigen; je kunt gerust accepteren. Je gezondheidsgegevens en deze app worden niet geraakt.</string>
+    <string name="leftover_kept_title">Oude kopie van de bridge behouden</string>
     <string name="leftover_kept_body">Ze kan de verbinding met het horloge storen. Je kunt haar later verwijderen via de app-instellingen van Android.</string>
-    <string name="install_phone_note">Rechten, weergave over andere apps, toegang tot meldingen en beperkte instellingen zet je zelf aan. Kom daarna terug naar dit scherm en het controleert opnieuw.</string>
+    <string name="install_phone_note">Machtigingen, weergeven over andere apps, toegang tot meldingen, onbeperkt batterijgebruik en beperkte instellingen zet je zelf aan. Kom daarna terug naar dit scherm, dan wordt het opnieuw gecontroleerd.</string>
     <string name="install_watch_title">Installeren op je horloge</string>
     <string name="install_watch_intro">Via Wi-Fi geïnstalleerd in deze volgorde: Health Monitor, de bridge en dan telefoonwekkers.</string>
-    <string name="install_watch_note">Het horloge blijft aan en verbonden terwijl dit loopt.</string>
+    <string name="install_watch_note">Houd het horloge wakker en op Wi-Fi terwijl dit loopt.</string>
     <string name="install_start">Installatie starten</string>
-    <string name="install_error_build_missing">De build ontbreekt of past niet bij deze installatie. Bouw opnieuw en installeer dan.</string>
-    <string name="install_error_failed">Het horloge weigerde de installatie.</string>
-    <string name="install_error_signature">Er staat al een exemplaar op het horloge dat met een andere sleutel is ondertekend. Er is niets verwijderd. Verwijder dat exemplaar zelf en probeer het opnieuw.</string>
+    <string name="install_error_build_missing">De build ontbreekt of past niet bij deze configuratie. Bouw opnieuw en installeer dan.</string>
+    <string name="install_error_failed">De installatie is geweigerd.</string>
+    <string name="install_error_signature">Er is al een kopie geïnstalleerd die met een andere sleutel is ondertekend. Er is niets verwijderd. Verwijder die kopie zelf en probeer het daarna opnieuw.</string>
     <string name="install_error_grant">Een toegangsinstelling kon niet worden toegepast.</string>
     <string name="action_open">Openen</string>
     <string name="action_allow_installing">Apps installeren toestaan</string>
     <string name="install_check_again">Opnieuw controleren</string>
     <string name="install_continue_anyway">Toch doorgaan</string>
-    <string name="install_onboarding">Open Samsung Health Monitor en rond de installatie ervan af</string>
+    <string name="install_onboarding">Open Samsung Health Monitor en rond de configuratie ervan af</string>
     <string name="install_error_unknown_sources">Deze app mag nog geen apps installeren. Sta het toe en begin opnieuw.</string>
     <string name="install_error_notifications">Sta eerst meldingen voor deze app toe: de koppelcode wordt in een melding getypt.</string>
     <string name="phone_adb_title">Alles in één keer toestaan</string>
-    <string name="phone_adb_intro">Als de schakelaars in de weg zitten, kan deze telefoon ze zichzelf geven via **Draadloze foutopsporing**. Je moet op Wi-Fi zitten. Een melding vraagt je om de koppelcode.</string>
+    <string name="phone_adb_intro">In plaats van alles met de hand aan te zetten, kan deze telefoon alles aan zichzelf verlenen via **Draadloze foutopsporing**. Je moet verbonden zijn met Wi-Fi. Een melding vraagt je om de koppelcode.</string>
     <string name="phone_adb_action">Alles toestaan met Draadloze foutopsporing</string>
     <string name="phone_adb_waiting_service">1. Zet **Draadloze foutopsporing** aan.\n2. Tik op **Apparaat koppelen met koppelcode**.\n3. Er verschijnt een melding waarin je de code kunt typen zonder dat scherm te verlaten.</string>
     <string name="phone_adb_waiting_code">Typ de code van zes cijfers die op het koppelscherm staat, hier of in de melding.</string>
@@ -397,7 +401,7 @@
     <string name="watch_error_unreachable">Het horloge is niet bereikbaar. Controleer of Draadloze foutopsporing aanstaat en of beide apparaten hetzelfde Wi-Fi delen.</string>
     <string name="watch_error_pairing">Het horloge vertrouwt deze telefoon niet meer. Ga terug en koppel opnieuw.</string>
     <string name="watch_unreachable_title">Horloge niet gevonden</string>
-    <string name="watch_unreachable_body">Maak het horloge wakker, controleer of het op hetzelfde wifi-netwerk zit als deze telefoon en zet draadloos foutopsporen weer aan (Instellingen › Ontwikkelaarsopties › Draadloze foutopsporing). Probeer het daarna opnieuw.</string>
+    <string name="watch_unreachable_body">Maak het horloge wakker, controleer of het op hetzelfde Wi-Fi-netwerk zit als deze telefoon en zet draadloze foutopsporing weer aan (Instellingen › Ontwikkelaarsopties › Draadloze foutopsporing). Probeer het daarna opnieuw.</string>
     <string name="grant_permission">Recht</string>
     <string name="grant_appop">App-bewerking</string>
     <string name="grant_setting">Systeeminstelling</string>
@@ -407,7 +411,7 @@
 
     <!-- Health Platform developer mode -->
     <string name="devmode_title">Ontwikkelaarsmodus van Health Platform</string>
-    <string name="devmode_intro">De Health Tracking-service praat alleen in ontwikkelaarsmodus met de aangepaste app. De patcher kan die via het scherm van het horloge aanzetten: houd het horloge ontgrendeld en in de buurt.</string>
+    <string name="devmode_intro">De Health Tracking-service communiceert alleen in de ontwikkelaarsmodus met de gepatchte app. De patcher kan die aanzetten via het scherm van het horloge: houd het horloge ontgrendeld en wakker.</string>
     <string name="devmode_step_settings">Open **Instellingen** op het horloge.</string>
     <string name="devmode_step_apps">Ga naar **Apps**.</string>
     <string name="devmode_step_health_platform">Kies **Health Platform**.</string>
@@ -425,7 +429,7 @@
     <string name="devmode_not_yet_title">Kon het niet zelf aanzetten</string>
     <string name="devmode_not_yet_message">[Dev mode] verscheen niet in de Health Platform-instellingen op het horloge. Ontgrendel het horloge en probeer het opnieuw, of tik zelf 10 keer achter elkaar op de titel.</string>
     <string name="devmode_unreachable_title">Horloge niet bereikbaar</string>
-    <string name="devmode_unreachable_message">Controleer of het horloge aan staat, op hetzelfde wifi-netwerk als deze telefoon, en of draadloze foutopsporing nog aan staat.</string>
+    <string name="devmode_unreachable_message">Controleer of het horloge aan staat, op hetzelfde Wi-Fi-netwerk als deze telefoon, en of draadloze foutopsporing nog aan staat.</string>
     <string name="devmode_success_title">Ontwikkelaarsmodus staat aan</string>
     <string name="devmode_success_message">Health Platform accepteert nu de aangepaste app. Door naar de volgende stap.</string>
 
@@ -457,13 +461,13 @@
     <string name="selftest_grants_title">Toegang voor %1$s</string>
     <string name="selftest_stock_title">Uitschakeling van %1$s</string>
     <string name="selftest_bridge_link_title">Bridge-verbinding met het horloge</string>
-    <string name="selftest_leftovers_title">Oude kopieën van de brug</string>
+    <string name="selftest_leftovers_title">Oude kopieën van de bridge</string>
     <string name="selftest_watch_platform">Health Platform in ontwikkelaarsmodus</string>
     <string name="selftest_gms_title">Horloge verbonden met de telefoon</string>
     <string name="selftest_shm_title">Health Monitor ziet het horloge</string>
     <string name="selftest_ecg_title">ECG bereikt de telefoon</string>
     <string name="selftest_platform_question">Staat Health Platform op het horloge in ontwikkelaarsmodus?</string>
-    <string name="selftest_gms_question">Toont de Wear OS-app op de telefoon het horloge als verbonden?</string>
+    <string name="selftest_gms_question">Toont de Galaxy Wearable-app op de telefoon het horloge als verbonden?</string>
     <string name="selftest_shm_question">Toont Samsung Health Monitor op de telefoon het horloge als verbonden?</string>
     <string name="selftest_ecg_question">Maak een ECG op het horloge. Verschijnt die op de telefoon?</string>
     <string name="selftest_detail_answered_no">Je antwoordde nee</string>
@@ -530,9 +534,9 @@
     <string name="home_menu_new_build">Nieuwe build</string>
     <string name="home_menu_self_test">Zelftest uitvoeren</string>
     <string name="home_menu_restore_watch">Horloge herstellen</string>
-    <string name="home_menu_uninstall">Verwijderen</string>
+    <string name="home_menu_uninstall">Alle wijzigingen ongedaan maken</string>
     <string name="restore_title">De originele app herstellen?</string>
-    <string name="restore_body">De gepatchte app wordt verwijderd en de standaardapp wordt weer aangezet. Je gegevens op het horloge blijven behouden.</string>
+    <string name="restore_body">De gepatchte app en zijn gegevens worden verwijderd, en de originele wordt weer ingeschakeld.</string>
     <string name="restore_confirm">Herstellen</string>
 
     <!-- Signing key -->
@@ -615,7 +619,7 @@
     <string name="watchpair_error_bad_host">Vul het IP-adres van het horloge in, bijvoorbeeld 192.168.1.20.</string>
     <string name="watchpair_error_bad_port">Vul een poort in van 1 tot 65535.</string>
     <string name="watchpair_guide_title">Schakel koppelen in op je horloge</string>
-    <string name="watchpair_guide_3">1. Verbind het horloge met hetzelfde Wi-Fi-netwerk als deze telefoon.\n2. **Instellingen** › **Verbindingen** › **Wi-Fi**.</string>
+    <string name="watchpair_guide_3">1. Open op het horloge **Instellingen** › **Verbindingen** › **Wi-Fi**.\n2. Maak verbinding met hetzelfde Wi-Fi-netwerk als deze telefoon.</string>
     <string name="watchpair_guide_5">1. Tik op **Nieuw apparaat koppelen**.\n2. Het horloge toont een code van 6 cijfers en een adres.\n3. Deze app vindt het adres zelf; jij typt alleen de code.</string>
     <string name="watchpair_guide_again">Laat het me nog eens zien</string>
     <string name="watchpair_manual">Overslaan en handmatig doen</string>
@@ -688,11 +692,11 @@
     <string name="troubleshoot_dialog_confirm">Gegevens wissen</string>
     <string name="troubleshoot_back_to_check">Terug naar de koppelingscontrole</string>
     <string name="skip_title">Dit slaan we over</string>
-    <string name="skip_body">We hebben genoeg informatie om het automatisch te herkennen.</string>
+    <string name="skip_body">Dit is al gedaan, dus je kunt doorgaan.</string>
     <string name="skip_checking">Je apparaten worden gecontroleerd…</string>
     <string name="skip_card_step">Stap %1$d · %2$s</string>
     <string name="skip_reason_profile">Android %1$s (%2$s) gevonden op het verbonden horloge.</string>
-    <string name="skip_reason_profile_network">Je horloge (%1$s) meldde Android API %2$s via wifi (%3$s).</string>
+    <string name="skip_reason_profile_network">Je horloge (%1$s) meldde Android API-niveau %2$s via Wi-Fi: %3$s.</string>
     <string name="skip_reason_wearable">Je horloge is al gekoppeld met Galaxy Wearable.</string>
     <string name="skip_reason_watchpair">Je horloge is al verbonden via draadloze foutopsporing.</string>
     <string name="skip_confirm">Begrepen</string>
@@ -707,25 +711,25 @@
     <string name="selfadb_guide_ui_paired">Gekoppelde apparaten</string>
     <string name="selfadb_open_wireless">Draadloze foutopsporing openen</string>
     <string name="outcome_acknowledge">Begrepen</string>
-    <string name="phone_adb_error_title">Dit is een probleem in de app</string>
-    <string name="phone_adb_error_message">Dit is een probleem in de app, niet iets wat je fout hebt gedaan, en je kunt het niet zelf oplossen. Je kunt nog steeds de knoppen Instellingen openen bij elke rij gebruiken of toch doorgaan.</string>
+    <string name="phone_adb_error_title">Toegang kon niet automatisch worden verleend</string>
+    <string name="phone_adb_error_message">De toegangsinstellingen konden niet worden toegepast via Draadloze foutopsporing. Je kunt nog steeds de knop Instellingen openen op elke rij gebruiken, of toch doorgaan.</string>
     <string name="phone_adb_success_title">Alles klaar</string>
     <string name="phone_adb_success_message">Door naar de volgende stap</string>
     <string name="acquire_shealth_title">Samsung Health (optioneel)</string>
-    <string name="acquire_shealth_summary">Maakt ook een gepatchte kopie van de Samsung Health-app voor de telefoon, \"Samsung Health+\", met ontgrendelde functies die een nieuwere Galaxy Watch vereisen. Ze wordt naast Samsung Health uit Play geïnstalleerd, dat je behoudt: die blijft verbonden met het horloge en uploadt naar je Samsung Account, en Samsung Health+ downloadt dezelfde gegevens uit de cloud nadat je met hetzelfde account inlogt (kan een tijdje achterlopen).</string>
+    <string name="acquire_shealth_summary">Bouw ook een gepatchte kopie van de Samsung Health-app voor de telefoon, \"Samsung Health+\", met functies aangezet die anders een nieuwere Galaxy Watch vereisen. Die wordt geïnstalleerd naast de Samsung Health-app uit Google Play, die je houdt: die blijft verbonden met het horloge en uploadt naar je Samsung-account, en Samsung Health+ downloadt dezelfde gegevens uit de cloud nadat je inlogt met hetzelfde account (dat kan een tijdje achterlopen).</string>
     <string name="output_shealth_phone">Samsung Health+ (gepatcht)</string>
-    <string name="change_purpose_shealth_phone">Een hernoemde kopie van Samsung Health met de onderstaande functies ontgrendeld. Ze draait naast Samsung Health uit Play en leest je gegevens uit de Samsung-cloud.</string>
+    <string name="change_purpose_shealth_phone">Een hernoemde kopie van Samsung Health met de tegel Energiescore en optioneel Vitale waarden, Trainingsbelasting en de fitnessindex aangezet. Werkt naast de Samsung Health-app uit Google Play en leest je gegevens uit de Samsung-cloud.</string>
     <string name="patch_shealth_res_webp">Herstelt vier afbeeldingen met de verkeerde bestandsextensie zodat de app opnieuw kan worden gebouwd (geen zichtbare wijziging).</string>
     <string name="patch_shealth_feature_dev_ui">Toont de functielijst in Instellingen &gt; Over zonder de Samsung-ontwikkelaarsmodus.</string>
     <string name="patch_shealth_vitality_tile">Toont de tegel Energiescore zonder te wachten tot het horloge de mogelijkheid meldt.</string>
     <string name="patch_shealth_rename_manifest">Geeft de app een eigen pakketnaam en label (Samsung Health+) zodat ze naast het origineel wordt geïnstalleerd.</string>
     <string name="patch_shealth_rename_code">Werkt de interne verwijzingen van de app bij naar de nieuwe pakketnaam.</string>
     <string name="patch_shealth_rename_account_xml">Geeft de app een eigen account- en synchronisatieregistratie zodat cloudsynchronisatie naast het origineel werkt.</string>
-    <string name="patch_shealth_capability_gates">Ontgrendelt Vitale functies, Trainingsbelasting en de fitnessindex, die anders een Galaxy Watch8 of Ultra vereisen. Ze worden op de telefoon berekend uit je gesynchroniseerde geschiedenis.</string>
+    <string name="patch_shealth_capability_gates">Zet Vitale waarden, Trainingsbelasting en de fitnessindex aan, die anders een Galaxy Watch8 of Ultra vereisen. Ze worden op de telefoon berekend uit je gesynchroniseerde geschiedenis.</string>
     <string name="patch_shealth_launcher_badge">Voegt een kleine OpenSHM-badge toe aan het app-pictogram, zodat je het van het origineel kunt onderscheiden.</string>
-    <string name="patch_shealth_oobe_local">Optioneel, standaard uit. Slaat de verplichte aanmelding met het Samsung-account over en gebruikt de app lokaal zonder cloudsynchronisatie. Zet dit alleen aan als aanmelden niet werkt.</string>
-    <string name="device_logs_channel">Apparaatlogboeken</string>
-    <string name="device_logs_notification_title">Apparaatlogboeken worden opgenomen</string>
+    <string name="patch_shealth_oobe_local">Standaard uit. Slaat de verplichting over om in te loggen met het Samsung-account en draait de app lokaal zonder cloudsynchronisatie, dus hij krijgt de gegevens niet die de Samsung Health-app uit Google Play uploadt. Zet dit alleen aan als inloggen niet werkt.</string>
+    <string name="device_logs_channel">Apparaatlogs</string>
+    <string name="device_logs_notification_title">Apparaatlogs worden opgenomen</string>
     <string name="device_logs_notification_text">%1$d horloge · %2$d telefoon</string>
     <string name="device_logs_action_stop">Stoppen</string>
     <string name="device_logs_action_open">Openen</string>
@@ -747,13 +751,13 @@
     <string name="device_logs_exported">Logs geëxporteerd</string>
     <string name="device_logs_export_failed">De logs konden niet worden geëxporteerd</string>
     <string name="device_logs_sheet_watch_title">Horloge niet verbonden</string>
-    <string name="device_logs_sheet_watch_off">Zet draadloos foutopsporen aan op het horloge (Instellingen › Ontwikkelaarsopties › Draadloos foutopsporen) en houd het op hetzelfde wifi-netwerk als deze telefoon. De log verbindt vanzelf zodra het horloge verschijnt.</string>
+    <string name="device_logs_sheet_watch_off">Zet draadloze foutopsporing aan op het horloge (Instellingen › Ontwikkelaarsopties › Draadloze foutopsporing) en houd het op hetzelfde Wi-Fi-netwerk als deze telefoon. De log verbindt vanzelf zodra het horloge verschijnt.</string>
     <string name="device_logs_sheet_watch_not_paired">Dit horloge is nooit met de patcher gekoppeld. Koppel het eerst en kom terug om de logs te zien.</string>
     <string name="device_logs_sheet_watch_pair">Horloge koppelen</string>
     <string name="device_logs_sheet_phone_title">Telefoon niet verbonden</string>
-    <string name="device_logs_sheet_phone_off">Zet draadloos foutopsporen aan op deze telefoon (Instellingen › Ontwikkelaarsopties › Draadloos foutopsporen) en probeer het opnieuw.</string>
+    <string name="device_logs_sheet_phone_off">Zet draadloze foutopsporing aan op deze telefoon (Instellingen › Ontwikkelaarsopties › Draadloze foutopsporing) en probeer het opnieuw.</string>
     <string name="device_logs_sheet_phone_open">Ontwikkelaarsopties openen</string>
-    <string name="device_logs_sheet_phone_untrusted">Draadloos foutopsporen staat aan, maar deze telefoon vertrouwt de patcher nog niet. Tik op Koppelen en typ de koppelcode in de melding die verschijnt.</string>
+    <string name="device_logs_sheet_phone_untrusted">Draadloze foutopsporing staat aan, maar deze telefoon vertrouwt de patcher nog niet. Tik op Koppelen en typ de koppelcode in de melding die verschijnt.</string>
     <string name="device_logs_sheet_phone_pair">Deze telefoon koppelen</string>
     <string name="revert_title">Alle wijzigingen ongedaan maken</string>
     <string name="revert_intro">Hiermee verwijder je wat OpenSHM Patcher op je telefoon en horloge heeft geïnstalleerd en worden de gewijzigde instellingen teruggezet. Alleen wat echt geïnstalleerd is wordt aangeraakt en systeem-apps worden nooit verwijderd.</string>
@@ -761,11 +765,11 @@
     <string name="revert_action_remove">Verwijderen</string>
     <string name="revert_action_enable">Weer inschakelen</string>
     <string name="revert_action_restore">Herstellen</string>
-    <string name="revert_setting_label">Instelling voor altijd-aan-scherm</string>
-    <string name="revert_setting_note">Staat nu uit; wordt weer aangezet.</string>
+    <string name="revert_setting_label">Instelling Always-on display</string>
+    <string name="revert_setting_note">Een eerdere versie van de patcher heeft het uitgezet; het wordt weer ingeschakeld.</string>
     <string name="revert_exemption_label">Uitzondering voor sensortoegang</string>
-    <string name="revert_exemption_note">Onze vermelding in de sensoruitzonderingslijst van het horloge wordt verwijderd; vermeldingen van andere apps blijven staan.</string>
-    <string name="revert_enable_note">De installatie heeft het uitgezet; het wordt weer ingeschakeld.</string>
+    <string name="revert_exemption_note">Onze vermelding in de uitzonderingslijst voor verborgen API\'s van het horloge wordt verwijderd; vermeldingen van andere apps blijven staan.</string>
+    <string name="revert_enable_note">De configuratie heeft het uitgezet; het wordt weer ingeschakeld.</string>
     <string name="revert_not_installed">Niet geïnstalleerd, niets te doen: %1$s</string>
     <string name="revert_system_apps">Met rust gelaten omdat het systeem-apps zijn: %1$s</string>
     <string name="revert_watch_unreachable_title">Het horloge is niet bereikbaar</string>
@@ -775,7 +779,7 @@
     <string name="revert_watch_skipped">Het horloge is overgeslagen. De apps erop blijven zoals ze zijn.</string>
     <string name="revert_start">Alles ongedaan maken</string>
     <string name="revert_confirm_title">Alles ongedaan maken?</string>
-    <string name="revert_confirm_body">De vermelde apps worden samen met hun gegevens verwijderd en de instellingen worden teruggezet. Android vraagt je elke verwijdering op deze telefoon te bevestigen. Je kunt de installatie later opnieuw uitvoeren.</string>
+    <string name="revert_confirm_body">De vermelde apps worden samen met hun gegevens verwijderd en de instellingen worden teruggezet. Android vraagt je elke verwijdering op deze telefoon te bevestigen. Je kunt de configuratie later opnieuw uitvoeren.</string>
     <string name="revert_confirm_action">Ongedaan maken</string>
     <string name="revert_running">Bezig met terugdraaien…</string>
     <string name="revert_result_gone">Al verwijderd</string>
@@ -787,12 +791,12 @@
     <string name="revert_done_complete_title">Alles is ongedaan gemaakt</string>
     <string name="revert_done_complete_body">De apps zijn van je telefoon en horloge verdwenen en de instellingen staan weer zoals ze waren.</string>
     <string name="revert_done_partial_title">Sommige wijzigingen zijn nog actief</string>
-    <string name="revert_done_partial_body">Niet alles kon ongedaan worden gemaakt. Los op wat vermeld staat en controleer opnieuw; de installatiegegevens blijven bewaard zodat je kunt afronden.</string>
+    <string name="revert_done_partial_body">Niet alles kon ongedaan worden gemaakt. Los op wat vermeld staat en controleer opnieuw; de configuratiegegevens blijven bewaard zodat je kunt afronden.</string>
     <string name="revert_check_again">Opnieuw controleren</string>
     <string name="revert_manual_title">Nog handmatig te doen</string>
     <string name="revert_manual_devmode">Schakel de ontwikkelaarsmodus van Health Platform uit als je die hebt ingeschakeld.</string>
     <string name="revert_manual_adb">Trek de foutopsporingsmachtiging in en schakel draadloze foutopsporing uit op het horloge en op deze telefoon.</string>
-    <string name="revert_manual_keys">Back-ups van je ondertekeningssleutel (Documenten/OpenSHM) en het opgeslagen wachtwoord blijven bestaan. Verwijder ze via Bestanden of je wachtwoordmanager als je ze niet meer nodig hebt.</string>
+    <string name="revert_manual_keys">Back-ups van je ondertekeningssleutel (Documents/OpenSHM) en het opgeslagen wachtwoord blijven bestaan. Verwijder ze via Bestanden of je wachtwoordmanager als je ze niet meer nodig hebt.</string>
     <string name="revert_self_action">OpenSHM Patcher verwijderen</string>
     <string name="revert_self_title">OpenSHM Patcher verwijderen?</string>
     <string name="revert_self_body">Android vraagt je dit te bevestigen. De app en de opgeslagen gegevens, inclusief de ondertekeningssleutel erin, worden verwijderd. Back-ups die je elders hebt opgeslagen blijven bestaan.</string>

@@ -128,7 +128,7 @@ class AppCatalogueTest {
         assertEquals("com.samsung.android.shealthmonitor", stock.packageName)
         assertEquals("Samsung Health Monitor (stock)", stock.label)
         assertTrue(stock.optional)
-        assertEquals("Two copies of the app would compete for the same sensor.", stock.reason)
+        assertEquals("The stock watch app keeps showing its regional error and is no longer needed. The patched copy replaces it.", stock.reason)
     }
 
     @Test
