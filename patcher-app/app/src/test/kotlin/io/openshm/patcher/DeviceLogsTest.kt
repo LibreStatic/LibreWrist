@@ -261,7 +261,7 @@ class LogBufferTest {
             ),
         )
         assertEquals(
-            "OpenSHM patcher 0.2.0 — device logs\nExported: 1970-01-01T00:00:00Z\nCatalogue serial: 18\n" +
+            "LibreWrist 0.2.0 — device logs\nExported: 1970-01-01T00:00:00Z\nCatalogue serial: 18\n" +
                 "\n===== WATCH (SM-L320 · Android 15) =====\nw1\nw2\n" +
                 "\n===== PHONE (unknown) =====\n${LogExport.NOT_CONNECTED}\n",
             out.toString("UTF-8"),

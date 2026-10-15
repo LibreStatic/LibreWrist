@@ -254,7 +254,7 @@
     <string name="patch_phone_rebrand_gms">Telefon uygulamasına saat uygulamasıyla aynı paketi ve anahtarı vererek ikisinin veri alışverişi yapmasını sağlar.</string>
     <string name="patch_watch_rebrand_coexist">Saat uygulamasını orijinalinin yanında durması için yeniden adlandırır.</string>
     <string name="patch_shm_wear_trusted_peers">Yamalı iki uygulamanın saat bağlantısında yalnızca orijinal uygulamaları değil birbirini tanımasını sağlar.</string>
-    <string name="patch_shm_launcher_badge">Orijinalinden ayırt edebilmeniz için uygulama simgesine küçük bir OpenSHM rozeti ekler.</string>
+    <string name="patch_shm_launcher_badge">Orijinalinden ayırt edebilmeniz için uygulama simgesine küçük bir LibreWrist rozeti ekler.</string>
     <string name="patch_watch_gms_resources_anchor">Orijinal sürümün kaldırdığı bir kaynağı tanımlar, böylece saat uygulamayı telefona bildirebilir.</string>
     <string name="patch_watch_queries_health_service">Saat uygulamasının sağlık hizmetini görmesini sağlar.</string>
     <string name="patch_watch_companion_vendor">Her marka eşlik eden telefonu kabul eder.</string>
@@ -457,7 +457,7 @@
     <string name="selftest_section_human">Sizin denetlediğiniz</string>
     <string name="selftest_rerun">Tekrar çalıştır</string>
     <string name="selftest_human_label">SİZİNLE DENETLE · %1$d / %2$d</string>
-    <string name="selftest_share_subject">OpenSHM Patcher kendi kendine sınama</string>
+    <string name="selftest_share_subject">LibreWrist kendi kendine sınama</string>
 
     <!-- Self-test rows: %1$s is an app name or a list of access names -->
     <string name="selftest_package_title">Kurulum: %1$s</string>
@@ -510,7 +510,7 @@
     <string name="allset_chip_link">Bağlantı</string>
 
     <!-- Home -->
-    <string name="home_title">OpenSHM</string>
+    <string name="home_title">LibreWrist</string>
     <string name="home_status_ok">Her şey çalışıyor</string>
     <string name="home_status_warning">Bakılması gerekiyor</string>
     <string name="home_status_failed">Bir şey bozuk</string>
@@ -712,7 +712,7 @@
     <string name="selfadb_guide_sub_1">Aşağıdaki düğmeye dokunun</string>
     <string name="selfadb_guide_sub_2">Geliştirici seçenekleri bölümünde Kablosuz hata ayıklamayı açın</string>
     <string name="selfadb_guide_sub_3">Cihazı eşleme kodu ile eşle seçeneğine dokunun</string>
-    <string name="selfadb_guide_sub_4">Altı haneyi OpenSHM bildiriminde veya burada, bu ekranda yazın</string>
+    <string name="selfadb_guide_sub_4">Altı haneyi LibreWrist bildiriminde veya burada, bu ekranda yazın</string>
     <string name="selfadb_guide_already">Daha önce eşlediyseniz kendiliğinden bağlanır.</string>
     <string name="selfadb_guide_ui_pair_code">Cihazı eşleme kodu ile eşle</string>
     <string name="selfadb_guide_ui_paired">Eşlenen cihazlar</string>
@@ -733,7 +733,7 @@
     <string name="patch_shealth_rename_code">Uygulamanın dahili referanslarını yeni paket adına günceller.</string>
     <string name="patch_shealth_rename_account_xml">Bulut senkronizasyonunun orijinalin yanında çalışması için uygulamaya kendi hesap ve senkronizasyon kaydını verir.</string>
     <string name="patch_shealth_capability_gates">Aksi halde Galaxy Watch8 veya Ultra gerektiren Hayati Değerler, Antrenman Yükü ve kondisyon endeksini açar. Bunlar telefonda, eşitlenmiş geçmişinizden hesaplanır.</string>
-    <string name="patch_shealth_launcher_badge">Orijinalinden ayırt edebilmeniz için uygulama simgesine küçük bir OpenSHM rozeti ekler.</string>
+    <string name="patch_shealth_launcher_badge">Orijinalinden ayırt edebilmeniz için uygulama simgesine küçük bir LibreWrist rozeti ekler.</string>
     <string name="patch_shealth_oobe_local">Varsayılan olarak kapalı. Samsung hesabıyla oturum açma zorunluluğunu atlar ve uygulamayı bulut eşitlemesi olmadan yerel olarak çalıştırır; bu yüzden Google Play\'deki Samsung Health uygulamasının yüklediği verileri almaz. Yalnızca oturum açma çalışmıyorsa açın.</string>
     <string name="device_logs_channel">Cihaz günlükleri</string>
     <string name="device_logs_notification_title">Cihaz günlükleri kaydediliyor</string>
@@ -767,7 +767,7 @@
     <string name="device_logs_sheet_phone_untrusted">Kablosuz hata ayıklama açık, ancak bu telefon yama aracına henüz güvenmiyor. Eşle\'ye dokunun ve görünen bildirime eşleme kodunu yazın.</string>
     <string name="device_logs_sheet_phone_pair">Bu telefonu eşle</string>
     <string name="revert_title">Tüm değişiklikleri geri al</string>
-    <string name="revert_intro">OpenSHM Patcher\'ın telefonunuza ve saatinize kurduklarını kaldırır ve değiştirdiği ayarları geri alır. Yalnızca gerçekten kurulu olanlara dokunulur; sistem uygulamaları asla kaldırılmaz.</string>
+    <string name="revert_intro">LibreWrist\'in telefonunuza ve saatinize kurduklarını kaldırır ve değiştirdiği ayarları geri alır. Yalnızca gerçekten kurulu olanlara dokunulur; sistem uygulamaları asla kaldırılmaz.</string>
     <string name="revert_probing">Neyin kurulu olduğu denetleniyor…</string>
     <string name="revert_action_remove">Kaldır</string>
     <string name="revert_action_enable">Yeniden aç</string>
@@ -800,7 +800,7 @@
     <string name="revert_done_partial_title">Bazı değişiklikler hâlâ yerinde</string>
     <string name="revert_done_partial_body">Her şey geri alınamadı. Listelenenleri düzeltip yeniden denetleyin; kurulum bilgileri korunur, böylece tamamlayabilirsiniz.</string>
     <string name="revert_title_watch">Saati geri yükle</string>
-    <string name="revert_intro_watch">Bu işlem, OpenSHM Patcher\'ın saatinize kurduklarını kaldırır ve orada değiştirdiklerini geri alır. Telefonunuz olduğu gibi kalır.</string>
+    <string name="revert_intro_watch">Bu işlem, LibreWrist\'in saatinize kurduklarını kaldırır ve orada değiştirdiklerini geri alır. Telefonunuz olduğu gibi kalır.</string>
     <string name="revert_title_app">%1$s uygulamasını kaldır</string>
     <string name="revert_intro_app">Yalnızca bu uygulama kaldırılır. Kurulumunuzun geri kalanı olduğu gibi kalır.</string>
     <string name="revert_start_watch">Saati geri yükle</string>
@@ -816,8 +816,8 @@
     <string name="revert_manual_devmode">Açtıysanız Health Platform\'un geliştirici modunu kapatın.</string>
     <string name="revert_manual_adb">Hata ayıklama yetkisini iptal edin ve saatte ile bu telefonda kablosuz hata ayıklamayı kapatın.</string>
     <string name="revert_manual_keys">İmza anahtarınızın yedekleri (Documents/OpenSHM) ve kayıtlı parola kalır. Artık gerekmiyorsa Dosyalar\'dan veya parola yöneticinizden silin.</string>
-    <string name="revert_self_action">OpenSHM Patcher\'ı kaldır</string>
-    <string name="revert_self_title">OpenSHM Patcher kaldırılsın mı?</string>
+    <string name="revert_self_action">LibreWrist\'i kaldır</string>
+    <string name="revert_self_title">LibreWrist kaldırılsın mı?</string>
     <string name="revert_self_body">Android onayınızı ister. Uygulama ve içindeki imza anahtarı dahil saklanan verileri kaldırılır. Başka yere kaydettiğiniz yedekler kalır.</string>
     <string name="revert_self_body_partial">Her şey geri alınmadı. Bu uygulama olmadan tamamlamak için yeniden kurmanız gerekir.</string>
     <string name="revert_self_cancelled">Kaldırma iptal edildi. Uygulama hâlâ kurulu.</string>

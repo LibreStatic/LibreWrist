@@ -251,7 +251,7 @@
     <string name="patch_phone_rebrand_gms">讓手機應用程式使用與手錶應用程式相同的套件名稱和金鑰，以便兩者交換資料。</string>
     <string name="patch_watch_rebrand_coexist">重新命名手錶應用程式，使其與內建應用程式並存。</string>
     <string name="patch_shm_wear_trusted_peers">讓兩個已修補的應用程式在手錶連線中互相辨識，而不僅限於原版應用程式。</string>
-    <string name="patch_shm_launcher_badge">在應用程式圖示上加入一個小的 OpenSHM 角標，方便與原版區分。</string>
+    <string name="patch_shm_launcher_badge">在應用程式圖示上加入一個小的 LibreWrist 角標，方便與原版區分。</string>
     <string name="patch_watch_gms_resources_anchor">定義原版建置中被移除的一項資源，讓手錶能向手機通告該應用程式。</string>
     <string name="patch_watch_queries_health_service">讓手錶應用程式能夠看到健康服務。</string>
     <string name="patch_watch_companion_vendor">接受任何品牌的配套手機。</string>
@@ -450,7 +450,7 @@
     <string name="selftest_section_human">由你確認</string>
     <string name="selftest_rerun">重新執行</string>
     <string name="selftest_human_label">請你確認 · %1$d / %2$d</string>
-    <string name="selftest_share_subject">OpenSHM Patcher 自我測試</string>
+    <string name="selftest_share_subject">LibreWrist 自我測試</string>
 
     <!-- Self-test rows: %1$s is an app name or a list of access names -->
     <string name="selftest_package_title">%1$s 已安裝</string>
@@ -503,7 +503,7 @@
     <string name="allset_chip_link">連結</string>
 
     <!-- Home -->
-    <string name="home_title">OpenSHM</string>
+    <string name="home_title">LibreWrist</string>
     <string name="home_status_ok">一切正常</string>
     <string name="home_status_warning">需要查看</string>
     <string name="home_status_failed">發生故障</string>
@@ -704,7 +704,7 @@
     <string name="selfadb_guide_sub_1">輕觸下方的按鈕</string>
     <string name="selfadb_guide_sub_2">在開發人員選項中開啟無線偵錯</string>
     <string name="selfadb_guide_sub_3">輕觸「使用配對碼配對裝置」</string>
-    <string name="selfadb_guide_sub_4">在 OpenSHM 通知或此畫面中輸入六位數字</string>
+    <string name="selfadb_guide_sub_4">在 LibreWrist 通知或此畫面中輸入六位數字</string>
     <string name="selfadb_guide_already">如果你之前已經配對過，它會自動連線。</string>
     <string name="selfadb_guide_ui_pair_code">使用配對碼配對裝置</string>
     <string name="selfadb_guide_ui_paired">已配對的裝置</string>
@@ -725,7 +725,7 @@
     <string name="patch_shealth_rename_code">將應用程式的內部參照更新為新的套件名稱。</string>
     <string name="patch_shealth_rename_account_xml">為應用程式提供獨立的帳戶和同步註冊，使雲端同步能在原應用程式旁邊正常運作。</string>
     <string name="patch_shealth_capability_gates">開啟「生命徵象」「訓練負荷」和體能指數，否則它們需要 Galaxy Watch8 或 Ultra。它們會根據你已同步的歷史記錄在手機上計算。</string>
-    <string name="patch_shealth_launcher_badge">在應用程式圖示上加入一個小的 OpenSHM 角標，方便與原版區分。</string>
+    <string name="patch_shealth_launcher_badge">在應用程式圖示上加入一個小的 LibreWrist 角標，方便與原版區分。</string>
     <string name="patch_shealth_oobe_local">預設關閉。略過三星帳戶登入要求，在本機執行應用程式且不進行雲端同步，因此無法取得來自 Google Play 的 Samsung Health 應用程式上傳的資料。僅在無法登入時開啟。</string>
     <string name="device_logs_channel">裝置記錄</string>
     <string name="device_logs_notification_title">正在記錄裝置記錄</string>
@@ -759,7 +759,7 @@
     <string name="device_logs_sheet_phone_untrusted">無線偵錯已開啟，但此手機尚未信任修補工具。輕觸「配對」，然後在出現的通知中輸入配對碼。</string>
     <string name="device_logs_sheet_phone_pair">配對此手機</string>
     <string name="revert_title">復原所有變更</string>
-    <string name="revert_intro">這會移除 OpenSHM Patcher 在你的手機和手錶上安裝的內容，並還原它所變更的設定。只會處理實際已安裝的項目，系統應用程式絕不會被移除。</string>
+    <string name="revert_intro">這會移除 LibreWrist 在你的手機和手錶上安裝的內容，並還原它所變更的設定。只會處理實際已安裝的項目，系統應用程式絕不會被移除。</string>
     <string name="revert_probing">正在檢查已安裝的內容…</string>
     <string name="revert_action_remove">移除</string>
     <string name="revert_action_enable">重新開啟</string>
@@ -767,7 +767,7 @@
     <string name="revert_setting_label">Always On Display 設定</string>
     <string name="revert_setting_note">舊版修補工具曾關閉此設定；它將重新開啟。</string>
     <string name="revert_exemption_label">感測器存取例外</string>
-    <string name="revert_exemption_note">將從手錶的隱藏 API 例外清單中移除 OpenSHM 的項目；其他應用程式的項目維持不變。</string>
+    <string name="revert_exemption_note">將從手錶的隱藏 API 例外清單中移除 LibreWrist 的項目；其他應用程式的項目維持不變。</string>
     <string name="revert_enable_note">設定過程中將其關閉，將重新開啟。</string>
     <string name="revert_not_installed">未安裝，無需處理：%1$s</string>
     <string name="revert_system_apps">因為是系統應用程式而保持不變：%1$s</string>
@@ -792,7 +792,7 @@
     <string name="revert_done_partial_title">仍有部分變更未復原</string>
     <string name="revert_done_partial_body">並非所有內容都能復原。請解決列出的問題後重新檢查；設定資訊已保留，你可以繼續完成。</string>
     <string name="revert_title_watch">還原手錶</string>
-    <string name="revert_intro_watch">這會移除 OpenSHM Patcher 安裝在手錶上的內容，並還原它在手錶上變更的設定。手機維持不變。</string>
+    <string name="revert_intro_watch">這會移除 LibreWrist 安裝在手錶上的內容，並還原它在手錶上變更的設定。手機維持不變。</string>
     <string name="revert_title_app">移除 %1$s</string>
     <string name="revert_intro_app">僅移除此應用程式。其餘設定維持不變。</string>
     <string name="revert_start_watch">還原手錶</string>
@@ -808,8 +808,8 @@
     <string name="revert_manual_devmode">如果你開啟過 Health Platform 的開發人員模式，請將其關閉。</string>
     <string name="revert_manual_adb">撤銷偵錯授權，並在手錶和這支手機上關閉無線偵錯。</string>
     <string name="revert_manual_keys">簽署金鑰的備份（Documents/OpenSHM）和已儲存的密碼會保留。如果不再需要，請在「檔案」或密碼管理工具中刪除。</string>
-    <string name="revert_self_action">解除安裝 OpenSHM Patcher</string>
-    <string name="revert_self_title">解除安裝 OpenSHM Patcher？</string>
+    <string name="revert_self_action">解除安裝 LibreWrist</string>
+    <string name="revert_self_title">解除安裝 LibreWrist？</string>
     <string name="revert_self_body">Android 會要求你確認。該應用程式及其儲存的資料（包括其中儲存的簽署金鑰）將被移除。你儲存在其他位置的備份會保留。</string>
     <string name="revert_self_body_partial">並非所有內容都已復原。沒有此應用程式，你需要重新安裝才能完成。</string>
     <string name="revert_self_cancelled">解除安裝已取消，應用程式仍已安裝。</string>

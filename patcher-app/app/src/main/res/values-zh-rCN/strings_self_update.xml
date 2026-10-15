@@ -8,7 +8,7 @@
     <string name="update_action_later">稍后</string>
     <string name="update_skip_version">不再显示此版本</string>
     <string name="update_closing_note">更新期间应用会关闭。完成后请重新打开。</string>
-    <string name="update_permission_text">要更新，请在刚打开的设置页面中允许 OpenSHM Patcher 安装应用，然后返回并点按“继续”。</string>
+    <string name="update_permission_text">要更新，请在刚打开的设置页面中允许 LibreWrist 安装应用，然后返回并点按“继续”。</string>
     <string name="update_downloading">正在下载更新…</string>
     <string name="update_verifying">正在检查下载内容…</string>
     <string name="update_installing">正在安装更新…</string>
@@ -33,7 +33,7 @@
     <string name="settings_version_label">版本</string>
     <string name="settings_version_value">%1$s(构建 %2$d)</string>
     <string name="update_channel_name">应用更新</string>
-    <string name="update_channel_description">当 OpenSHM Patcher 有新版本时通知你。</string>
+    <string name="update_channel_description">当 LibreWrist 有新版本时通知你。</string>
     <string name="update_notification_title">有新版本可用</string>
     <string name="update_notification_text">构建 %1$d(v%2$s)已可安装</string>
 </resources>

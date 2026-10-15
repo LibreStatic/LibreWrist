@@ -8,7 +8,7 @@
     <string name="update_action_later">Позже</string>
     <string name="update_skip_version">Больше не показывать эту версию</string>
     <string name="update_closing_note">Во время обновления приложение закроется. После этого откройте его снова.</string>
-    <string name="update_permission_text">Для обновления разрешите OpenSHM Patcher устанавливать приложения на только что открывшейся странице настроек, затем вернитесь и нажмите «Продолжить».</string>
+    <string name="update_permission_text">Для обновления разрешите LibreWrist устанавливать приложения на только что открывшейся странице настроек, затем вернитесь и нажмите «Продолжить».</string>
     <string name="update_downloading">Загрузка обновления…</string>
     <string name="update_verifying">Проверка загруженного файла…</string>
     <string name="update_installing">Установка обновления…</string>
@@ -33,7 +33,7 @@
     <string name="settings_version_label">Версия</string>
     <string name="settings_version_value">%1$s (сборка %2$d)</string>
     <string name="update_channel_name">Обновления приложения</string>
-    <string name="update_channel_description">Сообщает, когда доступна более новая версия OpenSHM Patcher.</string>
+    <string name="update_channel_description">Сообщает, когда доступна более новая версия LibreWrist.</string>
     <string name="update_notification_title">Доступна новая версия</string>
     <string name="update_notification_text">Сборка %1$d (v%2$s) готова к установке</string>
 </resources>

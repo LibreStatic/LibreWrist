@@ -260,7 +260,7 @@
     <string name="patch_phone_rebrand_gms">Nadaje aplikacji na telefonie ten sam pakiet i klucz co aplikacji na zegarku, aby mogły wymieniać dane.</string>
     <string name="patch_watch_rebrand_coexist">Zmienia nazwę aplikacji na zegarku, aby działała obok standardowej.</string>
     <string name="patch_shm_wear_trusted_peers">Sprawia, że obie zmodyfikowane aplikacje rozpoznają się nawzajem w połączeniu z zegarkiem, a nie tylko oryginalne.</string>
-    <string name="patch_shm_launcher_badge">Dodaje małą odznakę OpenSHM do ikony aplikacji, aby można ją było odróżnić od oryginału.</string>
+    <string name="patch_shm_launcher_badge">Dodaje małą odznakę LibreWrist do ikony aplikacji, aby można ją było odróżnić od oryginału.</string>
     <string name="patch_watch_gms_resources_anchor">Definiuje zasób usunięty z oryginalnej wersji, aby zegarek mógł zgłosić aplikację telefonowi.</string>
     <string name="patch_watch_queries_health_service">Pozwala aplikacji na zegarku widzieć usługę zdrowia.</string>
     <string name="patch_watch_companion_vendor">Akceptuje telefon dowolnej marki.</string>
@@ -471,7 +471,7 @@
     <string name="selftest_section_human">Sprawdzane przez Ciebie</string>
     <string name="selftest_rerun">Uruchom ponownie</string>
     <string name="selftest_human_label">SPRAWDŹ RAZEM Z NAMI · %1$d Z %2$d</string>
-    <string name="selftest_share_subject">Autotest OpenSHM Patcher</string>
+    <string name="selftest_share_subject">Autotest LibreWrist</string>
 
     <!-- Self-test rows: %1$s is an app name or a list of access names -->
     <string name="selftest_package_title">Instalacja: %1$s</string>
@@ -524,7 +524,7 @@
     <string name="allset_chip_link">Połączenie</string>
 
     <!-- Home -->
-    <string name="home_title">OpenSHM</string>
+    <string name="home_title">LibreWrist</string>
     <string name="home_status_ok">Wszystko działa</string>
     <string name="home_status_warning">Warto sprawdzić</string>
     <string name="home_status_failed">Coś nie działa</string>
@@ -728,7 +728,7 @@
     <string name="selfadb_guide_sub_1">Dotknij przycisku poniżej</string>
     <string name="selfadb_guide_sub_2">W Opcjach programisty włącz debugowanie bezprzewodowe</string>
     <string name="selfadb_guide_sub_3">Dotknij Sparuj urządzenie za pomocą kodu parowania</string>
-    <string name="selfadb_guide_sub_4">Wpisz sześć cyfr w powiadomieniu OpenSHM albo tutaj, na tym ekranie</string>
+    <string name="selfadb_guide_sub_4">Wpisz sześć cyfr w powiadomieniu LibreWrist albo tutaj, na tym ekranie</string>
     <string name="selfadb_guide_already">Jeśli sparowano już wcześniej, połączy się samo.</string>
     <string name="selfadb_guide_ui_pair_code">Sparuj urządzenie za pomocą kodu parowania</string>
     <string name="selfadb_guide_ui_paired">Sparowane urządzenia</string>
@@ -749,7 +749,7 @@
     <string name="patch_shealth_rename_code">Aktualizuje wewnętrzne odwołania aplikacji do nowej nazwy pakietu.</string>
     <string name="patch_shealth_rename_account_xml">Nadaje aplikacji własną rejestrację konta i synchronizacji, aby synchronizacja z chmurą działała obok oryginału.</string>
     <string name="patch_shealth_capability_gates">Włącza Parametry życiowe, Obciążenie treningowe i wskaźnik sprawności, które inaczej wymagają Galaxy Watch8 lub Ultra. Są obliczane na telefonie na podstawie Twojej zsynchronizowanej historii.</string>
-    <string name="patch_shealth_launcher_badge">Dodaje małą odznakę OpenSHM do ikony aplikacji, aby można ją było odróżnić od oryginału.</string>
+    <string name="patch_shealth_launcher_badge">Dodaje małą odznakę LibreWrist do ikony aplikacji, aby można ją było odróżnić od oryginału.</string>
     <string name="patch_shealth_oobe_local">Domyślnie wyłączone. Pomija wymóg logowania na konto Samsung i uruchamia aplikację lokalnie bez synchronizacji z chmurą, więc nie otrzymuje ona danych przesyłanych przez aplikację Samsung Health z Google Play. Włącz tylko wtedy, gdy logowanie nie działa.</string>
     <string name="device_logs_channel">Dzienniki urządzeń</string>
     <string name="device_logs_notification_title">Zapisywanie dzienników urządzeń</string>
@@ -783,7 +783,7 @@
     <string name="device_logs_sheet_phone_untrusted">Debugowanie bezprzewodowe jest włączone, ale ten telefon jeszcze nie ufa patcherowi. Dotknij Sparuj i wpisz kod parowania w powiadomieniu, które się pojawi.</string>
     <string name="device_logs_sheet_phone_pair">Sparuj ten telefon</string>
     <string name="revert_title">Cofnij wszystkie zmiany</string>
-    <string name="revert_intro">Usuwa to, co OpenSHM Patcher zainstalował na telefonie i zegarku, i przywraca zmienione ustawienia. Dotykane jest tylko to, co faktycznie jest zainstalowane, a aplikacje systemowe nigdy nie są usuwane.</string>
+    <string name="revert_intro">Usuwa to, co LibreWrist zainstalował na telefonie i zegarku, i przywraca zmienione ustawienia. Dotykane jest tylko to, co faktycznie jest zainstalowane, a aplikacje systemowe nigdy nie są usuwane.</string>
     <string name="revert_probing">Sprawdzanie, co jest zainstalowane…</string>
     <string name="revert_action_remove">Usuń</string>
     <string name="revert_action_enable">Włącz ponownie</string>
@@ -816,7 +816,7 @@
     <string name="revert_done_partial_title">Niektóre zmiany nadal obowiązują</string>
     <string name="revert_done_partial_body">Nie udało się cofnąć wszystkiego. Usuń wymienione przyczyny i sprawdź ponownie; dane konfiguracji zostają zachowane, abyś mógł dokończyć.</string>
     <string name="revert_title_watch">Przywróć zegarek</string>
-    <string name="revert_intro_watch">Usuwa to wszystko, co OpenSHM Patcher zainstalował na zegarku, i przywraca zmienione tam ustawienia. Telefon pozostaje bez zmian.</string>
+    <string name="revert_intro_watch">Usuwa to wszystko, co LibreWrist zainstalował na zegarku, i przywraca zmienione tam ustawienia. Telefon pozostaje bez zmian.</string>
     <string name="revert_title_app">Usuń %1$s</string>
     <string name="revert_intro_app">Usunięta zostanie tylko ta aplikacja. Reszta konfiguracji pozostaje bez zmian.</string>
     <string name="revert_start_watch">Przywróć zegarek</string>
@@ -832,8 +832,8 @@
     <string name="revert_manual_devmode">Wyłącz tryb programisty w Health Platform, jeśli go włączono.</string>
     <string name="revert_manual_adb">Cofnij autoryzację debugowania i wyłącz debugowanie bezprzewodowe na zegarku i na tym telefonie.</string>
     <string name="revert_manual_keys">Kopie zapasowe klucza podpisującego (Documents/OpenSHM) i zapisane hasło pozostają. Usuń je w aplikacji Pliki lub menedżerze haseł, jeśli już ich nie potrzebujesz.</string>
-    <string name="revert_self_action">Odinstaluj OpenSHM Patcher</string>
-    <string name="revert_self_title">Odinstalować OpenSHM Patcher?</string>
+    <string name="revert_self_action">Odinstaluj LibreWrist</string>
+    <string name="revert_self_title">Odinstalować LibreWrist?</string>
     <string name="revert_self_body">Android poprosi o potwierdzenie. Aplikacja i jej dane, w tym przechowywany w niej klucz podpisujący, zostaną usunięte. Kopie zapisane gdzie indziej pozostają.</string>
     <string name="revert_self_body_partial">Nie wszystko zostało cofnięte. Bez tej aplikacji musiałbyś zainstalować ją ponownie, aby dokończyć.</string>
     <string name="revert_self_cancelled">Odinstalowanie anulowane. Aplikacja nadal jest zainstalowana.</string>

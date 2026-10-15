@@ -1,4 +1,4 @@
-# Builds the OpenSHM Patcher app and publishes its APK as a GitHub release whenever something under
+# Builds the LibreWrist app and publishes its APK as a GitHub release whenever something under
 # patcher-app/, or one of the directories it bundles, changes on main (or on demand).
 #
 # Repository secrets (the LibreStatic release key; store and key share one password):
@@ -156,7 +156,7 @@ jobs:
           limit=60
           total="$(git rev-list --count --no-merges "$range")"
           {
-            echo "OpenSHM Patcher $version (build $PATCHER_VERSION_CODE), built from ${GITHUB_SHA::7}."
+            echo "LibreWrist $version (build $PATCHER_VERSION_CODE), built from ${GITHUB_SHA::7}."
             echo
             echo "$heading"
             echo
@@ -169,7 +169,7 @@ jobs:
           } > "$out/notes.md"
           gh release create "$tag" "$out"/*.apk "$out/SHA256SUMS" \
             --target "$GITHUB_SHA" \
-            --title "OpenSHM Patcher $version (build $PATCHER_VERSION_CODE)" \
+            --title "LibreWrist $version (build $PATCHER_VERSION_CODE)" \
             --notes-file "$out/notes.md"
 
       - name: Remove the signing key

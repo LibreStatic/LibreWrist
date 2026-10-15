@@ -8,7 +8,7 @@
     <string name="update_action_later">나중에</string>
     <string name="update_skip_version">이 버전을 다시 표시하지 않기</string>
     <string name="update_closing_note">업데이트하는 동안 앱이 종료됩니다. 끝난 뒤 다시 여세요.</string>
-    <string name="update_permission_text">업데이트하려면 방금 열린 설정 페이지에서 OpenSHM Patcher의 앱 설치를 허용한 다음 돌아와 계속을 누르세요.</string>
+    <string name="update_permission_text">업데이트하려면 방금 열린 설정 페이지에서 LibreWrist의 앱 설치를 허용한 다음 돌아와 계속을 누르세요.</string>
     <string name="update_downloading">업데이트를 다운로드하는 중…</string>
     <string name="update_verifying">다운로드를 확인하는 중…</string>
     <string name="update_installing">업데이트를 설치하는 중…</string>
@@ -33,7 +33,7 @@
     <string name="settings_version_label">버전</string>
     <string name="settings_version_value">%1$s(빌드 %2$d)</string>
     <string name="update_channel_name">앱 업데이트</string>
-    <string name="update_channel_description">OpenSHM Patcher의 새 버전이 있을 때 알려 줍니다.</string>
+    <string name="update_channel_description">LibreWrist의 새 버전이 있을 때 알려 줍니다.</string>
     <string name="update_notification_title">새 버전이 있습니다</string>
     <string name="update_notification_text">빌드 %1$d(v%2$s)을(를) 설치할 수 있습니다</string>
 </resources>

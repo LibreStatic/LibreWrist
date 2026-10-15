@@ -8,7 +8,7 @@
     <string name="update_action_later">لاحقًا</string>
     <string name="update_skip_version">لا تعرض هذا الإصدار مرة أخرى</string>
     <string name="update_closing_note">يُغلق التطبيق أثناء التحديث. افتحه من جديد بعد ذلك.</string>
-    <string name="update_permission_text">للتحديث، اسمح لـ OpenSHM Patcher بتثبيت التطبيقات في صفحة الإعدادات التي فُتحت للتو، ثم عد واضغط على متابعة.</string>
+    <string name="update_permission_text">للتحديث، اسمح لـ LibreWrist بتثبيت التطبيقات في صفحة الإعدادات التي فُتحت للتو، ثم عد واضغط على متابعة.</string>
     <string name="update_downloading">جارٍ تنزيل التحديث…</string>
     <string name="update_verifying">جارٍ فحص التنزيل…</string>
     <string name="update_installing">جارٍ تثبيت التحديث…</string>
@@ -33,7 +33,7 @@
     <string name="settings_version_label">الإصدار</string>
     <string name="settings_version_value">%1$s (الإصدار %2$d)</string>
     <string name="update_channel_name">تحديثات التطبيق</string>
-    <string name="update_channel_description">يخبرك عند توفر إصدار أحدث من OpenSHM Patcher.</string>
+    <string name="update_channel_description">يخبرك عند توفر إصدار أحدث من LibreWrist.</string>
     <string name="update_notification_title">إصدار جديد متاح</string>
     <string name="update_notification_text">الإصدار %1$d (v%2$s) جاهز للتثبيت</string>
 </resources>

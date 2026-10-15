@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit
  */
 class LibAdbBackend(
     private val keys: AdbKeyStore,
-    private val deviceName: String = "OpenSHM Patcher",
+    private val deviceName: String = "LibreWrist",
     private val peerApi: Int = Build.VERSION.SDK_INT,
 ) : AdbBackend {
 

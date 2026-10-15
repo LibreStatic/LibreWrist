@@ -19,7 +19,7 @@ object LogExport {
 
     fun header(versionName: String, nowMillis: Long, catalogueSerial: Long, zone: TimeZone = TimeZone.getDefault()): String {
         val date = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.ROOT).apply { timeZone = zone }.format(Date(nowMillis))
-        return "OpenSHM patcher $versionName — device logs\nExported: $date\nCatalogue serial: $catalogueSerial\n"
+        return "LibreWrist $versionName — device logs\nExported: $date\nCatalogue serial: $catalogueSerial\n"
     }
 
     /** Writes [header] and every section to [out]; file contents are copied as a stream, never loaded whole. */

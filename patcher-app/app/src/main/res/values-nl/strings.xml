@@ -254,7 +254,7 @@
     <string name="patch_phone_rebrand_gms">Geeft de telefoon-app hetzelfde pakket en dezelfde sleutel als de horlogeapp zodat ze gegevens kunnen uitwisselen.</string>
     <string name="patch_watch_rebrand_coexist">Hernoemt de horlogeapp zodat hij naast de standaardapp staat.</string>
     <string name="patch_shm_wear_trusted_peers">Laat de twee aangepaste apps elkaar herkennen via de horlogeverbinding, in plaats van alleen de originele apps.</string>
-    <string name="patch_shm_launcher_badge">Voegt een kleine OpenSHM-badge toe aan het app-pictogram, zodat je het van het origineel kunt onderscheiden.</string>
+    <string name="patch_shm_launcher_badge">Voegt een kleine LibreWrist-badge toe aan het app-pictogram, zodat je het van het origineel kunt onderscheiden.</string>
     <string name="patch_watch_gms_resources_anchor">Definieert een resource die de originele build heeft verwijderd, zodat het horloge de app aan de telefoon kan melden.</string>
     <string name="patch_watch_queries_health_service">Laat de horlogeapp de gezondheidsservice zien.</string>
     <string name="patch_watch_companion_vendor">Accepteert elk merk begeleidende telefoon.</string>
@@ -457,7 +457,7 @@
     <string name="selftest_section_human">Door jou gecontroleerd</string>
     <string name="selftest_rerun">Opnieuw uitvoeren</string>
     <string name="selftest_human_label">CONTROLE MET JOU · %1$d VAN %2$d</string>
-    <string name="selftest_share_subject">OpenSHM Patcher-zelftest</string>
+    <string name="selftest_share_subject">LibreWrist-zelftest</string>
 
     <!-- Self-test rows: %1$s is an app name or a list of access names -->
     <string name="selftest_package_title">Installatie van %1$s</string>
@@ -510,7 +510,7 @@
     <string name="allset_chip_link">Verbinding</string>
 
     <!-- Home -->
-    <string name="home_title">OpenSHM</string>
+    <string name="home_title">LibreWrist</string>
     <string name="home_status_ok">Alles werkt</string>
     <string name="home_status_warning">Even kijken</string>
     <string name="home_status_failed">Er is iets kapot</string>
@@ -712,7 +712,7 @@
     <string name="selfadb_guide_sub_1">Tik op de knop hieronder</string>
     <string name="selfadb_guide_sub_2">Zet in Ontwikkelaarsopties draadloze foutopsporing aan</string>
     <string name="selfadb_guide_sub_3">Tik op Apparaat koppelen met koppelcode</string>
-    <string name="selfadb_guide_sub_4">Typ de zes cijfers in de melding van OpenSHM, of hier op dit scherm</string>
+    <string name="selfadb_guide_sub_4">Typ de zes cijfers in de melding van LibreWrist, of hier op dit scherm</string>
     <string name="selfadb_guide_already">Als je al eerder hebt gekoppeld, maakt hij vanzelf verbinding.</string>
     <string name="selfadb_guide_ui_pair_code">Apparaat koppelen met koppelcode</string>
     <string name="selfadb_guide_ui_paired">Gekoppelde apparaten</string>
@@ -733,7 +733,7 @@
     <string name="patch_shealth_rename_code">Werkt de interne verwijzingen van de app bij naar de nieuwe pakketnaam.</string>
     <string name="patch_shealth_rename_account_xml">Geeft de app een eigen account- en synchronisatieregistratie zodat cloudsynchronisatie naast het origineel werkt.</string>
     <string name="patch_shealth_capability_gates">Zet Vitale waarden, Trainingsbelasting en de fitnessindex aan, die anders een Galaxy Watch8 of Ultra vereisen. Ze worden op de telefoon berekend uit je gesynchroniseerde geschiedenis.</string>
-    <string name="patch_shealth_launcher_badge">Voegt een kleine OpenSHM-badge toe aan het app-pictogram, zodat je het van het origineel kunt onderscheiden.</string>
+    <string name="patch_shealth_launcher_badge">Voegt een kleine LibreWrist-badge toe aan het app-pictogram, zodat je het van het origineel kunt onderscheiden.</string>
     <string name="patch_shealth_oobe_local">Standaard uit. Slaat de verplichting over om in te loggen met het Samsung-account en draait de app lokaal zonder cloudsynchronisatie, dus hij krijgt de gegevens niet die de Samsung Health-app uit Google Play uploadt. Zet dit alleen aan als inloggen niet werkt.</string>
     <string name="device_logs_channel">Apparaatlogs</string>
     <string name="device_logs_notification_title">Apparaatlogs worden opgenomen</string>
@@ -767,7 +767,7 @@
     <string name="device_logs_sheet_phone_untrusted">Draadloze foutopsporing staat aan, maar deze telefoon vertrouwt de patcher nog niet. Tik op Koppelen en typ de koppelcode in de melding die verschijnt.</string>
     <string name="device_logs_sheet_phone_pair">Deze telefoon koppelen</string>
     <string name="revert_title">Alle wijzigingen ongedaan maken</string>
-    <string name="revert_intro">Hiermee verwijder je wat OpenSHM Patcher op je telefoon en horloge heeft geïnstalleerd en worden de gewijzigde instellingen teruggezet. Alleen wat echt geïnstalleerd is wordt aangeraakt en systeem-apps worden nooit verwijderd.</string>
+    <string name="revert_intro">Hiermee verwijder je wat LibreWrist op je telefoon en horloge heeft geïnstalleerd en worden de gewijzigde instellingen teruggezet. Alleen wat echt geïnstalleerd is wordt aangeraakt en systeem-apps worden nooit verwijderd.</string>
     <string name="revert_probing">Controleren wat er is geïnstalleerd…</string>
     <string name="revert_action_remove">Verwijderen</string>
     <string name="revert_action_enable">Weer inschakelen</string>
@@ -800,7 +800,7 @@
     <string name="revert_done_partial_title">Sommige wijzigingen zijn nog actief</string>
     <string name="revert_done_partial_body">Niet alles kon ongedaan worden gemaakt. Los op wat vermeld staat en controleer opnieuw; de configuratiegegevens blijven bewaard zodat je kunt afronden.</string>
     <string name="revert_title_watch">Horloge herstellen</string>
-    <string name="revert_intro_watch">Dit verwijdert wat OpenSHM Patcher op je horloge heeft geïnstalleerd en zet terug wat het daar heeft gewijzigd. Je telefoon blijft zoals hij is.</string>
+    <string name="revert_intro_watch">Dit verwijdert wat LibreWrist op je horloge heeft geïnstalleerd en zet terug wat het daar heeft gewijzigd. Je telefoon blijft zoals hij is.</string>
     <string name="revert_title_app">%1$s verwijderen</string>
     <string name="revert_intro_app">Alleen deze app wordt verwijderd. De rest van je instellingen blijft zoals het is.</string>
     <string name="revert_start_watch">Horloge herstellen</string>
@@ -816,8 +816,8 @@
     <string name="revert_manual_devmode">Schakel de ontwikkelaarsmodus van Health Platform uit als je die hebt ingeschakeld.</string>
     <string name="revert_manual_adb">Trek de foutopsporingsmachtiging in en schakel draadloze foutopsporing uit op het horloge en op deze telefoon.</string>
     <string name="revert_manual_keys">Back-ups van je ondertekeningssleutel (Documents/OpenSHM) en het opgeslagen wachtwoord blijven bestaan. Verwijder ze via Bestanden of je wachtwoordmanager als je ze niet meer nodig hebt.</string>
-    <string name="revert_self_action">OpenSHM Patcher verwijderen</string>
-    <string name="revert_self_title">OpenSHM Patcher verwijderen?</string>
+    <string name="revert_self_action">LibreWrist verwijderen</string>
+    <string name="revert_self_title">LibreWrist verwijderen?</string>
     <string name="revert_self_body">Android vraagt je dit te bevestigen. De app en de opgeslagen gegevens, inclusief de ondertekeningssleutel erin, worden verwijderd. Back-ups die je elders hebt opgeslagen blijven bestaan.</string>
     <string name="revert_self_body_partial">Niet alles is ongedaan gemaakt. Zonder deze app moet je hem opnieuw installeren om af te ronden.</string>
     <string name="revert_self_cancelled">Verwijderen geannuleerd. De app is nog geïnstalleerd.</string>

@@ -260,7 +260,7 @@
     <string name="patch_phone_rebrand_gms">Даёт приложению на телефоне тот же пакет и ключ, что и на часах, чтобы они могли обмениваться данными.</string>
     <string name="patch_watch_rebrand_coexist">Переименовывает приложение на часах, чтобы оно стояло рядом с оригинальным.</string>
     <string name="patch_shm_wear_trusted_peers">Позволяет двум пропатченным приложениям узнавать друг друга при связи с часами, а не только оригинальным.</string>
-    <string name="patch_shm_launcher_badge">Добавляет на значок приложения небольшой бейдж OpenSHM, чтобы его можно было отличить от оригинала.</string>
+    <string name="patch_shm_launcher_badge">Добавляет на значок приложения небольшой бейдж LibreWrist, чтобы его можно было отличить от оригинала.</string>
     <string name="patch_watch_gms_resources_anchor">Определяет ресурс, удалённый из оригинальной сборки, чтобы часы могли сообщить телефону о приложении.</string>
     <string name="patch_watch_queries_health_service">Позволяет приложению на часах видеть службу здоровья.</string>
     <string name="patch_watch_companion_vendor">Принимает телефон любой марки.</string>
@@ -471,7 +471,7 @@
     <string name="selftest_section_human">Проверяете вы</string>
     <string name="selftest_rerun">Запустить снова</string>
     <string name="selftest_human_label">ПРОВЕРКА С ВАМИ · %1$d ИЗ %2$d</string>
-    <string name="selftest_share_subject">Самотест OpenSHM Patcher</string>
+    <string name="selftest_share_subject">Самотест LibreWrist</string>
 
     <!-- Self-test rows: %1$s is an app name or a list of access names -->
     <string name="selftest_package_title">Установка: %1$s</string>
@@ -524,7 +524,7 @@
     <string name="allset_chip_link">Связь</string>
 
     <!-- Home -->
-    <string name="home_title">OpenSHM</string>
+    <string name="home_title">LibreWrist</string>
     <string name="home_status_ok">Всё работает</string>
     <string name="home_status_warning">Стоит проверить</string>
     <string name="home_status_failed">Что-то сломано</string>
@@ -728,7 +728,7 @@
     <string name="selfadb_guide_sub_1">Нажмите кнопку ниже</string>
     <string name="selfadb_guide_sub_2">В разделе «Для разработчиков» включите отладку по Wi-Fi</string>
     <string name="selfadb_guide_sub_3">Нажмите «Подключить устройство с помощью кода подключения»</string>
-    <string name="selfadb_guide_sub_4">Введите шесть цифр в уведомлении OpenSHM или здесь, на этом экране</string>
+    <string name="selfadb_guide_sub_4">Введите шесть цифр в уведомлении LibreWrist или здесь, на этом экране</string>
     <string name="selfadb_guide_already">Если сопряжение уже выполнялось раньше, подключение произойдёт само.</string>
     <string name="selfadb_guide_ui_pair_code">Подключить устройство с помощью кода подключения</string>
     <string name="selfadb_guide_ui_paired">Подключённые устройства</string>
@@ -749,7 +749,7 @@
     <string name="patch_shealth_rename_code">Обновляет внутренние ссылки приложения на новое имя пакета.</string>
     <string name="patch_shealth_rename_account_xml">Даёт приложению собственную регистрацию учётной записи и синхронизации, чтобы облачная синхронизация работала рядом с оригиналом.</string>
     <string name="patch_shealth_capability_gates">Включает «Жизненные показатели», «Тренировочную нагрузку» и индекс физической формы, для которых иначе нужны Galaxy Watch8 или Ultra. Они вычисляются на телефоне по синхронизированной истории.</string>
-    <string name="patch_shealth_launcher_badge">Добавляет на значок приложения небольшой бейдж OpenSHM, чтобы его можно было отличить от оригинала.</string>
+    <string name="patch_shealth_launcher_badge">Добавляет на значок приложения небольшой бейдж LibreWrist, чтобы его можно было отличить от оригинала.</string>
     <string name="patch_shealth_oobe_local">По умолчанию выключено. Пропускает обязательный вход в Samsung Account и запускает приложение локально, без облачной синхронизации, поэтому оно не получает данные, которые загружает приложение Samsung Health из Google Play. Включайте, только если вход не работает.</string>
     <string name="device_logs_channel">Журналы устройств</string>
     <string name="device_logs_notification_title">Запись журналов устройств</string>
@@ -783,7 +783,7 @@
     <string name="device_logs_sheet_phone_untrusted">Отладка по Wi-Fi включена, но этот телефон ещё не доверяет патчеру. Нажмите «Сопрячь» и введите код сопряжения в появившемся уведомлении.</string>
     <string name="device_logs_sheet_phone_pair">Сопрячь этот телефон</string>
     <string name="revert_title">Отменить все изменения</string>
-    <string name="revert_intro">Удаляет то, что OpenSHM Patcher установил на телефон и часы, и возвращает изменённые настройки. Затрагивается только то, что действительно установлено, а системные приложения никогда не удаляются.</string>
+    <string name="revert_intro">Удаляет то, что LibreWrist установил на телефон и часы, и возвращает изменённые настройки. Затрагивается только то, что действительно установлено, а системные приложения никогда не удаляются.</string>
     <string name="revert_probing">Проверяем, что установлено…</string>
     <string name="revert_action_remove">Удалить</string>
     <string name="revert_action_enable">Включить снова</string>
@@ -816,7 +816,7 @@
     <string name="revert_done_partial_title">Некоторые изменения остались</string>
     <string name="revert_done_partial_body">Отменить удалось не всё. Устраните указанные причины и проверьте снова; данные настройки сохранены, чтобы вы могли закончить.</string>
     <string name="revert_title_watch">Восстановить часы</string>
-    <string name="revert_intro_watch">Будет удалено всё, что OpenSHM Patcher установил на часы, и возвращено всё, что он там изменил. Телефон остаётся как есть.</string>
+    <string name="revert_intro_watch">Будет удалено всё, что LibreWrist установил на часы, и возвращено всё, что он там изменил. Телефон остаётся как есть.</string>
     <string name="revert_title_app">Удалить %1$s</string>
     <string name="revert_intro_app">Удаляется только это приложение. Остальная настройка остаётся как есть.</string>
     <string name="revert_start_watch">Восстановить часы</string>
@@ -832,8 +832,8 @@
     <string name="revert_manual_devmode">Выключите режим разработчика в Health Platform, если вы его включали.</string>
     <string name="revert_manual_adb">Отзовите разрешение на отладку и выключите отладку по Wi-Fi на часах и на этом телефоне.</string>
     <string name="revert_manual_keys">Резервные копии ключа подписи (Documents/OpenSHM) и сохранённый пароль остаются. Удалите их в «Файлах» или менеджере паролей, если они больше не нужны.</string>
-    <string name="revert_self_action">Удалить OpenSHM Patcher</string>
-    <string name="revert_self_title">Удалить OpenSHM Patcher?</string>
+    <string name="revert_self_action">Удалить LibreWrist</string>
+    <string name="revert_self_title">Удалить LibreWrist?</string>
     <string name="revert_self_body">Android попросит подтвердить. Приложение и его данные, включая хранящийся в нём ключ подписи, будут удалены. Резервные копии, сохранённые в других местах, останутся.</string>
     <string name="revert_self_body_partial">Отменено не всё. Без этого приложения для завершения его придётся установить заново.</string>
     <string name="revert_self_cancelled">Удаление отменено. Приложение всё ещё установлено.</string>

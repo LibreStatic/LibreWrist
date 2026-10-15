@@ -46,7 +46,7 @@ class AppUpdateDownloader(context: Context) {
         val part = File(dir, update.apkName + ".part")
         try {
             val cap = minOf(update.sizeBytes + MARGIN_BYTES, MAX_BYTES)
-            val request = DownloadRequest(update.apkUrl, "OpenSHM-Patcher/${BuildConfig.VERSION_NAME}", null, null, update.sizeBytes)
+            val request = DownloadRequest(update.apkUrl, "LibreWrist/${BuildConfig.VERSION_NAME}", null, null, update.sizeBytes)
             val result = ApkDownloader(maxBytes = cap).fetch(request, onOpen) { stream, _ ->
                 var done = 0L
                 part.outputStream().use { out ->

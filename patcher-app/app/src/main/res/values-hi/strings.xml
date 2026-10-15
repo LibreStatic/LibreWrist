@@ -254,7 +254,7 @@
     <string name="patch_phone_rebrand_gms">फ़ोन ऐप को घड़ी ऐप जैसा ही पैकेज और कुंजी देता है ताकि दोनों डेटा का आदान-प्रदान कर सकें।</string>
     <string name="patch_watch_rebrand_coexist">घड़ी ऐप का नाम बदलता है ताकि वह स्टॉक ऐप के साथ रह सके।</string>
     <string name="patch_shm_wear_trusted_peers">दोनों पैच किए गए ऐप को घड़ी के लिंक पर एक-दूसरे को पहचानने देता है, सिर्फ़ स्टॉक ऐप को नहीं।</string>
-    <string name="patch_shm_launcher_badge">ऐप आइकन में एक छोटा OpenSHM बैज जोड़ता है, ताकि आप इसे मूल ऐप से अलग पहचान सकें।</string>
+    <string name="patch_shm_launcher_badge">ऐप आइकन में एक छोटा LibreWrist बैज जोड़ता है, ताकि आप इसे मूल ऐप से अलग पहचान सकें।</string>
     <string name="patch_watch_gms_resources_anchor">निर्माता बिल्ड द्वारा हटाया गया एक संसाधन परिभाषित करता है, ताकि घड़ी फ़ोन को ऐप की सूचना दे सके।</string>
     <string name="patch_watch_queries_health_service">घड़ी ऐप को हेल्थ सेवा दिखने देता है।</string>
     <string name="patch_watch_companion_vendor">किसी भी सहयोगी फ़ोन ब्रांड को स्वीकार करता है।</string>
@@ -457,7 +457,7 @@
     <string name="selftest_section_human">आपके द्वारा जाँचा गया</string>
     <string name="selftest_rerun">फिर चलाएँ</string>
     <string name="selftest_human_label">आपके साथ जाँच · %1$d / %2$d</string>
-    <string name="selftest_share_subject">OpenSHM Patcher स्व-परीक्षण</string>
+    <string name="selftest_share_subject">LibreWrist स्व-परीक्षण</string>
 
     <!-- Self-test rows: %1$s is an app name or a list of access names -->
     <string name="selftest_package_title">इंस्टॉलेशन: %1$s</string>
@@ -510,7 +510,7 @@
     <string name="allset_chip_link">लिंक</string>
 
     <!-- Home -->
-    <string name="home_title">OpenSHM</string>
+    <string name="home_title">LibreWrist</string>
     <string name="home_status_ok">सब कुछ ठीक चल रहा है</string>
     <string name="home_status_warning">एक नज़र डालें</string>
     <string name="home_status_failed">कुछ खराब है</string>
@@ -712,7 +712,7 @@
     <string name="selfadb_guide_sub_1">नीचे दिए गए बटन पर टैप करें</string>
     <string name="selfadb_guide_sub_2">डेवलपर विकल्प में वायरलेस डीबगिंग चालू करें</string>
     <string name="selfadb_guide_sub_3">पेयरिंग कोड से डिवाइस पेयर करें पर टैप करें</string>
-    <string name="selfadb_guide_sub_4">छह अंक OpenSHM की सूचना में या यहीं इस स्क्रीन पर लिखें</string>
+    <string name="selfadb_guide_sub_4">छह अंक LibreWrist की सूचना में या यहीं इस स्क्रीन पर लिखें</string>
     <string name="selfadb_guide_already">अगर आप पहले पेयर कर चुके हैं, तो यह अपने आप कनेक्ट हो जाएगा।</string>
     <string name="selfadb_guide_ui_pair_code">पेयरिंग कोड से डिवाइस पेयर करें</string>
     <string name="selfadb_guide_ui_paired">पेयर किए गए डिवाइस</string>
@@ -733,7 +733,7 @@
     <string name="patch_shealth_rename_code">ऐप के आंतरिक संदर्भों को नए पैकेज नाम पर अपडेट करता है।</string>
     <string name="patch_shealth_rename_account_xml">ऐप को अपना खाता और सिंक पंजीकरण देता है ताकि क्लाउड सिंक मूल ऐप के बगल में काम करे।</string>
     <string name="patch_shealth_capability_gates">वाइटल्स, ट्रेनिंग लोड और फ़िटनेस इंडेक्स चालू करता है, जिनके लिए वरना Galaxy Watch8 या Ultra चाहिए। इनकी गणना फ़ोन पर आपके सिंक किए गए इतिहास से होती है।</string>
-    <string name="patch_shealth_launcher_badge">ऐप आइकन में एक छोटा OpenSHM बैज जोड़ता है, ताकि आप इसे मूल ऐप से अलग पहचान सकें।</string>
+    <string name="patch_shealth_launcher_badge">ऐप आइकन में एक छोटा LibreWrist बैज जोड़ता है, ताकि आप इसे मूल ऐप से अलग पहचान सकें।</string>
     <string name="patch_shealth_oobe_local">डिफ़ॉल्ट रूप से बंद। Samsung Account से साइन इन की ज़रूरत छोड़ देता है और ऐप को क्लाउड सिंक के बिना लोकल रूप से चलाता है, इसलिए उसे वह डेटा नहीं मिलता जो Google Play वाला Samsung Health ऐप अपलोड करता है। इसे तभी चालू करें जब साइन इन काम न करे।</string>
     <string name="device_logs_channel">डिवाइस लॉग</string>
     <string name="device_logs_notification_title">डिवाइस लॉग रिकॉर्ड हो रहे हैं</string>
@@ -767,7 +767,7 @@
     <string name="device_logs_sheet_phone_untrusted">वायरलेस डीबगिंग चालू है, लेकिन यह फ़ोन अभी पैचर पर भरोसा नहीं करता। पेयर करें पर टैप करें, फिर दिखने वाली सूचना में पेयरिंग कोड डालें।</string>
     <string name="device_logs_sheet_phone_pair">इस फ़ोन को पेयर करें</string>
     <string name="revert_title">सभी बदलाव वापस करें</string>
-    <string name="revert_intro">यह वह सब हटाता है जो OpenSHM Patcher ने आपके फ़ोन और घड़ी पर इंस्टॉल किया था, और उसके बदले हुए सेटिंग को वापस करता है। केवल वही छुआ जाता है जो सच में इंस्टॉल है, और सिस्टम ऐप कभी नहीं हटाए जाते।</string>
+    <string name="revert_intro">यह वह सब हटाता है जो LibreWrist ने आपके फ़ोन और घड़ी पर इंस्टॉल किया था, और उसके बदले हुए सेटिंग को वापस करता है। केवल वही छुआ जाता है जो सच में इंस्टॉल है, और सिस्टम ऐप कभी नहीं हटाए जाते।</string>
     <string name="revert_probing">जाँच रहे हैं कि क्या इंस्टॉल है…</string>
     <string name="revert_action_remove">हटाएँ</string>
     <string name="revert_action_enable">फिर से चालू करें</string>
@@ -800,7 +800,7 @@
     <string name="revert_done_partial_title">कुछ बदलाव अब भी मौजूद हैं</string>
     <string name="revert_done_partial_body">सब कुछ वापस नहीं हो सका। सूची में बताई समस्याएँ ठीक करके दोबारा जाँचें; सेटअप की जानकारी सहेजी हुई है ताकि आप पूरा कर सकें।</string>
     <string name="revert_title_watch">घड़ी को पुनर्स्थापित करें</string>
-    <string name="revert_intro_watch">यह OpenSHM Patcher द्वारा आपकी घड़ी पर इंस्टॉल की गई चीज़ों को हटाता है और वहाँ बदली गई चीज़ों को वापस कर देता है। आपका फ़ोन जैसा है वैसा ही रहता है।</string>
+    <string name="revert_intro_watch">यह LibreWrist द्वारा आपकी घड़ी पर इंस्टॉल की गई चीज़ों को हटाता है और वहाँ बदली गई चीज़ों को वापस कर देता है। आपका फ़ोन जैसा है वैसा ही रहता है।</string>
     <string name="revert_title_app">%1$s हटाएँ</string>
     <string name="revert_intro_app">केवल यह ऐप हटाया जाता है। आपका बाकी सेटअप जैसा है वैसा ही रहता है।</string>
     <string name="revert_start_watch">घड़ी को पुनर्स्थापित करें</string>
@@ -816,8 +816,8 @@
     <string name="revert_manual_devmode">अगर आपने Health Platform का डेवलपर मोड चालू किया था तो उसे बंद करें।</string>
     <string name="revert_manual_adb">डीबगिंग की अनुमति रद्द करें और घड़ी तथा इस फ़ोन पर वायरलेस डीबगिंग बंद करें।</string>
     <string name="revert_manual_keys">आपकी साइनिंग कुंजी के बैकअप (Documents/OpenSHM) और सहेजा गया पासवर्ड बने रहते हैं। ज़रूरत न हो तो उन्हें फ़ाइलें ऐप या अपने पासवर्ड मैनेजर से हटा दें।</string>
-    <string name="revert_self_action">OpenSHM Patcher अनइंस्टॉल करें</string>
-    <string name="revert_self_title">OpenSHM Patcher अनइंस्टॉल करें?</string>
+    <string name="revert_self_action">LibreWrist अनइंस्टॉल करें</string>
+    <string name="revert_self_title">LibreWrist अनइंस्टॉल करें?</string>
     <string name="revert_self_body">Android आपसे पुष्टि माँगेगा। ऐप और उसका संग्रहीत डेटा, जिसमें उसके अंदर रखी साइनिंग कुंजी भी शामिल है, हट जाएगा। आपने कहीं और जो बैकअप सहेजे हैं वे बने रहेंगे।</string>
     <string name="revert_self_body_partial">सब कुछ वापस नहीं हुआ। इस ऐप के बिना पूरा करने के लिए आपको इसे फिर से इंस्टॉल करना होगा।</string>
     <string name="revert_self_cancelled">अनइंस्टॉल रद्द हुआ। ऐप अब भी इंस्टॉल है।</string>

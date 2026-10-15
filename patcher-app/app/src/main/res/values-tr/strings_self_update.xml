@@ -8,7 +8,7 @@
     <string name="update_action_later">Sonra</string>
     <string name="update_skip_version">Bu sürümü bir daha gösterme</string>
     <string name="update_closing_note">Uygulama güncellenirken kapanır. Sonrasında tekrar açın.</string>
-    <string name="update_permission_text">Güncellemek için az önce açılan ayarlar sayfasında OpenSHM Patcher\'ın uygulama yüklemesine izin verin, ardından geri dönüp Devam\'a dokunun.</string>
+    <string name="update_permission_text">Güncellemek için az önce açılan ayarlar sayfasında LibreWrist\'in uygulama yüklemesine izin verin, ardından geri dönüp Devam\'a dokunun.</string>
     <string name="update_downloading">Güncelleme indiriliyor…</string>
     <string name="update_verifying">İndirilen dosya denetleniyor…</string>
     <string name="update_installing">Güncelleme yükleniyor…</string>
@@ -33,7 +33,7 @@
     <string name="settings_version_label">Sürüm</string>
     <string name="settings_version_value">%1$s (yapı %2$d)</string>
     <string name="update_channel_name">Uygulama güncellemeleri</string>
-    <string name="update_channel_description">OpenSHM Patcher\'ın daha yeni bir sürümü olduğunda sizi bilgilendirir.</string>
+    <string name="update_channel_description">LibreWrist\'in daha yeni bir sürümü olduğunda sizi bilgilendirir.</string>
     <string name="update_notification_title">Yeni sürüm mevcut</string>
     <string name="update_notification_text">%1$d numaralı yapı (v%2$s) yüklenmeye hazır</string>
 </resources>

@@ -30,7 +30,7 @@ import kotlinx.coroutines.flow.StateFlow
 /** The checker the app uses everywhere: the release API of this build's repository. */
 internal fun newAppUpdateChecker(context: Context, settings: AppUpdatePrefs = AppUpdatePrefs(context)): AppUpdateChecker {
     val fetcher = HttpsCatalogueFetcher(
-        mapOf("User-Agent" to "OpenSHM-Patcher/${BuildConfig.VERSION_NAME}", "Accept" to "application/vnd.github+json"),
+        mapOf("User-Agent" to "LibreWrist/${BuildConfig.VERSION_NAME}", "Accept" to "application/vnd.github+json"),
     )
     return AppUpdateChecker(
         BuildConfig.UPDATE_REPO,

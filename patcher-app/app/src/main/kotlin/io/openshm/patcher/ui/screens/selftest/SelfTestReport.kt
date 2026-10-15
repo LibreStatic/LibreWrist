@@ -37,7 +37,7 @@ internal fun buildSelfTestReport(
     rowText: (SelfTestText) -> String,
     engineLog: List<String>,
 ): String = buildString {
-    appendLine("OpenSHM Patcher self-test")
+    appendLine("LibreWrist self-test")
     appendLine("App: ${header.appVersion}")
     appendLine("Catalogue serial: ${header.catalogueSerial}")
     appendLine()

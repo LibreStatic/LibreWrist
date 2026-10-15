@@ -8,7 +8,7 @@
     <string name="update_action_later">Later</string>
     <string name="update_skip_version">Deze versie niet meer tonen</string>
     <string name="update_closing_note">De app sluit tijdens het bijwerken. Open hem daarna opnieuw.</string>
-    <string name="update_permission_text">Sta OpenSHM Patcher toe om apps te installeren op de instellingenpagina die zojuist is geopend, kom daarna terug en tik op Doorgaan.</string>
+    <string name="update_permission_text">Sta LibreWrist toe om apps te installeren op de instellingenpagina die zojuist is geopend, kom daarna terug en tik op Doorgaan.</string>
     <string name="update_downloading">Update downloaden…</string>
     <string name="update_verifying">Download controleren…</string>
     <string name="update_installing">Update installeren…</string>
@@ -33,7 +33,7 @@
     <string name="settings_version_label">Versie</string>
     <string name="settings_version_value">%1$s (build %2$d)</string>
     <string name="update_channel_name">App-updates</string>
-    <string name="update_channel_description">Laat je weten wanneer er een nieuwere versie van OpenSHM Patcher beschikbaar is.</string>
+    <string name="update_channel_description">Laat je weten wanneer er een nieuwere versie van LibreWrist beschikbaar is.</string>
     <string name="update_notification_title">Nieuwe versie beschikbaar</string>
     <string name="update_notification_text">Build %1$d (v%2$s) staat klaar om te installeren</string>
 </resources>

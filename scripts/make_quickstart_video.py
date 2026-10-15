@@ -17,10 +17,10 @@ W, H = 1920, 1080
 
 # (image or None, step label, title, caption, seconds)
 SLIDES = [
-    (None, "", "OpenSHM Quick start",
+    (None, "", "LibreWrist Quick start",
      "ECG and blood pressure from your Galaxy Watch, on a phone that is not a Samsung. "
      "About 15 minutes, all on the phone, no PC.", 5),
-    ("01-welcome", "Step 1 of 9", "Open OpenSHM Patcher", "Install the APK from Releases, open it and tap Get started.", 4),
+    ("01-welcome", "Step 1 of 9", "Open LibreWrist", "Install the APK from Releases, open it and tap Get started.", 4),
     ("02-what-will-change", "Step 1 of 9", "See what will change", "Every app that gets installed, and what it is allowed to do. Nothing is erased.", 4),
     ("03-watch-profile", "Step 2 of 9", "Pick your watch", "Choose the Wear OS version of your watch, then Continue.", 3.5),
     ("04-wearable-pairing", "Step 3 of 9", "Pair with Galaxy Wearable", "Pair the watch as usual. All three checks must be green.", 3.5),
@@ -38,7 +38,7 @@ SLIDES = [
     ("14d-phone-developer-options", "Step 7 of 9", "Open Wireless debugging", "Settings, System, Developer options: tap Wireless debugging.", 3.5),
     ("14e-phone-allow-network", "Step 7 of 9", "Turn it on", "Turn on Use wireless debugging and tap Allow.", 3.5),
     ("14g-phone-pairing-code", "Step 7 of 9", "Get a pairing code", "Tap Pair device with pairing code. Keep the code on screen.", 4),
-    ("14i-phone-notification-code", "Step 7 of 9", "Give the code to OpenSHM", "Pull down the notifications, tap Enter code, type the 6 digits and send.", 4.5),
+    ("14i-phone-notification-code", "Step 7 of 9", "Give the code to LibreWrist", "Pull down the notifications, tap Enter code, type the 6 digits and send.", 4.5),
     ("14j-phone-adb-done", "Step 7 of 9", "Done", "Every missing permission is granted for you.", 3),
     ("16-install-watch", "Step 8 of 9", "Install on the watch", "Over Wi-Fi, with its permissions granted for you.", 3.5),
     ("17-developer-mode", "Step 8 of 9", "Health Platform developer mode", "Tap Turn it on for me and keep the watch unlocked.", 4),

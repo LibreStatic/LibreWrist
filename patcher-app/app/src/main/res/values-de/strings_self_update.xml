@@ -8,7 +8,7 @@
     <string name="update_action_later">Später</string>
     <string name="update_skip_version">Diese Version nicht mehr anzeigen</string>
     <string name="update_closing_note">Die App wird beim Aktualisieren geschlossen. Öffne sie danach erneut.</string>
-    <string name="update_permission_text">Erlaube OpenSHM Patcher zum Aktualisieren auf der soeben geöffneten Einstellungsseite, Apps zu installieren, und tippe danach auf Weiter.</string>
+    <string name="update_permission_text">Erlaube LibreWrist zum Aktualisieren auf der soeben geöffneten Einstellungsseite, Apps zu installieren, und tippe danach auf Weiter.</string>
     <string name="update_downloading">Update wird heruntergeladen…</string>
     <string name="update_verifying">Download wird geprüft…</string>
     <string name="update_installing">Update wird installiert…</string>
@@ -33,7 +33,7 @@
     <string name="settings_version_label">Version</string>
     <string name="settings_version_value">%1$s (Build %2$d)</string>
     <string name="update_channel_name">App-Updates</string>
-    <string name="update_channel_description">Meldet, wenn eine neuere Version von OpenSHM Patcher verfügbar ist.</string>
+    <string name="update_channel_description">Meldet, wenn eine neuere Version von LibreWrist verfügbar ist.</string>
     <string name="update_notification_title">Neue Version verfügbar</string>
     <string name="update_notification_text">Build %1$d (v%2$s) kann installiert werden</string>
 </resources>

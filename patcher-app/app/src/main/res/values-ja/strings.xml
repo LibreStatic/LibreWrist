@@ -59,8 +59,8 @@
     <string name="changes_technical">技術名を表示</string>
     <string name="change_purpose_shm_phone">スマートフォンでECGと血圧の測定結果を表示するSamsungのアプリです。このスマートフォンで動くように調整されています。</string>
     <string name="change_purpose_shm_watch">ウォッチでECGと血圧を測定するSamsungのアプリです。このスマートフォンと連携できるように調整されています。</string>
-    <string name="change_purpose_bridge_phone">通知、通話、アラームをBluetoothでウォッチに送るOpenSHMのアプリです。</string>
-    <string name="change_purpose_bridge_watch">スマートフォンの通知、通話、アラームをウォッチに表示するOpenSHMのアプリです。</string>
+    <string name="change_purpose_bridge_phone">通知、通話、アラームをBluetoothでウォッチに送るLibreWristのアプリです。</string>
+    <string name="change_purpose_bridge_watch">スマートフォンの通知、通話、アラームをウォッチに表示するLibreWristのアプリです。</string>
     <string name="change_purpose_alarm_fork">ウォッチのアラームアプリのコピーで、スマートフォンのアラームと同期します。元のアプリもそのまま残ります。</string>
     <string name="grant_title_calls">通話に応答</string>
     <string name="grant_title_phone_state">電話の状態</string>
@@ -251,7 +251,7 @@
     <string name="patch_phone_rebrand_gms">スマートフォンアプリにウォッチアプリと同じパッケージとキーを与え、両者がデータを交換できるようにします。</string>
     <string name="patch_watch_rebrand_coexist">ウォッチアプリの名前を変更し、標準アプリと共存できるようにします。</string>
     <string name="patch_shm_wear_trusted_peers">パッチ済みの 2 つのアプリが、純正アプリだけでなく互いをウォッチとの接続で認識できるようにします。</string>
-    <string name="patch_shm_launcher_badge">アプリのアイコンに小さな OpenSHM バッジを追加し、元のアプリと見分けられるようにします。</string>
+    <string name="patch_shm_launcher_badge">アプリのアイコンに小さな LibreWrist バッジを追加し、元のアプリと見分けられるようにします。</string>
     <string name="patch_watch_gms_resources_anchor">純正ビルドで削除されたリソースを定義し、ウォッチがアプリをスマートフォンに通知できるようにします。</string>
     <string name="patch_watch_queries_health_service">ウォッチアプリがヘルスサービスを認識できるようにします。</string>
     <string name="patch_watch_companion_vendor">どのメーカーのコンパニオンスマートフォンも受け入れます。</string>
@@ -450,7 +450,7 @@
     <string name="selftest_section_human">ご自身で確認</string>
     <string name="selftest_rerun">もう一度実行</string>
     <string name="selftest_human_label">確認をお願いします · %1$d/%2$d</string>
-    <string name="selftest_share_subject">OpenSHM Patcher セルフテスト</string>
+    <string name="selftest_share_subject">LibreWrist セルフテスト</string>
 
     <!-- Self-test rows: %1$s is an app name or a list of access names -->
     <string name="selftest_package_title">%1$sはインストール済み</string>
@@ -503,7 +503,7 @@
     <string name="allset_chip_link">リンク</string>
 
     <!-- Home -->
-    <string name="home_title">OpenSHM</string>
+    <string name="home_title">LibreWrist</string>
     <string name="home_status_ok">すべて正常に動作しています</string>
     <string name="home_status_warning">確認が必要です</string>
     <string name="home_status_failed">問題が発生しています</string>
@@ -704,7 +704,7 @@
     <string name="selfadb_guide_sub_1">下のボタンをタップします</string>
     <string name="selfadb_guide_sub_2">開発者向けオプションでワイヤレスデバッグをオンにします</string>
     <string name="selfadb_guide_sub_3">「ペア設定コードによるデバイスのペア設定」をタップします</string>
-    <string name="selfadb_guide_sub_4">6桁の数字を OpenSHM の通知、またはこの画面に入力します</string>
+    <string name="selfadb_guide_sub_4">6桁の数字を LibreWrist の通知、またはこの画面に入力します</string>
     <string name="selfadb_guide_already">以前にペア設定済みの場合は、自動的に接続されます。</string>
     <string name="selfadb_guide_ui_pair_code">ペア設定コードによるデバイスのペア設定</string>
     <string name="selfadb_guide_ui_paired">ペア設定済みのデバイス</string>
@@ -725,7 +725,7 @@
     <string name="patch_shealth_rename_code">アプリの内部参照を新しいパッケージ名に更新します。</string>
     <string name="patch_shealth_rename_account_xml">アプリに独自のアカウントと同期の登録を与え、元のアプリの隣でもクラウド同期が動作するようにします。</string>
     <string name="patch_shealth_capability_gates">通常は Galaxy Watch8 または Ultra が必要な「バイタル」「トレーニング負荷」と体力指数を有効にします。同期済みの履歴からスマートフォン上で計算されます。</string>
-    <string name="patch_shealth_launcher_badge">アプリのアイコンに小さな OpenSHM バッジを追加し、元のアプリと見分けられるようにします。</string>
+    <string name="patch_shealth_launcher_badge">アプリのアイコンに小さな LibreWrist バッジを追加し、元のアプリと見分けられるようにします。</string>
     <string name="patch_shealth_oobe_local">初期設定ではオフ。Samsung アカウントでのサインイン要件を省略し、クラウド同期なしでアプリをローカルで実行します。そのため、Google Play の Samsung Health アプリがアップロードしたデータは取得されません。サインインできない場合のみオンにしてください。</string>
     <string name="device_logs_channel">デバイスログ</string>
     <string name="device_logs_notification_title">デバイスログを記録中</string>
@@ -759,7 +759,7 @@
     <string name="device_logs_sheet_phone_untrusted">ワイヤレスデバッグはオンですが、このスマートフォンはまだパッチャーを信頼していません。「ペア設定」をタップし、表示される通知にペア設定コードを入力してください。</string>
     <string name="device_logs_sheet_phone_pair">このスマートフォンをペア設定</string>
     <string name="revert_title">すべての変更を元に戻す</string>
-    <string name="revert_intro">OpenSHM Patcher がスマートフォンとウォッチにインストールしたものを削除し、変更した設定を元に戻します。実際にインストールされているものだけが対象で、システムアプリは削除されません。</string>
+    <string name="revert_intro">LibreWrist がスマートフォンとウォッチにインストールしたものを削除し、変更した設定を元に戻します。実際にインストールされているものだけが対象で、システムアプリは削除されません。</string>
     <string name="revert_probing">インストール状況を確認しています…</string>
     <string name="revert_action_remove">削除</string>
     <string name="revert_action_enable">再び有効にする</string>
@@ -767,7 +767,7 @@
     <string name="revert_setting_label">常時表示の設定</string>
     <string name="revert_setting_note">以前のバージョンのパッチャーがオフにしました。オンに戻します。</string>
     <string name="revert_exemption_label">センサーアクセスの例外</string>
-    <string name="revert_exemption_note">ウォッチの非公開API例外リストからOpenSHMの項目を削除します。他のアプリの項目はそのまま残ります。</string>
+    <string name="revert_exemption_note">ウォッチの非公開API例外リストからLibreWristの項目を削除します。他のアプリの項目はそのまま残ります。</string>
     <string name="revert_enable_note">セットアップでオフにされました。オンに戻します。</string>
     <string name="revert_not_installed">未インストールのため対応不要: %1$s</string>
     <string name="revert_system_apps">システムアプリのため変更しません: %1$s</string>
@@ -792,7 +792,7 @@
     <string name="revert_done_partial_title">一部の変更が残っています</string>
     <string name="revert_done_partial_body">すべてを元に戻せませんでした。表示された内容を解決して、もう一度確認してください。セットアップの情報は保持されているので、続きから完了できます。</string>
     <string name="revert_title_watch">ウォッチを復元</string>
-    <string name="revert_intro_watch">OpenSHM Patcher がウォッチにインストールしたものを削除し、そこで変更した内容を元に戻します。スマートフォンはそのままです。</string>
+    <string name="revert_intro_watch">LibreWrist がウォッチにインストールしたものを削除し、そこで変更した内容を元に戻します。スマートフォンはそのままです。</string>
     <string name="revert_title_app">%1$s を削除</string>
     <string name="revert_intro_app">このアプリだけを削除します。ほかのセットアップはそのままです。</string>
     <string name="revert_start_watch">ウォッチを復元</string>
@@ -808,8 +808,8 @@
     <string name="revert_manual_devmode">Health Platform の開発者モードをオンにしている場合は、オフにしてください。</string>
     <string name="revert_manual_adb">デバッグの承認を取り消し、ウォッチとこのスマートフォンでワイヤレスデバッグをオフにしてください。</string>
     <string name="revert_manual_keys">署名キーのバックアップ（Documents/OpenSHM）と保存したパスワードは残ります。不要な場合は、ファイルアプリまたはパスワードマネージャーから削除してください。</string>
-    <string name="revert_self_action">OpenSHM Patcher をアンインストール</string>
-    <string name="revert_self_title">OpenSHM Patcher をアンインストールしますか？</string>
+    <string name="revert_self_action">LibreWrist をアンインストール</string>
+    <string name="revert_self_title">LibreWrist をアンインストールしますか？</string>
     <string name="revert_self_body">Android が確認を求めます。アプリと保存されたデータ（アプリ内に保管された署名キーを含む）が削除されます。別の場所に保存したバックアップは残ります。</string>
     <string name="revert_self_body_partial">すべてが元に戻ったわけではありません。このアプリがないと、完了するには再インストールが必要です。</string>
     <string name="revert_self_cancelled">アンインストールを中止しました。アプリはまだインストールされています。</string>

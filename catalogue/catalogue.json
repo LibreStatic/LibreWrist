@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "serial": 34,
+  "serial": 35,
   "minAppVersion": 28,
   "inputs": [
     {
@@ -2583,7 +2583,7 @@
         "shealth-phone"
       ],
       "title": "Launcher icon badge",
-      "description": "Adds a small OpenSHM badge (bottom-right) to the launcher, widget and shortcut icons of the app, in the colour and the monochrome (themed) layers, so it can be told apart from the original Samsung Health",
+      "description": "Adds a small LibreWrist badge (bottom-right) to the launcher, widget and shortcut icons of the app, in the colour and the monochrome (themed) layers, so it can be told apart from the original Samsung Health",
       "optional": true,
       "ops": [
         {
@@ -2728,7 +2728,7 @@
         "shm-phone"
       ],
       "title": "Launcher icon badge",
-      "description": "Adds a small OpenSHM badge (bottom-right) to the launcher icon of the phone app, in the colour and the monochrome (themed) layers, so it can be told apart from the original Samsung Health Monitor",
+      "description": "Adds a small LibreWrist badge (bottom-right) to the launcher icon of the phone app, in the colour and the monochrome (themed) layers, so it can be told apart from the original Samsung Health Monitor",
       "optional": true,
       "ops": [
         {

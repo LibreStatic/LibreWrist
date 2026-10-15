@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">OpenSHM Patcher</string>
+    <string name="app_name" translatable="false">LibreWrist</string>
 
     <!-- Shared actions -->
     <string name="action_back">Back</string>
@@ -361,7 +361,7 @@
     <string name="patch_phone_rebrand_gms">Gives the phone app the same package and key as the watch app so the two can exchange data.</string>
     <string name="patch_watch_rebrand_coexist">Renames the watch app so it sits next to the stock one.</string>
     <string name="patch_shm_wear_trusted_peers">Lets the two patched apps recognize each other on the watch link, instead of only the stock ones.</string>
-    <string name="patch_shm_launcher_badge">Adds a small OpenSHM badge to the app icon so you can tell it apart from the original.</string>
+    <string name="patch_shm_launcher_badge">Adds a small LibreWrist badge to the app icon so you can tell it apart from the original.</string>
     <string name="patch_watch_gms_resources_anchor">Defines a resource the vendor build removed, so the watch can announce the app to the phone.</string>
     <string name="patch_watch_queries_health_service">Lets the watch app see the health service.</string>
     <string name="patch_watch_companion_vendor">Accepts any companion phone brand.</string>
@@ -564,7 +564,7 @@
     <string name="selftest_section_human">Checked by you</string>
     <string name="selftest_rerun">Run again</string>
     <string name="selftest_human_label">CHECK WITH YOU · %1$d OF %2$d</string>
-    <string name="selftest_share_subject">OpenSHM Patcher self-test</string>
+    <string name="selftest_share_subject">LibreWrist self-test</string>
 
     <!-- Self-test rows: %1$s is an app name or a list of access names -->
     <string name="selftest_package_title">%1$s installed</string>
@@ -617,7 +617,7 @@
     <string name="allset_chip_link">Link</string>
 
     <!-- Home -->
-    <string name="home_title">OpenSHM</string>
+    <string name="home_title">LibreWrist</string>
     <string name="home_status_ok">Everything\'s working</string>
     <string name="home_status_warning">Needs a look</string>
     <string name="home_status_failed">Something is broken</string>
@@ -714,7 +714,7 @@
     <string name="selfadb_guide_sub_1">Tap the button below</string>
     <string name="selfadb_guide_sub_2">In Developer options, turn on Wireless debugging</string>
     <string name="selfadb_guide_sub_3">Tap Pair device with pairing code</string>
-    <string name="selfadb_guide_sub_4">Type the six digits in the OpenSHM notification, or here on this screen</string>
+    <string name="selfadb_guide_sub_4">Type the six digits in the LibreWrist notification, or here on this screen</string>
     <string name="selfadb_guide_already">If you already paired before, it connects by itself.</string>
     <string name="selfadb_guide_ui_pair_code">Pair device with pairing code</string>
     <string name="selfadb_guide_ui_paired">Paired devices</string>
@@ -735,7 +735,7 @@
     <string name="patch_shealth_rename_code">Updates the app\'s internal references to the new package name.</string>
     <string name="patch_shealth_rename_account_xml">Gives the app its own account and sync registration so cloud sync works next to the original.</string>
     <string name="patch_shealth_capability_gates">Turns on Vitals, Training load and the fitness index, which otherwise require a Galaxy Watch8 or Ultra. They are computed on the phone from your synced history.</string>
-    <string name="patch_shealth_launcher_badge">Adds a small OpenSHM badge to the app icon so you can tell it apart from the original.</string>
+    <string name="patch_shealth_launcher_badge">Adds a small LibreWrist badge to the app icon so you can tell it apart from the original.</string>
     <string name="patch_shealth_oobe_local">Off by default. Skips the Samsung Account sign-in requirement and runs the app locally without cloud sync, so it does not get the data that the Samsung Health app from Google Play uploads. Only turn it on if sign-in does not work.</string>
     <string name="device_logs_channel">Device logs</string>
     <string name="device_logs_notification_title">Recording device logs</string>
@@ -769,7 +769,7 @@
     <string name="device_logs_sheet_phone_untrusted">Wireless debugging is on, but this phone has not trusted the patcher yet. Tap Pair, then type the pairing code into the notification that appears.</string>
     <string name="device_logs_sheet_phone_pair">Pair this phone</string>
     <string name="revert_title">Undo all changes</string>
-    <string name="revert_intro">This removes what OpenSHM Patcher installed on your phone and your watch and puts back what it changed. Only what is really installed is touched, and system apps are never removed.</string>
+    <string name="revert_intro">This removes what LibreWrist installed on your phone and your watch and puts back what it changed. Only what is really installed is touched, and system apps are never removed.</string>
     <string name="revert_probing">Checking what is installed…</string>
     <string name="revert_action_remove">Remove</string>
     <string name="revert_action_enable">Turn back on</string>
@@ -802,7 +802,7 @@
     <string name="revert_done_partial_title">Some changes are still in place</string>
     <string name="revert_done_partial_body">Not everything could be undone. Fix what is listed and check again; the setup information is kept so you can finish.</string>
     <string name="revert_title_watch">Restore the watch</string>
-    <string name="revert_intro_watch">This removes what OpenSHM Patcher installed on your watch and puts back what it changed there. Your phone stays as it is.</string>
+    <string name="revert_intro_watch">This removes what LibreWrist installed on your watch and puts back what it changed there. Your phone stays as it is.</string>
     <string name="revert_title_app">Remove %1$s</string>
     <string name="revert_intro_app">Only this app is removed. The rest of your setup stays as it is.</string>
     <string name="revert_start_watch">Restore the watch</string>
@@ -818,8 +818,8 @@
     <string name="revert_manual_devmode">Turn off the developer mode of Health Platform if you switched it on.</string>
     <string name="revert_manual_adb">Revoke the debugging authorization and turn Wireless debugging off on the watch and on this phone.</string>
     <string name="revert_manual_keys">Backups of your signing key (Documents/OpenSHM) and the saved password stay. Delete them from Files or your password manager if you no longer need them.</string>
-    <string name="revert_self_action">Uninstall OpenSHM Patcher</string>
-    <string name="revert_self_title">Uninstall OpenSHM Patcher?</string>
+    <string name="revert_self_action">Uninstall LibreWrist</string>
+    <string name="revert_self_title">Uninstall LibreWrist?</string>
     <string name="revert_self_body">Android asks you to confirm. The app and its stored data, including the signing key kept inside it, are removed. Backups you saved elsewhere stay.</string>
     <string name="revert_self_body_partial">Not everything was undone. Without this app you would have to install it again to finish.</string>
     <string name="revert_self_cancelled">Uninstall cancelled. The app is still installed.</string>

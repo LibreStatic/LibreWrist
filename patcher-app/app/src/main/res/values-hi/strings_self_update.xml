@@ -8,7 +8,7 @@
     <string name="update_action_later">बाद में</string>
     <string name="update_skip_version">यह संस्करण फिर से न दिखाएँ</string>
     <string name="update_closing_note">अपडेट के दौरान ऐप बंद हो जाता है। बाद में उसे फिर से खोलें।</string>
-    <string name="update_permission_text">अपडेट करने के लिए अभी खुले सेटिंग पेज पर OpenSHM Patcher को ऐप इंस्टॉल करने की अनुमति दें, फिर वापस आकर जारी रखें पर टैप करें।</string>
+    <string name="update_permission_text">अपडेट करने के लिए अभी खुले सेटिंग पेज पर LibreWrist को ऐप इंस्टॉल करने की अनुमति दें, फिर वापस आकर जारी रखें पर टैप करें।</string>
     <string name="update_downloading">अपडेट डाउनलोड हो रहा है…</string>
     <string name="update_verifying">डाउनलोड जाँचा जा रहा है…</string>
     <string name="update_installing">अपडेट इंस्टॉल हो रहा है…</string>
@@ -33,7 +33,7 @@
     <string name="settings_version_label">संस्करण</string>
     <string name="settings_version_value">%1$s (बिल्ड %2$d)</string>
     <string name="update_channel_name">ऐप अपडेट</string>
-    <string name="update_channel_description">OpenSHM Patcher का नया संस्करण उपलब्ध होने पर आपको बताता है।</string>
+    <string name="update_channel_description">LibreWrist का नया संस्करण उपलब्ध होने पर आपको बताता है।</string>
     <string name="update_notification_title">नया संस्करण उपलब्ध है</string>
     <string name="update_notification_text">बिल्ड %1$d (v%2$s) इंस्टॉल के लिए तैयार है</string>
 </resources>

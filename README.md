@@ -1,4 +1,6 @@
-# OpenSHM
+# LibreWrist
+
+> LibreWrist was formerly called OpenSHM (the repository and some identifiers keep that name).
 
 Personal interoperability between a Galaxy Watch and a **non-Samsung** Android phone. With it, the
 Samsung Health Monitor (SHM) app can measure ECG, blood pressure and irregular heart rhythm
@@ -51,11 +53,11 @@ adapter and the pinch detector ship inside the app, not with the catalogue.
 Prefer watching to reading? This 90-second video shows the whole setup, step by step. The screens
 use sample data. Click it to open the full-quality MP4.
 
-[![OpenSHM quick start](docs/media/quick-start.gif)](docs/media/quick-start.mp4)
+[![LibreWrist quick start](docs/media/quick-start.gif)](docs/media/quick-start.mp4)
 
 ## Getting started: the patcher app
 
-The easiest way is **OpenSHM Patcher** (`patcher-app/`). This Android app does the whole job on the
+The easiest way is **LibreWrist** (`patcher-app/`). This Android app does the whole job on the
 phone itself; no PC is needed. Download the latest APK from the
 [Releases](https://github.com/LibreStatic/OpenSHM/releases) page and install it on the phone.
 
@@ -92,7 +94,7 @@ examples, so your screens will show your own values.
 
 ### 1. Welcome
 
-Open OpenSHM Patcher. **What will change on my devices?** lists every app that will be installed on
+Open LibreWrist. **What will change on my devices?** lists every app that will be installed on
 the phone and on the watch, and what each one is allowed to do. Tap **Get started**.
 
 <p>
@@ -240,7 +242,7 @@ the code.
 **Step E: give the code to the patcher.** Without closing the code window:
 
 1. Swipe down from the top of the screen to open the notification panel.
-2. Find the OpenSHM Patcher notification **Enter the pairing code** and tap **Enter code**.
+2. Find the LibreWrist notification **Enter the pairing code** and tap **Enter code**.
 3. Type the six digits shown on the code window and tap the send arrow.
 
 You can also go back to the patcher and type the code there, but the notification is easier,
@@ -253,7 +255,7 @@ because it keeps the code window on screen.
 
 **Step F: done.** The code window closes by itself. The patcher connects and switches on every
 missing permission. Go back to the patcher: it shows **All set** and the permission list turns
-green. *OpenSHM* now appears under **Paired devices** in Wireless debugging. The pairing is
+green. *LibreWrist* now appears under **Paired devices** in Wireless debugging. The pairing is
 remembered, so next time the patcher reconnects without a new code, as long as Wireless debugging is
 on.
 
@@ -262,7 +264,7 @@ on.
 **If something goes wrong:**
 
 - *The notification never asks for a code*: check that Wireless debugging is on and that the phone
-  is on Wi-Fi. Also check that notifications are allowed for OpenSHM Patcher.
+  is on Wi-Fi. Also check that notifications are allowed for LibreWrist.
 - *"Wrong code"*: codes expire when the window closes. Tap **Pair device with pairing code**
   again and use the new code.
 - *Wireless debugging turns itself off*: Android turns it off when you change Wi-Fi networks. Turn
@@ -358,7 +360,7 @@ reconnects by itself once the device shows up on the network again.
 #### Undo all changes
 
 Welcome, All set and the Home menu offer **Undo all changes**.
-It looks for every OpenSHM app on both devices (under the current package prefix and any earlier one
+It looks for every LibreWrist app on both devices (under the current package prefix and any earlier one
 it finds) and only acts on what is actually there:
 
 - on the watch, it removes the bridge's companion association, uninstalls our apps, turns the stock
@@ -367,7 +369,7 @@ it finds) and only acts on what is actually there:
 
 System apps are never touched, and one failing step does not stop the rest. An unreachable watch can
 be retried or skipped; the result is then marked as partial. After a complete revert the package
-prefix is unlocked and the stored builds are cleared. The last step offers to uninstall OpenSHM
+prefix is unlocked and the stored builds are cleared. The last step offers to uninstall LibreWrist
 Patcher itself.
 
 ### Optional: Samsung Health+
@@ -440,7 +442,7 @@ Everything runs on the two devices. Details are in [docs/architecture.md](docs/a
 
 | Path | What it is |
 |---|---|
-| `patcher-app/` | The OpenSHM Patcher Android app, a Gradle build with three modules: `:engine` (pure JVM patch engine), `:adb` (ADB client) and `:app` (Compose UI). Third-party licences are in [patcher-app/THIRD_PARTY.md](patcher-app/THIRD_PARTY.md). |
+| `patcher-app/` | The LibreWrist Android app, a Gradle build with three modules: `:engine` (pure JVM patch engine), `:adb` (ADB client) and `:app` (Compose UI). Third-party licences are in [patcher-app/THIRD_PARTY.md](patcher-app/THIRD_PARTY.md). |
 | `catalogue/` | The signed patch catalogue. `catalogue.json` describes the inputs, profiles and patterns as data; `catalogue.json.sig` and `catalogue.pub` are its signature and public key. Details in [docs/patches.md](docs/patches.md). |
 | `superpatcher/`, `scripts/superpatcher.py` | The Python patch engine. It interprets the same catalogue as the app. |
 | `watch-mod/` | Our own code injected into the watch SHM: the ECG and BP adapters, the Health Tracking client and the vendor overrides. |
