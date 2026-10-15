@@ -278,10 +278,10 @@ internal object PreviewData {
     fun buildFinished() =
         BuildUiState(patchCount = AppCatalogue.current.patternCount(WatchProfile.WearOs5.inputIds)).finish()
 
-    fun buildDone(backup: KeyBackupStatus = KeyBackupStatus.Hidden) = BuildDoneUiState(
+    fun buildDone(backup: KeyBackupStatus = KeyBackupStatus.Hidden, reused: Set<String> = emptySet()) = BuildDoneUiState(
         backup = backup,
         outputs = AppCatalogue.current.outputs.map {
-            BuiltOutput(it.id, it.label, it.device, it.packageName(PREFIX), sizeBytes = (30 + it.id.length * 3) * MB)
+            BuiltOutput(it.id, it.label, it.device, it.packageName(PREFIX), sizeBytes = (30 + it.id.length * 3) * MB, reused = it.id in reused)
         },
         patchCount = AppCatalogue.current.patternCount(WatchProfile.WearOs5.inputIds),
     )

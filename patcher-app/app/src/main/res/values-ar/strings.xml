@@ -352,6 +352,7 @@
     <string name="build_done_ready">جاهز للتثبيت</string>
     <string name="build_done_install">التثبيت على الهاتف</string>
     <string name="build_done_link_note">يتشارك تطبيقا Health Monitor اسم الحزمة ومفتاح التوقيع نفسيهما. وهذا ما يتيح لرابط بيانات Google تمرير الرسائل بينهما.</string>
+    <string name="build_done_reused">بدون تغيير: أُعيد استخدام الإصدار السابق</string>
     <plurals name="build_done_subtitle_patches">
         <item quantity="zero">%1$d تصحيح</item>
         <item quantity="one">تصحيح واحد</item>

@@ -65,12 +65,27 @@ class BuildRequest(
     val knownSignerCert: String?,
     /** Optional patterns to leave out (see [PatchRequest.disabledPatterns]); the engine refuses required or unknown ids. */
     val disabledPatterns: Set<String> = emptySet(),
+    /** What each output would be built from now (see [outputFingerprint]), by output id. */
+    val fingerprints: Map<String, String> = emptyMap(),
+    /** Outputs of the last build that may be kept as they are, by output id; used only when the fingerprint and the file still match. */
+    val reusable: Map<String, BuiltRecord> = emptyMap(),
 )
 
-/** One finished output. */
-class BuiltFile(val outputId: String, val file: File, val sizeBytes: Long, val sha256: String)
+/** One finished output; [reused] means the file of an earlier build was kept, [fingerprint] is what it was built from. */
+class BuiltFile(
+    val outputId: String,
+    val file: File,
+    val sizeBytes: Long,
+    val sha256: String,
+    val fingerprint: String = "",
+    val reused: Boolean = false,
+)
 
-/** [cancelled] means the user stopped the build: [files] is empty (what was built is deleted) and there is no [error]. */
+/**
+ * [files] are the complete outputs that exist after the run (on a failure or a cancel only those before
+ * it). [cancelled] means the user stopped the build: what this run built is deleted, so [files] holds
+ * only reused outputs, and there is no [error].
+ */
 class BuildOutcome(val ok: Boolean, val error: String?, val files: List<BuiltFile>, val cancelled: Boolean = false)
 
 /** Thrown from the listener handed to the engine to stop a blocking engine call at its next event. */
@@ -84,10 +99,13 @@ interface BuildSink {
 }
 
 /**
+ * An output is not built again when [BuildRequest.reusable] has a record with the same non-empty
+ * fingerprint as [BuildRequest.fingerprints] and `<id>.apk` still has the recorded size and sha256.
+ *
  * Builds the outputs of a request one after the other, in the catalogue `installOrder`, and stops at the
  * first failure or when [cancelled] turns true (checked before each output and, through the engine
  * listener, at the next engine event). A cancel deletes the partial output and every output already
- * built by this run. Each output goes to `<outputs>/<id>.apk.part` and is renamed to `<id>.apk` only when
+ * built by this run (not the reused ones). Each output goes to `<outputs>/<id>.apk.part` and is renamed to `<id>.apk` only when
  * its report is ok; a failure deletes the partial file. Plain JVM code.
  *
  * Stage mapping (engine phase event -> [BuildStage]); the stages list shows the output being built and
@@ -133,6 +151,14 @@ class BuildRunner(
                 val part = File(outputsDir, "${out.id}.apk.part")
                 val final = File(outputsDir, "${out.id}.apk")
                 part.delete()
+                val fingerprint = request.fingerprints[out.id].orEmpty()
+                val kept = reusable(request.reusable[out.id], fingerprint, final)
+                if (kept != null) {
+                    sink.onStage(out.id, index, outputs.size, BuildStage.SelfCheck)
+                    sink.onLog("reused ${out.id}: patches unchanged since the last build")
+                    built += BuiltFile(out.id, final, kept.sizeBytes, kept.sha256, fingerprint, reused = true)
+                    return@forEachIndexed
+                }
                 sink.onLog("== ${out.id} (${index + 1}/${outputs.size}) ==")
                 val result = try {
                     buildOne(out, request, part, listener(out.id, index, outputs.size, sink))
@@ -150,7 +176,7 @@ class BuildRunner(
                     return fail(sink, result.error ?: "${out.id}: no output was produced", built)
                 }
                 Files.move(part.toPath(), final.toPath(), StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING)
-                built += BuiltFile(out.id, final, final.length(), sha256(final))
+                built += BuiltFile(out.id, final, final.length(), sha256(final), fingerprint)
                 sink.onLog("built ${out.id}: ${final.length() / 1024} KiB")
             }
         } finally {
@@ -219,11 +245,17 @@ class BuildRunner(
         }
     }
 
+    private fun reusable(record: BuiltRecord?, fingerprint: String, file: File): BuiltRecord? =
+        record?.takeIf {
+            fingerprint.isNotEmpty() && it.fingerprint == fingerprint && file.isFile &&
+                file.length() == it.sizeBytes && sha256(file) == it.sha256
+        }
+
     private fun cancel(sink: BuildSink, built: List<BuiltFile>): BuildOutcome {
-        built.forEach { it.file.delete() }
+        built.filterNot { it.reused }.forEach { it.file.delete() }
         outputsDir.listFiles { f -> f.name.endsWith(".apk.part") }?.forEach { it.delete() }
         sink.onLog("CANCELLED by the user")
-        return BuildOutcome(false, null, emptyList(), cancelled = true)
+        return BuildOutcome(false, null, built.filter { it.reused }, cancelled = true)
     }
 
     private fun readAsset(path: String): ByteArray = openAssetOrFail(path).use { it.readBytes() }

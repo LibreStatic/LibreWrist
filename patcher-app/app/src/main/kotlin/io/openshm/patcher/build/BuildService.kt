@@ -7,7 +7,6 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
 import android.graphics.drawable.Icon
 import android.os.IBinder
@@ -21,7 +20,6 @@ import io.openshm.patcher.data.signingKeyStore
 import io.openshm.patcher.device.WatchKeepAlive
 import io.openshm.patcher.ui.screens.build.BuildStage
 import io.openshm.patcher.ui.screens.build.titleRes
-import java.security.MessageDigest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -122,6 +120,9 @@ class BuildService : Service() {
         BuildController.onLog("preparing the signing key")
         val signingKey = signingKeyStore(this).load()
         val storage = BuildStorage(this)
+        // The previous record tells which outputs can be kept; read it before it is cleared.
+        val reusable = storage.record.read()?.takeIf { it.prefix == prefix }?.outputs?.associateBy { it.outputId }.orEmpty()
+        val fingerprints = currentFingerprints(this, catalogue, prefix, outputIds, disabled)
         storage.record.clear()
         val runner = BuildRunner(
             catalogue = catalogue.engine,
@@ -138,35 +139,32 @@ class BuildService : Service() {
 
             override fun onLog(line: String) = BuildController.onLog(line)
         }
-        val outcome = runner.run(BuildRequest(outputIds, prefix, signingKey, ownCertificateSha256(), disabled), sink)
+        val outcome = runner.run(
+            BuildRequest(outputIds, prefix, signingKey, ownCertificateSha256(this), disabled, fingerprints, reusable), sink,
+        )
+        val records = outcome.files.map { BuiltRecord(it.outputId, it.file.path, it.sizeBytes, it.sha256, it.fingerprint, it.reused) }
         if (outcome.cancelled) {
             BuildController.onLog("build cancelled; partial outputs deleted")
+            writePartialRecord(storage, prefix, catalogue.serial, records)
             BuildController.cancelled()
         } else if (outcome.ok) {
             storage.record.write(
-                BuiltBuild(
-                    key, prefix, catalogue.serial, System.currentTimeMillis(),
-                    outcome.files.map { BuiltRecord(it.outputId, it.file.path, it.sizeBytes, it.sha256) },
-                    buildFacts(catalogue, outputIds),
-                ),
+                BuiltBuild(key, prefix, catalogue.serial, System.currentTimeMillis(), records, buildFacts(catalogue, outputIds)),
             )
             BuildController.succeed()
         } else {
+            writePartialRecord(storage, prefix, catalogue.serial, records)
             BuildController.fail(outcome.error ?: "The build failed.")
         }
     }
 
     /**
-     * SHA-256 of the certificate this app is signed with (lowercase hex). With several signers the
-     * platform's knownSigner check needs all of them, so that case is refused instead of pinning one.
+     * After a failed or cancelled build, keeps the complete outputs (reused or built before the failure)
+     * so the next build can reuse them. The empty key means "not a finished build" to the Build screen.
      */
-    @Suppress("DEPRECATION")
-    private fun ownCertificateSha256(): String? {
-        val info = packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNING_CERTIFICATES)
-        val signingInfo = info.signingInfo ?: return null
-        if (signingInfo.hasMultipleSigners()) return null
-        val signature = signingInfo.apkContentsSigners?.firstOrNull() ?: return null
-        return MessageDigest.getInstance("SHA-256").digest(signature.toByteArray()).joinToString("") { "%02x".format(it) }
+    private fun writePartialRecord(storage: BuildStorage, prefix: String, serial: Long, records: List<BuiltRecord>) {
+        if (records.isEmpty()) return
+        storage.record.write(BuiltBuild("", prefix, serial, System.currentTimeMillis(), records))
     }
 
     private fun finish() {

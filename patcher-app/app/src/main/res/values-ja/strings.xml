@@ -332,6 +332,7 @@
     <string name="build_done_ready">インストール可能</string>
     <string name="build_done_install">スマートフォンにインストール</string>
     <string name="build_done_link_note">2つのHealth Monitorアプリは、同じパッケージ名と署名キーを共有します。これにより、Googleのデータリンクで両者間のメッセージをやり取りできます。</string>
+    <string name="build_done_reused">変更なし：前回のビルドを再利用しました</string>
     <plurals name="build_done_subtitle_patches">
         <item quantity="other">パッチ %1$d 件</item>
     </plurals>

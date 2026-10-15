@@ -217,6 +217,17 @@ Phases, which match the Build artboard's step list:
    - check that every patched site is present, by re-running the anchors in "already applied"
      mode.
 
+**Build reuse.** The record of the last build (`built-outputs.properties`) stores a fingerprint per
+output: the output id, package prefix, signing certificate, a hash of the engine and build code and
+the library versions (`BuildConfig.ENGINE_FINGERPRINT`), and for patched outputs the input hash and version, the profile's
+patterns of that input, the disabled ones among them and the hash of each injected dex; for own apps
+the hash of the bridge APK (and the patcher's certificate for the phone bridge). A new build keeps an
+output without patching it when its fingerprint is unchanged and its signed APK in `outputs/` still
+has the recorded size and SHA-256, so changing one optional patch re-patches only the apps it
+belongs to, and the install step then finds the unchanged apps already installed. A failed or
+cancelled build keeps the complete outputs in a record with an empty key, which the Build screen
+never treats as finished.
+
 ### 5.2 Equivalence oracle (acceptance gate for the port)
 
 The Python engine has been verified against owner-tested builds ([V] in `docs/patches.md`). The

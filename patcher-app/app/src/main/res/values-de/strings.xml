@@ -336,6 +336,7 @@
     <string name="build_done_ready">bereit zur Installation</string>
     <string name="build_done_install">Auf dem Smartphone installieren</string>
     <string name="build_done_link_note">Die beiden Health-Monitor-Apps teilen sich einen Paketnamen und einen Signaturschlüssel. Dadurch kann die Google-Datenverbindung Nachrichten zwischen ihnen weitergeben.</string>
+    <string name="build_done_reused">Unverändert: die vorherige Version wurde wiederverwendet</string>
     <plurals name="build_done_subtitle_patches">
         <item quantity="one">%1$d Patch</item>
         <item quantity="other">%1$d Patches</item>

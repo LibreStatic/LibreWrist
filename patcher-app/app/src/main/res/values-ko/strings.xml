@@ -332,6 +332,7 @@
     <string name="build_done_ready">설치 준비 완료</string>
     <string name="build_done_install">휴대전화에 설치</string>
     <string name="build_done_link_note">두 Health Monitor 앱은 같은 패키지 이름과 서명 키를 공유합니다. 덕분에 Google 데이터 링크로 둘 사이에 메시지를 주고받을 수 있습니다.</string>
+    <string name="build_done_reused">변경 없음: 이전 빌드를 다시 사용했습니다</string>
     <plurals name="build_done_subtitle_patches">
         <item quantity="other">패치 %1$d개</item>
     </plurals>

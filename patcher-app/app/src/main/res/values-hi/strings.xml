@@ -336,6 +336,7 @@
     <string name="build_done_ready">इंस्टॉल के लिए तैयार</string>
     <string name="build_done_install">फ़ोन पर इंस्टॉल करें</string>
     <string name="build_done_link_note">दोनों Health Monitor ऐप एक ही पैकेज नाम और साइनिंग कुंजी साझा करते हैं। इसी से Google का डेटा लिंक उनके बीच संदेश पहुँचा पाता है।</string>
+    <string name="build_done_reused">कोई बदलाव नहीं: पिछला बिल्ड फिर से इस्तेमाल किया गया</string>
     <plurals name="build_done_subtitle_patches">
         <item quantity="one">%1$d पैच</item>
         <item quantity="other">%1$d पैच</item>

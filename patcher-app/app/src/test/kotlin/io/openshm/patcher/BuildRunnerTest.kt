@@ -414,4 +414,125 @@ class BuildRunnerTest {
             BuildController.fail("done with the test")
         }
     }
+
+    private fun fingerprints(ids: Collection<String>) = ids.associateWith { "fp-$it" }
+
+    private fun recordsOf(outcome: io.openshm.patcher.build.BuildOutcome) =
+        outcome.files.associate { it.outputId to BuiltRecord(it.outputId, it.file.path, it.sizeBytes, it.sha256, it.fingerprint, it.reused) }
+
+    private fun firstBuild(ids: Collection<String> = allIds): Map<String, BuiltRecord> {
+        val outcome = runner(FakeEngine()).run(BuildRequest(ids, "com.example", key, null, fingerprints = fingerprints(ids)), Sink())
+        assertTrue(outcome.error, outcome.ok)
+        assertTrue(outcome.files.none { it.reused })
+        return recordsOf(outcome)
+    }
+
+    private fun secondRun(
+        reusable: Map<String, BuiltRecord>,
+        fingerprints: Map<String, String> = fingerprints(allIds),
+        cancelled: () -> Boolean = { false },
+        sink: Sink = Sink(),
+    ): Triple<io.openshm.patcher.build.BuildOutcome, FakeEngine, Sink> {
+        val engine = FakeEngine()
+        val outcome = runner(engine, cancelled = cancelled)
+            .run(BuildRequest(allIds, "com.example", key, null, fingerprints = fingerprints, reusable = reusable), sink)
+        return Triple(outcome, engine, sink)
+    }
+
+    @Test fun anUnchangedOutputIsReusedWithoutCallingTheEngine() {
+        val first = firstBuild()
+        val (outcome, engine, sink) = secondRun(first)
+        assertTrue(outcome.error, outcome.ok)
+        assertEquals(0, engine.patches.size + engine.ownApps.size)
+        assertTrue(outcome.files.all { it.reused && it.fingerprint == "fp-${it.outputId}" })
+        assertEquals(first.mapValues { it.value.sha256 }, outcome.files.associate { it.outputId to it.sha256 })
+        assertTrue(sink.log.contains("reused shm-phone: patches unchanged since the last build"))
+    }
+
+    @Test fun onlyTheOutputsWithAChangedFingerprintAreRebuilt() {
+        val first = firstBuild()
+        val changedId = allIds.first()
+        val (outcome, engine, _) = secondRun(first, fingerprints(allIds) + (changedId to "other"))
+        assertTrue(outcome.error, outcome.ok)
+        assertEquals(1, engine.patches.size + engine.ownApps.size)
+        val byId = outcome.files.associateBy { it.outputId }
+        assertFalse(byId.getValue(changedId).reused)
+        assertEquals("other", byId.getValue(changedId).fingerprint)
+        assertTrue(allIds.filter { it != changedId }.all { byId.getValue(it).reused })
+    }
+
+    @Test fun aMissingOrChangedFileIsRebuilt() {
+        val first = firstBuild()
+        val gone = allIds[0]
+        val changed = allIds[1]
+        File(first.getValue(gone).path).delete()
+        File(first.getValue(changed).path).writeText("xxxxxxxxxxxxxxxxxxxx") // another size
+        val sameSize = allIds[2]
+        File(first.getValue(sameSize).path).also { it.writeText("x".repeat(it.length().toInt())) } // same size, other bytes
+        val (outcome, engine, _) = secondRun(first)
+        assertTrue(outcome.error, outcome.ok)
+        assertEquals(3, engine.patches.size + engine.ownApps.size)
+        assertEquals(setOf(gone, changed, sameSize), outcome.files.filter { !it.reused }.map { it.outputId }.toSet())
+    }
+
+    @Test fun anEmptyRecordedFingerprintNeverReuses() {
+        val first = firstBuild().mapValues { it.value.copy(fingerprint = "") }
+        val (outcome, engine, _) = secondRun(first, fingerprints = fingerprints(allIds).mapValues { "" })
+        assertTrue(outcome.ok)
+        assertEquals(allIds.size, engine.patches.size + engine.ownApps.size)
+        val (outcome2, engine2, _) = secondRun(first)
+        assertTrue(outcome2.ok)
+        assertEquals(allIds.size, engine2.patches.size + engine2.ownApps.size)
+    }
+
+    @Test fun cancelAfterAReuseKeepsTheReusedFileAndDeletesTheRebuiltOnes() {
+        val first = firstBuild()
+        val order = engineCatalogue.installOrder.map { it.output }
+        val reusedId = order[0]
+        var requested = false
+        val sink = object : BuildSink {
+            override fun onStage(outputId: String, index: Int, count: Int, stage: BuildStage) {}
+            override fun onLog(line: String) { if (line.startsWith("built ")) requested = true }
+        }
+        val engine = FakeEngine()
+        val outcome = runner(engine, cancelled = { requested }).run(
+            BuildRequest(allIds, "com.example", key, null, fingerprints = fingerprints(allIds), reusable = mapOf(reusedId to first.getValue(reusedId))),
+            sink,
+        )
+        assertTrue(outcome.cancelled)
+        assertEquals(1, engine.patches.size + engine.ownApps.size) // the second output was rebuilt, the third never started
+        assertEquals(listOf(reusedId), outcome.files.map { it.outputId })
+        assertTrue(outcome.files.single().reused)
+        assertTrue(File(root, "outputs/$reusedId.apk").isFile)
+        assertFalse(File(root, "outputs/${order[1]}.apk").exists()) // rebuilt in this run, so deleted
+    }
+
+    @Test fun stageProgressStaysMonotonicAcrossReusedOutputs() {
+        val first = firstBuild()
+        val order = engineCatalogue.installOrder.map { it.output }
+        val (outcome, _, sink) = secondRun(mapOf(order[0] to first.getValue(order[0]), order[2] to first.getValue(order[2])))
+        assertTrue(outcome.ok)
+        val progress = sink.stages.map { (_, index, stage) -> index * 100 + stage.ordinal }
+        assertEquals(progress.sorted(), progress)
+        for (reused in listOf(0, 2)) assertTrue(sink.stages.any { it.second == reused && it.third == BuildStage.SelfCheck })
+    }
+
+    @Test fun builtOutputsRecordKeepsTheFingerprintAndReusedFlag() {
+        val apk = File(root, "a.apk").also { it.writeText("12345") }
+        val store = BuiltOutputs(File(root, "record.properties"))
+        val build = BuiltBuild("k", "com.example", 7, 99, listOf(BuiltRecord("a", apk.path, 5, "ff", "fp", true), BuiltRecord("b", apk.path, 5, "ee")))
+        store.write(build)
+        val read = store.read()!!
+        assertEquals("fp", read.outputs[0].fingerprint)
+        assertTrue(read.outputs[0].reused)
+        assertEquals("", read.outputs[1].fingerprint)
+        assertFalse(read.outputs[1].reused)
+        // a record written before these fields existed
+        File(root, "record.properties").writeText(
+            "key=k\nprefix=p\nserial=1\nbuiltAt=2\nids=a\na.path=${apk.path.replace("\\", "/")}\na.size=5\na.sha256=ff\n",
+        )
+        val old = store.read()!!.outputs.single()
+        assertEquals("", old.fingerprint)
+        assertFalse(old.reused)
+    }
 }

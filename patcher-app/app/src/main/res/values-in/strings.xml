@@ -332,6 +332,7 @@
     <string name="build_done_ready">siap dipasang</string>
     <string name="build_done_install">Pasang di ponsel</string>
     <string name="build_done_link_note">Kedua aplikasi Health Monitor berbagi satu nama paket dan kunci penandatanganan. Itulah yang memungkinkan tautan data Google meneruskan pesan di antara keduanya.</string>
+    <string name="build_done_reused">Tidak berubah: versi sebelumnya digunakan kembali</string>
     <plurals name="build_done_subtitle_patches">
         <item quantity="other">%1$d patch</item>
     </plurals>

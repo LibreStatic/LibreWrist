@@ -6,8 +6,19 @@ import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.util.Properties
 
-/** One finished output as recorded. */
-data class BuiltRecord(val outputId: String, val path: String, val sizeBytes: Long, val sha256: String)
+/**
+ * One finished output as recorded. [fingerprint] is what it was built from (see [outputFingerprint]; empty
+ * for a record written before it existed, which never matches), [reused] that the last build kept the
+ * file of an earlier one instead of patching again.
+ */
+data class BuiltRecord(
+    val outputId: String,
+    val path: String,
+    val sizeBytes: Long,
+    val sha256: String,
+    val fingerprint: String = "",
+    val reused: Boolean = false,
+)
 
 /** The last successful build: what it was built for ([key]) and its files. */
 data class BuiltBuild(
@@ -33,7 +44,11 @@ class BuiltOutputs(private val file: File) {
             file.inputStream().use { p.load(it) }
             val ids = p.getProperty("ids")?.split(',')?.filter { it.isNotEmpty() } ?: return null
             val records = ids.map { id ->
-                BuiltRecord(id, p.getProperty("$id.path"), p.getProperty("$id.size").toLong(), p.getProperty("$id.sha256"))
+                BuiltRecord(
+                    id, p.getProperty("$id.path"), p.getProperty("$id.size").toLong(),
+                    p.getProperty("$id.sha256"),
+                    fingerprint = p.getProperty("$id.fingerprint").orEmpty(), reused = p.getProperty("$id.reused") == "true",
+                )
             }
             if (records.isEmpty() || records.any { File(it.path).length() != it.sizeBytes }) return null
             return BuiltBuild(
@@ -61,6 +76,8 @@ class BuiltOutputs(private val file: File) {
             p.setProperty("${o.outputId}.path", o.path)
             p.setProperty("${o.outputId}.size", o.sizeBytes.toString())
             p.setProperty("${o.outputId}.sha256", o.sha256)
+            p.setProperty("${o.outputId}.fingerprint", o.fingerprint)
+            p.setProperty("${o.outputId}.reused", o.reused.toString())
         }
         file.parentFile?.mkdirs()
         val tmp = File(file.path + ".part")

@@ -1,4 +1,5 @@
 import java.io.File
+import java.security.MessageDigest
 
 plugins {
     alias(libs.plugins.android.application)
@@ -37,6 +38,26 @@ android {
             "UPDATE_REPO must look like owner/name"
         }
         buildConfigField("String", "UPDATE_REPO", "\"$updateRepo\"")
+        // Hash of the code that decides what a built APK contains (the engine, its library versions and the
+        // build package of the app), so a build is only reused while that code is unchanged (see
+        // BuildFacts.outputFingerprint).
+        val root = rootProject.projectDir.toPath()
+        val engineFiles = listOf(
+            rootProject.file("engine/src/main"),
+            rootProject.file("engine/build.gradle.kts"),
+            rootProject.file("gradle/libs.versions.toml"),
+            rootProject.file("app/src/main/kotlin/io/openshm/patcher/build"),
+        ).flatMap { it.walkTopDown().filter { f -> f.isFile } }
+            .map { root.relativize(it.toPath()).toString().replace('\\', '/') to it }
+            .sortedBy { it.first }
+        val engineDigest = MessageDigest.getInstance("SHA-256")
+        for ((path, file) in engineFiles) {
+            engineDigest.update(path.toByteArray())
+            engineDigest.update(0)
+            engineDigest.update(file.readBytes())
+            engineDigest.update(0)
+        }
+        buildConfigField("String", "ENGINE_FINGERPRINT", "\"${engineDigest.digest().joinToString("") { "%02x".format(it) }}\"")
     }
     // The patcher's own fixed key, shared by every checkout (OPENSHM_KEYS_DIR, default
     // ~/.local/share/openshm/keys, see config.env; alias PATCHER_KEY_ALIAS, default "patcher"). Without

@@ -444,3 +444,7 @@ fun AppUpdateDownloadingDriver() = PreviewHost(ColorMode.Fallback) {
 
 @Composable
 fun SigningKeyImportDriver() = PreviewHost(ColorMode.Fallback) { SigningKeySample(form = SigningKeyForm.Import) }
+
+/** BuildDone after a build that kept two unchanged apps from the previous one. */
+@Composable
+fun BuildDoneReusedDriver() = PreviewHost(ColorMode.Fallback) { BuildDoneSample(reused = setOf("shm-phone", "bridge-watch")) }

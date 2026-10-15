@@ -336,6 +336,7 @@
     <string name="build_done_ready">klaar om te installeren</string>
     <string name="build_done_install">Installeren op telefoon</string>
     <string name="build_done_link_note">De twee Health Monitor-apps delen één pakketnaam en ondertekeningssleutel. Daardoor kan de gegevensverbinding van Google berichten tussen ze doorgeven.</string>
+    <string name="build_done_reused">Ongewijzigd: de vorige versie is hergebruikt</string>
     <plurals name="build_done_subtitle_patches">
         <item quantity="one">%1$d patch</item>
         <item quantity="other">%1$d patches</item>

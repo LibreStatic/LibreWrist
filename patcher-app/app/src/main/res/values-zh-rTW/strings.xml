@@ -332,6 +332,7 @@
     <string name="build_done_ready">可以安裝</string>
     <string name="build_done_install">安裝到手機</string>
     <string name="build_done_link_note">兩個 Health Monitor 應用程式使用相同的套件名稱和簽署金鑰。這樣 Google 的資料連結才能在它們之間傳遞訊息。</string>
+    <string name="build_done_reused">沒有變更：已重複使用先前的版本</string>
     <plurals name="build_done_subtitle_patches">
         <item quantity="other">%1$d 個修補程式</item>
     </plurals>

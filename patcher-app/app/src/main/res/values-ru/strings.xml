@@ -344,6 +344,7 @@
     <string name="build_done_ready">готово к установке</string>
     <string name="build_done_install">Установить на телефон</string>
     <string name="build_done_link_note">Два приложения Health Monitor используют одно имя пакета и один ключ подписи. Благодаря этому канал данных Google передаёт сообщения между ними.</string>
+    <string name="build_done_reused">Без изменений: использована предыдущая версия</string>
     <plurals name="build_done_subtitle_patches">
         <item quantity="one">%1$d патч</item>
         <item quantity="few">%1$d патча</item>

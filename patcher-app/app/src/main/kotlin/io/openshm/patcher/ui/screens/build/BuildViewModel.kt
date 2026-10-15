@@ -9,15 +9,18 @@ import io.openshm.patcher.build.BuildRunState
 import io.openshm.patcher.build.BuildService
 import io.openshm.patcher.build.BuildStorage
 import io.openshm.patcher.build.buildKey
+import io.openshm.patcher.build.currentFingerprints
 import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.SetupSession
 import io.openshm.patcher.ui.components.CheckStatus
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 /** Marks [stage] as running and every earlier stage as passed. */
 internal fun BuildUiState.startStage(stage: BuildStage): BuildUiState = copy(
@@ -69,10 +72,10 @@ internal fun BuildRunState.toUiState(patchCount: Int, logVisible: Boolean, curre
 /** The finished build for the current setup, read from the record the build service writes. */
 internal fun builtOutputs(storage: BuildStorage): BuildDoneUiState {
     val session = SetupSession.state.value
-    val sizes = storage.record.read()?.outputs?.associate { it.outputId to it.sizeBytes }.orEmpty()
+    val records = storage.record.read()?.outputs?.associateBy { it.outputId }.orEmpty()
     return BuildDoneUiState(
         outputs = AppCatalogue.current.outputs.filter { it.id in session.outputIds }.map {
-            BuiltOutput(it.id, it.label, it.device, it.packageName(session.packagePrefix), sizeBytes = sizes[it.id] ?: 0L)
+            BuiltOutput(it.id, it.label, it.device, it.packageName(session.packagePrefix), sizeBytes = records[it.id]?.sizeBytes ?: 0L, reused = records[it.id]?.reused == true)
         },
         patchCount = AppCatalogue.current.patternCount(session.inputIds, session.disabledPatches),
     )
@@ -126,8 +129,34 @@ class BuildViewModel(application: Application) : AndroidViewModel(application) {
         when {
             run.phase == BuildRunPhase.Running -> Unit
             run.key == key && run.phase != BuildRunPhase.Idle -> Unit // finished (or failed: Retry restarts) for this setup
-            storage.record.read()?.key == key -> recordedFinished.value = true
-            else -> BuildService.start(getApplication())
+            else -> {
+                if (checking) return
+                checking = true
+                viewModelScope.launch(Dispatchers.IO) {
+                    try {
+                        if (recordMatches()) recordedFinished.value = true else BuildService.start(getApplication())
+                    } finally {
+                        checking = false
+                    }
+                }
+            }
         }
+    }
+
+    @Volatile private var checking = false
+
+    /** True when the record is a finished build for this setup and every output still has the fingerprint it would get now. */
+    private fun recordMatches(): Boolean {
+        val record = storage.record.read()?.takeIf { it.key == key } ?: return false
+        val session = SetupSession.state.value
+        val current = try {
+            currentFingerprints(
+                getApplication(), AppCatalogue.current, session.packagePrefix, session.outputIds,
+                AppCatalogue.current.effectiveDisabled(session.disabledPatches),
+            )
+        } catch (e: Exception) {
+            return false
+        }
+        return record.outputs.all { it.fingerprint.isNotEmpty() && it.fingerprint == current[it.outputId] }
     }
 }

@@ -336,6 +336,7 @@
     <string name="build_done_ready">kurulmaya hazır</string>
     <string name="build_done_install">Telefona kur</string>
     <string name="build_done_link_note">İki Health Monitor uygulaması aynı paket adını ve imza anahtarını paylaşır. Google veri bağlantısının aralarında mesaj iletmesini sağlayan budur.</string>
+    <string name="build_done_reused">Değişiklik yok: önceki sürüm yeniden kullanıldı</string>
     <plurals name="build_done_subtitle_patches">
         <item quantity="one">%1$d yama</item>
         <item quantity="other">%1$d yama</item>

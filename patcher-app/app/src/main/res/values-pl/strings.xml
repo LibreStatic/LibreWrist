@@ -344,6 +344,7 @@
     <string name="build_done_ready">gotowe do instalacji</string>
     <string name="build_done_install">Zainstaluj na telefonie</string>
     <string name="build_done_link_note">Obie aplikacje Health Monitor mają tę samą nazwę pakietu i klucz podpisu. Dzięki temu łącze danych Google może przekazywać między nimi wiadomości.</string>
+    <string name="build_done_reused">Bez zmian: użyto poprzedniej wersji</string>
     <plurals name="build_done_subtitle_patches">
         <item quantity="one">%1$d łatka</item>
         <item quantity="few">%1$d łatki</item>

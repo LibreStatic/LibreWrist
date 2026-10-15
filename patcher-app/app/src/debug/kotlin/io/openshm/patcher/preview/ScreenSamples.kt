@@ -112,7 +112,8 @@ internal fun BuildSample(logSheet: Boolean = false, almostDone: Boolean = false,
 private val PreviewIcons = AppIconLoader { null }
 
 @Composable
-internal fun BuildDoneSample(backup: KeyBackupStatus = KeyBackupStatus.Hidden) = BuildDoneScreen(PreviewData.buildDone(backup), {}, {})
+internal fun BuildDoneSample(backup: KeyBackupStatus = KeyBackupStatus.Hidden, reused: Set<String> = emptySet()) =
+    BuildDoneScreen(PreviewData.buildDone(backup, reused), {}, {})
 
 @Composable
 internal fun InstallPhoneSample(grants: Boolean = false, adb: SelfAdbPhase? = SelfAdbPhase.WaitingForCode) =

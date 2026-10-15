@@ -443,6 +443,7 @@
     <string name="build_done_ready">ready to install</string>
     <string name="build_done_install">Install on phone</string>
     <string name="build_done_link_note">The two Health Monitor apps share one package name and signing key. That is what lets Google\'s data link pass messages between them.</string>
+    <string name="build_done_reused">Unchanged: the previous build was reused</string>
     <plurals name="build_done_subtitle_patches">
         <item quantity="one">%1$d patch</item>
         <item quantity="other">%1$d patches</item>

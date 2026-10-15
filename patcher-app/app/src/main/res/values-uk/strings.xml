@@ -344,6 +344,7 @@
     <string name="build_done_ready">готово до встановлення</string>
     <string name="build_done_install">Установити на телефон</string>
     <string name="build_done_link_note">Два застосунки Health Monitor мають одну назву пакета й один ключ підпису. Саме це дає змогу каналу даних Google передавати повідомлення між ними.</string>
+    <string name="build_done_reused">Без змін: використано попередню версію</string>
     <plurals name="build_done_subtitle_patches">
         <item quantity="one">%1$d патч</item>
         <item quantity="few">%1$d патчі</item>

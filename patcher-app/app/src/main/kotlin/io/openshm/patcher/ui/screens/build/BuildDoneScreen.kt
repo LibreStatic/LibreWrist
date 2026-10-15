@@ -65,7 +65,7 @@ import io.openshm.patcher.ui.components.TwoPaneMinWidth
 import io.openshm.patcher.ui.components.TopActions
 
 /** One produced app: its label, the final package name (prefix already applied) and size. */
-data class BuiltOutput(val id: String, val label: String, val device: Device, val packageName: String, val sizeBytes: Long)
+data class BuiltOutput(val id: String, val label: String, val device: Device, val packageName: String, val sizeBytes: Long, val reused: Boolean = false)
 
 data class BuildDoneUiState(
     val outputs: List<BuiltOutput> = emptyList(),
@@ -184,6 +184,13 @@ private fun ColumnScope.Details(
                     Column(Modifier.weight(1f)) {
                         Text(out.label, style = MaterialTheme.typography.titleSmall)
                         PackageId(out.packageName)
+                        if (out.reused) {
+                            Text(
+                                stringResource(R.string.build_done_reused),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = colors.onSurfaceVariant,
+                            )
+                        }
                     }
                     Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         InfoChip(stringResource(if (out.device == Device.Phone) R.string.device_phone else R.string.device_watch))

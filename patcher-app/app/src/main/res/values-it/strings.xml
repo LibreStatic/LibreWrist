@@ -336,6 +336,7 @@
     <string name="build_done_ready">pronto per l\'installazione</string>
     <string name="build_done_install">Installa sul telefono</string>
     <string name="build_done_link_note">Le due app Health Monitor condividono lo stesso nome di pacchetto e la stessa chiave di firma. È ciò che permette al collegamento dati di Google di scambiare messaggi tra loro.</string>
+    <string name="build_done_reused">Invariata: è stata riutilizzata la versione precedente</string>
     <plurals name="build_done_subtitle_patches">
         <item quantity="one">%1$d patch</item>
         <item quantity="other">%1$d patch</item>
