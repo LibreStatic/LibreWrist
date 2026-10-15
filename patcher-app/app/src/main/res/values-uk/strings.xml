@@ -298,10 +298,13 @@
     <!-- Install -->
     <string name="install_phone_title">Встановлення на цей телефон</string>
     <string name="install_phone_intro">Android просить підтвердити кожне встановлення. Потрібні застосункам доступи перевіряються потім; відсутні ви вмикаєте в **налаштуваннях**.</string>
-    <string name="leftover_removing_title">Видалення старої копії мосту</string>
-    <string name="leftover_removing_body">Попереднє налаштування залишило копію мосту під іншою назвою пакета. Вона конкурує з новою за зв\'язок із годинником. Android попросить підтвердити видалення; це безпечно. Ваші дані про здоров\'я та цей застосунок не зачіпаються.</string>
-    <string name="leftover_kept_title">Стару копію мосту збережено</string>
-    <string name="leftover_kept_body">Вона може заважати зв\'язку з годинником. Ви можете видалити її пізніше в налаштуваннях застосунків Android.</string>
+    <string name="leftover_removing_title">Видалення старих копій</string>
+    <string name="leftover_removing_body">Android попросить підтвердити кожне видалення. Старі копії моста конкурують із поточною за зв\'язок із годинником; стара копія Samsung Health+ дублює поточну.</string>
+    <string name="leftover_kept_title">Старі копії залишено</string>
+    <string name="leftover_kept_body">Вони можуть заважати зв\'язку з годинником або двічі відображатися в лаунчері. Пізніше їх можна видалити в налаштуваннях застосунків Android.</string>
+    <string name="leftover_remove_action">Видалити старі копії</string>
+    <string name="leftover_found_body">Попереднє налаштування залишило ці застосунки під іншою назвою пакета. Старі копії моста конкурують із поточною за зв\'язок із годинником; стара копія Samsung Health+ дублює поточну, яка отримує ті самі дані з вашого облікового запису Samsung. Android попросить підтвердити кожне видалення.</string>
+    <string name="leftover_found_title">Старі копії попереднього налаштування</string>
     <string name="install_phone_note">Дозволи, показ поверх інших застосунків, доступ до сповіщень, використання акумулятора без обмежень і обмежені налаштування вмикаєте ви. Поверніться потім на цей екран, і він перевірить усе знову.</string>
     <string name="install_watch_title">Встановлення на годинник</string>
     <string name="install_watch_intro">Встановлення через Wi-Fi у такому порядку: Health Monitor, міст, потім будильники телефона.</string>
@@ -413,7 +416,7 @@
     <string name="selftest_grants_title">Доступ: %1$s</string>
     <string name="selftest_stock_title">Вимкнення: %1$s</string>
     <string name="selftest_bridge_link_title">Зв\'язок із годинником через міст</string>
-    <string name="selftest_leftovers_title">Копії мосту від попередньої установки</string>
+    <string name="selftest_leftovers_title">Копії попереднього налаштування</string>
     <string name="selftest_watch_platform">Health Platform у режимі розробника</string>
     <string name="selftest_gms_title">Годинник підключено до телефона</string>
     <string name="selftest_shm_title">Health Monitor бачить годинник</string>

@@ -112,6 +112,7 @@ class InstallPhoneViewModel(application: Application) : AndroidViewModel(applica
         when (event) {
             InstallEvent.Start -> start()
             InstallEvent.Refresh -> runner.refresh(_state)
+            InstallEvent.RemoveLeftovers -> removeLeftovers()
             is InstallEvent.OpenGrantSettings -> openSettings(event)
             InstallEvent.OpenUnknownSources -> outgoing.trySend(PhoneSettings.unknownSources(getApplication()))
             is InstallEvent.OpenApp -> openApp(event.outputId)
@@ -124,6 +125,12 @@ class InstallPhoneViewModel(application: Application) : AndroidViewModel(applica
             InstallEvent.ConfirmReinstall -> reinstall()
             InstallEvent.AcknowledgeAdbOutcome -> _state.update { it.copy(adbOutcome = null) }
         }
+    }
+
+    private fun removeLeftovers() {
+        if (_state.value.running) return
+        _state.update { it.copy(running = true) }
+        viewModelScope.launch(Dispatchers.IO) { runner.removeLeftoversOnly(_state) }
     }
 
     private fun reinstall() {

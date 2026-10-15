@@ -284,10 +284,13 @@
     <!-- Install -->
     <string name="install_phone_title">Instalar en este teléfono</string>
     <string name="install_phone_intro">Android te pide confirmar cada instalación. El acceso que necesitan las apps se comprueba después; activas lo que falte en **Configuración**.</string>
-    <string name="leftover_removing_title">Quitando una copia anterior del puente</string>
-    <string name="leftover_removing_body">Una configuración anterior dejó una copia del puente con otro nombre de paquete. Compite con la nueva por el enlace con el reloj. Android te pedirá que confirmes la desinstalación; puedes aceptar sin problema. Tus datos de salud y esta app no se ven afectados.</string>
-    <string name="leftover_kept_title">Se conservó la copia anterior del puente</string>
-    <string name="leftover_kept_body">Puede interferir con el enlace con el reloj. Puedes desinstalarla más tarde desde la configuración de apps de Android.</string>
+    <string name="leftover_removing_title">Eliminando copias antiguas</string>
+    <string name="leftover_removing_body">Android te pedirá confirmar cada desinstalación. Las copias antiguas del puente compiten con la actual por el enlace con el reloj; una copia antigua de Samsung Health+ es un duplicado de la actual.</string>
+    <string name="leftover_kept_title">Copias antiguas conservadas</string>
+    <string name="leftover_kept_body">Pueden interferir con el enlace con el reloj o aparecer dos veces en el launcher. Puedes desinstalarlas más tarde desde los ajustes de aplicaciones de Android.</string>
+    <string name="leftover_remove_action">Eliminar copias antiguas</string>
+    <string name="leftover_found_body">Una configuración anterior dejó estas apps con otro nombre de paquete. Las copias antiguas del puente compiten con la actual por el enlace con el reloj; una copia antigua de Samsung Health+ es un duplicado de la actual, que recibe los mismos datos de tu cuenta de Samsung. Android te pide confirmar cada desinstalación.</string>
+    <string name="leftover_found_title">Copias antiguas de una configuración anterior</string>
     <string name="install_phone_note">Los permisos, mostrar sobre otras apps, el acceso a notificaciones, el uso de batería sin restricciones y la configuración restringida los activas tú. Vuelve a esta pantalla después y se comprobará de nuevo.</string>
     <string name="install_watch_title">Instalar en tu reloj</string>
     <string name="install_watch_intro">Se instala por Wi-Fi en este orden: Health Monitor, el puente y luego las alarmas del teléfono.</string>
@@ -397,7 +400,7 @@
     <string name="selftest_grants_title">Acceso de %1$s</string>
     <string name="selftest_stock_title">Desactivación de %1$s</string>
     <string name="selftest_bridge_link_title">Enlace del puente con el reloj</string>
-    <string name="selftest_leftovers_title">Copias anteriores del puente</string>
+    <string name="selftest_leftovers_title">Copias de una configuración anterior</string>
     <string name="selftest_watch_platform">Health Platform en modo de desarrollador</string>
     <string name="selftest_gms_title">Reloj conectado al teléfono</string>
     <string name="selftest_shm_title">Health Monitor ve el reloj</string>

@@ -284,10 +284,13 @@
     <!-- Install -->
     <string name="install_phone_title">इस फ़ोन पर इंस्टॉल करें</string>
     <string name="install_phone_intro">Android हर इंस्टॉल की पुष्टि माँगता है। ऐप को जो पहुँच चाहिए, उसे बाद में जाँचा जाता है; जो कम है उसे आप **सेटिंग** में चालू करते हैं।</string>
-    <string name="leftover_removing_title">ब्रिज की पुरानी प्रति हटाई जा रही है</string>
-    <string name="leftover_removing_body">पिछले सेटअप ने ब्रिज की एक प्रति दूसरे पैकेज नाम से छोड़ दी है। वह घड़ी के कनेक्शन के लिए नई प्रति से टकराती है। Android अनइंस्टॉल की पुष्टि माँगेगा; इसे स्वीकार करना सुरक्षित है। आपका स्वास्थ्य डेटा और यह ऐप प्रभावित नहीं होते।</string>
-    <string name="leftover_kept_title">ब्रिज की पुरानी प्रति रखी गई</string>
-    <string name="leftover_kept_body">यह घड़ी के कनेक्शन में बाधा डाल सकती है। आप इसे बाद में Android की ऐप सेटिंग से अनइंस्टॉल कर सकते हैं।</string>
+    <string name="leftover_removing_title">पुरानी प्रतियाँ हटाई जा रही हैं</string>
+    <string name="leftover_removing_body">Android हर अनइंस्टॉल की पुष्टि करने को कहेगा। ब्रिज की पुरानी प्रतियाँ घड़ी से कनेक्शन के लिए मौजूदा प्रति से होड़ करती हैं; Samsung Health+ की पुरानी प्रति मौजूदा प्रति की दोहरी प्रति है।</string>
+    <string name="leftover_kept_title">पुरानी प्रतियाँ रखी गईं</string>
+    <string name="leftover_kept_body">वे घड़ी के कनेक्शन में बाधा डाल सकती हैं या लॉन्चर में दो बार दिख सकती हैं। आप उन्हें बाद में Android की ऐप सेटिंग से अनइंस्टॉल कर सकते हैं।</string>
+    <string name="leftover_remove_action">पुरानी प्रतियाँ हटाएँ</string>
+    <string name="leftover_found_body">पिछले सेटअप ने ये ऐप अलग पैकेज नाम से छोड़ दिए हैं। ब्रिज की पुरानी प्रतियाँ घड़ी से कनेक्शन के लिए मौजूदा प्रति से होड़ करती हैं; Samsung Health+ की पुरानी प्रति मौजूदा प्रति की दोहरी प्रति है, जिसे आपके Samsung खाते से वही डेटा मिलता है। Android हर अनइंस्टॉल की पुष्टि करने को कहता है।</string>
+    <string name="leftover_found_title">पिछले सेटअप की पुरानी प्रतियाँ</string>
     <string name="install_phone_note">अनुमतियाँ, दूसरे ऐप के ऊपर दिखाना, सूचना एक्सेस, बैटरी का बिना पाबंदी उपयोग और प्रतिबंधित सेटिंग आप खुद चालू करते हैं। बाद में इस स्क्रीन पर लौटें, यह फिर से जाँच करेगी।</string>
     <string name="install_watch_title">अपनी घड़ी पर इंस्टॉल करें</string>
     <string name="install_watch_intro">Wi-Fi पर इस क्रम में इंस्टॉल होता है: Health Monitor, ब्रिज, फिर फ़ोन अलार्म।</string>
@@ -397,7 +400,7 @@
     <string name="selftest_grants_title">ऐक्सेस: %1$s</string>
     <string name="selftest_stock_title">बंद: %1$s</string>
     <string name="selftest_bridge_link_title">घड़ी से ब्रिज लिंक</string>
-    <string name="selftest_leftovers_title">पिछली इंस्टॉलेशन की ब्रिज प्रतियाँ</string>
+    <string name="selftest_leftovers_title">पिछले सेटअप की प्रतियाँ</string>
     <string name="selftest_watch_platform">Health Platform डेवलपर मोड में</string>
     <string name="selftest_gms_title">घड़ी फ़ोन से जुड़ी है</string>
     <string name="selftest_shm_title">Health Monitor को घड़ी दिखती है</string>

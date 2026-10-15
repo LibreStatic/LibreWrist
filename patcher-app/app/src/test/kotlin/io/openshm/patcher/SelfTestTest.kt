@@ -98,7 +98,7 @@ private class World(val catalogue: LoadedCatalogue) {
 
     val inspector = object : PackageInspector {
         override fun inspect(pkg: String) = installed[pkg]
-        override fun listenerPackages() = listenOf() + leftoverPhone
+        override fun candidatePackages() = listenOf() + leftoverPhone
     }
     val hasher = object : FileHasher {
         override fun sha256(path: String) = phoneFileSha[path]

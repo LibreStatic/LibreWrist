@@ -277,10 +277,13 @@
     <!-- Install -->
     <string name="install_phone_title">Pasang di ponsel ini</string>
     <string name="install_phone_intro">Android meminta Anda mengonfirmasi setiap pemasangan. Akses yang dibutuhkan aplikasi diperiksa sesudahnya; Anda dapat mengaktifkan yang belum ada di **Setelan**.</string>
-    <string name="leftover_removing_title">Menghapus salinan lama bridge</string>
-    <string name="leftover_removing_body">Penyiapan sebelumnya meninggalkan salinan bridge dengan nama paket berbeda. Salinan itu bersaing dengan yang baru untuk koneksi ke jam. Android akan meminta Anda mengonfirmasi penghapusan; aman untuk disetujui. Data kesehatan dan aplikasi ini tidak terpengaruh.</string>
-    <string name="leftover_kept_title">Salinan lama bridge dipertahankan</string>
-    <string name="leftover_kept_body">Salinan itu dapat mengganggu koneksi ke jam. Anda dapat mencopotnya nanti melalui setelan aplikasi Android.</string>
+    <string name="leftover_removing_title">Menghapus salinan lama</string>
+    <string name="leftover_removing_body">Android akan meminta Anda mengonfirmasi setiap pencopotan. Salinan lama bridge bersaing dengan yang sekarang untuk tautan ke jam; salinan lama Samsung Health+ adalah duplikat dari yang sekarang.</string>
+    <string name="leftover_kept_title">Salinan lama dipertahankan</string>
+    <string name="leftover_kept_body">Salinan ini dapat mengganggu tautan ke jam atau muncul dua kali di peluncur. Anda dapat mencopotnya nanti dari pengaturan aplikasi Android.</string>
+    <string name="leftover_remove_action">Hapus salinan lama</string>
+    <string name="leftover_found_body">Penyiapan sebelumnya meninggalkan aplikasi ini dengan nama paket yang berbeda. Salinan lama bridge bersaing dengan yang sekarang untuk tautan ke jam; salinan lama Samsung Health+ adalah duplikat dari yang sekarang, yang mendapat data yang sama dari akun Samsung Anda. Android meminta Anda mengonfirmasi setiap pencopotan.</string>
+    <string name="leftover_found_title">Salinan lama dari penyiapan sebelumnya</string>
     <string name="install_phone_note">Izin, tampilkan di atas aplikasi lain, akses notifikasi, penggunaan baterai tanpa batasan, dan setelan terbatas Anda aktifkan sendiri. Setelah itu, kembali ke layar ini dan semuanya akan diperiksa lagi.</string>
     <string name="install_watch_title">Pasang di jam Anda</string>
     <string name="install_watch_intro">Dipasang lewat Wi-Fi dengan urutan ini: Health Monitor, bridge, lalu alarm ponsel.</string>
@@ -389,7 +392,7 @@
     <string name="selftest_grants_title">Akses %1$s</string>
     <string name="selftest_stock_title">Penonaktifan %1$s</string>
     <string name="selftest_bridge_link_title">Tautan bridge ke jam</string>
-    <string name="selftest_leftovers_title">Salinan bridge dari instalasi sebelumnya</string>
+    <string name="selftest_leftovers_title">Salinan dari penyiapan sebelumnya</string>
     <string name="selftest_watch_platform">Health Platform dalam mode pengembang</string>
     <string name="selftest_gms_title">Jam terhubung ke ponsel</string>
     <string name="selftest_shm_title">Health Monitor melihat jam</string>

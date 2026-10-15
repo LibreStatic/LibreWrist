@@ -13,6 +13,7 @@ class LeftoverBridgesTest {
         OutputApp("bridge-watch", "Bridge", Device.Watch, "$ph.shmbridge.watch", null, singleCopy = true),
         OutputApp("bridge-phone", "Bridge", Device.Phone, "$ph.shmbridge.phone", null, singleCopy = true),
         OutputApp("shealth", "Health+", Device.Watch, "$ph.shealth", null),
+        OutputApp("shealth-phone", "Health+", Device.Phone, "$ph.shealth", null, singleCopy = true),
         OutputApp("shm-watch", "SHM", Device.Watch, "com.samsung.android.shealthmonitors", null),
     )
     private val current = "io.openshm.ucc1840"
@@ -35,6 +36,30 @@ class LeftoverBridgesTest {
                 "$current.shmbridge.watch", "$current.shmbridge.alarm", "io.openshm.u98ff48.shealth",
                 "com.sec.android.app.shealth", "com.samsung.android.shealthmonitors",
             ),
+        )
+    }
+
+    private fun phone(vararg installed: String) = LeftoverBridges.find(outputs, Device.Phone, current, installed.toList())
+
+    @Test
+    fun findsASamsungHealthPlusCopyUnderAnEarlierPrefixOnThePhone() {
+        assertEquals(
+            listOf("io.openshm.u98ff48.shealth", "ar.facu.shealth"),
+            phone("io.openshm.u98ff48.shealth", "ar.facu.shealth", "$current.shealth"),
+        )
+    }
+
+    @Test
+    fun theStockSamsungHealthPackageIsNeverALeftover() {
+        assertEquals(emptyList<String>(), phone("com.sec.android.app.shealth", "com.samsung.android.app.shealth"))
+        assertEquals(emptyList<String>(), phone("com.sec.android.app.shealth", "$current.shealth"))
+    }
+
+    @Test
+    fun thePatchersOwnPackageIsNeverALeftover() {
+        assertEquals(
+            emptyList<String>(),
+            LeftoverBridges.find(outputs, Device.Phone, current, listOf("io.openshm.patcher.shealth"), setOf("io.openshm.patcher.shealth")),
         )
     }
 

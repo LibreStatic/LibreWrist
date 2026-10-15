@@ -391,6 +391,9 @@ fun InstallPhoneLeftoversDriver() = PreviewHost(ColorMode.Fallback) { InstallPho
 fun InstallPhoneLeftoversKeptDriver() = PreviewHost(ColorMode.Fallback) { InstallPhoneLeftoversSample(kept = true) }
 
 @Composable
+fun InstallPhoneLeftoversFoundDriver() = PreviewHost(ColorMode.Fallback) { InstallPhoneLeftoversSample(found = true) }
+
+@Composable
 fun InstallPhoneConflictDialogDriver() = PreviewHost(ColorMode.Fallback) { InstallPhoneConflictSample(confirming = true) }
 
 @Composable

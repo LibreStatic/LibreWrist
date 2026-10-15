@@ -51,7 +51,7 @@ internal class PhoneInstallRunner(
     private val prefix: () -> String,
     private val lockPrefix: () -> Unit,
     private val log: (String) -> Unit = {},
-    /** The catalogue outputs, to recognise bridge copies of an earlier prefix; empty turns the cleanup off. */
+    /** The catalogue outputs, to recognise bridge and Samsung Health+ copies of an earlier prefix; empty turns the cleanup off. */
     private val outputs: List<OutputApp> = emptyList(),
     private val ownPackage: String = "",
     /** Called with the output id once that output is installed (Home's restored outputs forget it). */
@@ -103,26 +103,35 @@ internal class PhoneInstallRunner(
     }
 
     /**
-     * Removes the bridge copies an earlier prefix left on the phone (found through the notification
-     * listeners, which the phone bridge declares). The system may ask the user to confirm. System
-     * packages are never touched. Failures are only logged, never fail the run.
+     * The packages [removeLeftovers] would remove: copies of a `singleCopy` output under an earlier
+     * prefix (found through the notification listeners and launcher apps the phone shows us), user
+     * apps only. System packages are never returned. Failures are only logged.
      */
-    private suspend fun removeLeftovers(state: MutableStateFlow<InstallUiState>) {
-        if (outputs.isEmpty()) return
+    private fun findLeftovers(): List<String> {
+        if (outputs.isEmpty()) return emptyList()
         val found = try {
-            LeftoverBridges.find(outputs, Device.Phone, prefix(), installer.notificationListenerPackages(), setOf(ownPackage))
+            LeftoverBridges.find(outputs, Device.Phone, prefix(), installer.ownCandidatePackages(), setOf(ownPackage))
         } catch (e: RuntimeException) {
-            log("leftover bridges not listed: ${e.javaClass.simpleName}")
-            return
+            log("leftover copies not listed: ${e.javaClass.simpleName}")
+            return emptyList()
         }
-        val leftovers = found.filter {
+        return found.filter {
             try {
                 installer.packageKind(it) == PackageKind.User
             } catch (e: RuntimeException) {
-                log("leftover bridge $it not checked: ${e.javaClass.simpleName}")
+                log("leftover copy $it not checked: ${e.javaClass.simpleName}")
                 false
             }
         }
+    }
+
+    /**
+     * Removes the bridge and Samsung Health+ copies an earlier prefix left on the phone. The system
+     * may ask the user to confirm each one. System packages are never touched. Failures are only
+     * logged, never fail the run.
+     */
+    private suspend fun removeLeftovers(state: MutableStateFlow<InstallUiState>) {
+        val leftovers = findLeftovers()
         if (leftovers.isEmpty()) return
         // Shown before the system's confirmation appears, so the user knows what it is about.
         state.update { it.copy(removingLeftovers = leftovers) }
@@ -130,23 +139,34 @@ internal class PhoneInstallRunner(
             for (pkg in leftovers) {
                 try {
                     when (val result = installer.uninstall(pkg)) {
-                        UninstallResult.Success -> log("removed leftover bridge $pkg")
+                        UninstallResult.Success -> log("removed leftover copy $pkg")
                         is UninstallResult.Failure -> {
-                            log("leftover bridge $pkg not removed: ${result.message}")
+                            log("leftover copy $pkg not removed: ${result.message}")
                             keep(state, pkg)
                         }
                     }
                 } catch (e: IOException) {
-                    log("leftover bridge $pkg not removed: ${e.javaClass.simpleName}")
+                    log("leftover copy $pkg not removed: ${e.javaClass.simpleName}")
                     keep(state, pkg)
                 } catch (e: RuntimeException) {
-                    log("leftover bridge $pkg not removed: ${e.javaClass.simpleName}")
+                    log("leftover copy $pkg not removed: ${e.javaClass.simpleName}")
                     keep(state, pkg)
                 }
             }
         } finally {
             state.update { it.copy(removingLeftovers = emptyList()) }
         }
+    }
+
+    /** Removes only the leftovers (the "Remove old copies" action), then re-reads the state. */
+    suspend fun removeLeftoversOnly(state: MutableStateFlow<InstallUiState>) {
+        state.update { it.copy(running = true, leftoversKept = emptyList()) }
+        try {
+            removeLeftovers(state)
+        } finally {
+            state.update { it.copy(running = false) }
+        }
+        refresh(state)
     }
 
     private fun keep(state: MutableStateFlow<InstallUiState>, pkg: String) {
@@ -235,10 +255,12 @@ internal class PhoneInstallRunner(
 
     /**
      * Re-reads the grant rows of the installed items from the system and clears the "allow
-     * installing" stop once it was given. Does nothing while a run is in progress.
+     * installing" stop once it was given, and lists the leftover copies still on the phone. Does
+     * nothing while a run is in progress.
      */
     fun refresh(state: MutableStateFlow<InstallUiState>) {
         if (state.value.running) return
+        val leftovers = findLeftovers()
         state.update { current ->
             val items = current.items.map { item ->
                 if (item.status == CheckStatus.Passed) item.copy(grants = grants.refresh(item.packageName, item.grants)) else item
@@ -246,6 +268,7 @@ internal class PhoneInstallRunner(
             val allowed = current.needsUnknownSources && installer.canInstallPackages()
             current.copy(
                 items = items,
+                leftoversFound = leftovers,
                 needsUnknownSources = current.needsUnknownSources && !allowed,
                 errorRes = if (allowed) null else current.errorRes,
                 errorDetail = if (allowed) null else current.errorDetail,

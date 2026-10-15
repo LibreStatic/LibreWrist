@@ -231,11 +231,13 @@ private class FakePhoneInstaller : PhoneInstaller {
         return result(packageName)
     }
     val listeners = mutableListOf<String>()
+    val launchers = mutableListOf<String>()
     val kinds = mutableMapOf<String, PackageKind>()
     val uninstalled = mutableListOf<String>()
     var uninstallResult: (String) -> UninstallResult = { UninstallResult.Success }
     var onUninstall: (String) -> Unit = {}
     override fun notificationListenerPackages(): List<String> = listeners.toList()
+    override fun launcherPackages(): List<String> = launchers.toList()
     override fun packageKind(packageName: String): PackageKind = kinds[packageName] ?: PackageKind.System // never offers a removal
     override suspend fun uninstall(packageName: String): UninstallResult {
         uninstalled += packageName
@@ -285,6 +287,7 @@ class PhoneInstallRunnerTest {
 
     private val bridgeOutputs = listOf(
         OutputApp("bridge-phone", "Bridge", Device.Phone, "\${PKG_PREFIX}.shmbridge.phone", null, singleCopy = true),
+        OutputApp("shealth-phone", "Health+", Device.Phone, "\${PKG_PREFIX}.shealth", null, singleCopy = true),
     )
     private val old = "io.openshm.u98ff48"
 
@@ -299,6 +302,32 @@ class PhoneInstallRunnerTest {
         cleaningRunner(built("shm-phone", "bridge-phone")).run(s)
         assertEquals(listOf("$old.shmbridge.phone"), installer.uninstalled)
         assertEquals(listOf("$prefix.shm", "$prefix.bridge"), installer.installed)
+    }
+
+    @Test
+    fun aLauncherOnlySamsungHealthPlusCopyOfAnEarlierPrefixIsUninstalled() = runBlocking {
+        installer.launchers += listOf("$old.shealth", "$prefix.shealth", "com.sec.android.app.shealth")
+        for (p in installer.launchers) installer.kinds[p] = PackageKind.User
+        cleaningRunner(built("shm-phone", "bridge-phone")).run(state())
+        assertEquals(listOf("$old.shealth"), installer.uninstalled)
+    }
+
+    @Test
+    fun refreshListsTheLeftoversAndRemoveLeftoversOnlyClearsThemWithoutInstalling() = runBlocking {
+        installer.launchers += "$old.shealth"
+        installer.listeners += "$old.shmbridge.phone"
+        installer.kinds["$old.shealth"] = PackageKind.User
+        installer.kinds["$old.shmbridge.phone"] = PackageKind.User
+        installer.onUninstall = { installer.launchers.remove(it); installer.listeners.remove(it) }
+        val s = state(items().map { it.copy(status = CheckStatus.Passed) })
+        val runner = cleaningRunner(null)
+        runner.refresh(s)
+        assertEquals(setOf("$old.shealth", "$old.shmbridge.phone"), s.value.leftoversFound.toSet())
+        runner.removeLeftoversOnly(s)
+        assertEquals(setOf("$old.shealth", "$old.shmbridge.phone"), installer.uninstalled.toSet())
+        assertTrue(installer.installed.isEmpty())
+        assertTrue(s.value.leftoversFound.isEmpty())
+        assertFalse(s.value.running)
     }
 
     @Test

@@ -45,8 +45,8 @@ interface PackageInspector {
     /** Null when the package is not installed (or not visible to this app). */
     fun inspect(pkg: String): InstalledPackage?
 
-    /** Packages that declare a notification listener (the phone bridge does); the phone cannot list all packages. */
-    fun listenerPackages(): List<String> = emptyList()
+    /** Packages with a notification listener or a launcher activity (the phone bridge and Samsung Health+); the phone cannot list all packages. */
+    fun candidatePackages(): List<String> = emptyList()
 }
 
 interface FileHasher {
@@ -358,7 +358,7 @@ internal class SelfTestRunner(
     }
 
     private suspend fun phoneLeftovers(): Outcome {
-        val installed = withContext(io) { packages.listenerPackages() }
+        val installed = withContext(io) { packages.candidatePackages() }
         return leftoversOutcome(LeftoverBridges.find(catalogue.outputs, Device.Phone, prefix, installed), SelfTestFix.InstallPhone)
     }
 

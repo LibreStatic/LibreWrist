@@ -167,8 +167,12 @@ internal fun InstallPhoneConflictSample(confirming: Boolean = false) =
     InstallPhoneScreen(PreviewData.installPhoneConflict(confirming), {}, {}, {})
 
 @Composable
-internal fun InstallPhoneLeftoversSample(kept: Boolean = false) = InstallPhoneScreen(
-    if (kept) PreviewData.installPhoneLeftoversKept() else PreviewData.installPhoneRemovingLeftovers(),
+internal fun InstallPhoneLeftoversSample(kept: Boolean = false, found: Boolean = false) = InstallPhoneScreen(
+    when {
+        found -> PreviewData.installPhoneLeftoversFound()
+        kept -> PreviewData.installPhoneLeftoversKept()
+        else -> PreviewData.installPhoneRemovingLeftovers()
+    },
     {}, {}, {},
 )
 

@@ -59,6 +59,18 @@ interface PhoneInstaller {
      * manifest `<queries>`); the revert reads the bridge's package prefix from them.
      */
     fun notificationListenerPackages(): List<String> = emptyList()
+
+    /**
+     * Packages with a launcher activity that are visible to this app (the manifest `<queries>`); the
+     * Samsung Health+ copies of an earlier prefix show up here, as they declare no listener.
+     */
+    fun launcherPackages(): List<String> = emptyList()
+
+    /**
+     * Packages that may be a copy of one of our apps: [notificationListenerPackages] plus
+     * [launcherPackages], without duplicates.
+     */
+    fun ownCandidatePackages(): List<String> = (notificationListenerPackages() + launcherPackages()).distinct()
 }
 
 /**
@@ -122,6 +134,16 @@ class SessionPhoneInstaller(
         context.packageManager
             .queryIntentServices(Intent(NOTIFICATION_LISTENER_ACTION), 0)
             .mapNotNull { it.serviceInfo?.packageName }
+            .distinct()
+    } catch (e: RuntimeException) {
+        emptyList() // a platform quirk must not stop the revert; the stored prefix still counts
+    }
+
+    @Suppress("DEPRECATION")
+    override fun launcherPackages(): List<String> = try {
+        context.packageManager
+            .queryIntentActivities(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER), 0)
+            .mapNotNull { it.activityInfo?.packageName }
             .distinct()
     } catch (e: RuntimeException) {
         emptyList() // a platform quirk must not stop the revert; the stored prefix still counts

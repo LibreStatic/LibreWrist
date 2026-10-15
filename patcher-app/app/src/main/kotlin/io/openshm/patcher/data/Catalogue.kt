@@ -72,7 +72,7 @@ data class OutputApp(
     val knownSigner: Boolean = false,
     /** Content authority template where the app publishes its status (`statusAuthority`), or null. */
     val statusAuthority: String? = null,
-    /** Copies under other package prefixes are leftovers (`singleCopy`). */
+    /** Copies under other package prefixes are leftovers the install removes (`singleCopy`): bridges and Samsung Health+. */
     val singleCopy: Boolean = false,
     /** The install list asks the user to finish this app's own setup after it is installed (`then: userOnboarding`). */
     val userOnboarding: Boolean = false,

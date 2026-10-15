@@ -284,10 +284,13 @@
     <!-- Install -->
     <string name="install_phone_title">Installeren op deze telefoon</string>
     <string name="install_phone_intro">Android vraagt je elke installatie te bevestigen. De toegang die de apps nodig hebben, wordt daarna gecontroleerd; wat ontbreekt, zet je zelf aan in **Instellingen**.</string>
-    <string name="leftover_removing_title">Een oude kopie van de bridge wordt verwijderd</string>
-    <string name="leftover_removing_body">Een eerdere configuratie heeft een kopie van de bridge achtergelaten onder een andere pakketnaam. Die concurreert met de nieuwe om de verbinding met het horloge. Android vraagt je de verwijdering te bevestigen; je kunt gerust accepteren. Je gezondheidsgegevens en deze app worden niet geraakt.</string>
-    <string name="leftover_kept_title">Oude kopie van de bridge behouden</string>
-    <string name="leftover_kept_body">Ze kan de verbinding met het horloge storen. Je kunt haar later verwijderen via de app-instellingen van Android.</string>
+    <string name="leftover_removing_title">Oude kopieën worden verwijderd</string>
+    <string name="leftover_removing_body">Android vraagt je elke verwijdering te bevestigen. Oude bridge-kopieën concurreren met de huidige om de verbinding met het horloge; een oude Samsung Health+-kopie is een duplicaat van de huidige.</string>
+    <string name="leftover_kept_title">Oude kopieën bewaard</string>
+    <string name="leftover_kept_body">Ze kunnen de verbinding met het horloge storen of dubbel in de launcher verschijnen. Je kunt ze later verwijderen via de app-instellingen van Android.</string>
+    <string name="leftover_remove_action">Oude kopieën verwijderen</string>
+    <string name="leftover_found_body">Een eerdere installatie heeft deze apps achtergelaten onder een andere pakketnaam. Oude bridge-kopieën concurreren met de huidige om de verbinding met het horloge; een oude Samsung Health+-kopie is een duplicaat van de huidige, die dezelfde gegevens van je Samsung-account krijgt. Android vraagt je elke verwijdering te bevestigen.</string>
+    <string name="leftover_found_title">Oude kopieën van een eerdere installatie</string>
     <string name="install_phone_note">Machtigingen, weergeven over andere apps, toegang tot meldingen, onbeperkt batterijgebruik en beperkte instellingen zet je zelf aan. Kom daarna terug naar dit scherm, dan wordt het opnieuw gecontroleerd.</string>
     <string name="install_watch_title">Installeren op je horloge</string>
     <string name="install_watch_intro">Via Wi-Fi geïnstalleerd in deze volgorde: Health Monitor, de bridge en dan telefoonwekkers.</string>
@@ -397,7 +400,7 @@
     <string name="selftest_grants_title">Toegang voor %1$s</string>
     <string name="selftest_stock_title">Uitschakeling van %1$s</string>
     <string name="selftest_bridge_link_title">Bridge-verbinding met het horloge</string>
-    <string name="selftest_leftovers_title">Oude kopieën van de bridge</string>
+    <string name="selftest_leftovers_title">Kopieën van een eerdere installatie</string>
     <string name="selftest_watch_platform">Health Platform in ontwikkelaarsmodus</string>
     <string name="selftest_gms_title">Horloge verbonden met de telefoon</string>
     <string name="selftest_shm_title">Health Monitor ziet het horloge</string>

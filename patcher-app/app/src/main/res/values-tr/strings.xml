@@ -283,10 +283,13 @@
     <!-- Install -->
     <string name="install_phone_title">Bu telefona kur</string>
     <string name="install_phone_intro">Android her kurulumu onaylamanızı ister. Uygulamaların ihtiyaç duyduğu erişimler sonra denetlenir; eksik olanları **Ayarlar**\'dan siz açarsınız.</string>
-    <string name="leftover_removing_title">Köprünün eski bir kopyası kaldırılıyor</string>
-    <string name="leftover_removing_body">Önceki bir kurulum, köprünün bir kopyasını farklı bir paket adıyla bırakmış. Saat bağlantısı için yenisiyle yarışıyor. Android kaldırmayı onaylamanızı isteyecek; güvenle kabul edebilirsiniz. Sağlık verileriniz ve bu uygulama etkilenmez.</string>
-    <string name="leftover_kept_title">Eski köprü kopyası korundu</string>
-    <string name="leftover_kept_body">Saat bağlantısına engel olabilir. Daha sonra Android\'in uygulama ayarlarından kaldırabilirsiniz.</string>
+    <string name="leftover_removing_title">Eski kopyalar kaldırılıyor</string>
+    <string name="leftover_removing_body">Android her kaldırmayı onaylamanızı isteyecek. Köprünün eski kopyaları, saatle bağlantı için güncel olanla yarışır; eski bir Samsung Health+ kopyası güncel olanın kopyasıdır.</string>
+    <string name="leftover_kept_title">Eski kopyalar korundu</string>
+    <string name="leftover_kept_body">Saat bağlantısını bozabilir veya başlatıcıda iki kez görünebilirler. Daha sonra Android\'in uygulama ayarlarından kaldırabilirsiniz.</string>
+    <string name="leftover_remove_action">Eski kopyaları kaldır</string>
+    <string name="leftover_found_body">Önceki bir kurulum bu uygulamaları farklı bir paket adıyla bıraktı. Köprünün eski kopyaları, saatle bağlantı için güncel olanla yarışır; eski bir Samsung Health+ kopyası, aynı verileri Samsung hesabınızdan alan güncel olanın kopyasıdır. Android her kaldırmayı onaylamanızı ister.</string>
+    <string name="leftover_found_title">Önceki kurulumdan eski kopyalar</string>
     <string name="install_phone_note">İzinleri, diğer uygulamaların üzerinde göstermeyi, bildirim erişimini, kısıtlamasız pil kullanımını ve kısıtlanmış ayarları siz açarsınız. Ardından bu ekrana dönün, yeniden kontrol edilir.</string>
     <string name="install_watch_title">Saatinize kurun</string>
     <string name="install_watch_intro">Wi-Fi üzerinden şu sırayla kurulur: Health Monitor, köprü, sonra telefon alarmları.</string>
@@ -396,7 +399,7 @@
     <string name="selftest_grants_title">Erişim: %1$s</string>
     <string name="selftest_stock_title">Devre dışı: %1$s</string>
     <string name="selftest_bridge_link_title">Saate köprü bağlantısı</string>
-    <string name="selftest_leftovers_title">Önceki kurulumdan köprü kopyaları</string>
+    <string name="selftest_leftovers_title">Önceki kurulumdan kopyalar</string>
     <string name="selftest_watch_platform">Health Platform geliştirici modunda</string>
     <string name="selftest_gms_title">Saat telefona bağlı</string>
     <string name="selftest_shm_title">Health Monitor saati görüyor</string>

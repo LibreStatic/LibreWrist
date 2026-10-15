@@ -29,10 +29,12 @@ class AndroidPackageInspector(context: Context) : PackageInspector {
     }
 
     @Suppress("DEPRECATION")
-    override fun listenerPackages(): List<String> = try {
-        pm.queryIntentServices(Intent("android.service.notification.NotificationListenerService"), 0)
+    override fun candidatePackages(): List<String> = try {
+        val listeners = pm.queryIntentServices(Intent("android.service.notification.NotificationListenerService"), 0)
             .mapNotNull { it.serviceInfo?.packageName }
-            .distinct()
+        val launchers = pm.queryIntentActivities(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER), 0)
+            .mapNotNull { it.activityInfo?.packageName }
+        (listeners + launchers).distinct()
     } catch (e: RuntimeException) {
         emptyList()
     }

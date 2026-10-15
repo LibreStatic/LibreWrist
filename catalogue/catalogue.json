@@ -1,6 +1,6 @@
 {
   "schema": 2,
-  "serial": 40,
+  "serial": 41,
   "minAppVersion": 29,
   "inputs": [
     {
@@ -3035,7 +3035,8 @@
       "from": {
         "input": "shealth-phone",
         "profile": "shealth"
-      }
+      },
+      "singleCopy": true
     }
   ],
   "installOrder": [

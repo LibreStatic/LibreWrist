@@ -373,6 +373,12 @@ internal object PreviewData {
         leftoversKept = listOf(SampleApps.leftover(SampleApps.phoneSigner)),
     )
 
+    /** Everything is installed, but copies of an earlier prefix are still on the phone: the notice offers to remove them. */
+    fun installPhoneLeftoversFound() = InstallUiState(
+        installItems(Device.Phone, { CheckStatus.Passed }) { CheckStatus.Passed },
+        leftoversFound = listOf("io.openshm.u5c71d0.shealth", "io.openshm.u8b02e4.shealth", "io.openshm.u8b02e4.shmbridge.phone"),
+    )
+
     fun installWatch() = InstallUiState(
         installItems(Device.Watch, { CheckStatus.Pending }) { i ->
             when (i) {

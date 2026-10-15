@@ -298,10 +298,13 @@
     <!-- Install -->
     <string name="install_phone_title">Instalacja na tym telefonie</string>
     <string name="install_phone_intro">Android prosi o potwierdzenie każdej instalacji. Potrzebne aplikacjom uprawnienia są sprawdzane potem; brakujące włączasz w **Ustawieniach**.</string>
-    <string name="leftover_removing_title">Usuwanie starej kopii mostka</string>
-    <string name="leftover_removing_body">Wcześniejsza konfiguracja zostawiła kopię mostka pod inną nazwą pakietu. Rywalizuje ona z nową o połączenie z zegarkiem. Android poprosi o potwierdzenie odinstalowania; możesz je bezpiecznie zaakceptować. Twoje dane zdrowotne i ta aplikacja nie są naruszone.</string>
-    <string name="leftover_kept_title">Stara kopia mostka pozostała</string>
-    <string name="leftover_kept_body">Może zakłócać połączenie z zegarkiem. Możesz ją odinstalować później w ustawieniach aplikacji Androida.</string>
+    <string name="leftover_removing_title">Usuwanie starych kopii</string>
+    <string name="leftover_removing_body">Android poprosi o potwierdzenie każdego odinstalowania. Stare kopie mostka konkurują z obecną o połączenie z zegarkiem; stara kopia Samsung Health+ jest duplikatem obecnej.</string>
+    <string name="leftover_kept_title">Stare kopie zachowane</string>
+    <string name="leftover_kept_body">Mogą zakłócać połączenie z zegarkiem lub pojawiać się dwa razy w launcherze. Możesz je odinstalować później w ustawieniach aplikacji Androida.</string>
+    <string name="leftover_remove_action">Usuń stare kopie</string>
+    <string name="leftover_found_body">Wcześniejsza konfiguracja zostawiła te aplikacje pod inną nazwą pakietu. Stare kopie mostka konkurują z obecną o połączenie z zegarkiem; stara kopia Samsung Health+ jest duplikatem obecnej, która otrzymuje te same dane z Twojego konta Samsung. Android prosi o potwierdzenie każdego odinstalowania.</string>
+    <string name="leftover_found_title">Stare kopie z wcześniejszej konfiguracji</string>
     <string name="install_phone_note">Uprawnienia, wyświetlanie nad innymi aplikacjami, dostęp do powiadomień, nieograniczone użycie baterii i ustawienia z ograniczeniami włączasz samodzielnie. Potem wróć do tego ekranu, a sprawdzi je ponownie.</string>
     <string name="install_watch_title">Instalacja na zegarku</string>
     <string name="install_watch_intro">Instalacja przez Wi-Fi w tej kolejności: Health Monitor, mostek, a potem alarmy z telefonu.</string>
@@ -413,7 +416,7 @@
     <string name="selftest_grants_title">Dostęp: %1$s</string>
     <string name="selftest_stock_title">Wyłączenie: %1$s</string>
     <string name="selftest_bridge_link_title">Połączenie mostkiem z zegarkiem</string>
-    <string name="selftest_leftovers_title">Kopie mostka z wcześniejszej instalacji</string>
+    <string name="selftest_leftovers_title">Kopie z wcześniejszej konfiguracji</string>
     <string name="selftest_watch_platform">Health Platform w trybie programisty</string>
     <string name="selftest_gms_title">Zegarek połączony z telefonem</string>
     <string name="selftest_shm_title">Health Monitor widzi zegarek</string>

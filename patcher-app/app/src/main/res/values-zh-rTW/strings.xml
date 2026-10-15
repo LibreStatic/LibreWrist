@@ -277,10 +277,13 @@
     <!-- Install -->
     <string name="install_phone_title">安裝到這支手機</string>
     <string name="install_phone_intro">Android 會要求你確認每次安裝。應用程式所需的存取權限會在之後檢查；缺少的權限需要你在**設定**中開啟。</string>
-    <string name="leftover_removing_title">正在移除舊的橋接副本</string>
-    <string name="leftover_removing_body">先前的設定以另一個套件名稱留下了橋接副本，它會與新的橋接爭用手錶連線。Android 會請你確認解除安裝，可以放心接受。你的健康資料和本應用程式不受影響。</string>
-    <string name="leftover_kept_title">已保留舊的橋接副本</string>
-    <string name="leftover_kept_body">它可能干擾手錶連線。你可以稍後在 Android 的應用程式設定中解除安裝。</string>
+    <string name="leftover_removing_title">正在移除舊副本</string>
+    <string name="leftover_removing_body">Android 會要求您確認每次解除安裝。舊的橋接應用程式副本會與目前副本爭用手錶連線；舊的 Samsung Health+ 副本是目前副本的重複項。</string>
+    <string name="leftover_kept_title">已保留舊副本</string>
+    <string name="leftover_kept_body">它們可能干擾手錶連線，或在啟動器中顯示兩次。您可以稍後在 Android 的應用程式設定中解除安裝。</string>
+    <string name="leftover_remove_action">移除舊副本</string>
+    <string name="leftover_found_body">先前的設定以不同的套件名稱留下了這些應用程式。舊的橋接應用程式副本會與目前副本爭用手錶連線；舊的 Samsung Health+ 副本是目前副本的重複項，目前副本會從您的 Samsung 帳號取得相同的資料。Android 會要求您確認每次解除安裝。</string>
+    <string name="leftover_found_title">先前設定留下的舊副本</string>
     <string name="install_phone_note">權限、顯示在其他應用程式上層、通知存取權、電池使用不受限制以及受限制的設定，都需要由你自行開啟。之後回到此畫面，它會重新檢查。</string>
     <string name="install_watch_title">安裝到你的手錶</string>
     <string name="install_watch_intro">透過 Wi-Fi 依以下順序安裝：Health Monitor、橋接應用程式，然後是手機鬧鐘。</string>
@@ -389,7 +392,7 @@
     <string name="selftest_grants_title">權限：%1$s</string>
     <string name="selftest_stock_title">%1$s 已關閉</string>
     <string name="selftest_bridge_link_title">與手錶的橋接連結</string>
-    <string name="selftest_leftovers_title">先前的橋接副本</string>
+    <string name="selftest_leftovers_title">先前設定留下的副本</string>
     <string name="selftest_watch_platform">Health Platform 處於開發人員模式</string>
     <string name="selftest_gms_title">手錶已連線到手機</string>
     <string name="selftest_shm_title">Health Monitor 能看到手錶</string>

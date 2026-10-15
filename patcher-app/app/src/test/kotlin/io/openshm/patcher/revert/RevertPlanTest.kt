@@ -35,6 +35,22 @@ class RevertPlanTest {
     }
 
     @Test
+    fun aPrefixFoundFromALauncherOnlySamsungHealthPlusCopyAddsCandidates() {
+        val old = "io.openshm.uabcdef"
+        val prefixes = RevertPlan.prefixes(PREFIX, outputs, emptyList(), listOf("com.android.something", outputPkg("shealth-phone", old)))
+        assertEquals(listOf(PREFIX, old), prefixes)
+        val packages = RevertPlan.candidates(outputs, prefixes).map { it.pkg }
+        assertTrue(outputPkg("shealth-phone", old) in packages)
+        assertTrue(outputPkg("bridge-phone", old) in packages)
+    }
+
+    @Test
+    fun theStockSamsungHealthPackageNeverYieldsAPrefix() {
+        val prefixes = RevertPlan.prefixes(PREFIX, outputs, emptyList(), listOf("com.sec.android.app.shealth"))
+        assertEquals(listOf(PREFIX), prefixes)
+    }
+
+    @Test
     fun aPrefixFoundInThePhoneListenersAddsCandidates() {
         val old = "io.openshm.uabcdef"
         val prefixes = RevertPlan.prefixes(PREFIX, outputs, emptyList(), listOf("com.android.something", outputPkg("bridge-phone", old)))

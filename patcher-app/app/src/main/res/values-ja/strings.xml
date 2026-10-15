@@ -277,10 +277,13 @@
     <!-- Install -->
     <string name="install_phone_title">このスマートフォンにインストール</string>
     <string name="install_phone_intro">Androidがインストールごとに確認を求めます。アプリに必要なアクセス権はその後で確認されます。不足しているものは**設定**でオンにしてください。</string>
-    <string name="leftover_removing_title">古いブリッジのコピーを削除しています</string>
-    <string name="leftover_removing_body">以前のセットアップが、別のパッケージ名でブリッジのコピーを残しています。新しいブリッジとウォッチとの接続を取り合ってしまいます。Androidがアンインストールの確認を求めますが、そのまま承認して問題ありません。健康データとこのアプリには影響しません。</string>
-    <string name="leftover_kept_title">古いブリッジのコピーを残しました</string>
-    <string name="leftover_kept_body">ウォッチとの接続の妨げになる可能性があります。後でAndroidのアプリ設定からアンインストールできます。</string>
+    <string name="leftover_removing_title">古いコピーを削除しています</string>
+    <string name="leftover_removing_body">Androidがアンインストールのたびに確認を求めます。古いブリッジのコピーは、ウォッチとの接続を現在のブリッジと取り合います。古いSamsung Health+のコピーは現在のものと重複しています。</string>
+    <string name="leftover_kept_title">古いコピーを残しました</string>
+    <string name="leftover_kept_body">ウォッチとの接続の妨げになったり、ランチャーに二重に表示されたりする可能性があります。後でAndroidのアプリ設定からアンインストールできます。</string>
+    <string name="leftover_remove_action">古いコピーを削除</string>
+    <string name="leftover_found_body">以前のセットアップが、別のパッケージ名でこれらのアプリを残しています。古いブリッジのコピーは、ウォッチとの接続を現在のブリッジと取り合います。古いSamsung Health+のコピーは現在のものと重複しており、現在のものはSamsungアカウントから同じデータを取得します。Androidがアンインストールのたびに確認を求めます。</string>
+    <string name="leftover_found_title">以前のセットアップの古いコピー</string>
     <string name="install_phone_note">権限、他のアプリの上に重ねて表示、通知へのアクセス、バッテリー使用量の制限なし、制限付き設定は、ご自身でオンにしてください。その後この画面に戻ると、再確認されます。</string>
     <string name="install_watch_title">ウォッチにインストール</string>
     <string name="install_watch_intro">Wi-Fi経由で、Health Monitor、ブリッジ、スマートフォンアラームの順にインストールします。</string>
@@ -389,7 +392,7 @@
     <string name="selftest_grants_title">アクセス: %1$s</string>
     <string name="selftest_stock_title">%1$sはオフ</string>
     <string name="selftest_bridge_link_title">ウォッチへのブリッジリンク</string>
-    <string name="selftest_leftovers_title">以前のブリッジのコピー</string>
+    <string name="selftest_leftovers_title">以前のセットアップのコピー</string>
     <string name="selftest_watch_platform">Health Platformが開発者モード</string>
     <string name="selftest_gms_title">ウォッチがスマートフォンに接続済み</string>
     <string name="selftest_shm_title">Health Monitorがウォッチを認識</string>

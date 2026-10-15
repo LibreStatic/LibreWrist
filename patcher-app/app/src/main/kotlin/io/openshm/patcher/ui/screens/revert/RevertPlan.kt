@@ -63,20 +63,20 @@ object RevertPlan {
 
     /**
      * The package prefixes to look for: the stored [storedPrefix] (when set), plus every prefix that
-     * [watchPackages] or [phoneListenerPackages] show for the catalogue's templates (so an install made
+     * [watchPackages] or [phonePackages] (notification listeners and launcher apps) show for the catalogue's templates (so an install made
      * under an earlier prefix is found too). A template without the placeholder yields nothing.
      */
     fun prefixes(
         storedPrefix: String?,
         outputs: List<OutputApp>,
         watchPackages: Collection<String>,
-        phoneListenerPackages: Collection<String>,
+        phonePackages: Collection<String>,
     ): List<String> {
         val found = LinkedHashSet<String>()
         storedPrefix?.takeIf { it.isNotBlank() }?.let { found += it }
         for (out in outputs) {
             val suffix = suffixOf(out) ?: continue
-            val packages = if (out.device == Device.Watch) watchPackages else phoneListenerPackages
+            val packages = if (out.device == Device.Watch) watchPackages else phonePackages
             for (pkg in packages) {
                 if (!pkg.endsWith(suffix)) continue
                 val prefix = pkg.removeSuffix(suffix)

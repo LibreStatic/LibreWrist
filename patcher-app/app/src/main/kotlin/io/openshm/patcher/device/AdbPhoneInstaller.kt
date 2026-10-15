@@ -47,4 +47,6 @@ class AdbPhoneInstaller(
     }
 
     override fun notificationListenerPackages(): List<String> = platform.notificationListenerPackages()
+
+    override fun launcherPackages(): List<String> = platform.launcherPackages()
 }

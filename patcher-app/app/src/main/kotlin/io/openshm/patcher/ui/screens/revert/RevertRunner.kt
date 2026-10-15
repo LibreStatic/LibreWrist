@@ -116,11 +116,11 @@ class RevertRunner(
                 is Call.Error -> reach = WatchReach.Unreachable(IOException(listed.message))
             }
         }
-        val listeners = if (!scope.involvesPhone(outputs)) emptyList() else when (val r = guarded { phone.notificationListenerPackages() }) {
+        val phonePackages = if (!scope.involvesPhone(outputs)) emptyList() else when (val r = guarded { phone.ownCandidatePackages() }) {
             is Call.Ok -> r.value
             else -> emptyList()
         }
-        val prefixes = RevertPlan.prefixes(storedPrefix, outputs, watchPackages, listeners)
+        val prefixes = RevertPlan.prefixes(storedPrefix, outputs, watchPackages, phonePackages)
         val candidates = RevertPlan.candidates(outputs, prefixes, exclude = setOf(ownPackage)).filter(scope::includes)
 
         val items = ArrayList<RevertItem>()

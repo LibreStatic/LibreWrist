@@ -284,10 +284,13 @@
     <!-- Install -->
     <string name="install_phone_title">Auf diesem Smartphone installieren</string>
     <string name="install_phone_intro">Android bittet dich, jede Installation zu bestätigen. Der benötigte Zugriff wird danach geprüft; fehlende Berechtigungen aktivierst du in den **Einstellungen**.</string>
-    <string name="leftover_removing_title">Alte Kopie der Bridge wird entfernt</string>
-    <string name="leftover_removing_body">Eine frühere Einrichtung hat eine Kopie der Bridge unter einem anderen Paketnamen hinterlassen. Sie konkurriert mit der neuen um die Verbindung zur Uhr. Android bittet dich, die Deinstallation zu bestätigen; du kannst sie bedenkenlos akzeptieren. Deine Gesundheitsdaten und diese App sind nicht betroffen.</string>
-    <string name="leftover_kept_title">Alte Brücken-Kopie behalten</string>
-    <string name="leftover_kept_body">Sie kann die Verbindung zur Uhr stören. Du kannst sie später in den App-Einstellungen von Android deinstallieren.</string>
+    <string name="leftover_removing_title">Alte Kopien werden entfernt</string>
+    <string name="leftover_removing_body">Android bittet dich, jede Deinstallation zu bestätigen. Alte Bridge-Kopien konkurrieren mit der aktuellen um die Verbindung zur Uhr; eine alte Samsung Health+-Kopie ist ein Duplikat der aktuellen.</string>
+    <string name="leftover_kept_title">Alte Kopien behalten</string>
+    <string name="leftover_kept_body">Sie können die Verbindung zur Uhr stören oder im Launcher doppelt erscheinen. Du kannst sie später in den App-Einstellungen von Android deinstallieren.</string>
+    <string name="leftover_remove_action">Alte Kopien entfernen</string>
+    <string name="leftover_found_body">Eine frühere Einrichtung hat diese Apps unter einem anderen Paketnamen hinterlassen. Alte Bridge-Kopien konkurrieren mit der aktuellen um die Verbindung zur Uhr; eine alte Samsung Health+-Kopie ist ein Duplikat der aktuellen, die dieselben Daten von deinem Samsung-Konto erhält. Android bittet dich, jede Deinstallation zu bestätigen.</string>
+    <string name="leftover_found_title">Alte Kopien einer früheren Einrichtung</string>
     <string name="install_phone_note">Berechtigungen, Über anderen Apps einblenden, Benachrichtigungszugriff, uneingeschränkte Akkunutzung und eingeschränkte Einstellungen schaltest du selbst ein. Komm danach zu diesem Bildschirm zurück, dann wird erneut geprüft.</string>
     <string name="install_watch_title">Auf deiner Uhr installieren</string>
     <string name="install_watch_intro">Installation über WLAN in dieser Reihenfolge: Health Monitor, die Bridge, dann Smartphone-Wecker.</string>
@@ -397,7 +400,7 @@
     <string name="selftest_grants_title">Zugriff für %1$s</string>
     <string name="selftest_stock_title">Deaktivierung von %1$s</string>
     <string name="selftest_bridge_link_title">Bridge-Verbindung zur Uhr</string>
-    <string name="selftest_leftovers_title">Brücken-Kopien einer früheren Installation</string>
+    <string name="selftest_leftovers_title">Kopien einer früheren Einrichtung</string>
     <string name="selftest_watch_platform">Health Platform im Entwicklermodus</string>
     <string name="selftest_gms_title">Uhr mit dem Smartphone verbunden</string>
     <string name="selftest_shm_title">Health Monitor sieht die Uhr</string>

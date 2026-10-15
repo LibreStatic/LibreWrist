@@ -391,10 +391,13 @@
     <!-- Install -->
     <string name="install_phone_title">Install on this phone</string>
     <string name="install_phone_intro">Android asks you to confirm each install. Access the apps need is checked afterwards; you switch on what is missing in **Settings**.</string>
-    <string name="leftover_removing_title">Removing an old copy of the bridge</string>
-    <string name="leftover_removing_body">A previous setup left a copy of the bridge under a different package name. It competes with the new one for the watch link. Android will ask you to confirm the uninstall; it is safe to accept. Your health data and this app are not affected.</string>
-    <string name="leftover_kept_title">Old bridge copy kept</string>
-    <string name="leftover_kept_body">It may interfere with the watch link. You can uninstall it later from Android\'s app settings.</string>
+    <string name="leftover_removing_title">Removing old copies</string>
+    <string name="leftover_removing_body">Android will ask you to confirm each uninstall. Old bridge copies compete with the current one for the watch link; an old Samsung Health+ copy is a duplicate of the current one.</string>
+    <string name="leftover_kept_title">Old copies kept</string>
+    <string name="leftover_kept_body">They may interfere with the watch link or show up twice in the launcher. You can uninstall them later from Android\'s app settings.</string>
+    <string name="leftover_remove_action">Remove old copies</string>
+    <string name="leftover_found_body">An earlier setup left these apps under a different package name. Old bridge copies compete with the current one for the watch link; an old Samsung Health+ copy is a duplicate of the current one, which gets the same data from your Samsung account. Android asks you to confirm each uninstall.</string>
+    <string name="leftover_found_title">Old copies from an earlier setup</string>
     <string name="install_phone_note">Permissions, display over other apps, notification access, unrestricted battery use and restricted settings are switched on by you. Come back to this screen afterwards and it checks again.</string>
     <string name="install_watch_title">Install on your watch</string>
     <string name="install_watch_intro">Installed over Wi-Fi in this order: Health Monitor, the bridge, then phone alarms.</string>
@@ -504,7 +507,7 @@
     <string name="selftest_grants_title">Access for %1$s</string>
     <string name="selftest_stock_title">%1$s turned off</string>
     <string name="selftest_bridge_link_title">Bridge link to the watch</string>
-    <string name="selftest_leftovers_title">Bridge copies from an earlier install</string>
+    <string name="selftest_leftovers_title">Copies from an earlier setup</string>
     <string name="selftest_watch_platform">Health Platform in developer mode</string>
     <string name="selftest_gms_title">Watch connected to the phone</string>
     <string name="selftest_shm_title">Health Monitor sees the watch</string>

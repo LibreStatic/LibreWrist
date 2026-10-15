@@ -115,10 +115,12 @@ data class InstallUiState(
     val confirmingReinstall: Boolean = false,
     /** How the last Wireless debugging grant run ended, until the screen has shown it; phone screen only. */
     val adbOutcome: AdbOutcome? = null,
-    /** Packages of an earlier prefix's bridge that Android is being asked to remove right now; phone screen only. */
+    /** Packages of an earlier prefix's bridge or Samsung Health+ that Android is being asked to remove right now; phone screen only. */
     val removingLeftovers: List<String> = emptyList(),
-    /** Packages of an earlier prefix's bridge that stayed because the removal was declined or failed. */
+    /** Packages of an earlier prefix's bridge or Samsung Health+ that stayed because the removal was declined or failed. */
     val leftoversKept: List<String> = emptyList(),
+    /** Copies of an earlier prefix still on the phone, as last read by a refresh; the screen offers to remove them. */
+    val leftoversFound: List<String> = emptyList(),
 ) {
     /** Everything is installed but some access is still open: the user may go on without it. */
     val canSkipGrants: Boolean get() = !running && !done && items.isNotEmpty() && items.all { it.status == CheckStatus.Passed }
@@ -153,6 +155,9 @@ sealed interface InstallEvent {
 
     /** The user confirmed losing the installed copy's data: uninstall it, then install again. */
     data object ConfirmReinstall : InstallEvent
+
+    /** "Remove old copies" was tapped: removes only the leftover copies of an earlier prefix. */
+    data object RemoveLeftovers : InstallEvent
 
     /** The error dialog of a Wireless debugging run was acknowledged, or its success overlay ran out. */
     data object AcknowledgeAdbOutcome : InstallEvent
@@ -223,13 +228,15 @@ private fun WatchUnreachableCard(detail: String?) {
 }
 
 /**
- * An earlier setup left a copy of the bridge under another package name. While Android asks to
- * remove it the card explains the system dialog; if the user declined, it says what that leaves.
+ * An earlier setup left copies of the bridge or Samsung Health+ under another package name. While
+ * Android asks to remove them the card explains the system dialog; if the user declined, it says
+ * what that leaves; otherwise it lists what was found and offers to remove it.
  */
 @Composable
-private fun LeftoverRemovalCard(removing: List<String>, kept: List<String>) {
+private fun LeftoverRemovalCard(removing: List<String>, kept: List<String>, found: List<String>, onRemove: () -> Unit) {
     val isRemoving = removing.isNotEmpty()
-    val packages = if (isRemoving) removing else kept
+    val isKept = !isRemoving && kept.isNotEmpty()
+    val packages = if (isRemoving) removing else if (isKept) kept else found
     Surface(
         shape = MaterialTheme.shapes.large,
         color = PatcherTheme.status.warningContainer,
@@ -239,17 +246,24 @@ private fun LeftoverRemovalCard(removing: List<String>, kept: List<String>) {
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
                 StatusShape(CheckStatus.Warning, size = 24.dp)
                 Text(
-                    stringResource(if (isRemoving) R.string.leftover_removing_title else R.string.leftover_kept_title),
+                    stringResource(
+                        if (isRemoving) R.string.leftover_removing_title else if (isKept) R.string.leftover_kept_title else R.string.leftover_found_title,
+                    ),
                     style = MaterialTheme.typography.titleMedium,
                     color = PatcherTheme.status.onWarningContainer,
                 )
             }
             Text(
-                stringResource(if (isRemoving) R.string.leftover_removing_body else R.string.leftover_kept_body),
+                stringResource(
+                    if (isRemoving) R.string.leftover_removing_body else if (isKept) R.string.leftover_kept_body else R.string.leftover_found_body,
+                ),
                 style = MaterialTheme.typography.bodyMedium,
                 color = PatcherTheme.status.onWarningContainer,
             )
             packages.forEach { PackageId(it, maxLines = 2) }
+            if (!isRemoving) {
+                QuietAction(stringResource(R.string.leftover_remove_action), onRemove)
+            }
         }
     }
 }
@@ -277,8 +291,8 @@ private fun InstallStep(
         title = title,
         onBack = onBack,
         modifier = modifier,
-        banner = if (phone && (state.removingLeftovers.isNotEmpty() || state.leftoversKept.isNotEmpty())) {
-            { LeftoverRemovalCard(state.removingLeftovers, state.leftoversKept) }
+        banner = if (phone && (state.removingLeftovers.isNotEmpty() || state.leftoversKept.isNotEmpty() || (state.leftoversFound.isNotEmpty() && !state.running))) {
+            { LeftoverRemovalCard(state.removingLeftovers, state.leftoversKept, state.leftoversFound) { onEvent(InstallEvent.RemoveLeftovers) } }
         } else null,
         footer = {
             if (state.done) {

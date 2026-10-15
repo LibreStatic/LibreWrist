@@ -312,10 +312,13 @@
     <!-- Install -->
     <string name="install_phone_title">التثبيت على هذا الهاتف</string>
     <string name="install_phone_intro">يطلب منك Android تأكيد كل تثبيت. تُفحص الأذونات التي تحتاجها التطبيقات بعد ذلك؛ وتفعّل ما ينقص من **الإعدادات**.</string>
-    <string name="leftover_removing_title">جارٍ إزالة نسخة قديمة من الجسر</string>
-    <string name="leftover_removing_body">ترك إعداد سابق نسخة من الجسر باسم حزمة مختلف. وهي تنافس الجسر الجديد على الاتصال بالساعة. سيطلب منك Android تأكيد إلغاء التثبيت؛ ويمكنك الموافقة بأمان. لا تتأثر بياناتك الصحية ولا هذا التطبيق.</string>
-    <string name="leftover_kept_title">تم الإبقاء على نسخة الجسر القديمة</string>
-    <string name="leftover_kept_body">قد تتداخل مع الاتصال بالساعة. يمكنك إلغاء تثبيتها لاحقًا من إعدادات التطبيقات في Android.</string>
+    <string name="leftover_removing_title">جارٍ إزالة النسخ القديمة</string>
+    <string name="leftover_removing_body">سيطلب منك Android تأكيد كل عملية إلغاء تثبيت. النسخ القديمة من الجسر تنافس النسخة الحالية على الاتصال بالساعة؛ ونسخة Samsung Health+ القديمة مكررة من النسخة الحالية.</string>
+    <string name="leftover_kept_title">تم إبقاء النسخ القديمة</string>
+    <string name="leftover_kept_body">قد تتداخل مع الاتصال بالساعة أو تظهر مرتين في شاشة التطبيقات. يمكنك إلغاء تثبيتها لاحقًا من إعدادات التطبيقات في Android.</string>
+    <string name="leftover_remove_action">إزالة النسخ القديمة</string>
+    <string name="leftover_found_body">ترك إعداد سابق هذه التطبيقات باسم حزمة مختلف. النسخ القديمة من الجسر تنافس النسخة الحالية على الاتصال بالساعة؛ ونسخة Samsung Health+ القديمة مكررة من النسخة الحالية التي تحصل على البيانات نفسها من حساب Samsung الخاص بك. يطلب منك Android تأكيد كل عملية إلغاء تثبيت.</string>
+    <string name="leftover_found_title">نسخ قديمة من إعداد سابق</string>
     <string name="install_phone_note">الأذونات والعرض فوق التطبيقات الأخرى والوصول إلى الإشعارات واستخدام البطارية دون قيود والإعدادات المقيّدة تفعّلها أنت. عُد إلى هذه الشاشة بعد ذلك وستتحقق منها مرة أخرى.</string>
     <string name="install_watch_title">التثبيت على ساعتك</string>
     <string name="install_watch_intro">يُثبَّت عبر Wi-Fi بهذا الترتيب: Health Monitor، ثم الجسر، ثم منبّهات الهاتف.</string>
@@ -429,7 +432,7 @@
     <string name="selftest_grants_title">الوصول: %1$s</string>
     <string name="selftest_stock_title">الإيقاف: %1$s</string>
     <string name="selftest_bridge_link_title">رابط الجسر مع الساعة</string>
-    <string name="selftest_leftovers_title">نسخ الجسر من تثبيت سابق</string>
+    <string name="selftest_leftovers_title">نسخ من إعداد سابق</string>
     <string name="selftest_watch_platform">Health Platform في وضع المطور</string>
     <string name="selftest_gms_title">الساعة متصلة بالهاتف</string>
     <string name="selftest_shm_title">Health Monitor يرى الساعة</string>

@@ -6,11 +6,13 @@ import io.openshm.patcher.data.PackagePrefix
 import io.openshm.patcher.ui.screens.revert.RevertPlan
 
 /**
- * Finds copies of our bridge apps that an earlier package prefix left on one device. They would
- * compete with the current bridge for the phone link, so the install steps remove them.
+ * Finds copies of our apps that an earlier package prefix left on one device: old bridges (they would
+ * compete with the current bridge for the watch link) and old Samsung Health+ copies (duplicates of the
+ * current one, which gets the same data from the Samsung account). The install steps remove them.
  *
- * Only outputs the catalogue marks `singleCopy` count: other apps built from the catalogue (user health
- * data), stock apps and anything else is never a leftover.
+ * Only outputs the catalogue marks `singleCopy` count, and only under a prefix the patcher itself would
+ * accept, so the stock Samsung Health (`com.sec.android.app.shealth`, a reserved vendor namespace),
+ * the current prefix's copy and any other app are never a leftover.
  */
 object LeftoverBridges {
     /**

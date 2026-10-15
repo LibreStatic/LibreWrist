@@ -291,10 +291,13 @@
     <!-- Install -->
     <string name="install_phone_title">Installer sur ce téléphone</string>
     <string name="install_phone_intro">Android vous demande de confirmer chaque installation. Les accès dont les apps ont besoin sont vérifiés ensuite ; vous activez ce qui manque dans les **paramètres**.</string>
-    <string name="leftover_removing_title">Suppression d\'une ancienne copie du pont</string>
-    <string name="leftover_removing_body">Une configuration précédente a laissé une copie du pont sous un autre nom de paquet. Elle entre en concurrence avec la nouvelle pour la liaison avec la montre. Android vous demandera de confirmer la désinstallation ; vous pouvez accepter sans crainte. Vos données de santé et cette app ne sont pas touchées.</string>
-    <string name="leftover_kept_title">Ancienne copie du pont conservée</string>
-    <string name="leftover_kept_body">Elle peut perturber la liaison avec la montre. Vous pourrez la désinstaller plus tard depuis les paramètres des apps d\'Android.</string>
+    <string name="leftover_removing_title">Suppression des anciennes copies</string>
+    <string name="leftover_removing_body">Android vous demandera de confirmer chaque désinstallation. Les anciennes copies du pont entrent en concurrence avec l\'actuelle pour la liaison avec la montre ; une ancienne copie de Samsung Health+ est un doublon de l\'actuelle.</string>
+    <string name="leftover_kept_title">Anciennes copies conservées</string>
+    <string name="leftover_kept_body">Elles peuvent perturber la liaison avec la montre ou apparaître en double dans le lanceur. Vous pourrez les désinstaller plus tard depuis les paramètres des applications d\'Android.</string>
+    <string name="leftover_remove_action">Supprimer les anciennes copies</string>
+    <string name="leftover_found_body">Une configuration précédente a laissé ces applications sous un autre nom de paquet. Les anciennes copies du pont entrent en concurrence avec l\'actuelle pour la liaison avec la montre ; une ancienne copie de Samsung Health+ est un doublon de l\'actuelle, qui reçoit les mêmes données de votre compte Samsung. Android vous demande de confirmer chaque désinstallation.</string>
+    <string name="leftover_found_title">Anciennes copies d\'une configuration précédente</string>
     <string name="install_phone_note">Les autorisations, l\'affichage par-dessus d\'autres applis, l\'accès aux notifications, l\'utilisation illimitée de la batterie et les paramètres restreints sont à activer par vous. Revenez ensuite sur cet écran, il vérifiera à nouveau.</string>
     <string name="install_watch_title">Installer sur votre montre</string>
     <string name="install_watch_intro">Installation via Wi-Fi dans cet ordre : Health Monitor, le pont, puis les alarmes du téléphone.</string>
@@ -405,7 +408,7 @@
     <string name="selftest_grants_title">Accès de %1$s</string>
     <string name="selftest_stock_title">Désactivation de %1$s</string>
     <string name="selftest_bridge_link_title">Liaison du pont avec la montre</string>
-    <string name="selftest_leftovers_title">Copies précédentes du pont</string>
+    <string name="selftest_leftovers_title">Copies d\'une configuration précédente</string>
     <string name="selftest_watch_platform">Health Platform en mode développeur</string>
     <string name="selftest_gms_title">Montre connectée au téléphone</string>
     <string name="selftest_shm_title">Health Monitor voit la montre</string>

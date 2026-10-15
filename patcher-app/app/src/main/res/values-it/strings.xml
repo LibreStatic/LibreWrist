@@ -285,10 +285,13 @@
     <!-- Install -->
     <string name="install_phone_title">Installa su questo telefono</string>
     <string name="install_phone_intro">Android ti chiede di confermare ogni installazione. Gli accessi necessari alle app vengono controllati dopo; attivi ciò che manca nelle **Impostazioni**.</string>
-    <string name="leftover_removing_title">Rimozione di una vecchia copia del bridge</string>
-    <string name="leftover_removing_body">Una configurazione precedente ha lasciato una copia del bridge con un altro nome di pacchetto. Compete con quella nuova per il collegamento con l\'orologio. Android ti chiederà di confermare la disinstallazione; puoi accettare senza problemi. I tuoi dati sulla salute e questa app non sono interessati.</string>
-    <string name="leftover_kept_title">Vecchia copia del bridge conservata</string>
-    <string name="leftover_kept_body">Può interferire con il collegamento con l\'orologio. Puoi disinstallarla più tardi dalle impostazioni delle app di Android.</string>
+    <string name="leftover_removing_title">Rimozione delle vecchie copie</string>
+    <string name="leftover_removing_body">Android ti chiederà di confermare ogni disinstallazione. Le vecchie copie del bridge competono con quella attuale per il collegamento con lo smartwatch; una vecchia copia di Samsung Health+ è un duplicato di quella attuale.</string>
+    <string name="leftover_kept_title">Vecchie copie mantenute</string>
+    <string name="leftover_kept_body">Possono interferire con il collegamento con lo smartwatch o comparire due volte nel launcher. Puoi disinstallarle più tardi dalle impostazioni delle app di Android.</string>
+    <string name="leftover_remove_action">Rimuovi le vecchie copie</string>
+    <string name="leftover_found_body">Una configurazione precedente ha lasciato queste app con un altro nome di pacchetto. Le vecchie copie del bridge competono con quella attuale per il collegamento con lo smartwatch; una vecchia copia di Samsung Health+ è un duplicato di quella attuale, che riceve gli stessi dati dal tuo account Samsung. Android ti chiede di confermare ogni disinstallazione.</string>
+    <string name="leftover_found_title">Vecchie copie di una configurazione precedente</string>
     <string name="install_phone_note">Le autorizzazioni, la visualizzazione sopra altre app, l\'accesso alle notifiche, l\'uso della batteria senza limitazioni e le impostazioni con restrizioni li attivi tu. Poi torna a questa schermata e verrà ricontrollato tutto.</string>
     <string name="install_watch_title">Installa sul tuo orologio</string>
     <string name="install_watch_intro">Installazione via Wi-Fi in quest\'ordine: Health Monitor, il bridge, poi le sveglie del telefono.</string>
@@ -398,7 +401,7 @@
     <string name="selftest_grants_title">Accesso di %1$s</string>
     <string name="selftest_stock_title">Disattivazione di %1$s</string>
     <string name="selftest_bridge_link_title">Collegamento del bridge con l\'orologio</string>
-    <string name="selftest_leftovers_title">Copie precedenti del bridge</string>
+    <string name="selftest_leftovers_title">Copie di una configurazione precedente</string>
     <string name="selftest_watch_platform">Health Platform in modalità sviluppatore</string>
     <string name="selftest_gms_title">Orologio connesso al telefono</string>
     <string name="selftest_shm_title">Health Monitor vede l\'orologio</string>

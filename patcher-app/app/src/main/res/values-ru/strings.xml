@@ -298,10 +298,13 @@
     <!-- Install -->
     <string name="install_phone_title">Установка на этот телефон</string>
     <string name="install_phone_intro">Android просит подтвердить каждую установку. Нужные приложениям доступы проверяются потом; недостающие вы включаете в **настройках**.</string>
-    <string name="leftover_removing_title">Удаление старой копии моста</string>
-    <string name="leftover_removing_body">Прежняя настройка оставила копию моста под другим именем пакета. Она конкурирует с новой за связь с часами. Android попросит подтвердить удаление; это безопасно. Ваши данные о здоровье и это приложение не затрагиваются.</string>
-    <string name="leftover_kept_title">Старая копия моста сохранена</string>
-    <string name="leftover_kept_body">Она может мешать связи с часами. Вы можете удалить её позже в настройках приложений Android.</string>
+    <string name="leftover_removing_title">Удаление старых копий</string>
+    <string name="leftover_removing_body">Android попросит подтвердить каждое удаление. Старые копии моста конкурируют с текущей за связь с часами; старая копия Samsung Health+ дублирует текущую.</string>
+    <string name="leftover_kept_title">Старые копии оставлены</string>
+    <string name="leftover_kept_body">Они могут мешать связи с часами или дважды отображаться в лаунчере. Позже их можно удалить в настройках приложений Android.</string>
+    <string name="leftover_remove_action">Удалить старые копии</string>
+    <string name="leftover_found_body">Прежняя настройка оставила эти приложения под другим именем пакета. Старые копии моста конкурируют с текущей за связь с часами; старая копия Samsung Health+ дублирует текущую, которая получает те же данные из вашего аккаунта Samsung. Android попросит подтвердить каждое удаление.</string>
+    <string name="leftover_found_title">Старые копии прежней настройки</string>
     <string name="install_phone_note">Разрешения, показ поверх других приложений, доступ к уведомлениям, использование батареи без ограничений и ограниченные настройки включаете вы. Вернитесь потом на этот экран, и он проверит всё снова.</string>
     <string name="install_watch_title">Установка на часы</string>
     <string name="install_watch_intro">Установка по Wi-Fi в таком порядке: Health Monitor, мост, затем будильники телефона.</string>
@@ -413,7 +416,7 @@
     <string name="selftest_grants_title">Доступ: %1$s</string>
     <string name="selftest_stock_title">Отключение: %1$s</string>
     <string name="selftest_bridge_link_title">Связь с часами через мост</string>
-    <string name="selftest_leftovers_title">Копии моста от прежней установки</string>
+    <string name="selftest_leftovers_title">Копии прежней настройки</string>
     <string name="selftest_watch_platform">Health Platform в режиме разработчика</string>
     <string name="selftest_gms_title">Часы подключены к телефону</string>
     <string name="selftest_shm_title">Health Monitor видит часы</string>
