@@ -357,6 +357,7 @@
     <string name="patch_shm_main_gates">Skips the start-up system and update checks, and reports the screen lock as set.</string>
     <string name="patch_shm_setup_network_gate">Disables the SIM and regional check during setup.</string>
     <string name="patch_shm_sleep_apnea_support">Reports sleep apnea as supported.</string>
+    <string name="patch_shm_home_tabs_fallback">Shows blood pressure and ECG on the home screen when the country is on no feature list, instead of closing.</string>
     <string name="patch_phone_rebrand_gms">Gives the phone app the same package and key as the watch app so the two can exchange data.</string>
     <string name="patch_watch_rebrand_coexist">Renames the watch app so it sits next to the stock one.</string>
     <string name="patch_shm_wear_trusted_peers">Lets the two patched apps recognize each other on the watch link, instead of only the stock ones.</string>

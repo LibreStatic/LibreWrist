@@ -250,6 +250,7 @@
     <string name="patch_shm_main_gates">स्टार्ट-अप पर सिस्टम और अपडेट की जाँचें छोड़ देता है, और स्क्रीन लॉक को सेट बताता है।</string>
     <string name="patch_shm_setup_network_gate">सेटअप के दौरान SIM और क्षेत्र की जाँच बंद करता है।</string>
     <string name="patch_shm_sleep_apnea_support">स्लीप एपनिया को समर्थित बताता है।</string>
+    <string name="patch_shm_home_tabs_fallback">जब देश किसी भी फ़ीचर सूची में नहीं होता, तो ऐप बंद होने के बजाय होम स्क्रीन पर ब्लड प्रेशर और ईसीजी दिखाता है।</string>
     <string name="patch_phone_rebrand_gms">फ़ोन ऐप को घड़ी ऐप जैसा ही पैकेज और कुंजी देता है ताकि दोनों डेटा का आदान-प्रदान कर सकें।</string>
     <string name="patch_watch_rebrand_coexist">घड़ी ऐप का नाम बदलता है ताकि वह स्टॉक ऐप के साथ रह सके।</string>
     <string name="patch_shm_wear_trusted_peers">दोनों पैच किए गए ऐप को घड़ी के लिंक पर एक-दूसरे को पहचानने देता है, सिर्फ़ स्टॉक ऐप को नहीं।</string>

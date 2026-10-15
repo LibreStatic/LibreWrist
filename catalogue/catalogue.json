@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "serial": 33,
+  "serial": 34,
   "minAppVersion": 28,
   "inputs": [
     {
@@ -129,6 +129,7 @@
           "shm-main-gates",
           "shm-setup-network-gate",
           "shm-sleep-apnea-support",
+          "shm-home-tabs-fallback",
           "phone-rebrand-gms",
           "shm-wear-trusted-peers",
           "shm-launcher-badge"
@@ -2663,6 +2664,62 @@
             ]
           },
           "expect": 9
+        }
+      ]
+    },
+    "shm-home-tabs-fallback": {
+      "families": [
+        "shm-phone"
+      ],
+      "title": "Home tabs fallback",
+      "description": "Home feature list empty (saved SIM/network country in no per-feature list) -> BP + ECG; the home TabLayout is hidden instead of measured with zero tabs",
+      "optional": false,
+      "ops": [
+        {
+          "op": "insertInMethodAtMatch",
+          "sigRegex": "public static \\w+\\(\\)Ljava/util/ArrayList;",
+          "bodyAll": [
+            "\"com.samsung.android.shealthmonitor.bp.control.BloodPressureController\"",
+            "\"com.samsung.android.shealthmonitor.ecg2.control.Ecg2Controller\"",
+            "\"com.samsung.android.shealthmonitor.sleep.control.SleepController\""
+          ],
+          "pattern": "(?P<at>    return-object (?P<list>v\\d)\\n)",
+          "insert": [
+            "    invoke-virtual {{{list}}}, Ljava/util/ArrayList;->isEmpty()Z",
+            "",
+            "    move-result v1",
+            "",
+            "    if-eqz v1, :interop_home_tabs_ok",
+            "",
+            "    const-string v1, \"com.samsung.android.shealthmonitor.bp.control.BloodPressureController\"",
+            "",
+            "    invoke-virtual {{{list}}, v1}, Ljava/util/ArrayList;->add(Ljava/lang/Object;)Z",
+            "",
+            "    const-string v1, \"com.samsung.android.shealthmonitor.ecg2.control.Ecg2Controller\"",
+            "",
+            "    invoke-virtual {{{list}}, v1}, Ljava/util/ArrayList;->add(Ljava/lang/Object;)Z",
+            "",
+            "    :interop_home_tabs_ok",
+            ""
+          ],
+          "expect": 1
+        },
+        {
+          "op": "insertInMethodAtMatch",
+          "sigRegex": "public final \\w+\\(Landroid/widget/LinearLayout;Lcom/google/android/material/tabs/TabLayout;\\)V",
+          "bodyAll": [
+            "Lcom/google/android/material/tabs/TabLayout;->setTabMode(I)V"
+          ],
+          "pattern": "Ljava/util/ArrayList;->size\\(\\)I\\n\\n    move-result (?P<n>[vp]\\d+)\\n\\n(?P<at>)(?=    (?:if-nez (?P=n), :\\w+\\n\\n    const/4 (?P=n), 0x1|const/4 [vp]\\d+, 0x1\\n\\n    if-ne (?P=n), [vp]\\d+, :\\w+)\\n)",
+          "insert": [
+            "    if-nez {{n}}, :interop_home_tabs_some",
+            "",
+            "    const/4 {{n}}, 0x1",
+            "",
+            "    :interop_home_tabs_some",
+            ""
+          ],
+          "expect": 1
         }
       ]
     },

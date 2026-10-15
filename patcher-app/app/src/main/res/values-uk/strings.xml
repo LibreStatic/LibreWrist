@@ -256,6 +256,7 @@
     <string name="patch_shm_main_gates">Пропускає перевірки системи й оновлень під час запуску та повідомляє, що блокування екрана налаштовано.</string>
     <string name="patch_shm_setup_network_gate">Вимикає перевірку SIM і регіону під час налаштування.</string>
     <string name="patch_shm_sleep_apnea_support">Повідомляє, що апное уві сні підтримується.</string>
+    <string name="patch_shm_home_tabs_fallback">Показує тиск і ЕКГ на головному екрані, якщо країни немає в жодному списку функцій, замість закриття застосунку.</string>
     <string name="patch_phone_rebrand_gms">Надає застосунку на телефоні той самий пакет і ключ, що й на годиннику, щоб вони могли обмінюватися даними.</string>
     <string name="patch_watch_rebrand_coexist">Перейменовує застосунок на годиннику, щоб він стояв поруч зі стандартним.</string>
     <string name="patch_shm_wear_trusted_peers">Дає змогу двом пропатченим застосункам розпізнавати один одного у зв\'язку з годинником, а не лише стандартним.</string>

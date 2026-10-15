@@ -253,6 +253,7 @@
     <string name="patch_shm_main_gates">Ignore les vérifications du système et des mises à jour au démarrage, et indique que le verrouillage de l\'écran est configuré.</string>
     <string name="patch_shm_setup_network_gate">Désactive la vérification de la SIM et la vérification régionale pendant la configuration.</string>
     <string name="patch_shm_sleep_apnea_support">Signale l\'apnée du sommeil comme prise en charge.</string>
+    <string name="patch_shm_home_tabs_fallback">Affiche la tension artérielle et l\'ECG sur l\'écran d\'accueil quand le pays ne figure dans aucune liste de fonctions, au lieu de se fermer.</string>
     <string name="patch_phone_rebrand_gms">Donne à l\'app du téléphone le même paquet et la même clé que l\'app de la montre pour qu\'elles puissent échanger des données.</string>
     <string name="patch_watch_rebrand_coexist">Renomme l\'app de la montre pour qu\'elle cohabite avec celle d\'origine.</string>
     <string name="patch_shm_wear_trusted_peers">Permet aux deux apps modifiées de se reconnaître sur la liaison avec la montre, au lieu des seules apps d\'origine.</string>

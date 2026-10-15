@@ -200,12 +200,14 @@ Application order (the `#` column is the order in the `gms` profile of the catal
 | 10 | `shm-main-gates` | `checkSystem`/`updateVersionCheck` -> void; `isScreenLockEnabled` -> success | System / version / screen-lock gates |
 | 11 | `shm-setup-network-gate` | `checkNoNetworkError` -> void | No SIM/region gate in setup |
 | 12 | `shm-sleep-apnea-support` | `isPhoneSupportSleepApnea` forced true (const after move-result) | Regional check disabled |
-| 13 | `phone-rebrand-gms` | package -> `com.samsung.android.shealthmonitors` (manifest, permissions, authorities, exact package strings, share URI) | Same package and certificate as the watch app: the GMS Data Layer only delivers between equal AppKeys |
-| 14 | `shm-wear-trusted-peers` | the `wear-trusted-peer-packages` meta-data is removed (see the watch table) | Same reason as on the watch |
-| 15 | `shm-launcher-badge` *(optional)* | `adaptiveIconBadge`: the adaptive launcher icon gets a small OpenSHM badge at the bottom-right of the foreground and monochrome layers | The patched app is told apart from the stock Samsung Health Monitor in the launcher |
+| 13 | `shm-home-tabs-fallback` | The home feature list (one entry per controller whose per-feature country list holds the saved SIM/network country) falls back to BP + ECG when empty; the home `TabLayout` is hidden instead of being measured with zero tabs | Regional check disabled: with an empty or unlisted country (no SIM, or a country outside every list) the home screen crashed with `ArithmeticException: divide by zero` in the tab indicator's `onMeasure` |
+| 14 | `phone-rebrand-gms` | package -> `com.samsung.android.shealthmonitors` (manifest, permissions, authorities, exact package strings, share URI) | Same package and certificate as the watch app: the GMS Data Layer only delivers between equal AppKeys |
+| 15 | `shm-wear-trusted-peers` | the `wear-trusted-peer-packages` meta-data is removed (see the watch table) | Same reason as on the watch |
+| 16 | `shm-launcher-badge` *(optional)* | `adaptiveIconBadge`: the adaptive launcher icon gets a small OpenSHM badge at the bottom-right of the foreground and monochrome layers | The patched app is told apart from the stock Samsung Health Monitor in the launcher |
 
 Profile: all of them in `gms`. Verified [V]: the decoded result (smali, manifest, resources) is
-identical to the owner-verified `shm-phone-1.4.6.001-stock-mod-gms1` build (24 patched sites).
+identical to the owner-verified `shm-phone-1.4.6.001-stock-mod-gms1` build (24 patched sites),
+before `shm-home-tabs-fallback` was added (2 more sites).
 
 ## SHM watch 1.5.1.022
 

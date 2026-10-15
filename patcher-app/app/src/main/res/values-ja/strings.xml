@@ -247,6 +247,7 @@
     <string name="patch_shm_main_gates">起動時のシステムチェックとアップデートチェックをスキップし、画面ロックが設定済みであると報告します。</string>
     <string name="patch_shm_setup_network_gate">セットアップ中のSIMチェックと地域チェックを無効にします。</string>
     <string name="patch_shm_sleep_apnea_support">睡眠時無呼吸に対応していると報告します。</string>
+    <string name="patch_shm_home_tabs_fallback">国がどの機能リストにも含まれない場合、アプリを終了せずにホーム画面に血圧と心電図を表示します。</string>
     <string name="patch_phone_rebrand_gms">スマートフォンアプリにウォッチアプリと同じパッケージとキーを与え、両者がデータを交換できるようにします。</string>
     <string name="patch_watch_rebrand_coexist">ウォッチアプリの名前を変更し、標準アプリと共存できるようにします。</string>
     <string name="patch_shm_wear_trusted_peers">パッチ済みの 2 つのアプリが、純正アプリだけでなく互いをウォッチとの接続で認識できるようにします。</string>

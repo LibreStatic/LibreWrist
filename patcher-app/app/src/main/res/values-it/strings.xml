@@ -250,6 +250,7 @@
     <string name="patch_shm_main_gates">Salta i controlli di sistema e degli aggiornamenti all\'avvio, e indica che il blocco schermo è impostato.</string>
     <string name="patch_shm_setup_network_gate">Disattiva il controllo della SIM e quello regionale durante la configurazione.</string>
     <string name="patch_shm_sleep_apnea_support">Segnala l\'apnea notturna come supportata.</string>
+    <string name="patch_shm_home_tabs_fallback">Mostra la pressione sanguigna e l\'ECG nella schermata principale quando il paese non è in nessun elenco di funzioni, invece di chiudersi.</string>
     <string name="patch_phone_rebrand_gms">Dà all\'app del telefono lo stesso pacchetto e la stessa chiave dell\'app dell\'orologio, così le due possono scambiarsi dati.</string>
     <string name="patch_watch_rebrand_coexist">Rinomina l\'app dell\'orologio per affiancarla a quella originale.</string>
     <string name="patch_shm_wear_trusted_peers">Fa sì che le due app modificate si riconoscano sul collegamento con l\'orologio, invece delle sole app originali.</string>

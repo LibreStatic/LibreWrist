@@ -178,6 +178,7 @@ class LoadedCatalogue(val engine: Catalogue, private val resolve: (Int) -> Strin
         "shm-main-gates" to R.string.patch_shm_main_gates,
         "shm-setup-network-gate" to R.string.patch_shm_setup_network_gate,
         "shm-sleep-apnea-support" to R.string.patch_shm_sleep_apnea_support,
+        "shm-home-tabs-fallback" to R.string.patch_shm_home_tabs_fallback,
         "phone-rebrand-gms" to R.string.patch_phone_rebrand_gms,
         "watch-rebrand-coexist" to R.string.patch_watch_rebrand_coexist,
         "shm-wear-trusted-peers" to R.string.patch_shm_wear_trusted_peers,

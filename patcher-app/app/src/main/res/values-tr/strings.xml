@@ -250,6 +250,7 @@
     <string name="patch_shm_main_gates">Başlangıçtaki sistem ve güncelleme kontrollerini atlar ve ekran kilidini ayarlanmış olarak bildirir.</string>
     <string name="patch_shm_setup_network_gate">Kurulum sırasında SIM ve bölge kontrolünü devre dışı bırakır.</string>
     <string name="patch_shm_sleep_apnea_support">Uyku apnesini destekleniyor olarak bildirir.</string>
+    <string name="patch_shm_home_tabs_fallback">Ülke hiçbir özellik listesinde yoksa uygulamayı kapatmak yerine ana ekranda tansiyon ve EKG\'yi gösterir.</string>
     <string name="patch_phone_rebrand_gms">Telefon uygulamasına saat uygulamasıyla aynı paketi ve anahtarı vererek ikisinin veri alışverişi yapmasını sağlar.</string>
     <string name="patch_watch_rebrand_coexist">Saat uygulamasını orijinalinin yanında durması için yeniden adlandırır.</string>
     <string name="patch_shm_wear_trusted_peers">Yamalı iki uygulamanın saat bağlantısında yalnızca orijinal uygulamaları değil birbirini tanımasını sağlar.</string>

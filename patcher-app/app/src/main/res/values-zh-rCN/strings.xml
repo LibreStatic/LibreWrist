@@ -247,6 +247,7 @@
     <string name="patch_shm_main_gates">跳过启动时的系统检查和更新检查，并报告已设置屏幕锁定。</string>
     <string name="patch_shm_setup_network_gate">在设置过程中停用 SIM 卡检查和地区检查。</string>
     <string name="patch_shm_sleep_apnea_support">将睡眠呼吸暂停报告为受支持。</string>
+    <string name="patch_shm_home_tabs_fallback">当国家/地区不在任何功能列表中时，在主屏幕显示血压和心电图，而不是关闭应用。</string>
     <string name="patch_phone_rebrand_gms">让手机应用使用与手表应用相同的包名和密钥，以便两者交换数据。</string>
     <string name="patch_watch_rebrand_coexist">重命名手表应用，使其与自带应用并存。</string>
     <string name="patch_shm_wear_trusted_peers">让两个已修补的应用在手表连接中互相识别，而不仅限于原版应用。</string>

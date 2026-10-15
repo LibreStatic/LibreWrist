@@ -250,6 +250,7 @@
     <string name="patch_shm_main_gates">Omite las comprobaciones de sistema y de actualización al iniciar, e informa que el bloqueo de pantalla está configurado.</string>
     <string name="patch_shm_setup_network_gate">Desactiva la comprobación de SIM y la regional durante la configuración.</string>
     <string name="patch_shm_sleep_apnea_support">Informa que la apnea del sueño es compatible.</string>
+    <string name="patch_shm_home_tabs_fallback">Muestra la presión arterial y el ECG en la pantalla principal cuando el país no figura en ninguna lista de funciones, en lugar de cerrarse.</string>
     <string name="patch_phone_rebrand_gms">Da a la app del teléfono el mismo paquete y clave que la app del reloj para que puedan intercambiar datos.</string>
     <string name="patch_watch_rebrand_coexist">Renombra la app del reloj para que conviva con la original.</string>
     <string name="patch_shm_wear_trusted_peers">Hace que las dos apps parcheadas se reconozcan en el enlace con el reloj, en lugar de solo las originales.</string>

@@ -250,6 +250,7 @@
     <string name="patch_shm_main_gates">Slaat de systeem- en updatecontroles bij het opstarten over en meldt de schermvergrendeling als ingesteld.</string>
     <string name="patch_shm_setup_network_gate">Schakelt de SIM- en regiocontrole tijdens de configuratie uit.</string>
     <string name="patch_shm_sleep_apnea_support">Meldt slaapapneu als ondersteund.</string>
+    <string name="patch_shm_home_tabs_fallback">Toont bloeddruk en ECG op het startscherm als het land op geen enkele functielijst staat, in plaats van te sluiten.</string>
     <string name="patch_phone_rebrand_gms">Geeft de telefoon-app hetzelfde pakket en dezelfde sleutel als de horlogeapp zodat ze gegevens kunnen uitwisselen.</string>
     <string name="patch_watch_rebrand_coexist">Hernoemt de horlogeapp zodat hij naast de standaardapp staat.</string>
     <string name="patch_shm_wear_trusted_peers">Laat de twee aangepaste apps elkaar herkennen via de horlogeverbinding, in plaats van alleen de originele apps.</string>
