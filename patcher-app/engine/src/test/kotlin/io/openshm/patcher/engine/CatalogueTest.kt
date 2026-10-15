@@ -44,7 +44,7 @@ class CatalogueTest {
 
     @Test fun committedCatalogueParses() {
         val c = Catalogue.parse(String(catalogueBytes, Charsets.UTF_8))
-        assertEquals(55, c.patterns.size)
+        assertEquals(57, c.patterns.size)
         assertEquals(setOf("gms", "alarm", "shealth"), c.profiles.keys)
     }
 
@@ -211,7 +211,7 @@ class CatalogueTest {
 
     @Test fun parseSignedVerifiesBeforeParsing() {
         val key = CatalogueVerifier.parsePublicKey(pem)
-        assertEquals(55, Catalogue.parseSigned(catalogueBytes, signature, key).patterns.size)
+        assertEquals(57, Catalogue.parseSigned(catalogueBytes, signature, key).patterns.size)
         val tampered = catalogueBytes.copyOf().also { it[100] = (it[100].toInt() xor 1).toByte() }
         try {
             Catalogue.parseSigned(tampered, signature, key)
@@ -223,7 +223,7 @@ class CatalogueTest {
 
     @Test fun duplicateKeysAreRejected() {
         try {
-            Catalogue.parse("{\"schema\": 1, \"schema\": 1}")
+            Catalogue.parse("{\"schema\": 2, \"schema\": 2}")
             fail()
         } catch (e: CatalogueException) {
             // expected

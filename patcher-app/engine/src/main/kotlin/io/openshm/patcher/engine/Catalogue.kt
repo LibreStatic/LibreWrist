@@ -39,13 +39,56 @@ sealed class OutputSource {
     data class OwnApp(val path: String) : OutputSource()
 }
 
-data class CatalogueOutput(val id: String, val device: String, val packageName: String, val from: OutputSource)
+/** How an installed bridge is started: [receiver] (relative class name) with [action] (placeholders unexpanded). */
+data class OutputStart(val receiver: String, val action: String)
+
+data class CatalogueOutput(
+    val id: String, val device: String, val packageName: String, val from: OutputSource,
+    val start: OutputStart? = null,
+    /** The watch bridge talks to the companion app. */
+    val companionLink: Boolean = false,
+    /** The phone bridge may be signed by a key other than the catalogue's own. */
+    val knownSigner: Boolean = false,
+    /** Content authority (placeholders unexpanded) where the app publishes its status. */
+    val statusAuthority: String? = null,
+    /** Copies of this app under other package prefixes are leftovers. */
+    val singleCopy: Boolean = false,
+)
 
 data class InstallStep(val output: String, val then: String?)
 
-data class Grant(val kind: String, val fields: Map<String, String>, val optional: Boolean, val note: String?)
+data class Grant(
+    val kind: String, val fields: Map<String, String>, val optional: Boolean, val note: String?,
+    /** Key in [Catalogue.strings] explaining the grant, or null. */
+    val why: String? = null,
+)
 
-data class StockApp(val device: String, val packageName: String, val optional: Boolean, val reason: String)
+data class StockApp(
+    val device: String, val packageName: String, val optional: Boolean, val reason: String,
+    /** Output id of the app that replaces this stock app, or null. */
+    val replacedBy: String? = null,
+)
+
+/** A user-facing group of outputs; [icon] is one of [Catalogue.APP_ICONS]. */
+data class CatalogueApp(val id: String, val outputs: List<String>, val optional: Boolean, val icon: String)
+
+data class CompanionApp(val packageName: String, val watchPlugins: List<String>)
+
+data class HealthPlatform(
+    val packageName: String, val settingsAction: String, val settingsComponent: String,
+    val titleViewId: String, val devModeViewId: String, val taps: Int, val requiredBy: List<String>,
+)
+
+/** A secure setting the app puts back when reverting; [why] is a key of [Catalogue.strings]. */
+data class RevertSetting(val device: String, val kind: String, val key: String, val default: String, val why: String?)
+
+data class CataloguePlatform(
+    val companionApp: CompanionApp,
+    val healthPlatform: HealthPlatform,
+    /** Device (`phone`, `watch`) to the packages whose logs are collected. */
+    val logPackages: Map<String, List<String>>,
+    val revertSettings: List<RevertSetting>,
+)
 
 /** The parsed and validated catalogue. Build it with [Catalogue.parse]. */
 class Catalogue private constructor(
@@ -60,6 +103,10 @@ class Catalogue private constructor(
     val installOrder: List<InstallStep>,
     val grants: Map<String, List<Grant>>,
     val stockAppsToDisable: List<StockApp>,
+    val apps: List<CatalogueApp>,
+    /** Locale tag (`en`, `es`, `zh-TW`) to key to text; `en` holds every key. */
+    val strings: Map<String, Map<String, String>>,
+    val platform: CataloguePlatform,
 ) {
     /** A runner for this catalogue's patterns with the package prefix [prefix]. */
     fun runner(prefix: String) = ProfileRunner(patterns, prefix)
@@ -99,11 +146,20 @@ class Catalogue private constructor(
     companion object {
         private val OPTION_GROUP_RE = Regex("^[a-z][a-z0-9]*(-[a-z0-9]+)*$")
 
-        const val SCHEMA = 1
+        const val SCHEMA = 2
         const val SAMPLE_PREFIX = "com.example"
 
         private val TOP_KEYS = listOf("schema", "serial", "minAppVersion", "inputs", "families", "profiles",
-            "patterns", "outputs", "installOrder", "grants", "stockAppsToDisable")
+            "patterns", "outputs", "installOrder", "grants", "stockAppsToDisable", "apps", "strings", "platform")
+        /** The closed vocabulary of [CatalogueApp.icon]. */
+        val APP_ICONS = listOf("monitor-heart", "favorite", "alarm", "swap")
+        private val OUTPUT_OPTIONAL_KEYS = listOf("start", "companionLink", "knownSigner", "statusAuthority", "singleCopy")
+        private val LOCALE_RE = Regex("^[a-z]{2,3}(-[A-Z][A-Za-z]{1,3})?$")
+        private val STRING_KEY_RE = Regex("^[a-z][A-Za-z0-9_.-]{0,199}$")
+        private val TEXT_RE = Regex("^[^\\u0000-\\u001f\\u007f]{1,4000}$")
+        private val SETTINGS_COMPONENT_RE = Regex("^[A-Za-z]\\w*(\\.[A-Za-z]\\w*)+/(\\.[A-Za-z]\\w*)+$")
+        private val VIEW_ID_RE = Regex("^[a-z]+:id/[a-z_][a-z0-9_]*$")
+        private val RELATIVE_CLASS_RE = Regex("^(\\.[A-Za-z]\\w*)+$")
         private val DEVICES = listOf("phone", "watch")
         private val INSTALL_STEPS = listOf("userOnboarding")
 
@@ -217,7 +273,7 @@ class Catalogue private constructor(
             }
             val fields = GRANT_KINDS.getValue(kind)
             val out = ArrayList<String>()
-            val unknown = g.keys.map { it as String }.toSet() - setOf("kind", "optional", "note") - fields.keys
+            val unknown = g.keys.map { it as String }.toSet() - setOf("kind", "optional", "note", "why") - fields.keys
             if (unknown.isNotEmpty()) out.add("$where: unknown fields ${unknown.sorted()} for kind '$kind'")
             for ((name, rx) in fields) {
                 val v = g[name]
@@ -226,6 +282,9 @@ class Catalogue private constructor(
             if ("optional" in g && g["optional"] !is Boolean) out.add("$where: optional must be a boolean")
             if ("note" in g && !(g["note"] is String && NOTE_RE.matches(g["note"] as String))) {
                 out.add("$where: note must be a single-line string of 1..300 characters")
+            }
+            if ("why" in g && !(g["why"] is String && STRING_KEY_RE.matches(g["why"] as String))) {
+                out.add("$where: why must be a key of the strings table")
             }
             return out
         }
@@ -242,10 +301,13 @@ class Catalogue private constructor(
             }
             for ((i, o) in (outputs as List<*>).withIndex()) {
                 val where = "outputs[$i]"
-                if (o !is Map<*, *> || o.keys != setOf("id", "device", "package", "from")) {
-                    problems.add("$where: expected exactly id, device, package, from")
+                val base = setOf("id", "device", "package", "from")
+                if (o !is Map<*, *> || !o.keys.containsAll(base) || (o.keys - base - OUTPUT_OPTIONAL_KEYS.toSet()).isNotEmpty()) {
+                    problems.add("$where: expected id, device, package, from " +
+                        "(plus optionally ${OUTPUT_OPTIONAL_KEYS.joinToString(", ")})")
                     continue
                 }
+                problems.addAll(validateOutputExtras(where, o))
                 val id = o["id"]
                 if (id !is String || !ID_RE.matches(id)) {
                     problems.add("$where: id must match ${ID_RE.pattern}")
@@ -328,7 +390,7 @@ class Catalogue private constructor(
                 for ((i, g) in lst.withIndex()) {
                     problems.addAll(validateGrant("$where[$i]", g))
                     val key = (g as? Map<*, *>)?.let { m ->
-                        m.entries.filter { it.key != "optional" && it.key != "note" }
+                        m.entries.filter { it.key != "optional" && it.key != "note" && it.key != "why" }
                             .sortedBy { it.key as String }.joinToString(",") { "${it.key}=${it.value}" }
                     }
                     if (key != null && key in seen) problems.add("$where[$i]: duplicate grant")
@@ -343,9 +405,13 @@ class Catalogue private constructor(
             }
             for ((i, s) in (stock as List<*>).withIndex()) {
                 val where = "stockAppsToDisable[$i]"
-                if (s !is Map<*, *> || s.keys != setOf("device", "package", "optional", "reason")) {
-                    problems.add("$where: expected exactly device, package, optional, reason")
+                val stockBase = setOf("device", "package", "optional", "reason")
+                if (s !is Map<*, *> || !s.keys.containsAll(stockBase) || (s.keys - stockBase - "replacedBy").isNotEmpty()) {
+                    problems.add("$where: expected device, package, optional, reason (plus optionally replacedBy)")
                     continue
+                }
+                if ("replacedBy" in s && s["replacedBy"] !in outIds) {
+                    problems.add("$where: replacedBy '${s["replacedBy"]}' is not an output id")
                 }
                 if (s["device"] !in DEVICES) problems.add("$where: device must be one of $DEVICES")
                 val p = s["package"]
@@ -354,6 +420,174 @@ class Catalogue private constructor(
                 val r = s["reason"]
                 if (!(r is String && NOTE_RE.matches(r))) problems.add("$where: reason must be a single-line string of 1..300 characters")
             }
+            problems.addAll(validateApps(cat, outIds))
+            problems.addAll(validatePlatform(cat, outIds))
+            problems.addAll(validateStrings(cat, outIds))
+            return problems
+        }
+
+        private fun validateOutputExtras(where: String, o: Map<*, *>): List<String> {
+            val out = ArrayList<String>()
+            if ("start" in o) {
+                val st = o["start"]
+                if (st !is Map<*, *> || st.keys != setOf("receiver", "action")) {
+                    out.add("$where: start must be exactly {\"receiver\", \"action\"}")
+                } else {
+                    val r = st["receiver"]
+                    if (r !is String || !RELATIVE_CLASS_RE.matches(r)) {
+                        out.add("$where: start.receiver must be a class name relative to the package (\".Name\")")
+                    }
+                    val act = sampleName(st["action"])
+                    if (act == null || !PACKAGE_RE.matches(act)) {
+                        out.add("$where: start.action is not a valid action name " +
+                            "(only \${PKG_PREFIX} may be used as a placeholder)")
+                    }
+                }
+            }
+            for (k in listOf("companionLink", "knownSigner", "singleCopy")) {
+                if (k in o && o[k] !is Boolean) out.add("$where: $k must be a boolean")
+            }
+            if ("statusAuthority" in o) {
+                val auth = sampleName(o["statusAuthority"])
+                if (auth == null || !PACKAGE_RE.matches(auth)) {
+                    out.add("$where: statusAuthority is not a valid authority " +
+                        "(only \${PKG_PREFIX} may be used as a placeholder)")
+                }
+            }
+            return out
+        }
+
+        private fun validateApps(cat: Map<*, *>, outIds: List<String>): List<String> {
+            val apps = cat["apps"]
+            if (apps !is List<*> || apps.isEmpty()) return listOf("apps must be a non-empty list")
+            val problems = ArrayList<String>()
+            val ids = ArrayList<String>()
+            val owner = HashMap<String, String>()
+            for ((i, a) in apps.withIndex()) {
+                val where = "apps[$i]"
+                if (a !is Map<*, *> || a.keys != setOf("id", "outputs", "optional", "icon")) {
+                    problems.add("$where: expected exactly id, outputs, optional, icon")
+                    continue
+                }
+                val id = a["id"]
+                if (id !is String || !ID_RE.matches(id)) problems.add("$where: id must match ${ID_RE.pattern}")
+                else if (id in ids) problems.add("$where: duplicate id '$id'")
+                else ids.add(id)
+                if (a["optional"] !is Boolean) problems.add("$where: optional must be a boolean")
+                if (a["icon"] !in APP_ICONS) problems.add("$where: icon must be one of $APP_ICONS")
+                val outs = a["outputs"]
+                if (outs !is List<*> || outs.isEmpty()) {
+                    problems.add("$where: outputs must be a non-empty list")
+                    continue
+                }
+                for (oid in outs) {
+                    if (oid !in outIds) problems.add("$where: unknown output '$oid'")
+                    else if (oid as String in owner) problems.add("$where: output '$oid' is already in app '${owner[oid]}'")
+                    else owner[oid] = id as? String ?: ""
+                }
+            }
+            for (oid in outIds) if (oid !in owner) problems.add("apps: output '$oid' is in no app")
+            return problems
+        }
+
+        private fun packageListProblem(where: String, v: Any?): List<String> =
+            if (v is List<*> && v.size == v.toSet().size && v.all { it is String && PACKAGE_RE.matches(it) }) emptyList()
+            else listOf("$where: must be a list of distinct package names")
+
+        private fun validatePlatform(cat: Map<*, *>, outIds: List<String>): List<String> {
+            val p = cat["platform"]
+            if (p !is Map<*, *> || p.keys != setOf("companionApp", "healthPlatform", "logPackages", "revertSettings")) {
+                return listOf("platform: expected exactly companionApp, healthPlatform, logPackages, revertSettings")
+            }
+            val problems = ArrayList<String>()
+            val c = p["companionApp"]
+            if (c !is Map<*, *> || c.keys != setOf("package", "watchPlugins")) {
+                problems.add("platform.companionApp: expected exactly package, watchPlugins")
+            } else {
+                val pk = c["package"]
+                if (pk !is String || !PACKAGE_RE.matches(pk)) problems.add("platform.companionApp.package is not a valid package name")
+                problems.addAll(packageListProblem("platform.companionApp.watchPlugins", c["watchPlugins"]))
+            }
+            val h = p["healthPlatform"]
+            val hKeys = setOf("package", "settingsAction", "settingsComponent", "titleViewId", "devModeViewId", "taps", "requiredBy")
+            if (h !is Map<*, *> || h.keys != hKeys) {
+                problems.add("platform.healthPlatform: expected exactly ${hKeys.sorted().joinToString(", ")}")
+            } else {
+                for ((k, rx) in listOf("package" to PACKAGE_RE, "settingsAction" to PACKAGE_RE,
+                    "settingsComponent" to SETTINGS_COMPONENT_RE, "titleViewId" to VIEW_ID_RE, "devModeViewId" to VIEW_ID_RE)) {
+                    val v = h[k]
+                    if (v !is String || !rx.matches(v)) problems.add("platform.healthPlatform.$k missing or not matching ${rx.pattern}")
+                }
+                val taps = h["taps"]
+                if (!(taps is Long && taps in 1..50)) problems.add("platform.healthPlatform.taps must be an integer in 1..50")
+                val rb = h["requiredBy"]
+                if (rb !is List<*> || !rb.all { it in outIds }) {
+                    problems.add("platform.healthPlatform.requiredBy must be a list of output ids")
+                }
+            }
+            val lp = p["logPackages"]
+            if (lp !is Map<*, *> || lp.keys != DEVICES.toSet()) {
+                problems.add("platform.logPackages: expected exactly phone, watch")
+            } else {
+                for (d in DEVICES) problems.addAll(packageListProblem("platform.logPackages.$d", lp[d]))
+            }
+            val rs = p["revertSettings"]
+            if (rs !is List<*>) {
+                problems.add("platform.revertSettings must be a list")
+            } else {
+                for ((i, r) in rs.withIndex()) {
+                    val where = "platform.revertSettings[$i]"
+                    val need = setOf("device", "kind", "key", "default")
+                    if (r !is Map<*, *> || !r.keys.containsAll(need) || (r.keys - need - "why").isNotEmpty()) {
+                        problems.add("$where: expected device, kind, key, default (plus optionally why)")
+                        continue
+                    }
+                    if (r["device"] !in DEVICES) problems.add("$where: device must be one of $DEVICES")
+                    if (r["kind"] != "secureSetting") problems.add("$where: kind must be \"secureSetting\"")
+                    val key = r["key"]
+                    if (key !is String || !SETTING_KEY_RE.matches(key)) problems.add("$where: key missing or not matching ${SETTING_KEY_RE.pattern}")
+                    val def = r["default"]
+                    if (def !is String || !SETTING_VALUE_RE.matches(def)) problems.add("$where: default missing or not matching ${SETTING_VALUE_RE.pattern}")
+                    if ("why" in r && !(r["why"] is String && STRING_KEY_RE.matches(r["why"] as String))) {
+                        problems.add("$where: why must be a key of the strings table")
+                    }
+                }
+            }
+            return problems
+        }
+
+        private fun validateStrings(cat: Map<*, *>, outIds: List<String>): List<String> {
+            val st = cat["strings"]
+            val en = (st as? Map<*, *>)?.get("en") as? Map<*, *>
+            if (st !is Map<*, *> || en == null || en.isEmpty()) return listOf("strings: must be an object with a non-empty \"en\" table")
+            val problems = ArrayList<String>()
+            for ((loc, table) in st) {
+                if (loc !is String || !LOCALE_RE.matches(loc)) {
+                    problems.add("strings: locale '$loc' is not a BCP-47 tag like \"es\" or \"zh-TW\"")
+                }
+                if (table !is Map<*, *>) {
+                    problems.add("strings/$loc: must be an object")
+                    continue
+                }
+                for ((k, v) in table) {
+                    if (k !is String || !STRING_KEY_RE.matches(k)) problems.add("strings/$loc: key '$k' must match ${STRING_KEY_RE.pattern}")
+                    else if (loc != "en" && k !in en) problems.add("strings/$loc: key '$k' is not in strings/en")
+                    if (!(v is String && TEXT_RE.matches(v))) problems.add("strings/$loc/$k: must be a single-line string of 1..4000 characters")
+                }
+            }
+            val appIds = (cat["apps"] as? List<*>)?.mapNotNull { ((it as? Map<*, *>)?.get("id")) as? String }.orEmpty()
+            val required = appIds.flatMap { listOf("app.$it.title", "app.$it.summary") } + outIds.map { "output.$it.label" }
+            for (k in required) if (k !in en) problems.add("strings/en: missing required key '$k'")
+            val refs = ArrayList<Pair<String, Any?>>()
+            (cat["grants"] as? Map<*, *>)?.forEach { (oid, lst) ->
+                (lst as? List<*>)?.forEachIndexed { i, g ->
+                    if (g is Map<*, *> && g["why"] is String) refs.add("grants/$oid[$i]" to g["why"])
+                }
+            }
+            ((cat["platform"] as? Map<*, *>)?.get("revertSettings") as? List<*>)?.forEachIndexed { i, r ->
+                if (r is Map<*, *> && r["why"] is String) refs.add("platform.revertSettings[$i]" to r["why"])
+            }
+            for ((where, key) in refs) if (key !in en) problems.add("$where: why '$key' is not in strings/en")
             return problems
         }
 
@@ -549,23 +783,46 @@ class Catalogue private constructor(
             }
             val outputs = (cat["outputs"] as List<Map<String, Any?>>).map { o ->
                 val from = o["from"] as Map<String, String>
+                val start = (o["start"] as Map<String, String>?)?.let { OutputStart(it.getValue("receiver"), it.getValue("action")) }
                 CatalogueOutput(o["id"] as String, o["device"] as String, o["package"] as String,
                     if ("ownApp" in from) OutputSource.OwnApp(from.getValue("ownApp"))
-                    else OutputSource.Patched(from.getValue("input"), from.getValue("profile")))
+                    else OutputSource.Patched(from.getValue("input"), from.getValue("profile")),
+                    start = start, companionLink = o["companionLink"] as? Boolean ?: false,
+                    knownSigner = o["knownSigner"] as? Boolean ?: false,
+                    statusAuthority = o["statusAuthority"] as String?, singleCopy = o["singleCopy"] as? Boolean ?: false)
             }
             val order = (cat["installOrder"] as List<Map<String, Any?>>).map { InstallStep(it["output"] as String, it["then"] as String?) }
             val grants = (cat["grants"] as Map<String, List<Map<String, Any?>>>).mapValues { (_, l) ->
                 l.map { g ->
                     Grant(g["kind"] as String,
-                        g.filterKeys { it != "kind" && it != "optional" && it != "note" }.mapValues { it.value as String },
-                        g["optional"] as Boolean? ?: false, g["note"] as String?)
+                        g.filterKeys { it != "kind" && it != "optional" && it != "note" && it != "why" }.mapValues { it.value as String },
+                        g["optional"] as Boolean? ?: false, g["note"] as String?, g["why"] as String?)
                 }
             }
             val stock = (cat["stockAppsToDisable"] as List<Map<String, Any?>>).map {
-                StockApp(it["device"] as String, it["package"] as String, it["optional"] as Boolean, it["reason"] as String)
+                StockApp(it["device"] as String, it["package"] as String, it["optional"] as Boolean, it["reason"] as String,
+                    it["replacedBy"] as String?)
             }
+            val apps = (cat["apps"] as List<Map<String, Any?>>).map {
+                CatalogueApp(it["id"] as String, it["outputs"] as List<String>, it["optional"] as Boolean, it["icon"] as String)
+            }
+            val strings = (cat["strings"] as Map<String, Map<String, String>>)
+            val pl = cat["platform"] as Map<String, Any?>
+            val comp = pl["companionApp"] as Map<String, Any?>
+            val hp = pl["healthPlatform"] as Map<String, Any?>
+            val platform = CataloguePlatform(
+                CompanionApp(comp["package"] as String, comp["watchPlugins"] as List<String>),
+                HealthPlatform(hp["package"] as String, hp["settingsAction"] as String, hp["settingsComponent"] as String,
+                    hp["titleViewId"] as String, hp["devModeViewId"] as String, (hp["taps"] as Long).toInt(),
+                    hp["requiredBy"] as List<String>),
+                pl["logPackages"] as Map<String, List<String>>,
+                (pl["revertSettings"] as List<Map<String, Any?>>).map {
+                    RevertSetting(it["device"] as String, it["kind"] as String, it["key"] as String,
+                        it["default"] as String, it["why"] as String?)
+                },
+            )
             return Catalogue(SCHEMA, cat["serial"] as Long, cat["minAppVersion"] as Long, inputs, families, patterns,
-                profiles, outputs, order, grants, stock)
+                profiles, outputs, order, grants, stock, apps, strings, platform)
         }
     }
 }

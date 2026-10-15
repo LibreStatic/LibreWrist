@@ -4,22 +4,71 @@ import android.content.Context
 import android.content.res.AssetManager
 import androidx.annotation.VisibleForTesting
 import io.openshm.patcher.BuildConfig
-import io.openshm.patcher.R
 import io.openshm.patcher.engine.Catalogue
 import io.openshm.patcher.engine.CatalogueException
 import io.openshm.patcher.engine.CatalogueVerifier
 import io.openshm.patcher.engine.CatalogueInput
 import io.openshm.patcher.engine.CatalogueOutput
+import io.openshm.patcher.engine.CataloguePlatform
 import io.openshm.patcher.engine.OutputSource
 import java.io.File
+import java.util.Locale
 
 /**
  * The verified catalogue as the screens see it: the engine model mapped into the app model classes
- * ([InputApp], [OutputApp], [PatchInfo], [Grant], [StockApp]). User-facing text comes from string
- * resources, resolved once through [resolve] (the catalogue text is only the fallback).
+ * ([InputApp], [OutputApp], [AppGroup], [PatchInfo], [Grant], [StockApp]). User-facing text comes from
+ * the catalogue `strings` table, resolved once for [locales] through [text] (the catalogue's own
+ * title or description is only the fallback).
  */
-class LoadedCatalogue(val engine: Catalogue, private val resolve: (Int) -> String) {
+class LoadedCatalogue(val engine: Catalogue, val locales: List<Locale>) {
     val serial: Long get() = engine.serial
+
+    val text = CatalogueText(engine.strings, locales)
+
+    /** Platform facts (companion app, Health Platform service, log packages, settings to restore). */
+    val platform: CataloguePlatform get() = engine.platform
+
+    /** The user-facing apps, in the catalogue `apps` order; every output belongs to exactly one. */
+    val apps: List<AppGroup> = engine.apps.map { app ->
+        AppGroup(
+            id = app.id,
+            title = text.text("app.${app.id}.title", app.id),
+            summary = text.text("app.${app.id}.summary", ""),
+            optional = app.optional,
+            icon = app.icon,
+            outputIds = app.outputs,
+        )
+    }
+
+    /**
+     * Watch outputs whose install changes more than their own package, so reverting one also undoes that:
+     * the output that replaces a stock app (`replacedBy`) and any output with a `globalSetting` grant.
+     */
+    val watchExtraOutputs: Set<String> = buildSet {
+        engine.stockAppsToDisable.mapNotNullTo(this) { it.replacedBy }
+        engine.grants.forEach { (id, list) -> if (list.any { it.kind == "globalSetting" }) add(id) }
+    }.filterTo(mutableSetOf()) { id -> engine.outputs.any { it.id == id && it.device == "watch" } }
+
+    /** Global settings a grant appended an entry to, as setting key to the entries to remove again. */
+    val globalSettingEntries: Map<String, List<String>> = engine.grants.values.flatten()
+        .filter { it.kind == "globalSetting" }
+        .groupBy({ it.fields.getValue("key") }, { it.fields.getValue("value") })
+        .mapValues { (_, entries) -> entries.distinct() }
+
+    /**
+     * The outputs a setup builds, in `installOrder` order: those of every required app plus every
+     * optional app not in [skippedApps], limited to outputs whose official input can run on a
+     * phone or on a watch with SDK [watchSdk] (the input's `minSdk` is not above it).
+     */
+    fun selectedOutputs(watchSdk: Int, skippedApps: Set<String>): List<OutputApp> {
+        val inScope = apps.filter { !it.optional || it.id !in skippedApps }.flatMap { it.outputIds }.toSet()
+        return outputs.filter { out ->
+            out.id in inScope && (out.inputId?.let(::input)?.let { it.device == Device.Phone || it.minSdk <= watchSdk } ?: true)
+        }
+    }
+
+    /** The app that groups output [outputId]. */
+    fun appOf(outputId: String): AppGroup? = apps.firstOrNull { outputId in it.outputIds }
 
     val inputs: List<InputApp> = engine.inputs.map(::mapInput)
 
@@ -49,9 +98,10 @@ class LoadedCatalogue(val engine: Catalogue, private val resolve: (Int) -> Strin
         StockApp(
             device = device(stock.device),
             packageName = stock.packageName,
-            label = STOCK_LABELS[stock.packageName]?.let(resolve) ?: stock.packageName,
+            label = text.text("stock.${stock.packageName}.label", stock.packageName),
             optional = stock.optional,
-            reason = STOCK_REASONS[stock.packageName]?.let(resolve) ?: stock.reason,
+            reason = text.text("stock.${stock.packageName}.reason", stock.reason),
+            replacedBy = stock.replacedBy,
         )
     }
 
@@ -77,13 +127,12 @@ class LoadedCatalogue(val engine: Catalogue, private val resolve: (Int) -> Strin
         val patterns = profile.families[from.input].orEmpty().map { id ->
             val pattern = engine.patterns.getValue(id)
             PatchInfo(
-                id, pattern.title, PATCH_DESCRIPTIONS[id]?.let(resolve) ?: pattern.description,
+                id, pattern.title, text.text("pattern.$id.description", pattern.description),
                 optional = pattern.optional, optionGroup = pattern.optionGroup,
             )
         }
         val injections = profile.inject[from.input].orEmpty().map { id ->
-            val known = INJECTIONS[id]
-            PatchInfo(id, known?.first ?: id, known?.second?.let(resolve).orEmpty(), injection = true)
+            PatchInfo(id, text.text("inject.$id.title", id), text.text("inject.$id.description", ""), injection = true)
         }
         return patterns + injections
     }
@@ -101,16 +150,23 @@ class LoadedCatalogue(val engine: Catalogue, private val resolve: (Int) -> Strin
             variantChips = chipsOf(input.raw),
             apkMirrorRelease = (obtain?.get("apkmirrorRelease") as? String)?.trim('/')?.takeIf { it.isNotEmpty() },
             onApkMirror = obtain?.get("onApkMirror") != false,
+            minSdk = (input.raw["minSdk"] as? Number)?.toInt() ?: 0,
             abis = (input.raw["abis"] as? List<*>)?.filterIsInstance<String>().orEmpty(),
         )
     }
 
     private fun mapOutput(out: CatalogueOutput) = OutputApp(
         id = out.id,
-        label = OUTPUT_LABELS[out.id]?.let(resolve) ?: out.id,
+        label = text.text("output.${out.id}.label", out.id),
         device = device(out.device),
         packageTemplate = out.packageName,
         inputId = (out.from as? OutputSource.Patched)?.input,
+        purpose = text.text("output.${out.id}.purpose", ""),
+        start = out.start,
+        companionLink = out.companionLink,
+        knownSigner = out.knownSigner,
+        statusAuthority = out.statusAuthority,
+        singleCopy = out.singleCopy,
     )
 
     private fun mapGrant(g: io.openshm.patcher.engine.Grant): Grant {
@@ -123,7 +179,7 @@ class LoadedCatalogue(val engine: Catalogue, private val resolve: (Int) -> Strin
             "globalSetting" -> GrantKind.GlobalSetting to g.fields.getValue("key")
             else -> throw IllegalArgumentException("unknown grant kind '${g.kind}'")
         }
-        return Grant(kind, name, g.optional, g)
+        return Grant(kind, name, g.optional, g, why = g.why?.let(text::get))
     }
 
     companion object {
@@ -141,87 +197,6 @@ class LoadedCatalogue(val engine: Catalogue, private val resolve: (Int) -> Strin
         }
 
         private fun device(name: String) = if (name == "watch") Device.Watch else Device.Phone
-
-        private val OUTPUT_LABELS = mapOf<String, Int>(
-            "shm-phone" to R.string.output_shm_phone,
-            "shm-watch" to R.string.output_shm_watch,
-            "bridge-watch" to R.string.output_bridge_watch,
-            "alarm-fork" to R.string.output_alarm_fork,
-            "bridge-phone" to R.string.output_bridge_phone,
-            "shealth-phone" to R.string.output_shealth_phone,
-        )
-
-        private val STOCK_LABELS = mapOf<String, Int>(
-            "com.samsung.android.shealthmonitor" to R.string.stock_label_shm,
-        )
-
-        private val STOCK_REASONS = mapOf<String, Int>(
-            "com.samsung.android.shealthmonitor" to R.string.stock_reason_shm,
-        )
-
-        /** Injected code (profile `inject`): title and plain-language line, not catalogue patterns. */
-        private val INJECTIONS = mapOf<String, Pair<String, Int>>(
-            "watch-mod" to ("Health Tracking module" to R.string.patch_watch_mod),
-            "alarm-fork" to ("Alarm link module" to R.string.patch_alarm_fork),
-        )
-
-        private val PATCH_DESCRIPTIONS = mapOf<String, Int>(
-        "generic-manufacturer-check" to R.string.patch_generic_manufacturer_check,
-        "generic-vendor-check" to R.string.patch_generic_vendor_check,
-        "shm-min-age-22-to-16" to R.string.patch_shm_min_age_22_to_16,
-        "shm-supported-type-ordinals" to R.string.patch_shm_supported_type_ordinals,
-        "shm-region-supportedtype" to R.string.patch_shm_region_supportedtype,
-        "shm-region-countrylist" to R.string.patch_shm_region_countrylist,
-        "shm-root-packagevalidator" to R.string.patch_shm_root_packagevalidator,
-        "shm-force-update-response" to R.string.patch_shm_force_update_response,
-        "shm-force-update-pref" to R.string.patch_shm_force_update_pref,
-        "shm-main-gates" to R.string.patch_shm_main_gates,
-        "shm-setup-network-gate" to R.string.patch_shm_setup_network_gate,
-        "shm-sleep-apnea-support" to R.string.patch_shm_sleep_apnea_support,
-        "shm-home-tabs-fallback" to R.string.patch_shm_home_tabs_fallback,
-        "phone-rebrand-gms" to R.string.patch_phone_rebrand_gms,
-        "watch-rebrand-coexist" to R.string.patch_watch_rebrand_coexist,
-        "shm-wear-trusted-peers" to R.string.patch_shm_wear_trusted_peers,
-        "shm-launcher-badge" to R.string.patch_shm_launcher_badge,
-        "watch-gms-resources-anchor" to R.string.patch_watch_gms_resources_anchor,
-        "watch-queries-health-service" to R.string.patch_watch_queries_health_service,
-        "watch-companion-vendor" to R.string.patch_watch_companion_vendor,
-        "watch-alarm-system-app" to R.string.patch_watch_alarm_system_app,
-        "watch-mobile-installed" to R.string.patch_watch_mobile_installed,
-        "watch-min-age-22-to-16" to R.string.patch_watch_min_age_22_to_16,
-        "watch-ecg-sensor-adapter" to R.string.patch_watch_ecg_sensor_adapter,
-        "watch-bp-sensor-adapter" to R.string.patch_watch_bp_sensor_adapter,
-        "watch-sensor-unregister-compat" to R.string.patch_watch_sensor_unregister_compat,
-        "watch-bp-attribute-guard" to R.string.patch_watch_bp_attribute_guard,
-        "watch-apnea-country" to R.string.patch_watch_apnea_country,
-        "watch-apnea-reeval-not-supported" to R.string.patch_watch_apnea_reeval_not_supported,
-        "alarm-verify-symbols" to R.string.patch_alarm_verify_symbols,
-        "alarm-rebrand-manifest" to R.string.patch_alarm_rebrand_manifest,
-        "alarm-rebrand-code" to R.string.patch_alarm_rebrand_code,
-        "alarm-permissions-prune" to R.string.patch_alarm_permissions_prune,
-        "alarm-notification-permissions" to R.string.patch_alarm_notification_permissions,
-        "alarm-queries-libs" to R.string.patch_alarm_queries_libs,
-        "alarm-components-prune" to R.string.patch_alarm_components_prune,
-        "alarm-provider-open" to R.string.patch_alarm_provider_open,
-        "alarm-link-components" to R.string.patch_alarm_link_components,
-        "alarm-appfunctions-drop" to R.string.patch_alarm_appfunctions_drop,
-        "alarm-semgesture-skip" to R.string.patch_alarm_semgesture_skip,
-        "alarm-gms-observer-drop" to R.string.patch_alarm_gms_observer_drop,
-        "alarm-service-stop-on-destroy" to R.string.patch_alarm_service_stop_on_destroy,
-        "alarm-force-sound-vibrate" to R.string.patch_alarm_force_sound_vibrate,
-        "alarm-link-send" to R.string.patch_alarm_link_send,
-        "alarm-hide-launcher" to R.string.patch_alarm_hide_launcher,
-        "alarm-relabel" to R.string.patch_alarm_relabel,
-        "shealth-res-webp" to R.string.patch_shealth_res_webp,
-        "shealth-feature-dev-ui" to R.string.patch_shealth_feature_dev_ui,
-        "shealth-vitality-tile" to R.string.patch_shealth_vitality_tile,
-        "shealth-rename-manifest" to R.string.patch_shealth_rename_manifest,
-        "shealth-rename-code" to R.string.patch_shealth_rename_code,
-        "shealth-rename-account-xml" to R.string.patch_shealth_rename_account_xml,
-        "shealth-capability-gates" to R.string.patch_shealth_capability_gates,
-        "shealth-launcher-badge" to R.string.patch_shealth_launcher_badge,
-        "shealth-oobe-local" to R.string.patch_shealth_oobe_local,
-        )
     }
 }
 
@@ -249,11 +224,27 @@ object AppCatalogue {
         if (loaded == null) adoptStored(context)
     }
 
+    /**
+     * Re-resolves the catalogue text when the locales of [context] changed since it was loaded (the
+     * system or per-app language changed while the process lived); called when an activity is created.
+     */
+    fun followLocales(context: Context) {
+        val locales = localesOf(context)
+        val current = loaded ?: return
+        if (current.locales == locales) return
+        bundled?.let { bundled = LoadedCatalogue(it.engine, locales) }
+        install(LoadedCatalogue(current.engine, locales))
+    }
+
+    private fun localesOf(context: Context): List<Locale> =
+        context.resources.configuration.locales.let { list -> (0 until list.size()).map(list::get) }
+
     /** Installs the stored catalogue if valid (see [select]); called at startup and when Home adopts an update. */
     fun adoptStored(context: Context) {
         val app = context.applicationContext
-        val base = bundled ?: loadBundled(app.assets, app::getString).also { bundled = it }
-        install(select(base, StoredCatalogue(File(app.filesDir, DIR)), publicKey(app.assets), BuildConfig.VERSION_CODE, app::getString))
+        val locales = localesOf(app)
+        val base = bundled ?: loadBundled(app.assets, locales).also { bundled = it }
+        install(select(base, StoredCatalogue(File(app.filesDir, DIR)), publicKey(app.assets), BuildConfig.VERSION_CODE, locales))
     }
 
     private fun publicKey(assets: AssetManager) = assets.open("$DIR/catalogue.pub").use { String(it.readBytes(), Charsets.UTF_8) }
@@ -269,11 +260,11 @@ object AppCatalogue {
         store: StoredCatalogue,
         publicKeyPem: String,
         appVersionCode: Int,
-        resolve: (Int) -> String,
+        locales: List<Locale>,
     ): LoadedCatalogue {
         val files = store.read() ?: return bundled
         val stored = try {
-            fromBytes(files.json, files.signature, publicKeyPem, appVersionCode, resolve)
+            fromBytes(files.json, files.signature, publicKeyPem, appVersionCode, locales)
         } catch (e: RuntimeException) {
             null
         }
@@ -290,12 +281,12 @@ object AppCatalogue {
      * Reads the three bundled assets and loads them through the verifying parser. A bundled catalogue
      * that does not verify is a broken build, so this throws instead of falling back to anything.
      */
-    fun loadBundled(assets: AssetManager, resolve: (Int) -> String): LoadedCatalogue {
+    fun loadBundled(assets: AssetManager, locales: List<Locale>): LoadedCatalogue {
         fun read(name: String) = assets.open("$DIR/$name").use { it.readBytes() }
         return try {
             fromBytes(
                 read("catalogue.json"), read("catalogue.json.sig"), String(read("catalogue.pub"), Charsets.UTF_8),
-                BuildConfig.VERSION_CODE, resolve,
+                BuildConfig.VERSION_CODE, locales,
             )
         } catch (e: IllegalStateException) {
             throw IllegalStateException("the bundled catalogue is unusable (broken build): ${e.message}", e)
@@ -309,7 +300,7 @@ object AppCatalogue {
         signature: ByteArray,
         publicKeyPem: String,
         appVersionCode: Int,
-        resolve: (Int) -> String,
+        locales: List<Locale>,
     ): LoadedCatalogue {
         val engine = try {
             Catalogue.parseSigned(bytes, signature, CatalogueVerifier.parsePublicKey(publicKeyPem))
@@ -319,6 +310,6 @@ object AppCatalogue {
         check(engine.minAppVersion <= appVersionCode) {
             "the catalogue needs app version ${engine.minAppVersion}, this is $appVersionCode"
         }
-        return LoadedCatalogue(engine, resolve)
+        return LoadedCatalogue(engine, locales)
     }
 }

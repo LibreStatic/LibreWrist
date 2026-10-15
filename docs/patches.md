@@ -25,7 +25,7 @@ scripts/build_shm_watch.sh        # -> $DIST_DIR/shm-watch-1.5.1.022-gms.apk
 `catalogue/catalogue.json` (indent 2, key order preserved; `scripts/catalogue.py` writes it):
 
 ```
-{ "schema": 1, "serial": N, "minAppVersion": 1,
+{ "schema": 2, "serial": N, "minAppVersion": 1,
   "inputs":   [ ...copy of apks/inputs.json "inputs" (scripts/catalogue.py sync-inputs) ],
   "families": [ {"id", "package", "markerClass"?}, ... ],       first match wins
   "profiles": { "<name>": {"description", "families": {"<family>": ["<pattern id>", ...]},
@@ -33,7 +33,8 @@ scripts/build_shm_watch.sh        # -> $DIST_DIR/shm-watch-1.5.1.022-gms.apk
   "patterns": { "<id>": {"families": [...] | "*", "title", "description", "optional": false,
                          "optionGroup"?: "<kebab-case group>", "offByDefault"?: true,
                          "ops": [ {"op": "<name>", ...args}, ... ]} },
-  "outputs", "installOrder", "grants", "stockAppsToDisable": install section, see below }
+  "outputs", "installOrder", "grants", "stockAppsToDisable": install section, see below,
+  "apps", "strings", "platform": what the app shows and which platform packages it knows (schema 2) }
 ```
 
 - **Install section** (top level, same file): what to install and how, for the app that drives
@@ -47,7 +48,7 @@ scripts/build_shm_watch.sh        # -> $DIST_DIR/shm-watch-1.5.1.022-gms.apk
                            | {"ownApp": "<repo-relative dir>"} } ],               (our own app)
   "installOrder": [ {"output": "<output id>", "then"?: "userOnboarding"} ],   every output once
   "grants":       { "<output id>": [ <grant>, ... ] },
-  "stockAppsToDisable": [ {"device", "package", "optional": bool, "reason"} ]
+  "stockAppsToDisable": [ {"device", "package", "optional": bool, "reason", "replacedBy"?: "<output id>"} ]
   ```
 
   - `outputs[].package` is the package of the built APK; `${PKG_PREFIX}` is the only placeholder.
@@ -56,7 +57,8 @@ scripts/build_shm_watch.sh        # -> $DIST_DIR/shm-watch-1.5.1.022-gms.apk
   - `installOrder` lists every output exactly once; `then` is a follow-up the app performs after
     that install (`userOnboarding` = the user completes the in-app onboarding).
   - `grants`: closed set of kinds, each with exactly these fields plus the optional
-    `"optional": true` (best effort / recommended) and `"note"` (one line, <= 300 chars):
+    `"optional": true` (best effort / recommended), `"note"` (one line, <= 300 chars; a technical
+    note) and `"why"` (a key of `strings.en`: the plain-language reason shown to the user):
 
     | `kind` | fields | meaning (adb equivalent) |
     |---|---|---|
@@ -81,7 +83,41 @@ scripts/build_shm_watch.sh        # -> $DIST_DIR/shm-watch-1.5.1.022-gms.apk
     is a list of hidden-API member prefixes, not a `secure` user preference, and it is appended to,
     never overwritten.)
   - `stockAppsToDisable`: stock system apps that should be disabled on a device
-    (`pm disable-user --user 0 <package>`); `optional` apps are offered, not forced.
+    (`pm disable-user --user 0 <package>`); `optional` apps are offered, not forced. `replacedBy`
+    names the output that replaces the stock app (the step is skipped when that output is not built).
+  - `outputs[]` may also carry (schema 2, all optional): `start` = `{"receiver": ".Class",
+    "action": "<action>"}` (the broadcast that starts an installed bridge; `${PKG_PREFIX}` allowed in
+    the action), `companionLink` (the app talks to the companion app), `knownSigner` (may be signed
+    by a key other than the catalogue's own), `statusAuthority` (content authority where the app
+    publishes its status; `${PKG_PREFIX}` allowed) and `singleCopy` (copies under another package
+    prefix are leftovers).
+
+- **Schema 2 top-level keys** (the app reads these instead of hard-coding them; an engine that does
+  not know the schema rejects the file):
+  - `apps`: `[{"id", "outputs": [<output id>, ...], "optional": bool, "icon"}]`, the user-facing
+    groups, in the order the app shows them. Every output is in exactly one app; `icon` is one of
+    `monitor-heart`, `favorite`, `alarm`, `swap`.
+  - `strings`: `{"<locale>": {"<key>": "<text>"}}`, locales are BCP-47 tags (`en`, `es`, `id`,
+    `zh-CN`, `zh-TW`, ...). `en` is required and holds every key; the other locales only hold keys
+    that exist in `en` (the app falls back to `en` for a missing one). Texts are plain single-line
+    Unicode (no Android escapes, no control characters). Keys by convention: `app.<id>.title` and
+    `app.<id>.summary`, `output.<id>.label` and `.purpose`, `pattern.<id>.description`,
+    `inject.<name>.title` and `.description`, `stock.<package>.label` and `.reason`, and the shared
+    grant reasons `grant.why.<name>` (referenced from `grants[].why`). The validator requires
+    `app.<id>.title`, `app.<id>.summary` and `output.<id>.label` in `en` for every app and output,
+    and every `why` to resolve. `scripts/migrate_catalogue_strings.py` produced the first table from
+    the app's `strings.xml` files.
+  - `platform`: Samsung platform facts, so no package name lives in the app:
+    `companionApp` = `{"package", "watchPlugins": [<package>, ...]}` (Galaxy Wearable and one plugin
+    per watch family: waterplugin = Watch4/4 Classic/FE, heartplugin = Watch5/5 Pro, watch6plugin =
+    Watch6/6 Classic, watch7plugin = Watch7/Ultra, watchuniteplugin = Watch8/8 Classic/Ultra 2025 and
+    newer); `healthPlatform` = `{"package", "settingsAction", "settingsComponent" ("pkg/.Class"),
+    "titleViewId", "devModeViewId" ("ns:id/name"), "taps": 1..50, "requiredBy": [<output id>, ...]}`
+    (the Health Platform service whose developer mode the user enables; `requiredBy` lists the
+    outputs that need it); `logPackages` = `{"phone": [...], "watch": [...]}` (packages whose logs
+    the app collects); `revertSettings` = `[{"device", "kind": "secureSetting", "key", "default",
+    "why"?}]` (settings the revert puts back; the hidden-API exemption it removes is derived from
+    the `globalSetting` grants).
 
 - **Family detection**: the first rule whose `package` equals the manifest `package` and, if
   `markerClass` is set (a class type without `L`/`;`), whose class exists in any `smali*` dir.
@@ -200,14 +236,16 @@ Application order (the `#` column is the order in the `gms` profile of the catal
 | 10 | `shm-main-gates` | `checkSystem`/`updateVersionCheck` -> void; `isScreenLockEnabled` -> success | System / version / screen-lock gates |
 | 11 | `shm-setup-network-gate` | `checkNoNetworkError` -> void | No SIM/region gate in setup |
 | 12 | `shm-sleep-apnea-support` | `isPhoneSupportSleepApnea` forced true (const after move-result) | Regional check disabled |
-| 13 | `shm-home-tabs-fallback` | The home feature list (one entry per controller whose per-feature country list holds the saved SIM/network country) falls back to BP + ECG when empty; the home `TabLayout` is hidden instead of being measured with zero tabs | Regional check disabled: with an empty or unlisted country (no SIM, or a country outside every list) the home screen crashed with `ArithmeticException: divide by zero` in the tab indicator's `onMeasure` |
-| 14 | `phone-rebrand-gms` | package -> `com.samsung.android.shealthmonitors` (manifest, permissions, authorities, exact package strings, share URI) | Same package and certificate as the watch app: the GMS Data Layer only delivers between equal AppKeys |
-| 15 | `shm-wear-trusted-peers` | the `wear-trusted-peer-packages` meta-data is removed (see the watch table) | Same reason as on the watch |
-| 16 | `shm-launcher-badge` *(optional)* | `adaptiveIconBadge`: the adaptive launcher icon gets a small LibreWrist badge at the bottom-right of the foreground and monochrome layers | The patched app is told apart from the stock Samsung Health Monitor in the launcher |
+| 13 | `shm-home-tabs-fallback` | The home feature list (one entry per controller whose per-feature country list holds the saved SIM/network country) gets `BloodPressureController` first when it is missing and `Ecg2Controller` when it holds no ECG controller (`EcgController`, `ECGIhrnController`, `Ecg2Controller`); the home `TabLayout` is hidden instead of being measured with zero tabs | Regional check disabled: with an empty or unlisted country (no SIM, or a country outside every list) the home screen crashed with `ArithmeticException: divide by zero` in the tab indicator's `onMeasure`; since `shm-bp-worldwide` puts BP on every list, the ECG part is what keeps ECG for unlisted countries |
+| 14 | `shm-ihrn-countries` | The ECG2 country check (`util/r.r()`) also returns true for the ECG-only country list (CN, MO, NZ, LI, TR, RS, UA, PE), and the home feature list skips `EcgController` when that check is true, so those countries get `Ecg2Controller` (ECG 1.3 + IHRN) instead of `EcgController` (ECG 1.1, no IHRN) | Regional check disabled: with an ECG-only saved country the IHRN controller never starts, so its Data Layer channel is never set up and the IHRN setup item and switch never appear on the ECG card; the IHRN sync and notification settings are gated by the same check |
+| 15 | `shm-bp-worldwide` | The shared country lookup `util/r.o(country, list)` returns true when it is handed the BP country list (`util/r.h`, by reference), so every caller of the BP check passes: the home feature list (`BloodPressureController`), the BP sync channel (`rb/a.g()`), the BP notification setting, the watch BP module state sent at onboarding (`fa/c.b()`, `requestModuleDisableState`) and the ECG-only-country texts (`util/r.p()`) | Regional check disabled: BP is offered in every country, including unlisted ones and US (absent from Samsung's BP list) |
+| 16 | `phone-rebrand-gms` | package -> `com.samsung.android.shealthmonitors` (manifest, permissions, authorities, exact package strings, share URI) | Same package and certificate as the watch app: the GMS Data Layer only delivers between equal AppKeys |
+| 17 | `shm-wear-trusted-peers` | the `wear-trusted-peer-packages` meta-data is removed (see the watch table) | Same reason as on the watch |
+| 18 | `shm-launcher-badge` *(optional)* | `adaptiveIconBadge`: the adaptive launcher icon gets a small LibreWrist badge at the bottom-right of the foreground and monochrome layers | The patched app is told apart from the stock Samsung Health Monitor in the launcher |
 
 Profile: all of them in `gms`. Verified [V]: the decoded result (smali, manifest, resources) is
 identical to the owner-verified `shm-phone-1.4.6.001-stock-mod-gms1` build (24 patched sites),
-before `shm-home-tabs-fallback` was added (2 more sites).
+before `shm-home-tabs-fallback` and `shm-ihrn-countries` (2 more sites each) and `shm-bp-worldwide` (1 more site) were added.
 
 ## SHM watch 1.5.1.022
 
@@ -355,8 +393,10 @@ scripts/build_shealth.sh                # -> $DIST_DIR/shealth-7.00.6.011-shealt
 SHEALTH_OOBE_LOCAL=1 scripts/build_shealth.sh   # include the optional Local-only mode
 ```
 
-In the patcher app it is opt-out: the "Samsung Health" switch on the Acquire step adds the input,
-its patterns appear in Customize and the output joins the phone install.
+In the patcher app it is opt-out like every optional app (the other is Health Monitor, `shm-phone` +
+`shm-watch`, one switch): the "Samsung Health+" switch on the Acquire step controls the input, its patterns
+appear in Customize and the output joins the phone install. Only the bridges and, on Wear OS 5, the alarm
+fork (`alarm-watch`) are mandatory.
 
 Why two apps: the watch's Samsung Health pins the phone app's certificate
 (`wear-trusted-peer-packages` = `com.sec.android.app.shealth` with Samsung's digest) and silently

@@ -65,7 +65,7 @@ class InstallSection(unittest.TestCase):
         self.assertRejected('device must be one of')
         self.cat = copy.deepcopy(C.load_raw())
         self.cat['outputs'][0]['extra'] = 1
-        self.assertRejected('expected exactly id, device, package, from')
+        self.assertRejected('expected id, device, package, from')
 
     def test_off_by_default_patterns(self):
         self.cat = copy.deepcopy(C.load_raw())
@@ -218,7 +218,7 @@ class InstallSection(unittest.TestCase):
             self.assertTrue(self.problems(), field)
         self.cat = copy.deepcopy(C.load_raw())
         del self.cat['stockAppsToDisable'][0]['reason']
-        self.assertRejected('expected exactly')
+        self.assertRejected('expected device, package, optional, reason')
 
     def test_top_level_keys_are_required(self):
         for k in ('outputs', 'installOrder', 'grants', 'stockAppsToDisable'):
@@ -229,6 +229,111 @@ class InstallSection(unittest.TestCase):
     def test_duplicate_json_keys_are_rejected(self):
         with self.assertRaises(P.CatalogueError):
             json.loads('{"schema": 1, "schema": 2}', object_pairs_hook=P.no_duplicate_keys)
+
+
+class SchemaTwo(unittest.TestCase):
+    """apps / strings / platform and the optional output, stock and grant fields."""
+
+    def setUp(self):
+        self.cat = copy.deepcopy(C.load_raw())
+
+    def assertRejected(self, needle):
+        self.assertIn(needle, '\n'.join(P.validate_catalogue(self.cat)))
+
+    def app(self, app_id):
+        return next(a for a in self.cat['apps'] if a['id'] == app_id)
+
+    def test_real_catalogue_carries_the_new_data(self):
+        self.assertEqual(self.cat['schema'], 2)
+        self.assertEqual([a['id'] for a in self.cat['apps']],
+                         ['health-monitor', 'alarm', 'bridge', 'samsung-health'])
+        self.assertEqual(len(self.cat['strings']), 18)
+        en = self.cat['strings']['en']
+        for loc, table in self.cat['strings'].items():
+            self.assertLessEqual(set(table), set(en), loc)
+
+    def test_unknown_icon(self):
+        self.app('alarm')['icon'] = 'rocket'
+        self.assertRejected('icon must be one of')
+
+    def test_output_in_two_apps_or_none(self):
+        self.app('alarm')['outputs'].append('shm-phone')
+        self.assertRejected("output 'shm-phone' is already in app 'health-monitor'")
+        self.cat = copy.deepcopy(C.load_raw())
+        self.app('alarm')['outputs'] = ['bridge-phone']
+        self.assertRejected("output 'alarm-fork' is in no app")
+        self.cat = copy.deepcopy(C.load_raw())
+        self.app('alarm')['outputs'] = ['nope']
+        self.assertRejected("unknown output 'nope'")
+
+    def test_missing_required_english_key(self):
+        del self.cat['strings']['en']['app.alarm.title']
+        self.assertRejected("missing required key 'app.alarm.title'")
+        self.cat = copy.deepcopy(C.load_raw())
+        del self.cat['strings']['en']['output.shm-phone.label']
+        self.assertRejected("missing required key 'output.shm-phone.label'")
+
+    def test_unknown_why_key(self):
+        self.cat['grants']['shm-phone'][0]['why'] = 'grant.why.nope'
+        self.assertRejected("why 'grant.why.nope' is not in strings/en")
+        self.cat = copy.deepcopy(C.load_raw())
+        self.cat['grants']['shm-phone'][0]['why'] = 'Bad Key'
+        self.assertRejected('why must be a key')
+
+    def test_replaced_by_unknown_output(self):
+        self.cat['stockAppsToDisable'][0]['replacedBy'] = 'nope'
+        self.assertRejected("replacedBy 'nope' is not an output id")
+
+    def test_locale_key_not_in_english(self):
+        self.cat['strings']['es']['bogus.key'] = 'x'
+        self.assertRejected("key 'bogus.key' is not in strings/en")
+
+    def test_bad_string_values_and_locales(self):
+        for bad in ('', 'a\nb', 'a\x00b', 5):
+            self.cat = copy.deepcopy(C.load_raw())
+            self.cat['strings']['es']['inject.watch-mod.title'] = bad
+            self.assertRejected('single-line string')
+        self.cat = copy.deepcopy(C.load_raw())
+        self.cat['strings']['es_ES'] = {}
+        self.assertRejected("locale 'es_ES'")
+        self.cat = copy.deepcopy(C.load_raw())
+        del self.cat['strings']['en']
+        self.assertRejected('non-empty "en" table')
+
+    def test_output_behaviours(self):
+        out = next(o for o in self.cat['outputs'] if o['id'] == 'bridge-phone')
+        out['start']['receiver'] = 'NoDot'
+        self.assertRejected('start.receiver')
+        out['start']['receiver'] = '.Ok'
+        out['start']['action'] = '${OTHER}.x'
+        self.assertRejected('start.action')
+        out['start']['action'] = '${PKG_PREFIX}.x'
+        out['singleCopy'] = 'yes'
+        self.assertRejected('singleCopy must be a boolean')
+        out['singleCopy'] = True
+        out['statusAuthority'] = 'a b'
+        self.assertRejected('statusAuthority')
+        out['statusAuthority'] = '${PKG_PREFIX}.status'
+        out['unknownField'] = 1
+        self.assertRejected('expected id, device, package, from')
+
+    def test_platform(self):
+        hp = self.cat['platform']['healthPlatform']
+        for field, bad in (('taps', 0), ('requiredBy', ['nope']), ('titleViewId', 'title'),
+                           ('settingsComponent', 'a.b/Main'), ('package', 'x; id')):
+            self.cat = copy.deepcopy(C.load_raw())
+            self.cat['platform']['healthPlatform'][field] = bad
+            self.assertRejected(f'platform.healthPlatform')
+        self.cat = copy.deepcopy(C.load_raw())
+        self.cat['platform']['logPackages']['watch'] = ['not a package']
+        self.assertRejected('platform.logPackages.watch')
+        self.cat = copy.deepcopy(C.load_raw())
+        self.cat['platform']['revertSettings'][0]['default'] = '--user'
+        self.assertRejected('default missing or not matching')
+        self.cat = copy.deepcopy(C.load_raw())
+        del self.cat['platform']['companionApp']
+        self.assertRejected('platform: expected exactly')
+        self.assertTrue(hp)
 
 
 @unittest.skipUnless(shutil.which('openssl'), 'openssl not installed')

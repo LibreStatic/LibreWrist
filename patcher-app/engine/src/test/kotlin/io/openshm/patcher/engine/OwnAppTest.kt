@@ -163,7 +163,7 @@ class OwnAppTest {
     private fun catalogue(): Catalogue = Catalogue.parse(
         """
 {
-  "schema": 1, "serial": 1, "minAppVersion": 1,
+  "schema": 2, "serial": 1, "minAppVersion": 1,
   "inputs": [{"id": "syn", "file": "syn.apk", "sha256": "${"0".repeat(64)}", "label": "Synthetic", "package": "com.example.syn",
     "versionName": "1", "versionCode": 1, "minSdk": 21, "targetSdk": 21, "abis": [], "dpi": "nodpi", "format": "apk",
     "target": "phone", "role": "patched"}],
@@ -174,7 +174,7 @@ class OwnAppTest {
     {"id": "syn-out", "device": "phone", "package": "com.example.syn", "from": {"input": "syn", "profile": "p"}},
     {"id": "bridge-phone", "device": "phone", "package": "${'$'}{PKG_PREFIX}.shmbridge.phone", "from": {"ownApp": "shm-bridge/phone"}}
   ],
-  "installOrder": [{"output": "syn-out"}, {"output": "bridge-phone"}], "grants": {"syn-out": [], "bridge-phone": []}, "stockAppsToDisable": []
+  "installOrder": [{"output": "syn-out"}, {"output": "bridge-phone"}], "grants": {"syn-out": [], "bridge-phone": []}, "stockAppsToDisable": []${schema2Tail("syn-out", "bridge-phone")}
 }""",
     )
 
