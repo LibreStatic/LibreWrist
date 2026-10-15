@@ -50,7 +50,12 @@
     <string name="welcome_get_started">始める</string>
     <string name="welcome_what_changes">デバイスには何が変わりますか？</string>
     <string name="automation_unattended_title">無人モード</string>
-    <string name="automation_unattended_help">無人モードでは、LibreWrist が自動化できることをすべて（インストール、権限の付与、オプションの有効化）スマートフォンとウォッチで ADB 経由で行い、両方との ADB 接続がないと先へ進みません。手順の合間に 2 秒待ちます。ボタンのバーが埋まっている間に画面をタッチまたはスクロールすると一時停止し、そこからは手動で進めます。次の手順は再び自動で進みます。</string>
+    <string name="automation_unattended_help">無人モードでは、LibreWrist が自動化できることをすべて（インストール、権限の付与、オプションの有効化）スマートフォンとウォッチで ADB 経由で行い、両方との ADB 接続がないと先へ進みません。手順の合間に数秒（既定は 5 秒、設定で変更可能）待ちます。ボタンのバーが埋まっている間に画面をタッチまたはスクロールすると一時停止し、そこからは手動で進めます。次の手順は再び自動で進みます。</string>
+    <string name="settings_advance_wait">手順の間の待ち時間</string>
+    <string name="settings_advance_explainer">手順が自動で進むまでにボタンのバーが埋まる時間です。「止まらずに進む」がオンの間は適用されません。</string>
+    <plurals name="settings_advance_seconds">
+        <item quantity="other">%d 秒</item>
+    </plurals>
     <string name="automation_free_run_title">止まらずに進む</string>
     <string name="automation_free_run_help">操作の確認（プロファイルの修正、お知らせ）では、最後まで到達するか何かが失敗するまで停止しません。</string>
     <string name="automation_uninstall_title">別の鍵のアプリを削除</string>

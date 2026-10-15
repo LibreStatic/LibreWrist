@@ -50,7 +50,14 @@
     <string name="welcome_get_started">Inizia</string>
     <string name="welcome_what_changes">Cosa cambierà sui miei dispositivi?</string>
     <string name="automation_unattended_title">Modalità automatica</string>
-    <string name="automation_unattended_help">In modalità automatica LibreWrist esegue via ADB tutto ciò che si può automatizzare (installare, concedere permessi, attivare opzioni) sul telefono e sull\'orologio, e non prosegue senza una connessione ADB a entrambi. Tra un passaggio e l\'altro aspetta 2 secondi: se tocchi o scorri lo schermo mentre la barra del pulsante si riempie, si mette in pausa e continui tu; i passaggi successivi tornano ad avanzare da soli.</string>
+    <string name="automation_unattended_help">In modalità automatica LibreWrist esegue via ADB tutto ciò che si può automatizzare (installare, concedere permessi, attivare opzioni) sul telefono e sull\'orologio, e non prosegue senza una connessione ADB a entrambi. Tra un passaggio e l\'altro aspetta qualche secondo (5 per impostazione predefinita, regolabile nelle Impostazioni): se tocchi o scorri lo schermo mentre la barra del pulsante si riempie, si mette in pausa e continui tu; i passaggi successivi tornano ad avanzare da soli.</string>
+    <string name="settings_advance_wait">Attesa tra i passaggi</string>
+    <string name="settings_advance_explainer">Quanto impiega la barra del pulsante a riempirsi prima che il passaggio prosegua da solo. Non si applica quando "Avanza senza fermarti" è attivo.</string>
+    <plurals name="settings_advance_seconds">
+        <item quantity="one">%d secondo</item>
+        <item quantity="many">%d secondi</item>
+        <item quantity="other">%d secondi</item>
+    </plurals>
     <string name="automation_free_run_title">Avanza senza fermarti</string>
     <string name="automation_free_run_help">Non si fermerà alle conferme delle operazioni (correggere il profilo, avvisi) finché non arriva alla fine o qualcosa non va a buon fine.</string>
     <string name="automation_uninstall_title">Rimuovi app con altra chiave</string>

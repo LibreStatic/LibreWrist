@@ -50,7 +50,13 @@
     <string name="welcome_get_started">शुरू करें</string>
     <string name="welcome_what_changes">मेरे डिवाइस पर क्या बदलेगा?</string>
     <string name="automation_unattended_title">बिना निगरानी मोड</string>
-    <string name="automation_unattended_help">बिना निगरानी मोड में LibreWrist फ़ोन और घड़ी पर वह सब कुछ ADB से कर देता है जिसे ऑटोमेट किया जा सकता है (इंस्टॉल करना, अनुमतियाँ देना, विकल्प चालू करना), और दोनों से ADB कनेक्शन के बिना आगे नहीं बढ़ता। हर चरण के बीच यह 2 सेकंड रुकता है: बटन की पट्टी भरते समय अगर आप स्क्रीन को छुएँ या स्क्रॉल करें, तो यह रुक जाता है और आप खुद आगे बढ़ते हैं; अगले चरण फिर अपने आप आगे बढ़ते हैं।</string>
+    <string name="automation_unattended_help">बिना निगरानी मोड में LibreWrist फ़ोन और घड़ी पर वह सब कुछ ADB से कर देता है जिसे ऑटोमेट किया जा सकता है (इंस्टॉल करना, अनुमतियाँ देना, विकल्प चालू करना), और दोनों से ADB कनेक्शन के बिना आगे नहीं बढ़ता। हर चरण के बीच यह कुछ सेकंड रुकता है (डिफ़ॉल्ट रूप से 5, सेटिंग में बदला जा सकता है): बटन की पट्टी भरते समय अगर आप स्क्रीन को छुएँ या स्क्रॉल करें, तो यह रुक जाता है और आप खुद आगे बढ़ते हैं; अगले चरण फिर अपने आप आगे बढ़ते हैं।</string>
+    <string name="settings_advance_wait">चरणों के बीच प्रतीक्षा</string>
+    <string name="settings_advance_explainer">चरण अपने आप आगे बढ़ने से पहले बटन की पट्टी को भरने में कितना समय लगता है। "बिना रुके आगे बढ़ें" चालू होने पर यह लागू नहीं होता।</string>
+    <plurals name="settings_advance_seconds">
+        <item quantity="one">%d सेकंड</item>
+        <item quantity="other">%d सेकंड</item>
+    </plurals>
     <string name="automation_free_run_title">बिना रुके आगे बढ़ें</string>
     <string name="automation_free_run_help">यह ऑपरेशन की पुष्टियों (प्रोफ़ाइल सुधारना, सूचनाएँ) पर तब तक नहीं रुकेगा जब तक अंत तक न पहुँच जाए या कुछ विफल न हो जाए।</string>
     <string name="automation_uninstall_title">दूसरी कुंजी वाले ऐप हटाएँ</string>

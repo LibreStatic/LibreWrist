@@ -50,7 +50,15 @@
     <string name="welcome_get_started">Розпочати</string>
     <string name="welcome_what_changes">Що зміниться на моїх пристроях?</string>
     <string name="automation_unattended_title">Автономний режим</string>
-    <string name="automation_unattended_help">В автономному режимі LibreWrist виконує через ADB усе, що можна автоматизувати (встановлення, надання дозволів, увімкнення параметрів), на телефоні та на годиннику і не йде далі без ADB-підключення до обох. Між кроками він чекає 2 секунди: якщо торкнутися екрана або прокрутити його, поки заповнюється смуга на кнопці, він ставиться на паузу, і ви продовжуєте вручну; наступні кроки знову йдуть самі.</string>
+    <string name="automation_unattended_help">В автономному режимі LibreWrist виконує через ADB усе, що можна автоматизувати (встановлення, надання дозволів, увімкнення параметрів), на телефоні та на годиннику і не йде далі без ADB-підключення до обох. Між кроками він чекає кілька секунд (за замовчуванням 5, налаштовується в налаштуваннях): якщо торкнутися екрана або прокрутити його, поки заповнюється смуга на кнопці, він ставиться на паузу, і ви продовжуєте вручну; наступні кроки знову йдуть самі.</string>
+    <string name="settings_advance_wait">Очікування між кроками</string>
+    <string name="settings_advance_explainer">Скільки заповнюється смуга на кнопці, перш ніж крок продовжиться сам. Не діє, поки увімкнено «Йти без зупинок».</string>
+    <plurals name="settings_advance_seconds">
+        <item quantity="one">%d секунда</item>
+        <item quantity="few">%d секунди</item>
+        <item quantity="many">%d секунд</item>
+        <item quantity="other">%d секунди</item>
+    </plurals>
     <string name="automation_free_run_title">Йти без зупинок</string>
     <string name="automation_free_run_help">Він не зупинятиметься на підтвердженнях операцій (виправлення профілю, сповіщення), доки не дійде до кінця або щось не піде не так.</string>
     <string name="automation_uninstall_title">Видаляти за чужого підпису</string>

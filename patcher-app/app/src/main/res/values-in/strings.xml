@@ -50,7 +50,12 @@
     <string name="welcome_get_started">Mulai</string>
     <string name="welcome_what_changes">Apa yang akan berubah di perangkat saya?</string>
     <string name="automation_unattended_title">Mode tanpa pengawasan</string>
-    <string name="automation_unattended_help">Dalam mode tanpa pengawasan, LibreWrist melakukan lewat ADB semua yang bisa diotomatisasi (memasang, memberi izin, mengaktifkan opsi) di ponsel dan jam tangan, dan tidak melanjutkan tanpa koneksi ADB ke keduanya. Di antara langkah, ia menunggu 2 detik: jika Anda menyentuh atau menggulir layar saat bilah pada tombol terisi, ia berhenti sejenak dan Anda melanjutkan secara manual; langkah berikutnya kembali maju sendiri.</string>
+    <string name="automation_unattended_help">Dalam mode tanpa pengawasan, LibreWrist melakukan lewat ADB semua yang bisa diotomatisasi (memasang, memberi izin, mengaktifkan opsi) di ponsel dan jam tangan, dan tidak melanjutkan tanpa koneksi ADB ke keduanya. Di antara langkah, ia menunggu beberapa detik (default 5, dapat diatur di Pengaturan): jika Anda menyentuh atau menggulir layar saat bilah pada tombol terisi, ia berhenti sejenak dan Anda melanjutkan secara manual; langkah berikutnya kembali maju sendiri.</string>
+    <string name="settings_advance_wait">Jeda antar langkah</string>
+    <string name="settings_advance_explainer">Berapa lama bilah pada tombol terisi sebelum langkah berlanjut dengan sendirinya. Tidak berlaku saat "Lanjut tanpa berhenti" aktif.</string>
+    <plurals name="settings_advance_seconds">
+        <item quantity="other">%d detik</item>
+    </plurals>
     <string name="automation_free_run_title">Lanjut tanpa berhenti</string>
     <string name="automation_free_run_help">Ia tidak akan berhenti pada konfirmasi operasi (memperbaiki profil, pemberitahuan) sampai selesai atau ada yang gagal.</string>
     <string name="automation_uninstall_title">Hapus aplikasi berkunci lain</string>

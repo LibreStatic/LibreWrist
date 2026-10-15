@@ -6,6 +6,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
+/** Range and default of [AutomationState.advanceSeconds]. */
+const val ADVANCE_SECONDS_MIN = 2
+const val ADVANCE_SECONDS_MAX = 60
+const val ADVANCE_SECONDS_DEFAULT = 5
+
 /**
  * The automation switches of the Welcome screen. [freeRun] and [uninstallMismatch] only act while
  * [unattended] is on: with it off they stay stored but behave as off (see [freeRunActive] and
@@ -22,6 +27,8 @@ data class AutomationState(
     val freeRunWarningHidden: Boolean = false,
     /** The first-launch notice (the official apps are always fetched by hand) was acknowledged. */
     val appsNoticeSeen: Boolean = false,
+    /** Seconds a countdown takes before a step continues by itself, when Advance freely is off. */
+    val advanceSeconds: Int = ADVANCE_SECONDS_DEFAULT,
 ) {
     val freeRunActive: Boolean get() = unattended && freeRun
     val uninstallActive: Boolean get() = unattended && uninstallMismatch
@@ -44,6 +51,7 @@ object Automation {
     private const val KEY_UNINSTALL_MISMATCH = "uninstallMismatch"
     private const val KEY_WARNING_HIDDEN = "freeRunWarningHidden"
     private const val KEY_APPS_NOTICE_SEEN = "appsNoticeSeen"
+    private const val KEY_ADVANCE_SECONDS = "advanceSeconds"
 
     private val _state = MutableStateFlow(AutomationState())
     val state: StateFlow<AutomationState> = _state.asStateFlow()
@@ -60,6 +68,7 @@ object Automation {
             uninstallMismatch = p.getBoolean(KEY_UNINSTALL_MISMATCH, d.uninstallMismatch),
             freeRunWarningHidden = p.getBoolean(KEY_WARNING_HIDDEN, d.freeRunWarningHidden),
             appsNoticeSeen = p.getBoolean(KEY_APPS_NOTICE_SEEN, d.appsNoticeSeen),
+            advanceSeconds = p.getInt(KEY_ADVANCE_SECONDS, d.advanceSeconds).coerceIn(ADVANCE_SECONDS_MIN, ADVANCE_SECONDS_MAX),
         )
         prefs = p
     }
@@ -74,6 +83,8 @@ object Automation {
 
     fun acknowledgeAppsNotice() = update { it.copy(appsNoticeSeen = true) }
 
+    fun setAdvanceSeconds(value: Int) = update { it.copy(advanceSeconds = value.coerceIn(ADVANCE_SECONDS_MIN, ADVANCE_SECONDS_MAX)) }
+
     @Synchronized
     private fun update(transform: (AutomationState) -> AutomationState) {
         val next = transform(_state.value)
@@ -84,6 +95,7 @@ object Automation {
             ?.putBoolean(KEY_UNINSTALL_MISMATCH, next.uninstallMismatch)
             ?.putBoolean(KEY_WARNING_HIDDEN, next.freeRunWarningHidden)
             ?.putBoolean(KEY_APPS_NOTICE_SEEN, next.appsNoticeSeen)
+            ?.putInt(KEY_ADVANCE_SECONDS, next.advanceSeconds)
             ?.apply()
     }
 }

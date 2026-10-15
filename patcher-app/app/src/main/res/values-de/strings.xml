@@ -50,7 +50,13 @@
     <string name="welcome_get_started">Los geht\'s</string>
     <string name="welcome_what_changes">Was ändert sich auf meinen Geräten?</string>
     <string name="automation_unattended_title">Unbeaufsichtigter Modus</string>
-    <string name="automation_unattended_help">Im unbeaufsichtigten Modus erledigt LibreWrist alles, was sich automatisieren lässt (installieren, Berechtigungen erteilen, Optionen aktivieren), per ADB auf dem Smartphone und auf der Uhr und macht ohne ADB-Verbindung zu beiden nicht weiter. Zwischen den Schritten wartet es 2 Sekunden: Wenn du den Bildschirm berührst oder scrollst, während sich der Balken auf der Schaltfläche füllt, pausiert es und du machst von Hand weiter; die folgenden Schritte laufen wieder von selbst weiter.</string>
+    <string name="automation_unattended_help">Im unbeaufsichtigten Modus erledigt LibreWrist alles, was sich automatisieren lässt (installieren, Berechtigungen erteilen, Optionen aktivieren), per ADB auf dem Smartphone und auf der Uhr und macht ohne ADB-Verbindung zu beiden nicht weiter. Zwischen den Schritten wartet es ein paar Sekunden (standardmäßig 5, in den Einstellungen anpassbar): Wenn du den Bildschirm berührst oder scrollst, während sich der Balken auf der Schaltfläche füllt, pausiert es und du machst von Hand weiter; die folgenden Schritte laufen wieder von selbst weiter.</string>
+    <string name="settings_advance_wait">Wartezeit zwischen Schritten</string>
+    <string name="settings_advance_explainer">Wie lange sich der Balken auf der Schaltfläche füllt, bevor der Schritt von selbst weitergeht. Gilt nicht, solange „Ohne Anhalten fortfahren“ aktiv ist.</string>
+    <plurals name="settings_advance_seconds">
+        <item quantity="one">%d Sekunde</item>
+        <item quantity="other">%d Sekunden</item>
+    </plurals>
     <string name="automation_free_run_title">Ohne Anhalten fortfahren</string>
     <string name="automation_free_run_help">Es hält bei Bestätigungen von Vorgängen (Profil korrigieren, Hinweise) nicht an, bis es das Ende erreicht oder etwas fehlschlägt.</string>
     <string name="automation_uninstall_title">Fremdsignierte Apps löschen</string>

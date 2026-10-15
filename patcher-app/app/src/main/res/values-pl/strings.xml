@@ -50,7 +50,15 @@
     <string name="welcome_get_started">Zaczynamy</string>
     <string name="welcome_what_changes">Co zmieni się na moich urządzeniach?</string>
     <string name="automation_unattended_title">Tryb bez nadzoru</string>
-    <string name="automation_unattended_help">W trybie bez nadzoru LibreWrist wykonuje przez ADB wszystko, co da się zautomatyzować (instalację, nadawanie uprawnień, włączanie opcji), na telefonie i na zegarku, i nie idzie dalej bez połączenia ADB z oboma. Między krokami czeka 2 sekundy: jeśli dotkniesz ekranu lub go przewiniesz, gdy pasek na przycisku się wypełnia, wstrzyma się, a ty kontynuujesz ręcznie; kolejne kroki znów przechodzą same.</string>
+    <string name="automation_unattended_help">W trybie bez nadzoru LibreWrist wykonuje przez ADB wszystko, co da się zautomatyzować (instalację, nadawanie uprawnień, włączanie opcji), na telefonie i na zegarku, i nie idzie dalej bez połączenia ADB z oboma. Między krokami czeka kilka sekund (domyślnie 5, do zmiany w Ustawieniach): jeśli dotkniesz ekranu lub go przewiniesz, gdy pasek na przycisku się wypełnia, wstrzyma się, a ty kontynuujesz ręcznie; kolejne kroki znów przechodzą same.</string>
+    <string name="settings_advance_wait">Czas oczekiwania między krokami</string>
+    <string name="settings_advance_explainer">Jak długo wypełnia się pasek na przycisku, zanim krok przejdzie dalej sam. Nie dotyczy trybu, w którym włączono „Przechodź bez zatrzymywania”.</string>
+    <plurals name="settings_advance_seconds">
+        <item quantity="one">%d sekunda</item>
+        <item quantity="few">%d sekundy</item>
+        <item quantity="many">%d sekund</item>
+        <item quantity="other">%d sekundy</item>
+    </plurals>
     <string name="automation_free_run_title">Przechodź bez zatrzymywania</string>
     <string name="automation_free_run_help">Nie zatrzyma się na potwierdzeniach operacji (poprawianie profilu, komunikaty), dopóki nie dojdzie do końca albo coś się nie powiedzie.</string>
     <string name="automation_uninstall_title">Usuń aplikacje z innym kluczem</string>

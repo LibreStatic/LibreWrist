@@ -468,7 +468,7 @@ private val SampleAppUpdate = io.openshm.patcher.data.AppUpdate(
 fun SettingsDriver() = PreviewHost(ColorMode.Fallback) {
     io.openshm.patcher.ui.screens.settings.SettingsScreen(
         io.openshm.patcher.ui.screens.settings.SettingsUiState(versionName = "0.1.0", versionCode = 7),
-        notice = null, onNoticeShown = {}, onAutoCheck = {}, onCheckNow = {}, onSigningKey = {}, onBack = {},
+        notice = null, onNoticeShown = {}, onAutoCheck = {}, onAdvanceSeconds = {}, onCheckNow = {}, onSigningKey = {}, onBack = {},
     )
 }
 
@@ -476,7 +476,7 @@ fun SettingsDriver() = PreviewHost(ColorMode.Fallback) {
 fun SettingsNoRepoDriver() = PreviewHost(ColorMode.Fallback) {
     io.openshm.patcher.ui.screens.settings.SettingsScreen(
         io.openshm.patcher.ui.screens.settings.SettingsUiState(updatesAvailable = false, versionName = "0.1.0", versionCode = 6),
-        notice = null, onNoticeShown = {}, onAutoCheck = {}, onCheckNow = {}, onSigningKey = {}, onBack = {},
+        notice = null, onNoticeShown = {}, onAutoCheck = {}, onAdvanceSeconds = {}, onCheckNow = {}, onSigningKey = {}, onBack = {},
     )
 }
 

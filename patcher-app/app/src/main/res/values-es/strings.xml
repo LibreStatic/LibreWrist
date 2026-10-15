@@ -50,7 +50,13 @@
     <string name="welcome_get_started">Comenzar</string>
     <string name="welcome_what_changes">¿Qué cambiará en mis dispositivos?</string>
     <string name="automation_unattended_title">Modo desatendido</string>
-    <string name="automation_unattended_help">En modo desatendido LibreWrist hace por ADB todo lo que se puede automatizar (instalar, dar permisos, activar opciones) en el teléfono y en el reloj, y no avanza sin conexión ADB con ambos. Entre paso y paso espera 2 segundos: si tocas o desplazas la pantalla mientras se llena la barra del botón, se pausa y continúas tú; los pasos siguientes vuelven a avanzar solos.</string>
+    <string name="automation_unattended_help">En modo desatendido LibreWrist hace por ADB todo lo que se puede automatizar (instalar, dar permisos, activar opciones) en el teléfono y en el reloj, y no avanza sin conexión ADB con ambos. Entre paso y paso espera unos segundos (5 por defecto, ajustable en Ajustes): si tocas o desplazas la pantalla mientras se llena la barra del botón, se pausa y continúas tú; los pasos siguientes vuelven a avanzar solos.</string>
+    <string name="settings_advance_wait">Espera entre pasos</string>
+    <string name="settings_advance_explainer">Cuánto tarda en llenarse la barra del botón antes de que el paso continúe solo. No se aplica mientras "Avanzar libremente" esté activado.</string>
+    <plurals name="settings_advance_seconds">
+        <item quantity="one">%d segundo</item>
+        <item quantity="other">%d segundos</item>
+    </plurals>
     <string name="automation_free_run_title">Avanzar libremente</string>
     <string name="automation_free_run_help">No se detendrá en las confirmaciones de operaciones (corregir el perfil, avisos) hasta llegar al final o hasta que algo falle.</string>
     <string name="automation_uninstall_title">Borrar apps con otra firma</string>

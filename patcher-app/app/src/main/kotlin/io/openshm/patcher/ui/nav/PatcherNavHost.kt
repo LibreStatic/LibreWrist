@@ -602,6 +602,7 @@ fun PatcherNavHost(
                     notice = notice,
                     onNoticeShown = appUpdate::noticeShown,
                     onAutoCheck = vm::setAutoCheck,
+                    onAdvanceSeconds = vm::setAdvanceSeconds,
                     onCheckNow = appUpdate::checkNow,
                     onSigningKey = { navController.navigate(Route.SigningKey.path) },
                     onBack = back,

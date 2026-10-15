@@ -36,9 +36,6 @@ import androidx.lifecycle.compose.currentStateAsState
 import io.openshm.patcher.R
 import io.openshm.patcher.data.Automation
 
-/** How long the bar of an advance button takes to fill before the step continues by itself. */
-const val AUTO_ADVANCE_MILLIS = 2_000
-
 /**
  * Shared state of the unattended countdowns. A touch or scroll while a countdown is filling pauses
  * the current step (`paused`); the user then continues by hand. Leaving the step ([onRouteChanged])
@@ -110,14 +107,15 @@ fun rememberAutoAdvance(active: Boolean, onFire: () -> Unit): Float? {
     val resumed = LocalLifecycleOwner.current.lifecycle.currentStateAsState().value.isAtLeast(Lifecycle.State.RESUMED)
     val running = active && controller != null && !controller.paused && resumed
     // Only inside an unattended run: a step opened from Home (a rebuild, a fix) counts down instead.
-    val instant = Automation.state.collectAsState().value.freeRunActive &&
+    val automation = Automation.state.collectAsState().value
+    val instant = automation.freeRunActive &&
         UnattendedRun.state.collectAsState().value == RunState.Running
     val progress = remember { Animatable(0f) }
     var fired by remember { mutableStateOf(false) }
     val fire by rememberUpdatedState(onFire)
     // Fired once per activation: a button that stays after firing does not fire again until re-armed.
     LaunchedEffect(active) { if (!active) fired = false }
-    LaunchedEffect(running, fired, instant) {
+    LaunchedEffect(running, fired, instant, automation.advanceSeconds) {
         if (!running || fired || controller == null) {
             progress.snapTo(0f)
             return@LaunchedEffect
@@ -125,7 +123,7 @@ fun rememberAutoAdvance(active: Boolean, onFire: () -> Unit): Float? {
         controller.beginCountdown()
         try {
             progress.snapTo(0f)
-            if (!instant) progress.animateTo(1f, tween(AUTO_ADVANCE_MILLIS, easing = LinearEasing))
+            if (!instant) progress.animateTo(1f, tween(automation.advanceSeconds * 1000, easing = LinearEasing))
             fired = true
             fire()
         } finally {

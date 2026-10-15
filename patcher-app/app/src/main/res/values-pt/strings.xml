@@ -50,7 +50,14 @@
     <string name="welcome_get_started">Começar</string>
     <string name="welcome_what_changes">O que vai mudar nos meus dispositivos?</string>
     <string name="automation_unattended_title">Modo autônomo</string>
-    <string name="automation_unattended_help">No modo autônomo, o LibreWrist faz por ADB tudo o que pode ser automatizado (instalar, conceder permissões, ativar opções) no telefone e no relógio, e não avança sem conexão ADB com ambos. Entre um passo e outro ele espera 2 segundos: se você tocar ou rolar a tela enquanto a barra do botão se enche, ele pausa e você continua manualmente; os passos seguintes voltam a avançar sozinhos.</string>
+    <string name="automation_unattended_help">No modo autônomo, o LibreWrist faz por ADB tudo o que pode ser automatizado (instalar, conceder permissões, ativar opções) no telefone e no relógio, e não avança sem conexão ADB com ambos. Entre um passo e outro ele espera alguns segundos (5 por padrão, ajustável em Configurações): se você tocar ou rolar a tela enquanto a barra do botão se enche, ele pausa e você continua manualmente; os passos seguintes voltam a avançar sozinhos.</string>
+    <string name="settings_advance_wait">Espera entre os passos</string>
+    <string name="settings_advance_explainer">Quanto tempo a barra do botão leva para encher antes de o passo continuar sozinho. Não se aplica enquanto "Avançar sem parar" estiver ativado.</string>
+    <plurals name="settings_advance_seconds">
+        <item quantity="one">%d segundo</item>
+        <item quantity="many">%d segundos</item>
+        <item quantity="other">%d segundos</item>
+    </plurals>
     <string name="automation_free_run_title">Avançar sem parar</string>
     <string name="automation_free_run_help">Ele não vai parar nas confirmações de operações (corrigir o perfil, avisos) até chegar ao fim ou algo falhar.</string>
     <string name="automation_uninstall_title">Apagar apps com outra chave</string>

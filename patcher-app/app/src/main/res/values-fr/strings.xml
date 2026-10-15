@@ -50,7 +50,14 @@
     <string name="welcome_get_started">Commencer</string>
     <string name="welcome_what_changes">Qu\'est-ce qui va changer sur mes appareils ?</string>
     <string name="automation_unattended_title">Mode autonome</string>
-    <string name="automation_unattended_help">En mode autonome, LibreWrist fait par ADB tout ce qui peut être automatisé (installer, accorder des autorisations, activer des options) sur le téléphone et sur la montre, et n\'avance pas sans connexion ADB aux deux. Entre deux étapes, il attend 2 secondes : si vous touchez ou faites défiler l\'écran pendant que la barre du bouton se remplit, il se met en pause et vous continuez à la main ; les étapes suivantes avancent de nouveau seules.</string>
+    <string name="automation_unattended_help">En mode autonome, LibreWrist fait par ADB tout ce qui peut être automatisé (installer, accorder des autorisations, activer des options) sur le téléphone et sur la montre, et n\'avance pas sans connexion ADB aux deux. Entre deux étapes, il attend quelques secondes (5 par défaut, réglable dans les réglages) : si vous touchez ou faites défiler l\'écran pendant que la barre du bouton se remplit, il se met en pause et vous continuez à la main ; les étapes suivantes avancent de nouveau seules.</string>
+    <string name="settings_advance_wait">Attente entre les étapes</string>
+    <string name="settings_advance_explainer">Durée de remplissage de la barre du bouton avant que l\'étape continue d\'elle-même. Ne s\'applique pas lorsque « Avancer sans s\'arrêter » est activé.</string>
+    <plurals name="settings_advance_seconds">
+        <item quantity="one">%d seconde</item>
+        <item quantity="many">%d secondes</item>
+        <item quantity="other">%d secondes</item>
+    </plurals>
     <string name="automation_free_run_title">Avancer sans s\'arrêter</string>
     <string name="automation_free_run_help">Il ne s\'arrêtera pas aux confirmations d\'opérations (correction du profil, avis) jusqu\'à la fin ou jusqu\'à ce que quelque chose échoue.</string>
     <string name="automation_uninstall_title">Supprimer si la clé diffère</string>

@@ -50,7 +50,17 @@
     <string name="welcome_get_started">ابدأ الآن</string>
     <string name="welcome_what_changes">ما الذي سيتغير على أجهزتي؟</string>
     <string name="automation_unattended_title">الوضع التلقائي</string>
-    <string name="automation_unattended_help">في الوضع التلقائي ينفّذ LibreWrist عبر ADB كل ما يمكن أتمتته (التثبيت ومنح الأذونات وتفعيل الخيارات) على الهاتف وعلى الساعة، ولا يتابع من دون اتصال ADB بكليهما. ينتظر ثانيتين بين الخطوات: إذا لمست الشاشة أو مررتها بينما يمتلئ الشريط على الزر، يتوقف مؤقتًا وتتابع أنت يدويًا؛ وتعود الخطوات التالية إلى التقدم تلقائيًا.</string>
+    <string name="automation_unattended_help">في الوضع التلقائي ينفّذ LibreWrist عبر ADB كل ما يمكن أتمتته (التثبيت ومنح الأذونات وتفعيل الخيارات) على الهاتف وعلى الساعة، ولا يتابع من دون اتصال ADB بكليهما. ينتظر بضع ثوانٍ بين الخطوات (5 افتراضيًا، ويمكن تعديلها من الإعدادات): إذا لمست الشاشة أو مررتها بينما يمتلئ الشريط على الزر، يتوقف مؤقتًا وتتابع أنت يدويًا؛ وتعود الخطوات التالية إلى التقدم تلقائيًا.</string>
+    <string name="settings_advance_wait">الانتظار بين الخطوات</string>
+    <string name="settings_advance_explainer">المدة التي يستغرقها امتلاء الشريط على الزر قبل أن تتابع الخطوة من تلقاء نفسها. لا ينطبق ذلك أثناء تفعيل «المتابعة دون توقف».</string>
+    <plurals name="settings_advance_seconds">
+        <item quantity="zero">%d ثانية</item>
+        <item quantity="one">%d ثانية</item>
+        <item quantity="two">%d ثانيتان</item>
+        <item quantity="few">%d ثوانٍ</item>
+        <item quantity="many">%d ثانية</item>
+        <item quantity="other">%d ثانية</item>
+    </plurals>
     <string name="automation_free_run_title">المتابعة دون توقف</string>
     <string name="automation_free_run_help">لن يتوقف عند تأكيدات العمليات (تصحيح الملف الشخصي والإشعارات) حتى يصل إلى النهاية أو يفشل شيء ما.</string>
     <string name="automation_uninstall_title">حذف التطبيقات ذات المفتاح الآخر</string>

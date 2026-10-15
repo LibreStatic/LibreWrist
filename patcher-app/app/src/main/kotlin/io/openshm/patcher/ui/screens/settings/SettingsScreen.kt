@@ -22,6 +22,8 @@ import androidx.compose.material.icons.rounded.Key
 import androidx.compose.material.icons.rounded.Update
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,7 +31,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
@@ -37,17 +41,21 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.openshm.patcher.R
+import io.openshm.patcher.data.ADVANCE_SECONDS_MAX
+import io.openshm.patcher.data.ADVANCE_SECONDS_MIN
 import io.openshm.patcher.ui.components.OutlinedAction
 import io.openshm.patcher.ui.components.TopActions
 import io.openshm.patcher.ui.update.UpdateNotice
+import kotlin.math.roundToInt
 
-/** App settings: the update check, the signing key and the installed version. */
+/** App settings: the unattended-mode wait between steps, the update check, the signing key and the installed version. */
 @Composable
 fun SettingsScreen(
     state: SettingsUiState,
     notice: UpdateNotice?,
     onNoticeShown: () -> Unit,
     onAutoCheck: (Boolean) -> Unit,
+    onAdvanceSeconds: (Int) -> Unit,
     onCheckNow: () -> Unit,
     onSigningKey: () -> Unit,
     onBack: () -> Unit,
@@ -80,10 +88,43 @@ fun SettingsScreen(
                     modifier = Modifier.semantics { heading() },
                 )
                 Text(
-                    stringResource(R.string.settings_updates_heading),
+                    stringResource(R.string.automation_unattended_title),
                     style = MaterialTheme.typography.titleSmall,
                     color = colors.primary,
                     modifier = Modifier.semantics { heading() },
+                )
+                Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        stringResource(R.string.settings_advance_wait),
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.weight(1f),
+                    )
+                    Text(
+                        pluralStringResource(R.plurals.settings_advance_seconds, state.advanceSeconds, state.advanceSeconds),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = colors.onSurfaceVariant,
+                    )
+                }
+                Slider(
+                    value = state.advanceSeconds.toFloat(),
+                    onValueChange = { onAdvanceSeconds(it.roundToInt()) },
+                    valueRange = ADVANCE_SECONDS_MIN.toFloat()..ADVANCE_SECONDS_MAX.toFloat(),
+                    steps = ADVANCE_SECONDS_MAX - ADVANCE_SECONDS_MIN - 1,
+                    // One stop per second, but 57 tick marks would only be noise.
+                    colors = SliderDefaults.colors(activeTickColor = Color.Transparent, inactiveTickColor = Color.Transparent),
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                )
+                Text(
+                    stringResource(R.string.settings_advance_explainer),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = colors.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                )
+                Text(
+                    stringResource(R.string.settings_updates_heading),
+                    style = MaterialTheme.typography.titleSmall,
+                    color = colors.primary,
+                    modifier = Modifier.padding(top = 8.dp).semantics { heading() },
                 )
                 Row(
                     Modifier

@@ -50,7 +50,12 @@
     <string name="welcome_get_started">开始使用</string>
     <string name="welcome_what_changes">我的设备上会有什么变化？</string>
     <string name="automation_unattended_title">无人值守模式</string>
-    <string name="automation_unattended_help">在无人值守模式下，LibreWrist 会通过 ADB 在手机和手表上完成所有可以自动化的操作（安装、授予权限、开启选项），并且在没有与两者建立 ADB 连接时不会继续。步骤之间会等待 2 秒：如果在按钮上的进度条填充期间触摸或滚动屏幕，就会暂停，由你手动继续；之后的步骤会再次自动前进。</string>
+    <string name="automation_unattended_help">在无人值守模式下，LibreWrist 会通过 ADB 在手机和手表上完成所有可以自动化的操作（安装、授予权限、开启选项），并且在没有与两者建立 ADB 连接时不会继续。步骤之间会等待几秒（默认 5 秒，可在设置中调整）：如果在按钮上的进度条填充期间触摸或滚动屏幕，就会暂停，由你手动继续；之后的步骤会再次自动前进。</string>
+    <string name="settings_advance_wait">步骤之间的等待时间</string>
+    <string name="settings_advance_explainer">按钮上的进度条填满多久后，步骤会自动继续。开启“不停顿地前进”时不适用。</string>
+    <plurals name="settings_advance_seconds">
+        <item quantity="other">%d 秒</item>
+    </plurals>
     <string name="automation_free_run_title">不停顿地前进</string>
     <string name="automation_free_run_help">在操作确认（修正配置、通知）处不会停下，直到完成或出现失败。</string>
     <string name="automation_uninstall_title">删除其他密钥签名的应用</string>

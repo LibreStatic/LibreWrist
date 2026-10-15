@@ -50,7 +50,12 @@
     <string name="welcome_get_started">Başla</string>
     <string name="welcome_what_changes">Cihazlarımda neler değişecek?</string>
     <string name="automation_unattended_title">Gözetimsiz mod</string>
-    <string name="automation_unattended_help">Gözetimsiz modda LibreWrist, otomatikleştirilebilen her şeyi (yükleme, izin verme, seçenekleri açma) telefonda ve saatte ADB ile yapar ve ikisiyle de ADB bağlantısı olmadan ilerlemez. Adımlar arasında 2 saniye bekler: düğmedeki çubuk dolarken ekrana dokunur veya kaydırırsanız duraklar ve elle devam edersiniz; sonraki adımlar yine kendiliğinden ilerler.</string>
+    <string name="automation_unattended_help">Gözetimsiz modda LibreWrist, otomatikleştirilebilen her şeyi (yükleme, izin verme, seçenekleri açma) telefonda ve saatte ADB ile yapar ve ikisiyle de ADB bağlantısı olmadan ilerlemez. Adımlar arasında birkaç saniye bekler (varsayılan 5, Ayarlar\'dan değiştirilebilir): düğmedeki çubuk dolarken ekrana dokunur veya kaydırırsanız duraklar ve elle devam edersiniz; sonraki adımlar yine kendiliğinden ilerler.</string>
+    <string name="settings_advance_wait">Adımlar arası bekleme</string>
+    <string name="settings_advance_explainer">Adım kendiliğinden devam etmeden önce düğmedeki çubuğun dolması ne kadar sürer. "Durmadan ilerle" açıkken geçerli değildir.</string>
+    <plurals name="settings_advance_seconds">
+        <item quantity="other">%d saniye</item>
+    </plurals>
     <string name="automation_free_run_title">Durmadan ilerle</string>
     <string name="automation_free_run_help">İşlem onaylarında (profili düzeltme, bildirimler) sona ulaşana veya bir şey başarısız olana kadar durmaz.</string>
     <string name="automation_uninstall_title">Farklı imzalı uygulamaları sil</string>

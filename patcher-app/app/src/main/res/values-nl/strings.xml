@@ -50,7 +50,13 @@
     <string name="welcome_get_started">Aan de slag</string>
     <string name="welcome_what_changes">Wat verandert er op mijn apparaten?</string>
     <string name="automation_unattended_title">Onbeheerde modus</string>
-    <string name="automation_unattended_help">In de onbeheerde modus doet LibreWrist alles wat te automatiseren valt (installeren, rechten verlenen, opties inschakelen) via ADB op de telefoon en op het horloge, en gaat het niet verder zonder ADB-verbinding met beide. Tussen de stappen wacht het 2 seconden: als je het scherm aanraakt of scrolt terwijl de balk op de knop zich vult, pauzeert het en ga je zelf verder; de volgende stappen gaan weer vanzelf verder.</string>
+    <string name="automation_unattended_help">In de onbeheerde modus doet LibreWrist alles wat te automatiseren valt (installeren, rechten verlenen, opties inschakelen) via ADB op de telefoon en op het horloge, en gaat het niet verder zonder ADB-verbinding met beide. Tussen de stappen wacht het een paar seconden (standaard 5, aanpasbaar in Instellingen): als je het scherm aanraakt of scrolt terwijl de balk op de knop zich vult, pauzeert het en ga je zelf verder; de volgende stappen gaan weer vanzelf verder.</string>
+    <string name="settings_advance_wait">Wachttijd tussen stappen</string>
+    <string name="settings_advance_explainer">Hoe lang de balk op de knop nodig heeft om zich te vullen voordat de stap vanzelf doorgaat. Geldt niet als "Zonder stoppen doorgaan" aan staat.</string>
+    <plurals name="settings_advance_seconds">
+        <item quantity="one">%d seconde</item>
+        <item quantity="other">%d seconden</item>
+    </plurals>
     <string name="automation_free_run_title">Zonder stoppen doorgaan</string>
     <string name="automation_free_run_help">Het stopt niet bij bevestigingen van handelingen (het profiel corrigeren, meldingen) totdat het einde is bereikt of er iets misgaat.</string>
     <string name="automation_uninstall_title">Apps met andere sleutel wissen</string>

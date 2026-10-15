@@ -50,7 +50,12 @@
     <string name="welcome_get_started">시작하기</string>
     <string name="welcome_what_changes">내 기기에서 무엇이 바뀌나요?</string>
     <string name="automation_unattended_title">무인 모드</string>
-    <string name="automation_unattended_help">무인 모드에서 LibreWrist는 자동화할 수 있는 모든 작업(설치, 권한 부여, 옵션 켜기)을 휴대전화와 워치에서 ADB로 수행하며, 둘 다 ADB에 연결되어 있지 않으면 진행하지 않습니다. 단계 사이에 2초 기다립니다. 버튼의 막대가 차는 동안 화면을 터치하거나 스크롤하면 일시 중지되고 직접 이어서 진행합니다. 이후 단계는 다시 자동으로 진행됩니다.</string>
+    <string name="automation_unattended_help">무인 모드에서 LibreWrist는 자동화할 수 있는 모든 작업(설치, 권한 부여, 옵션 켜기)을 휴대전화와 워치에서 ADB로 수행하며, 둘 다 ADB에 연결되어 있지 않으면 진행하지 않습니다. 단계 사이에 몇 초(기본 5초, 설정에서 변경 가능) 기다립니다. 버튼의 막대가 차는 동안 화면을 터치하거나 스크롤하면 일시 중지되고 직접 이어서 진행합니다. 이후 단계는 다시 자동으로 진행됩니다.</string>
+    <string name="settings_advance_wait">단계 사이 대기 시간</string>
+    <string name="settings_advance_explainer">단계가 저절로 이어지기 전에 버튼의 막대가 차는 데 걸리는 시간입니다. “멈추지 않고 진행”이 켜져 있으면 적용되지 않습니다.</string>
+    <plurals name="settings_advance_seconds">
+        <item quantity="other">%d초</item>
+    </plurals>
     <string name="automation_free_run_title">멈추지 않고 진행</string>
     <string name="automation_free_run_help">끝에 도달하거나 문제가 생길 때까지 작업 확인(프로필 수정, 알림)에서 멈추지 않습니다.</string>
     <string name="automation_uninstall_title">다른 키의 앱 삭제</string>

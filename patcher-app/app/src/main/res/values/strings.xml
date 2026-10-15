@@ -52,7 +52,13 @@
     <string name="welcome_get_started">Get started</string>
     <string name="welcome_what_changes">What will change on my devices?</string>
     <string name="automation_unattended_title">Unattended mode</string>
-    <string name="automation_unattended_help">In unattended mode LibreWrist does over ADB everything that can be automated (installing, granting permissions, turning options on) on the phone and on the watch, and it does not go on without an ADB connection to both. Between steps it waits 2 seconds: if you touch or scroll the screen while the bar on the button is filling, it pauses and you continue by hand; the following steps go on by themselves again.</string>
+    <string name="automation_unattended_help">In unattended mode LibreWrist does over ADB everything that can be automated (installing, granting permissions, turning options on) on the phone and on the watch, and it does not go on without an ADB connection to both. Between steps it waits a few seconds (5 by default, adjustable in Settings): if you touch or scroll the screen while the bar on the button is filling, it pauses and you continue by hand; the following steps go on by themselves again.</string>
+    <string name="settings_advance_wait">Wait between steps</string>
+    <string name="settings_advance_explainer">How long the bar on the button takes to fill before the step continues by itself. It does not apply while Advance freely is on.</string>
+    <plurals name="settings_advance_seconds">
+        <item quantity="one">%d second</item>
+        <item quantity="other">%d seconds</item>
+    </plurals>
     <string name="automation_free_run_title">Advance freely</string>
     <string name="automation_free_run_help">It will not stop at operation confirmations (correcting the profile, notices) until it reaches the end or something fails.</string>
     <string name="automation_uninstall_title">Remove apps with another key</string>

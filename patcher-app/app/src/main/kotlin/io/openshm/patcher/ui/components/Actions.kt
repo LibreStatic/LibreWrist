@@ -77,7 +77,7 @@ fun IconAction(
 /**
  * Full-width 56 dp pill button used as the main action of a screen (canvas "Get started", "Build").
  * With [auto] it also continues by itself: in unattended mode a bar fills the pill over
- * [AUTO_ADVANCE_MILLIS] and then [onClick] runs once, unless the user touches the screen meanwhile.
+ * the advance time set in Settings and then [onClick] runs once, unless the user touches the screen meanwhile.
  */
 @Composable
 fun PrimaryAction(
