@@ -1,13 +1,22 @@
-# Assigns every new issue to the maintainer so GitHub sends an assignment notification.
-name: Auto-assign issues
+# Assigns new issues and pull requests to the maintainer so GitHub sends an assignment
+# notification. The action ignores the event payload and assigns every open, unassigned
+# issue and pull request on each run; workflow_dispatch allows a manual sweep.
+name: Auto-assign issues and pull requests
 
 on:
   issues:
     types:
       - opened
+  # pull_request_target so pull requests from forks get a token that can assign. Safe here:
+  # no pull request code is checked out or run.
+  pull_request_target:
+    types:
+      - opened
+  workflow_dispatch:
 
 permissions:
   issues: write
+  pull-requests: write
 
 jobs:
   assign:
@@ -18,4 +27,4 @@ jobs:
         with:
           assignees: FacuM
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          assignment_options: ISSUE
+          assignment_options: ISSUE,PULL_REQUEST
