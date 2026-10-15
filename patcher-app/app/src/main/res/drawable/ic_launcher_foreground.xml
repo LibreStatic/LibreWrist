@@ -1,36 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- A phone with a watch at its bottom-right corner: the launcher glyph. The phone outline stops
-     short of the watch instead of being covered by it, so the monochrome layer reads the same. -->
+     short of the watch instead of being covered by it, so the monochrome layer reads the same.
+     The group scales the glyph (about 44x55 unscaled) down around the centre so it keeps a clear
+     margin inside every launcher mask (squircle, rounded square, circle) and the 66dp safe zone. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <path
-        android:fillColor="#00000000"
-        android:pathData="M60.75,50.9 L60.75,33.86 A5.31,5.31 0,0,0 55.44,28.55 L39.51,28.55 A5.31,5.31 0,0,0 34.19,33.86 L34.19,67.5 A5.31,5.31 0,0,0 39.51,72.81 L48.73,72.81"
-        android:strokeColor="#FFFFFF"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:strokeWidth="4.43" />
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M60.75,51.57 L66.06,51.57 A1.77,1.77 0,0,1 67.83,53.34 L67.83,55.11 A1.77,1.77 0,0,1 66.06,56.88 L60.75,56.88 A1.77,1.77 0,0,1 58.98,55.11 L58.98,53.34 A1.77,1.77 0,0,1 60.75,51.57 Z" />
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M60.75,76.35 L66.06,76.35 A1.77,1.77 0,0,1 67.83,78.12 L67.83,79.89 A1.77,1.77 0,0,1 66.06,81.66 L60.75,81.66 A1.77,1.77 0,0,1 58.98,79.89 L58.98,78.12 A1.77,1.77 0,0,1 60.75,76.35 Z" />
-    <path
-        android:fillColor="#00000000"
-        android:pathData="M52.78,66.61 A10.62,10.62 0,1,1 74.03,66.61 A10.62,10.62 0,1,1 52.78,66.61 Z"
-        android:strokeColor="#FFFFFF"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:strokeWidth="3.98" />
-    <path
-        android:fillColor="#00000000"
-        android:pathData="M63.4,60.42 L63.4,66.61 L68.72,66.61"
-        android:strokeColor="#FFFFFF"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:strokeWidth="3.1" />
+    <group
+        android:pivotX="54"
+        android:pivotY="54"
+        android:scaleX="0.78"
+        android:scaleY="0.78">
+        <path
+            android:fillColor="#00000000"
+            android:pathData="M60.75,50.9 L60.75,33.86 A5.31,5.31 0,0,0 55.44,28.55 L39.51,28.55 A5.31,5.31 0,0,0 34.19,33.86 L34.19,67.5 A5.31,5.31 0,0,0 39.51,72.81 L48.73,72.81"
+            android:strokeColor="#FFFFFF"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round"
+            android:strokeWidth="4.43" />
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M60.75,51.57 L66.06,51.57 A1.77,1.77 0,0,1 67.83,53.34 L67.83,55.11 A1.77,1.77 0,0,1 66.06,56.88 L60.75,56.88 A1.77,1.77 0,0,1 58.98,55.11 L58.98,53.34 A1.77,1.77 0,0,1 60.75,51.57 Z" />
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M60.75,76.35 L66.06,76.35 A1.77,1.77 0,0,1 67.83,78.12 L67.83,79.89 A1.77,1.77 0,0,1 66.06,81.66 L60.75,81.66 A1.77,1.77 0,0,1 58.98,79.89 L58.98,78.12 A1.77,1.77 0,0,1 60.75,76.35 Z" />
+        <path
+            android:fillColor="#00000000"
+            android:pathData="M52.78,66.61 A10.62,10.62 0,1,1 74.03,66.61 A10.62,10.62 0,1,1 52.78,66.61 Z"
+            android:strokeColor="#FFFFFF"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round"
+            android:strokeWidth="3.98" />
+        <path
+            android:fillColor="#00000000"
+            android:pathData="M63.4,60.42 L63.4,66.61 L68.72,66.61"
+            android:strokeColor="#FFFFFF"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round"
+            android:strokeWidth="3.1" />
+    </group>
 </vector>
