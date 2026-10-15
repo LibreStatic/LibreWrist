@@ -30,6 +30,22 @@ The patcher recognizes the watch plugin of every Galaxy Watch family, and includ
 watch SHM closing on open on the Galaxy Watch8. The patcher UI is available in English and 17 other languages, and
 the bridge texts into the same 88 locales as the call notice.
 
+## New since 0.3.7
+
+These changes are on `main` and come with the next release (0.3.8). Unless a row says otherwise,
+they were verified on the tested setup above (SM-R920).
+
+| Feature | Up to 0.3.7 | Now |
+|---|---|---|
+| **Blood pressure calibration** on the watch | Did not work. A re-signed SHM cannot use the privileged BP sensor, so calibration stopped with a sensor error. | Works. Our own adapter feeds the BP code from the Health Tracking PPG green channel. Calibration completes end to end. |
+| **Double pinch** on a ringing phone alarm | Did nothing. The Alarm fork cannot reach Samsung's gesture service. | Snoozes or dismisses, as set on the watch. It uses the watch's public gesture library. Detection pauses while the watch is off the wrist. Tested on the Galaxy Watch5 Pro only; Watch7 and Watch8 are untested. |
+| **Rebuilding** after a change | Every build patched all the apps again. | Apps whose inputs, patches, key and engine did not change are reused as they are. Turning off one optional patch rebuilds only that app, and the install step skips the apps that are already installed. Tested on emulators. |
+| **Home: one app at a time** | Rebuild and restore applied to the whole setup. | Each app row has its own **Rebuild**, which opens the patches focused on that app, and **Restore**, which removes only that app. **Restore watch** in the Home menu undoes only the watch side. |
+| **Texts and translations** | Some texts were wrong or misleading, for example claiming that restore keeps data. | The English texts were corrected. All 17 translations were reviewed, using the official Android and One UI Watch setting names. |
+
+The updated catalogue needs this patcher release or a newer one (`minAppVersion` 28). The BP
+adapter and the pinch detector ship inside the app, not with the catalogue.
+
 ## Quick start video
 
 Prefer watching to reading? This 90-second video shows the whole setup, step by step. The screens
@@ -141,6 +157,9 @@ The required patches are locked; the others can be switched off. The defaults ar
 **Build**. The build runs in the background with a notification, so you can leave the app. When it
 finishes, all five apps are patched and signed with your own key. The app then offers to back up
 that key: **do it**, because you will need it for future updates.
+
+Later builds only patch again the apps whose inputs or patches changed. The others are reused, and
+**Built and signed** marks them as *Unchanged*.
 
 <p>
   <img src="docs/images/walkthrough/11-patches.png" width="260" alt="Patches">
@@ -297,7 +316,16 @@ From then on, the app opens on **Home**. It shows:
 - the apps you built;
 - an update card when a newer catalogue supports newer official apps.
 
-Each app can be rebuilt or restored, which turns the stock apps back on and removes ours.
+Each app row has two buttons:
+
+- **Rebuild** (*Change patches and rebuild*) opens the patches focused on that app, then runs a
+  normal build. Apps that did not change are reused, and the install steps only cover the apps that
+  were built again.
+- **Restore** removes only that app. For the watch Health Monitor, it also turns the stock app back
+  on and resets the watch settings the patcher changed.
+
+**Restore watch** in the Home menu undoes only the watch side. A restored app leaves Home until you
+install it again.
 
 <img src="docs/images/walkthrough/21-home.png" width="260" alt="Home">
 
@@ -329,7 +357,7 @@ reconnects by itself once the device shows up on the network again.
 
 #### Undo all changes
 
-Welcome and All set offer **Undo all changes**, and Home's **Uninstall** item opens the same screen.
+Welcome, All set and the Home menu offer **Undo all changes**.
 It looks for every OpenSHM app on both devices (under the current package prefix and any earlier one
 it finds) and only acts on what is actually there:
 
@@ -360,8 +388,8 @@ Turn the switch off if you do not want it. On a PC, `scripts/build_shealth.sh` b
 ### What to expect when you are done
 
 - **On the watch**, the patched Samsung Health Monitor replaces the stock one in the app list. It
-  offers ECG, and blood pressure once calibrated. Irregular heart rhythm notifications can be turned
-  on from the phone app.
+  offers ECG and blood pressure, including the BP calibration. Irregular heart rhythm notifications
+  can be turned on from the phone app.
 - **On the phone**, Samsung Health Monitor finds the watch as a compatible device. Readings taken
   on the watch appear there and can be exported as PDF.
 - **The bridge** sends phone notifications, incoming calls (answer or decline from the watch) and
@@ -370,6 +398,8 @@ Turn the switch off if you do not want it. On a PC, `scripts/build_shealth.sh` b
   link stays alive (also in Doze and power saving) **without a permanent notification**. Without the
   association it falls back to a foreground service with a "Phone connection" notification, which
   has its own channel so you can hide it without muting alarms or calls.
+- **Phone alarms** ringing on the watch can be snoozed or dismissed with a double pinch, if the
+  quick action is on in the watch's alarm settings.
 - Nothing stock was uninstalled. Galaxy Wearable keeps managing the watch as before.
 
 ### How to check that it works
@@ -380,11 +410,13 @@ Turn the switch off if you do not want it. On a PC, `scripts/build_shealth.sh` b
    - The watch shows a result (for example *Sinus rhythm*). Within a minute, the same reading shows
      up in Samsung Health Monitor on the phone.
 2. **Blood pressure**:
-   - In the phone app, start a calibration with a cuff monitor, taking three readings.
+   - In the phone app, start a calibration with a cuff monitor, taking three readings. The watch
+     completes the calibration.
    - After that, measure from the watch. The result syncs to the phone the same way as ECG.
 3. **Bridge**:
    - Send yourself a message, or call the phone: the notification or the call shows on the watch.
-   - Set an alarm on the phone a couple of minutes ahead: it rings on the watch.
+   - Set an alarm on the phone a couple of minutes ahead: it rings on the watch. With the watch on
+     your wrist, a double pinch snoozes or dismisses it.
 4. **If something does not arrive**, run **Test again** from Home and share the report. Most
    problems are one of these:
    - Health Platform developer mode turned off on the watch;
@@ -411,7 +443,7 @@ Everything runs on the two devices. Details are in [docs/architecture.md](docs/a
 | `patcher-app/` | The OpenSHM Patcher Android app, a Gradle build with three modules: `:engine` (pure JVM patch engine), `:adb` (ADB client) and `:app` (Compose UI). Third-party licences are in [patcher-app/THIRD_PARTY.md](patcher-app/THIRD_PARTY.md). |
 | `catalogue/` | The signed patch catalogue. `catalogue.json` describes the inputs, profiles and patterns as data; `catalogue.json.sig` and `catalogue.pub` are its signature and public key. Details in [docs/patches.md](docs/patches.md). |
 | `superpatcher/`, `scripts/superpatcher.py` | The Python patch engine. It interprets the same catalogue as the app. |
-| `watch-mod/` | Our own code injected into the watch SHM: the ECG adapter, the Health Tracking client and the vendor overrides. |
+| `watch-mod/` | Our own code injected into the watch SHM: the ECG and BP adapters, the Health Tracking client and the vendor overrides. |
 | `shm-bridge/` | Our own bridge apps (phone ⇄ watch over direct RFCOMM) and the fork of the watch Alarm app. |
 | `scripts/` | The PC build (`build_all.sh`, `build_shm_*.sh`, `build_shealth.sh`, `fetch_deps.sh`), catalogue tooling (`catalogue.py`), and shared helpers in `scripts/lib/`. |
 | `apks/` | Where the official input APKs go for PC builds. They are not versioned; see [apks/README.md](apks/README.md) and `apks/inputs.json`. |
