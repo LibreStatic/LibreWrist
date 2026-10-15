@@ -43,11 +43,11 @@ class RealBuildEngine(catalogue: Catalogue) : BuildEngine {
 
 /** Where the built-in own code lives in the app assets. */
 object BuildAssets {
-    /** `shm-bridge/phone` (catalogue `ownApp` path) becomes `owncode/apps/bridge-phone.apk`. */
+    /** The catalogue `ownApp` path with "/" as "-": `dir/app` becomes `owncode/apps/dir-app.apk` (see `own-code.gradle.kts`). */
     fun ownApp(path: String): String {
-        val name = path.removePrefix("shm-bridge/")
-        require(name != path && name.isNotEmpty() && '/' !in name) { "unknown own app path '$path'" }
-        return "owncode/apps/bridge-$name.apk"
+        val parts = path.split('/')
+        require(parts.size == 2 && parts.all { it.isNotEmpty() && it != ".." }) { "unknown own app path '$path'" }
+        return "owncode/apps/${parts.joinToString("-")}.apk"
     }
 
     fun injection(name: String): String {
@@ -208,7 +208,7 @@ class BuildRunner(
                 engine.buildOwnApp(
                     OwnAppRequest(
                         placeholderApk = placeholder, outputId = out.id, prefix = request.prefix,
-                        knownSignerCert = request.knownSignerCert.takeIf { out.id == PHONE_BRIDGE },
+                        knownSignerCert = request.knownSignerCert.takeIf { out.knownSigner },
                         outputApk = target, signingKey = request.signingKey, workDir = workDir,
                     ),
                     listener,
@@ -273,9 +273,6 @@ class BuildRunner(
     }
 
     companion object {
-        /** The only output that gets the patcher's own certificate as its known signer. */
-        const val PHONE_BRIDGE = "bridge-phone"
-
         fun stageOf(event: String): BuildStage? = when {
             event == "check-request" || event == "verify-input" || event == "unpack" -> BuildStage.Unpack
             event == "detect-family" || event == "check-injections" -> BuildStage.Fingerprints

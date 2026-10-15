@@ -7,7 +7,7 @@
 //
 // Output (merged into every variant's assets):
 //   owncode/injections/{watch-mod,alarm-fork}.dex    one classes.dex each
-//   owncode/apps/bridge-{watch,phone}.apk            unsigned
+//   owncode/apps/shm-bridge-{watch,phone}.apk      unsigned (the catalogue `ownApp` path with "/" as "-")
 //   catalogue/{catalogue.json,catalogue.json.sig,catalogue.pub}
 //
 // Configuration comes from the environment, like config.env: ANDROID_HOME (default: the SDK AGP uses),
@@ -160,7 +160,7 @@ val alarmFork = registerBuild("buildAlarmForkDex", "owncode/injections/alarm-for
     javaRelease.set(11); minSdk.set(34)
 }
 fun bridge(dir: String, minSdk: Int, targetSdk: Int) =
-    registerBuild("buildBridge${dir.replaceFirstChar { it.uppercase() }}Apk", "owncode/apps/bridge-$dir.apk", true) {
+    registerBuild("buildBridge${dir.replaceFirstChar { it.uppercase() }}Apk", "owncode/apps/shm-bridge-$dir.apk", true) {
         val root = repoRoot.resolve("shm-bridge/$dir")
         sources.set(root.resolve("src"))
         if (root.resolve("res").isDirectory) resources.set(root.resolve("res"))

@@ -1,5 +1,6 @@
 package io.openshm.patcher.device
 
+import io.openshm.patcher.TestCatalogue
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -7,60 +8,61 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class HealthPlatformDevModeTest {
+    private val platform = TestCatalogue.load().platform.healthPlatform
 
     @Test
     fun healthPlatformInFrontWhenItsActivityIsTopResumed() {
         val out = "    topResumedActivity=ActivityRecord{201713073 u0 " +
             "com.samsung.android.service.health/.wear.settings.home.SettingsMainActivity t8364}\n"
-        assertTrue(HealthPlatformDevMode.isHealthPlatformInFront(out))
+        assertTrue(HealthPlatformDevMode.isHealthPlatformInFront(out, platform))
     }
 
     @Test
     fun otherAppsInFrontAreIgnored() {
         val out = "    topResumedActivity=ActivityRecord{232446917 u0 " +
             "com.samsung.android.mediacontroller/.view.control.MediaControlActivity t8365}\n"
-        assertFalse(HealthPlatformDevMode.isHealthPlatformInFront(out))
-        assertFalse(HealthPlatformDevMode.isHealthPlatformInFront(""))
+        assertFalse(HealthPlatformDevMode.isHealthPlatformInFront(out, platform))
+        assertFalse(HealthPlatformDevMode.isHealthPlatformInFront("", platform))
     }
 
     @Test
     fun similarlyNamedPackagesDoNotCount() {
         val out = "topResumedActivity=ActivityRecord{1 u0 com.samsung.android.service.healthx/.Main t1}"
-        assertFalse(HealthPlatformDevMode.isHealthPlatformInFront(out))
+        assertFalse(HealthPlatformDevMode.isHealthPlatformInFront(out, platform))
     }
 
     @Test
     fun devModeShownAndTitleFoundByViewId() {
-        val screen = HealthPlatformDevMode.parseSettingsScreen(TOP_ON)
+        val screen = HealthPlatformDevMode.parseSettingsScreen(TOP_ON, platform)
         assertTrue(screen.devModeShown)
         assertEquals(224 to 43, screen.titleCenter)
     }
 
     @Test
     fun devModeOffWhenTheSubtitleIsMissingOrHidden() {
-        val missing = HealthPlatformDevMode.parseSettingsScreen(TOP_ON.replace(SUBTITLE_LINE, ""))
+        val missing = HealthPlatformDevMode.parseSettingsScreen(TOP_ON.replace(SUBTITLE_LINE, ""), platform)
         assertFalse(missing.devModeShown)
         assertEquals(224 to 43, missing.titleCenter)
-        val gone = HealthPlatformDevMode.parseSettingsScreen(TOP_ON.replace("V.ED..... ........ 170", "G.ED..... ........ 170"))
+        val gone = HealthPlatformDevMode.parseSettingsScreen(TOP_ON.replace("V.ED..... ........ 170", "G.ED..... ........ 170"), platform)
         assertFalse(gone.devModeShown)
     }
 
     @Test
     fun titleCentreAddsTheParentsOffsets() {
         val shifted = TOP_ON.replace("0,0-450,450 #1020002 android:id/content", "10,20-460,470 #1020002 android:id/content")
-        assertEquals(234 to 63, HealthPlatformDevMode.parseSettingsScreen(shifted).titleCenter)
+        assertEquals(234 to 63, HealthPlatformDevMode.parseSettingsScreen(shifted, platform).titleCenter)
     }
 
     @Test
     fun otherActivitiesTitlesAreIgnored() {
-        val screen = HealthPlatformDevMode.parseSettingsScreen(OTHER_ACTIVITY)
+        val screen = HealthPlatformDevMode.parseSettingsScreen(OTHER_ACTIVITY, platform)
         assertFalse(screen.devModeShown)
         assertNull(screen.titleCenter)
     }
 
     @Test
     fun emptyOutputReadsAsEmptyScreen() {
-        val screen = HealthPlatformDevMode.parseSettingsScreen("")
+        val screen = HealthPlatformDevMode.parseSettingsScreen("", platform)
         assertFalse(screen.devModeShown)
         assertNull(screen.titleCenter)
     }

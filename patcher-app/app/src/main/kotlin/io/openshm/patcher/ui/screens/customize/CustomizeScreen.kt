@@ -26,6 +26,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -40,9 +41,11 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.ui.unit.dp
 import io.openshm.patcher.R
+import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.Device
 import io.openshm.patcher.data.PackagePrefix
 import io.openshm.patcher.data.PatchInfo
+import io.openshm.patcher.data.RebuildScope
 import io.openshm.patcher.ui.components.FooterHint
 import io.openshm.patcher.ui.components.GroupedItem
 import io.openshm.patcher.ui.components.LocalTwoPane
@@ -54,6 +57,7 @@ import io.openshm.patcher.ui.components.PrimaryAction
 import io.openshm.patcher.ui.components.SectionTitle
 import io.openshm.patcher.ui.components.SetupStep
 import io.openshm.patcher.ui.components.StepScreenScaffold
+import io.openshm.patcher.ui.components.UnattendedAttention
 import io.openshm.patcher.ui.theme.PatcherTheme
 
 /** One patch row. A required patch (the default) is locked on; an optional one can be switched off. */
@@ -104,7 +108,8 @@ data class CustomizeUiState(
     val showPresets: Boolean get() = optionalCount > 0
     val enabledPatchCount: Int get() = visibleGroups.sumOf { g -> g.patches.count { it.required || it.enabled } }
     val appCount: Int get() = visibleGroups.size
-    val canBuild: Boolean get() = prefixProblem == null && enabledPatchCount > 0
+    /** Nothing to patch (every optional app left out) still builds our own apps; otherwise at least one patch must stay on. */
+    val canBuild: Boolean get() = prefixProblem == null && (enabledPatchCount > 0 || visibleGroups.isEmpty())
 }
 
 sealed interface CustomizeEvent {
@@ -123,6 +128,9 @@ fun CustomizeScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    UnattendedAttention(!state.canBuild)
+    // Opened from Home to change an app's patches: the user came to choose, so Build never fires by itself.
+    val rebuilding = RebuildScope.state.collectAsState().value != null
     StepScreenScaffold(
         step = SetupStep.Customize,
         title = stringResource(R.string.customize_title),
@@ -135,7 +143,7 @@ fun CustomizeScreen(
             )
             PrimaryAction(
                 stringResource(R.string.customize_build), onBuild,
-                icon = Icons.Rounded.Construction, enabled = state.canBuild,
+                icon = Icons.Rounded.Construction, enabled = state.canBuild, auto = !rebuilding,
             )
         },
         secondary = {
@@ -334,7 +342,8 @@ private fun AdvancedCard(state: CustomizeUiState, onEvent: (CustomizeEvent) -> U
                             }
                         },
                     )
-                    PackageId("${state.packagePrefix}.shmbridge.phone")
+                    // An example of what the prefix names: the package of the app that carries the known signer.
+                    AppCatalogue.current.outputs.firstOrNull { it.knownSigner }?.let { PackageId(it.packageName(state.packagePrefix)) }
                 }
             }
         }

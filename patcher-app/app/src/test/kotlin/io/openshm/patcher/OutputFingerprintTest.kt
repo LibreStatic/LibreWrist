@@ -49,7 +49,7 @@ class OutputFingerprintTest {
         val signature = Signature.getInstance("SHA256withECDSA").run { initSign(signer.private); update(bytes); sign() }
         val pem = "-----BEGIN PUBLIC KEY-----\n" +
             Base64.getMimeEncoder(64, "\n".toByteArray()).encodeToString(signer.public.encoded) + "\n-----END PUBLIC KEY-----\n"
-        return AppCatalogue.fromBytes(bytes, signature, pem, BuildConfig.VERSION_CODE, TestCatalogue.resolve)
+        return AppCatalogue.fromBytes(bytes, signature, pem, BuildConfig.VERSION_CODE, TestCatalogue.locales)
     }
 
     @Test fun identicalInputsGiveTheSameFingerprint() {

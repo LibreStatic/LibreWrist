@@ -39,6 +39,10 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 
 class PackageTargetsTest {
+    private companion object {
+        const val WEAR_SHEALTH = "com.samsung.android.wear.shealth"
+    }
+
     private val catalogue = TestCatalogue.load()
 
     @Test
@@ -65,7 +69,7 @@ class PackageTargetsTest {
         assertTrue("com.samsung.android.watch.alarm" in targets.exact)
         assertTrue("com.samsung.android.shealthmonitors" in targets.exact)
         assertTrue("abc.def.shmbridge.watch" in targets.exact)
-        assertTrue(PackageTargets.WEAR_SHEALTH in targets.exact)
+        assertTrue(WEAR_SHEALTH in targets.exact)
         assertFalse("abc.def.shmbridge.phone" in targets.exact)
         assertFalse("com.sec.android.app.shealth" in targets.exact)
     }
@@ -76,7 +80,7 @@ class PackageTargetsTest {
         assertTrue("abc.def.shmbridge.phone" in targets.exact)
         assertTrue("com.samsung.android.shealthmonitor" in targets.exact)
         assertFalse("abc.def.shmbridge.watch" in targets.exact)
-        assertFalse(PackageTargets.WEAR_SHEALTH in targets.exact)
+        assertFalse(WEAR_SHEALTH in targets.exact)
         assertFalse("com.samsung.android.watch.alarm" in targets.exact)
     }
 
@@ -88,10 +92,10 @@ class PackageTargetsTest {
             "other.prefix.shmbridge.watch" to listOf(10101),
             "abc.def.shmbridge.phone" to listOf(10102), // phone-only app
             "com.unrelated" to listOf(10103),
-            PackageTargets.WEAR_SHEALTH to listOf(10104),
+            WEAR_SHEALTH to listOf(10104),
         )
         assertEquals(
-            setOf("com.samsung.android.shealthmonitors", "other.prefix.shmbridge.watch", PackageTargets.WEAR_SHEALTH),
+            setOf("com.samsung.android.shealthmonitors", "other.prefix.shmbridge.watch", WEAR_SHEALTH),
             targets.select(installed).keys,
         )
         assertTrue(targets.select(emptyMap()).isEmpty())

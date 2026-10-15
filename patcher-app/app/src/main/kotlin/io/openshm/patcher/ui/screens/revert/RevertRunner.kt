@@ -3,12 +3,14 @@ package io.openshm.patcher.ui.screens.revert
 import io.openshm.patcher.adb.AdbException
 import io.openshm.patcher.adb.GrantReadback
 import io.openshm.patcher.data.Device
+import io.openshm.patcher.data.LoadedCatalogue
 import io.openshm.patcher.data.OutputApp
 import io.openshm.patcher.data.StockApp
 import io.openshm.patcher.device.PackageKind
 import io.openshm.patcher.device.PhoneInstaller
 import io.openshm.patcher.device.UninstallResult
 import io.openshm.patcher.device.WatchDevice
+import io.openshm.patcher.engine.RevertSetting
 import java.io.IOException
 import kotlinx.coroutines.CancellationException
 
@@ -63,13 +65,22 @@ data class RevertReport(val outcomes: Map<String, StepOutcome>, val watchCovered
 class RevertRunner(
     private val phone: PhoneInstaller,
     private val watch: WatchDevice,
-    private val outputs: List<OutputApp>,
-    private val stockApps: List<StockApp>,
+    private val catalogue: LoadedCatalogue,
     private val storedPrefix: String?,
     private val ownPackage: String,
     private val scope: RevertScope = RevertScope.All,
     private val log: (String) -> Unit = {},
 ) {
+    private val outputs: List<OutputApp> = catalogue.outputs
+    private val stockApps: List<StockApp> = catalogue.stockAppsToDisable
+
+    /** The secure settings the setup put away from their default on the watch (`platform.revertSettings`). */
+    private val settings: List<RevertSetting> =
+        catalogue.platform.revertSettings.filter { it.device == "watch" && it.kind == "secureSetting" }
+
+    /** Hidden-API style lists on the watch (global setting key to the entries our grants appended). */
+    private val exemptions: Map<String, List<String>> = catalogue.globalSettingEntries
+
     private sealed interface Call<out T> {
         class Ok<T>(val value: T) : Call<T>
         class Unreachable(val cause: IOException) : Call<Nothing>
@@ -140,7 +151,7 @@ class RevertRunner(
             }
             items += RevertItem(Device.Watch, c.label, c.pkg, RevertAction.Uninstall, presence, c.outputId)
         }
-        if (!scope.includesWatchExtras) return items
+        if (!scope.includesWatchExtras(catalogue.watchExtraOutputs)) return items
         for (stock in stockApps.filter { it.device == Device.Watch }) {
             val disabled = when (val r = guarded { watch.isDisabled(stock.packageName) }) {
                 is Call.Ok -> r.value
@@ -152,24 +163,25 @@ class RevertRunner(
                 if (disabled) Presence.Present else Presence.Absent,
             )
         }
-        val current = when (val r = guarded { watch.secureSetting(RevertPlan.ALWAYS_ON_KEY) }) {
-            is Call.Ok -> r.value
-            is Call.Unreachable -> return null
-            is Call.Error -> null
+        for (setting in settings) {
+            val current = when (val r = guarded { watch.secureSetting(setting.key) }) {
+                is Call.Ok -> r.value
+                is Call.Unreachable -> return null
+                is Call.Error -> null
+            }
+            items += RevertItem(
+                Device.Watch, setting.key, setting.key, RevertAction.RestoreSetting,
+                if (current != null && current != setting.default) Presence.Present else Presence.Absent,
+            )
         }
-        items += RevertItem(
-            Device.Watch, RevertPlan.ALWAYS_ON_KEY, RevertPlan.ALWAYS_ON_KEY, RevertAction.RestoreSetting,
-            if (current == "0") Presence.Present else Presence.Absent,
-        )
-        val exemptions = when (val r = guarded { watch.globalSetting(RevertPlan.HIDDEN_API_KEY) }) {
-            is Call.Ok ->
-                if (GrantReadback.listContainsEntry(r.value, RevertPlan.HIDDEN_API_ENTRY)) Presence.Present else Presence.Absent
-            is Call.Unreachable -> return null
-            is Call.Error -> Presence.Unknown
+        for ((key, entries) in exemptions) {
+            val presence = when (val r = guarded { watch.globalSetting(key) }) {
+                is Call.Ok -> if (entries.any { GrantReadback.listContainsEntry(r.value, it) }) Presence.Present else Presence.Absent
+                is Call.Unreachable -> return null
+                is Call.Error -> Presence.Unknown
+            }
+            items += RevertItem(Device.Watch, key, key, RevertAction.RemoveExemption, presence)
         }
-        items += RevertItem(
-            Device.Watch, RevertPlan.HIDDEN_API_KEY, RevertPlan.HIDDEN_API_KEY, RevertAction.RemoveExemption, exemptions,
-        )
         return items
     }
 
@@ -280,15 +292,19 @@ class RevertRunner(
     }
 
     private suspend fun restore(item: RevertItem): StepOutcome {
-        if (guarded { watch.secureSetting(item.pkg) }.get() != "0") return StepOutcome.Skipped(SkipReason.NothingToDo)
-        guarded { watch.putSecureSetting(item.pkg, RevertPlan.ALWAYS_ON_DEFAULT) }.get()
+        val setting = settings.firstOrNull { it.key == item.pkg } ?: return StepOutcome.Skipped(SkipReason.NothingToDo)
+        val current = guarded { watch.secureSetting(setting.key) }.get()
+        if (current == null || current == setting.default) return StepOutcome.Skipped(SkipReason.NothingToDo)
+        guarded { watch.putSecureSetting(setting.key, setting.default) }.get()
         return StepOutcome.Done
     }
 
     private suspend fun removeExemption(item: RevertItem): StepOutcome {
+        val entries = exemptions[item.pkg] ?: return StepOutcome.Skipped(SkipReason.NothingToDo)
         val current = guarded { watch.globalSetting(item.pkg) }.get()
-        if (!GrantReadback.listContainsEntry(current, RevertPlan.HIDDEN_API_ENTRY)) return StepOutcome.Skipped(SkipReason.NothingToDo)
-        val rest = GrantReadback.removeListEntry(current, RevertPlan.HIDDEN_API_ENTRY)
+        if (entries.none { GrantReadback.listContainsEntry(current, it) }) return StepOutcome.Skipped(SkipReason.NothingToDo)
+        var rest: String? = current
+        for (entry in entries) rest = rest?.let { GrantReadback.removeListEntry(it, entry) }
         if (rest == null) {
             guarded { watch.deleteGlobalSetting(item.pkg) }.get()
         } else {

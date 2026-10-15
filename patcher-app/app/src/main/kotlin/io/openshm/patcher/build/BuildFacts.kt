@@ -72,7 +72,7 @@ fun outputFingerprint(
         }
         is OutputSource.OwnApp -> {
             canonical.append("app=").append(sha256Of(openAsset(BuildAssets.ownApp(from.path)))).append('\n')
-            if (outputId == BuildRunner.PHONE_BRIDGE) canonical.append("knownSigner=").append(ownCertSha256.orEmpty()).append('\n')
+            if (out.knownSigner) canonical.append("knownSigner=").append(ownCertSha256.orEmpty()).append('\n')
         }
     }
     return hex(MessageDigest.getInstance("SHA-256").digest(canonical.toString().toByteArray()))

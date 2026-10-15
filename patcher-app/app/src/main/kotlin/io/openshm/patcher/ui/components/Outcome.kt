@@ -54,6 +54,7 @@ internal const val SUCCESS_OVERLAY_MILLIS = 2000L
  */
 @Composable
 fun AppErrorDialog(title: String, message: String, detail: String?, onAcknowledge: () -> Unit) {
+    LaunchedEffect(Unit) { UnattendedRun.fail() }
     val colors = MaterialTheme.colorScheme
     AlertDialog(
         onDismissRequest = {},

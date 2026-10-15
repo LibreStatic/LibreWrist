@@ -53,8 +53,7 @@ class RevertViewModel(application: Application, savedState: SavedStateHandle) : 
     private val runner = RevertRunner(
         phone = phone,
         watch = AdbWatchDevice(WatchLink.get(application)),
-        outputs = AppCatalogue.current.outputs,
-        stockApps = AppCatalogue.current.stockAppsToDisable,
+        catalogue = AppCatalogue.current,
         storedPrefix = SetupSession.state.value.packagePrefix,
         ownPackage = application.packageName,
         scope = scope,

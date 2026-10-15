@@ -52,7 +52,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.openshm.patcher.R
-import io.openshm.patcher.ui.screens.revert.RevertPlan
+
+import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.Device
 import io.openshm.patcher.ui.components.CheckStatus
 import io.openshm.patcher.ui.components.GroupedItem
@@ -75,10 +76,8 @@ data class UpdateOffer(val appLabel: String, val fromVersion: String, val toVers
 /** A line shown once after a catalogue check; [id] makes a repeated identical message show again. */
 data class CatalogueMessage(@StringRes val textRes: Int, val serial: Long? = null, val id: Long = 0L)
 
-/** The watch Health Monitor build: its restore sheet speaks of the whole watch. */
-private const val WATCH_MONITOR_ID = RevertPlan.SHM_WATCH_OUTPUT
-
-data class InstalledBuild(val id: String, val label: String, val packageName: String, val device: Device)
+/** [customizable] is false for an output with no patches to choose (a bridge): its customize action is off. */
+data class InstalledBuild(val id: String, val label: String, val packageName: String, val device: Device, val customizable: Boolean = true)
 
 data class HomeUiState(
     val status: HomeStatus = HomeStatus(CheckStatus.Pending, null),
@@ -267,6 +266,7 @@ private fun BuildRow(index: Int, count: Int, build: InstalledBuild, onEvent: (Ho
             IconAction(
                 Icons.Rounded.Tune, stringResource(R.string.home_rebuild_description, build.label),
                 { onEvent(HomeEvent.Rebuild(build.id)) },
+                enabled = build.customizable,
             )
             IconAction(
                 Icons.Rounded.SettingsBackupRestore, stringResource(R.string.home_restore_description, build.label),
@@ -279,7 +279,8 @@ private fun BuildRow(index: Int, count: Int, build: InstalledBuild, onEvent: (Ho
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun RestoreSheet(target: InstalledBuild, onEvent: (HomeEvent) -> Unit) {
-    val watchMonitor = target.id == WATCH_MONITOR_ID
+    // An app that replaces a stock app or changed a watch setting: its restore sheet speaks of the whole watch.
+    val watchMonitor = target.id in AppCatalogue.current.watchExtraOutputs
     ModalBottomSheet(
         onDismissRequest = { onEvent(HomeEvent.DismissRestore) },
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),

@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.ui.PatcherApp
 import io.openshm.patcher.update.AppUpdateRequests
 import io.openshm.patcher.ui.nav.PendingRoute
@@ -14,6 +15,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        AppCatalogue.followLocales(this)
         // Only a fresh launch carries the request; a recreation (rotation) must not repeat it.
         if (savedInstanceState == null) handle(intent)
         setContent { PatcherApp() }

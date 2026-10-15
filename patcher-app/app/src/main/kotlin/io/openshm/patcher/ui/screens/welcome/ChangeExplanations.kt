@@ -6,22 +6,11 @@ import io.openshm.patcher.data.Grant
 import io.openshm.patcher.data.GrantKind
 
 /*
- * Plain-language text for the "what will change" sheet: what each installed app is for, and what
- * each grant lets it do. Keyed by catalogue output id and grant name; a grant the app has no text
- * for still shows, under its kind and technical name, so a newer catalogue never hides anything.
+ * Names for the "what will change" sheet. What an app is for and why a grant is needed come from the
+ * catalogue (`OutputApp.purpose`, `Grant.why`); a grant without a reason still shows, under its kind and
+ * technical name, so a newer catalogue never hides anything. Android permission titles are platform
+ * facts and live here.
  */
-
-/** What an installed app is for, by catalogue output id. */
-@StringRes
-internal fun outputPurpose(outputId: String): Int? = when (outputId) {
-    "shm-phone" -> R.string.change_purpose_shm_phone
-    "shm-watch" -> R.string.change_purpose_shm_watch
-    "bridge-phone" -> R.string.change_purpose_bridge_phone
-    "bridge-watch" -> R.string.change_purpose_bridge_watch
-    "alarm-fork" -> R.string.change_purpose_alarm_fork
-    "shealth-phone" -> R.string.change_purpose_shealth_phone
-    else -> null
-}
 
 /** Short name of a grant, close to the name Android Settings uses for it. */
 @StringRes
@@ -43,40 +32,6 @@ internal fun grantTitle(grant: Grant): Int = when (grant.name) {
         GrantKind.AppOp -> R.string.grant_appop
         GrantKind.SecureSetting -> R.string.grant_setting
         GrantKind.GlobalSetting -> R.string.grant_title_hidden_api
-    }
-}
-
-/** Why [outputId] needs [grant], or null when the app has no text for it. */
-@StringRes
-internal fun grantReason(outputId: String, grant: Grant): Int? {
-    val watch = outputId != "bridge-phone" && outputId != "shm-phone" && outputId != "shealth-phone"
-    return when (grant.kind) {
-        GrantKind.NotificationListener -> if (watch) R.string.grant_why_listener_watch else R.string.grant_why_listener_phone
-        GrantKind.BatteryExemption -> when (outputId) {
-            "alarm-fork" -> R.string.grant_why_battery_alarm
-            "bridge-phone" -> R.string.grant_why_battery_bridge_phone
-            else -> R.string.grant_why_battery_bridge
-        }
-        GrantKind.GlobalSetting -> R.string.grant_why_hidden_api
-        else -> when (grant.name) {
-            "ANSWER_PHONE_CALLS" -> R.string.grant_why_calls
-            "READ_PHONE_STATE" -> R.string.grant_why_phone_state
-            "POST_NOTIFICATIONS" -> when (outputId) {
-                "bridge-phone" -> R.string.grant_why_notifications_phone
-                "alarm-fork" -> R.string.grant_why_notifications_alarm
-                "shm-watch", "shm-phone" -> R.string.grant_why_notifications_shm
-                "shealth-phone" -> R.string.grant_why_notifications_shealth
-                else -> R.string.grant_why_notifications_watch
-            }
-            "BLUETOOTH_CONNECT" -> if (watch) R.string.grant_why_bluetooth_watch else R.string.grant_why_bluetooth_phone
-            "ACCESS_RESTRICTED_SETTINGS" -> R.string.grant_why_restricted
-            "SYSTEM_ALERT_WINDOW" -> if (watch) R.string.grant_why_overlay_watch else R.string.grant_why_overlay_phone
-            "SCHEDULE_EXACT_ALARM" -> if (outputId == "shm-watch") R.string.grant_why_exact_alarm_shm else R.string.grant_why_exact_alarm_bridge
-            "USE_FULL_SCREEN_INTENT" -> if (outputId == "alarm-fork") R.string.grant_why_full_screen_alarm else R.string.grant_why_full_screen_bridge
-            "MANAGE_ONGOING_CALLS" -> R.string.grant_why_ongoing_calls
-            "doze_always_on" -> R.string.grant_why_always_on
-            else -> null
-        }
     }
 }
 

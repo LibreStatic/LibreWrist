@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -14,6 +15,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import io.openshm.patcher.device.PhoneSettings
+import io.openshm.patcher.ui.components.AutoAdvanceController
+import io.openshm.patcher.ui.components.LocalAutoAdvance
 import io.openshm.patcher.device.SelfAdbController
 import io.openshm.patcher.device.SelfAdbPurpose
 import io.openshm.patcher.device.SelfAdbService
@@ -29,13 +32,19 @@ import io.openshm.patcher.ui.screens.install.SelfAdbPhase
  *   adb shell am start -n io.openshm.patcher/.preview.WalkthroughActivity --es screen WelcomeDriver
  * `--es screen SelfAdbLive` instead runs the real Wireless debugging pairing with this phone (the
  * notification, Settings and the code entry are real) over the fake install list, and grants nothing.
+ * `--ez auto true` runs the unattended countdown on the screen's advance button (its action is a no-op),
+ * so the filling bar can be captured.
  */
 class WalkthroughActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         val screen = intent.getStringExtra("screen").orEmpty()
-        setContent { WalkthroughScreen(screen) }
+        val auto = intent.getBooleanExtra("auto", false)
+        setContent {
+            val controller = remember { if (auto) AutoAdvanceController() else null }
+            CompositionLocalProvider(LocalAutoAdvance provides controller) { WalkthroughScreen(screen) }
+        }
     }
 }
 
@@ -44,8 +53,15 @@ private fun WalkthroughScreen(name: String) {
     when (name) {
         "WelcomeDriver" -> WelcomeDriver()
         "WelcomeChangesDriver" -> WelcomeChangesDriver()
+        "WelcomeUnattendedOffDriver" -> WelcomeUnattendedOffDriver()
+        "WelcomeFreeRunWarningDriver" -> WelcomeFreeRunWarningDriver()
+        "WelcomeAppsNoticeDriver" -> WelcomeAppsNoticeDriver()
+        "PrimaryActionCountdownDriver" -> PrimaryActionCountdownDriver()
         "ProfileDetectedDriver" -> ProfileDetectedDriver()
         "WearablePairingDriver" -> WearablePairingDriver()
+        "PhoneAdbWaitingDriver" -> PhoneAdbWaitingDriver()
+        "PhoneAdbCodeDriver" -> PhoneAdbCodeDriver()
+        "PhoneAdbFailedDriver" -> PhoneAdbFailedDriver()
         "WatchPairDriver" -> WatchPairDriver()
         "WatchPairGuideWirelessDriver" -> WatchPairGuideWirelessDriver()
         "WatchPairPairingDriver" -> WatchPairPairingDriver()

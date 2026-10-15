@@ -11,12 +11,6 @@ class PackageTargets(val exact: Set<String>, val templates: List<Regex>) {
         installed.filter { (name, _) -> name in exact || templates.any { it.matches(name) } }
 
     companion object {
-        /**
-         * Samsung Health on the watch (the "regular Health"). The catalogue has no entry for it because
-         * the patcher neither builds nor installs it, but its logs explain most watch-side failures.
-         */
-        const val WEAR_SHEALTH = "com.samsung.android.wear.shealth"
-
         private const val PREFIX_TOKEN = "\${PKG_PREFIX}"
 
         /** What a generated package prefix looks like (dot-separated lowercase words). */
@@ -24,8 +18,9 @@ class PackageTargets(val exact: Set<String>, val templates: List<Regex>) {
 
         /**
          * Derived from the catalogue, never hard-coded: every input and output of [device], with output
-         * names resolved for [prefix]. An output template is also kept as a regex so an app built under
-         * another prefix (an earlier install) is still caught.
+         * names resolved for [prefix], plus the `platform.logPackages` of that device (apps the patcher
+         * neither builds nor installs whose logs explain most failures). An output template is also kept
+         * as a regex so an app built under another prefix (an earlier install) is still caught.
          */
         fun of(catalogue: LoadedCatalogue, device: LogDevice, prefix: String): PackageTargets {
             val target = if (device == LogDevice.Watch) Device.Watch else Device.Phone
@@ -36,7 +31,7 @@ class PackageTargets(val exact: Set<String>, val templates: List<Regex>) {
                 exact += output.packageName(prefix)
                 templateRegex(output.packageTemplate)?.let { templates += it }
             }
-            if (device == LogDevice.Watch) exact += WEAR_SHEALTH
+            exact += catalogue.platform.logPackages[if (target == Device.Watch) "watch" else "phone"].orEmpty()
             return PackageTargets(exact, templates)
         }
 

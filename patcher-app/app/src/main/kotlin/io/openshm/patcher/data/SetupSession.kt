@@ -7,27 +7,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-/** The choice made on the Profile screen: which watch the user has decides which inputs are needed. */
-enum class WatchProfile(val inputIds: List<String>) {
-    /** Wear OS 5 or newer: Health Monitor plus the phone-alarm fork (AlarmWatch needs Android 14). */
-    WearOs5(listOf("shm-phone", "shm-watch", "alarm-watch")),
-
-    /** Wear OS 3 or 4: Health Monitor only. */
-    WearOs3Or4(listOf("shm-phone", "shm-watch")),
-    ;
-
-    val outputIds: List<String>
-        get() = outputIdsFor(inputIds)
+/**
+ * The choice made on the Profile screen. [sdk] is the highest Android SDK the watch family runs (Wear OS
+ * 5 is Android 14, Wear OS 3 and 4 are Android 12 and 13); an official watch app whose `minSdk` is above
+ * it cannot be installed there and is left out of the setup.
+ */
+enum class WatchProfile(val sdk: Int) {
+    WearOs5(34),
+    WearOs3Or4(33),
 }
-
-/** Input of the opt-in Samsung Health build (Profile screen), on top of the watch's inputs. */
-const val SAMSUNG_HEALTH_INPUT = "shealth-phone"
-
-/** The outputs built from [inputIds] plus our own apps, in the catalogue `installOrder` order. */
-fun outputIdsFor(inputIds: Collection<String>): List<String> =
-    AppCatalogue.current.outputs
-        .filter { out -> out.inputId == null || out.inputId in inputIds }
-        .map { it.id }
 
 data class SessionState(
     val watchProfile: WatchProfile = WatchProfile.WearOs5,
@@ -38,16 +26,21 @@ data class SessionState(
      *  optional patch is applied. Each `offByDefault` pattern is added once, the first time the app
      *  sees it (see [seedOffByDefault]); after that the user's choice stands. */
     val disabledPatches: Set<String> = emptySet(),
-    /** Also patch Samsung Health (on by default, opt-out on the Acquire screen): it replaces the installed copy. */
-    val samsungHealth: Boolean = true,
+    /** Ids of the optional catalogue apps the user switched off on the Acquire screen; empty means all are included. */
+    val skippedApps: Set<String> = emptySet(),
     /** Ids of the outputs the user restored (removed) from Home; they stay out of Home and the self-test until installed again. */
     val restoredOutputs: Set<String> = emptySet(),
 ) {
-    /** The official apps this setup needs: the watch's, plus Samsung Health when chosen. */
-    val inputIds: List<String>
-        get() = watchProfile.inputIds + listOfNotNull(SAMSUNG_HEALTH_INPUT.takeIf { samsungHealth })
+    /** The outputs of this setup (see [LoadedCatalogue.selectedOutputs]), in the catalogue `installOrder` order. */
+    val outputIds: List<String>
+        get() = AppCatalogue.current.selectedOutputs(watchProfile.sdk, skippedApps).map { it.id }
 
-    val outputIds: List<String> get() = outputIdsFor(inputIds)
+    /** The official apps this setup needs: the inputs of [outputIds], in catalogue order. */
+    val inputIds: List<String>
+        get() {
+            val needed = AppCatalogue.current.selectedOutputs(watchProfile.sdk, skippedApps).mapNotNull { it.inputId }.toSet()
+            return AppCatalogue.current.inputs.map { it.id }.filter { it in needed }
+        }
 
     /** [outputIds] without the ones the user restored from Home: they are left out until installed again. */
     val activeOutputIds: List<String> get() = outputIds.filter { it !in restoredOutputs }
@@ -78,7 +71,8 @@ object SetupSession {
     private const val KEY_LOCKED = "prefixLocked"
     private const val KEY_DISABLED = "disabledPatches"
     private const val KEY_KNOWN_OPTIONAL = "knownOptionalPatches"
-    private const val KEY_SAMSUNG_HEALTH = "includeSamsungHealth"
+    private const val KEY_LEGACY_SAMSUNG_HEALTH = "includeSamsungHealth" // dropped flag, removed on the next save
+    private const val KEY_SKIPPED_APPS = "skippedApps"
     private const val KEY_RESTORED = "restoredOutputs"
 
     private val _state = MutableStateFlow(SessionState())
@@ -106,7 +100,7 @@ object SetupSession {
             packagePrefix = stored ?: PackagePrefix.generate(),
             prefixLocked = locked && stored != null,
             disabledPatches = disabled,
-            samsungHealth = p.getBoolean(KEY_SAMSUNG_HEALTH, true),
+            skippedApps = p.getStringSet(KEY_SKIPPED_APPS, null)?.toSet().orEmpty(),
             restoredOutputs = p.getStringSet(KEY_RESTORED, null)?.toSet().orEmpty(),
         )
         prefs = p
@@ -128,7 +122,8 @@ object SetupSession {
             .putBoolean(KEY_LOCKED, s.prefixLocked)
             .putStringSet(KEY_DISABLED, s.disabledPatches.toSet())
             .putStringSet(KEY_KNOWN_OPTIONAL, knownOptional)
-            .putBoolean(KEY_SAMSUNG_HEALTH, s.samsungHealth)
+            .putStringSet(KEY_SKIPPED_APPS, s.skippedApps.toSet())
+            .remove(KEY_LEGACY_SAMSUNG_HEALTH)
             .putStringSet(KEY_RESTORED, s.restoredOutputs.toSet())
             .apply()
     }

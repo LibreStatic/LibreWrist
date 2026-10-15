@@ -20,6 +20,10 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.draw.clip
+import io.openshm.patcher.data.Automation
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
@@ -58,17 +62,23 @@ fun IconAction(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     tint: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    enabled: Boolean = true,
 ) {
     IconButton(
         onClick = onClick,
         modifier = modifier.size(48.dp),
+        enabled = enabled,
         colors = IconButtonDefaults.iconButtonColors(contentColor = tint),
     ) {
         Icon(icon, contentDescription = description)
     }
 }
 
-/** Full-width 56 dp pill button used as the main action of a screen (canvas "Get started", "Build"). */
+/**
+ * Full-width 56 dp pill button used as the main action of a screen (canvas "Get started", "Build").
+ * With [auto] it also continues by itself: in unattended mode a bar fills the pill over
+ * [AUTO_ADVANCE_MILLIS] and then [onClick] runs once, unless the user touches the screen meanwhile.
+ */
 @Composable
 fun PrimaryAction(
     text: String,
@@ -77,12 +87,36 @@ fun PrimaryAction(
     icon: ImageVector? = null,
     enabled: Boolean = true,
     accent: Accent = Accent.Primary,
+    auto: Boolean = false,
 ) {
+    val automation by Automation.state.collectAsState()
+    val progress = rememberAutoAdvance(auto && enabled && automation.unattended, onClick)
+    PrimaryActionPill(text, onClick, progress, modifier, icon, enabled, accent)
+}
+
+/** Pure rendering of [PrimaryAction] for a given countdown [progress] (null: no bar). */
+@Composable
+internal fun PrimaryActionPill(
+    text: String,
+    onClick: () -> Unit,
+    progress: Float?,
+    modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
+    enabled: Boolean = true,
+    accent: Accent = Accent.Primary,
+) {
+    val shape = RoundedCornerShape(28.dp)
+    val description = stringResource(R.string.auto_advance_state)
     Button(
         onClick = onClick,
         enabled = enabled,
-        modifier = modifier.fillMaxWidth().heightIn(min = 56.dp),
-        shape = RoundedCornerShape(28.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .heightIn(min = 56.dp)
+            .clip(shape)
+            .autoFill(progress, autoFillColor(accent.content()))
+            .semantics { if (progress != null) stateDescription = description },
+        shape = shape,
         colors = ButtonDefaults.buttonColors(
             containerColor = accent.container(),
             contentColor = accent.content(),

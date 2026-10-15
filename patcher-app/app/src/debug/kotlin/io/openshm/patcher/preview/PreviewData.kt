@@ -8,6 +8,7 @@ import io.openshm.patcher.ui.components.CheckStatus
 import io.openshm.patcher.ui.screens.acquire.AcquireCard
 import io.openshm.patcher.ui.screens.acquire.AcquireProgress
 import io.openshm.patcher.ui.screens.acquire.AcquireUiState
+import io.openshm.patcher.ui.screens.acquire.OptionalAppToggle
 import io.openshm.patcher.ui.screens.acquire.GuidedBrowserUiState
 import io.openshm.patcher.ui.screens.build.BuildDoneUiState
 import io.openshm.patcher.ui.screens.build.KeyBackupStatus
@@ -53,8 +54,6 @@ import io.openshm.patcher.ui.screens.selftest.SelfTestText
 import io.openshm.patcher.ui.screens.selftest.SelfTestUiState
 import io.openshm.patcher.ui.screens.watchpair.WatchPairUiState
 import io.openshm.patcher.ui.screens.wearable.BondedDevice
-import io.openshm.patcher.ui.screens.wearable.GALAXY_WEARABLE_PACKAGE
-import io.openshm.patcher.ui.screens.wearable.WATCH_PLUGIN_PACKAGES
 import io.openshm.patcher.ui.screens.wearable.WearableFacts
 import io.openshm.patcher.ui.screens.wearable.wearableState
 import io.openshm.patcher.ui.screens.signingkey.ImportConfirmation
@@ -67,7 +66,6 @@ import io.openshm.patcher.ui.screens.revert.Presence
 import io.openshm.patcher.ui.screens.revert.RevertAction
 import io.openshm.patcher.ui.screens.revert.RevertItem
 import io.openshm.patcher.ui.screens.revert.RevertPhase
-import io.openshm.patcher.ui.screens.revert.RevertPlan
 import io.openshm.patcher.ui.screens.revert.RevertRow
 import io.openshm.patcher.ui.screens.revert.RevertScope
 import io.openshm.patcher.ui.screens.revert.RevertUiState
@@ -100,20 +98,23 @@ internal object PreviewData {
 
     /** What a full install leaves: three watch apps, the stock app turned off, the display setting, three phone apps. */
     private fun revertRows(outcomes: Map<String, StepOutcome> = emptyMap(), withWatch: Boolean = true, withPhone: Boolean = true): List<RevertRow> {
-        val stock = AppCatalogue.current.stockAppsToDisable.first { it.device == Device.Watch }
+        val catalogue = AppCatalogue.current
+        val stock = catalogue.stockAppsToDisable.first { it.device == Device.Watch }
         val items = buildList {
             if (withWatch) {
-                add(revertItem("bridge-watch", Device.Watch))
-                add(revertItem("alarm-fork", Device.Watch))
-                add(revertItem("shm-watch", Device.Watch))
+                add(revertItem(SampleApps.watchLinked.id, Device.Watch))
+                add(revertItem(SampleApps.watchOther.id, Device.Watch))
+                add(revertItem(SampleApps.watchMain.id, Device.Watch))
                 add(RevertItem(Device.Watch, stock.label, stock.packageName, RevertAction.Enable))
-                add(RevertItem(Device.Watch, RevertPlan.ALWAYS_ON_KEY, RevertPlan.ALWAYS_ON_KEY, RevertAction.RestoreSetting))
-                add(RevertItem(Device.Watch, RevertPlan.HIDDEN_API_KEY, RevertPlan.HIDDEN_API_KEY, RevertAction.RemoveExemption))
+                catalogue.platform.revertSettings.filter { it.device == "watch" }.forEach {
+                    add(RevertItem(Device.Watch, it.key, it.key, RevertAction.RestoreSetting))
+                }
+                catalogue.globalSettingEntries.keys.forEach { add(RevertItem(Device.Watch, it, it, RevertAction.RemoveExemption)) }
             }
             if (withPhone) {
-                if (AppCatalogue.current.outputs.any { it.id == "shealth-phone" }) add(revertItem("shealth-phone", Device.Phone))
-                add(revertItem("bridge-phone", Device.Phone))
-                add(revertItem("shm-phone", Device.Phone))
+                add(revertItem(SampleApps.phoneExtra.id, Device.Phone))
+                add(revertItem(SampleApps.phoneSigner.id, Device.Phone))
+                add(revertItem(SampleApps.phoneMain.id, Device.Phone))
             }
         }
         return items.map { RevertRow(it, outcomes[it.key]) }
@@ -122,7 +123,7 @@ internal object PreviewData {
     fun revertReview() = RevertUiState(
         phase = RevertPhase.Review,
         rows = revertRows(),
-        notInstalled = listOf(RevertItem(Device.Watch, "Alarm", "$PREFIX.shmbridge.alarm.old", RevertAction.Uninstall, Presence.Absent)),
+        notInstalled = listOf(RevertItem(Device.Watch, "Alarm", "${SampleApps.watchOther.packageName(PREFIX)}.old", RevertAction.Uninstall, Presence.Absent)),
     )
 
     fun revertProbing() = RevertUiState(phase = RevertPhase.Probing)
@@ -163,9 +164,9 @@ internal object PreviewData {
 
     /** One phone app removed from Home: the phone is the only device involved. */
     fun revertOutputDone(): RevertUiState {
-        val item = scopedRevertItem("bridge-phone", Device.Phone)
+        val item = scopedRevertItem(SampleApps.phoneSigner.id, Device.Phone)
         return RevertUiState(
-            scope = RevertScope.Output("bridge-phone"),
+            scope = RevertScope.Output(SampleApps.phoneSigner.id),
             phase = RevertPhase.Done,
             complete = true,
             watch = WatchStatus.NotNeeded,
@@ -214,10 +215,10 @@ internal object PreviewData {
     fun profileDenied() = ProfileUiState(pairedCheck = PairedCheck.Denied)
 
     fun wearable(
-        packages: Set<String> = setOf(GALAXY_WEARABLE_PACKAGE, WATCH_PLUGIN_PACKAGES[1]),
+        packages: Set<String> = AppCatalogue.current.platform.companionApp.let { setOf(it.packageName, it.watchPlugins[1]) },
         bluetoothAllowed: Boolean = true,
         bonded: List<BondedDevice> = listOf(BondedDevice("Galaxy Watch5 Pro (A1B2)", 0x0700)),
-    ) = wearableState(WearableFacts(packages, bluetoothAllowed, bonded))
+    ) = AppCatalogue.current.platform.companionApp.let { wearableState(WearableFacts(packages, bluetoothAllowed, bonded), it) }
 
     fun watchPairEmpty() = WatchPairUiState()
 
@@ -248,10 +249,11 @@ internal object PreviewData {
 
     fun acquire() = AcquireUiState(
         listOf(
-            AcquireCard(AppCatalogue.current.input("shm-phone"), AcquireProgress.Verified(91 * MB)),
-            AcquireCard(AppCatalogue.current.input("shm-watch"), AcquireProgress.Downloading(58 * MB, 91 * MB)),
-            AcquireCard(AppCatalogue.current.input("alarm-watch")),
+            AcquireCard(SampleApps.input(SampleApps.phoneMain), AcquireProgress.Verified(91 * MB)),
+            AcquireCard(SampleApps.input(SampleApps.watchMain), AcquireProgress.Downloading(58 * MB, 91 * MB)),
+            AcquireCard(SampleApps.input(SampleApps.watchOther)),
         ),
+        optionalApps = AppCatalogue.current.apps.filter { it.optional }.mapIndexed { i, app -> OptionalAppToggle(app, i == 0) },
     )
 
     fun acquireAllVerified() = AcquireUiState(
@@ -266,7 +268,7 @@ internal object PreviewData {
         }
         return GuidedBrowserUiState(
             host = "www.apkmirror.com",
-            appLabel = AppCatalogue.current.input("shm-watch").label,
+            appLabel = SampleApps.input(SampleApps.watchMain).label,
             coachStep = step,
             coachTotal = 3,
             coachTitle = title,
@@ -280,7 +282,7 @@ internal object PreviewData {
     /** A running build at output [number] (1-based) of [total]; the log has a few live lines. */
     fun build(stage: BuildStage = BuildStage.Apply, number: Int = 2, total: Int = 5) =
         BuildUiState(
-            patchCount = AppCatalogue.current.patternCount(WatchProfile.WearOs5.inputIds),
+            patchCount = AppCatalogue.current.patternCount(SessionState().inputIds),
             running = true,
             overall = ((number - 1) + stage.ordinal / BuildStage.entries.size.toFloat()) / total,
             currentApp = AppCatalogue.current.outputs[(number - 1).coerceIn(0, AppCatalogue.current.outputs.lastIndex)].let {
@@ -291,8 +293,8 @@ internal object PreviewData {
                 "00:41 ok   check-request (0 ms)",
                 "00:42 ok   unpack (118 ms)",
                 "00:43 ok   detect-family (240 ms)",
-                "00:44   + shm-main-gates: 3 patched sites",
-                "00:44   + shm-setup-network-gate: 1 patched site",
+                *AppCatalogue.current.patches(requireNotNull(SampleApps.phoneMain.inputId)).filter { !it.injection }.take(2)
+                    .mapIndexed { i, patch -> "00:44   + ${patch.id}: ${3 - 2 * i} patched site${if (i == 0) "s" else ""}" }.toTypedArray(),
             ),
         ).startStage(stage)
 
@@ -300,14 +302,14 @@ internal object PreviewData {
     fun buildCancelled() = build().copy(running = false, cancelled = true)
 
     fun buildFinished() =
-        BuildUiState(patchCount = AppCatalogue.current.patternCount(WatchProfile.WearOs5.inputIds)).finish()
+        BuildUiState(patchCount = AppCatalogue.current.patternCount(SessionState().inputIds)).finish()
 
     fun buildDone(backup: KeyBackupStatus = KeyBackupStatus.Hidden, reused: Set<String> = emptySet()) = BuildDoneUiState(
         backup = backup,
         outputs = AppCatalogue.current.outputs.map {
             BuiltOutput(it.id, it.label, it.device, it.packageName(PREFIX), sizeBytes = (30 + it.id.length * 3) * MB, reused = it.id in reused)
         },
-        patchCount = AppCatalogue.current.patternCount(WatchProfile.WearOs5.inputIds),
+        patchCount = AppCatalogue.current.patternCount(SessionState().inputIds),
     )
 
     private fun installItems(device: Device, grantStatus: (Int) -> CheckStatus, itemStatus: (Int) -> CheckStatus) =
@@ -362,13 +364,13 @@ internal object PreviewData {
     fun installPhoneRemovingLeftovers() = InstallUiState(
         installItems(Device.Phone, { CheckStatus.Pending }) { CheckStatus.Pending },
         running = true,
-        removingLeftovers = listOf("com.oldprefix.shmbridge.phone"),
+        removingLeftovers = listOf(SampleApps.leftover(SampleApps.phoneSigner)),
     )
 
     /** The removal of that copy was declined, so it stays and the notice says how to retry. */
     fun installPhoneLeftoversKept() = InstallUiState(
         installItems(Device.Phone, { CheckStatus.Pending }) { CheckStatus.Pending },
-        leftoversKept = listOf("com.oldprefix.shmbridge.phone"),
+        leftoversKept = listOf(SampleApps.leftover(SampleApps.phoneSigner)),
     )
 
     fun installWatch() = InstallUiState(
@@ -437,17 +439,17 @@ internal object PreviewData {
             SelfTestSection(
                 R.string.selftest_section_phone,
                 listOf(
-                    checkedRow("phone-pkg-shm-phone", t(R.string.selftest_package_title, app("shm-phone")), t(R.string.selftest_detail_package_ok, "1.5.2.004")),
-                    checkedRow("phone-pkg-bridge-phone", t(R.string.selftest_package_title, app("bridge-phone")), t(R.string.selftest_detail_package_ok_no_version)),
-                    checkedRow("phone-grants-bridge-phone", t(R.string.selftest_grants_title, app("bridge-phone")), t(R.string.selftest_detail_grants_ok)),
+                    checkedRow("phone-pkg-${SampleApps.phoneMain.id}", t(R.string.selftest_package_title, app(SampleApps.phoneMain.id)), t(R.string.selftest_detail_package_ok, "1.5.2.004")),
+                    checkedRow("phone-pkg-${SampleApps.phoneSigner.id}", t(R.string.selftest_package_title, app(SampleApps.phoneSigner.id)), t(R.string.selftest_detail_package_ok_no_version)),
+                    checkedRow("phone-grants-${SampleApps.phoneSigner.id}", t(R.string.selftest_grants_title, app(SampleApps.phoneSigner.id)), t(R.string.selftest_detail_grants_ok)),
                 ),
             ),
             SelfTestSection(
                 R.string.selftest_section_watch,
                 listOf(
-                    checkedRow("watch-pkg-shm-watch", t(R.string.selftest_package_title, app("shm-watch")), t(R.string.selftest_detail_watch_ok)),
-                    checkedRow("watch-pkg-bridge-watch", t(R.string.selftest_package_title, app("bridge-watch")), t(R.string.selftest_detail_watch_ok)),
-                    checkedRow("watch-grants-bridge-watch", t(R.string.selftest_grants_title, app("bridge-watch")), t(R.string.selftest_detail_grants_ok)),
+                    checkedRow("watch-pkg-${SampleApps.watchMain.id}", t(R.string.selftest_package_title, app(SampleApps.watchMain.id)), t(R.string.selftest_detail_watch_ok)),
+                    checkedRow("watch-pkg-${SampleApps.watchLinked.id}", t(R.string.selftest_package_title, app(SampleApps.watchLinked.id)), t(R.string.selftest_detail_watch_ok)),
+                    checkedRow("watch-grants-${SampleApps.watchLinked.id}", t(R.string.selftest_grants_title, app(SampleApps.watchLinked.id)), t(R.string.selftest_detail_grants_ok)),
                     checkedRow("watch-stock", t(R.string.selftest_stock_title, "Samsung Health Monitor"), t(R.string.selftest_detail_stock_off)),
                 ),
             ),
@@ -459,6 +461,16 @@ internal object PreviewData {
         ),
     )
 
+    /** Every check passed and the answers were reused: nothing they depend on changed. */
+    fun selfTestReused(): SelfTestUiState = selfTest().let { s ->
+        s.copy(
+            manualReused = true,
+            sections = s.sections.map { section ->
+                section.copy(rows = section.rows.map { if (it.isHuman) it.copy(status = CheckStatus.Passed, detail = t(R.string.selftest_detail_answer_reused)) else it })
+            },
+        )
+    }
+
     /** A run with failures that have a fix, a warning and a link that is down. */
     fun selfTestFailures(): SelfTestUiState = SelfTestUiState(
         listOf(
@@ -466,12 +478,12 @@ internal object PreviewData {
                 R.string.selftest_section_phone,
                 listOf(
                     checkedRow(
-                        "phone-pkg-shm-phone", t(R.string.selftest_package_title, app("shm-phone")),
+                        "phone-pkg-${SampleApps.phoneMain.id}", t(R.string.selftest_package_title, app(SampleApps.phoneMain.id)),
                         t(R.string.selftest_detail_hash_mismatch), CheckStatus.Failed, SelfTestFix.InstallPhone,
                     ),
-                    checkedRow("phone-pkg-bridge-phone", t(R.string.selftest_package_title, app("bridge-phone")), t(R.string.selftest_detail_package_ok, "0.3.0")),
+                    checkedRow("phone-pkg-${SampleApps.phoneSigner.id}", t(R.string.selftest_package_title, app(SampleApps.phoneSigner.id)), t(R.string.selftest_detail_package_ok, "0.3.0")),
                     checkedRow(
-                        "phone-grants-bridge-phone", t(R.string.selftest_grants_title, app("bridge-phone")),
+                        "phone-grants-${SampleApps.phoneSigner.id}", t(R.string.selftest_grants_title, app(SampleApps.phoneSigner.id)),
                         t(R.string.selftest_detail_grants_missing, "BridgeNotificationListener, BLUETOOTH_CONNECT"), CheckStatus.Failed, SelfTestFix.InstallPhone,
                     ),
                 ),
@@ -479,9 +491,9 @@ internal object PreviewData {
             SelfTestSection(
                 R.string.selftest_section_watch,
                 listOf(
-                    checkedRow("watch-pkg-shm-watch", t(R.string.selftest_package_title, app("shm-watch")), t(R.string.selftest_detail_watch_ok)),
+                    checkedRow("watch-pkg-${SampleApps.watchMain.id}", t(R.string.selftest_package_title, app(SampleApps.watchMain.id)), t(R.string.selftest_detail_watch_ok)),
                     checkedRow(
-                        "watch-grants-shm-watch", t(R.string.selftest_grants_title, app("shm-watch")),
+                        "watch-grants-${SampleApps.watchMain.id}", t(R.string.selftest_grants_title, app(SampleApps.watchMain.id)),
                         t(R.string.selftest_detail_grants_optional, "SCHEDULE_EXACT_ALARM"), CheckStatus.Warning, SelfTestFix.InstallWatch,
                     ),
                     checkedRow(
@@ -513,15 +525,15 @@ internal object PreviewData {
                 SelfTestSection(
                     R.string.selftest_section_phone,
                     listOf(
-                        checkedRow("phone-pkg-shm-phone", t(R.string.selftest_package_title, app("shm-phone")), t(R.string.selftest_detail_package_ok, "1.5.2.004")),
-                        SelfTestRow("phone-grants-bridge-phone", t(R.string.selftest_grants_title, app("bridge-phone")), CheckStatus.Running),
+                        checkedRow("phone-pkg-${SampleApps.phoneMain.id}", t(R.string.selftest_package_title, app(SampleApps.phoneMain.id)), t(R.string.selftest_detail_package_ok, "1.5.2.004")),
+                        SelfTestRow("phone-grants-${SampleApps.phoneSigner.id}", t(R.string.selftest_grants_title, app(SampleApps.phoneSigner.id)), CheckStatus.Running),
                     ),
                 ),
                 SelfTestSection(
                     R.string.selftest_section_watch,
                     listOf(
-                        skipped("watch-pkg-shm-watch", t(R.string.selftest_package_title, app("shm-watch"))),
-                        skipped("watch-pkg-bridge-watch", t(R.string.selftest_package_title, app("bridge-watch"))),
+                        skipped("watch-pkg-${SampleApps.watchMain.id}", t(R.string.selftest_package_title, app(SampleApps.watchMain.id))),
+                        skipped("watch-pkg-${SampleApps.watchLinked.id}", t(R.string.selftest_package_title, app(SampleApps.watchLinked.id))),
                         skipped("watch-stock", t(R.string.selftest_stock_title, "Samsung Health Monitor")),
                     ),
                 ),
@@ -532,8 +544,8 @@ internal object PreviewData {
 
     fun allSet(logsAvailable: Boolean = false) = AllSetUiState(passed = 8, total = 8, logsAvailable = logsAvailable)
 
-    private val logSamples = listOf(
-        "1234  1301 I ActivityManager: Start proc 4821:com.samsung.android.shealthmonitors/u0a123 for service",
+    private val logSamples get() = listOf(
+        "1234  1301 I ActivityManager: Start proc 4821:${SampleApps.watchMain.packageName(PREFIX)}/u0a123 for service",
         "4821  4821 D ShmBridge: bridge starting, protocol 3",
         "4821  4850 I HealthTracking: connected to the sensor service",
         "4821  4850 W HealthTracking: ECG sensor busy, retrying in 500 ms",
@@ -550,7 +562,8 @@ internal object PreviewData {
             capturing = true,
             watch = DeviceLogState(
                 LogDevice.Watch, watchStatus, lineCount = 1284,
-                packages = listOf("com.samsung.android.shealthmonitors", "$PREFIX.shmbridge.watch", "com.samsung.android.wear.shealth"),
+                packages = listOf(SampleApps.watchMain.packageName(PREFIX), SampleApps.watchLinked.packageName(PREFIX)) +
+                    AppCatalogue.current.platform.logPackages["watch"].orEmpty(),
                 tail = deviceLogLines(), deviceLabel = "SM-L320 · Android 15",
             ),
             phone = DeviceLogState(LogDevice.Phone, LogLinkStatus.Disconnected(DisconnectReason.WirelessDebuggingOff)),
@@ -559,14 +572,14 @@ internal object PreviewData {
     )
 
     /** [restoreSheet] opens the restore sheet for the build [restoreOf] (the watch Health Monitor by default). */
-    fun home(update: Boolean = true, restoreSheet: Boolean = false, menu: Boolean = false, patchesOnly: Boolean = false, restoreOf: String = "shm-watch"): HomeUiState {
-        val builds = AppCatalogue.current.outputs.map { InstalledBuild(it.id, it.label, it.packageName(PREFIX), it.device) }
+    fun home(update: Boolean = true, restoreSheet: Boolean = false, menu: Boolean = false, patchesOnly: Boolean = false, restoreOf: String = SampleApps.watchMain.id): HomeUiState {
+        val builds = AppCatalogue.current.outputs.map { InstalledBuild(it.id, it.label, it.packageName(PREFIX), it.device, customizable = it.inputId != null) }
         return HomeUiState(
             status = HomeStatus(CheckStatus.Passed, daysAgo = 2),
             update = when {
                 !update -> null
-                patchesOnly -> UpdateOffer(AppCatalogue.current.input("shm-watch").label, "1.5.1.022", "1.5.1.022", patchesOnly = true)
-                else -> UpdateOffer(AppCatalogue.current.input("shm-watch").label, "1.5.1.022", "1.5.2.004")
+                patchesOnly -> UpdateOffer(SampleApps.input(SampleApps.watchMain).label, "1.5.1.022", "1.5.1.022", patchesOnly = true)
+                else -> UpdateOffer(SampleApps.input(SampleApps.watchMain).label, "1.5.1.022", "1.5.2.004")
             },
             builds = builds,
             menuOpen = menu,

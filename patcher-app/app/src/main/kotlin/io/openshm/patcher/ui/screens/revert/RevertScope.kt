@@ -35,12 +35,14 @@ sealed interface RevertScope {
         is Output -> outputs.firstOrNull { it.id == outputId }?.device != Device.Watch
     }
 
-    /** Whether the stock-app, always-on and hidden-API entries of the watch belong to the run. */
-    val includesWatchExtras: Boolean
-        get() = when (this) {
-            All, Watch -> true
-            is Output -> outputId == RevertPlan.SHM_WATCH_OUTPUT
-        }
+    /**
+     * Whether the stock-app, setting and exemption entries of the watch belong to the run: always for a
+     * whole-watch run, for one output when it is one of [extraOutputs] (`LoadedCatalogue.watchExtraOutputs`).
+     */
+    fun includesWatchExtras(extraOutputs: Set<String>): Boolean = when (this) {
+        All, Watch -> true
+        is Output -> outputId in extraOutputs
+    }
 
     /** Whether the candidate package is part of the run. */
     fun includes(candidate: RevertCandidate): Boolean = when (this) {

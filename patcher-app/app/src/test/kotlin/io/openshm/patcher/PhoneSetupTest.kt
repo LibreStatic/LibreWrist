@@ -259,6 +259,7 @@ class PhoneInstallRunnerTest {
 
     @Before fun setUp() {
         dir = Files.createTempDirectory("phone-install").toFile()
+        io.openshm.patcher.data.AppCatalogue.install(TestCatalogue.load())
     }
 
     @After fun tearDown() {
@@ -283,7 +284,7 @@ class PhoneInstallRunnerTest {
     private val logged = mutableListOf<String>()
 
     private val bridgeOutputs = listOf(
-        OutputApp("bridge-phone", "Bridge", Device.Phone, "\${PKG_PREFIX}.shmbridge.phone", null),
+        OutputApp("bridge-phone", "Bridge", Device.Phone, "\${PKG_PREFIX}.shmbridge.phone", null, singleCopy = true),
     )
     private val old = "io.openshm.u98ff48"
 

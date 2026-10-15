@@ -36,7 +36,7 @@ interface WatchDevice {
      * Sends the bridge [pkg] its START broadcast (clears the stopped state, starts its service).
      * [prefix] is the package prefix of the build. Failures are [AdbException]s or [IOException]s.
      */
-    suspend fun startBridge(pkg: String, prefix: String)
+    suspend fun startBridge(pkg: String, receiver: String, action: String)
 
     /** `pm disable-user`; never uninstalls. */
     suspend fun disable(pkg: String)
@@ -125,8 +125,8 @@ class AdbWatchDevice(private val link: WatchLink) : WatchDevice {
 
     override suspend fun isInstalled(pkg: String): Boolean = RemotePackages(link.client()).isInstalled(pkg)
 
-    override suspend fun startBridge(pkg: String, prefix: String) {
-        val command = BridgeStart.watchCommand(pkg, prefix)
+    override suspend fun startBridge(pkg: String, receiver: String, action: String) {
+        val command = BridgeStart.watchCommand(pkg, receiver, action)
         link.client().shell(command).requireSuccess(command)
     }
 

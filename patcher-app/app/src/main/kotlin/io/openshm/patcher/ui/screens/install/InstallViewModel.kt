@@ -5,10 +5,12 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import io.openshm.patcher.R
+import io.openshm.patcher.adb.AdbClient
 import io.openshm.patcher.adb.GrantApplier
 import io.openshm.patcher.adb.GrantTarget
 import io.openshm.patcher.build.BuildStorage
 import io.openshm.patcher.data.GrantKind
+import io.openshm.patcher.device.AdbPhoneInstaller
 import io.openshm.patcher.device.AndroidPhoneProbe
 import io.openshm.patcher.device.LaunchRequest
 import io.openshm.patcher.device.PhoneGrants
@@ -19,6 +21,7 @@ import io.openshm.patcher.device.SelfAdbService
 import io.openshm.patcher.device.SelfAdbSnapshot
 import io.openshm.patcher.device.SessionPhoneInstaller
 import io.openshm.patcher.data.AppCatalogue
+import io.openshm.patcher.data.Automation
 import io.openshm.patcher.data.Device
 import io.openshm.patcher.data.RebuildScope
 import io.openshm.patcher.data.SetupSession
@@ -86,8 +89,10 @@ class InstallPhoneViewModel(application: Application) : AndroidViewModel(applica
     /** Screens to start: Settings pages, the app's own setup, the installer's confirmation. */
     val launches: Flow<LaunchRequest> = outgoing.receiveAsFlow()
 
+    private val sessionInstaller = SessionPhoneInstaller(application) { outgoing.trySend(LaunchRequest(it)) }
+
     private val runner = PhoneInstallRunner(
-        installer = SessionPhoneInstaller(application) { outgoing.trySend(LaunchRequest(it)) },
+        installer = sessionInstaller,
         grants = PhoneGrants(AndroidPhoneProbe(application)),
         build = { BuildStorage(application).record.read() },
         prefix = { SetupSession.state.value.packagePrefix },
@@ -122,14 +127,44 @@ class InstallPhoneViewModel(application: Application) : AndroidViewModel(applica
 
     private fun reinstall() {
         if (_state.value.running || _state.value.conflict == null) return
+        if (Automation.state.value.unattended) {
+            startUnattended(PendingInstall.Reinstall)
+            return
+        }
         _state.update { it.copy(running = true, confirmingReinstall = false) }
         viewModelScope.launch(Dispatchers.IO) { runner.reinstall(_state) }
     }
 
     private fun start() {
         if (_state.value.running) return
+        if (Automation.state.value.unattended) {
+            startUnattended(PendingInstall.Install)
+            return
+        }
         _state.update { it.copy(running = true) }
         viewModelScope.launch(Dispatchers.IO) { runner.run(_state) }
+    }
+
+    /** What unattended mode does once the phone's own ADB session is connected, before the grants. */
+    private enum class PendingInstall { Install, Reinstall }
+
+    @Volatile
+    private var pending: PendingInstall? = null
+
+    /**
+     * Unattended mode installs through the phone's own Wireless debugging session, so the system
+     * shows nothing and "Install unknown apps" is not needed. The work starts in [onAdb] once the
+     * session is connected; it never falls back to the platform installer.
+     */
+    private fun startUnattended(action: PendingInstall) {
+        pending = action
+        if (!SelfAdbController.begin(SelfAdbPurpose.PhoneGrants)) {
+            pending = null
+            return
+        }
+        _state.update { it.copy(running = true, confirmingReinstall = false, errorRes = null, errorDetail = null, adbOutcome = null) }
+        settingsOpened = false
+        SelfAdbService.start(getApplication())
     }
 
     private fun openSettings(event: InstallEvent.OpenGrantSettings) {
@@ -174,6 +209,11 @@ class InstallPhoneViewModel(application: Application) : AndroidViewModel(applica
             settingsOpened = true
             outgoing.trySend(PhoneSettings.wirelessDebugging())
         }
+        if (pending != null && (snapshot.phase == SelfAdbPhase.Failed || snapshot.purpose == null)) {
+            // The connection failed or was cancelled before the install started: nothing ran.
+            pending = null
+            _state.update { it.copy(running = false) }
+        }
         if (snapshot.phase == SelfAdbPhase.Failed) {
             if (snapshot.needsNotifications) fail(_state, R.string.install_error_notifications, null)
             else {
@@ -183,8 +223,11 @@ class InstallPhoneViewModel(application: Application) : AndroidViewModel(applica
         }
         if (snapshot.phase == SelfAdbPhase.Granting) {
             val client = SelfAdbController.takeClient(SelfAdbPurpose.PhoneGrants) ?: return
+            val action = pending
+            pending = null
             viewModelScope.launch(Dispatchers.IO) {
                 try {
+                    if (action != null && !installOverAdb(client, action)) return@launch
                     val ok = runner.grantWithAdb(_state) { pkg, grants ->
                         GrantApplier(client, GrantTarget.PHONE).apply(pkg, grants).also { report ->
                             Log.i(TAG, "grants for $pkg: ${report.outcomes.count { it.applied }} of ${report.outcomes.size} applied")
@@ -205,12 +248,35 @@ class InstallPhoneViewModel(application: Application) : AndroidViewModel(applica
                     _state.update { it.copy(adbOutcome = outcome) }
                 } catch (e: RuntimeException) {
                     Log.w(TAG, "grant run failed", e)
-                    _state.update { it.copy(adbOutcome = AdbOutcome.Failure(e.toString())) }
+                    _state.update { it.copy(running = false, adbOutcome = AdbOutcome.Failure(e.toString())) }
                 } finally {
                     SelfAdbController.finish()
                 }
             }
         }
+    }
+
+    /**
+     * The install (or the replacement of a copy another key signed) through [client]. True when every
+     * app is installed and the grants can follow; otherwise the runner set the error (Retry shows).
+     */
+    private suspend fun installOverAdb(client: AdbClient, action: PendingInstall): Boolean {
+        runner.installerOverride = AdbPhoneInstaller(client, sessionInstaller)
+        try {
+            when (action) {
+                PendingInstall.Install -> runner.run(_state)
+                PendingInstall.Reinstall -> runner.reinstall(_state)
+            }
+        } catch (e: RuntimeException) {
+            Log.w(TAG, "install over ADB failed", e)
+            _state.update { it.copy(running = false) }
+            fail(_state, R.string.phone_adb_failed, e.toString())
+            return false
+        } finally {
+            runner.installerOverride = null
+        }
+        val items = _state.value.items
+        return items.isNotEmpty() && items.all { it.status == CheckStatus.Passed }
     }
 }
 

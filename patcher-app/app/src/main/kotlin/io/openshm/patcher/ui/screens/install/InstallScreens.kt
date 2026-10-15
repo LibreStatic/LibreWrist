@@ -46,6 +46,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import io.openshm.patcher.R
 import io.openshm.patcher.data.Grant
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.openshm.patcher.data.Automation
 import io.openshm.patcher.data.Device
 import io.openshm.patcher.data.GrantKind
 import io.openshm.patcher.ui.components.Accent
@@ -56,7 +58,10 @@ import io.openshm.patcher.ui.components.InfoChip
 import io.openshm.patcher.ui.components.LocalTwoPane
 import io.openshm.patcher.ui.components.NoteRow
 import io.openshm.patcher.ui.components.PackageId
+import io.openshm.patcher.ui.components.AutoTextButton
 import io.openshm.patcher.ui.components.PrimaryAction
+import io.openshm.patcher.ui.components.UnattendedAttention
+import io.openshm.patcher.ui.components.observeUserInput
 import io.openshm.patcher.ui.components.SectionTitle
 import io.openshm.patcher.ui.components.SetupStep
 import io.openshm.patcher.ui.components.StatusShape
@@ -263,6 +268,7 @@ private fun InstallStep(
     accent: Accent,
     phone: Boolean = false,
 ) {
+    UnattendedAttention(installNeedsUser(state, phone))
     // Unfinished apps first, so what blocks Continue is visible without scrolling.
     val items = state.items.sortedBy { it.isComplete }
     val split = twoPaneSplit(items.map { it.rowCount })
@@ -276,7 +282,7 @@ private fun InstallStep(
         } else null,
         footer = {
             if (state.done) {
-                PrimaryAction(stringResource(R.string.action_continue), onContinue, accent = accent)
+                PrimaryAction(stringResource(R.string.action_continue), onContinue, accent = accent, auto = installFooterAuto(state, phone))
             } else if (phone && state.canSkipGrants) {
                 ActionRow {
                     PrimaryAction(stringResource(R.string.install_check_again), { onEvent(InstallEvent.Refresh) }, accent = accent)
@@ -288,6 +294,7 @@ private fun InstallStep(
                     { onEvent(InstallEvent.Start) },
                     enabled = !state.running,
                     accent = accent,
+                    auto = installFooterAuto(state, phone),
                 )
             }
         },
@@ -435,16 +442,20 @@ private fun IntroText(intro: String) =
 /** Asks before the installed copy is removed: its data is lost and this cannot be undone. */
 @Composable
 internal fun ReinstallDialog(label: String, device: Device, onConfirm: () -> Unit, onDismiss: () -> Unit) {
+    val uninstallActive = Automation.state.collectAsStateWithLifecycle().value.uninstallActive
     AlertDialog(
         onDismissRequest = onDismiss,
+        // The dialog is its own window: it reports touches itself so they pause the countdown.
+        modifier = Modifier.observeUserInput(),
         title = { Text(stringResource(R.string.reinstall_dialog_title, label)) },
         text = {
             Text(stringResource(if (device == Device.Phone) R.string.reinstall_dialog_body_phone else R.string.reinstall_dialog_body_watch))
         },
         confirmButton = {
-            TextButton(onClick = onConfirm, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)) {
-                Text(stringResource(R.string.reinstall_action))
-            }
+            AutoTextButton(
+                stringResource(R.string.reinstall_action), onConfirm, auto = uninstallActive,
+                color = MaterialTheme.colorScheme.error,
+            )
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },
     )

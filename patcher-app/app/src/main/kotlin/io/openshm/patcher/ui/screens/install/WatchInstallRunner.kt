@@ -3,9 +3,9 @@ package io.openshm.patcher.ui.screens.install
 import androidx.annotation.StringRes
 import io.openshm.patcher.R
 import io.openshm.patcher.adb.AdbException
-import io.openshm.patcher.adb.BridgeStart
 import io.openshm.patcher.adb.InstallResult
 import io.openshm.patcher.build.BuiltBuild
+import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.Device
 import io.openshm.patcher.data.OutputApp
 import io.openshm.patcher.device.PackageKind
@@ -121,9 +121,11 @@ internal class WatchInstallRunner(
 
     /** Starts a bridge once it is installed and granted (clears the stopped state). Never fails the run. */
     private suspend fun startBridge(item: InstallItem) {
-        if (!BridgeStart.isBridge(item.outputId)) return
+        val out = AppCatalogue.current.outputs.firstOrNull { it.id == item.outputId } ?: return
+        val start = out.start ?: return
+        val action = out.startAction(prefix()) ?: return
         try {
-            device.startBridge(item.packageName, prefix())
+            device.startBridge(item.packageName, start.receiver, action)
         } catch (e: IOException) {
             log("start request for ${item.outputId} failed: ${e.javaClass.simpleName}")
             return
@@ -131,7 +133,7 @@ internal class WatchInstallRunner(
             log("start request for ${item.outputId} rejected: ${e.javaClass.simpleName}")
             return
         }
-        if (item.outputId == BridgeStart.WATCH_OUTPUT) CompanionLinker(device, log, pause).link(item.packageName, prefix())
+        if (out.companionLink) CompanionLinker(device, log, pause).link(item.packageName, start.receiver, action)
     }
 
     /** True when the package is installed. */

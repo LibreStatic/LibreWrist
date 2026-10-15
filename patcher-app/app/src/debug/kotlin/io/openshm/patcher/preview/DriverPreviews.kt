@@ -24,10 +24,13 @@ import io.openshm.patcher.ui.screens.profile.GuideStep
 import io.openshm.patcher.ui.screens.profile.WatchVersionGuide
 import io.openshm.patcher.ui.screens.signingkey.SigningKeyForm
 import io.openshm.patcher.ui.screens.install.SelfAdbPhase
+import io.openshm.patcher.ui.screens.phoneadb.PhoneAdbUiState
 import io.openshm.patcher.ui.screens.wearable.ClearOutcome
 import io.openshm.patcher.ui.screens.wearable.TroubleshootUiState
 import io.openshm.patcher.ui.screens.welcome.ChangesContent
 import io.openshm.patcher.ui.screens.welcome.buildChanges
+import io.openshm.patcher.data.AutomationState
+import io.openshm.patcher.ui.screens.welcome.AutomationHelp
 import io.openshm.patcher.data.WatchProfile
 import io.openshm.patcher.device.LogDevice
 import io.openshm.patcher.device.LogLinkStatus
@@ -43,6 +46,30 @@ import io.openshm.patcher.device.LogLinkStatus
 fun WelcomeDriver() = PreviewHost(ColorMode.Fallback) { WelcomeSample() }
 
 /** Welcome over the floating backdrop, as PatcherApp layers them (still, like every driver). */
+/** Unattended mode off: the two dependent switches are disabled and shown off. */
+@Composable
+fun WelcomeUnattendedOffDriver() = PreviewHost(ColorMode.Fallback) { WelcomeSample(automation = AutomationState(unattended = false, freeRun = true)) }
+
+/** All three switches on, the red one included. */
+@Composable
+fun WelcomeAutomationOnDriver() = PreviewHost(ColorMode.Fallback) { WelcomeSample(automation = AutomationState(freeRun = true, uninstallMismatch = true)) }
+
+/** The warning shown before "Advance freely" is turned on. */
+@Composable
+fun WelcomeFreeRunWarningDriver() = PreviewHost(ColorMode.Fallback) { WelcomeSample(freeRunWarning = true) }
+
+/** The first-launch notice: the official apps are fetched by hand before unattended mode can run end to end. */
+@Composable
+fun WelcomeAppsNoticeDriver() = PreviewHost(ColorMode.Fallback) { WelcomeSample(appsNotice = true) }
+
+/** The explanation behind the (?) of the red switch. */
+@Composable
+fun WelcomeAutomationHelpDriver() = PreviewHost(ColorMode.Fallback) { WelcomeSample(help = AutomationHelp.Uninstall) }
+
+/** The advance countdown frozen mid-fill on the pill buttons and a dialog text button. */
+@Composable
+fun PrimaryActionCountdownDriver() = PreviewHost(ColorMode.Fallback) { CountdownSample(0.45f) }
+
 /** Welcome with the watch reachable over ADB: the device logs link shows at the bottom. */
 @Composable
 fun WelcomeWatchDriver() = PreviewHost(ColorMode.Fallback) { WelcomeSample(logsAvailable = true) }
@@ -282,7 +309,7 @@ fun CustomizeDriver() = PreviewHost(ColorMode.Fallback) { CustomizeSample() }
 
 /** Focus mode of a per-app rebuild: only the Health Monitor watch app's patches show. */
 @Composable
-fun CustomizeRebuildDriver() = PreviewHost(ColorMode.Fallback) { CustomizeSample(setOf("shm-watch")) }
+fun CustomizeRebuildDriver() = PreviewHost(ColorMode.Fallback) { CustomizeSample(setOf(SampleApps.watchMain.id)) }
 
 @Composable
 fun BuildDriver() = PreviewHost(ColorMode.Fallback) { BuildSample() }
@@ -384,6 +411,9 @@ fun SelfTestDriver() = PreviewHost(ColorMode.Fallback) { SelfTestSample() }
 fun SelfTestFailuresDriver() = PreviewHost(ColorMode.Fallback) { SelfTestSample(SelfTestVariant.Failures) }
 
 @Composable
+fun SelfTestReusedDriver() = PreviewHost(ColorMode.Fallback) { SelfTestSample(SelfTestVariant.Reused) }
+
+@Composable
 fun SelfTestWatchOffDriver() = PreviewHost(ColorMode.Fallback) { SelfTestSample(SelfTestVariant.WatchOff) }
 
 @Composable
@@ -399,7 +429,7 @@ fun HomePatchesUpdateDriver() = PreviewHost(ColorMode.Fallback) { HomeSample(pat
 fun HomeRestoreDriver() = PreviewHost(ColorMode.Fallback) { HomeSample(restoreSheet = true) }
 
 @Composable
-fun HomeRestoreAppDriver() = PreviewHost(ColorMode.Fallback) { HomeSample(restoreSheet = true, restoreOf = "bridge-watch") }
+fun HomeRestoreAppDriver() = PreviewHost(ColorMode.Fallback) { HomeSample(restoreSheet = true, restoreOf = SampleApps.watchLinked.id) }
 
 @Composable
 fun HomeMenuDriver() = PreviewHost(ColorMode.Fallback) { HomeSample(menu = true) }
@@ -465,4 +495,18 @@ fun SigningKeyImportDriver() = PreviewHost(ColorMode.Fallback) { SigningKeySampl
 
 /** BuildDone after a build that kept two unchanged apps from the previous one. */
 @Composable
-fun BuildDoneReusedDriver() = PreviewHost(ColorMode.Fallback) { BuildDoneSample(reused = setOf("shm-phone", "bridge-watch")) }
+fun BuildDoneReusedDriver() = PreviewHost(ColorMode.Fallback) { BuildDoneSample(reused = setOf(SampleApps.phoneMain.id, SampleApps.watchLinked.id)) }
+
+/** "Connect this phone" while it waits for Wireless debugging to be turned on. */
+@Composable
+fun PhoneAdbWaitingDriver() = PreviewHost(ColorMode.Fallback) { PhoneAdbSample(PhoneAdbUiState(phase = SelfAdbPhase.WaitingForService), subStep = 1) }
+
+/** "Connect this phone" asking for the pairing code. */
+@Composable
+fun PhoneAdbCodeDriver() = PreviewHost(ColorMode.Fallback) { PhoneAdbSample(PhoneAdbUiState(phase = SelfAdbPhase.WaitingForCode)) }
+
+/** "Connect this phone" after a failed attempt: Retry shows, never an automatic one. */
+@Composable
+fun PhoneAdbFailedDriver() = PreviewHost(ColorMode.Fallback) {
+    PhoneAdbSample(PhoneAdbUiState(phase = SelfAdbPhase.Failed, error = "Connection refused"))
+}

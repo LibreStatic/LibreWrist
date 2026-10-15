@@ -163,8 +163,8 @@ private class FakeDevice : WatchDevice {
     val started = mutableListOf<Pair<String, String>>()
     var startThrows: java.io.IOException? = null
 
-    override suspend fun startBridge(pkg: String, prefix: String) {
-        started += pkg to prefix
+    override suspend fun startBridge(pkg: String, receiver: String, action: String) {
+        started += pkg to action
         startThrows?.let { throw it }
     }
 
@@ -235,6 +235,7 @@ class WatchInstallRunnerTest {
 
     @Before fun setUp() {
         dir = Files.createTempDirectory("watch-install").toFile()
+        io.openshm.patcher.data.AppCatalogue.install(TestCatalogue.load())
     }
 
     @After fun tearDown() {
@@ -262,8 +263,8 @@ class WatchInstallRunnerTest {
     private val pauses = mutableListOf<Long>()
 
     private val bridgeOutputs = listOf(
-        OutputApp("alarm-fork", "Alarm", Device.Watch, "\${PKG_PREFIX}.shmbridge.alarm", null),
-        OutputApp("bridge-watch", "Bridge", Device.Watch, "\${PKG_PREFIX}.shmbridge.watch", null),
+        OutputApp("alarm-fork", "Alarm", Device.Watch, "\${PKG_PREFIX}.shmbridge.alarm", null, singleCopy = true),
+        OutputApp("bridge-watch", "Bridge", Device.Watch, "\${PKG_PREFIX}.shmbridge.watch", null, singleCopy = true, companionLink = true),
         OutputApp("shealth", "Health+", Device.Watch, "\${PKG_PREFIX}.shealth", null),
     )
 
@@ -352,7 +353,7 @@ class WatchInstallRunnerTest {
         val device = FakeDevice()
         val s = state(item("shm-watch"), item("bridge-watch", required), item("alarm-fork"))
         runner(device, built("shm-watch", "bridge-watch", "alarm-fork")).run(s)
-        assertEquals(listOf("$prefix.bridge-watch" to prefix), device.started)
+        assertEquals(listOf("$prefix.bridge-watch" to "$prefix.shmbridge.START"), device.started)
         assertEquals(listOf("$prefix.bridge-watch"), device.grantCalls.map { it.first })
         assertTrue(s.value.done)
     }
@@ -372,7 +373,7 @@ class WatchInstallRunnerTest {
         val s = bridgeRun(device)
         assertTrue(s.value.done)
         assertEquals(listOf("associate:$bridge:$mac"), device.companionCalls)
-        assertEquals(listOf(bridge to prefix, bridge to prefix), device.started)
+        assertEquals(listOf(bridge to "$prefix.shmbridge.START", bridge to "$prefix.shmbridge.START"), device.started)
         assertEquals(listOf(2000L, 2000L, 5000L), pauses)
         assertEquals(1, device.dozeReads)
     }

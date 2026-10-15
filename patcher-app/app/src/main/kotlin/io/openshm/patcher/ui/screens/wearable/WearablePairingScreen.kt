@@ -38,6 +38,7 @@ import io.openshm.patcher.ui.components.QuietAction
 import io.openshm.patcher.ui.components.SetupStep
 import io.openshm.patcher.ui.components.StatusShape
 import io.openshm.patcher.ui.components.StepScreenScaffold
+import io.openshm.patcher.ui.components.UnattendedAttention
 
 data class WearableCheck(
     val id: String,
@@ -82,6 +83,11 @@ fun WearablePairingScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // Checks still running finish by itself; a failed or warning one needs the user.
+    UnattendedAttention(
+        !state.allPassed && state.checks.isNotEmpty() &&
+            state.checks.none { it.status == CheckStatus.Pending || it.status == CheckStatus.Running },
+    )
     StepScreenScaffold(
         step = SetupStep.WearablePairing,
         title = stringResource(R.string.wearable_title),
@@ -89,7 +95,7 @@ fun WearablePairingScreen(
         modifier = modifier,
         footer = {
             ActionRow {
-                PrimaryAction(stringResource(R.string.action_continue), onContinue, enabled = state.allPassed)
+                PrimaryAction(stringResource(R.string.action_continue), onContinue, enabled = state.allPassed, auto = true)
                 QuietAction(stringResource(R.string.wearable_recheck), { onEvent(WearablePairingEvent.Recheck) })
             }
         },

@@ -1,29 +1,18 @@
 package io.openshm.patcher.ui.screens.wearable
 
 import io.openshm.patcher.R
+import io.openshm.patcher.engine.CompanionApp
 import io.openshm.patcher.ui.components.CheckStatus
-
-/** Samsung's official app that pairs and manages a Galaxy Watch. */
-internal const val GALAXY_WEARABLE_PACKAGE = "com.samsung.android.app.watchmanager"
-
-/**
- * The watch plugin Galaxy Wearable installs for each Wear OS Galaxy Watch, from its model table
- * (Galaxy Wearable 2.2.72). Every model family has its own plugin; all of them must also be listed
- * in the manifest `<queries>`, or this app cannot see them.
- */
-internal val WATCH_PLUGIN_PACKAGES = listOf(
-    "com.samsung.android.waterplugin",       // Watch4, Watch4 Classic, Watch FE
-    "com.samsung.android.heartplugin",       // Watch5, Watch5 Pro
-    "com.samsung.wearable.watch6plugin",     // Watch6, Watch6 Classic
-    "com.samsung.wearable.watch7plugin",     // Watch7, Watch Ultra
-    "com.samsung.wearable.watchuniteplugin", // Watch8, Watch8 Classic, Watch Ultra (2025) and newer
-)
 
 /** `BluetoothClass.Device.Major.WEARABLE`, kept here so the check logic has no platform dependency. */
 internal const val BLUETOOTH_MAJOR_WEARABLE = 0x0700
 
-/** Whether [packageName] is the Galaxy Wearable plugin of a Wear OS Galaxy Watch. */
-internal fun isWatchPlugin(packageName: String): Boolean = packageName in WATCH_PLUGIN_PACKAGES
+/**
+ * Whether [packageName] is a watch plugin of the [companion] app (catalogue `platform.companionApp`).
+ * Every model family has its own plugin, and all of them must also be listed in the manifest `<queries>`,
+ * or this app cannot see them.
+ */
+internal fun isWatchPlugin(packageName: String, companion: CompanionApp): Boolean = packageName in companion.watchPlugins
 
 /** A bonded Bluetooth device, reduced to what the watch test needs. */
 data class BondedDevice(val name: String?, val majorClass: Int?)
@@ -42,9 +31,9 @@ data class WearableFacts(
 /** What a check offers the user to do about it, besides installing or pairing in Galaxy Wearable. */
 enum class WearableCheckAction { AllowBluetooth }
 
-internal fun wearableChecks(facts: WearableFacts): List<WearableCheck> {
-    val appInstalled = GALAXY_WEARABLE_PACKAGE in facts.installedPackages
-    val pluginInstalled = facts.installedPackages.any(::isWatchPlugin)
+internal fun wearableChecks(facts: WearableFacts, companion: CompanionApp): List<WearableCheck> {
+    val appInstalled = companion.packageName in facts.installedPackages
+    val pluginInstalled = facts.installedPackages.any { isWatchPlugin(it, companion) }
     val watchBonded = facts.bluetoothAllowed && facts.bonded.any { it.isWatch() }
     return listOf(
         WearableCheck(
@@ -68,7 +57,7 @@ internal fun wearableChecks(facts: WearableFacts): List<WearableCheck> {
     )
 }
 
-internal fun wearableState(facts: WearableFacts) = WearablePairingUiState(
-    checks = wearableChecks(facts),
-    galaxyWearableInstalled = GALAXY_WEARABLE_PACKAGE in facts.installedPackages,
+internal fun wearableState(facts: WearableFacts, companion: CompanionApp) = WearablePairingUiState(
+    checks = wearableChecks(facts, companion),
+    galaxyWearableInstalled = companion.packageName in facts.installedPackages,
 )

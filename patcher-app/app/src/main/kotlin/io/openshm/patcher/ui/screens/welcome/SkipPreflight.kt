@@ -28,7 +28,7 @@ sealed interface SkipDialog {
  * Runs when the user starts the setup: asks the remembered watch (if any) and the phone, works out
  * which steps are already done and, when the next step is one of them, shows that run until [confirm]
  * before it [go]es on. [apply] records every skippable step just before moving on, so a cancelled
- * dialog skips nothing.
+ * dialog skips nothing. With [autoSkip] (unattended mode) the run is passed over without the dialog.
  */
 internal class SkipPreflight(
     private val scope: CoroutineScope,
@@ -40,6 +40,8 @@ internal class SkipPreflight(
     private val announced: () -> DetectedWatch? = { null },
     /** Records whether the user chose to walk the steps by hand. */
     private val setManual: (Boolean) -> Unit = {},
+    /** Skip the done steps without showing them (the dialog only lists steps that need nothing). */
+    private val autoSkip: () -> Boolean = { false },
 ) {
     private val _dialog = MutableStateFlow<SkipDialog?>(null)
     val dialog: StateFlow<SkipDialog?> = _dialog.asStateFlow()
@@ -65,7 +67,7 @@ internal class SkipPreflight(
             // Only the steps right after the welcome are announced here; a later one is announced
             // by the nav host when the user reaches it.
             val now = skippedRunAfter(Route.Welcome, steps)
-            if (now.isEmpty()) {
+            if (now.isEmpty() || autoSkip()) {
                 finish(steps, watch, manual = false)
             } else {
                 pendingWatch = watch

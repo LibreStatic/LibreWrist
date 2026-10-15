@@ -35,6 +35,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import io.openshm.patcher.R
 import io.openshm.patcher.data.WatchProfile
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.openshm.patcher.data.Automation
 import io.openshm.patcher.ui.components.Accent
 import io.openshm.patcher.ui.components.CheckStatus
 import io.openshm.patcher.ui.components.ContainerTextAction
@@ -50,6 +52,8 @@ import io.openshm.patcher.ui.components.PrimaryAction
 import io.openshm.patcher.ui.components.SetupStep
 import io.openshm.patcher.ui.components.StatusShape
 import io.openshm.patcher.ui.components.StepScreenScaffold
+import io.openshm.patcher.ui.components.ATTENTION_GRACE_MILLIS
+import io.openshm.patcher.ui.components.UnattendedAttention
 import io.openshm.patcher.ui.components.containerFieldColors
 import io.openshm.patcher.ui.theme.LocalReducedMotion
 import io.openshm.patcher.ui.theme.PatcherTheme
@@ -143,7 +147,14 @@ fun WatchPairScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val freeRunActive = Automation.state.collectAsStateWithLifecycle().value.freeRunActive
     HapticWhen(state.paired || state.correction != null, HapticFeedbackType.Confirm)
+    // Searching, typing the code or after a refused one: only the user can enable Wireless debugging and pair.
+    // A reconnect with the remembered pairing may still settle it, so it only waits longer before asking.
+    UnattendedAttention(
+        !state.pairing && !state.paired && state.correction == null,
+        graceMillis = if (state.reconnecting) RECONNECT_ATTENTION_GRACE_MILLIS else ATTENTION_GRACE_MILLIS,
+    )
     StepScreenScaffold(
         step = SetupStep.WatchPair,
         title = stringResource(R.string.watchpair_title),
@@ -156,7 +167,7 @@ fun WatchPairScreen(
         },
         footer = {
             if (state.correction != null) {
-                PrimaryAction(stringResource(R.string.action_continue), { onEvent(WatchPairEvent.ConfirmCorrection) })
+                PrimaryAction(stringResource(R.string.action_continue), { onEvent(WatchPairEvent.ConfirmCorrection) }, auto = freeRunActive)
             } else {
                 FooterHint(
                     stringResource(
@@ -390,3 +401,6 @@ private fun FoundRow(state: WatchPairUiState, onEvent: (WatchPairEvent) -> Unit)
         }
     }
 }
+
+/** A reconnect attempt searches for up to 20 s; give it a head start before asking for the code. */
+private const val RECONNECT_ATTENTION_GRACE_MILLIS = 10_000L

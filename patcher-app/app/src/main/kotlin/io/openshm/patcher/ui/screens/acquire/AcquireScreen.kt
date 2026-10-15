@@ -28,6 +28,7 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.openshm.patcher.R
+import io.openshm.patcher.data.AppGroup
 import io.openshm.patcher.data.Device
 import io.openshm.patcher.data.InputApp
 import io.openshm.patcher.data.VariantChip
@@ -41,6 +42,7 @@ import io.openshm.patcher.ui.components.SetupStep
 import io.openshm.patcher.ui.components.SplitAction
 import io.openshm.patcher.ui.components.StatusShape
 import io.openshm.patcher.ui.components.StepScreenScaffold
+import io.openshm.patcher.ui.components.UnattendedAttention
 import io.openshm.patcher.ui.components.WavyDownloadProgress
 
 /** Where one input app stands. Sizes are in bytes so the screen formats them the same way everywhere. */
@@ -63,11 +65,12 @@ data class AcquireCard(
     val moreWaysExpanded: Boolean = false,
 )
 
+data class OptionalAppToggle(val app: AppGroup, val enabled: Boolean)
+
 data class AcquireUiState(
     val cards: List<AcquireCard> = emptyList(),
-    /** The catalogue carries the optional Samsung Health input, so the opt-in card is shown. */
-    val samsungHealthOffered: Boolean = false,
-    val samsungHealth: Boolean = false,
+    /** One switch per optional app the catalogue offers. */
+    val optionalApps: List<OptionalAppToggle> = emptyList(),
 ) {
     val waiting: Int get() = cards.count { it.progress !is AcquireProgress.Verified }
 }
@@ -76,7 +79,7 @@ sealed interface AcquireEvent {
     data class OpenMirror(val inputId: String) : AcquireEvent
     data class ToggleMoreWays(val inputId: String) : AcquireEvent
     data class UseFile(val inputId: String) : AcquireEvent
-    data object ToggleSamsungHealth : AcquireEvent
+    data class ToggleApp(val appId: String) : AcquireEvent
 }
 
 @Composable
@@ -88,6 +91,8 @@ fun AcquireScreen(
     modifier: Modifier = Modifier,
 ) {
     val waiting = state.waiting
+    // A download finishes by itself; a missing or rejected file needs the user.
+    UnattendedAttention(state.cards.any { it.progress is AcquireProgress.Missing || it.progress is AcquireProgress.Rejected })
     StepScreenScaffold(
         step = SetupStep.Acquire,
         title = stringResource(R.string.acquire_title),
@@ -97,12 +102,11 @@ fun AcquireScreen(
             if (waiting > 0) {
                 FooterHint(pluralStringResource(R.plurals.acquire_waiting, waiting, waiting))
             }
-            PrimaryAction(stringResource(R.string.action_continue), onContinue, enabled = waiting == 0)
+            PrimaryAction(stringResource(R.string.action_continue), onContinue, enabled = waiting == 0, auto = true)
         },
         // The cards split across the panes (first half beside the intro); narrow, the same single column.
         secondary = {
             state.cards.drop((state.cards.size + 1) / 2).forEach { AcquireCardView(it, onEvent) }
-            if (state.samsungHealthOffered) SamsungHealthCard(state.samsungHealth, onEvent)
             NoteRow(Icons.Rounded.VerifiedUser, stringResource(R.string.acquire_verify_note))
         },
     ) {
@@ -111,23 +115,25 @@ fun AcquireScreen(
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+        // The switches come first: they decide which cards below are needed.
+        state.optionalApps.forEach { OptionalAppCard(it, onEvent) }
         state.cards.take((state.cards.size + 1) / 2).forEach { AcquireCardView(it, onEvent) }
     }
 }
 
 @Composable
-private fun SamsungHealthCard(enabled: Boolean, onEvent: (AcquireEvent) -> Unit) {
+private fun OptionalAppCard(toggle: OptionalAppToggle, onEvent: (AcquireEvent) -> Unit) {
     Surface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(28.dp), color = MaterialTheme.colorScheme.surfaceContainerLow) {
         Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(stringResource(R.string.acquire_shealth_title), style = MaterialTheme.typography.titleSmall)
+                Text(toggle.app.title, style = MaterialTheme.typography.titleSmall)
                 Text(
-                    stringResource(R.string.acquire_shealth_summary),
+                    toggle.app.summary,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            Switch(checked = enabled, onCheckedChange = { onEvent(AcquireEvent.ToggleSamsungHealth) })
+            Switch(checked = toggle.enabled, onCheckedChange = { onEvent(AcquireEvent.ToggleApp(toggle.app.id)) })
         }
     }
 }

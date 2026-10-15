@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.device.HealthPlatformDevMode
 import io.openshm.patcher.device.WatchLink
 import kotlinx.coroutines.CancellationException
@@ -25,7 +26,7 @@ import kotlinx.coroutines.sync.withLock
  */
 class DevModeViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val probe = HealthPlatformDevMode { WatchLink.get(application).client() }
+    private val probe = HealthPlatformDevMode(AppCatalogue.current.platform.healthPlatform) { WatchLink.get(application).client() }
 
     /** One watch command at a time: the poll and the buttons share the connection. */
     private val watchLock = Mutex()
