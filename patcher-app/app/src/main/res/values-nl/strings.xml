@@ -255,7 +255,9 @@
     <string name="patch_watch_alarm_system_app">Plant exacte wekkers zonder systeemrechten.</string>
     <string name="patch_watch_mobile_installed">Meldt de telefoon-app als geïnstalleerd.</string>
     <string name="patch_watch_ecg_sensor_adapter">Leest de ECG-sensor uit via de Health Tracking-service.</string>
+    <string name="patch_watch_bp_sensor_adapter">Leest de bloeddruksensor uit via de Health Tracking-service, omdat het horloge een opnieuw ondertekende app er niet rechtstreeks gebruik van laat maken.</string>
     <string name="patch_watch_sensor_unregister_compat">Voorkomt dat de app sluit bij het stoppen van sensoren op horloges met een ander sensorframework, zoals de Galaxy Watch8.</string>
+    <string name="patch_watch_bp_attribute_guard">Voorkomt dat de bloeddrukkalibratie de app sluit op horloges die de sensorinstelling blokkeren die de app gebruikt (One UI 8 Watch). De app toont in plaats daarvan zijn normale sensorfout.</string>
     <string name="patch_watch_apnea_country">Slaat de landcontrole voor apneu over.</string>
     <string name="patch_watch_apnea_reeval_not_supported">Controleert apneu-ondersteuning opnieuw die als niet ondersteund was opgeslagen.</string>
     <string name="patch_watch_mod">Voegt de module toe die met de Health Tracking-service praat.</string>

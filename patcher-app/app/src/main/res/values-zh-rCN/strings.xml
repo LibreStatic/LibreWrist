@@ -252,7 +252,9 @@
     <string name="patch_watch_alarm_system_app">无需系统权限即可安排精确闹钟。</string>
     <string name="patch_watch_mobile_installed">将手机应用报告为已安装。</string>
     <string name="patch_watch_ecg_sensor_adapter">通过 Health Tracking 服务读取心电图传感器。</string>
+    <string name="patch_watch_bp_sensor_adapter">通过 Health Tracking 服务读取血压传感器，因为手表不允许重新签名的应用直接使用它。</string>
     <string name="patch_watch_sensor_unregister_compat">防止在传感器框架不同的手表（如 Galaxy Watch8）上停止传感器时应用关闭。</string>
+    <string name="patch_watch_bp_attribute_guard">在会阻止其所用传感器设置的手表（One UI 8 Watch）上，防止血压校准导致应用关闭。应用会改为显示常规的传感器错误。</string>
     <string name="patch_watch_apnea_country">跳过呼吸暂停功能的国家检查。</string>
     <string name="patch_watch_apnea_reeval_not_supported">重新检查曾被存储为不受支持的呼吸暂停功能支持情况。</string>
     <string name="patch_watch_mod">添加与 Health Tracking 服务通信的模块。</string>

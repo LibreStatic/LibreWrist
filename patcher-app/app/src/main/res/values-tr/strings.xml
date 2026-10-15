@@ -255,7 +255,9 @@
     <string name="patch_watch_alarm_system_app">Sistem ayrıcalıkları olmadan tam zamanlı alarm kurar.</string>
     <string name="patch_watch_mobile_installed">Telefon uygulamasını kurulu olarak bildirir.</string>
     <string name="patch_watch_ecg_sensor_adapter">EKG sensörünü Health Tracking hizmeti üzerinden okur.</string>
+    <string name="patch_watch_bp_sensor_adapter">Saat, yeniden imzalanmış bir uygulamanın tansiyon sensörünü doğrudan kullanmasına izin vermediği için sensörü Health Tracking hizmeti üzerinden okur.</string>
     <string name="patch_watch_sensor_unregister_compat">Galaxy Watch8 gibi farklı sensör altyapısına sahip saatlerde sensörler durdurulurken uygulamanın kapanmasını önler.</string>
+    <string name="patch_watch_bp_attribute_guard">Kullandığı sensör kurulumunu engelleyen saatlerde (One UI 8 Watch) tansiyon kalibrasyonunun uygulamayı kapatmasını önler. Uygulama bunun yerine normal sensör hatasını gösterir.</string>
     <string name="patch_watch_apnea_country">Apne ülke denetimini atlar.</string>
     <string name="patch_watch_apnea_reeval_not_supported">Desteklenmiyor olarak kaydedilmiş apne desteğini yeniden denetler.</string>
     <string name="patch_watch_mod">Health Tracking hizmetiyle konuşan modülü ekler.</string>

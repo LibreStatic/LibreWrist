@@ -261,7 +261,9 @@
     <string name="patch_watch_alarm_system_app">Планує точні будильники без системних привілеїв.</string>
     <string name="patch_watch_mobile_installed">Повідомляє, що застосунок на телефоні встановлено.</string>
     <string name="patch_watch_ecg_sensor_adapter">Зчитує датчик ЕКГ через службу Health Tracking.</string>
+    <string name="patch_watch_bp_sensor_adapter">Зчитує датчик тиску через службу Health Tracking, бо годинник не дозволяє переподписаному застосунку використовувати його напряму.</string>
     <string name="patch_watch_sensor_unregister_compat">Не дає застосунку закриватися під час зупинки датчиків на годинниках з іншим фреймворком датчиків, як-от Galaxy Watch8.</string>
+    <string name="patch_watch_bp_attribute_guard">Не дає калібруванню тиску закривати застосунок на годинниках, які блокують потрібне йому налаштування датчика (One UI 8 Watch). Натомість застосунок показує свою звичайну помилку датчика.</string>
     <string name="patch_watch_apnea_country">Пропускає перевірку країни для апное.</string>
     <string name="patch_watch_apnea_reeval_not_supported">Повторно перевіряє підтримку апное, збережену як непідтримувана.</string>
     <string name="patch_watch_mod">Додає модуль для зв\'язку зі службою Health Tracking.</string>

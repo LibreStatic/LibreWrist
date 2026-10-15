@@ -255,7 +255,9 @@
     <string name="patch_watch_alarm_system_app">Pianifica sveglie esatte senza privilegi di sistema.</string>
     <string name="patch_watch_mobile_installed">Segnala l\'app del telefono come installata.</string>
     <string name="patch_watch_ecg_sensor_adapter">Legge il sensore ECG tramite il servizio Health Tracking.</string>
+    <string name="patch_watch_bp_sensor_adapter">Legge il sensore della pressione arteriosa tramite il servizio Health Tracking, perché l\'orologio non consente a un\'app rifirmata di usarlo direttamente.</string>
     <string name="patch_watch_sensor_unregister_compat">Evita che l\'app si chiuda all\'arresto dei sensori sugli orologi con un framework dei sensori diverso, come il Galaxy Watch8.</string>
+    <string name="patch_watch_bp_attribute_guard">Impedisce che la calibrazione della pressione arteriosa chiuda l\'app sugli orologi che bloccano la configurazione del sensore che usa (One UI 8 Watch). L\'app mostra invece il suo normale errore del sensore.</string>
     <string name="patch_watch_apnea_country">Salta il controllo del paese per l\'apnea.</string>
     <string name="patch_watch_apnea_reeval_not_supported">Ricontrolla il supporto all\'apnea memorizzato come non supportato.</string>
     <string name="patch_watch_mod">Aggiunge il modulo che comunica con il servizio Health Tracking.</string>

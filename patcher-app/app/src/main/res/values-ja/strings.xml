@@ -252,7 +252,9 @@
     <string name="patch_watch_alarm_system_app">システム権限なしで正確なアラームをスケジュールします。</string>
     <string name="patch_watch_mobile_installed">スマートフォンアプリがインストール済みと報告します。</string>
     <string name="patch_watch_ecg_sensor_adapter">Health Trackingサービス経由でECGセンサーを読み取ります。</string>
+    <string name="patch_watch_bp_sensor_adapter">ウォッチでは再署名したアプリが血圧センサーを直接使用できないため、Health Trackingサービス経由で読み取ります。</string>
     <string name="patch_watch_sensor_unregister_compat">Galaxy Watch8 など、センサーフレームワークが異なるウォッチでセンサー停止時にアプリが終了しないようにします。</string>
+    <string name="patch_watch_bp_attribute_guard">使用するセンサー設定がブロックされているウォッチ（One UI 8 Watch）で、血圧のキャリブレーション中にアプリが終了しないようにします。代わりに通常のセンサーエラーが表示されます。</string>
     <string name="patch_watch_apnea_country">無呼吸の国チェックをスキップします。</string>
     <string name="patch_watch_apnea_reeval_not_supported">非対応として保存されていた無呼吸の対応状況を再確認します。</string>
     <string name="patch_watch_mod">Health Trackingサービスと通信するモジュールを追加します。</string>

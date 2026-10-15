@@ -362,6 +362,58 @@ Value semantics:
 - If the client is slow, it delays ECG delivery for every client of the sensor. Handlers must return
   quickly (copy, enqueue, return).
 
+### 4.4 PPG_ON_DEMAND value mapping
+
+The `PPG_ON_DEMAND` tracker type reuses the exact `onDataUpdated` framing of 4.1; only the meaning
+of the six value positions differs. This section is anchored to the service implementation observed
+on the watch (probe run plus the service decompilation), not to a vendor SDK document: the producer
+`PpgOnDemandTracker.fetchValueFromData` always writes six values per data point in a fixed order —
+green, green status, red, red status, IR, IR status — and the converter
+`ServiceDataPoint.convertPpgToDataPoint` maps the integer field of positions 0..5 to the vendor
+keys below. Unlike ECG (4.2), the float and long fields of every position are unused.
+
+| Pos | Integer field | Vendor library key |
+|---|---|---|
+| 0 | PPG green ADC count (`SemPpg100HzSensorEvent.getGreen()`) | `PPG_GREEN` |
+| 1 | green channel status | `GREEN_STATUS` |
+| 2 | PPG red ADC count | `PPG_RED` |
+| 3 | red channel status | `RED_STATUS` |
+| 4 | PPG IR ADC count | `PPG_IR` |
+| 5 | IR channel status | `IR_STATUS` |
+
+Value semantics:
+
+- **Channel status (pos 1/3/5)**: 0 = normal (usable sample), -1 = error / no guarantee. When a
+  channel is absent the producer writes ADC count 0 and status -1, so 0 counts with status -1 must
+  be treated as "no data".
+- **ADC counts**: raw sensor values; no offset or scaling is applied by the service, and no range is
+  documented (it depends on the sensor HAL).
+- All six values are per data point — there are no per-batch fields like the ECG lead-off/sequence
+  pair, and no "not present" sentinel inside a batch.
+- The green channel is selected with code 8 (below); with only `GREEN` requested, red and IR still
+  travel as count 0 / status -1.
+
+Batching: the service sends one `onDataUpdated` per sensor event, with one data point per sample
+(N = 1 point observed on the wire and one point built per event in the service code) and M = 6
+values per point, regardless of the selected channels. The nominal sensor rate is 100 Hz (sensor
+type 61); the timestamp keeps the 4.1/4.3 wall-clock semantics. Flush is not allowed for
+`PPG_ON_DEMAND` (see 3.4); data flows without it because every sensor event is delivered directly.
+
+#### Code 8: setPpgType
+
+Request after the interface token, in order: `String appId`, `String trackerType`, string list of
+channel names (`GREEN`, `RED`, `IR`). The service reads the list with `createStringArrayList`,
+i.e. the same `int` count (-1 = null) then count strings encoding as the code 5 reply (3.3); the
+probe client wrote it with `Parcel.writeStringList`. The reply carries only the exception header
+(success = `readException()` returning cleanly). The call is queued on the service's request
+handler thread (section 7).
+
+Ordering rule: the channel selection is global per tracker type and is applied only when the
+tracker (re)registers its sensor, i.e. while the tracker is not started. `setPpgType` must
+therefore precede code 2 (`setEventListener`) on a freshly created tracker; sending it later has no
+effect until the tracker stops and starts again. A tracker created and armed without code 8 keeps
+the channel set of whoever armed it last.
+
 ---
 
 ## 5. Connect sequence

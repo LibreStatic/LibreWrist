@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "serial": 31,
+  "serial": 32,
   "minAppVersion": 28,
   "inputs": [
     {
@@ -146,6 +146,7 @@
           "watch-ecg-sensor-adapter",
           "watch-sensor-unregister-compat",
           "watch-bp-attribute-guard",
+          "watch-bp-sensor-adapter",
           "watch-apnea-country",
           "watch-apnea-reeval-not-supported"
         ]
@@ -896,6 +897,39 @@
             "",
             "    if-eqz v2, :goto_0",
             ""
+          ],
+          "count": 1
+        }
+      ]
+    },
+    "watch-bp-sensor-adapter": {
+      "families": [
+        "shm-watch"
+      ],
+      "title": "BP sensor",
+      "description": "Watch: the manual BP sensor (0x1c) registers through BpAdapter (Health Tracking PPG green channel) instead of the privileged SemSensorManager call; unregister reaches BpAdapter.stop through WatchOverrides.unregisterListener (sensor unregister compatibility pattern)",
+      "optional": false,
+      "ops": [
+        {
+          "op": "replaceInClass",
+          "className": "sl",
+          "old": [
+            "    iget-object p1, p1, Lkf;->h:Ljava/lang/Object;",
+            "",
+            "    check-cast p1, Lpl;",
+            "",
+            "    const/16 v1, 0x1c",
+            "",
+            "    invoke-virtual {v3, p1, v1}, Lcom/samsung/android/hardware/sensormanager/SemSensorManager;->registerListener(Lcom/samsung/android/hardware/sensormanager/SemSensorListener;I)I"
+          ],
+          "new": [
+            "    iget-object p1, p1, Lkf;->h:Ljava/lang/Object;",
+            "",
+            "    check-cast p1, Lpl;",
+            "",
+            "    const/16 v1, 0x1c",
+            "",
+            "    invoke-static {p1, v1}, L${PKG_PATH}/bp/BpAdapter;->start(Lcom/samsung/android/hardware/sensormanager/SemSensorListener;I)V"
           ],
           "count": 1
         }

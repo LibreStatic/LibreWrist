@@ -4,6 +4,8 @@ import android.util.Log;
 
 import com.samsung.android.hardware.sensormanager.SemSensorListener;
 
+import shminterop.bp.BpAdapter;
+
 import java.lang.reflect.Method;
 
 /**
@@ -17,7 +19,10 @@ import java.lang.reflect.Method;
  * unregisterListener(): replaces every direct SemSensorManager.unregisterListener(listener, int)
  * call (pattern watch-sensor-unregister-compat). On One UI 8 Watch, hidden-API enforcement
  * denies that overload to a re-signed user app (api=blocked): the direct call surfaces as
- * NoSuchMethodError, and reflection via getMethods() also filters it out.
+ * NoSuchMethodError, and reflection via getMethods() also filters it out. Sensor 28 (BP) is
+ * routed to BpAdapter.stop instead: that sensor is never registered with the framework manager
+ * (BpAdapter owns it through the Health Tracking service), and sl.i must keep running to
+ * unregister OffBody and cancel the timer.
  *
  * makeHrSensorAttribute(): builds a SemHrSensorAttribute by reflection for the BP calibration
  * path (pattern watch-bp-attribute-guard); returns null when hidden-API enforcement denies
@@ -28,6 +33,7 @@ public final class WatchOverrides {
 
     public static final int SENSOR_TYPE_IHRN = 0x25;   // 37 TYPE_WEAR_PPG_IHRN
     public static final int SENSOR_TYPE_SPO2 = 0x31;   // 49 SLEEP_WATCH_SPO2 (apnea)
+    public static final int SENSOR_TYPE_BP = 0x1c;     // 28 manual BP (green PPG via BpAdapter)
 
     // Logged once per (type, HAL result) so logcat is not flooded (IhrnScheduler polls often).
     private static volatile int sSensorLogged;
@@ -47,6 +53,13 @@ public final class WatchOverrides {
      * registered, which is better than closing the app.
      */
     public static void unregisterListener(Object manager, SemSensorListener listener, int type) {
+        if (type == SENSOR_TYPE_BP) {
+            // Never registered with the framework manager, so there is nothing to unregister
+            // there; BpAdapter tears down the Health Tracking tracker. sl.i keeps going (it
+            // still has to unregister OffBody and cancel its timer).
+            BpAdapter.stop(listener, type);
+            return;
+        }
         if (manager == null || listener == null) {
             return;
         }

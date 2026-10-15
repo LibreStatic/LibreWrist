@@ -144,6 +144,19 @@ public final class HealthClient {
         }, null);
     }
 
+    /**
+     * Code 8: selects the LED channels of a PPG tracker type. Must run before
+     * {@link #setEventListener} for that tracker, or the service keeps the previous channels.
+     */
+    public void setPpgType(final String trackerType, final List<String> ppgTypes) throws RemoteException {
+        final String app = packageName();
+        call(ServiceProtocol.TX_SET_PPG_TYPE, new Request() {
+            @Override public void write(WireWriter w) {
+                ServiceProtocol.writeSetPpgTypeRequest(w, app, trackerType, ppgTypes);
+            }
+        }, null);
+    }
+
     private <T> T call(int code, Request req, Reply<T> rep) throws RemoteException {
         IBinder s;
         synchronized (lock) { s = service; }

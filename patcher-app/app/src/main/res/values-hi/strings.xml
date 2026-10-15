@@ -255,7 +255,9 @@
     <string name="patch_watch_alarm_system_app">सिस्टम विशेषाधिकार के बिना सटीक अलार्म शेड्यूल करता है।</string>
     <string name="patch_watch_mobile_installed">फ़ोन ऐप को इंस्टॉल बताता है।</string>
     <string name="patch_watch_ecg_sensor_adapter">Health Tracking सेवा के ज़रिए ECG सेंसर पढ़ता है।</string>
+    <string name="patch_watch_bp_sensor_adapter">Health Tracking सेवा के ज़रिए ब्लड प्रेशर सेंसर पढ़ता है, क्योंकि घड़ी दोबारा साइन किए गए ऐप को इसे सीधे इस्तेमाल नहीं करने देती।</string>
     <string name="patch_watch_sensor_unregister_compat">Galaxy Watch8 जैसी अलग सेंसर फ़्रेमवर्क वाली घड़ियों पर सेंसर बंद करते समय ऐप को बंद होने से रोकता है।</string>
+    <string name="patch_watch_bp_attribute_guard">जो घड़ियाँ ब्लड प्रेशर कैलिब्रेशन का इस्तेमाल किया जाने वाला सेंसर सेटअप ब्लॉक करती हैं (One UI 8 Watch), उन पर कैलिब्रेशन को ऐप बंद करने से रोकता है। इसके बजाय ऐप अपनी सामान्य सेंसर त्रुटि दिखाता है।</string>
     <string name="patch_watch_apnea_country">एपनिया की देश जाँच छोड़ देता है।</string>
     <string name="patch_watch_apnea_reeval_not_supported">जो एपनिया समर्थन असमर्थित के रूप में सहेजा गया था, उसे दोबारा जाँचता है।</string>
     <string name="patch_watch_mod">Health Tracking सेवा से बात करने वाला मॉड्यूल जोड़ता है।</string>

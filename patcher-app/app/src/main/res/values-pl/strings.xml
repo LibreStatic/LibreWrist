@@ -261,7 +261,9 @@
     <string name="patch_watch_alarm_system_app">Planuje dokładne alarmy bez uprawnień systemowych.</string>
     <string name="patch_watch_mobile_installed">Zgłasza aplikację na telefonie jako zainstalowaną.</string>
     <string name="patch_watch_ecg_sensor_adapter">Odczytuje czujnik EKG przez usługę Health Tracking.</string>
+    <string name="patch_watch_bp_sensor_adapter">Odczytuje czujnik ciśnienia krwi przez usługę Health Tracking, ponieważ zegarek nie pozwala aplikacji podpisanej ponownie używać go bezpośrednio.</string>
     <string name="patch_watch_sensor_unregister_compat">Zapobiega zamykaniu aplikacji przy wyłączaniu czujników na zegarkach z innym frameworkiem czujników, np. Galaxy Watch8.</string>
+    <string name="patch_watch_bp_attribute_guard">Zapobiega zamykaniu aplikacji przez kalibrację ciśnienia krwi na zegarkach, które blokują używaną przez nią konfigurację czujnika (One UI 8 Watch). Zamiast tego aplikacja pokazuje swój zwykły błąd czujnika.</string>
     <string name="patch_watch_apnea_country">Pomija kontrolę kraju dla bezdechu.</string>
     <string name="patch_watch_apnea_reeval_not_supported">Ponownie sprawdza obsługę bezdechu zapisaną jako nieobsługiwana.</string>
     <string name="patch_watch_mod">Dodaje moduł komunikujący się z usługą Health Tracking.</string>

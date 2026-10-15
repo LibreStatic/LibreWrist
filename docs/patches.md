@@ -223,6 +223,7 @@ identical to the owner-verified `shm-phone-1.4.6.001-stock-mod-gms1` build (24 p
 | 7 | `watch-ecg-sensor-adapter` | sensor wrapper: type 0x1b (ECG) is always available and registered/unregistered through `EcgAdapter`; types 0x25 (IHRN) and 0x31 (SpO2/apnea) get an availability exemption through `WatchOverrides.sensorAvailability` | A re-signed app cannot reach the privileged ECG sensor; ECG comes from the Health Tracking Service through our own client (see [health-sdk.md](health-sdk.md)) |
 | 7b | `watch-sensor-unregister-compat` | the three direct `SemSensorManager.unregisterListener(listener, int)` calls (the sensor wrapper and two in the sensor controller) go through `WatchOverrides.unregisterListener`, which picks the framework's overload by reflection (`(listener, int)` with any return type, else `(listener)`) and logs failures instead of throwing | The One UI 8 Watch framework **denies** `SemSensorManager.unregisterListener` to a re-signed app (see `globalSetting` below): hidden-API enforcement makes the direct call surface as `NoSuchMethodError` (`api=blocked`), and the reflection fallback finds no overload because `getMethods()` also filters hidden members. The apnea version detector (run because of the 0x31 exemption) unregisters after its timeout, and that `NoSuchMethodError` escaped its `catch Exception` and closed the app on open |
 | 7c | `watch-bp-attribute-guard` | in the BP calibration path (`sl.g`), the `SemHrSensorAttribute` construction is routed through `WatchOverrides.makeHrSensorAttribute`, which builds it by reflection and returns null on any failure (`LinkageError` included); the following `setType`/`setDuration`/`setAttribute`/`registerListener` calls are skipped when it is null | The same hidden-API denial hits `SemHrSensorAttribute.<init>()V` on those watches; the uncaught `NoSuchMethodError` killed the process on every BP calibration attempt (3 crashes in one log). With the guard SHM takes its normal sensor-error path instead |
+| 7d | `watch-bp-sensor-adapter` | in `sl.g` (the BP start path, common to measurement and calibration), the `registerListener(listener, 0x1c)` call of the manual BP sensor is replaced by `BpAdapter.start(listener, 0x1c)` (the int result was already discarded, so the replacement returns void); unregister reaches `BpAdapter.stop` through `WatchOverrides.unregisterListener` (row 7b), which routes type 0x1c before its reflection fallback | A re-signed app cannot register the privileged manual-BP sensor either; the BP data comes from the Health Tracking Service PPG green channel (see [health-tracking-protocol.md](health-tracking-protocol.md) 4.4), repackaged per sample as a `SemBpManualSensorEvent` with the `green_raw` int — the one field the BP consumer (`pl`) reads. The wrapper class `sa2` is not involved: nothing registers 0x1c through it, the registration is direct (unlike the ECG, where the wrapper return value gates the flow). Sensor 24 (HR), registered just before in the same method, is deliberately left alone: its events carry only motion/quality flags for the abort logic and the result HR is computed from the PPG by the native library |
 | 8 | `watch-apnea-country` | the apnea "supported country" check returns true up front | Regional check disabled (the original is a fixed country list) |
 | 9 | `watch-apnea-reeval-not-supported` | in the stored apnea version getter, a persisted `NOT_SUPPORTED` is re-evaluated instead of returned | A value persisted by an earlier build (regional check still on) would be sticky |
 
@@ -260,7 +261,7 @@ grant touches): `hidden_api_blacklist_exemptions` gets the value
   [installation.md](installation.md#2-install-order).
 
 Plus two injected smali sets (profile `inject`, merged into one new `smali_classesN` dir
-before `apktool b`): `watch-mod` (`watch-mod/build-watch-mod.sh`: `EcgAdapter`,
+before `apktool b`): `watch-mod` (`watch-mod/build-watch-mod.sh`: `EcgAdapter`, `BpAdapter`,
 `WatchOverrides` — `sensorAvailability`, `unregisterListener` and `makeHrSensorAttribute` —,
 `UnregisterMethod` and the `shminterop.hsdk` Health Tracking client).
 
@@ -302,7 +303,7 @@ included): another build aborts instead of being patched by a heuristic. `<prefi
 | 8 | `alarm-provider-open` | `AlarmProvider` without the vendor read/write permissions |
 | 9 | `alarm-link-components` | Adds the `ALARM_LINK` signature permission, `LinkActivity` (no UI) and `LinkReceiver` (action `<prefix>.shmbridge.alarm.IN`), both protected by that permission |
 | 10 | `alarm-appfunctions-drop` | Removes the `appfunctions_aggregated_deps` smali tree |
-| 11 | `alarm-semgesture-skip` | `w2/k`, `w2/j`: the `sem_gesture` lookup is skipped (not available to a non-system app) and the `pauseGesture` null path falls through; `w2/k.onStartCommand` starts our own double pinch detector (`Pinch.start`, only when the quick action setting is on) and `onDestroy` stops it right before `super.onDestroy()` (anchored there, not inserted at the method start, so it does not collide with `alarm-service-stop-on-destroy` in the applied-mode check); the manifest declares `uses-native-library lib_algorithm.gesture.samsung.so` (`required=false`) |
+| 11 | `alarm-semgesture-skip` | `w2/k`, `w2/j`: the `sem_gesture` lookup is skipped (not available to a non-system app) and the `pauseGesture` null path falls through; `w2/k.onStartCommand` starts our own double pinch detector (`Pinch.start`, only when the quick action setting is on), the off-body callback of `w2/j` passes the sensor value to `Pinch.onBody` (detection pauses off the wrist and resumes from a fresh state on it, as stock disconnects and reconnects the gesture), and `onDestroy` stops it right before `super.onDestroy()` (anchored there, not inserted at the method start, so it does not collide with `alarm-service-stop-on-destroy` in the applied-mode check); the manifest declares `uses-native-library lib_algorithm.gesture.samsung.so` (`required=false`) |
 | 12 | `alarm-gms-observer-drop` | `CAlarmService.onCreate`: the GMS connection observer is removed (it would stop the service before the player exists) |
 | 13 | `alarm-service-stop-on-destroy` | `w2/k.onDestroy` calls `t()` first so sound/vibration is never orphaned |
 | 14 | `alarm-force-sound-vibrate` | `CAlarmService.r()`: play mode is always `0x11` (sound + vibrate); the stream is alarm usage |
@@ -324,8 +325,14 @@ listener with `QUICKACTION`; the app then snoozes or dismisses as set on the wat
 (`setting_gesture_quick_action_alarm_alert`). The library's JNI symbols fix the class name
 `com.samsung.android.lib_algorithm.gesture.samsung.NativeWrapper`, so that one own class lives
 outside the `shminterop` package (the patcher's `DexInjection` allowlists exactly that type).
-The catalogue's `minAppVersion` is 28 because it references `Pinch`, which exists only in patcher
-builds from CI run 28 on; an older app would build a fork that crashes when an alarm rings.
+The catalogue's `minAppVersion` is 28 because it references `Pinch` and `BpAdapter` (the BP
+sensor adapter, watch row 7d), which exist only in patcher builds from CI run 28 on; an older
+app would build a fork that crashes when an alarm rings or a BP measurement starts. That run
+number is only correct while run 28 is in fact the first release built after both features land
+on main: the injected dex ships inside the app bundle, not with the catalogue, so a release cut
+from an earlier commit would leave run-28 apps able to accept this catalogue without carrying
+the classes it references. If that ever happens, `minAppVersion` must move to the run number of
+the first release that does bundle them.
 Known limitations: the system-level `pauseGesture` during the alarm is unavailable; verified
 on an SM-R920 only, end to end with a phone-synced alarm (Watch7/8 use model types 1/2, untested).
 

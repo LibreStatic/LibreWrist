@@ -362,7 +362,9 @@
     <string name="patch_watch_alarm_system_app">Schedules exact alarms without system privileges.</string>
     <string name="patch_watch_mobile_installed">Reports the phone app as installed.</string>
     <string name="patch_watch_ecg_sensor_adapter">Reads the ECG sensor through the Health Tracking service.</string>
+    <string name="patch_watch_bp_sensor_adapter">Reads the blood pressure sensor through the Health Tracking service, because the watch does not let a re-signed app use it directly.</string>
     <string name="patch_watch_sensor_unregister_compat">Stops sensor clean-up from closing the app on watches with a different sensor framework, such as the Galaxy Watch8.</string>
+    <string name="patch_watch_bp_attribute_guard">Stops blood pressure calibration from closing the app on watches that block the sensor setup it uses (One UI 8 Watch). The app shows its normal sensor error instead.</string>
     <string name="patch_watch_apnea_country">Skips the apnea country check.</string>
     <string name="patch_watch_apnea_reeval_not_supported">Re-checks apnea support that was stored as unsupported.</string>
     <string name="patch_watch_mod">Adds the module that talks to the Health Tracking service.</string>

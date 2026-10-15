@@ -267,7 +267,9 @@
     <string name="patch_watch_alarm_system_app">يجدول منبّهات دقيقة دون صلاحيات النظام.</string>
     <string name="patch_watch_mobile_installed">يُبلغ بأن تطبيق الهاتف مثبَّت.</string>
     <string name="patch_watch_ecg_sensor_adapter">يقرأ مستشعر ECG عبر خدمة Health Tracking.</string>
+    <string name="patch_watch_bp_sensor_adapter">يقرأ مستشعر ضغط الدم عبر خدمة Health Tracking، لأن الساعة لا تسمح لتطبيق أُعيد توقيعه باستخدامه مباشرةً.</string>
     <string name="patch_watch_sensor_unregister_compat">يمنع إغلاق التطبيق عند إيقاف المستشعرات في الساعات ذات إطار مستشعرات مختلف، مثل Galaxy Watch8.</string>
+    <string name="patch_watch_bp_attribute_guard">يمنع معايرة ضغط الدم من إغلاق التطبيق على الساعات التي تحظر إعداد المستشعر الذي تستخدمه (One UI 8 Watch). ويعرض التطبيق بدلًا من ذلك خطأ المستشعر المعتاد.</string>
     <string name="patch_watch_apnea_country">يتخطى فحص البلد الخاص بانقطاع النفس.</string>
     <string name="patch_watch_apnea_reeval_not_supported">يعيد فحص دعم انقطاع النفس الذي خُزّن على أنه غير مدعوم.</string>
     <string name="patch_watch_mod">يضيف الوحدة التي تتحدث مع خدمة Health Tracking.</string>
