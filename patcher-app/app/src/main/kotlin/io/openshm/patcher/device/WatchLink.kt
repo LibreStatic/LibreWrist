@@ -146,6 +146,8 @@ open class WatchLink(
                     get() = prefs.getString(KEY_SERIAL_PREFIX, null)
                     set(value) = prefs.edit().putString(KEY_SERIAL_PREFIX, value).apply()
             }
+            // A fixed debug watch (see AdbDiscovery.fixedServices) counts as the paired one.
+            AdbDiscovery.fixedServices?.firstOrNull()?.let { if (store.host == null) store.host = it.host }
             val discovery = AdbDiscovery(context)
             return WatchLink(
                 LibAdbBackend(AdbKeyStore.forContext(context)),

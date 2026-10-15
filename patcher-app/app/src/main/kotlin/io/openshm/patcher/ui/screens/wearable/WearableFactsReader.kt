@@ -6,9 +6,15 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.content.ContextCompat
+import io.openshm.patcher.adb.AdbDiscovery
 
 /** Reads Galaxy Wearable, its watch plugin and the bonded devices from the phone; changes nothing. */
 internal fun readWearableFacts(context: Context): WearableFacts {
+    // Debug builds with a fixed emulated watch (see AdbDiscovery.fixedServices): it cannot be paired
+    // through Galaxy Wearable, so the pairing is reported as done.
+    if (AdbDiscovery.fixedServices != null) {
+        return WearableFacts(setOf(GALAXY_WEARABLE_PACKAGE, WATCH_PLUGIN_PACKAGES.first()), true, listOf(BondedDevice("Debug watch", null)))
+    }
     val allowed = ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED
     val bonded = if (allowed) {
         try {

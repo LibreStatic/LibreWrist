@@ -8,10 +8,12 @@ import java.net.Inet4Address
 import java.net.InetAddress
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flow
 
 enum class AdbServiceType(val nsdType: String) {
     /** Wireless debugging "Pair device with pairing code". */
@@ -82,7 +84,10 @@ class AdbDiscovery(context: Context) {
      * with [AdbException.Discovery] if the system refuses to start discovery. Cancelling the
      * collector stops discovery.
      */
-    fun discover(type: AdbServiceType): Flow<List<AdbService>> = callbackFlow {
+    fun discover(type: AdbServiceType): Flow<List<AdbService>> =
+        fixedServices?.let { fixed -> flow { emit(fixed.filter { it.type == type }); awaitCancellation() } } ?: discoverMdns(type)
+
+    private fun discoverMdns(type: AdbServiceType): Flow<List<AdbService>> = callbackFlow {
         val registry = ServiceRegistry()
         val resolver: Resolver = if (Build.VERSION.SDK_INT >= 34) {
             CallbackResolver(nsd, CALLBACK_EXECUTOR)
@@ -130,14 +135,22 @@ class AdbDiscovery(context: Context) {
         }
     }.distinctUntilChanged()
 
-    private companion object {
+    companion object {
+        /**
+         * Debug builds only: the services every discovery reports instead of mDNS, for an emulated watch
+         * that cannot announce itself (set from `debug.openshm.watch_adb`, see `PatcherApplication`).
+         * Null in normal use.
+         */
+        @Volatile
+        var fixedServices: List<AdbService>? = null
+
         /**
          * Shared and never shut down: NsdManager still delivers callbacks (such as
          * onServiceInfoCallbackUnregistered) after they are unregistered, and a task rejected by a
          * terminated executor crashes the process on NsdManager's handler thread. A late callback
          * here only reaches a closed channel.
          */
-        val CALLBACK_EXECUTOR: Executor by lazy {
+        private val CALLBACK_EXECUTOR: Executor by lazy {
             Executors.newSingleThreadExecutor { r -> Thread(r, "adb-nsd-callbacks").apply { isDaemon = true } }
         }
     }

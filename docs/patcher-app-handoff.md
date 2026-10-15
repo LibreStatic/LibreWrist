@@ -270,6 +270,17 @@ are the three APKs only.
   - At the end, offer to turn wireless debugging off: open the watch's settings
     (`settings put global adb_wifi_enabled 0` would cut our own connection, so do it last, or
     guide the user).
+- **Debug-only fixed watch.** Debug builds read the system property `debug.openshm.watch_adb`
+  (`host:port`) at start-up (`PatcherApplication`). When it is set, `AdbDiscovery` reports that
+  address as the only watch instead of searching mDNS, `WatchLink` remembers it as the paired watch,
+  and the Galaxy Wearable step reports the pairing as done. Release builds ignore it. Example with
+  an emulated phone and watch: `adb -s <watch> tcpip 5555`,
+  `adb -s <watch> forward tcp:15555 tcp:5555`, then
+  `adb -s <phone> shell setprop debug.openshm.watch_adb 10.0.2.2:15555` and restart the patcher.
+  Limitation: the Wear OS emulator cannot authorize a new ADB key. Its confirmation dialog
+  (`SecureAdbActivity`) denies at once when `USB_STATE` reports no USB connection, which is always
+  the case on an emulator, and the emulator has no Wi-Fi for TLS pairing. So the emulated watch only
+  accepts a key it already trusts.
 
 ### 5.6 Memory and performance
 
