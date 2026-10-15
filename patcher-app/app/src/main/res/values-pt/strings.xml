@@ -251,6 +251,8 @@
     <string name="patch_shm_setup_network_gate">Desativa a verificação de SIM e a regional durante a configuração.</string>
     <string name="patch_shm_sleep_apnea_support">Informa que a apneia do sono é compatível.</string>
     <string name="patch_shm_home_tabs_fallback">Mostra a pressão arterial e o ECG na tela inicial quando o país não está em nenhuma lista de recursos, em vez de fechar.</string>
+    <string name="patch_shm_ihrn_countries">Ativa as notificações de ritmo cardíaco irregular nos países em que a Samsung oferece o ECG sem elas, usando a versão mais recente do ECG.</string>
+    <string name="patch_shm_bp_worldwide">Mostra a pressão arterial em todos os países, inclusive onde a Samsung não a oferece.</string>
     <string name="patch_phone_rebrand_gms">Dá ao app do celular o mesmo pacote e a mesma chave do app do relógio para que os dois possam trocar dados.</string>
     <string name="patch_watch_rebrand_coexist">Renomeia o app do relógio para conviver com o original.</string>
     <string name="patch_shm_wear_trusted_peers">Faz com que os dois apps modificados se reconheçam na ligação com o relógio, em vez de apenas os originais.</string>
