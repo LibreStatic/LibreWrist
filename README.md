@@ -1,6 +1,6 @@
 # LibreWrist
 
-> LibreWrist was formerly called OpenSHM (the repository and some identifiers keep that name).
+> LibreWrist was formerly called OpenSHM (some identifiers, such as the `io.openshm` package, keep that name).
 
 Personal interoperability between a Galaxy Watch and a **non-Samsung** Android phone. With it, the
 Samsung Health Monitor (SHM) app can measure ECG, blood pressure and irregular heart rhythm
@@ -59,7 +59,7 @@ use sample data. Click it to open the full-quality MP4.
 
 The easiest way is **LibreWrist** (`patcher-app/`). This Android app does the whole job on the
 phone itself; no PC is needed. Download the latest APK from the
-[Releases](https://github.com/LibreStatic/OpenSHM/releases) page and install it on the phone.
+[Releases](https://github.com/LibreStatic/LibreWrist/releases) page and install it on the phone.
 
 The app guides you through these steps:
 
