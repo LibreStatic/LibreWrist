@@ -22,6 +22,11 @@ import android.util.Log;
  * <p>With {@link AlarmFork#enabled} the alarm is handed to the fork of Samsung's Alarm app
  * (native UI, fed by the bridge). If the fork is not available,
  * {@link AlarmRinger} rings as a fallback.</p>
+ *
+ * <p>Alarm sync can be switched off by the installer (extra {@code alarms=false} of the START
+ * broadcast, see {@link #syncEnabled}). Off means no ring by any path: {@code alarm/next} and
+ * {@code alarm/ring} are ignored, the local alarm is cancelled and nothing is written to
+ * Samsung's Alarm app. {@code alarm/stop} is still handled so that a ring in progress can end.</p>
  */
 public final class AlarmMirror {
 
@@ -29,6 +34,7 @@ public final class AlarmMirror {
     static final String K_T = "t";            // alarm instant (epoch ms)
     static final String K_FIRE = "fire";      // scheduled fire = t + GRACE
     static final String K_RING_AT = "ringAt"; // last alarm/ring received (epoch ms)
+    static final String K_SYNC = "sync";      // alarm sync on (absent = on)
     static final long GRACE_MS = 5000;
     static final long SNOOZE_MS = 10 * 60 * 1000L;
     /** A phone ring that arrived up to this much before t counts as "this alarm's". */
@@ -40,8 +46,29 @@ public final class AlarmMirror {
         return c.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
     }
 
+    /** Alarm sync is on (default): the installer did not switch it off. */
+    static boolean syncEnabled(Context c) {
+        return prefs(c).getBoolean(K_SYNC, true);
+    }
+
+    /** Stores the installer's switch (START extra {@code alarms}); turning it off drops any armed local alarm. */
+    static synchronized void setSyncEnabled(Context c, boolean on) {
+        boolean was = syncEnabled(c);
+        prefs(c).edit().putBoolean(K_SYNC, on).apply();
+        if (on != was) Log.i(BridgeHub.TAG, "alarm sync " + (on ? "on" : "off"));
+        if (!on) {
+            cancel(c);
+            SamsungAlarm.cancelSync(c);
+            prefs(c).edit().remove(K_T).remove(K_FIRE).apply();
+        }
+    }
+
     /** {@code alarm/next}: {@code t == null} cancels. */
     static synchronized void setNext(Context c, Long t) {
+        if (!syncEnabled(c)) {
+            Log.i(BridgeHub.TAG, "alarm/next ignored: alarm sync is off");
+            return;
+        }
         if (t == null || t <= 0) {
             cancel(c);
             prefs(c).edit().remove(K_T).remove(K_FIRE).apply();
@@ -54,6 +81,7 @@ public final class AlarmMirror {
 
     /** Schedules the managed alarm to ring at {@code t + GRACE}. */
     static synchronized void schedule(Context c, long t) {
+        if (!syncEnabled(c)) return;
         long fire = t + GRACE_MS;
         if (fire <= System.currentTimeMillis()) {
             cancel(c);
@@ -81,6 +109,7 @@ public final class AlarmMirror {
 
     /** BOOT_COMPLETED / MY_PACKAGE_REPLACED / exact-alarm permission change. */
     static synchronized void rearm(Context c) {
+        if (!syncEnabled(c)) return;
         long t = prefs(c).getLong(K_T, 0);
         if (t <= 0) {
             Log.i(BridgeHub.TAG, "re-arm: no saved alarm");
@@ -92,6 +121,7 @@ public final class AlarmMirror {
 
     /** Fire of the local alarm (t + GRACE). */
     static synchronized void onFire(Context c) {
+        if (!syncEnabled(c)) return;
         SharedPreferences p = prefs(c);
         long t = p.getLong(K_T, 0);
         long ringAt = p.getLong(K_RING_AT, 0);
@@ -118,6 +148,10 @@ public final class AlarmMirror {
 
     /** {@code alarm/ring} from the phone. */
     static void onPhoneRing(Context c, String id, String label, boolean canSnooze) {
+        if (!syncEnabled(c)) {
+            Log.i(BridgeHub.TAG, "alarm/ring ignored: alarm sync is off");
+            return;
+        }
         long now = System.currentTimeMillis();
         long ts = prefs(c).getLong(K_T, now);
         prefs(c).edit().putLong(K_RING_AT, now).apply();

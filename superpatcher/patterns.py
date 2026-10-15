@@ -134,12 +134,13 @@ def _validate_grant(where, g):
     return out
 
 
-def _validate_output_extras(where, o):
+def _validate_output_extras(where, o, optional_apps=frozenset()):
     out = []
     if 'start' in o:
         st = o['start']
-        if not isinstance(st, dict) or set(st) != {'receiver', 'action'}:
-            out.append(f'{where}: start must be exactly {{"receiver", "action"}}')
+        if not isinstance(st, dict) or not {'receiver', 'action'} <= set(st) \
+                or set(st) - {'receiver', 'action', 'switches'}:
+            out.append(f'{where}: start must be {{"receiver", "action"}} plus optionally "switches"')
         else:
             if not isinstance(st['receiver'], str) or not re.fullmatch(r'(\.[A-Za-z]\w*)+', st['receiver'],
                                                                       re.ASCII):
@@ -148,6 +149,16 @@ def _validate_output_extras(where, o):
             if act is None or not _PACKAGE_RE.fullmatch(act):
                 out.append(f'{where}: start.action is not a valid action name '
                            '(only ${PKG_PREFIX} may be used as a placeholder)')
+            if 'switches' in st:
+                sw = st['switches']
+                if not isinstance(sw, dict):
+                    out.append(f'{where}: start.switches must be an object')
+                else:
+                    for name, app in sw.items():
+                        if not re.fullmatch(r'[a-z][A-Za-z0-9]*', name, re.ASCII):
+                            out.append(f'{where}: start.switches key {name!r} is not a valid extra name')
+                        if not isinstance(app, str) or app not in optional_apps:
+                            out.append(f'{where}: start.switches[{name!r}] must be the id of an optional app')
     for k in ('companionLink', 'knownSigner', 'singleCopy'):
         if k in o and not isinstance(o[k], bool):
             out.append(f'{where}: {k} must be a boolean')
@@ -164,6 +175,10 @@ def _validate_install(cat, input_targets, profiles):
     input id -> device, `profiles` is the (dict) profiles section."""
     problems = []
     outputs = cat['outputs']
+    apps = cat.get('apps')
+    optional_apps = frozenset(
+        a['id'] for a in (apps if isinstance(apps, list) else ())
+        if isinstance(a, dict) and a.get('optional') is True and isinstance(a.get('id'), str))
     out_ids = []
     seen_pkgs = set()
     if not isinstance(outputs, list) or not outputs:
@@ -176,7 +191,7 @@ def _validate_install(cat, input_targets, profiles):
             problems.append(f'{where}: expected id, device, package, from '
                             f'(plus optionally {", ".join(_OUTPUT_OPTIONAL_KEYS)})')
             continue
-        problems.extend(_validate_output_extras(where, o))
+        problems.extend(_validate_output_extras(where, o, optional_apps))
         if not isinstance(o['id'], str) or not _ID_RE.fullmatch(o['id']):
             problems.append(f'{where}: id must match {_ID_RE.pattern}')
         elif o['id'] in out_ids:

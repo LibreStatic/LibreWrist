@@ -46,6 +46,8 @@ internal class WatchInstallRunner(
     private val ownPackage: String = "",
     /** Called with the output id once that output is installed (Home's restored outputs forget it). */
     private val onInstalled: (String) -> Unit = {},
+    /** The boolean START extras for an output (catalogue `start.switches`), e.g. alarm sync off when its app is skipped. */
+    private val startExtras: (OutputApp) -> Map<String, Boolean> = { emptyMap() },
 ) {
     private var locked = false
 
@@ -125,7 +127,7 @@ internal class WatchInstallRunner(
         val start = out.start ?: return
         val action = out.startAction(prefix()) ?: return
         try {
-            device.startBridge(item.packageName, start.receiver, action)
+            device.startBridge(item.packageName, start.receiver, action, startExtras(out))
         } catch (e: IOException) {
             log("start request for ${item.outputId} failed: ${e.javaClass.simpleName}")
             return

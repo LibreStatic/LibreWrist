@@ -39,8 +39,12 @@ sealed class OutputSource {
     data class OwnApp(val path: String) : OutputSource()
 }
 
-/** How an installed bridge is started: [receiver] (relative class name) with [action] (placeholders unexpanded). */
-data class OutputStart(val receiver: String, val action: String)
+/**
+ * How an installed bridge is started: [receiver] (relative class name) with [action] (placeholders unexpanded).
+ * [switches] maps a boolean intent-extra name to an optional app id: the start carries `--ez <name> false` only
+ * when that app is skipped (and offered for the watch), `true` otherwise.
+ */
+data class OutputStart(val receiver: String, val action: String, val switches: Map<String, String> = emptyMap())
 
 data class CatalogueOutput(
     val id: String, val device: String, val packageName: String, val from: OutputSource,
@@ -160,6 +164,7 @@ class Catalogue private constructor(
         private val SETTINGS_COMPONENT_RE = Regex("^[A-Za-z]\\w*(\\.[A-Za-z]\\w*)+/(\\.[A-Za-z]\\w*)+$")
         private val VIEW_ID_RE = Regex("^[a-z]+:id/[a-z_][a-z0-9_]*$")
         private val RELATIVE_CLASS_RE = Regex("^(\\.[A-Za-z]\\w*)+$")
+        private val EXTRA_NAME_RE = Regex("^[a-z][A-Za-z0-9]*$")
         private val DEVICES = listOf("phone", "watch")
         private val INSTALL_STEPS = listOf("userOnboarding")
 
@@ -293,6 +298,9 @@ class Catalogue private constructor(
         private fun validateInstall(cat: Map<*, *>, inputTargets: Map<String, Any?>, profiles: Map<*, *>): List<String> {
             val problems = ArrayList<String>()
             var outputs = cat["outputs"]
+            val optionalApps = (cat["apps"] as? List<*>).orEmpty().mapNotNull { a ->
+                (a as? Map<*, *>)?.takeIf { it["optional"] == true }?.get("id") as? String
+            }.toSet()
             val outIds = ArrayList<String>()
             val seenPkgs = HashSet<Pair<String, String>>()
             if (outputs !is List<*> || outputs.isEmpty()) {
@@ -307,7 +315,7 @@ class Catalogue private constructor(
                         "(plus optionally ${OUTPUT_OPTIONAL_KEYS.joinToString(", ")})")
                     continue
                 }
-                problems.addAll(validateOutputExtras(where, o))
+                problems.addAll(validateOutputExtras(where, o, optionalApps))
                 val id = o["id"]
                 if (id !is String || !ID_RE.matches(id)) {
                     problems.add("$where: id must match ${ID_RE.pattern}")
@@ -426,12 +434,13 @@ class Catalogue private constructor(
             return problems
         }
 
-        private fun validateOutputExtras(where: String, o: Map<*, *>): List<String> {
+        private fun validateOutputExtras(where: String, o: Map<*, *>, optionalApps: Set<String>): List<String> {
             val out = ArrayList<String>()
             if ("start" in o) {
                 val st = o["start"]
-                if (st !is Map<*, *> || st.keys != setOf("receiver", "action")) {
-                    out.add("$where: start must be exactly {\"receiver\", \"action\"}")
+                if (st !is Map<*, *> || !st.keys.containsAll(setOf("receiver", "action")) ||
+                    (st.keys - setOf("receiver", "action", "switches")).isNotEmpty()) {
+                    out.add("$where: start must be {\"receiver\", \"action\"} plus optionally \"switches\"")
                 } else {
                     val r = st["receiver"]
                     if (r !is String || !RELATIVE_CLASS_RE.matches(r)) {
@@ -441,6 +450,21 @@ class Catalogue private constructor(
                     if (act == null || !PACKAGE_RE.matches(act)) {
                         out.add("$where: start.action is not a valid action name " +
                             "(only \${PKG_PREFIX} may be used as a placeholder)")
+                    }
+                    if ("switches" in st) {
+                        val sw = st["switches"]
+                        if (sw !is Map<*, *>) {
+                            out.add("$where: start.switches must be an object")
+                        } else {
+                            for ((name, app) in sw) {
+                                if (name !is String || !EXTRA_NAME_RE.matches(name)) {
+                                    out.add("$where: start.switches key '$name' is not a valid extra name")
+                                }
+                                if (app !is String || app !in optionalApps) {
+                                    out.add("$where: start.switches['$name'] must be the id of an optional app")
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -783,7 +807,10 @@ class Catalogue private constructor(
             }
             val outputs = (cat["outputs"] as List<Map<String, Any?>>).map { o ->
                 val from = o["from"] as Map<String, String>
-                val start = (o["start"] as Map<String, String>?)?.let { OutputStart(it.getValue("receiver"), it.getValue("action")) }
+                val start = (o["start"] as Map<String, Any?>?)?.let {
+                    OutputStart(it.getValue("receiver") as String, it.getValue("action") as String,
+                        (it["switches"] as Map<String, String>?).orEmpty())
+                }
                 CatalogueOutput(o["id"] as String, o["device"] as String, o["package"] as String,
                     if ("ownApp" in from) OutputSource.OwnApp(from.getValue("ownApp"))
                     else OutputSource.Patched(from.getValue("input"), from.getValue("profile")),

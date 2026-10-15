@@ -76,6 +76,11 @@ adb -s $WATCH shell am broadcast -a shminterop.shmbridge.START -n $W/.BridgeAlar
 adb -s $PHONE shell am broadcast --user 0 -a shminterop.shmbridge.START -n $P/.CommsBootReceiver -f 0x20
 ```
 
+The watch START may carry the boolean extra `--ez alarms false`, which turns alarm sync off
+entirely (no fork ring, no fallback ringer, no local alarm, nothing written to Samsung's Alarm
+app; `alarm/stop` is still honoured). The patcher sends it when the user leaves the alarm fork out
+(and `--ez alarms true` otherwise); without the extra the setting is unchanged (default on).
+
 The watch link starts on that action, after boot and after an upgrade (`BridgeAlarmReceiver`,
 which also re-arms the mirrored alarm), and when `am start -n $W/.MainActivity` opens the status
 screen. The phone service starts on the same three triggers (`CommsBootReceiver`).

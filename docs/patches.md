@@ -86,8 +86,11 @@ scripts/build_shm_watch.sh        # -> $DIST_DIR/shm-watch-1.5.1.022-gms.apk
     (`pm disable-user --user 0 <package>`); `optional` apps are offered, not forced. `replacedBy`
     names the output that replaces the stock app (the step is skipped when that output is not built).
   - `outputs[]` may also carry (schema 2, all optional): `start` = `{"receiver": ".Class",
-    "action": "<action>"}` (the broadcast that starts an installed bridge; `${PKG_PREFIX}` allowed in
-    the action), `companionLink` (the app talks to the companion app), `knownSigner` (may be signed
+    "action": "<action>", "switches"?: {"<extra>": "<app id>"}}` (the broadcast that starts an
+    installed bridge; `${PKG_PREFIX}` allowed in the action; `switches` maps a boolean intent-extra
+    name `[a-z][A-Za-z0-9]*` to the id of an `optional` app: the patcher sends `--ez <extra> false`
+    only when that app is switched off and offered for the watch, `true` otherwise),
+    `companionLink` (the app talks to the companion app), `knownSigner` (may be signed
     by a key other than the catalogue's own), `statusAuthority` (content authority where the app
     publishes its status; `${PKG_PREFIX}` allowed) and `singleCopy` (copies under another package
     prefix are leftovers).

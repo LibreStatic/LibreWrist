@@ -317,6 +317,23 @@ class SchemaTwo(unittest.TestCase):
         out['unknownField'] = 1
         self.assertRejected('expected id, device, package, from')
 
+    def test_start_switches(self):
+        out = next(o for o in self.cat['outputs'] if o['id'] == 'bridge-watch')
+        self.assertEqual(out['start']['switches'], {'alarms': 'alarm'})
+        self.assertEqual(P.validate_catalogue(self.cat), [])
+        for bad, msg in (('x', 'start.switches must be an object'),
+                         ({'Alarms': 'alarm'}, 'not a valid extra name'),
+                         ({'1a': 'alarm'}, 'not a valid extra name'),
+                         ({'a b': 'alarm'}, 'not a valid extra name'),
+                         ({'alarms': 'nope'}, 'id of an optional app'),
+                         ({'alarms': 'bridge'}, 'id of an optional app'),
+                         ({'alarms': 5}, 'id of an optional app')):
+            out['start']['switches'] = bad
+            self.assertRejected(msg)
+        out['start']['switches'] = {'alarms': 'alarm'}
+        out['start']['other'] = 1
+        self.assertRejected('optionally "switches"')
+
     def test_platform(self):
         hp = self.cat['platform']['healthPlatform']
         for field, bad in (('taps', 0), ('requiredBy', ['nope']), ('titleViewId', 'title'),

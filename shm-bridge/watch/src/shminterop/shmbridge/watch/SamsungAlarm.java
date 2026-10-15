@@ -102,6 +102,7 @@ final class SamsungAlarm {
 
     /** Brings the phone's alarm {@code t} to Samsung's app (or defers until t − 24 h). */
     static synchronized void sync(Context c, long t) {
+        if (!AlarmMirror.syncEnabled(c)) return;
         long now = System.currentTimeMillis();
         if (t <= now) return;
         if (t - now >= DAY_MS - MARGIN_MS) {

@@ -172,7 +172,7 @@ public final class BridgeHub {
             h.put("role", "watch");
             JSONArray caps = new JSONArray();
             caps.put("notif");
-            caps.put("alarm");
+            if (AlarmMirror.syncEnabled(ctx)) caps.put("alarm");
             caps.put("call");
             h.put("caps", caps);
             lastHelloSentAt = System.currentTimeMillis();

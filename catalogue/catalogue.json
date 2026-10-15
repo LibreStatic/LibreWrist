@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "serial": 39,
-  "minAppVersion": 28,
+  "serial": 40,
+  "minAppVersion": 29,
   "inputs": [
     {
       "id": "shm-phone",
@@ -3005,7 +3005,10 @@
       },
       "start": {
         "receiver": ".BridgeAlarmReceiver",
-        "action": "${PKG_PREFIX}.shmbridge.START"
+        "action": "${PKG_PREFIX}.shmbridge.START",
+        "switches": {
+          "alarms": "alarm"
+        }
       },
       "companionLink": true,
       "singleCopy": true
@@ -3280,7 +3283,7 @@
       "outputs": [
         "alarm-fork"
       ],
-      "optional": false,
+      "optional": true,
       "icon": "alarm"
     },
     {
@@ -3344,7 +3347,7 @@
       "app.health-monitor.title": "Samsung Health Monitor",
       "app.health-monitor.summary": "Builds patched Samsung Health Monitor apps for the phone and the watch (ECG, blood pressure and the other watch sensors). Switch off to leave them out.",
       "app.alarm.title": "Phone alarms on the watch",
-      "app.alarm.summary": "Keeps the watch's alarms in sync with your phone's alarms.",
+      "app.alarm.summary": "Rings your phone's alarms on the watch with Samsung's alarm screen. Switch off to turn alarm sync off.",
       "app.bridge.title": "Bridge",
       "app.bridge.summary": "Sends your phone's notifications, calls and alarms to the watch over Bluetooth.",
       "app.samsung-health.title": "Samsung Health+",
@@ -3452,7 +3455,7 @@
     "ar": {
       "app.health-monitor.summary": "يُنشئ نسخًا مُصحَّحة من Samsung Health Monitor للهاتف وللساعة (تخطيط القلب وضغط الدم وبقية مستشعرات الساعة). أوقف التبديل لاستثنائها.",
       "app.alarm.title": "منبّهات الهاتف على الساعة",
-      "app.alarm.summary": "يبقي منبّهات الساعة متزامنة مع منبّهات هاتفك.",
+      "app.alarm.summary": "يُشغّل منبّهات هاتفك على الساعة بشاشة المنبّه من Samsung. أوقف التبديل لإيقاف مزامنة المنبّهات.",
       "app.bridge.title": "الجسر",
       "app.bridge.summary": "يرسل إشعارات هاتفك ومكالماته ومنبّهاته إلى الساعة عبر البلوتوث.",
       "app.samsung-health.summary": "أنشئ أيضًا نسخة مُصحَّحة من تطبيق Samsung Health للهاتف باسم «Samsung Health+»، مع تفعيل ميزات تتطلب بخلاف ذلك ساعة Galaxy Watch أحدث. تُثبَّت بجوار تطبيق Samsung Health من Google Play الذي تحتفظ به: يبقى ذلك التطبيق متصلًا بالساعة ويرفع البيانات إلى Samsung Account الخاص بك، بينما ينزّل Samsung Health+ البيانات نفسها من السحابة بعد تسجيل الدخول بالحساب نفسه (وقد يتأخر عنه بعض الوقت).",
@@ -3557,7 +3560,7 @@
     "de": {
       "app.health-monitor.summary": "Erstellt gepatchte Samsung-Health-Monitor-Apps für Smartphone und Uhr (EKG, Blutdruck und weitere Uhrensensoren). Ausschalten, um sie wegzulassen.",
       "app.alarm.title": "Smartphone-Wecker auf der Uhr",
-      "app.alarm.summary": "Hält die Wecker der Uhr mit den Weckern deines Smartphones synchron.",
+      "app.alarm.summary": "Lässt die Wecker deines Smartphones auf der Uhr mit dem Wecker-Bildschirm von Samsung klingeln. Ausschalten, um die Wecker-Synchronisierung abzuschalten.",
       "app.bridge.title": "Bridge",
       "app.bridge.summary": "Sendet die Benachrichtigungen, Anrufe und Wecker deines Smartphones per Bluetooth an die Uhr.",
       "app.samsung-health.summary": "Erstellt außerdem eine gepatchte Kopie der Samsung-Health-App für das Smartphone, „Samsung Health+“, mit eingeschalteten Funktionen, die sonst eine neuere Galaxy Watch erfordern. Sie wird neben der Samsung-Health-App aus Google Play installiert, die du behältst: Diese bleibt mit der Uhr verbunden und lädt die Daten in dein Samsung-Konto hoch, und Samsung Health+ lädt dieselben Daten aus der Cloud herunter, nachdem du dich mit demselben Konto angemeldet hast (das kann etwas verzögert sein).",
@@ -3662,7 +3665,7 @@
     "es": {
       "app.health-monitor.summary": "Crea copias parcheadas de Samsung Health Monitor para el teléfono y el reloj (ECG, presión arterial y otros sensores del reloj). Desactívalo para omitirlas.",
       "app.alarm.title": "Alarmas del teléfono en el reloj",
-      "app.alarm.summary": "Mantiene las alarmas del reloj sincronizadas con las de tu teléfono.",
+      "app.alarm.summary": "Hace sonar en el reloj las alarmas de tu teléfono con la pantalla de alarma de Samsung. Desactívalo para desactivar la sincronización de alarmas.",
       "app.bridge.title": "Puente",
       "app.bridge.summary": "Envía las notificaciones, llamadas y alarmas de tu teléfono al reloj por Bluetooth.",
       "app.samsung-health.summary": "También crea una copia parcheada de la app Samsung Health para teléfono, \"Samsung Health+\", con funciones activadas que de otro modo necesitan un Galaxy Watch más nuevo. Se instala junto a la app Samsung Health de Google Play, que conservas: esa sigue conectada al reloj y sube los datos a tu cuenta Samsung, y Samsung Health+ descarga los mismos datos de la nube cuando inicias sesión con la misma cuenta (puede ir con algo de retraso).",
@@ -3767,7 +3770,7 @@
     "fr": {
       "app.health-monitor.summary": "Crée des copies modifiées de Samsung Health Monitor pour le téléphone et la montre (ECG, tension artérielle et autres capteurs de la montre). Désactivez pour les ignorer.",
       "app.alarm.title": "Alarmes du téléphone sur la montre",
-      "app.alarm.summary": "Garde les alarmes de la montre synchronisées avec celles de votre téléphone.",
+      "app.alarm.summary": "Fait sonner sur la montre les alarmes de votre téléphone avec l'écran d'alarme de Samsung. Désactivez pour désactiver la synchronisation des alarmes.",
       "app.bridge.title": "Pont",
       "app.bridge.summary": "Envoie les notifications, les appels et les alarmes de votre téléphone à la montre par Bluetooth.",
       "app.samsung-health.summary": "Crée aussi une copie modifiée de l'app Samsung Health du téléphone, \"Samsung Health+\", avec des fonctions activées qui nécessitent sinon une Galaxy Watch plus récente. Elle s'installe à côté de l'app Samsung Health de Google Play, que vous conservez : celle-ci reste connectée à la montre et envoie les données vers votre compte Samsung, et Samsung Health+ télécharge les mêmes données depuis le cloud une fois que vous vous connectez avec le même compte (avec parfois un certain retard).",
@@ -3872,7 +3875,7 @@
     "hi": {
       "app.health-monitor.summary": "फ़ोन और घड़ी के लिए Samsung Health Monitor की पैच की गई कॉपियाँ बनाता है (ECG, रक्तचाप और घड़ी के अन्य सेंसर)। इन्हें छोड़ने के लिए बंद करें।",
       "app.alarm.title": "घड़ी पर फ़ोन अलार्म",
-      "app.alarm.summary": "घड़ी के अलार्म को आपके फ़ोन के अलार्म के साथ सिंक में रखता है।",
+      "app.alarm.summary": "आपके फ़ोन के अलार्म को घड़ी पर Samsung की अलार्म स्क्रीन के साथ बजाता है। अलार्म सिंक बंद करने के लिए इसे बंद करें।",
       "app.bridge.title": "ब्रिज",
       "app.bridge.summary": "आपके फ़ोन की सूचनाएँ, कॉल और अलार्म ब्लूटूथ से घड़ी तक भेजता है।",
       "app.samsung-health.summary": "फ़ोन के Samsung Health ऐप की एक पैच की गई कॉपी \"Samsung Health+\" भी बनाएँ, जिसमें वे सुविधाएँ चालू हैं जिनके लिए वरना नई Galaxy Watch चाहिए। यह Google Play वाले Samsung Health ऐप के बगल में इंस्टॉल होती है, जिसे आप रखते हैं: वह घड़ी से जुड़ा रहता है और आपके Samsung Account पर डेटा अपलोड करता है, और उसी खाते से साइन इन करने के बाद Samsung Health+ क्लाउड से वही डेटा डाउनलोड करता है (यह कुछ समय पीछे रह सकता है)।",
@@ -3977,7 +3980,7 @@
     "id": {
       "app.health-monitor.summary": "Membuat salinan Samsung Health Monitor yang dipatch untuk ponsel dan jam (EKG, tekanan darah, dan sensor jam lainnya). Matikan untuk melewatkannya.",
       "app.alarm.title": "Alarm ponsel di jam",
-      "app.alarm.summary": "Menjaga alarm di jam tetap sinkron dengan alarm di ponsel Anda.",
+      "app.alarm.summary": "Membunyikan alarm ponsel Anda di jam dengan layar alarm Samsung. Matikan untuk mematikan sinkronisasi alarm.",
       "app.bridge.title": "Bridge",
       "app.bridge.summary": "Mengirim notifikasi, panggilan, dan alarm ponsel Anda ke jam melalui Bluetooth.",
       "app.samsung-health.summary": "Juga membuat salinan aplikasi Samsung Health ponsel yang dipatch, \"Samsung Health+\", dengan fitur aktif yang biasanya membutuhkan Galaxy Watch yang lebih baru. Salinan ini dipasang berdampingan dengan aplikasi Samsung Health dari Google Play, yang tetap Anda simpan: aplikasi itu tetap terhubung ke jam dan mengunggah data ke akun Samsung Anda, lalu Samsung Health+ mengunduh data yang sama dari cloud setelah Anda login dengan akun yang sama (bisa sedikit terlambat).",
@@ -4082,7 +4085,7 @@
     "it": {
       "app.health-monitor.summary": "Crea copie modificate di Samsung Health Monitor per telefono e orologio (ECG, pressione sanguigna e altri sensori dell'orologio). Disattiva per ometterle.",
       "app.alarm.title": "Sveglie del telefono sull'orologio",
-      "app.alarm.summary": "Mantiene le sveglie dell'orologio sincronizzate con quelle del tuo telefono.",
+      "app.alarm.summary": "Fa suonare sull'orologio le sveglie del tuo telefono con la schermata sveglia di Samsung. Disattiva per disattivare la sincronizzazione delle sveglie.",
       "app.bridge.title": "Bridge",
       "app.bridge.summary": "Invia all'orologio, tramite Bluetooth, le notifiche, le chiamate e le sveglie del tuo telefono.",
       "app.samsung-health.summary": "Crea anche una copia modificata dell'app Samsung Health per telefono, \"Samsung Health+\", con funzioni attivate che altrimenti richiedono un Galaxy Watch più recente. Si installa accanto all'app Samsung Health di Google Play, che tieni: quella resta connessa all'orologio e carica i dati sul tuo account Samsung, e Samsung Health+ scarica gli stessi dati dal cloud dopo che accedi con lo stesso account (può essere in ritardo di un po').",
@@ -4187,7 +4190,7 @@
     "ja": {
       "app.health-monitor.summary": "スマートフォンとウォッチ向けのパッチ適用済み Samsung Health Monitor を作成します（心電図、血圧、その他のウォッチのセンサー）。含めない場合はオフにしてください。",
       "app.alarm.title": "ウォッチのスマートフォンアラーム",
-      "app.alarm.summary": "ウォッチのアラームをスマートフォンのアラームと同期させます。",
+      "app.alarm.summary": "スマートフォンのアラームを、Samsung のアラーム画面でウォッチに鳴らします。オフにするとアラームの同期もオフになります。",
       "app.bridge.title": "ブリッジ",
       "app.bridge.summary": "スマートフォンの通知、通話、アラームをBluetoothでウォッチに送ります。",
       "app.samsung-health.summary": "スマートフォン版 Samsung Health のパッチ適用済みコピー「Samsung Health+」も作成します。通常は新しい Galaxy Watch が必要な機能が有効になります。Google Play の Samsung Health アプリの隣にインストールされ、そちらはそのまま使い続けます。Google Play 版はウォッチと接続したまま Samsung アカウントにデータをアップロードし、Samsung Health+ は同じアカウントでサインインすると、クラウドから同じデータをダウンロードします（反映がしばらく遅れることがあります）。",
@@ -4292,7 +4295,7 @@
     "ko": {
       "app.health-monitor.summary": "휴대전화와 워치용 패치된 Samsung Health Monitor를 빌드합니다(ECG, 혈압 및 기타 워치 센서). 제외하려면 끄세요.",
       "app.alarm.title": "워치의 휴대전화 알람",
-      "app.alarm.summary": "워치의 알람을 휴대전화의 알람과 동기화합니다.",
+      "app.alarm.summary": "휴대전화의 알람을 Samsung 알람 화면으로 워치에서 울립니다. 끄면 알람 동기화가 꺼집니다.",
       "app.bridge.title": "브리지",
       "app.bridge.summary": "휴대전화의 알림, 전화, 알람을 블루투스로 워치에 전달합니다.",
       "app.samsung-health.summary": "휴대전화용 Samsung Health의 패치된 사본인 \"Samsung Health+\"도 빌드하며, 원래 최신 Galaxy Watch가 필요한 기능이 켜집니다. Google Play에서 받은 Samsung Health 앱 옆에 설치되며 그 앱은 그대로 유지합니다. 그 앱은 워치와 계속 연결된 채 삼성 계정에 데이터를 업로드하고, Samsung Health+는 같은 계정으로 로그인하면 클라우드에서 같은 데이터를 내려받습니다(다소 늦게 반영될 수 있습니다).",
@@ -4397,7 +4400,7 @@
     "nl": {
       "app.health-monitor.summary": "Bouwt gepatchte Samsung Health Monitor-apps voor de telefoon en het horloge (ECG, bloeddruk en andere sensoren van het horloge). Zet uit om ze over te slaan.",
       "app.alarm.title": "Telefoonwekkers op het horloge",
-      "app.alarm.summary": "Houdt de wekkers van het horloge synchroon met de wekkers van je telefoon.",
+      "app.alarm.summary": "Laat de wekkers van je telefoon op het horloge afgaan met het wekkerscherm van Samsung. Zet uit om de wekkersynchronisatie uit te schakelen.",
       "app.bridge.title": "Bridge",
       "app.bridge.summary": "Stuurt de meldingen, oproepen en wekkers van je telefoon via Bluetooth naar het horloge.",
       "app.samsung-health.summary": "Bouw ook een gepatchte kopie van de Samsung Health-app voor de telefoon, \"Samsung Health+\", met functies aangezet die anders een nieuwere Galaxy Watch vereisen. Die wordt geïnstalleerd naast de Samsung Health-app uit Google Play, die je houdt: die blijft verbonden met het horloge en uploadt naar je Samsung-account, en Samsung Health+ downloadt dezelfde gegevens uit de cloud nadat je inlogt met hetzelfde account (dat kan een tijdje achterlopen).",
@@ -4502,7 +4505,7 @@
     "pl": {
       "app.health-monitor.summary": "Tworzy zmodyfikowane aplikacje Samsung Health Monitor na telefon i zegarek (EKG, ciśnienie krwi i inne czujniki zegarka). Wyłącz, aby je pominąć.",
       "app.alarm.title": "Alarmy z telefonu na zegarku",
-      "app.alarm.summary": "Utrzymuje alarmy na zegarku zsynchronizowane z alarmami na telefonie.",
+      "app.alarm.summary": "Dzwoni alarmami z telefonu na zegarku z ekranem alarmu Samsunga. Wyłącz, aby wyłączyć synchronizację alarmów.",
       "app.bridge.title": "Mostek",
       "app.bridge.summary": "Przesyła powiadomienia, połączenia i alarmy z telefonu na zegarek przez Bluetooth.",
       "app.samsung-health.summary": "Tworzy też zmodyfikowaną kopię aplikacji Samsung Health na telefon, \"Samsung Health+\", z włączonymi funkcjami, które inaczej wymagają nowszego Galaxy Watch. Instaluje się obok aplikacji Samsung Health z Google Play, którą zachowujesz: ta pozostaje połączona z zegarkiem i przesyła dane na Twoje konto Samsung, a Samsung Health+ pobiera te same dane z chmury po zalogowaniu się na to samo konto (może być z pewnym opóźnieniem).",
@@ -4607,7 +4610,7 @@
     "pt": {
       "app.health-monitor.summary": "Cria cópias modificadas do Samsung Health Monitor para o celular e o relógio (ECG, pressão arterial e outros sensores do relógio). Desative para omiti-las.",
       "app.alarm.title": "Alarmes do celular no relógio",
-      "app.alarm.summary": "Mantém os alarmes do relógio sincronizados com os do seu celular.",
+      "app.alarm.summary": "Toca no relógio os alarmes do seu celular com a tela de alarme da Samsung. Desative para desativar a sincronização de alarmes.",
       "app.bridge.title": "Ponte",
       "app.bridge.summary": "Envia as notificações, chamadas e alarmes do seu celular para o relógio por Bluetooth.",
       "app.samsung-health.summary": "Também cria uma cópia modificada do app Samsung Health para celular, \"Samsung Health+\", com recursos ativados que de outro modo exigem um Galaxy Watch mais novo. Ela é instalada ao lado do app Samsung Health do Google Play, que você mantém: esse continua conectado ao relógio e envia os dados para a sua conta Samsung, e o Samsung Health+ baixa os mesmos dados da nuvem depois que você entra com a mesma conta (pode ficar um tempo atrasado).",
@@ -4712,7 +4715,7 @@
     "ru": {
       "app.health-monitor.summary": "Собирает пропатченные приложения Samsung Health Monitor для телефона и часов (ЭКГ, давление и другие датчики часов). Выключите, чтобы пропустить их.",
       "app.alarm.title": "Будильники телефона на часах",
-      "app.alarm.summary": "Синхронизирует будильники на часах с будильниками телефона.",
+      "app.alarm.summary": "Включает на часах будильники телефона с экраном будильника Samsung. Выключите, чтобы отключить синхронизацию будильников.",
       "app.bridge.title": "Мост",
       "app.bridge.summary": "Передаёт уведомления, звонки и будильники телефона на часы по Bluetooth.",
       "app.samsung-health.summary": "Также собрать пропатченную копию приложения Samsung Health для телефона, «Samsung Health+», с включёнными функциями, для которых иначе нужны более новые Galaxy Watch. Она устанавливается рядом с приложением Samsung Health из Google Play, которое остаётся у вас: оно по-прежнему подключено к часам и загружает данные в ваш Samsung Account, а Samsung Health+ скачивает те же данные из облака после входа в тот же аккаунт (с некоторой задержкой).",
@@ -4817,7 +4820,7 @@
     "tr": {
       "app.health-monitor.summary": "Telefon ve saat için yamalı Samsung Health Monitor uygulamaları oluşturur (EKG, tansiyon ve saatin diğer sensörleri). Atlamak için kapatın.",
       "app.alarm.title": "Saatte telefon alarmları",
-      "app.alarm.summary": "Saatteki alarmları telefonunuzun alarmlarıyla eşit tutar.",
+      "app.alarm.summary": "Telefonunuzun alarmlarını saatte Samsung'un alarm ekranıyla çaldırır. Alarm eşitlemesini kapatmak için kapatın.",
       "app.bridge.title": "Köprü",
       "app.bridge.summary": "Telefonunuzun bildirimlerini, aramalarını ve alarmlarını Bluetooth ile saate gönderir.",
       "app.samsung-health.summary": "Ayrıca Samsung Health telefon uygulamasının, aksi halde daha yeni bir Galaxy Watch gerektiren özellikleri açılmış yamalı bir kopyasını, \"Samsung Health+\"'ı oluşturur. Bu kopya, sakladığınız Google Play'deki Samsung Health uygulamasının yanına kurulur: o uygulama saate bağlı kalır ve verileri Samsung hesabınıza yükler; Samsung Health+ ise aynı hesapla oturum açtıktan sonra aynı verileri buluttan indirir (bir süre geriden gelebilir).",
@@ -4922,7 +4925,7 @@
     "uk": {
       "app.health-monitor.summary": "Збирає пропатчені застосунки Samsung Health Monitor для телефона й годинника (ЕКГ, тиск та інші датчики годинника). Вимкніть, щоб пропустити їх.",
       "app.alarm.title": "Будильники телефона на годиннику",
-      "app.alarm.summary": "Синхронізує будильники на годиннику з будильниками телефона.",
+      "app.alarm.summary": "Дзвонить будильниками телефона на годиннику з екраном будильника Samsung. Вимкніть, щоб вимкнути синхронізацію будильників.",
       "app.bridge.title": "Міст",
       "app.bridge.summary": "Передає сповіщення, дзвінки та будильники телефона на годинник через Bluetooth.",
       "app.samsung-health.summary": "Також зібрати пропатчену копію застосунку Samsung Health для телефона, «Samsung Health+», з увімкненими функціями, яким інакше потрібен новіший Galaxy Watch. Вона встановлюється поруч із застосунком Samsung Health з Google Play, який залишається у вас: він і далі підключений до годинника й вивантажує дані до вашого Samsung Account, а Samsung Health+ завантажує ті самі дані з хмари після входу в той самий обліковий запис (з певною затримкою).",
@@ -5027,7 +5030,7 @@
     "zh-CN": {
       "app.health-monitor.summary": "为手机和手表构建打补丁的 Samsung Health Monitor 应用（心电图、血压及手表的其他传感器）。关闭即可不包含它们。",
       "app.alarm.title": "手表上的手机闹钟",
-      "app.alarm.summary": "让手表上的闹钟与手机的闹钟保持同步。",
+      "app.alarm.summary": "用三星的闹钟界面在手表上响起手机的闹钟。关闭即可关闭闹钟同步。",
       "app.bridge.title": "桥接应用",
       "app.bridge.summary": "通过蓝牙把手机的通知、来电和闹钟发送到手表。",
       "app.samsung-health.summary": "还会构建手机版 Samsung Health 的补丁副本“Samsung Health+”，开启原本需要较新 Galaxy Watch 的功能。它安装在来自 Google Play 的 Samsung Health 应用旁边，你需保留该应用：它会继续与手表连接并上传到你的三星账号，而 Samsung Health+ 在你用同一账号登录后从云端下载相同的数据（可能会滞后一段时间）。",
@@ -5132,7 +5135,7 @@
     "zh-TW": {
       "app.health-monitor.summary": "為手機和手錶建置修補過的 Samsung Health Monitor 應用程式（心電圖、血壓及手錶的其他感測器）。關閉即可不包含它們。",
       "app.alarm.title": "手錶上的手機鬧鐘",
-      "app.alarm.summary": "讓手錶上的鬧鐘與手機的鬧鐘保持同步。",
+      "app.alarm.summary": "用三星的鬧鐘介面在手錶上響起手機的鬧鐘。關閉即可關閉鬧鐘同步。",
       "app.bridge.title": "橋接應用程式",
       "app.bridge.summary": "透過藍牙把手機的通知、來電和鬧鐘傳送到手錶。",
       "app.samsung-health.summary": "還會建置手機版 Samsung Health 的修補副本「Samsung Health+」，開啟原本需要較新 Galaxy Watch 的功能。它會安裝在來自 Google Play 的 Samsung Health 應用程式旁邊，你需保留該應用程式：它會繼續與手錶連線並上傳至你的三星帳戶，而 Samsung Health+ 在你以同一帳戶登入後會從雲端下載相同的資料（可能會延遲一段時間）。",
