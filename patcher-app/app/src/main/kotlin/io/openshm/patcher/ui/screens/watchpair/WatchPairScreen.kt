@@ -309,6 +309,8 @@ private fun PairPanel(
                         error = state.errorRes?.let { stringResource(it) },
                         shakeKey = state.failures,
                         busy = state.pairing,
+                        // A found watch is waiting for its code: open the keyboard straight away.
+                        autoFocus = !state.manual && state.foundAddress != null,
                         onColor = MaterialTheme.colorScheme.onTertiaryContainer,
                         containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                     )

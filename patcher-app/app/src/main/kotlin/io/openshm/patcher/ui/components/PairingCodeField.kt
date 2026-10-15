@@ -91,7 +91,8 @@ fun containerFieldColors(onColor: Color, containerColor: Color): TextFieldColors
  *
  * [busy] makes the field read-only (not disabled, so focus and the keyboard stay) with a spinner.
  * Each increase of [shakeKey] (a failed attempt) shakes the field with a rejecting haptic and hands
- * the focus and the keyboard back so a new code can be typed straight away. [onColor] and
+ * the focus and the keyboard back so a new code can be typed straight away. [autoFocus] takes the
+ * focus and opens the keyboard when the field appears (or when it turns true). [onColor] and
  * [containerColor] are for a field inside a tinted container.
  */
 @Composable
@@ -103,6 +104,7 @@ fun PairingCodeField(
     error: String? = null,
     shakeKey: Int = 0,
     busy: Boolean = false,
+    autoFocus: Boolean = false,
     onColor: Color? = null,
     containerColor: Color? = null,
 ) {
@@ -114,6 +116,11 @@ fun PairingCodeField(
     val amplitude = with(LocalDensity.current) { SHAKE_AMPLITUDE_DP.dp.toPx() }
     // The key already shown (first composition, rotation) is not a failure to report.
     val seen = remember { mutableIntStateOf(shakeKey) }
+    LaunchedEffect(autoFocus) {
+        if (!autoFocus) return@LaunchedEffect
+        runCatching { focus.requestFocus() }
+        keyboard?.show()
+    }
     LaunchedEffect(shakeKey) {
         if (shakeKey <= seen.intValue) return@LaunchedEffect
         seen.intValue = shakeKey
