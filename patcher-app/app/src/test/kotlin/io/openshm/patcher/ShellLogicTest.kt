@@ -73,10 +73,10 @@ class CustomizeStateTest {
     private val session = SessionState(watchProfile = WatchProfile.WearOs5, packagePrefix = "io.openshm.u3fa91c", skippedApps = setOf("samsung-health"))
 
     private val optionalIds = setOf(
-        "shm-min-age-22-to-16", "watch-min-age-22-to-16", "shm-setup-network-gate", "shm-sleep-apnea-support", "watch-apnea-country",
+        "shm-min-age-22-to-16", "watch-min-age-22-to-16", "shm-setup-network-gate", "shm-sleep-apnea-support", "shm-sleep-countries", "watch-apnea-country",
         "watch-apnea-reeval-not-supported", "alarm-force-sound-vibrate", "alarm-hide-launcher", "alarm-relabel", "shm-launcher-badge",
     )
-    private val apneaIds = setOf("shm-sleep-apnea-support", "watch-apnea-country", "watch-apnea-reeval-not-supported")
+    private val apneaIds = setOf("shm-sleep-apnea-support", "shm-sleep-countries", "watch-apnea-country", "watch-apnea-reeval-not-supported")
 
     private fun CustomizeUiState.patch(id: String) = groups.flatMap { it.patches }.first { it.info.id == id }
     private fun CustomizeUiState.toggle(id: String): CustomizeUiState {
@@ -88,7 +88,7 @@ class CustomizeStateTest {
     fun optionalPatchesStartEnabledAndPresetsAreShown() {
         val s = customizeStateFor(session)
         assertEquals(3, s.appCount)
-        assertEquals(10, s.optionalCount)
+        assertEquals(optionalIds.size, s.optionalCount)
         assertEquals(optionalIds, s.groups.flatMap { it.patches }.filter { !it.required }.map { it.info.id }.toSet())
         assertTrue(s.showPresets)
         assertEquals(Preset.Recommended, s.preset)
@@ -117,7 +117,7 @@ class CustomizeStateTest {
         for (start in apneaIds) {
             val off = s.toggle(start)
             assertEquals(start, apneaIds, off.disabledIds)
-            assertEquals(s.enabledPatchCount - 3, off.enabledPatchCount)
+            assertEquals(s.enabledPatchCount - apneaIds.size, off.enabledPatchCount)
             assertEquals(s, off.toggle(apneaIds.first { it != start }))
         }
     }
@@ -128,7 +128,7 @@ class CustomizeStateTest {
         val minimal = s.reduce(CustomizeEvent.SelectPreset(Preset.Minimal))
         assertEquals(Preset.Minimal, minimal.preset)
         assertEquals(optionalIds, minimal.disabledIds)
-        assertEquals(s.enabledPatchCount - 10, minimal.enabledPatchCount)
+        assertEquals(s.enabledPatchCount - optionalIds.size, minimal.enabledPatchCount)
         assertTrue(minimal.canBuild)
         assertEquals(s, minimal.reduce(CustomizeEvent.SelectPreset(Preset.Recommended)))
     }
@@ -145,7 +145,7 @@ class CustomizeStateTest {
     fun skippedPatchesAreNotCounted() {
         val c = AppCatalogue.current
         val all = c.patternCount(session.inputIds)
-        assertEquals(all - 3, c.patternCount(session.inputIds, apneaIds))
+        assertEquals(all - apneaIds.size, c.patternCount(session.inputIds, apneaIds))
         assertEquals(all - 1, c.patternCount(session.inputIds, setOf("alarm-relabel", "generic-vendor-check", "nope")))
     }
 

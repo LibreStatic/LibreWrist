@@ -5,6 +5,8 @@ import android.util.Log;
 import com.samsung.android.hardware.sensormanager.SemSensorListener;
 
 import shminterop.bp.BpAdapter;
+import shminterop.spo2.ApneaTestDriver;
+import shminterop.spo2.SpO2Adapter;
 
 import java.lang.reflect.Method;
 
@@ -14,7 +16,8 @@ import java.lang.reflect.Method;
  *
  * sensorAvailability(): availability exemption for the sensor wrapper (sa2.a) for IHRN
  * (0x25) and SpO2/apnea (0x31). Sensor 0x1b (ECG) is resolved earlier in the wrapper
- * (EcgAdapter) and never gets here.
+ * (EcgAdapter) and never gets here. The remaining calls of 0x31 (registerListener, setAttribute,
+ * unregisterListener of sa2) are answered by SpO2Adapter (pattern watch-spo2-sensor-adapter).
  *
  * unregisterListener(): replaces every direct SemSensorManager.unregisterListener(listener, int)
  * call (pattern watch-sensor-unregister-compat). On One UI 8 Watch, hidden-API enforcement
@@ -22,7 +25,8 @@ import java.lang.reflect.Method;
  * NoSuchMethodError, and reflection via getMethods() also filters it out. Sensor 28 (BP) is
  * routed to BpAdapter.stop instead: that sensor is never registered with the framework manager
  * (BpAdapter owns it through the Health Tracking service), and sl.i must keep running to
- * unregister OffBody and cancel the timer.
+ * unregister OffBody and cancel the timer. Sensor 0x31 is routed to SpO2Adapter.unregister
+ * for the same reason.
  *
  * makeHrSensorAttribute(): builds a SemHrSensorAttribute by reflection for the BP calibration
  * path (pattern watch-bp-attribute-guard); returns null when hidden-API enforcement denies
@@ -58,6 +62,12 @@ public final class WatchOverrides {
             // there; BpAdapter tears down the Health Tracking tracker. sl.i keeps going (it
             // still has to unregister OffBody and cancel its timer).
             BpAdapter.stop(listener, type);
+            return;
+        }
+        if (type == SENSOR_TYPE_SPO2) {
+            // Never registered with the framework manager either (SpO2Adapter answers sa2.c/d/e
+            // for 0x31 itself); this only tells it the consumer is done.
+            SpO2Adapter.unregister(listener, type);
             return;
         }
         if (manager == null || listener == null) {
@@ -103,6 +113,9 @@ public final class WatchOverrides {
      * the real HAL result; any other type passes through unchanged.
      */
     public static boolean sensorAvailability(int type, boolean halResult) {
+        // SHM checks sensor availability at start-up, before any 0x31 call reaches SpO2Adapter;
+        // the test driver must already be polling then (inert unless its debug prop is set).
+        ApneaTestDriver.ensureStarted();
         int bit;
         String name;
         if (type == SENSOR_TYPE_IHRN) {

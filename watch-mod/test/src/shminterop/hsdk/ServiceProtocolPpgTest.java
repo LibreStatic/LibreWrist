@@ -21,6 +21,7 @@ public final class ServiceProtocolPpgTest {
         setPpgTypeRequest();
         batchLayout();
         statusMapping();
+        redIrChannels();
         multiPoint();
         nullAndEmptyLists();
         classMismatch();
@@ -101,6 +102,8 @@ public final class ServiceProtocolPpgTest {
         eq(8, ServiceProtocol.TX_SET_PPG_TYPE, "tx setPpgType");
         eq("PPG_ON_DEMAND", ServiceProtocol.TRACKER_PPG_ON_DEMAND, "tracker type string");
         eq("GREEN", ServiceProtocol.PPG_TYPE_GREEN, "green channel string");
+        eq("RED", ServiceProtocol.PPG_TYPE_RED, "red channel string");
+        eq("IR", ServiceProtocol.PPG_TYPE_IR, "IR channel string");
         eq(0, PpgBatch.STATUS_NORMAL, "status normal");
         eq(-1, PpgBatch.STATUS_ERROR, "status error");
     }
@@ -148,6 +151,12 @@ public final class ServiceProtocolPpgTest {
             eq(111, b.samples[0].greenAdc, what + " green from position 0");
             eq(0, b.samples[0].greenStatus, what + " status from position 1");
             check(b.samples[0].isGreenNormal(), what + " isGreenNormal");
+            // Red/IR: ADC counts from positions 2 and 4, statuses from 3 and 5 (here both error).
+            eq(222, b.samples[0].redAdc, what + " red from position 2");
+            eq(-1, b.samples[0].redStatus, what + " red status from position 3");
+            eq(333, b.samples[0].irAdc, what + " IR from position 4");
+            eq(-1, b.samples[0].irStatus, what + " IR status from position 5");
+            check(!b.samples[0].isRedNormal() && !b.samples[0].isIrNormal(), what + " red/IR not normal");
         }
     }
 
@@ -181,6 +190,37 @@ public final class ServiceProtocolPpgTest {
         eq(1, b.samples.length, "null-channel point kept");
         eq(0, b.samples[0].greenAdc, "null-channel adc");
         check(!b.samples[0].isGreenNormal(), "null-channel not normal");
+    }
+
+    static void redIrChannels() {
+        // A SpO2 request (RED, IR only): green is null (0 / -1), red and IR carry data.
+        FakeWire w = new FakeWire();
+        w.writeInt(2);
+        point(w, true, 100L, 0, -1, 250000, 0, 380000, 0);
+        point(w, true, 110L, 0, -1, 250100, 0, 380050, -1);
+        PpgBatch b = ServiceProtocol.parsePpgBatch(w, true);
+        eq(2, b.samples.length, "red/ir count");
+        eq(250000, b.samples[0].redAdc, "red adc");
+        eq(380000, b.samples[0].irAdc, "ir adc");
+        check(b.samples[0].isRedNormal() && b.samples[0].isIrNormal(), "red/ir normal");
+        check(!b.samples[0].isGreenNormal(), "green absent");
+        check(b.samples[1].isRedNormal() && !b.samples[1].isIrNormal(), "per-channel status");
+
+        // Only positions 0 and 1 present: red/IR default to 0 / error (no guarantee).
+        w = new FakeWire();
+        w.writeInt(1);
+        w.writeInt(1);
+        w.writeLong(9L);
+        w.writeInt(2);
+        value(w, true, CLS, 500, 0f, 0L);
+        value(w, true, CLS, 0, 0f, 0L);
+        b = ServiceProtocol.parsePpgBatch(w, true);
+        eq(0, b.samples[0].redAdc, "absent red adc");
+        eq(PpgBatch.STATUS_ERROR, b.samples[0].redStatus, "absent red status");
+        eq(PpgBatch.STATUS_ERROR, b.samples[0].irStatus, "absent IR status");
+        // The three-argument constructor keeps the green-only behaviour (BpAdapter tests).
+        PpgSample g = new PpgSample(1L, 5, 0);
+        check(g.isGreenNormal() && !g.isRedNormal() && !g.isIrNormal(), "green-only sample");
     }
 
     static void multiPoint() {

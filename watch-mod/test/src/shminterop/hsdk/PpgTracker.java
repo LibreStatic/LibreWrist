@@ -24,6 +24,9 @@ public class PpgTracker {
     public PpgTracker(Context context, Listener listener) {
     }
 
+    public PpgTracker(Context context, java.util.List<String> channels, Listener listener) {
+    }
+
     public void start() {
     }
 

@@ -3,7 +3,8 @@
 # parcel is replaced by an in-memory fake), the unregisterListener overload choice of
 # shminterop.watch.UnregisterMethod, and the BpAdapter repackaging layer (the Android and vendor
 # types come from behavioural doubles in the test tree and PpgTracker from a shadow; the real
-# tracker needs the binder stack only a device has).
+# tracker needs the binder stack only a device has), and the SpO2 adapter pieces
+# (estimator, synthetic night, answer chunking, store, flow with doubles).
 #   watch-mod/test/run-tests.sh
 set -euo pipefail
 cd "$(dirname "$0")"
@@ -19,6 +20,7 @@ javac --release 11 -nowarn -encoding UTF-8 -d "$OUT/classes" \
   ../src/shminterop/watch/UnregisterMethod.java \
   ../src/shminterop/watch/HrSensorAttributeFactory.java \
   $(find ../src/shminterop/bp -name '*.java') \
+  $(find ../src/shminterop/spo2 -name '*.java') \
   $(find src -name '*.java')
 
 FAILED=0
@@ -27,4 +29,9 @@ java -Xmx256m -cp "$OUT/classes" shminterop.hsdk.ServiceProtocolPpgTest || FAILE
 java -Xmx256m -cp "$OUT/classes" shminterop.watch.UnregisterMethodTest || FAILED=1
 java -Xmx256m -cp "$OUT/classes" shminterop.watch.HrSensorAttributeFactoryTest || FAILED=1
 java -Xmx256m -cp "$OUT/classes" shminterop.bp.BpAdapterTest || FAILED=1
+java -Xmx256m -cp "$OUT/classes" shminterop.spo2.Spo2EstimatorTest || FAILED=1
+java -Xmx256m -cp "$OUT/classes" shminterop.spo2.SyntheticNightTest || FAILED=1
+java -Xmx256m -Dtest.tmp="$OUT" -cp "$OUT/classes" shminterop.spo2.Spo2AnswerTest || FAILED=1
+java -Xmx256m -cp "$OUT/classes" shminterop.spo2.ApneaTestDriverTest || FAILED=1
+java -Xmx256m -cp "$OUT/classes" shminterop.spo2.SpO2AdapterTest || FAILED=1
 exit "$FAILED"

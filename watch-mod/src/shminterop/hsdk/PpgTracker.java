@@ -4,14 +4,15 @@ import android.content.Context;
 import android.os.RemoteException;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * PPG tracker of the Health Tracking Service: connect, capability check, create, select the green
- * LED, register the listener, deliver batches and errors; re-arms after a service restart.
+ * PPG tracker of the Health Tracking Service: connect, capability check, create, select the LED
+ * channels, register the listener, deliver batches and errors; re-arms after a service restart.
  *
  * {@link Listener} callbacks may run on binder or main threads and must return quickly.
  */
@@ -31,12 +32,20 @@ public final class PpgTracker {
 
     private final HealthClient client;
     private final Listener out;
+    private final List<String> channels;
     private final ListenerBinder binder;
     private final ExecutorService worker = Executors.newSingleThreadExecutor();
     private volatile boolean running;
 
+    /** Green-only tracker (BP). */
     public PpgTracker(Context context, Listener listener) {
+        this(context, Collections.singletonList(ServiceProtocol.PPG_TYPE_GREEN), listener);
+    }
+
+    /** Tracker for the given LED channels (ServiceProtocol.PPG_TYPE_*), e.g. RED and IR for SpO2. */
+    public PpgTracker(Context context, List<String> channels, Listener listener) {
         this.out = listener;
+        this.channels = new ArrayList<String>(channels);
         this.binder = new ListenerBinder(new ServiceProtocol.PpgSink() {
             @Override public void onBatch(PpgBatch batch) { out.onBatch(batch); }
             @Override public void onError(HealthError error) { out.onError(error); }
@@ -90,8 +99,7 @@ public final class PpgTracker {
             // LED channels only when it (re)registers the tracker's sensor, so a setPpgType sent
             // after registration would not change anything until the tracker restarts. This is the
             // order the on-watch probe validated (codes 1, 8, 2).
-            client.setPpgType(ServiceProtocol.TRACKER_PPG_ON_DEMAND,
-                    Collections.singletonList(ServiceProtocol.PPG_TYPE_GREEN));
+            client.setPpgType(ServiceProtocol.TRACKER_PPG_ON_DEMAND, channels);
             // No lock is held here: PERMISSION_ERROR may call back on this thread.
             client.setEventListener(ServiceProtocol.TRACKER_PPG_ON_DEMAND, binder);
             if (!running) {

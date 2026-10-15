@@ -1,6 +1,6 @@
 {
   "schema": 2,
-  "serial": 41,
+  "serial": 47,
   "minAppVersion": 29,
   "inputs": [
     {
@@ -129,9 +129,11 @@
           "shm-main-gates",
           "shm-setup-network-gate",
           "shm-sleep-apnea-support",
+          "shm-sleep-countries",
           "shm-home-tabs-fallback",
           "shm-ihrn-countries",
           "shm-bp-worldwide",
+          "shm-provider-callers",
           "phone-rebrand-gms",
           "shm-wear-trusted-peers",
           "shm-launcher-badge"
@@ -147,6 +149,7 @@
           "watch-mobile-installed",
           "watch-min-age-22-to-16",
           "watch-ecg-sensor-adapter",
+          "watch-spo2-sensor-adapter",
           "watch-sensor-unregister-compat",
           "watch-bp-attribute-guard",
           "watch-bp-sensor-adapter",
@@ -195,12 +198,14 @@
       "families": {
         "shealth-phone": [
           "shealth-res-webp",
+          "shealth-ai-provider-start",
           "shealth-feature-dev-ui",
           "shealth-vitality-tile",
           "shealth-rename-manifest",
           "shealth-rename-code",
           "shealth-rename-account-xml",
           "shealth-capability-gates",
+          "shealth-shm-providers",
           "shealth-launcher-badge",
           "shealth-oobe-local"
         ]
@@ -534,6 +539,53 @@
         }
       ]
     },
+    "shm-sleep-countries": {
+      "families": [
+        "shm-phone"
+      ],
+      "title": "Sleep countries",
+      "description": "The sleep country list check passes for every country: the shared list lookup (util/r.o(country, list)) returns true when it is handed the sleep list (util/r.l), so the home Sleep controller (sleep tab, apnea onboarding), its Data Layer channel and the sleep content provider treat any saved SIM/network country as a sleep country",
+      "optional": true,
+      "optionGroup": "sleep-apnea",
+      "ops": [
+        {
+          "op": "verifyClassContains",
+          "checks": [
+            {
+              "className": "com/samsung/android/shealthmonitor/util/r",
+              "contains": "    filled-new-array/range {v1 .. v79}, [Ljava/lang/String;\n\n    move-result-object v0\n\n    sput-object v0, Lcom/samsung/android/shealthmonitor/util/r;->l:[Ljava/lang/String;"
+            },
+            {
+              "className": "com/samsung/android/shealthmonitor/util/r",
+              "contains": ".method public static o(Ljava/lang/String;[Ljava/lang/String;)Z"
+            }
+          ]
+        },
+        {
+          "op": "insertAtMethodStart",
+          "fileRegex": "/shealthmonitor/util/r\\.smali$",
+          "sigRegex": "public static o\\(Ljava/lang/String;\\[Ljava/lang/String;\\)Z",
+          "bodyAll": [
+            "Ljava/util/stream/Stream;->anyMatch(Ljava/util/function/Predicate;)Z"
+          ],
+          "needRegs": 1,
+          "insert": [
+            "",
+            "    sget-object v0, Lcom/samsung/android/shealthmonitor/util/r;->l:[Ljava/lang/String;",
+            "",
+            "    if-ne p1, v0, :interop_sleep_country_list",
+            "",
+            "    const/4 v0, 0x1",
+            "",
+            "    return v0",
+            "",
+            "    :interop_sleep_country_list",
+            ""
+          ],
+          "expect": 1
+        }
+      ]
+    },
     "phone-rebrand-gms": {
       "families": [
         "shm-phone"
@@ -838,6 +890,84 @@
             "    return-void",
             "",
             "    :ss_skip_e",
+            ""
+          ]
+        }
+      ]
+    },
+    "watch-spo2-sensor-adapter": {
+      "families": [
+        "shm-watch"
+      ],
+      "title": "Sleep SpO2 sensor",
+      "description": "Watch: the sleep SpO2 sensor (0x31) is answered by SpO2Adapter (raw red/IR PPG from the Health Tracking Service, windowed ratio-of-ratios) instead of the privileged SemSensorManager: sa2.c (register), sa2.d (setAttribute: GET_VERSION / SET_OPERATION_MODE / GET_DATA) and sa2.e (unregister)",
+      "optional": false,
+      "ops": [
+        {
+          "op": "insertAtMethodStart",
+          "sigRegex": "public final \\w+\\(Lcom/samsung/android/hardware/sensormanager/SemSensorListener;I\\)Z",
+          "bodyAll": [
+            "Lcom/samsung/android/hardware/sensormanager/SemSensorManager;->registerListener("
+          ],
+          "expect": 1,
+          "insert": [
+            "",
+            "    const/16 v0, 0x31",
+            "",
+            "    if-ne p2, v0, :ss_skip_spo2_c",
+            "",
+            "    invoke-static {p1, p2}, L${PKG_PATH}/spo2/SpO2Adapter;->register(Lcom/samsung/android/hardware/sensormanager/SemSensorListener;I)Z",
+            "",
+            "    move-result v0",
+            "",
+            "    return v0",
+            "",
+            "    :ss_skip_spo2_c",
+            ""
+          ]
+        },
+        {
+          "op": "insertAtMethodStart",
+          "sigRegex": "public final \\w+\\(Lcom/samsung/android/hardware/sensormanager/SemSensorListener;ILcom/samsung/android/hardware/sensormanager/SemSensorAttribute;\\)Z",
+          "bodyAll": [
+            "Lcom/samsung/android/hardware/sensormanager/SemSensorManager;->setAttribute("
+          ],
+          "expect": 1,
+          "insert": [
+            "",
+            "    const/16 v0, 0x31",
+            "",
+            "    if-ne p2, v0, :ss_skip_spo2_d",
+            "",
+            "    invoke-static {p1, p2, p3}, L${PKG_PATH}/spo2/SpO2Adapter;->setAttribute(Lcom/samsung/android/hardware/sensormanager/SemSensorListener;ILcom/samsung/android/hardware/sensormanager/SemSensorAttribute;)Z",
+            "",
+            "    move-result v0",
+            "",
+            "    return v0",
+            "",
+            "    :ss_skip_spo2_d",
+            ""
+          ]
+        },
+        {
+          "op": "insertAtMethodStart",
+          "sigRegex": "public final \\w+\\(Lcom/samsung/android/hardware/sensormanager/SemSensorListener;I\\)V",
+          "bodyAll": [
+            "->unregisterListener(",
+            "/SemSensorListener;I)V"
+          ],
+          "expect": 1,
+          "insert": [
+            "",
+            "    const/16 v0, 0x31",
+            "",
+            "    if-ne p2, v0, :ss_skip_spo2_e",
+            "",
+            "    invoke-static {p1, p2}, L${PKG_PATH}/spo2/SpO2Adapter;->unregister(Lcom/samsung/android/hardware/sensormanager/SemSensorListener;I)V",
+            "",
+            "    return-void",
+            "",
+            "    :ss_skip_spo2_e",
             ""
           ]
         }
@@ -1994,6 +2124,39 @@
         }
       ]
     },
+    "shealth-ai-provider-start": {
+      "families": [
+        "shealth-phone"
+      ],
+      "title": "Settings provider start",
+      "description": "GenerativeAiProvider.a() (the Settings AI menu refresh that ExternalSettingsProvider.onCreate starts on a background coroutine) returns early while ContextHolder has no context yet: providers are created before Application.onCreate sets it, and the coroutine reached SharedPreferences through a null context (NullPointerException in the main process at every cold start); Settings still gets the menu, since its get_menu_list call runs after the application is up",
+      "optional": false,
+      "ops": [
+        {
+          "op": "insertAtMethodStart",
+          "fileRegex": "/home/settings/advanced/generativeinsight/GenerativeAiProvider\\.smali$",
+          "sigRegex": "public final a\\(\\)V",
+          "bodyAll": [
+            "Lup1;-><init>(Ljava/lang/Object;Lkotlin/coroutines/Continuation;I)V"
+          ],
+          "needRegs": 1,
+          "insert": [
+            "",
+            "    invoke-static {}, Lcom/samsung/android/app/shealth/app/helper/ContextHolder;->getContext()Landroid/content/Context;",
+            "",
+            "    move-result-object v0",
+            "",
+            "    if-nez v0, :interop_ai_provider_ready",
+            "",
+            "    return-void",
+            "",
+            "    :interop_ai_provider_ready",
+            ""
+          ],
+          "expect": 1
+        }
+      ]
+    },
     "shealth-rename-manifest": {
       "families": [
         "shealth-phone"
@@ -2580,6 +2743,54 @@
         }
       ]
     },
+    "shealth-shm-providers": {
+      "families": [
+        "shealth-phone"
+      ],
+      "title": "Health Monitor providers",
+      "description": "Samsung Health+ reads the renamed phone Health Monitor (com.samsung.android.shealthmonitors): the sleep apnea status and BP measure-flag content URIs and the two signature permissions that guard them point at the new authorities, so the Sleep apnea card and the BP flag reach the patched app",
+      "optional": false,
+      "ops": [
+        {
+          "op": "replaceConstStringExact",
+          "old": "content://com.samsung.android.shealthmonitor.sleep",
+          "new": "content://com.samsung.android.shealthmonitors.sleep",
+          "expect": 1
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "content://com.samsung.android.shealthmonitor.bp",
+          "new": "content://com.samsung.android.shealthmonitors.bp",
+          "expect": 1
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "uses-permission",
+            "attr": {
+              "android:name": "com.samsung.android.shealthmonitor.sleep.READ_SLEEP_APNEA_STATUS"
+            }
+          },
+          "attrs": {
+            "android:name": "com.samsung.android.shealthmonitors.sleep.READ_SLEEP_APNEA_STATUS"
+          },
+          "expect": 1
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "uses-permission",
+            "attr": {
+              "android:name": "com.samsung.android.shealthmonitor.bp.READ_MEASURE_FLAG"
+            }
+          },
+          "attrs": {
+            "android:name": "com.samsung.android.shealthmonitors.bp.READ_MEASURE_FLAG"
+          },
+          "expect": 1
+        }
+      ]
+    },
     "shealth-launcher-badge": {
       "families": [
         "shealth-phone"
@@ -2874,6 +3085,36 @@
             ""
           ],
           "expect": 1
+        }
+      ]
+    },
+    "shm-provider-callers": {
+      "families": [
+        "shm-phone"
+      ],
+      "title": "Provider callers",
+      "description": "The sleep apnea status provider (SleepContentProvider.call) and the BP measure-flag provider (BpContentProvider.call) answer the renamed Samsung Health+ (${PKG_PREFIX}.shealth) instead of only com.sec.android.app.shealth; their read permissions stay signature-level, so the caller must also share the signing certificate",
+      "optional": false,
+      "ops": [
+        {
+          "op": "replaceInClass",
+          "className": "com/samsung/android/shealthmonitor/sleep/provider/SleepContentProvider",
+          "old": [
+            "    const-string v4, \"com.sec.android.app.shealth\""
+          ],
+          "new": [
+            "    const-string v4, \"${PKG_PREFIX}.shealth\""
+          ]
+        },
+        {
+          "op": "replaceInClass",
+          "className": "com/samsung/android/shealthmonitor/bp/provider/BpContentProvider",
+          "old": [
+            "    const-string v1, \"com.sec.android.app.shealth\""
+          ],
+          "new": [
+            "    const-string v1, \"${PKG_PREFIX}.shealth\""
+          ]
         }
       ]
     },
@@ -3391,6 +3632,7 @@
       "pattern.watch-mobile-installed.description": "Reports the phone app as installed.",
       "pattern.watch-min-age-22-to-16.description": "Lowers the minimum age of every feature (22, or 18 for sleep apnea) to 16.",
       "pattern.watch-ecg-sensor-adapter.description": "Reads the ECG sensor through the Health Tracking service and treats the irregular heart rhythm and SpO2 sensors as available.",
+      "pattern.watch-spo2-sensor-adapter.description": "Answers the sleep SpO2 sensor from raw red and infrared readings of the Health Tracking service, because the watch does not let a re-signed app use it directly.",
       "pattern.watch-sensor-unregister-compat.description": "Stops sensor clean-up from closing the app on watches with a different sensor framework, such as the Galaxy Watch8.",
       "pattern.watch-bp-attribute-guard.description": "Stops blood pressure calibration from closing the app on watches that block the sensor setup it uses (One UI 8 Watch). The app shows its normal sensor error instead.",
       "pattern.watch-bp-sensor-adapter.description": "Reads the blood pressure sensor through the Health Tracking service, because the watch does not let a re-signed app use it directly.",
@@ -3496,6 +3738,7 @@
       "pattern.watch-mobile-installed.description": "يُبلغ بأن تطبيق الهاتف مثبَّت.",
       "pattern.watch-min-age-22-to-16.description": "يخفّض الحد الأدنى للعمر لكل الميزات (22 عامًا، أو 18 عامًا لانقطاع النفس أثناء النوم) إلى 16 عامًا.",
       "pattern.watch-ecg-sensor-adapter.description": "يقرأ مستشعر تخطيط القلب عبر خدمة Health Tracking، ويعامل مستشعري عدم انتظام ضربات القلب وSpO2 على أنهما متاحان.",
+      "pattern.watch-spo2-sensor-adapter.description": "يجيب عن مستشعر تشبع الأكسجين أثناء النوم انطلاقًا من قراءات الأشعة الحمراء وتحت الحمراء الخام من خدمة Health Tracking، لأن الساعة لا تسمح لتطبيق أُعيد توقيعه باستخدامه مباشرة.",
       "pattern.watch-sensor-unregister-compat.description": "يمنع إغلاق التطبيق عند إيقاف المستشعرات في الساعات ذات إطار مستشعرات مختلف، مثل Galaxy Watch8.",
       "pattern.watch-bp-attribute-guard.description": "يمنع معايرة ضغط الدم من إغلاق التطبيق على الساعات التي تحظر إعداد المستشعر الذي تستخدمه (One UI 8 Watch). ويعرض التطبيق بدلًا من ذلك خطأ المستشعر المعتاد.",
       "pattern.watch-bp-sensor-adapter.description": "يقرأ مستشعر ضغط الدم عبر خدمة Health Tracking، لأن الساعة لا تسمح لتطبيق أُعيد توقيعه باستخدامه مباشرةً.",
@@ -3601,6 +3844,7 @@
       "pattern.watch-mobile-installed.description": "Meldet die Smartphone-App als installiert.",
       "pattern.watch-min-age-22-to-16.description": "Senkt das Mindestalter aller Funktionen (22 oder 18 für Schlafapnoe) auf 16.",
       "pattern.watch-ecg-sensor-adapter.description": "Liest den EKG-Sensor über den Health-Tracking-Dienst aus und behandelt die Sensoren für unregelmäßigen Herzrhythmus und SpO2 als verfügbar.",
+      "pattern.watch-spo2-sensor-adapter.description": "Beantwortet den Schlaf-SpO2-Sensor aus den rohen Rot- und Infrarotwerten des Health-Tracking-Dienstes, weil die Uhr einer neu signierten App den direkten Zugriff nicht erlaubt.",
       "pattern.watch-sensor-unregister-compat.description": "Verhindert, dass die App beim Beenden der Sensoren auf Uhren mit anderem Sensor-Framework wie der Galaxy Watch8 abstürzt.",
       "pattern.watch-bp-attribute-guard.description": "Verhindert, dass die Blutdruckkalibrierung die App auf Uhren schließt, die die verwendete Sensoreinrichtung blockieren (One UI 8 Watch). Die App zeigt stattdessen ihren normalen Sensorfehler an.",
       "pattern.watch-bp-sensor-adapter.description": "Liest den Blutdrucksensor über den Health-Tracking-Dienst aus, weil die Uhr einer neu signierten App den direkten Zugriff nicht erlaubt.",
@@ -3706,6 +3950,7 @@
       "pattern.watch-mobile-installed.description": "Informa que la app del teléfono está instalada.",
       "pattern.watch-min-age-22-to-16.description": "Baja a 16 la edad mínima de todas las funciones (22, o 18 para la apnea del sueño).",
       "pattern.watch-ecg-sensor-adapter.description": "Lee el sensor de ECG a través del servicio Health Tracking y trata como disponibles los sensores de ritmo cardíaco irregular y de SpO2.",
+      "pattern.watch-spo2-sensor-adapter.description": "Responde al sensor de SpO2 del sueño con las lecturas en bruto de luz roja e infrarroja del servicio Health Tracking, porque el reloj no permite que una app firmada de nuevo lo use directamente.",
       "pattern.watch-sensor-unregister-compat.description": "Evita que la app se cierre al detener los sensores en relojes con otro framework de sensores, como el Galaxy Watch8.",
       "pattern.watch-bp-attribute-guard.description": "Evita que la calibración de la presión arterial cierre la app en relojes que bloquean la configuración del sensor que usa (One UI 8 Watch). En su lugar, la app muestra su error de sensor habitual.",
       "pattern.watch-bp-sensor-adapter.description": "Lee el sensor de presión arterial a través del servicio Health Tracking, porque el reloj no deja que una app firmada de nuevo lo use directamente.",
@@ -3811,6 +4056,7 @@
       "pattern.watch-mobile-installed.description": "Signale l'app du téléphone comme installée.",
       "pattern.watch-min-age-22-to-16.description": "Abaisse à 16 ans l'âge minimum de toutes les fonctions (22 ans, ou 18 pour l'apnée du sommeil).",
       "pattern.watch-ecg-sensor-adapter.description": "Lit le capteur d'ECG via le service Health Tracking et considère les capteurs de rythme cardiaque irrégulier et de SpO2 comme disponibles.",
+      "pattern.watch-spo2-sensor-adapter.description": "Répond au capteur de SpO2 du sommeil à partir des mesures brutes rouge et infrarouge du service Health Tracking, car la montre ne laisse pas une appli re-signée l'utiliser directement.",
       "pattern.watch-sensor-unregister-compat.description": "Empêche l'app de se fermer à l'arrêt des capteurs sur les montres dont le framework de capteurs diffère, comme la Galaxy Watch8.",
       "pattern.watch-bp-attribute-guard.description": "Empêche l'étalonnage de la tension artérielle de fermer l'app sur les montres qui bloquent la configuration du capteur qu'elle utilise (One UI 8 Watch). L'app affiche à la place son erreur de capteur habituelle.",
       "pattern.watch-bp-sensor-adapter.description": "Lit le capteur de tension artérielle via le service Health Tracking, car la montre ne laisse pas une app re-signée l'utiliser directement.",
@@ -3916,6 +4162,7 @@
       "pattern.watch-mobile-installed.description": "फ़ोन ऐप को इंस्टॉल बताता है।",
       "pattern.watch-min-age-22-to-16.description": "हर सुविधा की न्यूनतम आयु (22, या स्लीप एपनिया के लिए 18) घटाकर 16 कर देता है।",
       "pattern.watch-ecg-sensor-adapter.description": "Health Tracking सेवा के ज़रिए ECG सेंसर पढ़ता है और अनियमित हृदय गति तथा SpO2 सेंसर को उपलब्ध मानता है।",
+      "pattern.watch-spo2-sensor-adapter.description": "नींद के दौरान SpO2 सेंसर का उत्तर Health Tracking सेवा की कच्ची लाल और इन्फ्रारेड रीडिंग से देता है, क्योंकि घड़ी दोबारा हस्ताक्षरित ऐप को इसे सीधे उपयोग करने नहीं देती।",
       "pattern.watch-sensor-unregister-compat.description": "Galaxy Watch8 जैसी अलग सेंसर फ़्रेमवर्क वाली घड़ियों पर सेंसर बंद करते समय ऐप को बंद होने से रोकता है।",
       "pattern.watch-bp-attribute-guard.description": "जो घड़ियाँ ब्लड प्रेशर कैलिब्रेशन का इस्तेमाल किया जाने वाला सेंसर सेटअप ब्लॉक करती हैं (One UI 8 Watch), उन पर कैलिब्रेशन को ऐप बंद करने से रोकता है। इसके बजाय ऐप अपनी सामान्य सेंसर त्रुटि दिखाता है।",
       "pattern.watch-bp-sensor-adapter.description": "Health Tracking सेवा के ज़रिए ब्लड प्रेशर सेंसर पढ़ता है, क्योंकि घड़ी दोबारा साइन किए गए ऐप को इसे सीधे इस्तेमाल नहीं करने देती।",
@@ -4021,6 +4268,7 @@
       "pattern.watch-mobile-installed.description": "Melaporkan aplikasi ponsel sebagai terpasang.",
       "pattern.watch-min-age-22-to-16.description": "Menurunkan usia minimum semua fitur (22, atau 18 untuk apnea tidur) menjadi 16.",
       "pattern.watch-ecg-sensor-adapter.description": "Membaca sensor EKG lewat layanan Health Tracking dan menganggap sensor ritme jantung tidak teratur dan SpO2 tersedia.",
+      "pattern.watch-spo2-sensor-adapter.description": "Menjawab sensor SpO2 saat tidur dari bacaan mentah merah dan inframerah layanan Health Tracking, karena jam tidak mengizinkan aplikasi yang ditandatangani ulang memakainya secara langsung.",
       "pattern.watch-sensor-unregister-compat.description": "Mencegah aplikasi tertutup saat sensor dihentikan di jam tangan dengan framework sensor berbeda, seperti Galaxy Watch8.",
       "pattern.watch-bp-attribute-guard.description": "Mencegah kalibrasi tekanan darah menutup aplikasi di jam yang memblokir penyiapan sensor yang dipakainya (One UI 8 Watch). Aplikasi akan menampilkan kesalahan sensor seperti biasa.",
       "pattern.watch-bp-sensor-adapter.description": "Membaca sensor tekanan darah lewat layanan Health Tracking, karena jam tidak mengizinkan aplikasi yang ditandatangani ulang memakainya secara langsung.",
@@ -4126,6 +4374,7 @@
       "pattern.watch-mobile-installed.description": "Segnala l'app del telefono come installata.",
       "pattern.watch-min-age-22-to-16.description": "Abbassa a 16 anni l'età minima di tutte le funzioni (22, o 18 per l'apnea notturna).",
       "pattern.watch-ecg-sensor-adapter.description": "Legge il sensore ECG tramite il servizio Health Tracking e considera disponibili i sensori del ritmo cardiaco irregolare e della SpO2.",
+      "pattern.watch-spo2-sensor-adapter.description": "Risponde al sensore SpO2 del sonno con le letture grezze di luce rossa e infrarossa del servizio Health Tracking, perché l'orologio non permette a un'app firmata di nuovo di usarlo direttamente.",
       "pattern.watch-sensor-unregister-compat.description": "Evita che l'app si chiuda all'arresto dei sensori sugli orologi con un framework dei sensori diverso, come il Galaxy Watch8.",
       "pattern.watch-bp-attribute-guard.description": "Impedisce che la calibrazione della pressione arteriosa chiuda l'app sugli orologi che bloccano la configurazione del sensore che usa (One UI 8 Watch). L'app mostra invece il suo normale errore del sensore.",
       "pattern.watch-bp-sensor-adapter.description": "Legge il sensore della pressione arteriosa tramite il servizio Health Tracking, perché l'orologio non consente a un'app rifirmata di usarlo direttamente.",
@@ -4231,6 +4480,7 @@
       "pattern.watch-mobile-installed.description": "スマートフォンアプリがインストール済みと報告します。",
       "pattern.watch-min-age-22-to-16.description": "すべての機能の最低年齢（22歳、睡眠時無呼吸は18歳）を16歳に引き下げます。",
       "pattern.watch-ecg-sensor-adapter.description": "Health Trackingサービス経由でECGセンサーを読み取り、不規則な心拍リズムとSpO2のセンサーを利用可能として扱います。",
+      "pattern.watch-spo2-sensor-adapter.description": "再署名したアプリは直接使えないため、睡眠中のSpO2センサーへの要求に、Health Trackingサービスの赤色・赤外線の生データから応答します。",
       "pattern.watch-sensor-unregister-compat.description": "Galaxy Watch8 など、センサーフレームワークが異なるウォッチでセンサー停止時にアプリが終了しないようにします。",
       "pattern.watch-bp-attribute-guard.description": "使用するセンサー設定がブロックされているウォッチ（One UI 8 Watch）で、血圧のキャリブレーション中にアプリが終了しないようにします。代わりに通常のセンサーエラーが表示されます。",
       "pattern.watch-bp-sensor-adapter.description": "ウォッチでは再署名したアプリが血圧センサーを直接使用できないため、Health Trackingサービス経由で読み取ります。",
@@ -4336,6 +4586,7 @@
       "pattern.watch-mobile-installed.description": "휴대전화 앱이 설치된 것으로 보고합니다.",
       "pattern.watch-min-age-22-to-16.description": "모든 기능의 최소 연령(22세, 수면 무호흡은 18세)을 16세로 낮춥니다.",
       "pattern.watch-ecg-sensor-adapter.description": "Health Tracking 서비스를 통해 ECG 센서를 읽고, 불규칙 심장 리듬 및 SpO2 센서를 사용 가능한 것으로 처리합니다.",
+      "pattern.watch-spo2-sensor-adapter.description": "재서명된 앱은 시계의 수면 SpO2 센서를 직접 사용할 수 없으므로, Health Tracking 서비스의 적색·적외선 원시 값으로 센서 요청에 응답합니다.",
       "pattern.watch-sensor-unregister-compat.description": "Galaxy Watch8처럼 센서 프레임워크가 다른 워치에서 센서를 중지할 때 앱이 종료되지 않도록 합니다.",
       "pattern.watch-bp-attribute-guard.description": "사용하는 센서 설정이 차단된 워치(One UI 8 Watch)에서 혈압 보정 중에 앱이 종료되지 않도록 합니다. 대신 일반 센서 오류가 표시됩니다.",
       "pattern.watch-bp-sensor-adapter.description": "워치에서 재서명된 앱이 혈압 센서를 직접 사용할 수 없으므로 Health Tracking 서비스를 통해 읽습니다.",
@@ -4441,6 +4692,7 @@
       "pattern.watch-mobile-installed.description": "Meldt de telefoon-app als geïnstalleerd.",
       "pattern.watch-min-age-22-to-16.description": "Verlaagt de minimumleeftijd van alle functies (22, of 18 voor slaapapneu) naar 16.",
       "pattern.watch-ecg-sensor-adapter.description": "Leest de ecg-sensor uit via de Health Tracking-service en behandelt de sensoren voor onregelmatig hartritme en SpO2 als beschikbaar.",
+      "pattern.watch-spo2-sensor-adapter.description": "Beantwoordt de slaap-SpO2-sensor met de ruwe rode en infraroodmetingen van de Health Tracking-service, omdat het horloge een opnieuw ondertekende app geen directe toegang geeft.",
       "pattern.watch-sensor-unregister-compat.description": "Voorkomt dat de app sluit bij het stoppen van sensoren op horloges met een ander sensorframework, zoals de Galaxy Watch8.",
       "pattern.watch-bp-attribute-guard.description": "Voorkomt dat de bloeddrukkalibratie de app sluit op horloges die de sensorinstelling blokkeren die de app gebruikt (One UI 8 Watch). De app toont in plaats daarvan zijn normale sensorfout.",
       "pattern.watch-bp-sensor-adapter.description": "Leest de bloeddruksensor uit via de Health Tracking-service, omdat het horloge een opnieuw ondertekende app er niet rechtstreeks gebruik van laat maken.",
@@ -4546,6 +4798,7 @@
       "pattern.watch-mobile-installed.description": "Zgłasza aplikację na telefonie jako zainstalowaną.",
       "pattern.watch-min-age-22-to-16.description": "Obniża do 16 lat minimalny wiek wszystkich funkcji (22 lata lub 18 dla bezdechu sennego).",
       "pattern.watch-ecg-sensor-adapter.description": "Odczytuje czujnik EKG przez usługę Health Tracking i traktuje czujniki nieregularnego rytmu serca i SpO2 jako dostępne.",
+      "pattern.watch-spo2-sensor-adapter.description": "Odpowiada na zapytania czujnika SpO2 podczas snu na podstawie surowych odczytów czerwonych i podczerwonych z usługi Health Tracking, bo zegarek nie pozwala ponownie podpisanej aplikacji korzystać z niego bezpośrednio.",
       "pattern.watch-sensor-unregister-compat.description": "Zapobiega zamykaniu aplikacji przy wyłączaniu czujników na zegarkach z innym frameworkiem czujników, np. Galaxy Watch8.",
       "pattern.watch-bp-attribute-guard.description": "Zapobiega zamykaniu aplikacji przez kalibrację ciśnienia krwi na zegarkach, które blokują używaną przez nią konfigurację czujnika (One UI 8 Watch). Zamiast tego aplikacja pokazuje swój zwykły błąd czujnika.",
       "pattern.watch-bp-sensor-adapter.description": "Odczytuje czujnik ciśnienia krwi przez usługę Health Tracking, ponieważ zegarek nie pozwala aplikacji podpisanej ponownie używać go bezpośrednio.",
@@ -4651,6 +4904,7 @@
       "pattern.watch-mobile-installed.description": "Informa que o app do celular está instalado.",
       "pattern.watch-min-age-22-to-16.description": "Reduz para 16 a idade mínima de todos os recursos (22, ou 18 para apneia do sono).",
       "pattern.watch-ecg-sensor-adapter.description": "Lê o sensor de ECG pelo serviço Health Tracking e trata os sensores de ritmo cardíaco irregular e de SpO2 como disponíveis.",
+      "pattern.watch-spo2-sensor-adapter.description": "Responde ao sensor de SpO2 do sono com as leituras brutas de luz vermelha e infravermelha do serviço Health Tracking, porque o relógio não deixa um app assinado de novo usá-lo diretamente.",
       "pattern.watch-sensor-unregister-compat.description": "Evita que o app feche ao parar os sensores em relógios com outro framework de sensores, como o Galaxy Watch8.",
       "pattern.watch-bp-attribute-guard.description": "Impede que a calibração da pressão arterial feche o app em relógios que bloqueiam a configuração do sensor que ele usa (One UI 8 Watch). Em vez disso, o app mostra o erro de sensor normal dele.",
       "pattern.watch-bp-sensor-adapter.description": "Lê o sensor de pressão arterial pelo serviço Health Tracking, porque o relógio não deixa um app assinado novamente usá-lo diretamente.",
@@ -4756,6 +5010,7 @@
       "pattern.watch-mobile-installed.description": "Сообщает, что приложение на телефоне установлено.",
       "pattern.watch-min-age-22-to-16.description": "Снижает минимальный возраст для всех функций (22 года, для апноэ во сне 18 лет) до 16 лет.",
       "pattern.watch-ecg-sensor-adapter.description": "Считывает датчик ЭКГ через службу Health Tracking и считает датчики нерегулярного сердечного ритма и SpO2 доступными.",
+      "pattern.watch-spo2-sensor-adapter.description": "Отвечает за датчик SpO2 во сне по необработанным красным и инфракрасным показаниям службы Health Tracking, потому что часы не позволяют переподписанному приложению использовать его напрямую.",
       "pattern.watch-sensor-unregister-compat.description": "Не даёт приложению закрываться при остановке датчиков на часах с другим фреймворком датчиков, например Galaxy Watch8.",
       "pattern.watch-bp-attribute-guard.description": "Не даёт калибровке давления закрывать приложение на часах, которые блокируют используемую ею настройку датчика (One UI 8 Watch). Вместо этого приложение показывает свою обычную ошибку датчика.",
       "pattern.watch-bp-sensor-adapter.description": "Считывает датчик давления через службу Health Tracking, потому что часы не дают переподписанному приложению использовать его напрямую.",
@@ -4861,6 +5116,7 @@
       "pattern.watch-mobile-installed.description": "Telefon uygulamasını kurulu olarak bildirir.",
       "pattern.watch-min-age-22-to-16.description": "Tüm özelliklerin alt yaş sınırını (22 veya uyku apnesi için 18) 16'ya düşürür.",
       "pattern.watch-ecg-sensor-adapter.description": "EKG sensörünü Health Tracking hizmeti üzerinden okur ve düzensiz kalp ritmi ile SpO2 sensörlerini kullanılabilir olarak kabul eder.",
+      "pattern.watch-spo2-sensor-adapter.description": "Saat, yeniden imzalanmış bir uygulamanın uyku SpO2 sensörünü doğrudan kullanmasına izin vermediği için sensörü Health Tracking hizmetinin ham kırmızı ve kızılötesi okumalarından yanıtlar.",
       "pattern.watch-sensor-unregister-compat.description": "Galaxy Watch8 gibi farklı sensör altyapısına sahip saatlerde sensörler durdurulurken uygulamanın kapanmasını önler.",
       "pattern.watch-bp-attribute-guard.description": "Kullandığı sensör kurulumunu engelleyen saatlerde (One UI 8 Watch) tansiyon kalibrasyonunun uygulamayı kapatmasını önler. Uygulama bunun yerine normal sensör hatasını gösterir.",
       "pattern.watch-bp-sensor-adapter.description": "Saat, yeniden imzalanmış bir uygulamanın tansiyon sensörünü doğrudan kullanmasına izin vermediği için sensörü Health Tracking hizmeti üzerinden okur.",
@@ -4966,6 +5222,7 @@
       "pattern.watch-mobile-installed.description": "Повідомляє, що застосунок на телефоні встановлено.",
       "pattern.watch-min-age-22-to-16.description": "Знижує мінімальний вік для всіх функцій (22 роки, для апное уві сні 18 років) до 16 років.",
       "pattern.watch-ecg-sensor-adapter.description": "Зчитує датчик ЕКГ через службу Health Tracking і вважає датчики нерегулярного серцевого ритму та SpO2 доступними.",
+      "pattern.watch-spo2-sensor-adapter.description": "Відповідає за датчик SpO2 під час сну за необробленими червоними та інфрачервоними показниками служби Health Tracking, бо годинник не дозволяє повторно підписаному застосунку користуватися ним напряму.",
       "pattern.watch-sensor-unregister-compat.description": "Не дає застосунку закриватися під час зупинки датчиків на годинниках з іншим фреймворком датчиків, як-от Galaxy Watch8.",
       "pattern.watch-bp-attribute-guard.description": "Не дає калібруванню тиску закривати застосунок на годинниках, які блокують потрібне йому налаштування датчика (One UI 8 Watch). Натомість застосунок показує свою звичайну помилку датчика.",
       "pattern.watch-bp-sensor-adapter.description": "Зчитує датчик тиску через службу Health Tracking, бо годинник не дозволяє переподписаному застосунку використовувати його напряму.",
@@ -5071,6 +5328,7 @@
       "pattern.watch-mobile-installed.description": "将手机应用报告为已安装。",
       "pattern.watch-min-age-22-to-16.description": "将所有功能的最低年龄（22 岁，睡眠呼吸暂停为 18 岁）降到 16 岁。",
       "pattern.watch-ecg-sensor-adapter.description": "通过 Health Tracking 服务读取心电图传感器，并将心律不齐和血氧（SpO2）传感器视为可用。",
+      "pattern.watch-spo2-sensor-adapter.description": "重新签名的应用无法直接使用睡眠血氧传感器，因此改用 Health Tracking 服务的红光和红外光原始读数来响应传感器请求。",
       "pattern.watch-sensor-unregister-compat.description": "防止在传感器框架不同的手表（如 Galaxy Watch8）上停止传感器时应用关闭。",
       "pattern.watch-bp-attribute-guard.description": "在会阻止其所用传感器设置的手表（One UI 8 Watch）上，防止血压校准导致应用关闭。应用会改为显示常规的传感器错误。",
       "pattern.watch-bp-sensor-adapter.description": "通过 Health Tracking 服务读取血压传感器，因为手表不允许重新签名的应用直接使用它。",
@@ -5176,6 +5434,7 @@
       "pattern.watch-mobile-installed.description": "將手機應用程式回報為已安裝。",
       "pattern.watch-min-age-22-to-16.description": "將所有功能的最低年齡（22 歲，睡眠呼吸中止為 18 歲）降到 16 歲。",
       "pattern.watch-ecg-sensor-adapter.description": "透過 Health Tracking 服務讀取心電圖感測器，並將心律不整和血氧（SpO2）感測器視為可用。",
+      "pattern.watch-spo2-sensor-adapter.description": "重新簽署的應用程式無法直接使用睡眠血氧感測器，因此改用 Health Tracking 服務的紅光與紅外光原始讀數來回應感測器請求。",
       "pattern.watch-sensor-unregister-compat.description": "避免在感測器框架不同的手錶（例如 Galaxy Watch8）上停止感測器時應用程式關閉。",
       "pattern.watch-bp-attribute-guard.description": "在會封鎖其所用感測器設定的手錶（One UI 8 Watch）上，避免血壓校正導致應用程式關閉。應用程式會改為顯示一般的感測器錯誤。",
       "pattern.watch-bp-sensor-adapter.description": "透過 Health Tracking 服務讀取血壓感測器，因為手錶不允許重新簽署的應用程式直接使用它。",

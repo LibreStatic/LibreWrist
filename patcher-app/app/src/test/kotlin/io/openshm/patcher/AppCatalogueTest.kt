@@ -15,7 +15,7 @@ class AppCatalogueTest {
 
     @Test
     fun serialAndInputs() {
-        assertEquals(41L, c.serial)
+        assertEquals(47L, c.serial)
         assertEquals(
             listOf(
                 listOf("shm-phone", "Samsung Health Monitor (phone)", "1.4.6.001", "Phone",
@@ -73,12 +73,12 @@ class AppCatalogueTest {
         assertEquals(
             listOf("generic-manufacturer-check", "generic-vendor-check", "shm-min-age-22-to-16", "shm-supported-type-ordinals",
                 "shm-region-supportedtype", "shm-region-countrylist", "shm-root-packagevalidator", "shm-force-update-response",
-                "shm-force-update-pref", "shm-main-gates", "shm-setup-network-gate", "shm-sleep-apnea-support", "shm-home-tabs-fallback", "shm-ihrn-countries", "shm-bp-worldwide", "phone-rebrand-gms", "shm-wear-trusted-peers",
+                "shm-force-update-pref", "shm-main-gates", "shm-setup-network-gate", "shm-sleep-apnea-support", "shm-sleep-countries", "shm-home-tabs-fallback", "shm-ihrn-countries", "shm-bp-worldwide", "shm-provider-callers", "phone-rebrand-gms", "shm-wear-trusted-peers",
                 "shm-launcher-badge"),
             c.patches("shm-phone").map { it.id },
         )
         val watch = c.patches("shm-watch")
-        assertEquals(16, watch.size)
+        assertEquals(17, watch.size)
         assertEquals("watch-mod", watch.last().id)
         assertEquals("Health Tracking module", watch.last().title)
         assertTrue(watch.last().injection)
@@ -89,7 +89,7 @@ class AppCatalogueTest {
         assertEquals(18, alarm.size)
         assertEquals("alarm-fork", alarm.last().id)
         assertEquals("Alarm link module", alarm.last().title)
-        assertEquals(18 + 15 + 17, c.patternCount(listOf("shm-phone", "shm-watch", "alarm-watch")))
+        assertEquals(20 + 16 + 17, c.patternCount(listOf("shm-phone", "shm-watch", "alarm-watch")))
         assertTrue(c.patchSets.flatMap { it.patches }.all { it.description.isNotBlank() })
     }
 

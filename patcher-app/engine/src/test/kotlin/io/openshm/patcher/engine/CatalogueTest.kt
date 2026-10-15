@@ -44,7 +44,7 @@ class CatalogueTest {
 
     @Test fun committedCatalogueParses() {
         val c = Catalogue.parse(String(catalogueBytes, Charsets.UTF_8))
-        assertEquals(57, c.patterns.size)
+        assertEquals(62, c.patterns.size)
         assertEquals(setOf("gms", "alarm", "shealth"), c.profiles.keys)
     }
 
@@ -144,14 +144,14 @@ class CatalogueTest {
         val c = Catalogue.parse(String(catalogueBytes, Charsets.UTF_8))
         assertEquals(
             setOf(
-                "shm-min-age-22-to-16", "watch-min-age-22-to-16", "shm-setup-network-gate", "shm-sleep-apnea-support", "watch-apnea-country",
+                "shm-min-age-22-to-16", "watch-min-age-22-to-16", "shm-setup-network-gate", "shm-sleep-apnea-support", "shm-sleep-countries", "watch-apnea-country",
                 "watch-apnea-reeval-not-supported", "alarm-force-sound-vibrate", "alarm-hide-launcher", "alarm-relabel",
                 "shealth-oobe-local", "shealth-capability-gates", "shealth-launcher-badge", "shm-launcher-badge",
             ),
             c.patterns.values.filter { it.optional }.map { it.id }.toSet(),
         )
         assertEquals(
-            setOf("shm-sleep-apnea-support", "watch-apnea-country", "watch-apnea-reeval-not-supported"),
+            setOf("shm-sleep-apnea-support", "shm-sleep-countries", "watch-apnea-country", "watch-apnea-reeval-not-supported"),
             c.patterns.values.filter { it.optionGroup == "sleep-apnea" }.map { it.id }.toSet(),
         )
         assertEquals(
@@ -211,7 +211,7 @@ class CatalogueTest {
 
     @Test fun parseSignedVerifiesBeforeParsing() {
         val key = CatalogueVerifier.parsePublicKey(pem)
-        assertEquals(57, Catalogue.parseSigned(catalogueBytes, signature, key).patterns.size)
+        assertEquals(62, Catalogue.parseSigned(catalogueBytes, signature, key).patterns.size)
         val tampered = catalogueBytes.copyOf().also { it[100] = (it[100].toInt() xor 1).toByte() }
         try {
             Catalogue.parseSigned(tampered, signature, key)

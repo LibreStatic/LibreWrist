@@ -130,7 +130,7 @@ class BuildRunnerTest {
 
     @Test fun disabledPatternsReachEveryPatchedOutput() {
         val engine = FakeEngine()
-        val disabled = setOf("shm-sleep-apnea-support", "watch-apnea-country", "watch-apnea-reeval-not-supported", "alarm-relabel")
+        val disabled = setOf("shm-sleep-apnea-support", "shm-sleep-countries", "watch-apnea-country", "watch-apnea-reeval-not-supported", "alarm-relabel")
         runner(engine).run(BuildRequest(allIds, "com.example", key, null, disabled), Sink())
         assertEquals(setOf("shm-phone", "shm-watch", "alarm-watch", "shealth-phone"), engine.patches.map { it.inputId }.toSet())
         for (req in engine.patches) assertEquals(disabled, req.disabledPatterns)

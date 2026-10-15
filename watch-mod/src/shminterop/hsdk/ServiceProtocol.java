@@ -26,8 +26,11 @@ public final class ServiceProtocol {
     public static final String TRACKER_ECG = "ECG";
     /** On-demand PPG tracker type; delivers green/red/IR ADC counts (protocol 4.4). */
     public static final String TRACKER_PPG_ON_DEMAND = "PPG_ON_DEMAND";
-    /** setPpgType channel name for the green LED; the only channel our trackers use. */
+    /** setPpgType channel name for the green LED (the BP tracker uses only this one). */
     public static final String PPG_TYPE_GREEN = "GREEN";
+    /** setPpgType channel names for the red and infrared LEDs (the SpO2 adapter uses these two). */
+    public static final String PPG_TYPE_RED = "RED";
+    public static final String PPG_TYPE_IR = "IR";
 
     // service transactions
     public static final int TX_CREATE = 1;
@@ -261,7 +264,12 @@ public final class ServiceProtocol {
             if (m == 0 || !ok[0]) continue; // no green sample for this point
             // Absent quality position means no guarantee, the producer's default too.
             int status = m > 1 && ok[1] ? ints[1] : PpgBatch.STATUS_ERROR;
-            samples.add(new PpgSample(ts, ints[0], status));
+            // Red/IR: positions 2..5 (ADC, status); absent means no data and no guarantee.
+            int redAdc = m > 2 && ok[2] ? ints[2] : 0;
+            int redStatus = m > 3 && ok[3] ? ints[3] : PpgBatch.STATUS_ERROR;
+            int irAdc = m > 4 && ok[4] ? ints[4] : 0;
+            int irStatus = m > 5 && ok[5] ? ints[5] : PpgBatch.STATUS_ERROR;
+            samples.add(new PpgSample(ts, ints[0], status, redAdc, redStatus, irAdc, irStatus));
         }
         if (samples.isEmpty()) return null;
         return new PpgBatch(samples.toArray(new PpgSample[0]));
