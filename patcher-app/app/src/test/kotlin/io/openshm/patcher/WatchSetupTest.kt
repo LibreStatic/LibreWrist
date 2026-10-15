@@ -161,10 +161,12 @@ private class FakeDevice : WatchDevice {
     override suspend fun isInstalled(pkg: String) = pkg in present
 
     val started = mutableListOf<Pair<String, String>>()
+    val startedExtras = mutableListOf<Map<String, Boolean>>()
     var startThrows: java.io.IOException? = null
 
-    override suspend fun startBridge(pkg: String, receiver: String, action: String) {
+    override suspend fun startBridge(pkg: String, receiver: String, action: String, extras: Map<String, Boolean>) {
         started += pkg to action
+        startedExtras += extras
         startThrows?.let { throw it }
     }
 
@@ -356,6 +358,28 @@ class WatchInstallRunnerTest {
         assertEquals(listOf("$prefix.bridge-watch" to "$prefix.shmbridge.START"), device.started)
         assertEquals(listOf("$prefix.bridge-watch"), device.grantCalls.map { it.first })
         assertTrue(s.value.done)
+    }
+
+    @Test
+    fun theStartCarriesTheCatalogueSwitchValues() = runBlocking {
+        val cat = io.openshm.patcher.data.AppCatalogue.current
+        for ((skipped, expected) in listOf(setOf("alarm") to false, emptySet<String>() to true)) {
+            val device = FakeDevice()
+            val extras = { out: OutputApp -> cat.startSwitches(out, 34, skipped) }
+            WatchInstallRunner(device, { built("bridge-watch") }, { prefix }, { locked++ }, { logged += it },
+                startExtras = extras).run(state(item("bridge-watch")))
+            assertEquals(listOf(mapOf("alarms" to expected)), device.startedExtras)
+        }
+    }
+
+    @Test
+    fun theSwitchStaysOnWhereTheForkIsNotOffered() {
+        val cat = io.openshm.patcher.data.AppCatalogue.current
+        val bridgeOut = cat.output("bridge-watch")
+        assertEquals(mapOf("alarms" to false), cat.startSwitches(bridgeOut, 34, setOf("alarm")))
+        assertEquals(mapOf("alarms" to true), cat.startSwitches(bridgeOut, 33, setOf("alarm")))
+        assertEquals(mapOf("alarms" to true), cat.startSwitches(bridgeOut, 34, emptySet()))
+        assertEquals(emptyMap<String, Boolean>(), cat.startSwitches(cat.output("bridge-phone"), 34, setOf("alarm")))
     }
 
     private val bridge get() = "$prefix.bridge-watch"

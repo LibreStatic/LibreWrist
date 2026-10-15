@@ -162,7 +162,7 @@ internal class FakeWatch(
     override suspend fun install(apk: File, onProgress: (Float) -> Unit): InstallResult = error("never installs")
     override suspend fun applyGrants(pkg: String, grants: List<AdbGrant>) = GrantReport(emptyList())
     override suspend fun isInstalled(pkg: String) = kinds[pkg] != null && kinds[pkg] != PackageKind.Missing
-    override suspend fun startBridge(pkg: String, receiver: String, action: String) {}
+    override suspend fun startBridge(pkg: String, receiver: String, action: String, extras: Map<String, Boolean>) {}
     override suspend fun disable(pkg: String) = error("never disables here")
 }
 

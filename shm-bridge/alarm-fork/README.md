@@ -4,6 +4,10 @@ The alarm fork (`shminterop.shmbridge.alarm`) is **not built from this directory
 produced by the patch pipeline (profile `alarm` of `catalogue/catalogue.json`,
 `scripts/build_alarm_fork.sh`) from the official `alarm-watch-1.3.05.5` APK, which the user downloads from APKMirror (the copy preinstalled on a watch is usually another build and fails the hash) (see `apks/README.md`).
 The patch list is documented in [docs/patches.md](../../docs/patches.md#alarm-fork-1305-9).
+
+The fork is an optional app in the patcher. Leaving it out turns alarm sync off: the patcher starts the
+watch bridge with `--ez alarms false` (see `shm-bridge/README.md`), so the fallback ringer does not take over.
+On watches that cannot run the fork (Wear OS 4) there is no switch and the fallback ringer keeps working.
 No vendor code is stored in this repo.
 
 `src/shminterop/shmbridge/alarm/` holds the classes that the pipeline adds to the fork:

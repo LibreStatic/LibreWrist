@@ -294,6 +294,10 @@ class InstallWatchViewModel(application: Application) : AndroidViewModel(applica
         log = { Log.w("BridgeStart", it) },
         outputs = AppCatalogue.current.outputs,
         ownPackage = application.packageName,
+        startExtras = { out ->
+            val session = SetupSession.state.value
+            AppCatalogue.current.startSwitches(out, session.watchProfile.sdk, session.skippedApps)
+        },
     )
 
     init {

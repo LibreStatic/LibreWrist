@@ -33,7 +33,7 @@ class CatalogueSchema2Test {
         val c = parsed()
         assertEquals(2, c.schema)
         assertEquals(listOf("health-monitor", "alarm", "bridge", "samsung-health"), c.apps.map { it.id })
-        assertEquals(listOf(true, false, false, true), c.apps.map { it.optional })
+        assertEquals(listOf(true, true, false, true), c.apps.map { it.optional })
         assertEquals(listOf("shm-phone", "shm-watch"), c.apps.first().outputs)
         assertEquals("com.samsung.android.app.watchmanager", c.platform.companionApp.packageName)
         assertEquals(5, c.platform.companionApp.watchPlugins.size)
@@ -46,6 +46,8 @@ class CatalogueSchema2Test {
         assertTrue(phone.knownSigner && phone.singleCopy && !phone.companionLink)
         assertEquals("\${PKG_PREFIX}.shmbridge.phone.status", phone.statusAuthority)
         assertTrue(c.outputs.single { it.id == "bridge-watch" }.companionLink)
+        assertEquals(mapOf("alarms" to "alarm"), c.outputs.single { it.id == "bridge-watch" }.start?.switches)
+        assertEquals(emptyMap<String, String>(), phone.start?.switches)
         assertEquals("shm-watch", c.stockAppsToDisable.single().replacedBy)
         assertTrue(c.grants.getValue("bridge-phone").any { it.why == "grant.why.calls" })
         val en = c.strings.getValue("en")
@@ -113,6 +115,16 @@ class CatalogueSchema2Test {
         assertRejected(mutated("\"singleCopy\": true", "\"singleCopy\": \"yes\""), "singleCopy must be a boolean")
         assertRejected(mutated("\"statusAuthority\": \"\${PKG_PREFIX}", "\"statusAuthority\": \"\${OTHER}"), "statusAuthority")
         assertRejected(mutated("\"action\": \"\${PKG_PREFIX}.shmbridge.START\"", "\"action\": \"\${PKG_PREFIX}.a b\""), "start.action")
+    }
+
+    @Test fun badStartSwitchesAreRejected() {
+        val ok = "\"alarms\": \"alarm\""
+        assertRejected(mutated(ok, "\"Alarms\": \"alarm\""), "not a valid extra name")
+        assertRejected(mutated(ok, "\"1a\": \"alarm\""), "not a valid extra name")
+        assertRejected(mutated(ok, "\"alarms\": \"nope\""), "id of an optional app")
+        assertRejected(mutated(ok, "\"alarms\": \"bridge\""), "id of an optional app")
+        assertRejected(mutated(ok, "\"alarms\": 5"), "id of an optional app")
+        assertRejected(mutated("\"switches\": {", "\"other\": 1,\n        \"switches\": {"), "optionally \"switches\"")
     }
 
     @Test fun badPlatformIsRejected() {

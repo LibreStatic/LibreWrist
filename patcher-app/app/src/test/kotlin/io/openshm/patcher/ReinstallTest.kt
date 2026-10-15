@@ -75,7 +75,7 @@ private class ConflictingWatch(var kind: PackageKind = PackageKind.User, var fai
 
     override suspend fun applyGrants(pkg: String, grants: List<AdbGrant>) = GrantReport(emptyList())
 
-    override suspend fun startBridge(pkg: String, receiver: String, action: String) {}
+    override suspend fun startBridge(pkg: String, receiver: String, action: String, extras: Map<String, Boolean>) {}
     override suspend fun isInstalled(pkg: String) = kind != PackageKind.Missing
     override suspend fun disable(pkg: String) = error("never disables here")
     override suspend fun packageKind(pkg: String) = kind

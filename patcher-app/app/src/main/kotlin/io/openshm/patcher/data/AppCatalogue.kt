@@ -67,6 +67,21 @@ class LoadedCatalogue(val engine: Catalogue, val locales: List<Locale>) {
         }
     }
 
+    /**
+     * The boolean START extras of [output] (`start.switches`): false only for an optional app that is
+     * skipped and has an output offered for a watch with SDK [watchSdk] (the switch exists on the Acquire
+     * screen); true otherwise, so a watch that cannot run the app's output keeps the bridge's fallback.
+     */
+    fun startSwitches(output: OutputApp, watchSdk: Int, skippedApps: Set<String>): Map<String, Boolean> {
+        val switches = output.start?.switches.orEmpty()
+        if (switches.isEmpty()) return emptyMap()
+        val offered = selectedOutputs(watchSdk, emptySet()).map { it.id }.toSet()
+        return switches.mapValues { (_, appId) ->
+            val app = apps.firstOrNull { it.id == appId }
+            !(app != null && app.optional && app.outputIds.any { it in offered } && appId in skippedApps)
+        }
+    }
+
     /** The app that groups output [outputId]. */
     fun appOf(outputId: String): AppGroup? = apps.firstOrNull { outputId in it.outputIds }
 
