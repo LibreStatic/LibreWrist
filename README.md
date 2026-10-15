@@ -3,8 +3,8 @@
 > LibreWrist was formerly called OpenSHM (some identifiers, such as the `io.openshm` package, keep that name).
 
 Personal interoperability between a Galaxy Watch and a **non-Samsung** Android phone. With it, the
-Samsung Health Monitor (SHM) app can measure ECG, blood pressure and irregular heart rhythm
-notifications (IHRN) on the watch and sync them with the phone. It also includes our own bridge for
+Samsung Health Monitor (SHM) app can measure ECG, blood pressure, irregular heart rhythm
+notifications (IHRN) and sleep apnea on the watch and sync them with the phone. It also includes our own bridge for
 alarms, notifications and calls.
 
 This repository **contains no vendor code and no APKs**. It holds:
@@ -67,8 +67,11 @@ repository. The catalogue is data only: the app checks its ECDSA signature and n
 it.
 
 Export the signing key from the app after the first build (the export and import forms open as
-dialogs; the app also offers an automatic backup right after the first build). Upgrading the installed apps without
-losing data requires the **same key and the same package prefix**.
+dialogs; the app also offers an automatic backup right after the first build). The app also keeps a
+copy in your Google account (Google Play services Block Store, end-to-end encrypted when the phone
+has a screen lock) and restores it by itself when the phone has no key, for example after a
+reinstall. Upgrading the installed apps without losing data requires the **same key and the same
+package prefix**.
 
 ## Walkthrough
 
@@ -141,8 +144,9 @@ Every file is checked against the catalogue's checksum. Continue unlocks once al
 
 The required patches are locked; the others can be switched off. The defaults are recommended. Tap
 **Build**. The build runs in the background with a notification, so you can leave the app. When it
-finishes, all five apps are patched and signed with your own key. The app then offers to back up
-that key: **do it**, because you will need it for future updates.
+finishes, every selected app is patched and signed with your own key. The app then offers to back
+up that key: **do it**, because you will need it for future updates. A copy also goes to your Google
+account when Google Play services is available.
 
 Later builds only patch again the apps whose inputs or patches changed. The others are reused, and
 **Built and signed** marks them as *Unchanged*.
@@ -264,7 +268,9 @@ Their permissions are granted automatically. Then:
   measurements with the patched app.
 - **Earlier copies**: watch bridge and alarm copies left by an earlier package prefix are removed
   first, since they would compete with the current bridge for the link. The phone install step does
-  the same with the phone bridge (Android asks you to confirm). Samsung Health+ is never touched.
+  the same with the phone bridge and with Samsung Health+ copies left by an earlier prefix, which
+  are duplicates of the current one (Android asks you to confirm each uninstall). The stock Samsung
+  Health is never touched.
 - **Phone bridge link**: the bridge is registered as a companion app of the phone on the watch, so
   it stays connected without an ongoing notification.
 - **Turn off the stock app**: the stock Health Monitor is disabled, not uninstalled, so it does not
@@ -282,7 +288,7 @@ The patcher runs these checks:
 
 - it confirms what is installed on both devices, with which signature;
 - it confirms that permissions are granted;
-- it checks that no bridge copy from an earlier package prefix is left on either device;
+- it checks that no copy of our apps from an earlier package prefix is left on either device;
 - it checks that the bridge link between the phone and the watch is up.
 
 It then asks you a few questions about what you see on the devices. When every check passes, you
@@ -378,6 +384,9 @@ installs **next to** the stock Samsung Health from the Play Store instead of rep
   the watch and uploading to the Samsung cloud.
 - Samsung Health+ signs in to the same Samsung account, downloads the history, and unlocks the
   phone-side features hidden on non-Samsung phones (for example the Energy Score tile).
+- It reads the sleep apnea status and the BP measurement flag from the patched Health Monitor, so
+  the Sleep apnea card shows up under Sleep. This only works because both apps are signed with your
+  key.
 - Its patches appear on the patches step. Optional ones add a launcher badge (also available for
   SHM) and a local-only mode, which is off by default.
 
@@ -388,6 +397,10 @@ Turn the switch off if you do not want it. On a PC, `scripts/build_shealth.sh` b
 - **On the watch**, the patched Samsung Health Monitor replaces the stock one in the app list. It
   offers ECG and blood pressure, including the BP calibration. Irregular heart rhythm notifications
   can be turned on from the phone app.
+- **Sleep apnea** is available in every country (its patches are on by default and can be switched
+  off together on the patches step). The phone app shows a **Sleep** tab, where the
+  apnea setup starts; after that the watch records the blood oxygen level while you sleep. While
+  recording, the red and infrared sensor LEDs stay on all night, so expect more battery use.
 - **On the phone**, Samsung Health Monitor finds the watch as a compatible device. Readings taken
   on the watch appear there and can be exported as PDF.
 - **The bridge** sends phone notifications, incoming calls (answer or decline from the watch) and
@@ -411,11 +424,15 @@ Turn the switch off if you do not want it. On a PC, `scripts/build_shealth.sh` b
    - In the phone app, start a calibration with a cuff monitor, taking three readings. The watch
      completes the calibration.
    - After that, measure from the watch. The result syncs to the phone the same way as ECG.
-3. **Bridge**:
+3. **Sleep apnea**:
+   - In the phone app, open the **Sleep** tab and finish the sleep apnea setup.
+   - Sleep with the watch on. Nights shorter than 1 hour are ignored, and a result needs about 3
+     hours. After you wake up, the result shows up in the phone app.
+4. **Bridge**:
    - Send yourself a message, or call the phone: the notification or the call shows on the watch.
    - Set an alarm on the phone a couple of minutes ahead: it rings on the watch. With the watch on
      your wrist, a double pinch snoozes or dismisses it.
-4. **If something does not arrive**, run **Test again** from Home and share the report. Most
+5. **If something does not arrive**, run **Test again** from Home and share the report. Most
    problems are one of these:
    - Health Platform developer mode turned off on the watch;
    - a missing permission;
@@ -433,12 +450,15 @@ These come from user reports. Each one links to its GitHub issue, where progress
   treats each failed reading as an alert. These are false alarms, not a health finding. A custom
   sensor translation layer is in progress. Until it ships, turn irregular heart rhythm
   notifications off in the phone app.
-- :construction: **Sleep apnea detection is not available yet**
-  ([#3](https://github.com/LibreStatic/LibreWrist/issues/3)). It needs calibration patterns baked
-  into Samsung's firmware, which are being extracted and tested against a custom driver. The same
-  applies to a persistent SpO2 unlock. The irregular heartbeat toggle from that report works since
-  0.4.0, and feature level 1.3 is the highest one available, so there is nothing newer to upgrade
-  to.
+- :hourglass_flowing_sand: **Sleep apnea detection is missing**
+  ([#3](https://github.com/LibreStatic/LibreWrist/issues/3)). The apps hid it outside Samsung's
+  country list, and a re-signed watch app cannot read the privileged sleep SpO2 sensor. The bug is
+  confirmed and a fix shipped in 0.6.0: the regional checks are disabled, and our SpO2 adapter
+  computes the overnight blood oxygen from the raw red and infrared signals of the Health Tracking
+  service. Update the patcher and run the patches again. We are still waiting for an affected user
+  to report that a night's result shows up on their phone. The SpO2 values have been compared with
+  the stock reading on one session so far, so treat them as indicative. The irregular heartbeat
+  toggle from that report works since 0.4.0, and feature level 1.3 is the highest one available.
 - :hourglass_flowing_sand: **Blood pressure calibration stuck at 0% with the PPG LEDs off**
   ([#2](https://github.com/LibreStatic/LibreWrist/issues/2)), reported on a Galaxy Watch4 Classic
   (SM-R890) with One UI Watch 8 and patcher 0.3.7. The bug is confirmed and a fix shipped in
@@ -451,8 +471,9 @@ These come from user reports. Each one links to its GitHub issue, where progress
    Data Layer between them.
 2. Both patched SHM apps share one package (`com.samsung.android.shealthmonitors`) and one signing
    certificate. GMS needs both to deliver messages between the two apps.
-3. On the watch, our ECG adapter talks to the Health Tracking service through a clean-room client
-   ([protocol](docs/health-tracking-protocol.md)). The service only accepts it while Health
+3. On the watch, our ECG, BP and SpO2 adapters stand in for the privileged sensors. They talk to
+   the Health Tracking service through a clean-room client
+   ([protocol](docs/health-tracking-protocol.md)), which the service only accepts while Health
    Platform developer mode is on.
 4. The bridge talks to the watch directly over RFCOMM, phone ⇄ watch.
 
@@ -465,11 +486,11 @@ Everything runs on the two devices. Details are in [docs/architecture.md](docs/a
 | `patcher-app/` | The LibreWrist Android app, a Gradle build with three modules: `:engine` (pure JVM patch engine), `:adb` (ADB client) and `:app` (Compose UI). Third-party licences are in [patcher-app/THIRD_PARTY.md](patcher-app/THIRD_PARTY.md). |
 | `catalogue/` | The signed patch catalogue. `catalogue.json` describes the inputs, profiles and patterns as data; `catalogue.json.sig` and `catalogue.pub` are its signature and public key. Details in [docs/patches.md](docs/patches.md). |
 | `superpatcher/`, `scripts/superpatcher.py` | The Python patch engine. It interprets the same catalogue as the app. |
-| `watch-mod/` | Our own code injected into the watch SHM: the ECG and BP adapters, the Health Tracking client and the vendor overrides. |
+| `watch-mod/` | Our own code injected into the watch SHM: the ECG, BP and SpO2 adapters, the Health Tracking client and the vendor overrides. |
 | `shm-bridge/` | Our own bridge apps (phone ⇄ watch over direct RFCOMM) and the fork of the watch Alarm app. |
 | `scripts/` | The PC build (`build_all.sh`, `build_shm_*.sh`, `build_shealth.sh`, `fetch_deps.sh`), catalogue tooling (`catalogue.py`), and shared helpers in `scripts/lib/`. |
 | `apks/` | Where the official input APKs go for PC builds. They are not versioned; see [apks/README.md](apks/README.md) and `apks/inputs.json`. |
-| `docs/` | [Architecture](docs/architecture.md), [installation runbook](docs/installation.md), [patches](docs/patches.md), [Health Tracking client](docs/health-sdk.md) and [protocol](docs/health-tracking-protocol.md), plus research notes on Samsung Health ([phone survey](docs/samsung-health-survey.md), [watch survey](docs/shealth-watch-survey.md)). |
+| `docs/` | [Architecture](docs/architecture.md), [installation runbook](docs/installation.md), [patches](docs/patches.md), [Health Tracking client](docs/health-sdk.md) and [protocol](docs/health-tracking-protocol.md), [SpO2 adapter](docs/spo2-adapter.md), the sensor datasheets ([ECG](docs/ecg-calibration.md), [BP calibration](docs/bp-calibration.md), [SpO2](docs/spo2-calibration.md)), plus research notes on Samsung Health ([phone survey](docs/samsung-health-survey.md), [watch survey](docs/shealth-watch-survey.md)). |
 
 ## Building on a PC
 
