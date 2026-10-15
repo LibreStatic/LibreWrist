@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "serial": 32,
+  "serial": 33,
   "minAppVersion": 28,
   "inputs": [
     {
@@ -2591,19 +2591,36 @@
             "foreground": [
               {
                 "pathData": "M61.5,71.5a10,10 0,1 1,20 0a10,10 0,1 1,-20 0",
-                "fillColor": "#FF4F5BD5",
+                "fillColor": "#FF0E8C7F",
                 "strokeColor": "#FFFFFFFF",
                 "strokeWidth": 1.5
               },
               {
-                "pathData": "M65.56,71.5a5.94,5.94 0,1 1,11.88 0a5.94,5.94 0,1 1,-11.88 0",
+                "pathData": "M73.26,70.69 L73.26,66.26 A1.38,1.38 0,0,0 71.87,64.88 L67.73,64.88 A1.38,1.38 0,0,0 66.34,66.26 L66.34,75.01 A1.38,1.38 0,0,0 67.73,76.4 L70.13,76.4",
                 "strokeColor": "#FFFFFFFF",
-                "strokeWidth": 1.35
+                "strokeWidth": 1.15,
+                "strokeLineCap": "round",
+                "strokeLineJoin": "round"
               },
               {
-                "pathData": "M67.18,72.04 L69.61,72.04 L70.69,69.34 L72.31,74.74 L73.39,72.04 L75.82,72.04",
+                "pathData": "M73.26,70.87 L74.64,70.87 A0.46,0.46 0,0,1 75.1,71.33 L75.1,71.79 A0.46,0.46 0,0,1 74.64,72.25 L73.26,72.25 A0.46,0.46 0,0,1 72.8,71.79 L72.8,71.33 A0.46,0.46 0,0,1 73.26,70.87 Z",
+                "fillColor": "#FFFFFFFF"
+              },
+              {
+                "pathData": "M73.26,77.32 L74.64,77.32 A0.46,0.46 0,0,1 75.1,77.78 L75.1,78.24 A0.46,0.46 0,0,1 74.64,78.7 L73.26,78.7 A0.46,0.46 0,0,1 72.8,78.24 L72.8,77.78 A0.46,0.46 0,0,1 73.26,77.32 Z",
+                "fillColor": "#FFFFFFFF"
+              },
+              {
+                "pathData": "M71.18,74.78 A2.77,2.77 0,1,1 76.71,74.78 A2.77,2.77 0,1,1 71.18,74.78 Z",
                 "strokeColor": "#FFFFFFFF",
-                "strokeWidth": 1.08,
+                "strokeWidth": 1.04,
+                "strokeLineCap": "round",
+                "strokeLineJoin": "round"
+              },
+              {
+                "pathData": "M73.95,73.17 L73.95,74.78 L75.33,74.78",
+                "strokeColor": "#FFFFFFFF",
+                "strokeWidth": 0.81,
                 "strokeLineCap": "round",
                 "strokeLineJoin": "round"
               }
@@ -2615,14 +2632,31 @@
                 "strokeWidth": 1.5
               },
               {
-                "pathData": "M65.56,71.5a5.94,5.94 0,1 1,11.88 0a5.94,5.94 0,1 1,-11.88 0",
+                "pathData": "M73.26,70.69 L73.26,66.26 A1.38,1.38 0,0,0 71.87,64.88 L67.73,64.88 A1.38,1.38 0,0,0 66.34,66.26 L66.34,75.01 A1.38,1.38 0,0,0 67.73,76.4 L70.13,76.4",
                 "strokeColor": "#FFFFFFFF",
-                "strokeWidth": 1.35
+                "strokeWidth": 1.15,
+                "strokeLineCap": "round",
+                "strokeLineJoin": "round"
               },
               {
-                "pathData": "M67.18,72.04 L69.61,72.04 L70.69,69.34 L72.31,74.74 L73.39,72.04 L75.82,72.04",
+                "pathData": "M73.26,70.87 L74.64,70.87 A0.46,0.46 0,0,1 75.1,71.33 L75.1,71.79 A0.46,0.46 0,0,1 74.64,72.25 L73.26,72.25 A0.46,0.46 0,0,1 72.8,71.79 L72.8,71.33 A0.46,0.46 0,0,1 73.26,70.87 Z",
+                "fillColor": "#FFFFFFFF"
+              },
+              {
+                "pathData": "M73.26,77.32 L74.64,77.32 A0.46,0.46 0,0,1 75.1,77.78 L75.1,78.24 A0.46,0.46 0,0,1 74.64,78.7 L73.26,78.7 A0.46,0.46 0,0,1 72.8,78.24 L72.8,77.78 A0.46,0.46 0,0,1 73.26,77.32 Z",
+                "fillColor": "#FFFFFFFF"
+              },
+              {
+                "pathData": "M71.18,74.78 A2.77,2.77 0,1,1 76.71,74.78 A2.77,2.77 0,1,1 71.18,74.78 Z",
                 "strokeColor": "#FFFFFFFF",
-                "strokeWidth": 1.08,
+                "strokeWidth": 1.04,
+                "strokeLineCap": "round",
+                "strokeLineJoin": "round"
+              },
+              {
+                "pathData": "M73.95,73.17 L73.95,74.78 L75.33,74.78",
+                "strokeColor": "#FFFFFFFF",
+                "strokeWidth": 0.81,
                 "strokeLineCap": "round",
                 "strokeLineJoin": "round"
               }
@@ -2646,19 +2680,36 @@
             "foreground": [
               {
                 "pathData": "M61.5,71.5a10,10 0,1 1,20 0a10,10 0,1 1,-20 0",
-                "fillColor": "#FF4F5BD5",
+                "fillColor": "#FF0E8C7F",
                 "strokeColor": "#FFFFFFFF",
                 "strokeWidth": 1.5
               },
               {
-                "pathData": "M65.56,71.5a5.94,5.94 0,1 1,11.88 0a5.94,5.94 0,1 1,-11.88 0",
+                "pathData": "M73.26,70.69 L73.26,66.26 A1.38,1.38 0,0,0 71.87,64.88 L67.73,64.88 A1.38,1.38 0,0,0 66.34,66.26 L66.34,75.01 A1.38,1.38 0,0,0 67.73,76.4 L70.13,76.4",
                 "strokeColor": "#FFFFFFFF",
-                "strokeWidth": 1.35
+                "strokeWidth": 1.15,
+                "strokeLineCap": "round",
+                "strokeLineJoin": "round"
               },
               {
-                "pathData": "M67.18,72.04 L69.61,72.04 L70.69,69.34 L72.31,74.74 L73.39,72.04 L75.82,72.04",
+                "pathData": "M73.26,70.87 L74.64,70.87 A0.46,0.46 0,0,1 75.1,71.33 L75.1,71.79 A0.46,0.46 0,0,1 74.64,72.25 L73.26,72.25 A0.46,0.46 0,0,1 72.8,71.79 L72.8,71.33 A0.46,0.46 0,0,1 73.26,70.87 Z",
+                "fillColor": "#FFFFFFFF"
+              },
+              {
+                "pathData": "M73.26,77.32 L74.64,77.32 A0.46,0.46 0,0,1 75.1,77.78 L75.1,78.24 A0.46,0.46 0,0,1 74.64,78.7 L73.26,78.7 A0.46,0.46 0,0,1 72.8,78.24 L72.8,77.78 A0.46,0.46 0,0,1 73.26,77.32 Z",
+                "fillColor": "#FFFFFFFF"
+              },
+              {
+                "pathData": "M71.18,74.78 A2.77,2.77 0,1,1 76.71,74.78 A2.77,2.77 0,1,1 71.18,74.78 Z",
                 "strokeColor": "#FFFFFFFF",
-                "strokeWidth": 1.08,
+                "strokeWidth": 1.04,
+                "strokeLineCap": "round",
+                "strokeLineJoin": "round"
+              },
+              {
+                "pathData": "M73.95,73.17 L73.95,74.78 L75.33,74.78",
+                "strokeColor": "#FFFFFFFF",
+                "strokeWidth": 0.81,
                 "strokeLineCap": "round",
                 "strokeLineJoin": "round"
               }
@@ -2670,14 +2721,31 @@
                 "strokeWidth": 1.5
               },
               {
-                "pathData": "M65.56,71.5a5.94,5.94 0,1 1,11.88 0a5.94,5.94 0,1 1,-11.88 0",
+                "pathData": "M73.26,70.69 L73.26,66.26 A1.38,1.38 0,0,0 71.87,64.88 L67.73,64.88 A1.38,1.38 0,0,0 66.34,66.26 L66.34,75.01 A1.38,1.38 0,0,0 67.73,76.4 L70.13,76.4",
                 "strokeColor": "#FFFFFFFF",
-                "strokeWidth": 1.35
+                "strokeWidth": 1.15,
+                "strokeLineCap": "round",
+                "strokeLineJoin": "round"
               },
               {
-                "pathData": "M67.18,72.04 L69.61,72.04 L70.69,69.34 L72.31,74.74 L73.39,72.04 L75.82,72.04",
+                "pathData": "M73.26,70.87 L74.64,70.87 A0.46,0.46 0,0,1 75.1,71.33 L75.1,71.79 A0.46,0.46 0,0,1 74.64,72.25 L73.26,72.25 A0.46,0.46 0,0,1 72.8,71.79 L72.8,71.33 A0.46,0.46 0,0,1 73.26,70.87 Z",
+                "fillColor": "#FFFFFFFF"
+              },
+              {
+                "pathData": "M73.26,77.32 L74.64,77.32 A0.46,0.46 0,0,1 75.1,77.78 L75.1,78.24 A0.46,0.46 0,0,1 74.64,78.7 L73.26,78.7 A0.46,0.46 0,0,1 72.8,78.24 L72.8,77.78 A0.46,0.46 0,0,1 73.26,77.32 Z",
+                "fillColor": "#FFFFFFFF"
+              },
+              {
+                "pathData": "M71.18,74.78 A2.77,2.77 0,1,1 76.71,74.78 A2.77,2.77 0,1,1 71.18,74.78 Z",
                 "strokeColor": "#FFFFFFFF",
-                "strokeWidth": 1.08,
+                "strokeWidth": 1.04,
+                "strokeLineCap": "round",
+                "strokeLineJoin": "round"
+              },
+              {
+                "pathData": "M73.95,73.17 L73.95,74.78 L75.33,74.78",
+                "strokeColor": "#FFFFFFFF",
+                "strokeWidth": 0.81,
                 "strokeLineCap": "round",
                 "strokeLineJoin": "round"
               }
