@@ -2,6 +2,8 @@ package io.openshm.patcher.ui.screens.selftest
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +20,8 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -36,6 +40,7 @@ import io.openshm.patcher.ui.components.SectionTitle
 import io.openshm.patcher.ui.components.SetupStep
 import io.openshm.patcher.ui.components.StatusShape
 import io.openshm.patcher.ui.components.StepScreenScaffold
+import io.openshm.patcher.ui.components.UnattendedAttention
 
 /** A line of text built from a string resource and its arguments, so rows can name packages and grants. */
 data class SelfTestText(@StringRes val res: Int, val args: List<String> = emptyList())
@@ -66,16 +71,39 @@ data class SelfTestSection(@StringRes val title: Int, val rows: List<SelfTestRow
 /** A check only the person holding the devices can answer ("Did the watch buzz?"). */
 data class HumanCheck(val index: Int, val total: Int, @StringRes val question: Int)
 
-data class SelfTestUiState(val sections: List<SelfTestSection> = emptyList()) {
+data class SelfTestUiState(
+    val sections: List<SelfTestSection> = emptyList(),
+    /** Fingerprint of what the questions depend on; null when it cannot be known (the answers are then not reusable). */
+    val manualFingerprint: String? = null,
+    /** True from the start of a run until it is known whether the questions are asked or answered from the last time. */
+    val resolvingManual: Boolean = false,
+    /** The questions were answered from the last time, not by the user in this run. */
+    val manualReused: Boolean = false,
+) {
     private val allRows get() = sections.flatMap { it.rows }
     val passedCount: Int get() = allRows.count { it.status == CheckStatus.Passed }
     val warningCount: Int get() = allRows.count { it.status == CheckStatus.Warning }
     val failedCount: Int get() = allRows.count { it.status == CheckStatus.Failed }
     val totalCount: Int get() = allRows.size
 
-    /** The first question still unanswered, with its place among all of them. */
+    /** Sections of automated checks, in order; the questions live in [manualSection]. */
+    val automatedSections: List<SelfTestSection> get() = sections.filter { s -> s.rows.none { it.isHuman } }
+
+    /** The questions only the person holding the devices can answer, if any. */
+    val manualSection: SelfTestSection? get() = sections.firstOrNull { s -> s.rows.any { it.isHuman } }
+
+    /**
+     * The questions are asked only once every automated row ended without a failure (a warning does
+     * not block the setup, so it does not hold them back either).
+     */
+    val manualOpen: Boolean
+        get() = !running && !resolvingManual && manualSection != null &&
+            allRows.none { !it.isHuman && it.status == CheckStatus.Failed }
+
+    /** The first question still unanswered, with its place among all of them; null until [manualOpen]. */
     val humanCheck: HumanCheck?
         get() {
+            if (!manualOpen) return null
             val questions = allRows.filter { it.isHuman }
             val next = questions.indexOfFirst { it.status == CheckStatus.Pending }
             return if (next < 0) null else HumanCheck(next + 1, questions.size, questions[next].question!!)
@@ -85,7 +113,10 @@ data class SelfTestUiState(val sections: List<SelfTestSection> = emptyList()) {
     val running: Boolean
         get() = allRows.any { it.status == CheckStatus.Running || (it.status == CheckStatus.Pending && !it.isHuman) }
 
-    val finished: Boolean get() = allRows.isNotEmpty() && allRows.none { it.status == CheckStatus.Pending || it.status == CheckStatus.Running }
+    /** Every row ended, or the automated rows did with a failure (the questions are then never asked). */
+    val finished: Boolean
+        get() = allRows.isNotEmpty() && !running && !resolvingManual &&
+            (!manualOpen || allRows.none { it.status == CheckStatus.Pending })
     val allPassed: Boolean get() = finished && allRows.all { it.status == CheckStatus.Passed }
 
     /** Warnings (skipped or unreadable checks) do not stop the setup; a failure does. */
@@ -97,6 +128,7 @@ sealed interface SelfTestEvent {
     data object Share : SelfTestEvent
     data object Rerun : SelfTestEvent
     data class Answer(val yes: Boolean) : SelfTestEvent
+    data object AskAgain : SelfTestEvent
 }
 
 @Composable
@@ -108,6 +140,8 @@ fun SelfTestScreen(
     modifier: Modifier = Modifier,
 ) {
     val split = state.splitIndex()
+    // A question to answer, or a failed check to fix.
+    UnattendedAttention(state.humanCheck != null || (state.finished && state.failedCount > 0))
     HapticWhen(state.allPassed, HapticFeedbackType.Confirm)
     HapticWhen(state.finished && state.failedCount > 0, HapticFeedbackType.Reject)
     StepScreenScaffold(
@@ -118,30 +152,53 @@ fun SelfTestScreen(
         topTrailing = {
             IconAction(Icons.Rounded.Share, stringResource(R.string.action_share_report), { onEvent(SelfTestEvent.Share) })
         },
-        footer = { PrimaryAction(stringResource(R.string.action_continue), onContinue, enabled = state.canContinue) },
+        footer = { PrimaryAction(stringResource(R.string.action_continue), onContinue, enabled = state.canContinue, auto = true) },
         secondary = {
-            state.sections.drop(split).forEach { SectionBlock(it, onEvent) }
-            state.humanCheck?.let { HumanCheckCard(it, onEvent) }
+            state.automatedSections.drop(split).forEach { SectionBlock(it, onEvent) }
             OutlinedAction(
                 stringResource(R.string.selftest_rerun),
                 { onEvent(SelfTestEvent.Rerun) },
                 Icons.Rounded.Refresh,
-                enabled = !state.running,
+                enabled = !state.running && !state.resolvingManual,
             )
         },
     ) {
-        state.sections.take(split).forEach { SectionBlock(it, onEvent) }
+        // On top, so the questions are not lost below the automated rows.
+        val manual = state.manualSection
+        if (manual != null && state.manualOpen) ManualStage(manual, state.humanCheck, state.manualReused, onEvent)
+        state.automatedSections.take(split).forEach { SectionBlock(it, onEvent) }
     }
 }
 
-/** Sections are shared between the two panes by row count; narrow, the secondary simply follows the primary. */
+/** Automated sections are shared between the two panes by row count; narrow, the secondary simply follows the primary. */
 private fun SelfTestUiState.splitIndex(): Int {
+    val automated = automatedSections
+    val total = automated.sumOf { it.rows.size }
     var seen = 0
-    sections.forEachIndexed { i, s ->
-        if (seen * 2 >= totalCount) return i
+    automated.forEachIndexed { i, s ->
+        if (seen * 2 >= total) return i
         seen += s.rows.size
     }
-    return sections.size
+    return automated.size
+}
+
+/** The questions: the open one first, then every question with its answer. Scrolls itself into view when it appears. */
+@Composable
+private fun ManualStage(section: SelfTestSection, check: HumanCheck?, reused: Boolean, onEvent: (SelfTestEvent) -> Unit) {
+    val requester = remember { BringIntoViewRequester() }
+    LaunchedEffect(Unit) { requester.bringIntoView() }
+    Column(Modifier.bringIntoViewRequester(requester), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        check?.let { HumanCheckCard(it, onEvent) }
+        SectionBlock(section, onEvent)
+        if (reused) {
+            ContainerTextAction(
+                stringResource(R.string.selftest_ask_again),
+                { onEvent(SelfTestEvent.AskAgain) },
+                onColor = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.align(Alignment.End),
+            )
+        }
+    }
 }
 
 @Composable

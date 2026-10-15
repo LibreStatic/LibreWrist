@@ -113,6 +113,7 @@ fun AllSetScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             ActionRow {
+                // The unattended run ends on this screen: Done waits for the user.
                 PrimaryAction(stringResource(R.string.action_done), onDone)
                 OutlinedAction(stringResource(R.string.action_share_report), onShare, Icons.Rounded.Share)
             }

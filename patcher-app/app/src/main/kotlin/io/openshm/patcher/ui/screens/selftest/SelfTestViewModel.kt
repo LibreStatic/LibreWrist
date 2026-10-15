@@ -1,6 +1,7 @@
 package io.openshm.patcher.ui.screens.selftest
 
 import android.app.Application
+import android.os.Build
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import io.openshm.patcher.BuildConfig
@@ -32,6 +33,7 @@ class SelfTestViewModel(application: Application) : AndroidViewModel(application
     private val session = SetupSession.state.value
     private val catalogue = AppCatalogue.current
     private val record: SelfTestRecord = PrefsSelfTestRecord(application)
+    private val manualAnswers: ManualAnswersStore = PrefsManualAnswersStore(application)
 
     private val runner = SelfTestRunner(
         catalogue = catalogue,
@@ -45,6 +47,8 @@ class SelfTestViewModel(application: Application) : AndroidViewModel(application
         bridge = ContentResolverBridgeStatus(application),
         watch = LinkWatchShell(WatchLink.get(application)),
         io = Dispatchers.IO,
+        phoneBuild = { Build.FINGERPRINT },
+        manualAnswers = manualAnswers,
         logFailure = { message, e -> Log.w(TAG, message, e) },
     )
 
@@ -63,8 +67,10 @@ class SelfTestViewModel(application: Application) : AndroidViewModel(application
         when (event) {
             is SelfTestEvent.Answer -> {
                 _state.update { it.answer(event.yes) }
+                updateManualAnswers(event.yes)
                 saveIfFinished()
             }
+            SelfTestEvent.AskAgain -> _state.update { it.askAgain() }
             SelfTestEvent.Rerun -> start()
             // Handled by the screen host: they need navigation and the activity.
             is SelfTestEvent.Fix, SelfTestEvent.Share -> Unit
@@ -145,6 +151,18 @@ class SelfTestViewModel(application: Application) : AndroidViewModel(application
             runner.run(_state)
             saveIfFinished()
         }
+    }
+
+    /** A "no" forgets the stored answers; the last "yes" that leaves every question passed remembers them. */
+    private fun updateManualAnswers(yes: Boolean) {
+        if (!yes) {
+            manualAnswers.clear()
+            return
+        }
+        val current = _state.value
+        val fingerprint = current.manualFingerprint ?: return
+        val human = current.sections.flatMap { it.rows }.filter { it.isHuman }
+        if (!current.manualReused && human.isNotEmpty() && human.all { it.status == CheckStatus.Passed }) manualAnswers.save(fingerprint)
     }
 
     private fun saveIfFinished() {

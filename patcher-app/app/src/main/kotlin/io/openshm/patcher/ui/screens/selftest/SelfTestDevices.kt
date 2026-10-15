@@ -23,7 +23,7 @@ class AndroidPackageInspector(context: Context) : PackageInspector {
         val info = pm.getPackageInfo(pkg, PackageManager.GET_SIGNING_CERTIFICATES)
         val signers = info.signingInfo?.apkContentsSigners.orEmpty()
             .map { hex(MessageDigest.getInstance("SHA-256").digest(it.toByteArray())) }.toSet()
-        InstalledPackage(info.versionName, signers, info.applicationInfo?.sourceDir)
+        InstalledPackage(info.versionName, signers, info.applicationInfo?.sourceDir, info.longVersionCode, info.lastUpdateTime)
     } catch (e: PackageManager.NameNotFoundException) {
         null
     }

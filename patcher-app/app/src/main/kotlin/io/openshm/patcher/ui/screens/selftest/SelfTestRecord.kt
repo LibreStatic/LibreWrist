@@ -27,6 +27,26 @@ interface SelfTestRecord {
     fun clear() {}
 }
 
+/** The manual answers' fingerprint in the `selftest` preferences, apart from the last result's keys. */
+class PrefsManualAnswersStore(context: Context) : ManualAnswersStore {
+    private val prefs = context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+
+    override fun fingerprint(): String? = prefs.getString(KEY, null)
+
+    override fun save(fp: String) {
+        prefs.edit().putString(KEY, fp).apply()
+    }
+
+    override fun clear() {
+        prefs.edit().remove(KEY).apply()
+    }
+
+    private companion object {
+        const val PREFS = "selftest"
+        const val KEY = "manual_answers_fingerprint"
+    }
+}
+
 /** SharedPreferences `selftest`: timestamp, the three counts and the overall status. */
 class PrefsSelfTestRecord(context: Context) : SelfTestRecord {
     private val prefs = context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)

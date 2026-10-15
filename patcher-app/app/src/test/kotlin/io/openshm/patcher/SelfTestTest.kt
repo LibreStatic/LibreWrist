@@ -1,5 +1,6 @@
 package io.openshm.patcher
 
+import io.openshm.patcher.R
 import io.openshm.patcher.adb.ShellResult
 import io.openshm.patcher.build.BuiltBuild
 import io.openshm.patcher.build.BuiltRecord
@@ -12,6 +13,7 @@ import io.openshm.patcher.ui.screens.selftest.BridgeStatus
 import io.openshm.patcher.ui.screens.selftest.BridgeStatusSource
 import io.openshm.patcher.ui.screens.selftest.FileHasher
 import io.openshm.patcher.ui.screens.selftest.InstalledPackage
+import io.openshm.patcher.ui.screens.selftest.ManualAnswersStore
 import io.openshm.patcher.ui.screens.selftest.PackageInspector
 import io.openshm.patcher.ui.screens.selftest.ReportHeader
 import io.openshm.patcher.ui.screens.selftest.SelfTestFix
@@ -19,9 +21,12 @@ import io.openshm.patcher.ui.screens.selftest.SelfTestParsers
 import io.openshm.patcher.ui.screens.selftest.SelfTestResult
 import io.openshm.patcher.ui.screens.selftest.SelfTestRow
 import io.openshm.patcher.ui.screens.selftest.SelfTestRunner
+import io.openshm.patcher.ui.screens.selftest.SelfTestSection
+import io.openshm.patcher.ui.screens.selftest.SelfTestText
 import io.openshm.patcher.ui.screens.selftest.SelfTestUiState
 import io.openshm.patcher.ui.screens.selftest.WatchShell
 import io.openshm.patcher.ui.screens.selftest.answer
+import io.openshm.patcher.ui.screens.selftest.askAgain
 import io.openshm.patcher.ui.screens.selftest.buildSelfTestReport
 import io.openshm.patcher.ui.screens.selftest.engineLogSummary
 import io.openshm.patcher.ui.screens.selftest.result
@@ -43,6 +48,13 @@ private const val OTHER_CERT = "00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff
 private val PHONE_OUTPUTS = listOf("shm-phone", "bridge-phone")
 private val WATCH_OUTPUTS = listOf("shm-watch", "bridge-watch", "alarm-fork")
 private const val STOCK = "com.samsung.android.shealthmonitor"
+
+private class FakeManualAnswers : ManualAnswersStore {
+    var stored: String? = null
+    override fun fingerprint() = stored
+    override fun save(fp: String) { stored = fp }
+    override fun clear() { stored = null }
+}
 
 /** Every interface of the runner as a configurable fake; the defaults describe a fully healthy setup. */
 private class World(val catalogue: LoadedCatalogue) {
@@ -69,6 +81,17 @@ private class World(val catalogue: LoadedCatalogue) {
     val watchFileSha = WATCH_OUTPUTS.associate { "/data/app/~~x==/${pkg(it)}-1==/base.apk" to sha(it) }.toMutableMap()
     var stockDisabled = true
     var stockInstalled = true
+
+    val companionPackage = catalogue.platform.companionApp.packageName
+    val healthPackage = catalogue.platform.healthPlatform.packageName
+    init {
+        installed[companionPackage] = InstalledPackage("5.0", setOf(CERT), null, versionCode = 50L, lastUpdateTime = 1000L)
+    }
+    var phoneBuild = "phone/build:1"
+    var watchBuild: String? = "watch/build:1"
+    var healthVersion: Long? = 100L
+    var healthUpdated = "2025-01-02 03:04:05"
+    val store = FakeManualAnswers()
 
     val leftoverWatch = mutableListOf<String>()
     val leftoverPhone = mutableListOf<String>()
@@ -112,7 +135,9 @@ private class World(val catalogue: LoadedCatalogue) {
                 if (words[2] == STOCK) { if (stockInstalled) ok("package:/system/app/Stock/Stock.apk\n") else fail() }
                 else watchInstalled[words[2]]?.let { ok("package:$it\n") } ?: fail()
             words[0] == "sha256sum" -> watchFileSha[words[1]]?.let { ok("$it  ${words[1]}\n") } ?: fail()
+            command == "getprop ro.build.fingerprint" -> watchBuild?.let { ok("$it\n") } ?: fail()
             words[0] == "dumpsys" && words[1] == "package" -> ok(
+                (if (words[2] == healthPackage) healthVersion?.let { "    versionCode=$it minSdk=30\n    lastUpdateTime=$healthUpdated\n" }.orEmpty() else "") +
                 catalogue.grants.values.flatten().filter { it.engine?.kind == "permission" }.joinToString("\n") {
                     val name = it.engine!!.fields.getValue("name")
                     "      $name: granted=${name !in missingWatchPermissions}, flags=[ ]"
@@ -146,6 +171,8 @@ private class World(val catalogue: LoadedCatalogue) {
         bridge = bridge,
         watch = watch,
         io = Dispatchers.Unconfined,
+        phoneBuild = { phoneBuild },
+        manualAnswers = store,
     )
 }
 
@@ -239,6 +266,42 @@ class SelfTestRunnerTest {
         assertTrue(state.finished)
         assertFalse(state.canContinue)
         assertEquals(CheckStatus.Failed, state.result(1L)!!.overall)
+    }
+
+    @Test
+    fun `the questions stay closed while automated rows run`() {
+        val state = world.runner().initial()
+        assertFalse(state.manualOpen)
+        assertNull(state.humanCheck)
+        assertFalse(state.finished)
+    }
+
+    @Test
+    fun `an automated failure keeps the questions closed and ends the run`() {
+        world.leftoverWatch += "io.openshm.u98ff48.shmbridge.watch"
+        val state = run()
+        assertFalse(state.manualOpen)
+        assertNull(state.humanCheck)
+        assertTrue(state.finished)
+        assertFalse(state.canContinue)
+        assertEquals(CheckStatus.Failed, state.result(1L)!!.overall)
+    }
+
+    @Test
+    fun `an automated warning does not hold the questions back`() {
+        fun row(id: String, status: CheckStatus, question: Int? = null) =
+            SelfTestRow(id, SelfTestText(R.string.selftest_title), status, question = question)
+        val state = SelfTestUiState(
+            listOf(
+                SelfTestSection(R.string.selftest_section_phone, listOf(row("a", CheckStatus.Passed), row("b", CheckStatus.Warning))),
+                SelfTestSection(R.string.selftest_section_human, listOf(row("q", CheckStatus.Pending, R.string.selftest_ecg_question))),
+            ),
+        )
+        assertTrue(state.manualOpen)
+        assertEquals(1, state.humanCheck?.index)
+        assertFalse(state.finished)
+        assertEquals(listOf(R.string.selftest_section_phone), state.automatedSections.map { it.title })
+        assertEquals(R.string.selftest_section_human, state.manualSection?.title)
     }
 
     @Test
@@ -427,9 +490,137 @@ class SelfTestRunnerTest {
         repeat(4) { s = s.answer(true) }
         return s.canContinue
     }
+
+    // Reusing the manual answers
+
+    private fun runAndRemember(): String {
+        val first = run()
+        val fingerprint = first.manualFingerprint
+        assertTrue(fingerprint != null)
+        world.store.stored = fingerprint
+        return fingerprint!!
+    }
+
+    @Test
+    fun `a matching stored fingerprint answers the questions from the last time`() {
+        runAndRemember()
+        val state = run()
+        val human = state.rows().filter { it.isHuman }
+        assertEquals(4, human.size)
+        assertTrue(human.all { it.status == CheckStatus.Passed && it.detail == SelfTestText(R.string.selftest_detail_answer_reused) })
+        assertNull(state.humanCheck)
+        assertTrue(state.manualReused)
+        assertTrue(state.finished)
+        assertTrue(state.canContinue)
+        assertFalse(state.resolvingManual)
+    }
+
+    @Test
+    fun `no stored fingerprint or another one asks the questions`() {
+        var state = run()
+        assertEquals(1, state.humanCheck?.index)
+        assertFalse(state.manualReused)
+        assertFalse(state.resolvingManual)
+        assertTrue(state.manualFingerprint != null)
+        world.store.stored = "something else"
+        state = run()
+        assertEquals(1, state.humanCheck?.index)
+        assertFalse(state.manualReused)
+    }
+
+    private fun assertInvalidates(change: () -> Unit) {
+        runAndRemember()
+        change()
+        val state = run()
+        assertFalse(state.manualReused)
+        assertEquals(1, state.humanCheck?.index)
+    }
+
+    @Test
+    fun `a new build of an output invalidates the stored answers`() = assertInvalidates {
+        world.build = world.build!!.let { b -> b.copy(outputs = b.outputs.map { if (it.outputId == "shm-phone") it.copy(sha256 = "ff".repeat(32)) else it }) }
+        world.phoneFileSha["/phone/shm-phone.apk"] = "ff".repeat(32)
+    }
+
+    @Test
+    fun `an update of the companion app invalidates the stored answers`() = assertInvalidates {
+        world.installed[world.companionPackage] = InstalledPackage("5.0", setOf(CERT), null, versionCode = 50L, lastUpdateTime = 2000L)
+    }
+
+    @Test
+    fun `a new phone OS build invalidates the stored answers`() = assertInvalidates { world.phoneBuild = "phone/build:2" }
+
+    @Test
+    fun `a new Health Platform version on the watch invalidates the stored answers`() = assertInvalidates { world.healthVersion = 101L }
+
+    @Test
+    fun `a new watch OS build invalidates the stored answers`() = assertInvalidates { world.watchBuild = "watch/build:2" }
+
+    @Test
+    fun `an unreachable watch leaves no fingerprint and asks the questions`() {
+        runAndRemember()
+        world.watchConnected = false
+        val state = run()
+        assertNull(state.manualFingerprint)
+        assertFalse(state.manualReused)
+        assertFalse(state.resolvingManual)
+        assertFalse(state.running)
+    }
+
+    @Test
+    fun `a watch read that fails leaves no fingerprint`() {
+        world.watchBuild = null
+        assertNull(run().manualFingerprint)
+        world.watchBuild = "watch/build:1"
+        world.healthVersion = null
+        assertNull(run().manualFingerprint)
+    }
+
+    @Test
+    fun `a package row that did not pass leaves no fingerprint`() {
+        world.installed.remove(world.pkg("shm-phone"))
+        val state = run()
+        assertNull(state.manualFingerprint)
+        assertFalse(state.resolvingManual)
+        world.installed[world.pkg("shm-phone")] = InstalledPackage("1.0", setOf(CERT), "/phone/shm-phone.apk")
+        world.build = null
+        assertNull(run().manualFingerprint)
+    }
+
+    @Test
+    fun `the questions stay closed while the manual answers are being resolved`() {
+        val initial = world.runner().initial()
+        assertTrue(initial.resolvingManual)
+        assertFalse(initial.manualOpen)
+        val done = run()
+        val resolving = done.copy(resolvingManual = true)
+        assertFalse(resolving.manualOpen)
+        assertNull(resolving.humanCheck)
+        assertFalse(resolving.finished)
+    }
+
+    @Test
+    fun `asking again resets the reused answers to pending`() {
+        runAndRemember()
+        val state = run().askAgain()
+        val human = state.rows().filter { it.isHuman }
+        assertTrue(human.all { it.status == CheckStatus.Pending && it.detail == null })
+        assertFalse(state.manualReused)
+        assertEquals(1, state.humanCheck?.index)
+        assertEquals(world.store.stored, state.manualFingerprint)
+    }
 }
 
 class SelfTestSupportTest {
+    @Test
+    fun `the package stamp is read from dumpsys output`() {
+        val dump = "Packages:\n  Package [x] (1):\n    versionCode=123 minSdk=30 targetSdk=33\n    versionName=2.0\n    lastUpdateTime=2025-03-04 05:06:07\n"
+        assertEquals(SelfTestParsers.WatchPackageStamp(123L, "2025-03-04 05:06:07"), SelfTestParsers.packageStamp(dump))
+        assertNull(SelfTestParsers.packageStamp("versionCode=123 minSdk=30"))
+        assertNull(SelfTestParsers.packageStamp("lastUpdateTime=2025-03-04 05:06:07"))
+        assertNull(SelfTestParsers.packageStamp(""))
+    }
+
     @Test
     fun `sha256sum output is parsed to lowercase hex`() {
         val digest = "ABCDEF0123456789".repeat(4)
