@@ -833,14 +833,22 @@ LTE) is not served by FUS at all (unparsable empty history on ARO/XAR/EUX) [V no
 
 1. **Which path the owner's R920 takes at runtime** — TI (APK `libspo2.so` via HTS
    SpO2LibManager) vs ADI (sensor-hub-computed, library never loaded): depends on the on-device
-   SSM version and the `fresh_hrm_dualized` (feature 0x23) answer [notes 20 §8, 12]. Until
-   settled, it is unknown whether stock even runs the algorithm of §2.1 on this watch.
+   SSM version and the `fresh_hrm_dualized` (feature 0x23) answer [notes 20 §8, 12].
+   **RESOLVED-BY-OBSERVATION — the R920 takes the ADI path.** The 2026-10-15 note below settled
+   it (logcat tag `SHS#SpO2ManualADISensor`, so `libspo2.so` is not loaded here), and the same-day
+   on-wrist sessions `ds1`/`ds2` corroborate it from a second capture: their logcats carry only
+   the `SHS#SpO2ManualADISensor` tag and no TI/`libspo2.so` activity
+   (`$CACHE/spo2-val/ds{1,2}/logcat.txt`).
    *Note (2026-10-15, SM-R920 R920XXS2DZG3):* the HTS on-demand SPO2 tracker runs the **ADI**
    path on this watch (logcat tag `SHS#SpO2ManualADISensor`), so `libspo2.so` is not loaded here.
    The orientation finding of [spo2-adapter.md](spo2-adapter.md) (labelled IR behaves as red) is
    consistent with that path.
 2. **Actual delivery rate of `SemSpo2ManualSensorEvent`** as configured by the sensor service —
-   the library assumes 75 Hz; a different true rate rescales every time constant [note 20 §8].
+   **MEASURED ≈ 75 rows/s.** Counting phase-B rows over the capture wall span in the same-day
+   `ds1`/`ds2` sessions gives `ds1`: 3694 rows / ~50.03 s ≈ 73.8 Hz, `ds2`: 4095 / ~49.97 s ≈
+   82.0 Hz early then throttled (provenance `$CACHE/spo2-val/ds{1,2}/logcat.txt` and the session
+   CSVs). The delivered rate therefore **matches the library's 75 Hz constant** (§3.1); no
+   different true rate is in play on this watch [note 20 §8].
 3. **Whether the hub's 4 Hz overnight estimator shares the libspo2 mapping** — the estimator runs
    on the CHUB (Cortex-M55) hub, whose image `os.checked.bin` is **not shipped as plaintext** in this
    build (only inside the signed+encrypted `ldfw.img`); the previously named `lpd.core.bin` is the LPD
@@ -865,6 +873,14 @@ LTE) is not served by FUS at all (unparsable empty history on ARO/XAR/EUX) [V no
 11. **Whether the Java-side constants (accelerometer scale 0.0023950562, accuracy mapping) are
     identical in the other models' HealthPlatform APKs** — the APKs differ per model and were
     never smali-compared across families (§ preamble).
+
+**Dataset outcome (2026-10-15).** The on-wrist collection ended this day: 15 capture sessions
+(16 directory entries under `$CACHE/spo2-val/` — one is the analyzer's `__pycache__`), of which
+**1 is evaluable** (n = 1: `s173708`, mapping error **−2.03** at 75 Hz resample / **+0.56** at the
+native rate). The completion bottleneck is the ADI path (§7.1 item 1): the sensor measures, but
+the ADI path times out before a COMPLETE value, so only 1 of the 15 sessions yields a phase-B
+COMPLETE to compare against. The mapping-level validation therefore stands at **n = 1**, pending
+sessions in which ADI completes.
 
 ### 7.2 Binary-analysis leftovers ([N] items — each blocks bit-exact reproduction of the named step; resolvable by re-reading the byte-identical binaries, no device needed)
 
