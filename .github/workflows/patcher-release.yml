@@ -51,6 +51,22 @@ jobs:
           # Full history and tags: the release notes list the commits since the previous patcher release.
           fetch-depth: 0
 
+      # Every upload needs a versionName no earlier release used (AGENTS.md, Versioning); a push that
+      # changes the app without bumping it fails here, before the build, instead of publishing a
+      # second release with the same name.
+      - name: Check that the version name is new
+        run: |
+          version="$(sed -n 's/^ *versionName = "\(.*\)"$/\1/p' patcher-app/app/build.gradle.kts)"
+          if [ -z "$version" ]; then
+            echo "::error::could not read versionName from patcher-app/app/build.gradle.kts"
+            exit 1
+          fi
+          taken="$(git tag --list "patcher-v$version-r*")"
+          if [ -n "$taken" ]; then
+            echo "::error::versionName $version was already released ($(echo $taken)); bump it in patcher-app/app/build.gradle.kts"
+            exit 1
+          fi
+
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
