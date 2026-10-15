@@ -21,4 +21,8 @@
     <string name="key_backup_with_password_entry">Opslaan in Documents met mijn eigen wachtwoord</string>
     <string name="key_backup_with_password_hint">De sleutel wordt opgeslagen in Documents/OpenSHM, beveiligd met een wachtwoord dat je zelf kiest. De app bewaart het niet, dus noteer het.</string>
     <string name="key_backup_no_manager_hint">Als je de app-gegevens wist, wordt deze kopie verwijderd. Er is geen wachtwoordbeheerder beschikbaar, dus sla hem op in Documents met een wachtwoord dat je zelf kiest.</string>
+    <string name="key_backup_cloud_saved">Kopie in je Google-account: opgeslagen</string>
+    <string name="key_backup_cloud_local_only">Alleen op deze telefoon (zet een schermvergrendeling aan om te uploaden)</string>
+    <string name="key_backup_cloud_restore">Herstellen vanuit je Google-account</string>
+    <string name="key_backup_cloud_restored">Ondertekeningssleutel hersteld vanuit je Google-account</string>
 </resources>

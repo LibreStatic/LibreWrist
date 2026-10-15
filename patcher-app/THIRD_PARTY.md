@@ -19,6 +19,7 @@ added to a build file. Build-only and test-only tools are listed separately.
 | Navigation Compose | `androidx.navigation:navigation-compose` | Apache-2.0 | `:app` |
 | Credential Manager | `androidx.credentials:credentials` 1.5.0 | Apache-2.0 | `:app`; saves and reads the exported signing key's password in the system password manager |
 | Credential Manager Play services provider | `androidx.credentials:credentials-play-services-auth` 1.5.0 | Apache-2.0 | `:app`; Google Password Manager on Android 12 and 13. Pulls the Google Play services auth client libraries (`com.google.android.gms`, Android SDK / Play services terms, not Apache-2.0) as transitive dependencies |
+| Google Play services Block Store | `com.google.android.gms:play-services-auth-blockstore` 16.4.0 | Android SDK / Play services terms (not Apache-2.0) | `:app`; optional extra copy of the signing key in the Google account (end-to-end encrypted cloud backup). Used only when Google Play services is present; every failure falls back to the normal file backup |
 | Lifecycle (runtime and ViewModel for Compose) | `androidx.lifecycle:lifecycle-runtime-compose`, `lifecycle-viewmodel-compose` | Apache-2.0 | `:app` |
 | Activity Compose, Core KTX | `androidx.activity:activity-compose`, `androidx.core:core-ktx` | Apache-2.0 | `:app` |
 

@@ -21,4 +21,8 @@
     <string name="key_backup_with_password_entry">Сохранить в Documents с моим паролем</string>
     <string name="key_backup_with_password_hint">Ключ сохраняется в Documents/OpenSHM под паролем, который вы выберете. Приложение его не хранит, так что запишите его.</string>
     <string name="key_backup_no_manager_hint">Очистка данных приложения удалит эту копию. Менеджер паролей недоступен, поэтому сохраните её в Documents с паролем, который вы выберете.</string>
+    <string name="key_backup_cloud_saved">Копия в аккаунте Google: сохранена</string>
+    <string name="key_backup_cloud_local_only">Только на этом телефоне (включите блокировку экрана, чтобы загрузить её)</string>
+    <string name="key_backup_cloud_restore">Восстановить из аккаунта Google</string>
+    <string name="key_backup_cloud_restored">Ключ подписи восстановлен из аккаунта Google</string>
 </resources>

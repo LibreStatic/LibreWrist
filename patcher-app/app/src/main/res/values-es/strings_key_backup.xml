@@ -21,4 +21,8 @@
     <string name="key_backup_with_password_entry">Guardar en Documents con mi propia contraseña</string>
     <string name="key_backup_with_password_hint">La clave se guarda en Documents/OpenSHM, protegida con una contraseña que tú eliges. La app no la guarda, así que anótala.</string>
     <string name="key_backup_no_manager_hint">Borrar los datos de la app elimina esta copia. No hay un gestor de contraseñas disponible, así que guárdala en Documents con una contraseña que tú elijas.</string>
+    <string name="key_backup_cloud_saved">Copia en tu cuenta de Google: guardada</string>
+    <string name="key_backup_cloud_local_only">Solo en este teléfono (activa el bloqueo de pantalla para subirla)</string>
+    <string name="key_backup_cloud_restore">Restaurar desde tu cuenta de Google</string>
+    <string name="key_backup_cloud_restored">Clave de firma restaurada desde tu cuenta de Google</string>
 </resources>

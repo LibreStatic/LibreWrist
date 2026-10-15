@@ -21,4 +21,8 @@
     <string name="key_backup_with_password_entry">الحفظ في Documents بكلمة مرور خاصة بي</string>
     <string name="key_backup_with_password_hint">يُحفظ المفتاح في Documents/OpenSHM محميًا بكلمة مرور تختارها. لا يحتفظ التطبيق بها، لذا دوّنها.</string>
     <string name="key_backup_no_manager_hint">مسح بيانات التطبيق يحذف هذه النسخة. لا يتوفر مدير كلمات مرور، لذا احفظها في Documents بكلمة مرور تختارها.</string>
+    <string name="key_backup_cloud_saved">نسخة في حساب Google: محفوظة</string>
+    <string name="key_backup_cloud_local_only">على هذا الهاتف فقط (فعّل قفل الشاشة لرفعها)</string>
+    <string name="key_backup_cloud_restore">الاستعادة من حساب Google</string>
+    <string name="key_backup_cloud_restored">تمت استعادة مفتاح التوقيع من حساب Google</string>
 </resources>

@@ -21,4 +21,8 @@
     <string name="key_backup_with_password_entry">In Documents mit eigenem Passwort speichern</string>
     <string name="key_backup_with_password_hint">Der Schlüssel wird, geschützt durch ein selbst gewähltes Passwort, in Documents/OpenSHM gespeichert. Die App merkt sich es nicht, also notiere es dir.</string>
     <string name="key_backup_no_manager_hint">Wenn du die App-Daten löschst, wird diese Kopie gelöscht. Es ist kein Passwortmanager verfügbar, speichere sie daher mit einem eigenen Passwort in Documents.</string>
+    <string name="key_backup_cloud_saved">Kopie in Ihrem Google-Konto: gespeichert</string>
+    <string name="key_backup_cloud_local_only">Nur auf diesem Telefon (Bildschirmsperre aktivieren, um sie hochzuladen)</string>
+    <string name="key_backup_cloud_restore">Aus Ihrem Google-Konto wiederherstellen</string>
+    <string name="key_backup_cloud_restored">Signaturschlüssel aus Ihrem Google-Konto wiederhergestellt</string>
 </resources>

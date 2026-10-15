@@ -21,4 +21,8 @@
     <string name="key_backup_with_password_entry">Documents içine kendi parolamla kaydet</string>
     <string name="key_backup_with_password_hint">Anahtar, seçtiğin bir parolayla korunarak Documents/OpenSHM klasörüne kaydedilir. Uygulama parolayı saklamaz, o yüzden bir yere not et.</string>
     <string name="key_backup_no_manager_hint">Uygulama verilerini temizlemek bu kopyayı siler. Parola yöneticisi kullanılamıyor; kopyayı kendi seçtiğin bir parolayla Documents klasörüne kaydet.</string>
+    <string name="key_backup_cloud_saved">Google hesabınızdaki kopya: kaydedildi</string>
+    <string name="key_backup_cloud_local_only">Yalnızca bu telefonda (yüklemek için ekran kilidini açın)</string>
+    <string name="key_backup_cloud_restore">Google hesabınızdan geri yükle</string>
+    <string name="key_backup_cloud_restored">İmzalama anahtarı Google hesabınızdan geri yüklendi</string>
 </resources>

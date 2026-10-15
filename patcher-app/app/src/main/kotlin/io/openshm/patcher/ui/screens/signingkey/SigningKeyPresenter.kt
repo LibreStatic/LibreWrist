@@ -3,12 +3,16 @@ package io.openshm.patcher.ui.screens.signingkey
 import androidx.annotation.StringRes
 import io.openshm.patcher.R
 import io.openshm.patcher.data.BackupFiles
+import io.openshm.patcher.data.CloudKeyBackup
+import io.openshm.patcher.data.CloudRestoreResult
+import io.openshm.patcher.data.CloudSaveResult
 import io.openshm.patcher.data.KeyBackupRecord
 import io.openshm.patcher.data.ManualKeyBackup
 import io.openshm.patcher.data.PrivateBackups
 import io.openshm.patcher.data.KeyImportException
 import io.openshm.patcher.data.SigningKeyStore
 import io.openshm.patcher.data.keyBackupDigestOf
+import io.openshm.patcher.data.keyBackupFileNameOf
 import io.openshm.patcher.data.keyBackupShortDigest
 import java.io.ByteArrayInputStream
 import java.io.IOException
@@ -55,7 +59,22 @@ data class SigningKeyUiState(
     val confirmation: ImportConfirmation? = null,
     /** The saved password picked for an import belongs to a different key than the chosen file. */
     val savedPasswordMismatch: Boolean = false,
+    /** The Google account copy of the key (an optional extra). */
+    val cloud: CloudStatus = CloudStatus.None,
+    /** The Google account holds a key that differs from the current one (or there is none here). */
+    val cloudRestorable: Boolean = false,
 )
+
+enum class CloudStatus {
+    /** Unavailable or not tried: nothing is shown. */
+    None,
+
+    /** The current key is in the Google account. */
+    Saved,
+
+    /** The copy stays on this phone until a screen lock allows the encrypted upload. */
+    LocalOnly,
+}
 
 /** What the nav host asks the system document picker for. */
 enum class SigningKeyRequest { CreateBackupFile, PickKeyFile, CreateLocalBackupFile }
@@ -70,6 +89,8 @@ sealed interface SigningKeyEvent {
     /** [savedCredentialId] is the id of the saved password the user picked, if any (public text). */
     class SubmitImport(val password: CharArray, val savedCredentialId: String? = null) : SigningKeyEvent
     data object ConfirmImport : SigningKeyEvent
+    /** Imports the key held in the Google account through the usual confirmation. */
+    data object RestoreFromCloud : SigningKeyEvent
     data object DismissConfirmation : SigningKeyEvent
     data object DismissMessage : SigningKeyEvent
 }
@@ -124,6 +145,8 @@ class SigningKeyPresenter(
     private val backupFiles: BackupFiles? = null,
     /** The private copies of automatic backups; null skips looking for them. */
     private val privateBackups: PrivateBackups? = null,
+    /** The optional Google account copy; null skips it. */
+    private val cloud: CloudKeyBackup? = null,
 ) {
     private val _state = MutableStateFlow(SigningKeyUiState())
     val state: StateFlow<SigningKeyUiState> = _state.asStateFlow()
@@ -135,6 +158,53 @@ class SigningKeyPresenter(
     private var pendingImportPassword: CharArray? = null
     private var pendingImportBytes: ByteArray? = null
     private var pendingSavedDigest: String? = null
+
+    /** First load: brings the key back from the Google account when this app has none, then refreshes and syncs the copy. */
+    suspend fun start() {
+        if (cloud != null && cloudStep { cloud.restoreIfNoKey() } is CloudRestoreResult.Restored) {
+            _state.update { it.copy(message = SigningKeyMessage(R.string.key_backup_cloud_restored, false)) }
+        }
+        refresh()
+        syncCloud()
+    }
+
+    /** Saves the current key to the Google account when needed and updates what the screen shows about it. */
+    suspend fun syncCloud(replaceForeign: Boolean = false) {
+        val c = cloud ?: return
+        val result = cloudStep { c.save(replaceForeign) }
+        val status = when (result) {
+            is CloudSaveResult.Saved -> if (result.cloud) CloudStatus.Saved else CloudStatus.LocalOnly
+            CloudSaveResult.AlreadySaved -> CloudStatus.Saved
+            else -> CloudStatus.None
+        }
+        val stored = cloudStep { c.storedCertificateSha256() }
+        _state.update { it.copy(cloud = status, cloudRestorable = stored != null && stored != it.certificateSha256) }
+    }
+
+    /** The optional cloud layer must never break the screen: any failure means "nothing to show". */
+    private suspend fun <T> cloudStep(block: suspend () -> T): T? =
+        try {
+            block()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Throwable) {
+            null
+        }
+
+    /** Starts an import from the key held in the Google account; the usual confirmation follows. */
+    suspend fun restoreFromCloud() {
+        val c = cloud ?: return
+        if (_state.value.busy) return
+        val key = cloudStep { c.load() }
+        if (key == null) {
+            _state.update { it.copy(cloudRestorable = false, formError = R.string.signing_key_import_unreadable) }
+            return
+        }
+        wipePending()
+        pendingImportPassword = key.password
+        // inspectFile wipes the bytes on failure and keeps them as the pending bytes on success.
+        inspectFile("cloud") { key.p12 }
+    }
 
     suspend fun refresh() {
         val snapshot = withContext(io) {
@@ -174,11 +244,10 @@ class SigningKeyPresenter(
             SigningKeyEvent.ExportLocalBackup -> if (_state.value.localBackup != null) requestChannel.trySend(SigningKeyRequest.CreateLocalBackupFile)
             SigningKeyEvent.CloseForm -> closeForm()
             is SigningKeyEvent.SubmitExport -> submitExport(event.password, event.confirm)
-            is SigningKeyEvent.SubmitImport -> submitImport(event.password, event.savedCredentialId)
             SigningKeyEvent.DismissConfirmation -> dismissConfirmation()
             SigningKeyEvent.DismissMessage -> _state.update { it.copy(message = null) }
-            // Confirmation does work and is a suspend call, see confirmImport.
-            SigningKeyEvent.ConfirmImport -> Unit
+            // These do work and are suspend calls, see submitImport and confirmImport.
+            is SigningKeyEvent.SubmitImport, SigningKeyEvent.ConfirmImport, SigningKeyEvent.RestoreFromCloud -> Unit
         }
     }
 
@@ -209,7 +278,13 @@ class SigningKeyPresenter(
         }
     }
 
-    private fun submitImport(password: CharArray, savedCredentialId: String?) {
+    /**
+     * Starts an import with [password] (the caller's array is wiped). A saved credential whose automatic
+     * backup file this app can read goes straight to the confirmation; any other case asks for the file.
+     */
+    suspend fun submitImport(password: CharArray, savedCredentialId: String? = null) {
+        var direct: ByteArray? = null
+        var directName: String? = null
         try {
             if (password.isEmpty()) {
                 _state.update { it.copy(formError = R.string.signing_key_error_empty) }
@@ -219,9 +294,30 @@ class SigningKeyPresenter(
             pendingImportPassword = password.copyOf()
             pendingSavedDigest = savedCredentialId?.let(::keyBackupDigestOf)
             _state.update { it.copy(formError = null, savedPasswordMismatch = false) }
-            requestChannel.trySend(SigningKeyRequest.PickKeyFile)
+            val name = savedCredentialId?.let(::keyBackupFileNameOf)
+            val files = backupFiles
+            if (name != null && files != null) {
+                direct = try {
+                    withContext(io) { files.read(name) }
+                } catch (e: CancellationException) {
+                    wipePending()
+                    throw e
+                } catch (e: Exception) {
+                    null
+                }
+                directName = name
+            }
+            val bytes = direct
+            if (bytes != null) {
+                // inspectFile wipes the bytes on failure and keeps them as the pending bytes on success.
+                inspectFile(directName) { bytes }
+            } else {
+                requestChannel.trySend(SigningKeyRequest.PickKeyFile)
+            }
         } finally {
             password.fill('\u0000')
+            // Kept as the pending bytes only after a successful inspection; wiped on every other path.
+            if (direct !== pendingImportBytes) direct?.fill(0)
         }
     }
 
@@ -376,6 +472,7 @@ class SigningKeyPresenter(
             )
         }
         refresh()
+        if (ok) syncCloud(replaceForeign = true)
     }
 
     fun dismissConfirmation() {

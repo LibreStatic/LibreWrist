@@ -7,6 +7,7 @@ import io.openshm.patcher.data.CredentialManagerPasswords
 import io.openshm.patcher.data.KeyBackup
 import io.openshm.patcher.data.KeyBackupOutcome
 import io.openshm.patcher.data.ManualKeyBackup
+import io.openshm.patcher.data.cloudKeyBackup
 import io.openshm.patcher.data.MediaStoreBackupFiles
 import io.openshm.patcher.data.PrefsExportedCertRecord
 import io.openshm.patcher.data.privateBackups
@@ -55,6 +56,14 @@ class KeyBackupViewModel(application: Application) : AndroidViewModel(applicatio
             started = false
             _status.value = if (force) before else KeyBackupStatus.Hidden
             throw e
+        }
+        // The optional Google account copy, after the outcome above so it can never change it.
+        try {
+            cloudKeyBackup(app).save()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Throwable) {
+            // Optional layer.
         }
     }
 

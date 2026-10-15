@@ -109,6 +109,11 @@ fun SigningKeyScreen(
                     color = colors.onSurfaceVariant,
                 )
             }
+            when (state.cloud) {
+                CloudStatus.Saved -> CloudLine(R.string.key_backup_cloud_saved)
+                CloudStatus.LocalOnly -> CloudLine(R.string.key_backup_cloud_local_only)
+                CloudStatus.None -> Unit
+            }
             state.message?.let { MessageCard(it, onDismiss = { onEvent(SigningKeyEvent.DismissMessage) }) }
             Text(
                 stringResource(R.string.key_backup_manual_heading),
@@ -307,6 +312,11 @@ private fun ExportDialog(state: SigningKeyUiState, onEvent: (SigningKeyEvent) ->
     )
 }
 
+@Composable
+private fun CloudLine(@androidx.annotation.StringRes text: Int) {
+    Text(stringResource(text), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+}
+
 /** Progress and failures while a dialog is open; a failure would otherwise land on the screen behind it. */
 @Composable
 private fun DialogStatus(state: SigningKeyUiState) {
@@ -342,12 +352,22 @@ private fun ImportDialog(state: SigningKeyUiState, onEvent: (SigningKeyEvent) ->
                                 password = String(saved.password)
                                 saved.password.fill('\u0000')
                                 savedId = saved.credentialId
+                                // Continue by itself: the matching backup file, or the picker in Documents/OpenSHM.
+                                onEvent(SigningKeyEvent.SubmitImport(password.toCharArray(), saved.credentialId))
                             }
                         }
                     },
                     Icons.Rounded.Key,
                     enabled = !state.busy,
                 )
+                if (state.cloudRestorable) {
+                    OutlinedAction(
+                        stringResource(R.string.key_backup_cloud_restore),
+                        { onEvent(SigningKeyEvent.RestoreFromCloud) },
+                        Icons.Rounded.Key,
+                        enabled = !state.busy,
+                    )
+                }
                 if (noSaved) Text(stringResource(R.string.key_backup_use_saved_none), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
                 PasswordField(
                     // Typing a different password makes the picked credential irrelevant.

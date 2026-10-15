@@ -34,6 +34,14 @@ fun keyBackupDigestOf(idOrFileName: String): String? =
     Regex("""OpenSHM signing key ([0-9a-f]{8})(?: \u00B7 \d{8}-\d{6})?|openshm-signing-key-([0-9a-f]{8})(?:-\d{8}-\d{6})?\.p12""")
         .matchEntire(idOrFileName)?.groupValues?.drop(1)?.firstOrNull { it.isNotEmpty() }
 
+/** The backup file a credential id belongs to (stamp-less older ids included), or null for any other text, a file name too. */
+fun keyBackupFileNameOf(credentialId: String): String? {
+    val m = Regex("""OpenSHM signing key ([0-9a-f]{8})(?: \u00B7 (\d{8}-\d{6}))?""").matchEntire(credentialId) ?: return null
+    val short = m.groupValues[1]
+    val stamp = m.groupValues[2]
+    return if (stamp.isEmpty()) "openshm-signing-key-$short.p12" else "openshm-signing-key-$short-$stamp.p12"
+}
+
 /** What the password manager did with a save request. */
 enum class PasswordSaveResult { Saved, Declined, Unavailable }
 
@@ -49,6 +57,9 @@ interface BackupFiles {
 
     /** Creates the new file [name], so that it never shows up half written. Never replaces or truncates an existing file. */
     fun write(name: String, bytes: ByteArray)
+
+    /** The bytes of the finished file [name] (the caller wipes them); null when it is absent, still pending or not visible to this app. */
+    fun read(name: String): ByteArray?
 }
 
 /**

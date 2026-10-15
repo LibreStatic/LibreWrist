@@ -21,4 +21,8 @@
     <string name="key_backup_with_password_entry">Simpan ke Documents dengan sandi saya sendiri</string>
     <string name="key_backup_with_password_hint">Kunci disimpan di Documents/OpenSHM, dilindungi sandi yang Anda pilih. Aplikasi tidak menyimpannya, jadi catat sandi tersebut.</string>
     <string name="key_backup_no_manager_hint">Menghapus data aplikasi akan menghapus salinan ini. Pengelola sandi tidak tersedia, jadi simpan ke Documents dengan sandi pilihanmu.</string>
+    <string name="key_backup_cloud_saved">Salinan di akun Google Anda: tersimpan</string>
+    <string name="key_backup_cloud_local_only">Hanya di ponsel ini (aktifkan kunci layar untuk mengunggahnya)</string>
+    <string name="key_backup_cloud_restore">Pulihkan dari akun Google Anda</string>
+    <string name="key_backup_cloud_restored">Kunci penandatanganan dipulihkan dari akun Google Anda</string>
 </resources>

@@ -1,6 +1,7 @@
 package io.openshm.patcher.ui.nav
 
 import android.Manifest
+import io.openshm.patcher.data.KEY_BACKUP_FOLDER
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -572,7 +573,7 @@ fun PatcherNavHost(
                 val createLocal = rememberLauncherForActivityResult(
                     ActivityResultContracts.CreateDocument(PKCS12_MIME), vm::onLocalBackupFileCreated,
                 )
-                val pickKey = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument(), vm::onKeyFilePicked)
+                val pickKey = rememberLauncherForActivityResult(OpenKeyDocument(), vm::onKeyFilePicked)
                 LaunchedEffect(vm) {
                     vm.requests.collect { request ->
                         when (request) {
@@ -758,6 +759,15 @@ private const val TEXT_MIME = "text/plain"
 private const val PKCS12_MIME = "application/x-pkcs12"
 private const val BACKUP_FILE_NAME = "openshm-signing-key.p12"
 private const val APK_MIME = "application/vnd.android.package-archive"
+
+/** The system document picker opened in Documents/OpenSHM, where the automatic backups are written. */
+private class OpenKeyDocument : ActivityResultContracts.OpenDocument() {
+    override fun createIntent(context: Context, input: Array<String>): Intent =
+        super.createIntent(context, input).putExtra(
+            android.provider.DocumentsContract.EXTRA_INITIAL_URI,
+            android.provider.DocumentsContract.buildDocumentUri("com.android.externalstorage.documents", "primary:$KEY_BACKUP_FOLDER"),
+        )
+}
 
 /**
  * Runs an action once notifications may be posted, asking first on Android 13+: the self-ADB pairing

@@ -21,4 +21,8 @@
     <string name="key_backup_with_password_entry">Save to Documents with my own password</string>
     <string name="key_backup_with_password_hint">The key is saved to Documents/OpenSHM, protected by a password you choose. The app does not keep it, so write it down.</string>
     <string name="key_backup_no_manager_hint">Clearing the app\'s data deletes this copy. No password manager is available, so save it to Documents with a password you choose.</string>
+    <string name="key_backup_cloud_saved">Copy in your Google account: saved</string>
+    <string name="key_backup_cloud_local_only">Only on this phone (turn on a screen lock to upload it)</string>
+    <string name="key_backup_cloud_restore">Restore from your Google account</string>
+    <string name="key_backup_cloud_restored">Signing key restored from your Google account</string>
 </resources>

@@ -21,4 +21,8 @@
     <string name="key_backup_with_password_entry">Salvar em Documents com minha própria senha</string>
     <string name="key_backup_with_password_hint">A chave é salva em Documents/OpenSHM, protegida por uma senha que você escolhe. O app não a guarda, então anote-a.</string>
     <string name="key_backup_no_manager_hint">Limpar os dados do app apaga esta cópia. Não há gerenciador de senhas disponível, então salve-a em Documents com uma senha escolhida por você.</string>
+    <string name="key_backup_cloud_saved">Cópia na sua conta Google: guardada</string>
+    <string name="key_backup_cloud_local_only">Apenas neste telemóvel (ative o bloqueio de ecrã para a enviar)</string>
+    <string name="key_backup_cloud_restore">Restaurar a partir da sua conta Google</string>
+    <string name="key_backup_cloud_restored">Chave de assinatura restaurada a partir da sua conta Google</string>
 </resources>

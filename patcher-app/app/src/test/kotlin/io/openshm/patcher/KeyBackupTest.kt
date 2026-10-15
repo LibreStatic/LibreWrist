@@ -36,6 +36,7 @@ class KeyBackupTest {
         override var sha256: String? = null,
         override var backupFile: String? = null,
         override var declinedSha256: String? = null,
+        override var cloudSha256: String? = null,
         override var backupPrivate: Boolean = false,
         override var privateBackupFile: String? = null,
     ) : KeyBackupRecord
@@ -58,6 +59,7 @@ class KeyBackupTest {
             check(name !in files) { "never replaces a file" }
             files[name] = bytes.copyOf()
         }
+        override fun read(name: String) = files[name]?.copyOf()
     }
 
     private class FakePrivates : PrivateBackups {
@@ -279,6 +281,7 @@ class KeyBackupTest {
         val failing = object : BackupFiles {
             override fun exists(name: String) = false
             override fun write(name: String, bytes: ByteArray) = throw java.io.IOException("full")
+            override fun read(name: String): ByteArray? = null
         }
         assertEquals(KeyBackupOutcome.Failed, runBlocking { KeyBackup(store, record, saver, failing, privates, Dispatchers.Unconfined).run() })
         assertNull(record.sha256)
@@ -299,6 +302,15 @@ class KeyBackupTest {
         assertEquals("OpenSHM signing key abcdef01 \u00B7 20240102-030405", keyBackupCredentialId(sha, "20240102-030405"))
         assertEquals("abcdef01", keyBackupDigestOf(keyBackupFileName(sha, "20240102-030405")))
         assertEquals("abcdef01", keyBackupDigestOf(keyBackupCredentialId(sha, "20240102-030405")))
+    }
+
+    @Test fun credentialIdsMapToTheirBackupFileName() {
+        val sha = "abcdef0123456789"
+        assertEquals("openshm-signing-key-abcdef01-20240102-030405.p12", io.openshm.patcher.data.keyBackupFileNameOf(keyBackupCredentialId(sha, "20240102-030405")))
+        assertEquals("openshm-signing-key-abcdef01.p12", io.openshm.patcher.data.keyBackupFileNameOf("OpenSHM signing key abcdef01"))
+        assertNull(io.openshm.patcher.data.keyBackupFileNameOf("some other credential"))
+        assertNull(io.openshm.patcher.data.keyBackupFileNameOf("OpenSHM signing key abcdef0"))
+        assertNull(io.openshm.patcher.data.keyBackupFileNameOf(keyBackupFileName(sha, "20240102-030405")))
         // Older names without a stamp still parse.
         assertEquals("abcdef01", keyBackupDigestOf("openshm-signing-key-abcdef01.p12"))
         assertEquals("abcdef01", keyBackupDigestOf("OpenSHM signing key abcdef01"))

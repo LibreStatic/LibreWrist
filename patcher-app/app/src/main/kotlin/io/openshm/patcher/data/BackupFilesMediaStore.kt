@@ -58,7 +58,14 @@ class MediaStoreBackupFiles(context: Context) : BackupFiles {
         }
     }
 
+    /** After a reinstall MediaStore hides the files the previous install wrote, so null is a normal result. */
+    override fun read(name: String): ByteArray? {
+        val row = find(name)?.takeIf { !it.pending } ?: return null
+        return resolver.openInputStream(row.uri)?.use { it.readBounded(MAX_READ_BYTES) }
+    }
+
     private companion object {
+        const val MAX_READ_BYTES = 1 shl 20
         const val MIME = "application/x-pkcs12"
     }
 }

@@ -17,7 +17,10 @@ import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.InputStore
 import io.openshm.patcher.data.RebuildScope
 import io.openshm.patcher.data.SetupSession
+import io.openshm.patcher.data.cloudKeyBackup
+import io.openshm.patcher.data.CloudRestoreResult
 import io.openshm.patcher.data.signingKeyStore
+import kotlinx.coroutines.runBlocking
 import io.openshm.patcher.device.WatchKeepAlive
 import io.openshm.patcher.ui.screens.build.BuildStage
 import io.openshm.patcher.ui.screens.build.titleRes
@@ -119,7 +122,17 @@ class BuildService : Service() {
             }
         }
         BuildController.onLog("preparing the signing key")
-        val signingKey = signingKeyStore(this).load()
+        val keyStore = signingKeyStore(this)
+        if (!keyStore.exists()) {
+            // Optional: a key backed up to the Google account comes back before a new one is created.
+            val restored = try {
+                runBlocking { cloudKeyBackup(this@BuildService).restoreIfNoKey() }
+            } catch (e: Throwable) {
+                null
+            }
+            if (restored is CloudRestoreResult.Restored) BuildController.onLog("signing key restored from the Google account backup")
+        }
+        val signingKey = keyStore.load()
         val storage = BuildStorage(this)
         // The previous record tells which outputs can be kept; read it before it is cleared.
         val reusable = storage.record.read()?.takeIf { it.prefix == prefix }?.outputs?.associateBy { it.outputId }.orEmpty()

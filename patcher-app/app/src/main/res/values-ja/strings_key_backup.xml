@@ -21,4 +21,8 @@
     <string name="key_backup_with_password_entry">独自のパスワードで Documents に保存</string>
     <string name="key_backup_with_password_hint">キーは、ご自身で決めたパスワードで保護して Documents/OpenSHM に保存されます。アプリはパスワードを保持しないので、控えておいてください。</string>
     <string name="key_backup_no_manager_hint">アプリのデータを消去するとこのコピーも削除されます。パスワードマネージャーが使えないため、自分で決めたパスワードで Documents に保存してください。</string>
+    <string name="key_backup_cloud_saved">Google アカウントのコピー: 保存済み</string>
+    <string name="key_backup_cloud_local_only">この端末のみ (アップロードするには画面ロックを有効にしてください)</string>
+    <string name="key_backup_cloud_restore">Google アカウントから復元</string>
+    <string name="key_backup_cloud_restored">署名キーを Google アカウントから復元しました</string>
 </resources>

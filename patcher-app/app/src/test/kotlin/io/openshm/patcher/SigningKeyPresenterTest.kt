@@ -1,5 +1,6 @@
 package io.openshm.patcher
 
+import io.openshm.patcher.data.BackupFiles
 import io.openshm.patcher.data.KeyBackupRecord
 import io.openshm.patcher.data.SigningKeyStore
 import io.openshm.patcher.ui.screens.signingkey.ExportPasswordPolicy
@@ -32,6 +33,7 @@ class SigningKeyPresenterTest {
         override var sha256: String? = null,
         override var backupFile: String? = null,
         override var declinedSha256: String? = null,
+        override var cloudSha256: String? = null,
         override var backupPrivate: Boolean = false,
         override var privateBackupFile: String? = null,
     ) : KeyBackupRecord
@@ -154,7 +156,7 @@ class SigningKeyPresenterTest {
         val p = presenter(s)
         p.refresh()
         p.onEvent(SigningKeyEvent.OpenImport)
-        p.onEvent(SigningKeyEvent.SubmitImport(chars("a-long-password"), credentialId))
+        p.submitImport(chars("a-long-password"), credentialId)
         p.inspectFile(fileName) { backup }
         return p.state.value.savedPasswordMismatch
     }
@@ -177,7 +179,7 @@ class SigningKeyPresenterTest {
         val p = presenter(s)
         p.refresh()
         p.onEvent(SigningKeyEvent.OpenImport)
-        p.onEvent(SigningKeyEvent.SubmitImport(chars("a-long-password")))
+        p.submitImport(chars("a-long-password"))
         assertEquals(SigningKeyRequest.PickKeyFile, p.requests.first())
         p.inspectFile { backup }
 
@@ -201,7 +203,7 @@ class SigningKeyPresenterTest {
         val (backup, _) = otherBackup()
         val p = presenter(s)
         p.refresh()
-        p.onEvent(SigningKeyEvent.SubmitImport(chars("a-long-password")))
+        p.submitImport(chars("a-long-password"))
         p.inspectFile { backup }
         p.onEvent(SigningKeyEvent.DismissConfirmation)
         assertNull(p.state.value.confirmation)
@@ -216,7 +218,7 @@ class SigningKeyPresenterTest {
         val p = presenter(s)
         p.refresh()
         p.onEvent(SigningKeyEvent.OpenImport)
-        p.onEvent(SigningKeyEvent.SubmitImport(chars("not-the-password")))
+        p.submitImport(chars("not-the-password"))
         p.inspectFile { backup }
         assertNull(p.state.value.confirmation)
         assertEquals(R.string.signing_key_import_wrong_password, p.state.value.formError)
@@ -227,7 +229,7 @@ class SigningKeyPresenterTest {
         val s = store().also { it.load() }
         val p = presenter(s)
         p.refresh()
-        p.onEvent(SigningKeyEvent.SubmitImport(chars("a-long-password")))
+        p.submitImport(chars("a-long-password"))
         p.inspectFile { throw IOException("cannot open") }
         assertEquals(R.string.signing_key_import_unreadable, p.state.value.formError)
         assertNull(p.state.value.confirmation)
@@ -238,7 +240,7 @@ class SigningKeyPresenterTest {
         val s = store()
         val p = presenter(s)
         p.refresh()
-        p.onEvent(SigningKeyEvent.SubmitImport(chars("a-long-password")))
+        p.submitImport(chars("a-long-password"))
         p.inspectFile { backup }
         assertNull(p.state.value.confirmation!!.currentSha256)
         p.confirmImport()
@@ -247,11 +249,109 @@ class SigningKeyPresenterTest {
         assertTrue(p.state.value.keyExists)
     }
 
+    private class FakeBackupFiles(private val content: Map<String, ByteArray>, private val failing: Boolean = false) : BackupFiles {
+        override fun exists(name: String) = name in content
+        override fun write(name: String, bytes: ByteArray) = throw UnsupportedOperationException()
+        override fun read(name: String): ByteArray? = if (failing) throw IOException("denied") else content[name]?.copyOf()
+    }
+
+    private val savedId = "OpenSHM signing key aaaaaaaa \u00B7 20240102-030405"
+    private val savedFile = "openshm-signing-key-aaaaaaaa-20240102-030405.p12"
+
+    private fun presenterWith(s: SigningKeyStore, files: BackupFiles) = SigningKeyPresenter(s, record, Dispatchers.Unconfined, backupFiles = files)
+
+    @Test fun aSavedPasswordWithAReadableBackupSkipsThePicker() = runBlocking {
+        val s = store().also { it.load() }
+        val (backup, backupSha) = otherBackup()
+        val p = presenterWith(s, FakeBackupFiles(mapOf(savedFile to backup)))
+        p.refresh()
+        p.onEvent(SigningKeyEvent.OpenImport)
+        p.submitImport(chars("a-long-password"), savedId)
+        assertEquals(backupSha, p.state.value.confirmation?.importedSha256)
+        assertNull(kotlinx.coroutines.withTimeoutOrNull(50) { p.requests.first() })
+        p.confirmImport()
+        assertEquals(backupSha, s.certificateSha256())
+    }
+
+    @Test fun aSavedPasswordWithoutAReadableBackupAsksForTheFile() = runBlocking {
+        val s = store().also { it.load() }
+        val (backup, _) = otherBackup()
+        for (files in listOf(FakeBackupFiles(emptyMap()), FakeBackupFiles(mapOf(savedFile to backup), failing = true))) {
+            val p = presenterWith(s, files)
+            p.refresh()
+            p.submitImport(chars("a-long-password"), savedId)
+            assertEquals(SigningKeyRequest.PickKeyFile, p.requests.first())
+            assertNull(p.state.value.confirmation)
+        }
+    }
+
+    @Test fun aTypedPasswordAsksForTheFileEvenWhenABackupExists() = runBlocking {
+        val s = store().also { it.load() }
+        val (backup, _) = otherBackup()
+        val p = presenterWith(s, FakeBackupFiles(mapOf(savedFile to backup)))
+        p.refresh()
+        p.submitImport(chars("a-long-password"))
+        assertEquals(SigningKeyRequest.PickKeyFile, p.requests.first())
+        assertNull(p.state.value.confirmation)
+    }
+
+    @Test fun aWrongPasswordWithTheDirectReadShowsTheFormError() = runBlocking {
+        val s = store().also { it.load() }
+        val (backup, _) = otherBackup()
+        val p = presenterWith(s, FakeBackupFiles(mapOf(savedFile to backup)))
+        p.refresh()
+        p.onEvent(SigningKeyEvent.OpenImport)
+        p.submitImport(chars("not-the-password"), savedId)
+        assertNull(p.state.value.confirmation)
+        assertEquals(R.string.signing_key_import_wrong_password, p.state.value.formError)
+        assertNull(kotlinx.coroutines.withTimeoutOrNull(50) { p.requests.first() })
+    }
+
+    @Test fun startRestoresTheKeyFromTheCloudWhenThereIsNone() = runBlocking {
+        val vault = FakeKeyVault()
+        val donor = store(other).also { it.load() }
+        io.openshm.patcher.data.CloudKeyBackup(donor, FakeRecord(), vault, Dispatchers.Unconfined).save()
+        val s = store()
+        val p = SigningKeyPresenter(s, record, Dispatchers.Unconfined, cloud = io.openshm.patcher.data.CloudKeyBackup(s, record, vault, Dispatchers.Unconfined))
+        p.start()
+        assertTrue(s.exists())
+        assertEquals(donor.certificateSha256(), p.state.value.certificateSha256)
+        assertEquals(R.string.key_backup_cloud_restored, p.state.value.message!!.text)
+        assertEquals(io.openshm.patcher.ui.screens.signingkey.CloudStatus.Saved, p.state.value.cloud)
+    }
+
+    @Test fun aDifferentCloudKeyIsOfferedAndGoesThroughTheConfirmation() = runBlocking {
+        val vault = FakeKeyVault()
+        val donor = store(other).also { it.load() }
+        io.openshm.patcher.data.CloudKeyBackup(donor, FakeRecord(), vault, Dispatchers.Unconfined).save()
+        val s = store().also { it.load() }
+        val p = SigningKeyPresenter(s, record, Dispatchers.Unconfined, cloud = io.openshm.patcher.data.CloudKeyBackup(s, record, vault, Dispatchers.Unconfined))
+        p.refresh()
+        p.syncCloud()
+        assertTrue(p.state.value.cloudRestorable)
+        val before = s.certificateSha256()
+        p.restoreFromCloud()
+        assertEquals(donor.certificateSha256(), p.state.value.confirmation?.importedSha256)
+        assertEquals(before, s.certificateSha256())
+        p.confirmImport()
+        assertEquals(donor.certificateSha256(), s.certificateSha256())
+    }
+
+    @Test fun aBrokenCloudNeverBreaksTheScreen() = runBlocking {
+        val vault = FakeKeyVault(failing = true)
+        val s = store().also { it.load() }
+        val p = SigningKeyPresenter(s, record, Dispatchers.Unconfined, cloud = io.openshm.patcher.data.CloudKeyBackup(s, record, vault, Dispatchers.Unconfined))
+        p.start()
+        assertTrue(p.state.value.keyExists)
+        assertEquals(io.openshm.patcher.ui.screens.signingkey.CloudStatus.None, p.state.value.cloud)
+        assertNull(p.state.value.message)
+    }
+
     @Test fun anEmptyImportPasswordIsRejected() = runBlocking {
         val p = presenter()
         p.refresh()
         p.onEvent(SigningKeyEvent.OpenImport)
-        p.onEvent(SigningKeyEvent.SubmitImport(CharArray(0)))
+        p.submitImport(CharArray(0))
         assertEquals(R.string.signing_key_error_empty, p.state.value.formError)
     }
 

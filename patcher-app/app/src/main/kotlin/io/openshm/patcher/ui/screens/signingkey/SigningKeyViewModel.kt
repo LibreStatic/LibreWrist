@@ -6,6 +6,7 @@ import android.provider.OpenableColumns
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import io.openshm.patcher.data.MediaStoreBackupFiles
+import io.openshm.patcher.data.cloudKeyBackup
 import io.openshm.patcher.data.PrefsExportedCertRecord
 import io.openshm.patcher.data.privateBackups
 import io.openshm.patcher.data.readBounded
@@ -22,20 +23,27 @@ import kotlinx.coroutines.withContext
  * the pickers and hands the chosen document back through [onBackupFileCreated] / [onKeyFilePicked].
  */
 class SigningKeyViewModel(application: Application) : AndroidViewModel(application) {
-    private val presenter = SigningKeyPresenter(signingKeyStore(application), PrefsExportedCertRecord(application), backupFiles = MediaStoreBackupFiles(application), privateBackups = privateBackups(application))
+    private val presenter = run {
+        val record = PrefsExportedCertRecord(application)
+        SigningKeyPresenter(
+            signingKeyStore(application), record, backupFiles = MediaStoreBackupFiles(application), privateBackups = privateBackups(application),
+            cloud = cloudKeyBackup(application, record),
+        )
+    }
 
     val state: StateFlow<SigningKeyUiState> = presenter.state
     val requests: Flow<SigningKeyRequest> = presenter.requests
 
     init {
-        viewModelScope.launch { presenter.refresh() }
+        viewModelScope.launch { presenter.start() }
     }
 
     fun onEvent(event: SigningKeyEvent) {
-        if (event == SigningKeyEvent.ConfirmImport) {
-            viewModelScope.launch { presenter.confirmImport() }
-        } else {
-            presenter.onEvent(event)
+        when (event) {
+            SigningKeyEvent.ConfirmImport -> viewModelScope.launch { presenter.confirmImport() }
+            SigningKeyEvent.RestoreFromCloud -> viewModelScope.launch { presenter.restoreFromCloud() }
+            is SigningKeyEvent.SubmitImport -> viewModelScope.launch { presenter.submitImport(event.password, event.savedCredentialId) }
+            else -> presenter.onEvent(event)
         }
     }
 

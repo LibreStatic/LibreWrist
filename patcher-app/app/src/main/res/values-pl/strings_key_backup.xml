@@ -21,4 +21,8 @@
     <string name="key_backup_with_password_entry">Zapisz w Documents z własnym hasłem</string>
     <string name="key_backup_with_password_hint">Klucz zostanie zapisany w Documents/OpenSHM i zabezpieczony hasłem, które wybierzesz. Aplikacja go nie zapamiętuje, więc zapisz je sobie.</string>
     <string name="key_backup_no_manager_hint">Wyczyszczenie danych aplikacji usunie tę kopię. Menedżer haseł jest niedostępny, więc zapisz ją w Documents z wybranym przez siebie hasłem.</string>
+    <string name="key_backup_cloud_saved">Kopia na koncie Google: zapisana</string>
+    <string name="key_backup_cloud_local_only">Tylko na tym telefonie (włącz blokadę ekranu, aby ją przesłać)</string>
+    <string name="key_backup_cloud_restore">Przywróć z konta Google</string>
+    <string name="key_backup_cloud_restored">Klucz podpisu przywrócono z konta Google</string>
 </resources>

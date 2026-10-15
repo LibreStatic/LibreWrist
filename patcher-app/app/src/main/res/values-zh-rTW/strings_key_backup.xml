@@ -21,4 +21,8 @@
     <string name="key_backup_with_password_entry">用我自己的密碼儲存到 Documents</string>
     <string name="key_backup_with_password_hint">金鑰將以你設定的密碼保護並儲存到 Documents/OpenSHM。應用程式不會保存該密碼，請自行記下。</string>
     <string name="key_backup_no_manager_hint">清除應用程式資料會刪除此副本。沒有可用的密碼管理工具，請使用你自訂的密碼將其儲存到 Documents。</string>
+    <string name="key_backup_cloud_saved">Google 帳戶中的副本：已儲存</string>
+    <string name="key_backup_cloud_local_only">僅在此手機上（開啟螢幕鎖定後才會上傳）</string>
+    <string name="key_backup_cloud_restore">從 Google 帳戶還原</string>
+    <string name="key_backup_cloud_restored">已從 Google 帳戶還原簽署金鑰</string>
 </resources>

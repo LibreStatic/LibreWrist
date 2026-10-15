@@ -20,6 +20,9 @@ interface KeyBackupRecord : ExportedCertRecord {
 
     /** The certificate digest whose password manager prompt the user declined: no automatic prompt again. */
     var declinedSha256: String?
+
+    /** The certificate digest whose copy reached the Google account (end-to-end encrypted Block Store backup). */
+    var cloudSha256: String?
 }
 
 /** [ExportedCertRecord] in the "signing" SharedPreferences. Holds a public digest only. */
@@ -46,7 +49,12 @@ class PrefsExportedCertRecord(context: Context) : KeyBackupRecord {
         get() = prefs.getString(DECLINED, null)
         set(value) = prefs.edit().putString(DECLINED, value).apply()
 
+    override var cloudSha256: String?
+        get() = prefs.getString(CLOUD, null)
+        set(value) = prefs.edit().putString(CLOUD, value).apply()
+
     private companion object {
+        const val CLOUD = "keyBackupCloudSha256"
         const val KEY = "exportedCertSha256"
         const val BACKUP_FILE = "keyBackupFile"
         const val BACKUP_PRIVATE = "keyBackupPrivate"
