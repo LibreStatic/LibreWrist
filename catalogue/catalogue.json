@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "serial": 30,
+  "serial": 31,
   "minAppVersion": 28,
   "inputs": [
     {
@@ -1480,7 +1480,7 @@
         "alarm-watch"
       ],
       "title": "Gesture manager",
-      "description": "SemGestureManager: skip the sem_gesture lookup (w2/k, w2/j) and the pauseGesture null path; start our own double pinch detector (public lib_algorithm.gesture.samsung.so) and stop it before super.onDestroy",
+      "description": "SemGestureManager: skip the sem_gesture lookup (w2/k, w2/j) and the pauseGesture null path; start our own double pinch detector (public lib_algorithm.gesture.samsung.so), pause it off the wrist (w2/j off-body callback), and stop it before super.onDestroy",
       "optional": false,
       "ops": [
         {
@@ -1543,6 +1543,24 @@
             "    goto :cond_5",
             "",
             "    const-string p1, \"sem_gesture\"",
+            ""
+          ]
+        },
+        {
+          "op": "replaceInClass",
+          "className": "w2/j",
+          "old": [
+            "    iget-object p0, p0, Lw2/j;->a:Lw2/k;",
+            "",
+            "    if-nez p1, :cond_2",
+            ""
+          ],
+          "new": [
+            "    iget-object p0, p0, Lw2/j;->a:Lw2/k;",
+            "",
+            "    invoke-static {p1}, L${PKG_PATH}/shmbridge/alarm/Pinch;->onBody(I)V",
+            "",
+            "    if-nez p1, :cond_2",
             ""
           ]
         },

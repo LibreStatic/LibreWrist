@@ -84,6 +84,20 @@ public final class Pinch {
         }
     }
 
+    /**
+     * Value of the app's off-body sensor (0 = off the wrist, 1 = on it), as the app receives it
+     * while ringing: detection pauses off the wrist and resumes, from a fresh state, on it.
+     */
+    public static synchronized void onBody(int value) {
+        Session s = sActive;
+        if (s == null || (value != 0 && value != 1)) return;
+        boolean pause = value == 0;
+        if (s.paused == pause) return;
+        if (!pause) s.resetPending = true;
+        s.paused = pause;
+        Log.i(TAG, pause ? "paused (off the wrist)" : "resumed (on the wrist)");
+    }
+
     /** Lock-free (read under the native lock by the sensor thread). */
     private static boolean isActive(Session s) {
         return sActive == s;
@@ -147,6 +161,10 @@ public final class Pinch {
         HandlerThread thread;
         Handler main;
         long lastDelivered;
+        /** Set by {@link Pinch#onBody}; samples are dropped while paused. */
+        volatile boolean paused;
+        /** Set on resume; the sensor thread then drops the queued samples and resets the library. */
+        volatile boolean resetPending;
 
         Session(Context ctx, Object listener) {
             this.ctx = ctx;
@@ -194,6 +212,17 @@ public final class Pinch {
         @Override
         public void onSensorChanged(SensorEvent e) {
             try {
+                if (paused) return;
+                if (resetPending) {
+                    resetPending = false;
+                    lacc.clear();
+                    gyro.clear();
+                    NativeWrapper r = nw;
+                    synchronized (NATIVE_LOCK) {
+                        if (r == null || !isActive(this)) return;
+                        r.nativeReset(MODE_CONTROL, model, false);
+                    }
+                }
                 int t = e.sensor.getType();
                 if (t == Sensor.TYPE_LINEAR_ACCELERATION) {
                     push(lacc, e.values, 1f);
@@ -220,7 +249,7 @@ public final class Pinch {
                 lastDelivered = now;
                 Log.i(TAG, "double pinch");
                 main.post(() -> {
-                    if (isActive(this)) deliver(listener);
+                    if (isActive(this) && !paused) deliver(listener);
                 });
             } catch (Throwable t) {
                 Log.w(TAG, "sample failed", t);

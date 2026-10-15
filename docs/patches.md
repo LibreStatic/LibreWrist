@@ -326,9 +326,8 @@ listener with `QUICKACTION`; the app then snoozes or dismisses as set on the wat
 outside the `shminterop` package (the patcher's `DexInjection` allowlists exactly that type).
 The catalogue's `minAppVersion` is 28 because it references `Pinch`, which exists only in patcher
 builds from CI run 28 on; an older app would build a fork that crashes when an alarm rings.
-Known limitations: no off-body pause (stock disconnects the gesture when the watch is off the
-wrist); the system-level `pauseGesture` during the alarm is unavailable; verified on an SM-R920
-only, end to end with a phone-synced alarm (Watch7/8 use model types 1/2, untested).
+Known limitations: the system-level `pauseGesture` during the alarm is unavailable; verified
+on an SM-R920 only, end to end with a phone-synced alarm (Watch7/8 use model types 1/2, untested).
 
 Verified [V]: the decoded result matches the previous owner-verified fork build (same
 smali, resources and manifest after normalising the previous package marker). Differences:
