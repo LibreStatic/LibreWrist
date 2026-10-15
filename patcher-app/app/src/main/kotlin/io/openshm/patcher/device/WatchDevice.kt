@@ -22,6 +22,9 @@ import kotlinx.coroutines.withContext
 
 /** What the watch screens need from the watch; the real one runs over ADB, tests use fakes. Failures are [AdbException]s. */
 interface WatchDevice {
+    /** Runs [block] with the watch kept awake (a no-op by default); never changes the outcome of [block]. */
+    suspend fun <T> stayAwake(block: suspend () -> T): T = block()
+
     suspend fun install(apk: File, onProgress: (Float) -> Unit): InstallResult
 
     /**
@@ -102,7 +105,9 @@ interface WatchDevice {
     suspend fun isDozeExempt(pkg: String): Boolean? = null
 }
 
-class AdbWatchDevice(private val link: WatchLink) : WatchDevice {
+class AdbWatchDevice(private val link: WatchLink, private val awake: WatchAwake? = null) : WatchDevice {
+    override suspend fun <T> stayAwake(block: suspend () -> T): T = if (awake != null) awake.around(block) else block()
+
     override suspend fun install(apk: File, onProgress: (Float) -> Unit): InstallResult {
         val source = ApkSource("base.apk", apk.length()) { apk.inputStream() }
         return AdbInstaller(link.client()).install(listOf(source)) { written, total ->

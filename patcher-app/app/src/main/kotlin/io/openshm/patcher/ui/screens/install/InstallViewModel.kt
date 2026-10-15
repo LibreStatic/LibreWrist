@@ -26,6 +26,7 @@ import io.openshm.patcher.data.Device
 import io.openshm.patcher.data.RebuildScope
 import io.openshm.patcher.data.SetupSession
 import io.openshm.patcher.device.AdbWatchDevice
+import io.openshm.patcher.device.WatchAwake
 import io.openshm.patcher.device.WatchKeepAlive
 import io.openshm.patcher.device.WatchLink
 import io.openshm.patcher.ui.components.CheckStatus
@@ -286,7 +287,7 @@ class InstallWatchViewModel(application: Application) : AndroidViewModel(applica
     val state: StateFlow<InstallUiState> = _state.asStateFlow()
 
     private val runner = WatchInstallRunner(
-        device = AdbWatchDevice(WatchLink.get(application)),
+        device = WatchLink.get(application).let { AdbWatchDevice(it, WatchAwake.forWatch(application, it)) },
         build = { BuildStorage(application).record.read() },
         prefix = { SetupSession.state.value.packagePrefix },
         lockPrefix = { SetupSession.update { it.copy(prefixLocked = true) } },

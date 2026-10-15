@@ -197,7 +197,10 @@ class RevertRunner(
      * right before acting, so a package that changed since the probe is handled. [watchCovered] is
      * false when the watch was unreachable or skipped, which keeps the result partial.
      */
-    suspend fun run(items: List<RevertItem>, watchCovered: Boolean, onStep: (RevertItem, StepOutcome) -> Unit): RevertReport {
+    suspend fun run(items: List<RevertItem>, watchCovered: Boolean, onStep: (RevertItem, StepOutcome) -> Unit): RevertReport =
+        if (watchCovered) watch.stayAwake { runSteps(items, watchCovered, onStep) } else runSteps(items, watchCovered, onStep)
+
+    private suspend fun runSteps(items: List<RevertItem>, watchCovered: Boolean, onStep: (RevertItem, StepOutcome) -> Unit): RevertReport {
         val outcomes = LinkedHashMap<String, StepOutcome>()
         var watchDown: String? = null
         val ordered = items.filter { it.actionable }

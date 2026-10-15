@@ -65,6 +65,13 @@ internal class FakeWatch(
     val disabled: MutableSet<String> = mutableSetOf(),
     val settings: MutableMap<String, String> = mutableMapOf(),
 ) : WatchDevice {
+    var stayAwakeCalls = 0
+
+    override suspend fun <T> stayAwake(block: suspend () -> T): T {
+        stayAwakeCalls++
+        return block()
+    }
+
     val calls = mutableListOf<String>()
 
     /** Every call throws this while set (the watch is off or not paired). */

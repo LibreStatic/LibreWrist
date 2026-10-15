@@ -10,6 +10,7 @@ import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.Device
 import io.openshm.patcher.data.SetupSession
 import io.openshm.patcher.device.AdbWatchDevice
+import io.openshm.patcher.device.WatchAwake
 import io.openshm.patcher.device.LaunchRequest
 import io.openshm.patcher.device.SessionPhoneInstaller
 import io.openshm.patcher.device.UninstallResult
@@ -52,7 +53,7 @@ class RevertViewModel(application: Application, savedState: SavedStateHandle) : 
     private val keepAlive = WatchKeepAlive.get(application)
     private val runner = RevertRunner(
         phone = phone,
-        watch = AdbWatchDevice(WatchLink.get(application)),
+        watch = WatchLink.get(application).let { AdbWatchDevice(it, WatchAwake.forWatch(application, it)) },
         catalogue = AppCatalogue.current,
         storedPrefix = SetupSession.state.value.packagePrefix,
         ownPackage = application.packageName,

@@ -55,7 +55,7 @@ internal class WatchInstallRunner(
         locked = false
         state.update { it.copy(running = true, errorRes = null, errorDetail = null, conflict = null, confirmingReinstall = false) }
         try {
-            walk(state)
+            device.stayAwake { walk(state) }
         } finally {
             state.update { it.copy(running = false) }
         }

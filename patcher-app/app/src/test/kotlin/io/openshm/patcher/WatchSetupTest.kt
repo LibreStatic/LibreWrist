@@ -124,6 +124,13 @@ class GrantMappingTest {
 }
 
 private class FakeDevice : WatchDevice {
+    var stayAwakeCalls = 0
+
+    override suspend fun <T> stayAwake(block: suspend () -> T): T {
+        stayAwakeCalls++
+        return block()
+    }
+
     val installed = mutableListOf<String>()
     val grantCalls = mutableListOf<Pair<String, List<AdbGrant>>>()
     var installFor: (File) -> InstallResult = { InstallResult.Success(1) }
@@ -274,6 +281,13 @@ class WatchInstallRunnerTest {
         WatchInstallRunner(device, { build }, { prefix }, { locked++ }, { logged += it }, { pauses += it }, bridgeOutputs, "io.openshm.patcher")
 
     private val old = "io.openshm.u98ff48"
+
+    @Test
+    fun theInstallRunsWhileTheWatchIsKeptAwake() = runBlocking {
+        val device = FakeDevice()
+        runner(device, built("alarm-fork")).run(state(item("alarm-fork")))
+        assertEquals(1, device.stayAwakeCalls)
+    }
 
     @Test
     fun theFirstPendingItemShowsAsRunningWhileTheWatchIsListedForLeftovers() = runBlocking {

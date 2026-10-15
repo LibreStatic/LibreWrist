@@ -95,6 +95,17 @@ class RevertRunnerTest {
     }
 
     @Test
+    fun theWatchIsKeptAwakeOnlyWhenItIsCovered() {
+        val (phone, watch) = fullInstall()
+        val r = runner(phone, watch)
+        val items = runBlocking { r.probe().items }
+        runBlocking { r.run(items, true) { _, _ -> } }
+        assertEquals(1, watch.stayAwakeCalls)
+        runBlocking { r.run(items, false) { _, _ -> } }
+        assertEquals(1, watch.stayAwakeCalls)
+    }
+
+    @Test
     fun aPackageThatTurnedSystemAfterTheProbeIsStillNotTouched() {
         val (phone, watch) = fullInstall()
         val r = runner(phone, watch)

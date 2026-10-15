@@ -7,6 +7,7 @@
 //
 // Output (merged into every variant's assets):
 //   owncode/injections/{watch-mod,alarm-fork}.dex    one classes.dex each
+//   owncode/tools/keep-awake.dex                     helper the patcher runs on the watch during installs
 //   owncode/apps/shm-bridge-{watch,phone}.apk      unsigned (the catalogue `ownApp` path with "/" as "-")
 //   catalogue/{catalogue.json,catalogue.json.sig,catalogue.pub}
 //
@@ -168,6 +169,10 @@ fun bridge(dir: String, minSdk: Int, targetSdk: Int) =
         javaRelease.set(11); utf8.set(true)
         this.minSdk.set(minSdk); this.targetSdk.set(targetSdk)
     }
+val keepAwake = registerBuild("buildKeepAwakeDex", "owncode/tools/keep-awake.dex", false) {
+    sources.set(repoRoot.resolve("patcher-app/keep-awake/src"))
+    javaRelease.set(8); minSdk.set(30)
+}
 val bridgeWatch = bridge("watch", 30, 36)
 val bridgePhone = bridge("phone", 29, 35)
 
@@ -191,7 +196,7 @@ abstract class AssembleOwnCodeAssets @Inject constructor(private val fs: FileSys
 val ownCodeAssets = tasks.register<AssembleOwnCodeAssets>("ownCodeAssets") {
     group = "build"
     description = "Builds the placeholder-form own-code assets and copies the signed catalogue."
-    dependsOn(watchMod, alarmFork, bridgeWatch, bridgePhone)
+    dependsOn(watchMod, alarmFork, keepAwake, bridgeWatch, bridgePhone)
     built.set(stagingDir)
     catalogue.from(
         repoRoot.resolve("catalogue/catalogue.json"), repoRoot.resolve("catalogue/catalogue.json.sig"),
