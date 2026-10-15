@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 /** Who started the attempt, so the one that owns the connection is the only one that takes it. */
-enum class SelfAdbPurpose { PhoneGrants, Troubleshoot, PhoneLog }
+enum class SelfAdbPurpose { PhoneGrants, Troubleshoot, PhoneLog, Setup }
 
 /**
  * What the screens see of the phone's Wireless debugging fallback. [client] is set once connected

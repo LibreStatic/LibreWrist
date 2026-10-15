@@ -11,31 +11,36 @@ import org.junit.Test
 class AdbInstallerTest {
     private fun apk(name: String, content: ByteArray) = ApkSource(name, content.size.toLong()) { ByteArrayInputStream(content) }
 
-    /** Fake device: records shell commands and the bytes sent to each install-write. */
+    /**
+     * Fake device: records shell commands and the bytes sent to each install-write. Like libadb
+     * after a lost close, an install-write stream never reports EOF: only its exit packet ends it.
+     */
     private class Device(
         val createOut: String = "Success: created install session [77]\n",
-        val writeOut: (String) -> String = { "Success: streamed bytes\n" },
+        val writeOut: (String) -> ShellResult = { ok("Success: streamed bytes\n") },
         val commitOut: String = "Success\n",
     ) {
         val shells = mutableListOf<String>()
         val writes = mutableMapOf<String, FakeChannel>()
 
-        fun transport() = scriptedTransport(
-            shell = { cmd ->
+        fun transport() = FakeTransport { dest ->
+            val cmd = dest.removePrefix("shell,v2,raw:")
+            if (cmd.startsWith("cmd package install-write")) {
+                val r = writeOut(cmd)
+                FakeChannel(v2Frames(r.stdout, r.stderr, r.exitCode), hangAtEnd = true).also { writes[cmd] = it }
+            } else {
                 shells += cmd
-                when {
+                val r = when {
                     cmd.startsWith("cmd package install-create") -> ok(createOut)
                     cmd.startsWith("cmd package install-commit") -> ok(commitOut)
                     else -> ok()
                 }
-            },
-            exec = { dest ->
-                val ch = FakeChannel(writeOut(dest).toByteArray())
-                writes[dest] = ch
-                ch
-            },
-        )
+                FakeChannel(v2Frames(r.stdout, r.stderr, r.exitCode))
+            }
+        }
     }
+
+    private fun Device.stdin(cmd: String) = v2Stdin(writes[cmd]!!.written.toByteArray())
 
     @Test
     fun `installs several APKs in one session and reports progress`() = runBlocking {
@@ -52,8 +57,9 @@ class AdbInstallerTest {
         assertEquals("cmd package install-create -S 100005 -r --user 0", device.shells[0])
         assertEquals("cmd package install-commit 77", device.shells[1])
         assertEquals(2, device.shells.size)
-        assertArrayEquals(base, device.writes["exec:cmd package install-write -S 100000 77 base.apk -"]!!.written.toByteArray())
-        assertArrayEquals(split, device.writes["exec:cmd package install-write -S 5 77 split_a.apk -"]!!.written.toByteArray())
+        assertArrayEquals(base, device.stdin("cmd package install-write -S 100000 77 base.apk -"))
+        assertArrayEquals(split, device.stdin("cmd package install-write -S 5 77 split_a.apk -"))
+        assertTrue(device.writes.values.all { it.closed })
         assertEquals(100_005L to 100_005L, progress.last())
     }
 
@@ -89,11 +95,19 @@ class AdbInstallerTest {
 
     @Test
     fun `write failure stops, skips commit and abandons`() = runBlocking {
-        val device = Device(writeOut = { "Failure [INSTALL_FAILED_INVALID_APK]\n" })
+        val device = Device(writeOut = { ok("Failure [INSTALL_FAILED_INVALID_APK]\n") })
         val r = AdbInstaller(AdbClient(device.transport())).install(listOf(apk("base.apk", ByteArray(3)), apk("s.apk", ByteArray(3))))
         assertEquals(InstallResult.Stage.WRITE, (r as InstallResult.Failure).stage)
         assertEquals(1, device.writes.size)
         assertTrue(device.shells.none { it.contains("install-commit") })
+        assertEquals("cmd package install-abandon 77", device.shells.last())
+    }
+
+    @Test
+    fun `a write that exits non-zero fails even without a Failure line`() = runBlocking {
+        val device = Device(writeOut = { ShellResult(1, "Success: streamed bytes\n", "") })
+        val r = AdbInstaller(AdbClient(device.transport())).install(listOf(apk("base.apk", ByteArray(3))))
+        assertEquals(InstallResult.Stage.WRITE, (r as InstallResult.Failure).stage)
         assertEquals("cmd package install-abandon 77", device.shells.last())
     }
 

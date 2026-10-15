@@ -70,6 +70,7 @@ class SelfAdbPairingNotifier(
         scope = scope,
         isLocalHost = AndroidOwnAddresses(appContext)::contains,
         log = { Log.i(LOG_TAG, it) },
+        endpointStore = PrefsSelfAdbEndpointStore(appContext),
     )
     private var renderJob: Job? = null
 

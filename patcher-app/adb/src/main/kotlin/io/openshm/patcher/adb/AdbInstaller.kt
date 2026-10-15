@@ -65,8 +65,8 @@ class AdbInstaller(private val client: AdbClient) {
             for (apk in apks) {
                 val base = written
                 val out = streamApk(sessionId, apk, writeTimeoutMillis) { onProgress(base + it, total) }
-                if (!InstallOutput.isSuccess(out)) {
-                    return InstallOutput.failure(ShellResult(1, out, ""), InstallResult.Stage.WRITE)
+                if (!out.isSuccess || !InstallOutput.isSuccess(out.stdout)) {
+                    return InstallOutput.failure(out, InstallResult.Stage.WRITE)
                 }
                 written += apk.sizeBytes
             }
@@ -86,20 +86,24 @@ class AdbInstaller(private val client: AdbClient) {
         apk: ApkSource,
         timeoutMillis: Long,
         progress: (Long) -> Unit,
-    ): String = client.useChannel(InstallCommands.write(sessionId, apk), timeoutMillis) { channel ->
+    ): ShellResult = client.useChannel(InstallCommands.write(sessionId, apk), timeoutMillis) { channel ->
         var sent = 0L
         apk.open().use { input ->
-            val buf = ByteArray(64 * 1024)
+            // Each chunk goes out as one stdin packet: the shell-protocol header, then the bytes.
+            val buf = ByteArray(ShellV2.HEADER_SIZE + 64 * 1024)
+            val room = buf.size - ShellV2.HEADER_SIZE
             while (sent < apk.sizeBytes) {
-                val n = input.read(buf, 0, minOf(buf.size.toLong(), apk.sizeBytes - sent).toInt())
+                val n = input.read(buf, ShellV2.HEADER_SIZE, minOf(room.toLong(), apk.sizeBytes - sent).toInt())
                 if (n < 0) throw AdbException.Protocol("${apk.name} is shorter than its declared size")
-                channel.write(buf, 0, n)
+                ShellV2.putHeader(buf, ShellV2.ID_STDIN, n)
+                channel.write(buf, 0, ShellV2.HEADER_SIZE + n)
                 sent += n
                 progress(sent)
             }
         }
-        // `-S size` makes the device stop reading after exactly that many bytes, then report.
-        channel.readFully(64 * 1024).toString(Charsets.UTF_8)
+        // `-S size` makes the device stop reading after exactly that many bytes, then exit. The
+        // exit packet ends the read; nothing waits for the stream to close (see [InstallCommands.write]).
+        ShellV2.readResult(channel)
     }
 
     private suspend fun abandon(sessionId: Int) {
@@ -128,9 +132,14 @@ internal object InstallCommands {
         }
     }
 
-    /** Dedicated `exec:` service: raw stdin/stdout, no pty, so APK bytes pass untouched. */
+    /**
+     * `shell,v2` without a pty: APK bytes pass untouched inside stdin packets, and the exit packet
+     * tells when the command is done. Not `exec:`, whose only end marker is the stream closing:
+     * libadb loses a close that arrives while output is still queued, and the read then never
+     * returns (the device has received every byte, but the session is never committed).
+     */
     fun write(sessionId: Int, apk: ApkSource): String =
-        "exec:cmd package install-write -S ${apk.sizeBytes} $sessionId ${apk.name} -"
+        "shell,v2,raw:cmd package install-write -S ${apk.sizeBytes} $sessionId ${apk.name} -"
 
     fun commit(sessionId: Int) = "cmd package install-commit $sessionId"
 

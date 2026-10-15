@@ -94,6 +94,9 @@ private class LibAdbChannel(private val stream: AdbStream) : AdbChannel {
     override fun read(buffer: ByteArray, offset: Int, length: Int): Int {
         // No isClosed check up front: the peer often sends its last data (the shell's exit packet)
         // and closes at once, and libadb still hands out what it queued before saying "closed".
+        // Caveat (libadb 3.1.1): such a close is only marked pending, and once the queue is drained
+        // the next read waits forever instead of failing. So a protocol must end on a marker it
+        // reads (the shell,v2 exit packet), never on EOF.
         return try {
             stream.read(buffer, offset, length)
         } catch (e: IOException) {

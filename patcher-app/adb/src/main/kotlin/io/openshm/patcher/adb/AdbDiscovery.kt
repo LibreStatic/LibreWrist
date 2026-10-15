@@ -8,12 +8,12 @@ import java.net.Inet4Address
 import java.net.InetAddress
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
-import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 
 enum class AdbServiceType(val nsdType: String) {
     /** Wireless debugging "Pair device with pairing code". */
@@ -85,7 +85,11 @@ class AdbDiscovery(context: Context) {
      * collector stops discovery.
      */
     fun discover(type: AdbServiceType): Flow<List<AdbService>> =
-        fixedServices?.let { fixed -> flow { emit(fixed.filter { it.type == type }); awaitCancellation() } } ?: discoverMdns(type)
+        fixedServices?.let { fixed ->
+            // Added to mDNS, not instead of it: the phone's own Wireless debugging is still found there.
+            val extra = fixed.filter { it.type == type }
+            discoverMdns(type).onStart { emit(emptyList()) }.map { extra + it }
+        } ?: discoverMdns(type)
 
     private fun discoverMdns(type: AdbServiceType): Flow<List<AdbService>> = callbackFlow {
         val registry = ServiceRegistry()
@@ -137,7 +141,7 @@ class AdbDiscovery(context: Context) {
 
     companion object {
         /**
-         * Debug builds only: the services every discovery reports instead of mDNS, for an emulated watch
+         * Debug builds only: services every discovery reports on top of mDNS, for an emulated watch
          * that cannot announce itself (set from `debug.openshm.watch_adb`, see `PatcherApplication`).
          * Null in normal use.
          */

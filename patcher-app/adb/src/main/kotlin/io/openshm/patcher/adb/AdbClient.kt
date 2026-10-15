@@ -158,6 +158,8 @@ internal fun AdbChannel.readFully(limit: Int = ShellV2.MAX_OUTPUT_BYTES): ByteAr
 /** Decoder of the `shell,v2` framing: 1-byte id, 4-byte little-endian length, payload. */
 internal object ShellV2 {
     const val MAX_OUTPUT_BYTES = 16 * 1024 * 1024
+    const val HEADER_SIZE = 5
+    const val ID_STDIN = 0
     private const val ID_STDOUT = 1
     private const val ID_STDERR = 2
     private const val ID_EXIT = 3
@@ -166,9 +168,9 @@ internal object ShellV2 {
         val stdout = ByteArrayOutputStream()
         val stderr = ByteArrayOutputStream()
         var exit: Int? = null
-        val header = ByteArray(5)
+        val header = ByteArray(HEADER_SIZE)
         while (true) {
-            if (!readExactly(channel, header, 5)) break
+            if (!readExactly(channel, header, HEADER_SIZE)) break
             val id = header[0].toInt() and 0xff
             val length = (header[1].toInt() and 0xff) or
                 ((header[2].toInt() and 0xff) shl 8) or
@@ -191,6 +193,15 @@ internal object ShellV2 {
         val code = exit ?: throw AdbException.Protocol("The shell ended without an exit status")
         // toString(String), not toString(Charset): the Charset overload is API 33 and minSdk is 31.
         return ShellResult(code, stdout.toString("UTF-8"), stderr.toString("UTF-8"))
+    }
+
+    /** Writes a packet header for [length] payload bytes of stream [id] at the start of [target]. */
+    fun putHeader(target: ByteArray, id: Int, length: Int) {
+        target[0] = id.toByte()
+        target[1] = length.toByte()
+        target[2] = (length shr 8).toByte()
+        target[3] = (length shr 16).toByte()
+        target[4] = (length shr 24).toByte()
     }
 
     /** Fills the first [count] bytes of [target]; false when the stream ended before the first byte. */

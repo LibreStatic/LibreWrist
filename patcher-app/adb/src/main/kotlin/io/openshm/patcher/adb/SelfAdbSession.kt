@@ -61,6 +61,9 @@ class SelfAdbSession(
     private val isLocalHost: (String) -> Boolean = ::isOwnAddress,
     /** Diagnostic lines (state names, counts, exception class names); never codes or keys. */
     private val log: (String) -> Unit = {},
+    /** Last working endpoint, tried before mDNS discovery and updated on every successful connect. */
+    private val endpointStore: SelfAdbEndpointStore? = null,
+    private val storedEndpointTimeoutMillis: Long = 3_000,
 ) {
     private val mutableState = MutableStateFlow<SelfAdbState>(SelfAdbState.Idle)
     val state: StateFlow<SelfAdbState> = mutableState
@@ -82,6 +85,9 @@ class SelfAdbSession(
     @Volatile
     private var pairingPort: Int? = null
 
+    /** Connect ports already dialled in the current [start] attempt. */
+    private val triedPorts: MutableSet<Int> = java.util.Collections.synchronizedSet(HashSet())
+
     @Volatile
     private var pairingHost: String = localHost
 
@@ -96,6 +102,7 @@ class SelfAdbSession(
         submitJob?.cancel()
         val gen = ++generation
         pairingPort = null
+        triedPorts.clear()
         set(SelfAdbState.Reconnecting)
         discoveryJob = scope.launch {
             val client = try {
@@ -115,6 +122,8 @@ class SelfAdbSession(
                 return@launch
             }
             if (!transition(gen, SelfAdbState.WaitingForPairingService)) return@launch
+            // Wireless debugging switched back on while waiting: the stored key may be trusted again.
+            val follower = launch { followConnectServices(gen) }
             try {
                 pairingServices.collect { services ->
                     val local = services.filter { isLocalHost(it.host) }
@@ -129,7 +138,43 @@ class SelfAdbSession(
                 // For example a SecurityException from NsdManager: end visibly instead of crashing.
                 log("pairing discovery crashed: ${e.javaClass.simpleName}")
                 transition(gen, SelfAdbState.Failed(AdbException.Discovery("Discovery failed: ${e.javaClass.simpleName}")))
+            } finally {
+                follower.cancel()
             }
+        }
+    }
+
+    private fun isWaitingForPairing(): Boolean = mutableState.value.let {
+        it is SelfAdbState.WaitingForPairingService || it is SelfAdbState.AmbiguousService || it is SelfAdbState.WaitingForCode
+    }
+
+    /**
+     * While waiting for a pairing code, dials every new local connect port with the stored key. Any
+     * failure keeps the pairing state; a code in flight (generation bump) makes a late result stale.
+     */
+    private suspend fun followConnectServices(gen: Int) {
+        try {
+            connectServices.collect { list ->
+                for (service in list.filter { isLocalHost(it.host) }.distinctBy { it.port }) {
+                    if (gen != generation || !isWaitingForPairing()) return@collect
+                    if (!triedPorts.add(service.port)) continue
+                    log("pairing wait: new connect service, trying the stored key")
+                    val client = try {
+                        dial(service)
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        log("pairing wait: stored key not accepted (${e.javaClass.simpleName})")
+                        continue
+                    }
+                    if (!transition(gen, SelfAdbState.Connected(client))) runCatching { client.close() }
+                    return@collect
+                }
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            log("pairing wait: connect discovery ended (${e.javaClass.simpleName})")
         }
     }
 
@@ -139,8 +184,21 @@ class SelfAdbSession(
      * not trusted and propagates. Null when no local connect service shows up.
      */
     private suspend fun reconnect(): AdbClient? {
-        val tried = HashSet<Int>()
+        val tried = triedPorts
         var client: AdbClient? = null
+        endpointStore?.load()?.takeIf { isLocalHost(it.first) }?.let { (host, port) ->
+            // The identical endpoint is not dialled again by the mDNS path below.
+            if (host == localHost) tried.add(port)
+            try {
+                val stored = AdbClient.connect(backend, host, port, storedEndpointTimeoutMillis)
+                log("reconnect: stored endpoint accepted")
+                return stored
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                log("reconnect: stored endpoint failed (${e.javaClass.simpleName}), using discovery")
+            }
+        }
         withTimeoutOrNull(reconnectTimeoutMillis) {
             connectServices.first { list ->
                 val local = list.filter { isLocalHost(it.host) }
@@ -169,12 +227,16 @@ class SelfAdbSession(
      */
     private suspend fun dial(service: AdbService): AdbClient {
         try {
-            return AdbClient.connect(backend, localHost, service.port)
+            return AdbClient.connect(backend, localHost, service.port).also { remember(localHost, service.port) }
         } catch (e: AdbException.ConnectionFailed) {
             if (!AdbErrors.isRefused(e) || service.host == localHost) throw e
             log("connect: $localHost refused, trying the announced address")
         }
-        return AdbClient.connect(backend, service.host, service.port)
+        return AdbClient.connect(backend, service.host, service.port).also { remember(service.host, service.port) }
+    }
+
+    private fun remember(host: String, port: Int) {
+        runCatching { endpointStore?.save(host, port) }
     }
 
     @Synchronized
@@ -278,7 +340,7 @@ class SelfAdbSession(
      * other error is final. Returns null when [gen] went stale.
      */
     private suspend fun connectToLocalService(gen: Int): AdbClient? {
-        val tried = HashSet<Int>()
+        val tried = HashSet<Int>() // not triedPorts: a pairing-wait attempt may have failed before pairing
         var refused: AdbException? = null
         var client: AdbClient? = null
         var superseded = false
