@@ -50,6 +50,15 @@ per recipe note 30 [V notes 10, 30, 31, 60–6x].
 | Status machine: internal statuses {0, −4, −52 (reported as −5), 2}; READY 1 / COMPLETE_NOTILT 3 / TIMEOUT −6 never emitted by this build; 3000-sample decision requires HR ≥ 1 and mapped SpO2 > 0; motion re-report every 200th sample, give-up at 999; PPG-HR fallback after sample 1999 | note 20 §6 | note 21 §E |
 | The three algorithm binaries' sizes and sha256 hashes | notes 20/22/31 | notes 60, 61, 6x — each family session re-computed the same hashes and ran its own `cmp -s` |
 | Overnight wrapper datasheet — JNI contract, 4-lane input word, +69 decode, the full RunProc pipeline (§2.2), every constant byte-exact, and the absence of any dcRatio/accPower computation | note 40 | note 41 — verdict "agrees" on every library-side claim; one grammar correction in the unused `decode_eht_entry` export (§4.4) and two nuances folded into §2.2 steps 4/6 |
+| §7.2 residue: FIR (151-tap, ×2⁻¹⁶) / IIR (7+7) / Kaiser (95) tables, and the template Pearson threshold 0.65 with the 900.0/59.0 window caps | note 70 §7.2 items 3,6,7 | note 90 §Q3 (fresh byte reads + Ghidra; all values reproduced) |
+| §7.2 residue: adaptive-bank init/LMS constants {0.96, 0.9, 0.95} and the −0.2/1e-8/+0.2 steers; `an_init_bound_for_spo2` = 24 f32 | note 70 §7.2 items 1,2 | note 90 §Q2 |
+| §7.2 residue: `judge_result_flag` returns −4 against a **runtime** field (state+0x28) compared to a caller-supplied value — no static threshold; −52 on the 4th large jump | note 70 §7.2 item 3 | note 90 §Q4 |
+| §7.2 residue: output field out[3] is never written in steady state → the hr-source byte is not enumerable | note 70 §7.2 item 12 | note 90 §Q5 |
+| §7.2 residue: internal PPG HR = acos(ω)·190.9859317102744; the external-HR latch holds external samples only | note 70 §7.2 items 13,14 | note 90 §Q6 |
+| §7.2 residue: irRaw/redRaw ADC full-scale — no constant exists or is applied; R is scale-invariant | note 70 §7.2 item 16 | note 90 §Q8 |
+| Hub: `lpd.core.bin` is the Exynos LPD **display** Cortex-M4 firmware, not the sensor hub (supersedes note 31 §5) | note 71 §1 | note 90 §Q1 |
+| SSM producer: attribute key is lowercase `"cmd"`, `Cmd = {FLUSH, GET_DATA, GET_VERSION}` — no `SET_OPERATION_MODE`; `secSize = min(remaining, 30000)`, `secRemainCount = remaining ÷ 30001`; no `versionMap` | note 71 §2 | note 90 §Q10 |
+| `dcRatio` / `accPower` are absent from the wrapper, the SSM producer class, the framework event class and HTS — no analyzed producer computes them | notes 71 §2.6, 72 | note 90 §Q9 |
 
 ### 0.2 Corrections the confirmation and this revision produced (authoritative — use these values)
 
@@ -79,6 +88,46 @@ per recipe note 30 [V notes 10, 30, 31, 60–6x].
   in §2.1 step 8 — when they disagree, the formula wins.
 - The 75.0 store's downstream use: the code at 0x13d1a computes **(75/60)·28** from it — note 21
   records the computation but not the quantity's meaning; see §3.1 and §7.2.
+- **§7.2 residue resolved (notes 70/90) — corrections to the earlier text:**
+  - The three "waveform range floats at file 0x3e8c–0x3e94" (§2.1 step 5, §7.2 item 4) are **not
+    floats** — they are VFP/ALU instruction encodings (`ldr.w`/`vneg.f32`/`add.w`) misread on a
+    straddling boundary (note 70 §7.2 item 4).
+  - The `judge_result_flag` −4/−52 "thresholds" are **runtime/caller values**, not static constants
+    (note 70 §7.2 item 3; note 90 §Q4) — §2.1 steps 4c/5.1 and §7.2 item 3 are corrected.
+  - Output field **out[3] is never written a nonzero value** (note 70 §7.2 item 12; note 90 §Q5):
+    the hr-source byte is not enumerable in this build — this supersedes §4.1's earlier role claim.
+  - The **(75/60)·28 numerator is the `.data` sample-rate word 75.0** at vaddr 0xe004 (file 0xd004),
+    **not** an opaque runtime field (note 70 §7.2 item 15; re-read this revision): `int((75.0/60.0)·28)
+    = 35` is stored to state+0x13c0e (§3.1).
+  - **FIR table↔channel assignment** (§2.1 step 4b): `fir_filter_for_spo2` (0xa5a8) feeds **both**
+    main-pipeline channels (one GOT load at file 0x3c22, its pointer reused at the two channel calls
+    0x3c2c/0x3c3e); `fir_filter_f_for_spo2` (0xa1d0) is referenced **only** from the adaptive-bank
+    function (GOT load file 0x591c). Note 70 is authoritative here; note 90 could not pin it (§4.1).
+  - **Vote share gates** (§2.1 step 10): the reported selector gates are **5/30/60 %** (5.0 @file
+    0x4864, 30.0 @0x48a0, 60.0 @0x4c10) and the secondary selector **8/30/70 %** (8.0 @0x4cb0,
+    30.0 @0x4cfa, 70.0 @0x4c34); both sets byte-verified this revision (note 90's table listed only
+    8/30).
+  - **`an2bpm` multiplier**: the earlier "−5.264523029" was the **f32 truncation of the low 4 bytes**
+    of a **double**; the real value is the f64 **190.9859317102744** (@file 0x2a48, re-read this
+    revision) — §3.1 corrected.
+  - **Filter tables** (§3.1): tap values are now recorded (note 70 §7.2 item 7, full lists); the
+    Kaiser table is the **SDFT window/compensation** table (consumed by `sdft`); `ekp`/`ekK` are
+    **240 f64** twiddles each (not 480 f32); the IIR is consumed **only** by `iir_bpf` (no
+    main-pipeline use).
+- **Hub finding (notes 71/72).** `lpd.core.bin` is the Exynos **LPD display** Cortex-M4 coprocessor
+  firmware, **not** the sensor hub — note 31 §5/§6's identification is superseded (note 71 §1; note 90
+  §Q1). The 4 Hz overnight estimator runs on the CHUB (Cortex-M55) hub, whose one-binary image is
+  `os.checked.bin`; that file is **not shipped as plaintext** in this build (absent from AP / ramdisk /
+  bootloader members / CSC / FOTA; the only container present is the signed+encrypted `ldfw.img`,
+  `CryptoManagerV50`) → a hard **encryption blocker** (note 72), and no encryption-breaking was
+  attempted (project stop rule).
+- **Producer-side (note 71).** The SSM SpO2 bundle builder's semantics are resolved (§2.3/§4.3/§4.4):
+  the attribute key is lowercase `"cmd"` with `Cmd = {FLUSH, GET_DATA, GET_VERSION}` (no
+  `SET_OPERATION_MODE` on this sensor); `secFullSize` = total, `secSize = min(remaining, 30000)`,
+  `secRemainCount = remaining ÷ 30001` (minutes 500/501); `version` = int[4] @ packet offsets
+  {9,10,11,12}; `version_type` from packet type 2/4; pages carry `data_type` NORMAL; **no `versionMap`
+  key exists**. `dcRatioList`/`accPowerList` are **not produced** by any analyzed tree (wrapper, SSM
+  service, framework event class, HTS) — only SHM's own event-class copy references them (§4.4).
 
 ### 0.3 Single-session findings NOT independently confirmed
 
@@ -91,8 +140,11 @@ per recipe note 30 [V notes 10, 30, 31, 60–6x].
   referred only to a grammar detail of the unused `decode_eht_entry` export (corrected in
   §4.4); the two nuances the confirmation added are folded into §2.2 steps 4 and 6. What
   remains single-session is the consumer-side smali chain (next bullet).
-- All SHM-watch smali consumption facts (note 12; read-only single session). **The interface
-  the adapter must satisfy (§2.3, §4.3, §5.3) inherits this caveat.**
+- All SHM-watch smali consumption facts (note 12; read-only single session). **The SHM-consumer
+  side of the interface the adapter must satisfy (§2.3, §4.3, §5.3) inherits this caveat.** The
+  producer side of that interface (the SSM bundle builder and attribute classes) is now analysed
+  in note 71 and cross-checked in note 90 (§0.1), so §2.3/§4.3's *producer* claims are on two
+  sessions.
 - Everything tagged [I] below.
 
 ---
@@ -111,8 +163,9 @@ per recipe note 30 [V notes 10, 30, 31, 60–6x].
   (version string `ver01.2824`), not the system copy — proven from the class initializer, the APK
   packaging (only libspo2 / libbialibrary / liblib_wrapper ship in the APK) and zero
   `spo2manual`/`hmspo2wrap` references anywhere in the HTS smali [V note 22 §7].
-- Input per sample: `{irRaw, redRaw}` raw ADC ints (**unscaled**; their numeric full-scale is
-  [N] — §7.2) [V]; accelerometer XYZ in g — the Java side scales each raw axis by
+- Input per sample: `{irRaw, redRaw}` raw ADC ints (**unscaled**; no ADC full-scale constant
+  exists or is applied — the ratio path is scale-invariant, §7.2 item 16) [V note 70; C note 90];
+  accelerometer XYZ in g — the Java side scales each raw axis by
   0.0023950562 = 9.81/4095.9375 [V+C]; `redLOffset` u16 and `externalHr` u8 [V]. The event
   source is the dedicated manual-SpO2 sensor (`SemSpo2ManualSensorEvent`), **not**
   PPG_ON_DEMAND [V note 20 §2]. The algorithm's internal sample-rate constant is **75 Hz** [V+C].
@@ -123,24 +176,31 @@ per recipe note 30 [V notes 10, 30, 31, 60–6x].
 
 ### 1.2 Path B — HM overnight (sleep-apnea) SpO2
 
-- Chain: the sensor hub (nanohub stack; hub MCU image `lpd.core.bin` on the R920's S5E5515 SoC
-  [V note 31 §5]) produces ~4 Hz per-sample SpO2 estimates quantized to 5 bits, 4 per second
-  (4 Hz is the wrapper's input contract; the true hub rate is unverified) [V note 40 §2–§3; I rate].
+- Chain: the sensor hub (Exynos **CHUB / nanohub**, `samsung,exynos-nanohub` Cortex-M55 on the
+  R920's S5E5515 SoC) produces ~4 Hz per-sample SpO2 estimates quantized to 5 bits, 4 per second
+  (4 Hz is the wrapper's input contract; the true hub rate is unverified) [V note 40 §2–§3; I rate;
+  C hub identity note 72 §1].
   The vendor post-processing wrapper `lib_hmspo2wrap.sensor.samsung.so` (version 1.11.01)
-  aggregates them into per-second SpO2 and per-minute anchors [V note 40]. A Samsung
-  sensor-manager service (SSM — not present in the analyzed trees; loader role *inferred*)
-  assembles the `SemSleepWatchSpO2SensorEvent` bundle (event type 0x31 = 49) carrying
-  `secSpO2List`, `secTimeList`, `dcRatioList`, `accPowerList`, … [V keys; I loader]. The SHM
+  aggregates them into per-second SpO2 and per-minute anchors [V note 40]. The Samsung
+  sensor-manager service (SSM) assembles the `SemSleepWatchSpO2SensorEvent` bundle (event type
+  0x31 = 49); its producer class `SleepWatchSpO2Handler` **is** analyzed (note 71 §2), and the
+  bundle carries the `sec*`, `min*`, `version*` and `data_type` keys [V note 71 §2]. The
+  `dcRatioList` / `accPowerList` keys do **not** exist in any analyzed tree (§4.4). The SHM
   watch APK (`com.samsung.android.shealthmonitor` 1.5.1.022) pulls it with `getData(start, end)`
   and feeds the apnea flow [V note 12].
 - SHM fork [V note 12]: **V1** (`Apnea1Manager`) evaluates per-second values locally (values
   only); **V2** (`Apnea2Manager`) persists per-sample `SleepRaw(timestamp, spO2:B, dcRatio:S,
   accPower:S)` into Room and syncs raw sessions to a Samsung phone via ApneaSyncManager
   (transport below that not traced).
-- The hub's own 4 Hz estimator (upstream of the wrapper) is **not present in any analyzed
-  binary**; `lpd.core.bin` was extracted but not analyzed (hub phase closed "not-needed")
-  [V notes 31, 40 §8; phase summary]. Whether it shares the libspo2 mapping cannot be determined
-  from the analyzed material [I].
+- **Hub image (corrected).** The hub is the Exynos **CHUB / nanohub** (Cortex-M55) sensor hub. The
+  image `lpd.core.bin` that note 31 identified as the "sensor hub" is in fact the Exynos **LPD
+  (Low-Power-Display) Cortex-M4** coprocessor firmware — wrong component (note 71 §1; note 90 §Q1).
+  The 4 Hz estimator's actual carrier is the CHUB one-binary image `os.checked.bin`, which is **not
+  shipped as plaintext** in the R920XXS2DZG3 build (absent from AP / ramdisk / bootloader members /
+  CSC / FOTA; the only firmware container present is the signed+encrypted `ldfw.img`,
+  `CryptoManagerV50`) → hard blocker, no encryption-breaking attempted (note 72). Whether the
+  estimator shares the libspo2 mapping is therefore **not determinable** from the analyzed material
+  [I].
 
 ### 1.3 What an adapter can actually reproduce from raw red + IR
 
@@ -153,9 +213,10 @@ per recipe note 30 [V notes 10, 30, 31, 60–6x].
   [V note 12; single-session caveat §0.3].
 - **Not reproducible bit-exactly: the stock pre-processing decisions** (which beats survive,
   when motion fires, the internal HR path) — those pipeline stages are structurally described
-  but their internals are [N] (§1.4, §7.2). An adapter can implement the exact mapping/voting
-  contract on top of its own pre-processing; it cannot guarantee stock-identical beat
-  acceptance from this material.
+  and their constants are now pinned (notes 70/90), but the **motion threshold that fires −4 is a
+  caller-supplied runtime value with no static constant** (§2.1 steps 4c/5.1), so stock-identical
+  beat acceptance cannot be guaranteed from this material. An adapter can implement the exact
+  mapping/voting contract on top of its own pre-processing.
 - **Not reproducible bit-exactly: the stock overnight per-second stream.** Stock overnight
   values come from the hub's 4 Hz estimator plus the wrapper aggregation (§2.2); the estimator
   is not recoverable from any analyzed binary, and dcRatio/accPower have no definition in any
@@ -186,12 +247,14 @@ per recipe note 30 [V notes 10, 30, 31, 60–6x].
 - the SHM consumption interface: bundle keys, batching, acceptance rules, timers (§2.3, §4.3,
   §5.3) — single-session caveat.
 
-**Structurally described but NOT reproducible bit-exactly from the notes** (all [N] items,
-collected in §7.2): the adaptive filter bank (no update equations, step sizes, tap counts,
-steering rule); z-score normalization (no constants); the motion metric (no formula, axes or
-−4 threshold); beat detection (no detection rule or channel); the template/calmness machinery
-(no window selection, resample method, threshold, template init/update); the FIR/IIR/Kaiser tap
-values (not enumerated; IIR chain position unpinned); the internal PPG HR path (SDFT untraced).
+**Structurally described but NOT reproducible bit-exactly from the notes** (remaining [N] items,
+collected in §7.2): the numeric value of the **caller-supplied −4 motion threshold** (a runtime field,
+no static constant); whether `R ≥ 0.08` is enforced on the per-beat stream; the exact **M+0x98
+"ratio of two channel-statistic floats"** definition; the vote re-evaluation **cadence** as beats
+accumulate; the **hr-source byte** (out[3], never written); and `irRaw`/`redRaw` **ADC full-scale**
+(no such constant exists). The adaptive filter bank, z-score normalization, motion metric, beat
+detection, template/calmness machinery, FIR/IIR/Kaiser tables and the internal PPG HR path are now
+pinned by byte reads (notes 70/90) — see §2.1/§3.1.
 
 ---
 
@@ -199,8 +262,9 @@ values (not enumerated; IIR chain position unpinned); the internal PPG HR path (
 
 ### 2.1 On-demand mapping (`libspo2.so`, APK build ver01.2824) — step by step
 
-Read this together with §1.4: steps 4c, 5, 6 and 11 are **structure-verified but not
-reproducible bit-exactly**; the notes do not contain their internals.
+Read this together with §1.4: the mapping/voting contract (steps 7–10) and the pre-processing
+internals (steps 4b/4c/5/6/11) are now pinned by byte reads (notes 70, 90); every remaining
+non-reproducible item is called out inline and collected in §7.2.
 
 1. **Init** (`funci`, once per tracker init): clears debug/flag structs, sets the initialized
    byte, performs a full reset. The reset initializes per-channel state — two 150-tap FIR
@@ -216,52 +280,72 @@ reproducible bit-exactly**; the notes do not contain their internals.
    - **4a. DC removal** [V equation; C init constants]: single-pole EMA per channel,
      `DC ← (1 − α)·x + α·DC` with **α = 0.98** (i.e. `DC ← 0.02·x + 0.98·DC`); state zeroed at
      init; the AC passed on is `x − DC_prev` (the DC value from before this sample's update).
-   - **4b. FIR band-pass** [C structure; tap values [N]]: transposed direct-form FIR,
-     **150 taps** (the `0x96` length argument is pinned). Two coefficient tables exist,
-     `fir_filter_f_for_spo2` (0xa1d0) and `fir_filter_for_spo2` (0xa5a8), each spanning 151 f32
-     slots to the next symbol — the 151st slot's role is [N] (possibly padding). **The actual
-     tap values are not recorded in the notes** and the table↔channel assignment conflicts
-     *within the source material*: note 20 says "one per channel", while note 21's call sites
-     show `fir_filter_for_spo2` passed at **both** main-pipeline channel calls (0x13c2c/0x13c3e)
-     and `fir_filter_f_for_spo2` passed to a `fir_bpf` call **inside the adaptive-bank
-     function** (0x15920) — §7.2.
-   - **4c. Adaptive notch, normalization, motion metric** [V structure only; internals [N]]:
-     an accelerometer-steered adaptive band-stop (LMS-style recursion; center frequency clamped
-     to bounds derived from accelerometer activity; bound table `an_init_bound_for_spo2`,
-     24-or-25 slots — the consumer count is unaudited, so even the table indexing is uncertain);
-     online z-score normalization (EMA mean/variance — no update rule or constants recorded);
-     a motion-variance metric from a 50-sample accelerometer-magnitude ring with min/max clamps
-     (no formula, axes or threshold recorded). Four parameter islands near init ({0.35, 0.0,
-     8.5, 1.2}, {20000.0, 5e8, 0.3, 0.5}, {25.0, 0.9, 0.8, 0.8}, {0.8, 0.8, 0.5, −100.0}) are
-     motion/HR-side parameters with unresolved roles. Note 21 explicitly did not audit this
-     ~2.7 KB function — §7.2.
-   - **4d. IIR band-pass** [tables C; position [N]]: 6th-order, coefficient tables confirmed at
-     0xa198/0xa1b4 (§3.1). Its position in the per-sample chain is **not pinned** — no consuming
-     call site is recorded in the notes; treat it as exported infrastructure, not a specified
-     pipeline stage.
-5. **Beat segmentation** (from sample 77) [C gates; detection rule [N]]: the filtered channels
-   are pushed into 630-sample (8.4 s) beat buffers (index guards at 0x274); the filtered value
-   is read at index `i + 0x99` (FIR group-delay compensation). Interval validation compares
-   beat-to-beat distances: > **286** samples (≈ 3.8 s at 75 Hz) flags "no beat recently" (287
-   being the strict side of ≤); a second gate pair at **210/211** (≈ 2.8 s) works the same way;
-   a variability gate of **105** samples (≈ 1.4 s) applies to |Δinterval|. Which channel the
-   detection runs on and the peak criterion are [N]. Waveform range-quality bits: flags 0x40 /
-   0x20 from range checks against floats at file 0x3e8c–0x3e94 (values [N]), bit 0x10 NaN path,
-   +0x80 when the comparisons pass; their effect on beat acceptance is untraced — §7.2.
-6. **Artifact rejection** [C structure; internals [N]]: a window of the beat waveform (located
-   via a 300-entry timestamp ring) is linearly detrended, min-shifted, max-normalized, resampled
-   to 64 points via the library's `interpolate_array` helper (method not further specified) and
-   Pearson-correlated against the running template (`calc_pearson_coef_and_index`; plain
-   Pearson r); the coefficient is stored at state+0x14d8. `judge_result_flag` compares
-   consecutive coefficients: more than 3 alternations beyond a threshold (mod-4 ring counter,
-   `gStFlagJudgeParam`) → internal status −52; the motion metric over threshold → −4. The
-   window boundaries inside the 630-sample buffer, the threshold values, the exact
-   "alternation" definition, and the template's initialization/update rule are [N] — §7.2.
+   - **4b. FIR band-pass** [C]: transposed direct-form FIR, **151 taps** (length argument `0x96` =
+     150 plus tap[150] added explicitly in `fir_bpf`; output scaled by **2⁻¹⁶**, f32 `0x37800000`
+     @file 0x2bc0) [V note 70 §7.2 item 7; C note 90 §Q3]. Two symmetric linear-phase f32 tables of
+     151 values each: `fir_filter_f_for_spo2` @0xa1d0 and `fir_filter_for_spo2` @0xa5a8 (full value
+     lists in note 70 §7.2 item 7). **Assignment:** `fir_filter_for_spo2` feeds **both** main-pipeline
+     channels — one GOT load at file 0x3c22 whose pointer is reused at the two channel calls
+     0x3c2c / 0x3c3e; `fir_filter_f_for_spo2` is referenced **only** from the adaptive-bank function
+     `FUN_000157a0` (GOT load file 0x591c) [V note 70 §7.2 item 7; re-verified this revision]. This
+     settles note 20 vs note 21 in favour of the call-site evidence.
+   - **4c. Adaptive notch, normalization, motion metric** [C] — three sub-blocks, all now pinned by
+     byte reads (note 70 §7.2 items 1–3; note 90 §Q2):
+     - **Adaptive band-stop** (`adaptive_bpf` @0x2ca0; `init_adaptive_bpf` @0x2c40): five tap slots
+       (+0x24…+0x37); init constants α₁ = **0.96** (f32 `0x3f75c28f` @file 0x2c88), β = **0.9**
+       (`0x3f666666` @0x2c8c), α₂ = **0.95** (`0x3f733333` @0x2c98), two slots at 0.0; steering
+       accumulates `p38 += p24·(−0.2)` and the centre coefficient is clamped to `[bound_lo, bound_hi]`
+       (two caller pointers); step constants f64 **−0.2 / 1e-8 / +0.2** @file 0x2e30/0x2e38/0x2e40.
+     - **Bounds table** `an_init_bound_for_spo2` @0xa804 = **24 f32** (96 B, dynsym size); the
+       pair-averaging consumer reads adjacent pairs `0.5·(tab[k]+tab[k+1])` for k = 0,2,…,20 (11
+       iterations, counter 0→0x39c stepping 0x54, output stride 0x54) → touches entries **0…21; no
+       25th slot is accessed** [V note 70 §7.2 item 1; C note 90 §Q2; re-verified this revision].
+     - **Z-score normalization** (`normalization_for_spo2` @0x2bd0): `mean' = mean·α + x·(1−α)`,
+       `var' = (x−mean')²·(1−α) + var·α`, `result = (x−mean')/√var'`; **α = 0.95** (f32 `0x3f733333`
+       @file 0x2c38), **1−α = 0.05** (@0x2c3c); warm-up (`param_3 < 1`) forces result 0.
+     - **Motion metric** (`acc_var` @0x2e70): one input per call, invoked only every 5th sample; the
+       input is the **signed sum of the three accelerometer axes** (not a magnitude); EMA α @+0xd4,
+       a 50-entry ring at +0x08…+0xcf (index wraps at 49), variance recomputed on each 50-wrap, a long
+       EMA `0.999·e + 0.001·x` (f64 @0x2f28 / 0x2f30), output `+0xe0 = clamp(2·x, 0.95, 1.0)`
+       (f32 `0x3f733333` @0x2f38). The metric's **numeric threshold that fires −4 is caller-supplied**
+       (§5.1), not a constant.
+   - **4d. IIR band-pass** [C]: 6th-order, coefficient tables at 0xa198/0xa1b4 (§3.1). Its position
+     is now pinned: `filter_b`/`filter_a` (GOT 0xde14/0xde18) are consumed **only** by `iir_bpf`
+     @0x2ab8 — there is **no** main-pipeline use, so it is exported infrastructure, not a specified
+     per-sample stage [V note 70 §7.2 item 7].
+5. **Beat segmentation** (from sample 77) [C]: the filtered channels are pushed into 630-sample
+   (8.4 s) beat buffers (index guards at 0x274); the smoothed value is read at ring index `i + 0x99`
+   (153 = FIR group-delay compensation; file 0x3ea4 / 0x4090). **Both channels are processed
+   symmetrically** — two per-channel contexts, each with a ring count at +0x1e0, flags at +0xe4, and
+   three beat-time slots at +0x134 (prev-prev) / +0x138 (prev) / +0x13c (current); a beat requires
+   each channel's count ≥ 3 (file 0x3f40 / 0x3f4c). **Peak criterion:** the beat time is the
+   per-sample regression turning point (`find_max_point_by_regression` @0x6aa8), and both channels
+   must agree within the interval gates [C]/[I]. Interval gates are **286** (`0x11e`, file 0x4048 /
+   0x406e) and **210** (`0xd2`, file 0x3f68 / 0x3f8e / 0x3fa6); variability gate **105** (`0x69`).
+   Per accepted beat the two per-beat segments (the spans between consecutive beat-time slots) are
+   copied and summed. The words the earlier text cited as "range floats at file 0x3e8c–0x3e94" are
+   **not floats** — they are VFP/ALU instruction encodings (`ldr.w`/`vneg.f32`/`add.w`) misread on a
+   straddling boundary; the compared floats are runtime `.bss` values (base+0x13e8c/90/94) [V note 70
+   §7.2 item 4; C note 90 §Q3]. The `(flags & 0xe0) == 0xe0` "all four quality bits set" condition
+   advances beat acceptance (counter +0x1da4; any-flag counter +0x1da8) [V note 70 §7.2 item 4].
+6. **Artifact rejection** [C]: a window of the beat waveform (from a **300-entry** ring — values at
+   +0x6b4, timestamps at +0x1010; window = `nearest−2 … nearest+2`, requiring span ≥ 10 samples) is
+   linearly detrended, min-shifted, max-normalized, resampled to **64 points** via `interpolate_array`
+   @0x6d5c, and Pearson-correlated against the running template (`calc_pearson_coef_and_index`
+   @0x7028; `calc_correlation` @0x6fc0 over 49 upsampled lags, divisor f64 **15.50384075** @0x7110);
+   the coefficient is stored at state+0x14d8. **Pearson threshold = 0.65** (f64 `0x3fe4cccccccccccd`
+   @file 0x75d0); the window caps are **dt ≤ 900.0** (f32 `0x44610000` @0x75d8) and **widen 59.0**
+   (f32 `0x426c0000` @0x75e0) [V note 70 §7.2 item 6; C note 90 §Q3]. `judge_result_flag` @0x360c
+   returns internal −52 (`0xffffffcc`) after 4 consecutive large |Δ| of the coefficient (counter
+   `+0x136aa` wraps 0…3); the motion metric over the **runtime** threshold → −4 (§5.1). The template is
+   initialized by `init_template_data` @0x7170 (zeroes the buffers). The exact re-sampling "widen"
+   value's role within the window selection is [I].
 7. **Per accepted beat — ratio of ratios** [C]:
    - AC per side = the **sum of the two per-beat segments of that channel's FIR-filtered
      signal**, made absolute after summation: `AC_A = |M[0x00] + M[0x04]|` (IR),
-     `AC_B = |M[0x08] + M[0x0c]|` (red). The segment boundaries within the 630-sample buffer
-     are [N].
+     `AC_B = |M[0x08] + M[0x0c]|` (red). The two segments are the spans **between consecutive
+     beat-time slots** (+0x134 / +0x138 / +0x13c); the smoothed value is read at ring index
+     `i + 0x99` [V note 70 §7.2 item 5].
    - `DC_A = M[0x18]`, `DC_B = M[0x1c]`: the per-channel DC-filter (4a) state values; the
      sample at which they are read is [N].
    - Perfusion-like indices per side = `100·|AC|/DC` (exposed via `get_perfusion_index`).
@@ -270,8 +354,10 @@ reproducible bit-exactly**; the notes do not contain their internals.
      (slot M+0x3c vs M+0x50 chosen by `redLOffset < threshold`). On reject, the internal R slot
      (M+0x74) and the internal DC-ratio slot (M+0x2c, which holds DC_B/DC_A on accept) are
      zeroed. On accept (caller's "beat valid" argument ≥ 1): M+0x74 = R, M+0x2c = DC_B/DC_A.
-   - The **0.08 lower bound** is verified enforced for the secondary stream (out-of-bounds →
-     zeroed at 0x14bd2); whether the beat path enforces `R ≥ 0.08` is [N] — §7.2.
+   - The **0.08 lower bound** (f32 @file 0x38cc, inline copy @0x3868) is verified enforced for the
+     secondary stream (out-of-bounds → zeroed at 0x14bd2); there is **no distinct static comparison**
+     separating the per-beat stream from the M+0x98 stream, so whether the beat path enforces
+     `R ≥ 0.08` remains [N] — §7.2 item 11 [V note 70 §7.2 item 11].
    - Clarifier: the internal M+0x2c slot is on-demand-library state with **no known
      relationship** to the sleep-watch event's `dcRatioList` (§4.4) — different components,
      different dataflows [D].
@@ -282,45 +368,56 @@ reproducible bit-exactly**; the notes do not contain their internals.
    corrected illustration values (computed this session; see §0.2): R = 0.5 → 98.97; R = 0.75 →
    93.20; R = 1.0 → 87.15; R = 1.5 → 74.26; the 70.0 clamp binds from R ≈ 1.6564, so for
    R ∈ [1.6564, 1.84] the mapped value is pinned at 70.0.
-9. **Two estimate streams, same polynomial** [C; second source only loosely defined]:
-   - Stream 1's R source is the **per-beat slot M+0x74** (written per accepted beat, step 7);
-     its results land at M+0x7c and are classified with pools 0x447c/0x4480 (94.0/90.0) into
-     bands ≥94 / [90,94) / < 90.
-   - Stream 2's R source is **M+0x98, "a ratio of two channel-statistic floats"** maintained in
-     `.bss` tables (pool words point near 0x20fc0/0x224aa) — the notes contain no closer
-     definition of those statistics [N]. It is bounded by the same constants (1.84 / 0.08,
-     selected by the same redLOffset test) and **zeroed when out of bounds**. Its results land
-     at M+0x9c and are classified with pools 0x4c2c/0x4c30 (94.0/90.0) into bands ≥94 /
-     [90,94) / [70,90), with < 70 dropped.
-   - Both streams are mapped by the same polynomial and the same coefficient sets (the two
-     `FUN_00016760` call sites, flags 1 and 2). A dedup guard skips accumulation "when R is
-     unchanged since the previous beat" — the exact comparison predicate (equality vs
-     tolerance) and whether it also freezes the band counters are [N].
-10. **Band voting** [C gates; two assignments [N]]:
-    - The **reported** selector fires with gates: share(≥ 94) ≥ **5 %** → mean(≥ 94); else
-      share(≥ 90) ≥ **30 %** → mean(hi+mid); else share(< 90) ≥ **60 %** → mean(lo); else **0**
-      (no value). It writes the `get_spo2` slots of the results struct at 0x28D28 (+0x4 flag /
-      +0x2c value). The share denominator is a total counter in that struct (+0x1c).
-    - The **secondary** selector fires with gates **8 % / 30 % / 70 %**, else no valid flag
-      (the getter then reports −1.0). It writes the `get_template_spo2` slots (+0x0 / +0x20).
-    - [N] (a) which selector consumes which accumulator's counters: note 20 labels the reported
-      selector "direct path" (its path 0 = the M+0x98 stream), while note 21's block layout
-      places the reported selector immediately after the M+0x7c (per-beat) accumulator — the
-      two readings conflict; see §7.2. The gates and the reported-value semantics are confirmed
-      either way. (b) The firing schedule (when the vote re-evaluates as beats accumulate) is
-      not pinned; the spo2 byte reported at COMPLETE is the mean from the most recent firing
-      [D].
-11. **HR fusion** [C rule; internal path not implementable]: the reported HR is the current
-    `externalHr` sample when ≠ 0, otherwise the **latched** previous HR; when that value is
-    < 1 and the sample count ≥ 2000 (i.e. after sample 1999), the internal PPG HR (latched into
-    state+0xc whenever `get_hr()` produced > 0) is used instead, if ≥ 1; otherwise 0. Exactly
-    what enters the latch (external samples only, or also the internal HR) is [N]. The internal
-    PPG HR path (SDFT/beat machinery; only the acos→bpm multiplier −5.264523029 is pinned) is
-    not specified in the notes — with `externalHr = 0` the stock HR ≥ 1 decision gate cannot be
-    evaluated from this document (§1.4, §7.2).
-12. **Output packing**: {status, spo2, hr, hr-source} byte-packed into the result struct;
-    `funcr` spreads the 4 bytes into the Java `int[4]` (§4.1). The spo2 value is the
-    char-truncation of the band-voted mean [C].
+9. **Two estimate streams, same polynomial** [C]:
+   - Stream 1's R source is the **per-beat slot M+0x74** (written per accepted beat by
+     `FUN_0001667c` @0x667c, step 7); its mapped results land at **M+0x7c** (`FUN_00016760` @0x6760,
+     flag 1) and are classified with pools 0x447c/0x4480 (94.0/90.0) into bands ≥94 / [90,94) / < 90.
+   - Stream 2's R source is the **M+0x98 "ratio of two channel-statistic floats"** block; its mapped
+     results land at **M+0x9c** (flag 2) and are classified with pools 0x4c2c/0x4c30 (94.0/90.0) into
+     bands ≥94 / [90,94) / [70,90), with < 70 dropped. It is bounded by the same constants
+     (1.84 / 0.08, selected by the same `redLOffset` test) and **zeroed when out of bounds**. The
+     closer definition of the two channel statistics remains [N].
+   - **Stream↔source association (resolved):** the block locality places the reported selector after
+     the per-beat M+0x7c accumulator, and the M+0x98 block is the secondary selector's ratio block —
+     note 21's reading; note 20's "reported = M+0x98" label is superseded [C note 70 §7.2 item 8].
+   - **Dedup guard (resolved):** the predicate is **exact float equality** `R == *(float*)(state +
+     0x143d6)` (no tolerance); on a duplicate the branch **jumps over the band-counter increments**,
+     i.e. the band counters are **frozen** [V note 70 §7.2 item 9].
+10. **Band voting** [C]:
+    - The **reported** selector fires with gates: share(≥ 94) ≥ **5 %** (5.0 @file 0x4864) →
+      mean(≥ 94); else share(≥ 90) ≥ **30 %** (30.0 @0x48a0) → mean(hi+mid); else share(< 90) ≥
+      **60 %** (60.0 @0x4c10) → mean(lo); else **0** (0.0 @0x4c14). It writes the `get_spo2` slots of
+      the results struct at 0x28D28; the share scale is ×100 (100.0 @0x4c08). It consumes the
+      **per-beat M+0x7c** accumulator block (widths A / A+B / C at +0x80/+0x84, +0x88/+0x8c,
+      +0x90/+0x94) [V note 70 §7.2 items 8,10].
+    - The **secondary** selector fires with gates **8 %** (8.0 @file 0x4cb0) / **30 %** (30.0
+      @0x4cfa) / **70 %** (70.0 @0x4c34), else no valid flag (the getter then reports −1.0). It
+      consumes the M+0x98 statistic block and writes `get_template_spo2`. Both gate sets were
+      byte-verified this revision; the reported set is **5/30/60**, the secondary **8/30/70** [V note
+      70 §7.2 item 8; note 90 §Q4 lists only the secondary 8/30].
+    - **Firing schedule:** the reported selector re-evaluates per valid beat; a **6-beat boundary**
+      exists (decompile line 1025: `if (iVar12 < 6)` switches a state flag). The band thresholds on
+      mapped SpO2 are **94.0 / 90.0 / 70.0** (file 0x447c / 0x4480 / 0x4810, mirrored at
+      0x4c2c/0x4c30/0x4c34). The exact re-evaluation cadence as beats accumulate remains [I]
+      [C note 70 §7.2 item 10].
+11. **HR fusion** [C]: the reported HR is the current `externalHr` sample when ≠ 0, otherwise the
+    **latched** previous HR; when that value is < 1 and the sample count ≥ 2000 (i.e. after sample
+    1999), the internal PPG HR is used instead, if ≥ 1; otherwise 0. **The external-HR latch**
+    (`*(int*)(base + 0x178e6)` inside `__Execute_SpO2_Algorithm` @0x7884) is updated **only** from
+    the external `param_7` when it is ≠ 0 (previous value reused otherwise; reset to 0 at start) — the
+    internal HR **never** enters this latch [V note 70 §7.2 item 14; C note 90 §Q6]. The internal PPG
+    HR = **acos(ω)·190.9859317102744** (f64 @file 0x5f78 = 1200/2π), emitted inline in `FUN_000157a0`;
+    the exported `an2bpm_for_spo2` @0x2a18 applies the same K (f64 @0x2a48) and has **no in-library
+    caller**; `bpm2an_for_spo2` @0x2a50 = cos(x·0.005235987755983) (k f64 @0x2a80) is called twice in
+    `FUN_000157a0`; the SDFT chain is `sdft` @0x2ffc → `find_sdft_snr_idx` @0x33a0 →
+    `check_sdft_local_peak` @0x31b0 [V note 70 §7.2 item 13; C note 90 §Q6]. With `externalHr = 0` the
+    internal HR is what feeds the ≥ 1 gate.
+12. **Output packing** (`secspo2_algorithm_wrap` @0x76e0) [V]: out[0] = status, out[1] = `get_spo2()`,
+    out[2] = `get_hr()`, out[4] = `get_template_spo2()`, then a 0x30-byte memcpy into out[5..];
+    **out[3] is never written** in the steady-state path (and is 0.0 in the warm-up path), so the
+    "hr-source" slot is always 0 / untouched caller memory [note 70 §7.2 item 12; C note 90 §Q5].
+    `funcr` spreads the 4 bytes into the Java `int[4]` (§4.1); the spo2 value is the char-truncation of
+    the band-voted mean [C].
 13. **Decision**: forced at sample **3000** (= 40 s at 75 Hz): COMPLETE iff HR ≥ 1 and mapped
     SpO2 > 0, else LOWSQ. **No earlier completion path exists in this build** [C].
 
@@ -391,7 +488,10 @@ the ≤ 7 gate, but that configuration is not stock-observed) [I] — §7.3.
 
 - **Mode gate**: the apnea version comes from pref `apnea_feature_version` (−1 UNKNOWN /
   0 NOT_SUPPORTED / 1 V1 / 2 V2). `setOperationMode` (HM_SPO2_VERSION_1 / _2 on the SSM
-  attribute) is sent only when the version is ready; otherwise skipped.
+  attribute) is sent only when the version is ready; otherwise skipped. (Observed SHM-side call
+  only: this sensor's attribute key is the lowercase `cmd` with {FLUSH, GET_DATA, GET_VERSION},
+  so there is **no `SET_OPERATION_MODE`** on this sensor — it exists on the Stress attribute;
+  see the reconciliation below.)
 - **Pull**: `getData(startTimestamp, endTimestamp)` on event type 0x31, then register; a
   **5000 ms watchdog** arms after the request.
 - **Batching**: data arrives in multiple events; accumulate until the accumulated count equals
@@ -402,17 +502,31 @@ the ≤ 7 gate, but that configuration is not stock-observed) [I] — §7.3.
   tree, §7.3): `SemSensorManager` via `getSystemService("sem_sensor")`, reached through SHM's
   wrapper with methods isAvailable(type), isFeatureSupported(type, String),
   registerListener(listener, type) (true iff result 0), setAttribute(listener, type, attribute),
-  unregisterListener(listener, type). Attribute bundle: `Cmd` ∈ {FLUSH, GET_DATA, GET_VERSION,
-  SET_OPERATION_MODE}; keys `mode` (value 1 or 2), `startTimestamp`/`endTimestamp` (longs),
-  `versionType` (2 = CALCULATION_ALGO_VERSION, 4 = SIGNALCHECK_ALGO_VERSION); all delivered via
-  setAttribute(0x31, bundle). Events arrive at `SemSensorListener.onEventChanged`; SHM gates on
-  type 0x31 and reads the bundle keys of §4.3.
-- **Producer-side semantics are [N]**: the relations among `secFullSize` / `secSize` /
-  `secRemainCount`, samples per event and event ordering are service-side bookkeeping absent
-  from the analyzed trees; SHM's data-flow handling of `data_type = VERSION` is not described
-  (the VERSION/"SQC" query flow is a separate h8 path that falls back to `versionMap`); how a
-  producer should fill `version` / `versionMap` / `version_type` and the unconsumed keys is
-  unknown — §7.3.
+  unregisterListener(listener, type). Attribute bundle (producer class
+  `SemSleepWatchSpO2SensorAttribute`, note 71 §2): key **`cmd`** (lowercase) holding an
+  `EnumSet<Cmd>` with `Cmd = {FLUSH, GET_DATA, GET_VERSION}`; `getData` adds `startTimestamp`/
+  `endTimestamp` (longs) and `getVersion` adds `versionType` (2 = CALCULATION_ALGO_VERSION,
+  4 = SIGNALCHECK_ALGO_VERSION). **There is no `SET_OPERATION_MODE` member on this sensor's Cmd
+  enum** (that member belongs to the Stress attribute), so the `setOperationMode` step above has no
+  producer-side counterpart in the analyzed trees [V note 71 §2.6.2; C note 90 §Q10]. Events arrive
+  at `SemSensorListener.onEventChanged`; SHM gates on type 0x31 and reads the bundle keys of §4.3.
+- **Producer-side semantics (resolved, note 71 §2)** — producer class `SleepWatchSpO2Handler` posts
+  `SemSensorHalAdapter.postDirectEvent(0x31, bundle)`:
+  - **Paging**: each event carries a second-resolution page (≤ 30000 pairs) and a minute-resolution
+    page (≤ 500 triples) simultaneously, sliced oldest-first (`Arrays.copyOfRange` with a forward
+    offset). `secFullSize` = total seconds; `secSize = min(remaining, 30000)`; `secRemainCount =
+    remaining ÷ 30001`. Minute fields are analogous with page 500 / divisor 501. Every page stamps
+    `data_type = DataType.NORMAL`. If the per-second list is empty, **no event is posted at all**
+    [V note 71 §2.1/§2.2].
+  - **version**: HAL packet type 2 (CALCULATION) / 4 (SIGNALCHECK) → `data_type = VERSION`,
+    `version` = int[4] from packet offsets **{9,10,11,12}** (MODE/MAJOR/BUILD/DEVICE), `version_type`
+    via `intToVersionType` (2 → CALCULATION_ALGO_VERSION, 4 → SIGNALCHECK_ALGO_VERSION)
+    [V note 71 §2.3].
+  - **`versionMap` does not exist**: absent from the producer, the event class and HTS; the SHM "SQC"
+    path's `versionMap` is a local fallback map, not a producer bundle key [N note 71 §2.3].
+  - **Unconsumed keys**: `min*` / `maximumSpO2List` / `minimumSpO2List` are produced and exposed but
+    have **zero consuming call sites** in the analyzed trees (there is also no `getMax*` getter)
+    [V note 71 §2.5].
 - **V1** (Apnea1Manager): input is the per-second values only (as doubles). Needs ≥ 3600 samples
   to evaluate; result "Insufficient 1" unless length ≥ config_hours × 3600 (config 3 → 10800);
   "Insufficient 2/3" when the result value is negative; the valid fraction (non-NaN,
@@ -438,8 +552,9 @@ sha256sum + stat + cmp -s) [V notes 20/22/31, 60, 61, 6x]:
 | `lib_hmspo2wrap.sensor.samsung.so` | system `/system/lib` (overnight post-processing) | 22 084 B | `01d968c6746183fca611a5fbe0128df6c544e94da4c8b2b091af9a1c2ada7e11` | `ae2ce26d…` (prefix as recorded) | `1.11.01` |
 
 All ELF32 ARM; the two spo2 libs Android 26 / NDK r20; the wrapper Android 28 / NDK r21b [V].
-Offsets below are **file offsets in `libspo2.so`** (APK build) unless stated; each was
-byte-verified in note 21 §A [C].
+Offsets below are **file offsets in `libspo2.so`** (APK build) unless stated; each was byte-verified
+in note 21 §A [C], and the tables/constants resolved from the §7.2 residue were re-read in note 70
+and reproduced independently in note 90 [V/C].
 
 | constant | value | provenance |
 |---|---|---|
@@ -455,16 +570,22 @@ byte-verified in note 21 §A [C].
 | band edges acc-2 | 94.0 / 90.0 %, lower edge 70.0 | files 0x4c2c / 0x4c30 / 0x4c34 |
 | share gates (reported) | 5 % / 30 % / 60 % | vfp immediates `0x40a00000` @Ghidra 0x14864, `0x41f00000` @Ghidra 0x148a0; 60.0 file 0x4c10 |
 | share gates (secondary) | 8 % / 30 % / 70 % | 8.0 @Ghidra 0x14cb0; 30.0 @Ghidra 0x14cfa; 70.0 pool file 0x4c34, loaded @Ghidra 0x14d08 |
-| sample rate | 75.0 Hz | `.data` vaddr 0xe004 = file 0xd004 (`0x42960000`); the code also computes (75/60)·28 from it at 0x13d1a — quantity unexplained in the notes (§7.2) |
+| sample rate | 75.0 Hz | `.data` vaddr 0xe004 = file 0xd004 (`0x42960000`); (75/60)·28 = **int 35** stored to state+0x13c0e (divisor f64 60.0 @file 0x4008, ×28.0, `vcvt.s32`) [V note 70 §7.2 item 15; C note 90 §Q7; re-read this revision] |
 | DC filter α | 0.98 | file 0x3850 (`0x3f7ae148`) |
-| FIR band-pass | 150 taps (length argument `0x96`, pinned); two 151-slot float tables `fir_filter_f_for_spo2` 0xa1d0 and `fir_filter_for_spo2` 0xa5a8 — 151st-slot role [N]; **tap values [N]** (not recorded in any note); table↔channel assignment conflicting (§2.1 step 4b, §7.2) | [C structure] |
-| IIR band-pass (infrastructure) | b = [0.1044481, 0, −0.3133443, 0, 0.3133443, 0, −0.1044481] @0xa198; a = [1.0, −3.3464386, 4.5369792, −3.4548595, 1.7421415, −0.5275742, 0.0499856] @0xa1b4; chain position [N] | **corrected values** [C note 21 §C2] |
-| adaptive-notch bounds | 24 floats (24th slot may be padding; consumer count unaudited): 0.9659258 0.9876884 0.9426415 0.9781476 0.9135454 0.9588197 0.8633956 0.9335804 0.7996846 0.9092361 0.7253744 0.8553643 0.6414496 0.7901550 0.5490228 0.7144727 0.4493190 0.6293204 0.3436597 0.5358268 0.2840154 0.4352311 0.3090170 0.9876884 @0xa804 | **corrected values** [C note 21 §C1] |
-| Kaiser window table | 95 floats `compansate_kaiser_for_spo2` @0xa42c; only first/last recorded (0.9640617 / 0.99558); role consistent-by-layout, consuming instruction [N] | [C layout] |
-| an2bpm constant | −5.264523029 @0x2a48 — the acos→bpm multiplier of `an2bpm_for_spo2` | [C] |
+| FIR band-pass | **151 taps** (length `0x96` = 150 + tap[150] added explicitly in `fir_bpf`), output scaled ×**2⁻¹⁶** (`0x37800000` @0x2bc0); tables `fir_filter_for_spo2` @0xa5a8 (feeds **both** main channels) and `fir_filter_f_for_spo2` @0xa1d0 (adaptive bank only) — 151 symmetric f32 each; full value lists in note 70 §7.2 item 7 | [V note 70 §7.2 item 7; C note 90 §Q3] |
+| IIR band-pass (infrastructure) | b = [0.1044481, 0, −0.3133443, 0, 0.3133443, 0, −0.1044481] @0xa198; a = [1.0, −3.3464386, 4.5369792, −3.4548595, 1.7421415, −0.5275742, 0.0499856] @0xa1b4; consumed **only** by `iir_bpf` @0x2ab8 (GOT 0xde14/0xde18) — no main-pipeline use | **corrected values** [C note 21 §C2]; position [V note 70 §7.2 item 7] |
+| adaptive-notch bounds | **24 f32** @0xa804 (dynsym size 96 B): 0.9659258 0.9876884 0.9426415 0.9781476 0.9135454 0.9588197 0.8633956 0.9335804 0.7996846 0.9092361 0.7253744 0.8553643 0.6414496 0.7901550 0.5490228 0.7144727 0.4493190 0.6293204 0.3436597 0.5358268 0.2840154 0.4352311 0.3090170 0.9876884; the pair-averaging consumer reads entries **0…21** (no 25th slot) | **corrected values** [C note 21 §C1]; count/consumer [V note 70 §7.2 item 1; C note 90 §Q2] |
+| adaptive-bank init/LMS | α₁ = 0.96 (`0x3f75c28f` @0x2c88), β = 0.9 (`0x3f666666` @0x2c8c), α₂ = 0.95 (`0x3f733333` @0x2c98); step doubles −0.2 / 1e-8 / +0.2 @0x2e30/0x2e38/0x2e40; five tap slots (+0x24…+0x37) | [V note 70 §7.2 items 1,2; C note 90 §Q2] |
+| normalization α | 0.95 @0x2c38, 1−α = 0.05 @0x2c3c (mean/variance EMA; `result = (x−mean)/√var`) | [V note 70 §7.2 item 2; C note 90 §Q2] |
+| motion metric | input = **signed sum of 3 accelerometer axes**, sampled every 5th call; 50-entry ring (+0x08), EMA α @+0xd4, variance @+0xdc, EMA 0.999/0.001 @0x2f28/0x2f30, output clamp(2·x, 0.95, 1.0) @0x2f38 | [V note 70 §7.2 item 3; C note 90 §Q2] |
+| template / calmness | 300-entry ring (+0x6b4 value, +0x1010 u64 time); 64-pt linear interp (`interpolate_array` @0x6d5c); **Pearson threshold 0.65** f64 `0x3fe4cccccccccccd` @0x75d0; dt cap **900.0** f32 @0x75d8; widen **59.0** f32 @0x75e0; correlation divisor f64 **15.50384075** @0x7110 | [V note 70 §7.2 item 6; C note 90 §Q3] |
+| dedup guard | predicate is **exact float equality** `R == *(float*)(state+0x143d6)` (no tolerance); a duplicate **freezes** the band counters | [V note 70 §7.2 item 9] |
+| external-HR latch | `*(int*)(base+0x178e6)` in `__Execute_SpO2_Algorithm` @0x7884; updated **only** from external `param_7` ≠ 0; internal HR never enters it | [V note 70 §7.2 item 14; C note 90 §Q6] |
+| Kaiser window table | 95 f32 `compansate_kaiser_for_spo2` @0xa42c; the **SDFT window/compensation** table, consumed by `sdft` @0x2ffc (GOT load @file 0x3018); full values in note 70 §7.2 item 7 | [V note 70 §7.2 item 7; C note 90 §Q3] |
+| an2bpm constant | **190.9859317102744** f64 @0x2a48 (`0x4067df8cc0a876f9`) — the acos→bpm multiplier of `an2bpm_for_spo2` (the earlier "−5.264523029" was the f32 read of the low 4 bytes of this double) | [V note 70 §7.2 item 13; C note 90 §Q6; re-read this revision] |
 | timeout floats | 94.0 / 90.0 @0x7be4 / 0x7be8 — predicate vestigial (both branches accept a positive value; HR < 1 is what fails) | [C] |
 | accelerometer scale | 0.0023950562 g/LSB = 9.81/4095.9375 | HTS Java side (smali word `0x3b1cf660`), not in the library; verified in the analyzed HTS APK copy only — not compared across models' APKs [C scope-limited] |
-| window counts | warm-up 150; decision 3000; HR fallback after 1999; motion re-report 200; motion give-up 999; log cadence 100; accel ring 50; beat buffer 630; beat gates 286/287, 210/211, 105; template resample 64; FIR 150 taps | all [C] |
+| window counts | warm-up 150; decision 3000; HR fallback after 1999; motion re-report 200; motion give-up 999; log cadence 100; accel ring 50; beat buffer 630; beat gates 286/287, 210/211, 105; template resample 64; FIR length arg 150 / 151 taps (length argument `0x96` = 150 + tap[150] added explicitly, §2.1 step 4b) | all [C] |
 
 Wrapper (overnight) constants [V note 40; single session]:
 
@@ -535,7 +656,7 @@ question (§7.1).
 | 0 | status (§5.1), mapped to `SpO2OnDemandTracker$Status` |
 | 1 | SpO2 — char-truncation of the band-voted mean; −1 when no fresh estimate (warm-up forces −1.0; the underlying getter is one-shot: flag cleared on read) [C getter semantics; D byte-level consequence] |
 | 2 | heart rate (see §2.1 step 11) |
-| 3 | hr-source / aux — role confirmed (which HR source was used); **its possible values are never enumerated** in the notes [N] (§7.2) |
+| 3 | hr-source / aux — **out[3] is never written a nonzero value in this build**: `secspo2_algorithm_wrap` writes out[0], out[1], out[2] and out[4] and memcpys into out[5..], skipping index 3; the warm-up path writes 0.0 there. Its value set is therefore **not enumerable**, and the earlier "which HR source was used" role is unsupported [V note 70 §7.2 item 12; C note 90 §Q5] (§7.2) |
 
 - HTS `ValueKey$SpO2Set` order: STATUS, SPO2, HEART_RATE, ACCURACY_FLAG [V note 12].
 - ACCURACY_FLAG ∈ {0 (NORMAL), −999 (ERROR)}, default 500 when the sensor omits it; it is the
@@ -566,12 +687,16 @@ their unit is caller-owned (unknown — §7.1) [V; I unit].
 
 ### 4.3 `secSpO2List` and the SSM sleep-watch event bundle [V notes 12, 40 §6]
 
-- Event: `SemSleepWatchSpO2SensorEvent`, type **0x31 (49)**. Keys: `secSpO2List` (int[]),
-  `secTimeList` (long[]), `dcRatioList` (short[]), `accPowerList` (short[]), `secFullSize`,
-  `secRemainCount`, `secSize`, `timestamps` (long[]), `version` (int[]), `versionMap`
-  (HashMap), `version_type`, `data_type` (enum NORMAL=0 / EMPTY=1 / VERSION=2), plus unconsumed
-  `minSize`, `minFullSize`, `minRemainCount`, `minTimeList` (long[]), `maximumSpO2List` /
-  `minimumSpO2List` (int[]).
+- Event: `SemSleepWatchSpO2SensorEvent`, type **0x31 (49)**. **Producer-side key set** (note 71 §2,
+  class `SleepWatchSpO2Handler`): `secSpO2List` (int[]), `secTimeList` (long[]), `secFullSize`,
+  `secSize`, `secRemainCount`, `minTimeList` (long[]), `minimumSpO2List` / `maximumSpO2List` (int[]),
+  `minFullSize`, `minSize`, `minRemainCount`, `version` (int[]), `version_type`, `data_type` (enum
+  NORMAL / EMPTY / VERSION), `timestamps` (long[]). The **unconsumed** producer keys (`min*` /
+  `minimumSpO2List` / `maximumSpO2List`) have zero consuming call sites [V note 71 §2.5]. There is
+  **no `versionMap` key** in the producer or the event class (the SHM "SQC" path's `versionMap` is a
+  local fallback map) [N note 71 §2.3]. `dcRatioList` / `accPowerList` are **not** in the producer set
+  either; they appear only in SHM's own copy of the event class (`getDcRatioList`/`getAccPowerList`) —
+  see §4.4.
 - **secSpO2List value range**: on the stock device the per-second values come from the wrapper,
   whose output domain is **0 = invalid second, else 70..100** [V]. SHM applies **no clamp, no
   range check, no scale** anywhere in the consumption path (ac, k8, x10, ApneaSessionManager,
@@ -582,11 +707,12 @@ their unit is caller-owned (unknown — §7.1) [V; I unit].
 - **Cadence**: one value per second is *inferred* — from the sec*/min* key families, the
   index-wise pairing of secSpO2List[i] with secTimeList[i], and the evaluator treating sample
   count as seconds (≥ 3600 = 1 h). No explicit 1 Hz constant exists in the smali [I].
-- **Producer-side semantics are [N]** (§2.3): relations among `secFullSize` / `secSize` /
-  `secRemainCount`, samples per event, event ordering, `data_type = VERSION` handling in the
-  data flow, `version`/`versionMap`/`version_type` filling, and expectations for the unconsumed
-  `min*` / `maximumSpO2List` / `minimumSpO2List` keys (their "per-minute aggregates" reading is
-  an unverified guess) — §7.3.
+- **Producer-side semantics (resolved, note 71 §2)**: `secFullSize` = total seconds;
+  `secSize = min(remaining, 30000)`; `secRemainCount = remaining ÷ 30001`; the minute fields are
+  analogous (page 500 / divisor 501); pages are oldest-first and each carries both a second and a
+  minute page; pages carry `data_type = NORMAL`; an empty second list posts no event; `version` =
+  int[4] from packet offsets {9,10,11,12} with `version_type` from packet type 2/4
+  [V note 71 §2.1–§2.3]. The only unresolved piece is the actual `secTimeList` unit (§7.1 item 5).
 
 ### 4.4 `dcRatio` and `accPower` — status: not defined in any analyzed binary
 
@@ -594,20 +720,24 @@ their unit is caller-owned (unknown — §7.1) [V; I unit].
   the analyzed material.** In `lib_hmspo2wrap` they appear in no function, no bitfield, no
   constant (all 12 algorithm functions decompiled and traced; the library writes exactly the
   five outputs of §4.2 plus one scalar) [V note 40 §7]. The libspo2 pipeline's outputs (status /
-  spo2 / hr / aux and the getter set) contain nothing by these names either [V notes 20/21].
-- What is verified (consumer side) [V notes 12, 40 §6]: `dcRatioList` / `accPowerList` are
-  `short[]`, one entry per second, parallel to `secSpO2List`; they exist **only** in the
-  sleep-watch event (the continuous SpO2 event lacks them). SHM reads them with no bounds (only
-  the batch min), stores `SleepRaw.dcRatio:S` / `SleepRaw.accPower:S`, persists via Room
-  (Apnea2Manager) and ships them into vendor sync. They pass through as opaque shorts.
-- Origin: upstream of both the SHM APK and the wrapper — the SSM service bundle builder and/or
-  the sensor hub. Since the wrapper's input word carries only the 5-bit SpO2 code + 2 flag
-  bits, dcRatio/accPower must travel in a different field or stream than the wrapper's sample
-  array (plausibly the EHT entry payloads; the wrapper exports `decode_eht_entry`, which has
-  no internal callers — grammar per note 41: entries with bit 31 set carry a kind in bits 24–27
-  of the first word, kind 0 → type 1 / size 4, kinds 1 and 3 → payload-word count in bits
-  16–23, type 2; otherwise the type-1 header is effectively two words, the payload-word count
-  living in bits 24–31 of the *second* word) [C note 41].
+  spo2 / hr / aux and the getter set) contain nothing by these names either [V notes 20/21]. They
+  are absent from the **SSM producer class**, the **framework event class** and **HTS** as well
+  (zero case-insensitive grep hits) [N notes 71 §2.6, 90 §Q9].
+- What is verified (consumer side) [V notes 12, 40 §6, 71 §2.6]: `dcRatioList` / `accPowerList` are
+  `short[]`, one entry per second, parallel to `secSpO2List`, and exist **only** in SHM's copy of
+  the sleep-watch event class (`getDcRatioList`/`getAccPowerList`); the producer-side event class in
+  the analyzed framework tree has no such getters. SHM reads them with no bounds (only the batch
+  min), stores `SleepRaw.dcRatio:S` / `SleepRaw.accPower:S`, persists via Room (Apnea2Manager) and
+  ships them into vendor sync. They pass through as opaque shorts.
+- Origin: **upstream of both the SHM APK and the wrapper** — since the SSM bundle builder does
+  **not** produce them (note 71 §2.6) and no userspace library computes them, their producer sits
+  further upstream (the sensor hub, whose image is unreachable — §1.2). The wrapper's input word
+  carries only the 5-bit SpO2 code + 2 flag bits, so dcRatio/accPower must travel in a different
+  field or stream than the wrapper's sample array (plausibly the EHT entry payloads; the wrapper
+  exports `decode_eht_entry`, which has no internal callers — grammar per note 41: entries with bit 31
+  set carry a kind in bits 24–27 of the first word, kind 0 → type 1 / size 4, kinds 1 and 3 →
+  payload-word count in bits 16–23, type 2; otherwise the type-1 header is effectively two words, the
+  payload-word count living in bits 24–31 of the *second* word) [C note 41; N note 71 §2.6].
 - The names suggest DC-ratio and accelerometer-power quality signals — naming inference only
   [I]. Do **not** confuse them with libspo2's internal M+0x2c slot (DC_B/DC_A, §2.1 step 7):
   that is on-demand-library state with no known relationship to the event's `dcRatioList` [D].
@@ -705,14 +835,21 @@ LTE) is not served by FUS at all (unparsable empty history on ARO/XAR/EUX) [V no
    SpO2LibManager) vs ADI (sensor-hub-computed, library never loaded): depends on the on-device
    SSM version and the `fresh_hrm_dualized` (feature 0x23) answer [notes 20 §8, 12]. Until
    settled, it is unknown whether stock even runs the algorithm of §2.1 on this watch.
+   *Note (2026-10-15, SM-R920 R920XXS2DZG3):* the HTS on-demand SPO2 tracker runs the **ADI**
+   path on this watch (logcat tag `SHS#SpO2ManualADISensor`), so `libspo2.so` is not loaded here.
+   The orientation finding of [spo2-adapter.md](spo2-adapter.md) (labelled IR behaves as red) is
+   consistent with that path.
 2. **Actual delivery rate of `SemSpo2ManualSensorEvent`** as configured by the sensor service —
    the library assumes 75 Hz; a different true rate rescales every time constant [note 20 §8].
-3. **Whether the hub's 4 Hz overnight estimator shares the libspo2 mapping** — requires hub
-   firmware (`lpd.core.bin`) analysis or device capture; not determinable from the analyzed
-   userspace binaries [note 40 §5].
-4. **dcRatio / accPower production and encoding** — producing component, scale/offset/sentinel
-   of the shorts, and the stream they travel in; only a device capture of the SSM sleep-watch
-   SpO2 event settles it [note 40 §7].
+3. **Whether the hub's 4 Hz overnight estimator shares the libspo2 mapping** — the estimator runs
+   on the CHUB (Cortex-M55) hub, whose image `os.checked.bin` is **not shipped as plaintext** in this
+   build (only inside the signed+encrypted `ldfw.img`); the previously named `lpd.core.bin` is the LPD
+   **display** image, not the estimator (notes 71 §1, 72). Not determinable from the analyzed material;
+   would require the encrypted image or a device capture [notes 40 §5, 71, 72].
+4. **dcRatio / accPower production and encoding** — the producing component, scale/offset/sentinel of
+   the shorts, and the stream they travel in are absent from every analyzed tree (wrapper, SSM service,
+   framework event class, HTS); the producer is upstream/unreachable, so only a device capture of the
+   SSM sleep-watch SpO2 event settles it [notes 40 §7, 71 §2.6].
 5. **Timestamp unit** of `secTimeList` / wrapper long arrays (caller-owned) [note 40 §9].
 6. **Per-second cadence of `secSpO2List`** on a real device (1 Hz is inferred; no explicit
    constant) [note 12 §4].
@@ -731,62 +868,76 @@ LTE) is not served by FUS at all (unparsable empty history on ARO/XAR/EUX) [V no
 
 ### 7.2 Binary-analysis leftovers ([N] items — each blocks bit-exact reproduction of the named step; resolvable by re-reading the byte-identical binaries, no device needed)
 
-1. **Adaptive filter bank** (§2.1 step 4c): LMS update equation, step size(s), tap count, the
-   rule steering the center frequency from the accelerometer and the bound-table indexing
-   (including the 24-vs-25-slot consumer count of `an_init_bound_for_spo2`).
-2. **Z-score normalization**: update rule and constants (§2.1 step 4c).
-3. **Motion metric**: formula, which accelerometer axes, the 50-sample ring details, and the
-   threshold that yields status −4 (§2.1 steps 4c, 5.1).
-4. **`judge_result_flag` thresholds** (stack-passed floats) and the waveform range floats at
-   file 0x3e8c–0x3e94; the effect of the 0x40/0x20/0x10/0x80 quality bits on beat acceptance.
-5. **Beat detection**: which channel, what peak criterion; the segment boundaries of the two
-   per-beat sums that feed AC_A / AC_B (§2.1 steps 5, 7).
-6. **Template/calmness machinery**: window selection inside the 630-sample buffer (300-entry
-   timestamp ring), detrend/resample method, the Pearson threshold, the exact "alternation"
-   definition, and the running template's initialization/update rule (§2.1 step 6).
-7. **Filter tables**: the 151+151 FIR tap values, the 151st-slot role, the table↔channel
-   assignment (note 20's "one per channel" vs note 21's call-site evidence, §2.1 step 4b), the
-   IIR's chain position, and the Kaiser table's consuming instruction + remaining 93 values.
-8. **Stream↔source association** (§2.1 steps 9–10): which selector consumes which accumulator —
-   note 20's labeling (reported selector = "direct" = the M+0x98 statistic stream) vs note 21's
-   block locality (reported selector follows the M+0x7c per-beat accumulator). Also the actual
-   definition of the M+0x98 "ratio of two channel-statistic floats". The reported-value gates
-   are confirmed either way; the R source feeding them is not.
-9. **Dedup guard**: exact comparison predicate (equality vs tolerance) and whether it freezes
-   the band counters (§2.1 step 9).
-10. **Vote firing schedule**: when the selectors re-evaluate as beats accumulate (§2.1 step 10).
-11. **Beat-path R lower bound**: whether `R ≥ 0.08` is enforced on the per-beat stream
-    (verified only for the M+0x98 stream) (§2.1 step 7).
-12. **hr-source byte** (out[3]): enumeration of its possible values (§4.1).
-13. **PPG HR path**: SDFT bin→bpm and the `an2bpm_for_spo2` caller chain — with `externalHr = 0`
-    the HR ≥ 1 gate at sample 3000 cannot be evaluated as stock does (§2.1 step 11).
-14. **External-HR latch**: exactly what enters the latch (external samples only, or also the
-    internal HR) (§2.1 step 11).
-15. **(75/60)·28**: what quantity the 0x13d1a computation represents (§3.1).
-16. **ADC full-scale** of `irRaw` / `redRaw` — needed to judge whether an arbitrary source's
-    counts share the constants' assumed scaling (§1.1).
-17. **Independent confirmation of the remaining single-session datasheets**: the SHM smali
-    claims (note 12 — the basis of the interface) and note 22's two-table constants (§0.3).
-    (The wrapper datasheet, note 40, was subsequently confirmed by note 41 — §0.1.)
+Status after the §7.2 residue pass (note 70, byte reads) independently reproduced by note 90:
+**1–2, 5–9, 12–16 resolved; 3, 4, 10, 17 partially resolved; 11 remains unresolved** (item 8's
+M+0x98 statistic definition also stays [N]).
+
+1. **Adaptive filter bank** (§2.1 step 4c) — **resolved**: update equations, tap count (5 slots),
+   steering rule and constants in note 70 §7.2 item 1 / §2.1 step 4c. The bound-table indexing
+   resolves to **24 resident entries** (the pair-averaging consumer touches 0…21; no 25th slot).
+2. **Z-score normalization** — **resolved**: `normalization_for_spo2` @0x2bd0, α = 0.95 / 0.05
+   (note 70 §7.2 item 2; §2.1 step 4c).
+3. **Motion metric** — **partially resolved**: formula, axes (signed 3-axis sum, every 5th sample),
+   ring and clamp are pinned (note 70 §7.2 item 3); the **−4 threshold remains a caller-supplied
+   runtime field** with no static constant, so the numeric trigger is not pinnable (§5.1).
+4. **`judge_result_flag` thresholds / "range floats" / quality bits** — **partially resolved**: the
+   cited 0x3e8c–0x3e94 words are **instructions, not floats**; the compared floats are runtime `.bss`
+   values; the `(flags & 0xe0) == 0xe0` all-pass condition and its counters are pinned, the per-bit
+   staging is [C] (note 70 §7.2 item 4).
+5. **Beat detection** — **resolved** (structural): both channels symmetric, count ≥ 3, gates
+   286/210/105, read at `i+0x99`; the peak criterion is `find_max_point_by_regression` [C]/[I]
+   (note 70 §7.2 item 5).
+6. **Template / calmness machinery** — **resolved**: 300-entry ring, 64-pt interp, Pearson 0.65,
+   dt cap 900.0, widen 59.0, correlation divisor 15.50384075, alternation via sign flips (note 70
+   §7.2 item 6).
+7. **Filter tables** — **resolved**: 151+151 FIR (full values, ×2⁻¹⁶ output scale), 7+7 IIR (consumed
+   only by `iir_bpf`), 95-float Kaiser (SDFT window), 24-float bound table, `ekp`/`ekK` = 240 f64
+   each; table↔channel assignment pinned (note 70 §7.2 item 7).
+8. **Stream↔source association** — **resolved**: reported selector consumes the per-beat M+0x7c
+   accumulator, secondary consumes the M+0x98 block (note 21's reading; note 70 §7.2 item 8). The
+   closer definition of the two channel statistics in the M+0x98 block stays [N].
+9. **Dedup guard** — **resolved**: exact float equality (`state+0x143d6`); duplicates freeze the band
+   counters (note 70 §7.2 item 9).
+10. **Vote firing schedule** — **partially resolved**: reported selector re-evaluates per valid beat,
+   6-beat boundary exists, band thresholds 94/90/70 (note 70 §7.2 item 10); the exact cadence is [I].
+11. **Beat-path R lower bound** — **unresolved**: 0.08 @0x3868/0x38cc is consumed, but no static
+   comparison separates the per-beat stream from the M+0x98 stream (note 70 §7.2 item 11).
+12. **hr-source byte (out[3])** — **resolved (negative)**: the wrap never writes index 3 → always
+   0 / untouched; not enumerable (note 70 §7.2 item 12; §4.1).
+13. **PPG HR path** — **resolved**: HR = acos(ω)·190.9859317102744; `an2bpm` (no in-lib caller),
+    `bpm2an`, and the SDFT chain `sdft → find_sdft_snr_idx → check_sdft_local_peak` (note 70 §7.2
+   item 13; §2.1 step 11).
+14. **External-HR latch** — **resolved**: `*(int*)(base+0x178e6)` holds **external samples only**
+   (note 70 §7.2 item 14; §2.1 step 11).
+15. **(75/60)·28** — **resolved**: numerator = the `.data` sample-rate word 75.0 (file 0xd004, vaddr 0xe004), divisor
+   60.0 (@0x4008), result int **35** stored to state+0x13c0e (note 70 §7.2 item 15; §3.1).
+16. **ADC full-scale** — **resolved (negative)**: no full-scale constant exists or is applied; the
+   ratio path is scale-invariant (note 70 §7.2 item 16; §1.1).
+17. **Independent confirmation of the remaining single-session datasheets** — **partially resolved**:
+   the producer-side smali chain (bundle builder, attribute, version handling) is now corroborated by
+   notes 71/90; the **SHM-consumer smali claims (note 12)** that define the adapter's interface remain
+   single-session, as does note 22's two-table constants for the system copy (§0.3).
 
 ### 7.3 Design decisions this material cannot make (must be settled before implementation; none is answerable from the analyzed binaries alone)
 
 1. **Injection contract** (which interface the SpO2Adapter must expose so that SHM's
    `getData(start, end)` + listener registration on type 0x31 is satisfied): the observable
-   SHM-side surface is in §2.3; the answering side (the vendor sensor-manager service) is
-   absent from every analyzed tree, and no note describes an injection point. Requires SSM-side
-   analysis or device work plus an OpenSHM design decision.
+   SHM-side surface is in §2.3, and the producer side (the SSM `SleepWatchSpO2Handler` bundle
+   builder) is now analyzed (note 71). What remains is the OpenSHM-side injection point/design —
+   where the adapter's emitted bundle enters the `sem_sensor` pipeline — which is a design decision,
+   not a binary question.
 2. **Per-second emission**: which value constitutes "the SpO2 of second t". The specified
    algorithm produces one band-voted mean per 40 s session (plus status updates); the stock
-   per-second stream originates in the unrecoverable hub estimator (§1.3). Candidate policies
-   (latest voted mean, per-beat estimates, re-running the mapping per second) are adapter
-   designs with no stock counterpart in this material.
+   per-second stream originates in the unrecoverable hub estimator (§1.2/§1.3, now a hard blocker —
+   note 72). Candidate policies (latest voted mean, per-beat estimates, re-running the mapping per
+   second) are adapter designs with no stock counterpart in this material.
 3. **V1 vs V2 target, and the dcRatio/accPower encoding**: V1 needs per-second values only;
    V2 additionally requires two shorts per second that the adapter must invent (non-stock by
-   construction, §4.4). Owner/design decision.
+   construction, §4.4; the stock producer for them is unreachable). Owner/design decision.
 4. **Resampling method** for feeding a ~100 Hz PPG_ON_DEMAND stream into the 75 Hz assumption
    (filter, interpolation, target-rate handling) — §1.3.
-5. **Producer-side bundle filling**: `secSize`/`secFullSize`/`secRemainCount` values and their
-   relations, samples per event, event ordering, `version`/`versionMap`/`version_type`, the
-   unconsumed keys, and `data_type` usage — constrained by §2.3/§4.3 and settleable only
-   against a device (§7.1) plus this design decision.
+5. **Producer-side bundle filling** — **resolved** (note 71): `secSize`/`secFullSize`/
+   `secRemainCount` and the minute analogues, samples per event, oldest-first ordering,
+   `version`/`version_type`, `data_type = NORMAL`, and the unconsumed `min*`/`max*` keys are all
+   specified in §2.3/§4.3, so the adapter can emit a stock-shaped bundle. (No `versionMap` is
+   involved — that key does not exist.)
