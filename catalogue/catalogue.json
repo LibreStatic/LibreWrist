@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "serial": 35,
+  "serial": 36,
   "minAppVersion": 28,
   "inputs": [
     {
@@ -130,6 +130,8 @@
           "shm-setup-network-gate",
           "shm-sleep-apnea-support",
           "shm-home-tabs-fallback",
+          "shm-ihrn-countries",
+          "shm-bp-worldwide",
           "phone-rebrand-gms",
           "shm-wear-trusted-peers",
           "shm-launcher-badge"
@@ -2672,7 +2674,7 @@
         "shm-phone"
       ],
       "title": "Home tabs fallback",
-      "description": "Home feature list empty (saved SIM/network country in no per-feature list) -> BP + ECG; the home TabLayout is hidden instead of measured with zero tabs",
+      "description": "Home feature list without BP or without any ECG controller (saved SIM/network country in no per-feature list) -> BP (first) + ECG2 added; the home TabLayout is hidden instead of measured with zero tabs",
       "optional": false,
       "ops": [
         {
@@ -2685,17 +2687,42 @@
           ],
           "pattern": "(?P<at>    return-object (?P<list>v\\d)\\n)",
           "insert": [
-            "    invoke-virtual {{{list}}}, Ljava/util/ArrayList;->isEmpty()Z",
-            "",
-            "    move-result v1",
-            "",
-            "    if-eqz v1, :interop_home_tabs_ok",
-            "",
             "    const-string v1, \"com.samsung.android.shealthmonitor.bp.control.BloodPressureController\"",
             "",
-            "    invoke-virtual {{{list}}, v1}, Ljava/util/ArrayList;->add(Ljava/lang/Object;)Z",
+            "    invoke-virtual {{{list}}, v1}, Ljava/util/ArrayList;->contains(Ljava/lang/Object;)Z",
+            "",
+            "    move-result v2",
+            "",
+            "    if-nez v2, :interop_home_tabs_bp",
+            "",
+            "    const/4 v2, 0x0",
+            "",
+            "    invoke-virtual {{{list}}, v2, v1}, Ljava/util/ArrayList;->add(ILjava/lang/Object;)V",
+            "",
+            "    :interop_home_tabs_bp",
+            "    const-string v1, \"com.samsung.android.shealthmonitor.ecg.control.EcgController\"",
+            "",
+            "    invoke-virtual {{{list}}, v1}, Ljava/util/ArrayList;->contains(Ljava/lang/Object;)Z",
+            "",
+            "    move-result v2",
+            "",
+            "    if-nez v2, :interop_home_tabs_ok",
+            "",
+            "    const-string v1, \"com.samsung.android.shealthmonitor.ihrn.control.ECGIhrnController\"",
+            "",
+            "    invoke-virtual {{{list}}, v1}, Ljava/util/ArrayList;->contains(Ljava/lang/Object;)Z",
+            "",
+            "    move-result v2",
+            "",
+            "    if-nez v2, :interop_home_tabs_ok",
             "",
             "    const-string v1, \"com.samsung.android.shealthmonitor.ecg2.control.Ecg2Controller\"",
+            "",
+            "    invoke-virtual {{{list}}, v1}, Ljava/util/ArrayList;->contains(Ljava/lang/Object;)Z",
+            "",
+            "    move-result v2",
+            "",
+            "    if-nez v2, :interop_home_tabs_ok",
             "",
             "    invoke-virtual {{{list}}, v1}, Ljava/util/ArrayList;->add(Ljava/lang/Object;)Z",
             "",
@@ -2717,6 +2744,133 @@
             "    const/4 {{n}}, 0x1",
             "",
             "    :interop_home_tabs_some",
+            ""
+          ],
+          "expect": 1
+        }
+      ]
+    },
+    "shm-ihrn-countries": {
+      "families": [
+        "shm-phone"
+      ],
+      "title": "IHRN countries",
+      "description": "Countries where SHM offers ECG without IHRN (the ECG-only list: CN MO NZ LI TR RS UA PE) count as ECG2 countries (the ECG2 country check returns true for them), so the IHRN controller, its Data Layer channel, sync and settings are enabled; the home feature list no longer adds the ECG-only controller when the ECG2 check is true",
+      "optional": false,
+      "ops": [
+        {
+          "op": "verifyClassContains",
+          "checks": [
+            {
+              "className": "com/samsung/android/shealthmonitor/util/r",
+              "contains": "    const-string v8, \"CN\"\n\n    filled-new-array/range {v1 .. v8}, [Ljava/lang/String;\n\n    move-result-object v0\n\n    sput-object v0, Lcom/samsung/android/shealthmonitor/util/r;->i:[Ljava/lang/String;"
+            },
+            {
+              "className": "com/samsung/android/shealthmonitor/util/r",
+              "contains": ".method public static r()Z\n    .locals 2\n\n    sget-object v0, Lcom/samsung/android/shealthmonitor/util/r;->k:[Ljava/lang/String;"
+            },
+            {
+              "className": "com/samsung/android/shealthmonitor/util/r",
+              "contains": ".method public static h()Ljava/lang/String;"
+            },
+            {
+              "className": "com/samsung/android/shealthmonitor/util/r",
+              "contains": ".method public static o(Ljava/lang/String;[Ljava/lang/String;)Z"
+            }
+          ]
+        },
+        {
+          "op": "insertAtMethodStart",
+          "fileRegex": "/shealthmonitor/util/r\\.smali$",
+          "sigRegex": "public static r\\(\\)Z",
+          "bodyAll": [
+            "Lcom/samsung/android/shealthmonitor/util/r;->k:[Ljava/lang/String;"
+          ],
+          "needRegs": 2,
+          "insert": [
+            "",
+            "    sget-object v0, Lcom/samsung/android/shealthmonitor/util/r;->i:[Ljava/lang/String;",
+            "",
+            "    invoke-static {}, Lcom/samsung/android/shealthmonitor/util/r;->h()Ljava/lang/String;",
+            "",
+            "    move-result-object v1",
+            "",
+            "    invoke-static {v1, v0}, Lcom/samsung/android/shealthmonitor/util/r;->o(Ljava/lang/String;[Ljava/lang/String;)Z",
+            "",
+            "    move-result v0",
+            "",
+            "    if-eqz v0, :interop_ihrn_country_ecg2",
+            "",
+            "    return v0",
+            "",
+            "    :interop_ihrn_country_ecg2",
+            ""
+          ],
+          "expect": 1
+        },
+        {
+          "op": "insertInMethodAtMatch",
+          "sigRegex": "public static \\w+\\(\\)Ljava/util/ArrayList;",
+          "bodyAll": [
+            "\"com.samsung.android.shealthmonitor.bp.control.BloodPressureController\"",
+            "\"com.samsung.android.shealthmonitor.ecg.control.EcgController\"",
+            "\"com.samsung.android.shealthmonitor.ecg2.control.Ecg2Controller\"",
+            "\"com.samsung.android.shealthmonitor.sleep.control.SleepController\""
+          ],
+          "pattern": "    if-eqz (?P<reg>v\\d+), (?P<skip>:\\w+)\\n\\n(?P<at>)(?:    invoke-static \\{\\}, Lcom/samsung/android/shealthmonitor/util/r;->r\\(\\)Z\\n\\n    move-result (?P=reg)\\n\\n    if-nez (?P=reg), (?P=skip)\\n\\n)?    const-string (?P=reg), \"com\\.samsung\\.android\\.shealthmonitor\\.ecg\\.control\\.EcgController\"\\n",
+          "insert": [
+            "    invoke-static {}, Lcom/samsung/android/shealthmonitor/util/r;->r()Z",
+            "",
+            "    move-result {{reg}}",
+            "",
+            "    if-nez {{reg}}, {{skip}}",
+            "",
+            ""
+          ],
+          "expect": 1
+        }
+      ]
+    },
+    "shm-bp-worldwide": {
+      "families": [
+        "shm-phone"
+      ],
+      "title": "BP countries",
+      "description": "The BP country list check passes for every country: the shared list lookup (util/r.o(country, list)) returns true when it is handed the BP list (util/r.h), so the home BP controller, the BP sync channel, the BP notification setting and the watch BP module state (onboarding requestModuleDisableState) treat any saved SIM/network country, including unlisted ones and US, as a BP country",
+      "optional": false,
+      "ops": [
+        {
+          "op": "verifyClassContains",
+          "checks": [
+            {
+              "className": "com/samsung/android/shealthmonitor/util/r",
+              "contains": "    const-string v94, \"LB\"\n\n    filled-new-array/range {v1 .. v94}, [Ljava/lang/String;\n\n    move-result-object v0\n\n    sput-object v0, Lcom/samsung/android/shealthmonitor/util/r;->h:[Ljava/lang/String;"
+            },
+            {
+              "className": "com/samsung/android/shealthmonitor/util/r",
+              "contains": ".method public static o(Ljava/lang/String;[Ljava/lang/String;)Z\n    .locals 2"
+            }
+          ]
+        },
+        {
+          "op": "insertAtMethodStart",
+          "fileRegex": "/shealthmonitor/util/r\\.smali$",
+          "sigRegex": "public static o\\(Ljava/lang/String;\\[Ljava/lang/String;\\)Z",
+          "bodyAll": [
+            "Ljava/util/stream/Stream;->anyMatch(Ljava/util/function/Predicate;)Z"
+          ],
+          "needRegs": 1,
+          "insert": [
+            "",
+            "    sget-object v0, Lcom/samsung/android/shealthmonitor/util/r;->h:[Ljava/lang/String;",
+            "",
+            "    if-ne p1, v0, :interop_bp_country_list",
+            "",
+            "    const/4 v0, 0x1",
+            "",
+            "    return v0",
+            "",
+            "    :interop_bp_country_list",
             ""
           ],
           "expect": 1

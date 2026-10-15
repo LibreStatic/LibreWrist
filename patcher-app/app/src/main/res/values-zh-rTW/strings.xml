@@ -248,6 +248,8 @@
     <string name="patch_shm_setup_network_gate">在設定過程中停用 SIM 卡檢查和地區檢查。</string>
     <string name="patch_shm_sleep_apnea_support">將睡眠呼吸中止症回報為受支援。</string>
     <string name="patch_shm_home_tabs_fallback">當國家/地區不在任何功能清單中時，在主畫面顯示血壓與心電圖，而不是關閉應用程式。</string>
+    <string name="patch_shm_ihrn_countries">在三星僅提供心電圖、不提供心律不整通知的國家/地區，使用較新的心電圖版本開啟心律不整通知。</string>
+    <string name="patch_shm_bp_worldwide">在所有國家/地區顯示血壓，包括三星未提供此功能的國家/地區。</string>
     <string name="patch_phone_rebrand_gms">讓手機應用程式使用與手錶應用程式相同的套件名稱和金鑰，以便兩者交換資料。</string>
     <string name="patch_watch_rebrand_coexist">重新命名手錶應用程式，使其與內建應用程式並存。</string>
     <string name="patch_shm_wear_trusted_peers">讓兩個已修補的應用程式在手錶連線中互相辨識，而不僅限於原版應用程式。</string>

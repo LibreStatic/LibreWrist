@@ -248,6 +248,8 @@
     <string name="patch_shm_setup_network_gate">Menonaktifkan pemeriksaan SIM dan wilayah selama penyiapan.</string>
     <string name="patch_shm_sleep_apnea_support">Melaporkan apnea tidur sebagai didukung.</string>
     <string name="patch_shm_home_tabs_fallback">Menampilkan tekanan darah dan EKG di layar utama saat negara tidak ada di daftar fitur mana pun, alih-alih menutup aplikasi.</string>
+    <string name="patch_shm_ihrn_countries">Mengaktifkan notifikasi irama jantung tidak teratur di negara tempat Samsung menyediakan EKG tanpa fitur itu, menggunakan versi EKG yang lebih baru.</string>
+    <string name="patch_shm_bp_worldwide">Menampilkan tekanan darah di semua negara, termasuk negara tempat Samsung tidak menyediakannya.</string>
     <string name="patch_phone_rebrand_gms">Memberi aplikasi ponsel paket dan kunci yang sama dengan aplikasi jam agar keduanya bisa bertukar data.</string>
     <string name="patch_watch_rebrand_coexist">Mengganti nama aplikasi jam agar berdampingan dengan aplikasi bawaan.</string>
     <string name="patch_shm_wear_trusted_peers">Membuat kedua aplikasi yang dipatch saling mengenali di tautan jam, bukan hanya aplikasi aslinya.</string>

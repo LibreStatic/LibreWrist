@@ -257,6 +257,8 @@
     <string name="patch_shm_setup_network_gate">Wyłącza kontrolę karty SIM i regionu podczas konfiguracji.</string>
     <string name="patch_shm_sleep_apnea_support">Zgłasza obsługę bezdechu sennego.</string>
     <string name="patch_shm_home_tabs_fallback">Pokazuje ciśnienie krwi i EKG na ekranie głównym, gdy kraju nie ma na żadnej liście funkcji, zamiast zamykać aplikację.</string>
+    <string name="patch_shm_ihrn_countries">Włącza powiadomienia o nieregularnym rytmie serca w krajach, w których Samsung oferuje EKG bez nich, korzystając z nowszej wersji EKG.</string>
+    <string name="patch_shm_bp_worldwide">Pokazuje ciśnienie krwi w każdym kraju, także tam, gdzie Samsung go nie oferuje.</string>
     <string name="patch_phone_rebrand_gms">Nadaje aplikacji na telefonie ten sam pakiet i klucz co aplikacji na zegarku, aby mogły wymieniać dane.</string>
     <string name="patch_watch_rebrand_coexist">Zmienia nazwę aplikacji na zegarku, aby działała obok standardowej.</string>
     <string name="patch_shm_wear_trusted_peers">Sprawia, że obie zmodyfikowane aplikacje rozpoznają się nawzajem w połączeniu z zegarkiem, a nie tylko oryginalne.</string>

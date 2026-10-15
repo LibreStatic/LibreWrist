@@ -263,6 +263,8 @@
     <string name="patch_shm_setup_network_gate">يعطّل فحص SIM والمنطقة أثناء الإعداد.</string>
     <string name="patch_shm_sleep_apnea_support">يُبلغ بأن انقطاع النفس أثناء النوم مدعوم.</string>
     <string name="patch_shm_home_tabs_fallback">يعرض ضغط الدم وتخطيط القلب في الشاشة الرئيسية عندما لا تكون الدولة في أي قائمة ميزات، بدلًا من إغلاق التطبيق.</string>
+    <string name="patch_shm_ihrn_countries">يفعّل إشعارات عدم انتظام ضربات القلب في الدول التي تقدّم فيها Samsung تخطيط القلب بدونها، باستخدام الإصدار الأحدث من تخطيط القلب.</string>
+    <string name="patch_shm_bp_worldwide">يعرض ضغط الدم في كل الدول، بما فيها الدول التي لا تقدّمه فيها Samsung.</string>
     <string name="patch_phone_rebrand_gms">يمنح تطبيق الهاتف الحزمة والمفتاح نفسيهما لتطبيق الساعة ليتبادلا البيانات.</string>
     <string name="patch_watch_rebrand_coexist">يعيد تسمية تطبيق الساعة ليتجاور مع التطبيق الأصلي.</string>
     <string name="patch_shm_wear_trusted_peers">يجعل التطبيقين المُصحَّحين يتعرّف كل منهما على الآخر عبر الاتصال بالساعة، بدلًا من التطبيقين الأصليين فقط.</string>

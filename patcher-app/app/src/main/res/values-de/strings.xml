@@ -251,6 +251,8 @@
     <string name="patch_shm_setup_network_gate">Deaktiviert die SIM- und die regionale Prüfung während der Einrichtung.</string>
     <string name="patch_shm_sleep_apnea_support">Meldet Schlafapnoe als unterstützt.</string>
     <string name="patch_shm_home_tabs_fallback">Zeigt Blutdruck und EKG auf dem Startbildschirm, wenn das Land auf keiner Funktionsliste steht, statt die App zu schließen.</string>
+    <string name="patch_shm_ihrn_countries">Aktiviert Benachrichtigungen über unregelmäßigen Herzrhythmus in Ländern, in denen Samsung EKG ohne sie anbietet, mit der neueren EKG-Version.</string>
+    <string name="patch_shm_bp_worldwide">Zeigt den Blutdruck in jedem Land an, auch dort, wo Samsung ihn nicht anbietet.</string>
     <string name="patch_phone_rebrand_gms">Gibt der Smartphone-App dasselbe Paket und denselben Schlüssel wie der Uhren-App, damit beide Daten austauschen können.</string>
     <string name="patch_watch_rebrand_coexist">Benennt die Uhren-App um, damit sie neben der Original-App existiert.</string>
     <string name="patch_shm_wear_trusted_peers">Sorgt dafür, dass sich die beiden angepassten Apps über die Uhrverbindung erkennen statt nur die Original-Apps.</string>
