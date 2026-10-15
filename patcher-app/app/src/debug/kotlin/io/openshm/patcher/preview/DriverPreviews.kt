@@ -78,6 +78,10 @@ fun WelcomeWatchDriver() = PreviewHost(ColorMode.Fallback) { WelcomeSample(logsA
 @Composable
 fun WelcomeRevertDriver() = PreviewHost(ColorMode.Fallback) { WelcomeSample(canRevert = true) }
 
+/** Welcome with both bottom links (device logs and undo), the tallest action block on a phone. */
+@Composable
+fun WelcomeAllLinksDriver() = PreviewHost(ColorMode.Fallback) { WelcomeSample(logsAvailable = true, canRevert = true) }
+
 /** Undo all changes: checking the devices. */
 @Composable
 fun RevertProbingDriver() = PreviewHost(ColorMode.Fallback) { RevertSample(PreviewData.revertProbing()) }

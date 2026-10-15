@@ -40,6 +40,7 @@ import androidx.compose.foundation.layout.widthIn
 import io.openshm.patcher.ui.components.SinglePaneMaxWidth
 import io.openshm.patcher.ui.components.TwoPaneMinWidth
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -74,6 +75,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.openshm.patcher.R
 import io.openshm.patcher.data.AutomationState
@@ -199,18 +203,20 @@ private fun WelcomeBody(
                     }
                 }
             } else {
-                Column(
-                    Modifier
-                        .weight(1f)
-                        .verticalScroll(rememberScrollState())
-                        .padding(start = 16.dp, end = 16.dp, top = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(20.dp),
-                ) {
-                    WelcomeHeader(onSettings, Modifier.padding(start = 8.dp, top = 8.dp))
-                    WelcomeHero(Modifier.fillMaxWidth().height(220.dp))
-                    WelcomeText()
+                // One scroll for everything, but the hero gives way first: it shrinks so the actions (with the
+                // device logs and undo links) still fit on a short screen, and only below its minimum height
+                // does the screen scroll, as one piece.
+                BoxWithConstraints(Modifier.weight(1f).fillMaxWidth()) {
+                    val padding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp)
+                    NarrowWelcome(
+                        height = maxHeight - padding.calculateTopPadding() - padding.calculateBottomPadding(),
+                        header = { WelcomeHeader(onSettings, Modifier.padding(start = 8.dp, top = 8.dp)) },
+                        hero = { WelcomeHero() },
+                        text = { Column(verticalArrangement = Arrangement.spacedBy(20.dp)) { WelcomeText() } },
+                        actions = { WelcomeActions(state.logsAvailable, state.canRevert, state.automation, onEvent, onGetStarted, onDeviceLogs, onRevert) },
+                        modifier = Modifier.verticalScroll(rememberScrollState()).padding(padding),
+                    )
                 }
-                WelcomeActions(state.logsAvailable, state.canRevert, state.automation, onEvent, onGetStarted, onDeviceLogs, onRevert, Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 16.dp))
             }
         }
     }
@@ -236,6 +242,59 @@ private fun WelcomeHeader(onSettings: () -> Unit, modifier: Modifier = Modifier)
 
 /** Widest the welcome screen gets when the hero sits beside the text. */
 private val WelcomeWideMaxWidth = 1100.dp
+
+/** Height range of the hero in the single-column layout; it takes what is left within it. */
+private val NarrowHeroMinHeight = 96.dp
+private val NarrowHeroMaxHeight = 220.dp
+
+/**
+ * The single-column welcome: header, hero, text, and the actions at the bottom. The hero gets the room
+ * the rest leaves out of [height] (the visible height), up to [NarrowHeroMaxHeight]. When that is less
+ * than [NarrowHeroMinHeight] the hero is left out if that lets everything fit; only when nothing fits
+ * does it stay at its minimum, with the layout taller than [height] (it scrolls). Otherwise the layout
+ * is exactly [height] tall, with the actions at the bottom.
+ */
+@Composable
+private fun NarrowWelcome(
+    height: Dp,
+    header: @Composable () -> Unit,
+    hero: @Composable () -> Unit,
+    text: @Composable () -> Unit,
+    actions: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Layout(listOf(header, hero, text, actions), modifier) { (headerM, heroM, textM, actionsM), constraints ->
+        val width = constraints.maxWidth
+        val gap = 20.dp.roundToPx()
+        val loose = Constraints(maxWidth = width)
+        val headerP = headerM.single().measure(loose)
+        val textP = textM.single().measure(loose)
+        val actionsP = actionsM.single().measure(loose)
+        val fixed = headerP.height + textP.height + actionsP.height + 2 * gap
+        val visible = height.roundToPx()
+        val room = visible - fixed - gap
+        val heroHeight = when {
+            room >= NarrowHeroMinHeight.roundToPx() -> minOf(room, NarrowHeroMaxHeight.roundToPx())
+            room + gap >= 0 -> 0
+            else -> NarrowHeroMinHeight.roundToPx()
+        }
+        // A shrunk hero narrows in proportion, so the panel keeps its shape instead of stretching wide.
+        val heroWidth = (width.toLong() * heroHeight / NarrowHeroMaxHeight.roundToPx()).toInt().coerceAtMost(width)
+        val heroP = if (heroHeight > 0) heroM.single().measure(Constraints.fixed(heroWidth, heroHeight)) else null
+        val total = maxOf(visible, fixed + (heroP?.let { heroHeight + gap } ?: 0))
+        layout(width, total) {
+            var y = 0
+            headerP.place(0, y)
+            y += headerP.height + gap
+            heroP?.let {
+                it.place((width - heroWidth) / 2, y)
+                y += heroHeight + gap
+            }
+            textP.place(0, y)
+            actionsP.place(0, total - actionsP.height)
+        }
+    }
+}
 
 @Composable
 private fun WelcomeText() {

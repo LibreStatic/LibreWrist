@@ -5,10 +5,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -142,9 +144,14 @@ fun PhoneWatchIllustration(modifier: Modifier = Modifier, scale: Float = 1f, lin
     }
 }
 
+/** Size the welcome hero art is drawn at; the hero scales it down to fit. */
+private val HeroArtWidth = 300.dp
+private val HeroArtHeight = 196.dp
+
 /**
  * Welcome hero: phone, watch and the link between them, drawn as one fixed-size composition that is
- * centered on a rounded panel of any width (canvas Welcome artboard, restyled with expressive shapes).
+ * centered on a rounded panel of any size, scaled down when the panel is smaller (canvas Welcome
+ * artboard, restyled with expressive shapes).
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -154,14 +161,16 @@ fun WelcomeHero(modifier: Modifier = Modifier, frozenAt: Float? = null) {
     val clock = rememberHeroClock(frozenAt)
     // Easter egg: the watch tells the phone's real time. Previews keep the classic 10:08.
     val faceTime = rememberWatchTime(fixed = if (frozenAt != null || LocalInspectionMode.current) "10:08" else null)
-    Box(
+    BoxWithConstraints(
         modifier
             .clearAndSetSemantics { }
             .clip(RoundedCornerShape(48.dp))
             .background(colors.surfaceContainerHigh),
         contentAlignment = Alignment.Center,
     ) {
-        Box(Modifier.size(width = 300.dp, height = 196.dp)) {
+        // The art is drawn at a fixed size and scaled down (never up) when the hero is given less room.
+        val scale = minOf(1f, (maxWidth - 16.dp) / HeroArtWidth, (maxHeight - 16.dp) / HeroArtHeight).coerceAtLeast(0.1f)
+        Box(Modifier.requiredSize(HeroArtWidth, HeroArtHeight).graphicsLayer { scaleX = scale; scaleY = scale }) {
             // Soft expressive shapes behind each device.
             Box(
                 Modifier.offset((-14).dp, (-6).dp).size(196.dp).rotate(12f)
