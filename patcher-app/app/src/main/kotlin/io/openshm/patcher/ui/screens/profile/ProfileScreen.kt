@@ -85,7 +85,7 @@ fun ProfileScreen(
         title = stringResource(R.string.profile_title),
         onBack = onBack,
         modifier = modifier,
-        footer = { PrimaryAction(stringResource(R.string.action_continue), onContinue) },
+        footer = { PrimaryAction(stringResource(R.string.action_continue), onContinue, auto = true) },
         secondary = {
             state.detected?.let { DetectedCard(it) }
             PairedWatchesSection(state, onEvent)

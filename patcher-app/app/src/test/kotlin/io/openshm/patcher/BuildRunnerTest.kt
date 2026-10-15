@@ -307,10 +307,10 @@ class BuildRunnerTest {
     }
 
     @Test fun aMissingAssetFailsClearly() {
-        val outcome = runner(FakeEngine(), assets = { path -> if (path == "owncode/apps/bridge-phone.apk") null else ByteArray(4) })
+        val outcome = runner(FakeEngine(), assets = { path -> if (path == "owncode/apps/shm-bridge-phone.apk") null else ByteArray(4) })
             .run(request(listOf("bridge-phone")), Sink())
         assertFalse(outcome.ok)
-        assertTrue(outcome.error!!, outcome.error!!.contains("owncode/apps/bridge-phone.apk"))
+        assertTrue(outcome.error!!, outcome.error!!.contains("owncode/apps/shm-bridge-phone.apk"))
         assertTrue(File(root, "outputs").listFiles().orEmpty().isEmpty())
     }
 
@@ -329,10 +329,10 @@ class BuildRunnerTest {
     }
 
     @Test fun assetPaths() {
-        assertEquals("owncode/apps/bridge-phone.apk", BuildAssets.ownApp("shm-bridge/phone"))
-        assertEquals("owncode/apps/bridge-watch.apk", BuildAssets.ownApp("shm-bridge/watch"))
+        assertEquals("owncode/apps/shm-bridge-phone.apk", BuildAssets.ownApp("shm-bridge/phone"))
+        assertEquals("owncode/apps/shm-bridge-watch.apk", BuildAssets.ownApp("shm-bridge/watch"))
         assertEquals("owncode/injections/watch-mod.dex", BuildAssets.injection("watch-mod"))
-        for (bad in listOf("phone", "other/phone", "shm-bridge/", "shm-bridge/a/b")) {
+        for (bad in listOf("phone", "../phone", "shm-bridge/", "shm-bridge/a/b")) {
             try {
                 BuildAssets.ownApp(bad)
                 throw AssertionError("accepted $bad")

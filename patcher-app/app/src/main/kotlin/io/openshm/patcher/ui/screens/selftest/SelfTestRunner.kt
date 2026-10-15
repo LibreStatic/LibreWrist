@@ -33,7 +33,13 @@ import kotlinx.coroutines.withContext
 /* What the self-test needs from the outside world. Each one is an interface so the checks run in JVM tests. */
 
 /** An installed package as the platform reports it. [signerSha256] are lowercase hex digests of the signing certificates. */
-data class InstalledPackage(val versionName: String?, val signerSha256: Set<String>, val apkPath: String?)
+data class InstalledPackage(
+    val versionName: String?,
+    val signerSha256: Set<String>,
+    val apkPath: String?,
+    val versionCode: Long? = null,
+    val lastUpdateTime: Long? = null,
+)
 
 interface PackageInspector {
     /** Null when the package is not installed (or not visible to this app). */
@@ -85,6 +91,25 @@ object SelfTestParsers {
 
     /** True for an absolute path that is safe to put in a shell command without quoting. */
     fun isSafePath(path: String): Boolean = safePath.matches(path) && !path.contains("..")
+
+    /** What identifies one installed version of a package on the watch: `versionCode` and `lastUpdateTime`. */
+    data class WatchPackageStamp(val versionCode: Long, val lastUpdateTime: String)
+
+    private val lastUpdate = Regex("""\blastUpdateTime=([^\r\n]+)""")
+
+    /** The stamp in `dumpsys package <pkg>` output; null when either field is missing. */
+    fun packageStamp(dumpsys: String): WatchPackageStamp? {
+        val code = PmParsers.parseVersion(dumpsys)?.versionCode ?: return null
+        val updated = lastUpdate.find(dumpsys)?.groupValues?.get(1)?.trim()?.takeIf { it.isNotEmpty() } ?: return null
+        return WatchPackageStamp(code, updated)
+    }
+}
+
+/** Where the fingerprint of the last manual answers is kept, so the questions are not asked again while nothing changed. */
+interface ManualAnswersStore {
+    fun fingerprint(): String?
+    fun save(fp: String)
+    fun clear()
 }
 
 private data class Outcome(val status: CheckStatus, val detail: SelfTestText? = null, val fix: SelfTestFix? = null)
@@ -119,9 +144,6 @@ private const val SECTION_WATCH = 1
 private const val SECTION_LINK = 2
 private const val SECTION_HUMAN = 3
 
-/** The status provider's authority is the bridge package prefix plus this suffix (`StatusProvider.AUTHORITY`). */
-const val BRIDGE_STATUS_AUTHORITY_SUFFIX = ".shmbridge.phone.status"
-
 /**
  * The self-test: one row per fact worth knowing about the installed apps, each checked against the
  * real device and run in parallel. Plain code over interfaces, so it runs in JVM tests;
@@ -144,6 +166,9 @@ internal class SelfTestRunner(
     private val bridge: BridgeStatusSource,
     private val watch: WatchShell,
     private val io: CoroutineDispatcher,
+    /** The phone's OS build fingerprint. */
+    private val phoneBuild: () -> String,
+    private val manualAnswers: ManualAnswersStore,
     /** Where a check that threw is reported (the app's log; nothing in JVM tests). */
     private val logFailure: (String, Throwable) -> Unit = { _, _ -> },
 ) {
@@ -169,18 +194,18 @@ internal class SelfTestRunner(
             if (hasBridge(Device.Watch)) {
                 add(Check(SECTION_WATCH, pendingRow("watch-leftovers", text(R.string.selftest_leftovers_title), SelfTestFix.InstallWatch)) { watchLeftovers(it) })
             }
-            // The stock apps are turned off for the watch Health Monitor: not checked once it was restored.
-            val stockApps = if (outputs.any { it.id == SHM_WATCH }) catalogue.stockAppsToDisable.filter { it.device == Device.Watch } else emptyList()
+            // A stock app is turned off for the output that replaces it: not checked once that output was restored.
+            val stockApps = catalogue.stockAppsToDisable.filter { stock -> stock.device == Device.Watch && outputs.any { it.id == stock.replacedBy } }
             for (stock in stockApps) {
                 add(Check(SECTION_WATCH, pendingRow("watch-stock-${stock.packageName}", text(R.string.selftest_stock_title, stock.label), SelfTestFix.DisableStock)) { watchStock(it, stock.packageName, stock.optional) })
             }
-            if (outputs.any { it.id == BRIDGE_PHONE }) {
-                add(Check(SECTION_LINK, pendingRow("link-bridge", text(R.string.selftest_bridge_link_title), SelfTestFix.InstallPhone)) { bridgeLink() })
+            outputs.firstNotNullOfOrNull { it.statusAuthority(prefix) }?.let { authority ->
+                add(Check(SECTION_LINK, pendingRow("link-bridge", text(R.string.selftest_bridge_link_title), SelfTestFix.InstallPhone)) { bridgeLink(authority) })
             }
         }
     }
 
-    private fun hasBridge(device: Device) = outputs.any { it.device == device && it.packageTemplate.contains(".shmbridge.") }
+    private fun hasBridge(device: Device) = outputs.any { it.device == device && it.singleCopy }
 
     private fun pendingRow(id: String, title: SelfTestText, fix: SelfTestFix?) = SelfTestRow(id, title, CheckStatus.Pending, fix = fix)
 
@@ -195,20 +220,87 @@ internal class SelfTestRunner(
     fun initial(): SelfTestUiState {
         val titles = listOf(R.string.selftest_section_phone, R.string.selftest_section_watch, R.string.selftest_section_link, R.string.selftest_section_human)
         val rows = checks.groupBy({ it.section }, { it.row }) + (SECTION_HUMAN to humanRows)
-        return SelfTestUiState(titles.indices.mapNotNull { i -> rows[i]?.takeIf { it.isNotEmpty() }?.let { SelfTestSection(titles[i], it) } })
+        return SelfTestUiState(
+            titles.indices.mapNotNull { i -> rows[i]?.takeIf { it.isNotEmpty() }?.let { SelfTestSection(titles[i], it) } },
+            resolvingManual = true,
+        )
     }
 
-    /** Runs the automated rows in parallel, writing each row's progress into [state]. Questions are left to the user. */
-    suspend fun run(state: MutableStateFlow<SelfTestUiState>) = coroutineScope {
+    /**
+     * Runs the automated rows in parallel, writing each row's progress into [state]. Questions are left to
+     * the user, unless nothing they depend on changed since the last time they were all answered yes.
+     */
+    suspend fun run(state: MutableStateFlow<SelfTestUiState>) {
+        state.update { it.copy(resolvingManual = true, manualFingerprint = null, manualReused = false) }
         val context = RunContext(watch)
-        for (check in checks) {
-            launch {
-                val id = check.row.id
-                state.update { it.withRow(id) { row -> row.copy(status = CheckStatus.Running, detail = null) } }
-                val outcome = execute(check, context)
-                state.update { it.withRow(id) { row -> row.copy(status = outcome.status, detail = outcome.detail, fix = outcome.fix ?: row.fix) } }
+        coroutineScope {
+            for (check in checks) {
+                launch {
+                    val id = check.row.id
+                    state.update { it.withRow(id) { row -> row.copy(status = CheckStatus.Running, detail = null) } }
+                    val outcome = execute(check, context)
+                    state.update { it.withRow(id) { row -> row.copy(status = outcome.status, detail = outcome.detail, fix = outcome.fix ?: row.fix) } }
+                }
             }
         }
+        val failed = state.value.sections.flatMap { it.rows }.any { !it.isHuman && it.status == CheckStatus.Failed }
+        val fingerprint = if (failed) null else manualFingerprint(state.value, context)
+        val reused = fingerprint != null && fingerprint == stored()
+        state.update { current ->
+            val resolved = current.copy(resolvingManual = false, manualFingerprint = fingerprint, manualReused = reused)
+            if (!reused) resolved else resolved.copy(sections = resolved.sections.map { s ->
+                s.copy(rows = s.rows.map { if (it.isHuman) it.copy(status = CheckStatus.Passed, detail = SelfTestText(R.string.selftest_detail_answer_reused)) else it })
+            })
+        }
+    }
+
+    private fun stored(): String? = try {
+        manualAnswers.fingerprint()
+    } catch (e: RuntimeException) {
+        logFailure("reading the stored manual answers failed", e)
+        null
+    }
+
+    /**
+     * SHA-256 of everything the manual answers depend on, or null when it cannot be known (a package
+     * row did not pass, no build record, the watch cannot be read). Components, sorted: each checked
+     * output's build sha256; phone: package, versionCode and lastUpdateTime of the companion app and its
+     * watch plugins when installed; the phone's OS build fingerprint; watch: `ro.build.fingerprint` and
+     * the Health Platform's versionCode and lastUpdateTime.
+     */
+    private suspend fun manualFingerprint(state: SelfTestUiState, context: RunContext): String? = try {
+        computeFingerprint(state, context)
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: IOException) {
+        logFailure("manual answers fingerprint failed", e)
+        null
+    } catch (e: RuntimeException) {
+        logFailure("manual answers fingerprint failed", e)
+        null
+    }
+
+    private suspend fun computeFingerprint(state: SelfTestUiState, context: RunContext): String? {
+        val pkgRows = state.sections.flatMap { it.rows }.filter { it.id.startsWith("phone-pkg-") || it.id.startsWith("watch-pkg-") }
+        if (pkgRows.any { it.status != CheckStatus.Passed }) return null
+        val parts = ArrayList<String>()
+        for (out in outputs) parts += "output:${out.id}:${recordOf(out.id)?.sha256?.lowercase() ?: return null}"
+        val companion = catalogue.platform.companionApp
+        for (pkg in listOf(companion.packageName) + companion.watchPlugins) {
+            val installed = withContext(io) { packages.inspect(pkg) } ?: continue
+            parts += "phone:$pkg:${installed.versionCode}:${installed.lastUpdateTime}"
+        }
+        parts += "phone-build:${withContext(io) { phoneBuild() }}"
+        if (!context.watchAvailable()) return null
+        val prop = context.shell("getprop ro.build.fingerprint")
+        val watchBuild = prop.stdout.trim().takeIf { prop.isSuccess && it.isNotEmpty() } ?: return null
+        parts += "watch-build:$watchBuild"
+        val health = catalogue.platform.healthPlatform.packageName
+        val dump = context.shell("dumpsys package $health")
+        val stamp = (if (dump.isSuccess) SelfTestParsers.packageStamp(dump.stdout) else null) ?: return null
+        parts += "watch:$health:${stamp.versionCode}:${stamp.lastUpdateTime}"
+        val digest = java.security.MessageDigest.getInstance("SHA-256").digest(parts.sorted().joinToString("\n").toByteArray())
+        return digest.joinToString("") { "%02x".format(it) }
     }
 
     private suspend fun execute(check: Check, context: RunContext): Outcome = try {
@@ -270,8 +362,7 @@ internal class SelfTestRunner(
         return leftoversOutcome(LeftoverBridges.find(catalogue.outputs, Device.Phone, prefix, installed), SelfTestFix.InstallPhone)
     }
 
-    private suspend fun bridgeLink(): Outcome {
-        val authority = prefix + BRIDGE_STATUS_AUTHORITY_SUFFIX
+    private suspend fun bridgeLink(authority: String): Outcome {
         return when (val status = withContext(io) { bridge.query(authority) }) {
             BridgeStatus.ProviderMissing -> Outcome(CheckStatus.Failed, text(R.string.selftest_detail_bridge_missing), SelfTestFix.InstallPhone)
             BridgeStatus.Denied -> Outcome(CheckStatus.Failed, text(R.string.selftest_detail_bridge_denied), SelfTestFix.Build)
@@ -376,11 +467,6 @@ internal class SelfTestRunner(
         optional.isNotEmpty() -> Outcome(CheckStatus.Warning, text(R.string.selftest_detail_grants_optional, optional.joinToString(", ")), fix)
         else -> Outcome(CheckStatus.Passed, text(R.string.selftest_detail_grants_ok))
     }
-
-    private companion object {
-        const val BRIDGE_PHONE = "bridge-phone"
-        const val SHM_WATCH = "shm-watch"
-    }
 }
 
 internal fun SelfTestUiState.withRow(id: String, change: (SelfTestRow) -> SelfTestRow) =
@@ -394,3 +480,9 @@ internal fun SelfTestUiState.answer(yes: Boolean): SelfTestUiState {
         else it.copy(status = CheckStatus.Failed, detail = SelfTestText(R.string.selftest_detail_answered_no))
     }
 }
+
+/** Back to waiting for an answer, every question again (the stored answers stay until the user answers). */
+internal fun SelfTestUiState.askAgain(): SelfTestUiState = copy(
+    sections = sections.map { s -> s.copy(rows = s.rows.map { if (it.isHuman) it.copy(status = CheckStatus.Pending, detail = null) else it }) },
+    manualReused = false,
+)

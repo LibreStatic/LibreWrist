@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import io.openshm.patcher.R
 import io.openshm.patcher.data.Device
 import io.openshm.patcher.data.OutputApp
+import io.openshm.patcher.data.StockApp
 import io.openshm.patcher.device.DetectedWatch
 
 /** A setup step passed over because what it asks for is already true; [watch] fills the reason when it is about the watch. */
@@ -29,31 +30,52 @@ internal fun skippableSteps(watch: DetectedWatch?, wearableReady: Boolean): List
  * leaving [route]. Empty when the next step needs the user.
  */
 internal fun skippedRunAfter(route: Route, skipped: List<SkippedStep>): List<SkippedStep> = buildList {
-    var target = SetupFlow.next(route)
+    // The phone ADB step is never announced and never skipped by a detected state: look past it.
+    val silent = setOf(Route.PhoneAdb)
+    var target = SetupFlow.next(route, silent)
     while (target != null) {
         val step = skipped.firstOrNull { it.route == target } ?: break
         add(step)
-        target = SetupFlow.next(target)
+        target = SetupFlow.next(target, silent)
     }
 }
+
+/** The steps that only exist in unattended mode; without it they are passed over, never announced. */
+internal fun automationSkippedRoutes(unattended: Boolean): Set<Route> = if (unattended) emptySet() else setOf(Route.PhoneAdb)
 
 /**
  * The steps a per-app rebuild of [scope] passes over without a word (nothing is announced): the phone
  * install without a phone output, the watch install without a watch output, and the developer-mode and
- * stock-app steps unless the Health Monitor on the watch ("shm-watch") is rebuilt. Empty outside a
+ * stock-app steps unless an output in scope needs them (see [selectionSkippedRoutes]). Empty outside a
  * rebuild (null [scope]).
  */
-internal fun rebuildSkippedRoutes(outputs: List<OutputApp>, scope: Set<String>?): Set<Route> {
+internal fun rebuildSkippedRoutes(
+    outputs: List<OutputApp>,
+    scope: Set<String>?,
+    devModeOutputs: Collection<String>,
+    stockApps: List<StockApp>,
+): Set<Route> {
     if (scope == null) return emptySet()
     val inScope = outputs.filter { it.id in scope }
     return buildSet {
         if (inScope.none { it.device == Device.Phone }) add(Route.InstallPhone)
         if (inScope.none { it.device == Device.Watch }) add(Route.WatchInstall)
-        if ("shm-watch" !in scope) {
-            add(Route.DevMode)
-            add(Route.DisableStock)
-        }
+        addAll(selectionSkippedRoutes(scope, devModeOutputs, stockApps))
     }
+}
+
+/**
+ * The steps passed over silently when nothing in [outputIds] needs them: developer mode is for the
+ * outputs the Health Platform lists as [devModeOutputs] (`healthPlatform.requiredBy`), the stock-app step
+ * for outputs that replace a stock app (`replacedBy`).
+ */
+internal fun selectionSkippedRoutes(
+    outputIds: Collection<String>,
+    devModeOutputs: Collection<String>,
+    stockApps: List<StockApp>,
+): Set<Route> = buildSet {
+    if (outputIds.none { it in devModeOutputs }) add(Route.DevMode)
+    if (stockApps.none { it.replacedBy in outputIds }) add(Route.DisableStock)
 }
 
 /** The steps skipped in this run of the setup; the nav host's `next` passes over them. */

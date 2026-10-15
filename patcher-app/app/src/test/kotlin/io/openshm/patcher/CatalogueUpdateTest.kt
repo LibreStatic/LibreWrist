@@ -61,7 +61,7 @@ class CatalogueUpdateTest {
     }
 
     private fun load(bytes: ByteArray): LoadedCatalogue =
-        AppCatalogue.fromBytes(bytes, signer.sign(bytes), signer.publicKeyPem, 1, TestCatalogue.resolve)
+        AppCatalogue.fromBytes(bytes, signer.sign(bytes), signer.publicKeyPem, 1, TestCatalogue.locales)
 
     private class MemState(override var highestSerial: Long = 0) : UpdateState
 
@@ -191,7 +191,7 @@ class CatalogueUpdateTest {
     // ---- startup selection
 
     private fun select(bundled: LoadedCatalogue) =
-        AppCatalogue.select(bundled, store(), signer.publicKeyPem, 1, TestCatalogue.resolve)
+        AppCatalogue.select(bundled, store(), signer.publicKeyPem, 1, TestCatalogue.locales)
 
     @Test fun aStoredNewerCatalogueIsUsed() {
         val newer = text(8)

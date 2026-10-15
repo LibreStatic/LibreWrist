@@ -5,6 +5,8 @@ import io.openshm.patcher.ui.screens.revert.RevertScope
 /** Every destination of the single activity. [path] is the Navigation Compose route. */
 enum class Route(val path: String) {
     Welcome("welcome"),
+    /** Unattended mode only: pairs this phone's own Wireless debugging; passed over otherwise. */
+    PhoneAdb("phone-adb"),
     Profile("profile"),
     WearablePairing("wearable-pairing"),
     /** Sub-screen of the WearablePairing step ("Trouble pairing?"); not part of [SetupFlow]. */
@@ -59,6 +61,7 @@ enum class Route(val path: String) {
 object SetupFlow {
     val order: List<Route> = listOf(
         Route.Welcome,
+        Route.PhoneAdb,
         Route.Profile,
         Route.WearablePairing,
         Route.WatchPair,

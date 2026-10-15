@@ -162,9 +162,9 @@ private fun StepShapeBackground(step: SetupStep, modifier: Modifier = Modifier) 
 
 /** "STEP N OF M" plus the screen title, next to the morphing step shape. */
 @Composable
-fun StepHeader(step: SetupStep, title: String, modifier: Modifier = Modifier) {
-    val label = stringResource(R.string.step_label, step.number, SetupStep.Total)
-    val watchLabel = if (step.onWatch) stringResource(R.string.step_label_watch_suffix) else ""
+fun StepHeader(step: SetupStep, title: String, modifier: Modifier = Modifier, numbered: Boolean = true) {
+    val label = if (numbered) stringResource(R.string.step_label, step.number, SetupStep.Total) else ""
+    val watchLabel = if (numbered && step.onWatch) stringResource(R.string.step_label_watch_suffix) else ""
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(14.dp),
@@ -172,11 +172,13 @@ fun StepHeader(step: SetupStep, title: String, modifier: Modifier = Modifier) {
     ) {
         StepShape(step, Modifier.clearAndSetSemantics { })
         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(
-                text = label + watchLabel,
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            if (numbered) {
+                Text(
+                    text = label + watchLabel,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
             Text(
                 text = title,
                 style = MaterialTheme.typography.headlineSmallEmphasized,

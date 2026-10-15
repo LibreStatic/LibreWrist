@@ -19,6 +19,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.openshm.patcher.data.Automation
+import io.openshm.patcher.ui.components.AutoTextButton
+import io.openshm.patcher.ui.components.UnattendedAttention
+import io.openshm.patcher.ui.components.observeUserInput
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -74,6 +79,11 @@ fun DevModeScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // Turning it on failed, or the watch stopped answering: the user has to step in.
+    UnattendedAttention(
+        state.notice == DevModeNotice.NotYet || state.notice == DevModeNotice.Unreachable ||
+            (!state.detected && !state.watchReachable),
+    )
     StepScreenScaffold(
         step = SetupStep.WatchInstall,
         title = stringResource(R.string.devmode_title),
@@ -108,13 +118,13 @@ fun DevModeScreen(
         },
         footer = {
             if (state.detected) {
-                PrimaryAction(stringResource(R.string.action_continue), onContinue, accent = Accent.Tertiary)
+                PrimaryAction(stringResource(R.string.action_continue), onContinue, accent = Accent.Tertiary, auto = true)
             } else {
                 ActionRow {
                     PrimaryAction(
                         stringResource(if (state.checking) R.string.devmode_enabling else R.string.devmode_enable),
                         { onEvent(DevModeEvent.Enable) },
-                        enabled = !state.checking, accent = Accent.Tertiary,
+                        enabled = !state.checking, accent = Accent.Tertiary, auto = true,
                     )
                     QuietAction(stringResource(R.string.devmode_skip), onContinue, accent = Accent.Tertiary)
                 }
@@ -167,11 +177,21 @@ private fun DevModeNoticeDialog(notice: DevModeNotice, onDismiss: () -> Unit) {
         DevModeNotice.NotYet -> Triple(Icons.Rounded.TouchApp, R.string.devmode_not_yet_title, R.string.devmode_not_yet_message)
         DevModeNotice.Unreachable -> Triple(Icons.Rounded.WifiOff, R.string.devmode_unreachable_title, R.string.devmode_unreachable_message)
     }
+    val freeRunActive = Automation.state.collectAsStateWithLifecycle().value.freeRunActive
     AlertDialog(
         onDismissRequest = onDismiss,
+        // The dialog is its own window: it reports touches itself so they pause the countdown.
+        modifier = Modifier.observeUserInput(),
         icon = { Icon(icon, contentDescription = null) },
         title = { Text(stringResource(title), textAlign = TextAlign.Center) },
         text = { Text(stringResource(text), style = MaterialTheme.typography.bodyLarge) },
-        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.outcome_acknowledge)) } },
+        confirmButton = {
+            val label = stringResource(R.string.outcome_acknowledge)
+            if (notice == DevModeNotice.LookAtWatch) {
+                AutoTextButton(label, onDismiss, auto = freeRunActive)
+            } else {
+                TextButton(onClick = onDismiss) { Text(label) }
+            }
+        },
     )
 }

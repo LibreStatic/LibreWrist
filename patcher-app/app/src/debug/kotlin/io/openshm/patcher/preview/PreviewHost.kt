@@ -35,6 +35,7 @@ internal const val PHONE = "spec:width=412dp,height=915dp,dpi=420"
 internal fun PreviewHost(mode: ColorMode, content: @Composable () -> Unit) {
     // IDE previews have no PatcherApplication; under Robolectric / the device it is already installed.
     AppCatalogue.ensure(LocalContext.current)
+    AppCatalogue.followLocales(LocalContext.current)
     // Same root as PatcherApp: a Surface, so text without an explicit color gets the theme's content color.
     PatcherTheme(dynamicColor = mode == ColorMode.Dynamic) {
         // Previews and drivers stay still: endless animations would never let a test clock go idle.

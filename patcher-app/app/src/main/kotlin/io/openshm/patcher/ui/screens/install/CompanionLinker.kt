@@ -18,7 +18,7 @@ internal class CompanionLinker(
     private val log: (String) -> Unit,
     private val pause: suspend (Long) -> Unit = { delay(it) },
 ) {
-    suspend fun link(pkg: String, prefix: String) {
+    suspend fun link(pkg: String, receiver: String, action: String) {
         try {
             val mac = waitForPhoneMac(pkg)
             if (mac == null) {
@@ -32,7 +32,7 @@ internal class CompanionLinker(
                     device.associateCompanion(pkg, mac)
                     log("linked $pkg to the phone in the companion device manager")
                 }
-                device.startBridge(pkg, prefix)
+                device.startBridge(pkg, receiver, action)
             }
             keepDozeExemption(pkg)
         } catch (e: IOException) {

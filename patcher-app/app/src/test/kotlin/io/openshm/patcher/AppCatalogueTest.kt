@@ -15,7 +15,7 @@ class AppCatalogueTest {
 
     @Test
     fun serialAndInputs() {
-        assertEquals(36L, c.serial)
+        assertEquals(39L, c.serial)
         assertEquals(
             listOf(
                 listOf("shm-phone", "Samsung Health Monitor (phone)", "1.4.6.001", "Phone",

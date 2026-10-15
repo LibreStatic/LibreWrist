@@ -17,9 +17,9 @@ import config  # noqa: E402
 from superpatcher import engine as E  # noqa: E402
 
 DEFAULT_CATALOGUE = os.path.join(ROOT, 'catalogue', 'catalogue.json')
-SCHEMA = 1
+SCHEMA = 2
 _TOP_KEYS = ('schema', 'serial', 'minAppVersion', 'inputs', 'families', 'profiles', 'patterns',
-             'outputs', 'installOrder', 'grants', 'stockAppsToDisable')
+             'outputs', 'installOrder', 'grants', 'stockAppsToDisable', 'apps', 'strings', 'platform')
 _PLACEHOLDER = re.compile(r'\$\{([^}]*)\}')
 
 # --- install section (outputs, installOrder, grants, stockAppsToDisable) -------------------
@@ -38,6 +38,13 @@ _SETTING_VALUE_RE = re.compile(r'^\w[\w.-]{0,63}$', re.ASCII)   # no leading '-'
 _GLOBAL_SETTING_VALUE_RE = re.compile(r'^L[a-zA-Z0-9_/$-]{0,127}$', re.ASCII)
 _COMPONENT_RE = re.compile(r'^(\.[A-Za-z]\w*)+$|^[A-Za-z]\w*(\.[A-Za-z]\w*)+$', re.ASCII)
 _NOTE_RE = re.compile(r'^[^\x00-\x1f\x7f]{1,300}$', re.ASCII)
+_APP_ICONS = ('monitor-heart', 'favorite', 'alarm', 'swap')   # closed vocabulary of apps[].icon
+_OUTPUT_OPTIONAL_KEYS = ('start', 'companionLink', 'knownSigner', 'statusAuthority', 'singleCopy')
+_LOCALE_RE = re.compile(r'^[a-z]{2,3}(-[A-Z][A-Za-z]{1,3})?$', re.ASCII)
+_STRING_KEY_RE = re.compile(r'^[a-z][A-Za-z0-9_.-]{0,199}$', re.ASCII)
+_TEXT_RE = re.compile(r'^[^\x00-\x1f\x7f]{1,4000}$')
+_SETTINGS_COMPONENT_RE = re.compile(r'^[A-Za-z]\w*(\.[A-Za-z]\w*)+/(\.[A-Za-z]\w*)+$', re.ASCII)
+_VIEW_ID_RE = re.compile(r'^[a-z]+:id/[a-z_][a-z0-9_]*$', re.ASCII)
 _INSTALL_STEPS = ('userOnboarding',)   # values allowed in installOrder[].then
 # Closed set of grant kinds: kind -> required fields (besides "kind"); "optional" (bool) and
 # "note" (str) are accepted on every kind.
@@ -111,7 +118,7 @@ def _validate_grant(where, g):
         return [f'{where}: "kind" must be one of {sorted(_GRANT_KINDS)}']
     fields = _GRANT_KINDS[g['kind']]
     out = []
-    unknown = set(g) - {'kind', 'optional', 'note'} - set(fields)
+    unknown = set(g) - {'kind', 'optional', 'note', 'why'} - set(fields)
     if unknown:
         out.append(f'{where}: unknown fields {sorted(unknown)} for kind {g["kind"]!r}')
     for name, rx in fields.items():
@@ -122,6 +129,33 @@ def _validate_grant(where, g):
         out.append(f'{where}: optional must be a boolean')
     if 'note' in g and not (isinstance(g['note'], str) and _NOTE_RE.fullmatch(g['note'])):
         out.append(f'{where}: note must be a single-line string of 1..300 characters')
+    if 'why' in g and not (isinstance(g['why'], str) and _STRING_KEY_RE.fullmatch(g['why'])):
+        out.append(f'{where}: why must be a key of the strings table')
+    return out
+
+
+def _validate_output_extras(where, o):
+    out = []
+    if 'start' in o:
+        st = o['start']
+        if not isinstance(st, dict) or set(st) != {'receiver', 'action'}:
+            out.append(f'{where}: start must be exactly {{"receiver", "action"}}')
+        else:
+            if not isinstance(st['receiver'], str) or not re.fullmatch(r'(\.[A-Za-z]\w*)+', st['receiver'],
+                                                                      re.ASCII):
+                out.append(f'{where}: start.receiver must be a class name relative to the package (".Name")')
+            act = _sample_package(st['action'])
+            if act is None or not _PACKAGE_RE.fullmatch(act):
+                out.append(f'{where}: start.action is not a valid action name '
+                           '(only ${PKG_PREFIX} may be used as a placeholder)')
+    for k in ('companionLink', 'knownSigner', 'singleCopy'):
+        if k in o and not isinstance(o[k], bool):
+            out.append(f'{where}: {k} must be a boolean')
+    if 'statusAuthority' in o:
+        auth = _sample_package(o['statusAuthority'])
+        if auth is None or not _PACKAGE_RE.fullmatch(auth):
+            out.append(f'{where}: statusAuthority is not a valid authority '
+                       '(only ${PKG_PREFIX} may be used as a placeholder)')
     return out
 
 
@@ -137,9 +171,12 @@ def _validate_install(cat, input_targets, profiles):
         outputs = []
     for i, o in enumerate(outputs):
         where = f'outputs[{i}]'
-        if not isinstance(o, dict) or set(o) != {'id', 'device', 'package', 'from'}:
-            problems.append(f'{where}: expected exactly id, device, package, from')
+        base = {'id', 'device', 'package', 'from'}
+        if not isinstance(o, dict) or not base <= set(o) or set(o) - base - set(_OUTPUT_OPTIONAL_KEYS):
+            problems.append(f'{where}: expected id, device, package, from '
+                            f'(plus optionally {", ".join(_OUTPUT_OPTIONAL_KEYS)})')
             continue
+        problems.extend(_validate_output_extras(where, o))
         if not isinstance(o['id'], str) or not _ID_RE.fullmatch(o['id']):
             problems.append(f'{where}: id must match {_ID_RE.pattern}')
         elif o['id'] in out_ids:
@@ -214,7 +251,7 @@ def _validate_install(cat, input_targets, profiles):
         seen = []
         for i, g in enumerate(lst):
             problems.extend(_validate_grant(f'{where}[{i}]', g))
-            key = json.dumps({k: v for k, v in g.items() if k not in ('optional', 'note')},
+            key = json.dumps({k: v for k, v in g.items() if k not in ('optional', 'note', 'why')},
                              sort_keys=True) if isinstance(g, dict) else None
             if key is not None and key in seen:
                 problems.append(f'{where}[{i}]: duplicate grant')
@@ -226,9 +263,12 @@ def _validate_install(cat, input_targets, profiles):
         stock = []
     for i, s in enumerate(stock):
         where = f'stockAppsToDisable[{i}]'
-        if not isinstance(s, dict) or set(s) != {'device', 'package', 'optional', 'reason'}:
-            problems.append(f'{where}: expected exactly device, package, optional, reason')
+        base = {'device', 'package', 'optional', 'reason'}
+        if not isinstance(s, dict) or not base <= set(s) or set(s) - base - {'replacedBy'}:
+            problems.append(f'{where}: expected device, package, optional, reason (plus optionally replacedBy)')
             continue
+        if 'replacedBy' in s and s['replacedBy'] not in out_ids:
+            problems.append(f'{where}: replacedBy {s["replacedBy"]!r} is not an output id')
         if s['device'] not in _DEVICES:
             problems.append(f'{where}: device must be one of {list(_DEVICES)}')
         if not isinstance(s['package'], str) or not _PACKAGE_RE.fullmatch(s['package']):
@@ -237,6 +277,151 @@ def _validate_install(cat, input_targets, profiles):
             problems.append(f'{where}: optional must be a boolean')
         if not (isinstance(s['reason'], str) and _NOTE_RE.fullmatch(s['reason'])):
             problems.append(f'{where}: reason must be a single-line string of 1..300 characters')
+    problems.extend(_validate_apps(cat, out_ids))
+    problems.extend(_validate_platform(cat, out_ids))
+    problems.extend(_validate_strings(cat, out_ids))
+    return problems
+
+
+def _validate_apps(cat, out_ids):
+    apps = cat['apps']
+    if not isinstance(apps, list) or not apps:
+        return ['apps must be a non-empty list']
+    problems, ids, owner = [], [], {}
+    for i, a in enumerate(apps):
+        where = f'apps[{i}]'
+        if not isinstance(a, dict) or set(a) != {'id', 'outputs', 'optional', 'icon'}:
+            problems.append(f'{where}: expected exactly id, outputs, optional, icon')
+            continue
+        if not isinstance(a['id'], str) or not _ID_RE.fullmatch(a['id']):
+            problems.append(f'{where}: id must match {_ID_RE.pattern}')
+        elif a['id'] in ids:
+            problems.append(f'{where}: duplicate id {a["id"]!r}')
+        else:
+            ids.append(a['id'])
+        if not isinstance(a['optional'], bool):
+            problems.append(f'{where}: optional must be a boolean')
+        if a['icon'] not in _APP_ICONS:
+            problems.append(f'{where}: icon must be one of {list(_APP_ICONS)}')
+        outs = a['outputs']
+        if not isinstance(outs, list) or not outs:
+            problems.append(f'{where}: outputs must be a non-empty list')
+            continue
+        for oid in outs:
+            if oid not in out_ids:
+                problems.append(f'{where}: unknown output {oid!r}')
+            elif oid in owner:
+                problems.append(f'{where}: output {oid!r} is already in app {owner[oid]!r}')
+            else:
+                owner[oid] = a['id']
+    for oid in out_ids:
+        if oid not in owner:
+            problems.append(f'apps: output {oid!r} is in no app')
+    return problems
+
+
+def _package_list(where, v):
+    if not isinstance(v, list) or len(v) != len(set(map(str, v))) or \
+            not all(isinstance(p, str) and _PACKAGE_RE.fullmatch(p) for p in v):
+        return [f'{where}: must be a list of distinct package names']
+    return []
+
+
+def _validate_platform(cat, out_ids):
+    p = cat['platform']
+    if not isinstance(p, dict) or set(p) != {'companionApp', 'healthPlatform', 'logPackages', 'revertSettings'}:
+        return ['platform: expected exactly companionApp, healthPlatform, logPackages, revertSettings']
+    problems = []
+    c = p['companionApp']
+    if not isinstance(c, dict) or set(c) != {'package', 'watchPlugins'}:
+        problems.append('platform.companionApp: expected exactly package, watchPlugins')
+    else:
+        if not isinstance(c['package'], str) or not _PACKAGE_RE.fullmatch(c['package']):
+            problems.append('platform.companionApp.package is not a valid package name')
+        problems.extend(_package_list('platform.companionApp.watchPlugins', c['watchPlugins']))
+    h = p['healthPlatform']
+    keys = {'package', 'settingsAction', 'settingsComponent', 'titleViewId', 'devModeViewId', 'taps',
+            'requiredBy'}
+    if not isinstance(h, dict) or set(h) != keys:
+        problems.append(f'platform.healthPlatform: expected exactly {", ".join(sorted(keys))}')
+    else:
+        for k, rx in (('package', _PACKAGE_RE), ('settingsAction', _PACKAGE_RE),
+                      ('settingsComponent', _SETTINGS_COMPONENT_RE), ('titleViewId', _VIEW_ID_RE),
+                      ('devModeViewId', _VIEW_ID_RE)):
+            if not isinstance(h[k], str) or not rx.fullmatch(h[k]):
+                problems.append(f'platform.healthPlatform.{k} missing or not matching {rx.pattern}')
+        if not (isinstance(h['taps'], int) and not isinstance(h['taps'], bool) and 1 <= h['taps'] <= 50):
+            problems.append('platform.healthPlatform.taps must be an integer in 1..50')
+        rb = h['requiredBy']
+        if not isinstance(rb, list) or not all(o in out_ids for o in rb):
+            problems.append('platform.healthPlatform.requiredBy must be a list of output ids')
+    lp = p['logPackages']
+    if not isinstance(lp, dict) or set(lp) != set(_DEVICES):
+        problems.append('platform.logPackages: expected exactly phone, watch')
+    else:
+        for d in _DEVICES:
+            problems.extend(_package_list(f'platform.logPackages.{d}', lp[d]))
+    rs = p['revertSettings']
+    if not isinstance(rs, list):
+        problems.append('platform.revertSettings must be a list')
+        rs = []
+    for i, r in enumerate(rs):
+        where = f'platform.revertSettings[{i}]'
+        if not isinstance(r, dict) or not {'device', 'kind', 'key', 'default'} <= set(r) or \
+                set(r) - {'device', 'kind', 'key', 'default', 'why'}:
+            problems.append(f'{where}: expected device, kind, key, default (plus optionally why)')
+            continue
+        if r['device'] not in _DEVICES:
+            problems.append(f'{where}: device must be one of {list(_DEVICES)}')
+        if r['kind'] != 'secureSetting':
+            problems.append(f'{where}: kind must be "secureSetting"')
+        if not isinstance(r['key'], str) or not _SETTING_KEY_RE.fullmatch(r['key']):
+            problems.append(f'{where}: key missing or not matching {_SETTING_KEY_RE.pattern}')
+        if not isinstance(r['default'], str) or not _SETTING_VALUE_RE.fullmatch(r['default']):
+            problems.append(f'{where}: default missing or not matching {_SETTING_VALUE_RE.pattern}')
+        if 'why' in r and not (isinstance(r['why'], str) and _STRING_KEY_RE.fullmatch(r['why'])):
+            problems.append(f'{where}: why must be a key of the strings table')
+    return problems
+
+
+def _validate_strings(cat, out_ids):
+    st = cat['strings']
+    if not isinstance(st, dict) or not isinstance(st.get('en'), dict) or not st['en']:
+        return ['strings: must be an object with a non-empty "en" table']
+    problems = []
+    for loc, table in st.items():
+        if not isinstance(loc, str) or not _LOCALE_RE.fullmatch(loc):
+            problems.append(f'strings: locale {loc!r} is not a BCP-47 tag like "es" or "zh-TW"')
+        if not isinstance(table, dict):
+            problems.append(f'strings/{loc}: must be an object')
+            continue
+        for k, v in table.items():
+            if not _STRING_KEY_RE.fullmatch(k):
+                problems.append(f'strings/{loc}: key {k!r} must match {_STRING_KEY_RE.pattern}')
+            elif loc != 'en' and k not in st['en']:
+                problems.append(f'strings/{loc}: key {k!r} is not in strings/en')
+            if not (isinstance(v, str) and _TEXT_RE.fullmatch(v)):
+                problems.append(f'strings/{loc}/{k}: must be a single-line string of 1..4000 characters')
+    en = st['en']
+    app_ids = [a['id'] for a in cat['apps'] if isinstance(a, dict) and isinstance(a.get('id'), str)] \
+        if isinstance(cat['apps'], list) else []
+    required = [f'app.{a}.{f}' for a in app_ids for f in ('title', 'summary')] + \
+        [f'output.{o}.label' for o in out_ids]
+    for k in required:
+        if k not in en:
+            problems.append(f'strings/en: missing required key {k!r}')
+    refs = []
+    for oid, lst in cat['grants'].items() if isinstance(cat['grants'], dict) else ():
+        for i, g in enumerate(lst if isinstance(lst, list) else ()):
+            if isinstance(g, dict) and isinstance(g.get('why'), str):
+                refs.append((f'grants/{oid}[{i}]', g['why']))
+    rs = cat['platform'].get('revertSettings') if isinstance(cat['platform'], dict) else None
+    for i, r in enumerate(rs if isinstance(rs, list) else ()):
+        if isinstance(r, dict) and isinstance(r.get('why'), str):
+            refs.append((f'platform.revertSettings[{i}]', r['why']))
+    for where, key in refs:
+        if key not in en:
+            problems.append(f'{where}: why {key!r} is not in strings/en')
     return problems
 
 

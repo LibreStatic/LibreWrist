@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import io.openshm.patcher.data.AppCatalogue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -36,13 +37,15 @@ class WearablePairingViewModel(application: Application) : AndroidViewModel(appl
         }
     }
 
+    private val companion get() = AppCatalogue.current.platform.companionApp
+
     fun recheck() {
-        viewModelScope.launch(Dispatchers.Default) { _state.value = wearableState(readWearableFacts(getApplication())) }
+        viewModelScope.launch(Dispatchers.Default) { _state.value = wearableState(readWearableFacts(getApplication(), companion), companion) }
     }
 
     private fun open() {
         val context = getApplication<Application>()
-        context.packageManager.getLaunchIntentForPackage(GALAXY_WEARABLE_PACKAGE)
+        context.packageManager.getLaunchIntentForPackage(companion.packageName)
             ?.let { context.startActivity(it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
     }
 
@@ -50,10 +53,10 @@ class WearablePairingViewModel(application: Application) : AndroidViewModel(appl
     private fun store() {
         val context = getApplication<Application>()
         try {
-            context.startActivity(storeIntent("market://details?id=$GALAXY_WEARABLE_PACKAGE"))
+            context.startActivity(storeIntent("market://details?id=$companion.packageName"))
         } catch (e: ActivityNotFoundException) {
             try {
-                context.startActivity(storeIntent("https://play.google.com/store/apps/details?id=$GALAXY_WEARABLE_PACKAGE"))
+                context.startActivity(storeIntent("https://play.google.com/store/apps/details?id=$companion.packageName"))
             } catch (e2: ActivityNotFoundException) {
                 // No store and no browser: the how-to still names the app.
             }

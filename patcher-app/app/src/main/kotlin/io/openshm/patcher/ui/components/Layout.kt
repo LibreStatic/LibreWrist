@@ -134,6 +134,8 @@ fun StepScreenScaffold(
     footer: @Composable ColumnScope.() -> Unit = {},
     secondary: (@Composable ColumnScope.() -> Unit)? = null,
     banner: (@Composable ColumnScope.() -> Unit)? = null,
+    /** False for a step outside the numbered sequence (the header then shows no "Step N of M"). */
+    numbered: Boolean = true,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     BoxWithConstraints(
@@ -150,7 +152,7 @@ fun StepScreenScaffold(
                     topTrailing()
                     if (onHelp != null) HelpAction(onHelp)
                 }
-                StepHeader(step, title, Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
+                StepHeader(step, title, Modifier.padding(horizontal = 16.dp, vertical = 4.dp), numbered)
                 val reducedMotion = LocalReducedMotion.current
                 AnimatedVisibility(
                     visible = banner != null,

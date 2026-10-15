@@ -76,6 +76,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.openshm.patcher.R
+import io.openshm.patcher.data.AutomationState
 import io.openshm.patcher.data.Device
 import io.openshm.patcher.data.Grant
 import io.openshm.patcher.data.StockApp
@@ -87,7 +88,16 @@ import io.openshm.patcher.ui.components.SubtleLink
 import io.openshm.patcher.ui.components.WelcomeHero
 
 /** One app the build installs, with the access it is given afterwards (`catalogue.json` `grants`). */
-data class AppChange(val outputId: String, val label: String, val packageName: String, val grants: List<Grant>)
+data class AppChange(
+    val outputId: String,
+    val label: String,
+    val packageName: String,
+    val grants: List<Grant>,
+    /** One plain-language line on what the app is for, from the catalogue; empty when there is none. */
+    val purpose: String = "",
+    /** The catalogue `apps` icon symbol of the app this output belongs to. */
+    val icon: String = "",
+)
 
 /** What the build changes on one device, from the verified catalogue. */
 data class DeviceChanges(val device: Device, val apps: List<AppChange>, val disables: List<StockApp>)
@@ -101,6 +111,17 @@ data class WelcomeUiState(
     val logsAvailable: Boolean = false,
     /** Something was installed by the setup, so everything can be undone. */
     val canRevert: Boolean = false,
+    /** The automation switches shown under "Get started". */
+    val automation: AutomationState = AutomationState(),
+    /** The explanation dialog of a switch, while open. */
+    val help: AutomationHelp? = null,
+    /** The warning shown before "Advance freely" is turned on. */
+    val freeRunWarning: Boolean = false,
+    /**
+     * The first-launch notice, shown only while an official app is missing: unattended mode only runs
+     * end to end once the official apps were fetched by hand (and again after the list changes).
+     */
+    val appsNotice: Boolean = false,
 )
 
 sealed interface WelcomeEvent {
@@ -110,6 +131,14 @@ sealed interface WelcomeEvent {
     data object ConfirmSkip : WelcomeEvent
     data object CancelSkip : WelcomeEvent
     data object ManualSetup : WelcomeEvent
+    data class SetUnattended(val on: Boolean) : WelcomeEvent
+    data class SetFreeRun(val on: Boolean) : WelcomeEvent
+    data class SetUninstallMismatch(val on: Boolean) : WelcomeEvent
+    data class ShowHelp(val help: AutomationHelp) : WelcomeEvent
+    data object HideHelp : WelcomeEvent
+    data class ConfirmFreeRun(val dontShowAgain: Boolean) : WelcomeEvent
+    data object CancelFreeRun : WelcomeEvent
+    data object AcknowledgeAppsNotice : WelcomeEvent
 }
 
 @Composable
@@ -124,6 +153,7 @@ fun WelcomeScreen(
 ) {
     Box(modifier.fillMaxSize()) {
         WelcomeBody(state, onEvent, onGetStarted, onSettings, onDeviceLogs, onRevert)
+        AutomationDialogs(state, onEvent)
         SkipStepsOverlay(
             state.skip,
             onConfirm = { onEvent(WelcomeEvent.ConfirmSkip) },
@@ -164,7 +194,7 @@ private fun WelcomeBody(
                         WelcomeHero(Modifier.weight(1f).height(260.dp))
                         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(20.dp)) {
                             WelcomeText()
-                            WelcomeActions(state.logsAvailable, state.canRevert, onEvent, onGetStarted, onDeviceLogs, onRevert, Modifier.padding(top = 4.dp))
+                            WelcomeActions(state.logsAvailable, state.canRevert, state.automation, onEvent, onGetStarted, onDeviceLogs, onRevert, Modifier.padding(top = 4.dp))
                         }
                     }
                 }
@@ -180,7 +210,7 @@ private fun WelcomeBody(
                     WelcomeHero(Modifier.fillMaxWidth().height(220.dp))
                     WelcomeText()
                 }
-                WelcomeActions(state.logsAvailable, state.canRevert, onEvent, onGetStarted, onDeviceLogs, onRevert, Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 16.dp))
+                WelcomeActions(state.logsAvailable, state.canRevert, state.automation, onEvent, onGetStarted, onDeviceLogs, onRevert, Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 16.dp))
             }
         }
     }
@@ -228,6 +258,7 @@ private fun WelcomeText() {
 private fun WelcomeActions(
     logsAvailable: Boolean,
     canRevert: Boolean,
+    automation: AutomationState,
     onEvent: (WelcomeEvent) -> Unit,
     onGetStarted: () -> Unit,
     onDeviceLogs: () -> Unit,
@@ -239,6 +270,7 @@ private fun WelcomeActions(
             PrimaryAction(stringResource(R.string.welcome_get_started), onGetStarted)
             QuietAction(stringResource(R.string.welcome_what_changes), { onEvent(WelcomeEvent.ShowChanges) })
         }
+        AutomationToggles(automation, onEvent, Modifier.padding(top = 4.dp))
         if (logsAvailable) SubtleLink(stringResource(R.string.device_logs_link), onDeviceLogs, Modifier.padding(top = 4.dp), Icons.Rounded.Terminal)
         if (canRevert) SubtleLink(stringResource(R.string.revert_title), onRevert, Modifier.padding(top = 4.dp), Icons.Rounded.Undo)
     }
@@ -332,12 +364,12 @@ private fun AppCard(app: AppChange, technical: Boolean) {
                     Modifier.size(44.dp).background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(14.dp)),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Icon(appIcon(app.outputId), contentDescription = null, tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                    Icon(appIcon(app.icon), contentDescription = null, tint = MaterialTheme.colorScheme.onPrimaryContainer)
                 }
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     Text(app.label, style = MaterialTheme.typography.titleMedium)
-                    outputPurpose(app.outputId)?.let {
-                        Text(stringResource(it), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    app.purpose.takeIf { it.isNotEmpty() }?.let {
+                        Text(it, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     if (technical) PackageId(app.packageName, maxLines = 2)
                 }
@@ -349,14 +381,14 @@ private fun AppCard(app: AppChange, technical: Boolean) {
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.primary,
                 )
-                app.grants.forEach { GrantRow(app.outputId, it, technical) }
+                app.grants.forEach { GrantRow(it, technical) }
             }
         }
     }
 }
 
 @Composable
-private fun GrantRow(outputId: String, grant: Grant, technical: Boolean) {
+private fun GrantRow(grant: Grant, technical: Boolean) {
     val title = grantTitle(grant)
     Row(Modifier.semantics(mergeDescendants = true) {}, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
         Icon(
@@ -370,9 +402,9 @@ private fun GrantRow(outputId: String, grant: Grant, technical: Boolean) {
                 Text(stringResource(title), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium, modifier = Modifier.weight(1f, fill = false))
                 if (grant.optional) OptionalBadge()
             }
-            val reason = grantReason(outputId, grant)
+            val reason = grant.why
             if (reason != null) {
-                Text(stringResource(reason), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(reason, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             if (technical || reason == null) PackageId(grantTechnicalName(grant), maxLines = 2)
         }
@@ -420,10 +452,11 @@ private fun DisableCard(stock: StockApp, technical: Boolean) {
     }
 }
 
-private fun appIcon(outputId: String): ImageVector = when (outputId) {
-    "shm-phone", "shm-watch" -> Icons.Rounded.MonitorHeart
-    "shealth-phone" -> Icons.Rounded.Favorite
-    "alarm-fork" -> Icons.Rounded.Alarm
+/** The icon for a catalogue `apps` icon symbol (`Catalogue.APP_ICONS`); an unknown symbol gets the generic one. */
+private fun appIcon(symbol: String): ImageVector = when (symbol) {
+    "monitor-heart" -> Icons.Rounded.MonitorHeart
+    "favorite" -> Icons.Rounded.Favorite
+    "alarm" -> Icons.Rounded.Alarm
     else -> Icons.Rounded.SwapHoriz
 }
 

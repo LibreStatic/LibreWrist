@@ -9,9 +9,9 @@ import org.junit.Test
 class LeftoverBridgesTest {
     private val ph = "\${PKG_PREFIX}"
     private val outputs = listOf(
-        OutputApp("alarm-fork", "Alarm", Device.Watch, "$ph.shmbridge.alarm", null),
-        OutputApp("bridge-watch", "Bridge", Device.Watch, "$ph.shmbridge.watch", null),
-        OutputApp("bridge-phone", "Bridge", Device.Phone, "$ph.shmbridge.phone", null),
+        OutputApp("alarm-fork", "Alarm", Device.Watch, "$ph.shmbridge.alarm", null, singleCopy = true),
+        OutputApp("bridge-watch", "Bridge", Device.Watch, "$ph.shmbridge.watch", null, singleCopy = true),
+        OutputApp("bridge-phone", "Bridge", Device.Phone, "$ph.shmbridge.phone", null, singleCopy = true),
         OutputApp("shealth", "Health+", Device.Watch, "$ph.shealth", null),
         OutputApp("shm-watch", "SHM", Device.Watch, "com.samsung.android.shealthmonitors", null),
     )

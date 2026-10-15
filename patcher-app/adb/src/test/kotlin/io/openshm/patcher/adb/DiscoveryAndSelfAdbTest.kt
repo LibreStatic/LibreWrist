@@ -60,6 +60,9 @@ class DiscoveryAndSelfAdbTest {
         val refusedOnLoopback: MutableSet<Int> = java.util.Collections.synchronizedSet(mutableSetOf())
         val logLines: MutableList<String> = java.util.Collections.synchronizedList(mutableListOf())
         var pairGate: java.util.concurrent.CountDownLatch? = null
+        var connectGate: java.util.concurrent.CountDownLatch? = null
+        var transports: MutableList<FakeTransport>? = null
+        val failPorts: MutableMap<Int, Throwable> = java.util.concurrent.ConcurrentHashMap()
         val backend = object : AdbBackend {
             override fun pair(host: String, port: Int, code: String, abort: AbortScope) {
                 pairCalls += Triple(host, port, code)
@@ -70,8 +73,10 @@ class DiscoveryAndSelfAdbTest {
             override fun connect(host: String, port: Int, timeoutMillis: Long, abort: AbortScope): AdbTransport {
                 connectCalls += host to port
                 failConnect?.let { throw it }
+                failPorts[port]?.let { throw it }
+                connectGate?.await(5, java.util.concurrent.TimeUnit.SECONDS)
                 if (port in refusedPorts || (host == "127.0.0.1" && port in refusedOnLoopback)) throw java.net.ConnectException("ECONNREFUSED")
-                return FakeTransport { FakeChannel() }
+                return FakeTransport { FakeChannel() }.also { transports?.add(it) }
             }
         }
         val scope = CoroutineScope(Dispatchers.Default)
@@ -214,12 +219,12 @@ class DiscoveryAndSelfAdbTest {
         env.session.start()
         env.pairing.value = listOf(AdbService("p", "192.168.1.5", 40032, AdbServiceType.PAIRING))
         env.session.await { it is SelfAdbState.WaitingForCode }
+        env.failConnect = javax.net.ssl.SSLException("handshake")
+        env.session.submitCode("123456")
         env.connect.value = listOf(
             AdbService("a", "192.168.1.5", 41005, AdbServiceType.CONNECT),
             AdbService("b", "192.168.1.5", 41006, AdbServiceType.CONNECT),
         )
-        env.failConnect = javax.net.ssl.SSLException("handshake")
-        env.session.submitCode("123456")
         val failed = env.session.await { it is SelfAdbState.Failed } as SelfAdbState.Failed
         assertTrue(failed.error is AdbException.ConnectionFailed)
         assertEquals(1, env.connectCalls.size)
@@ -244,10 +249,10 @@ class DiscoveryAndSelfAdbTest {
         env.session.start()
         env.pairGate!!.countDown()
         Thread.sleep(300) // the restarted session found no connect service to reconnect to
+        env.refusedPorts += 41040 // the pairing-wait follower dials it, but the stored key is not usable
         env.connect.value = listOf(AdbService("c", "192.168.1.5", 41040, AdbServiceType.CONNECT))
         Thread.sleep(100)
-        assertTrue(env.session.state.value !is SelfAdbState.Connected)
-        assertTrue(env.connectCalls.isEmpty())
+        assertTrue(env.session.state.value is SelfAdbState.WaitingForCode || env.session.state.value == SelfAdbState.WaitingForPairingService)
         assertEquals(1, env.pairCalls.size)
         env.scope.cancel()
     }
@@ -366,6 +371,153 @@ class DiscoveryAndSelfAdbTest {
         assertTrue(lines.toString(), lines.contains("state WaitingForCode"))
         assertTrue(lines.toString(), lines.contains("pairing services: 2 found, 1 on this device"))
         assertTrue(lines.none { it.contains("987654") })
+        env.scope.cancel()
+    }
+
+    private class MemoryStore(var endpoint: Pair<String, Int>? = null) : SelfAdbEndpointStore {
+        override fun load() = endpoint
+
+        override fun save(host: String, port: Int) {
+            endpoint = host to port
+        }
+    }
+
+    private fun Env.sessionWith(store: SelfAdbEndpointStore?, reconnectTimeout: Long = 150) = SelfAdbSession(
+        backend, pairing, connect, scope, connectServiceTimeoutMillis = 300, reconnectTimeoutMillis = reconnectTimeout,
+        isLocalHost = { it.startsWith("192.168.1.5") || it.startsWith("10.0.0.") || it == "127.0.0.1" },
+        log = { logLines += it }, endpointStore = store, storedEndpointTimeoutMillis = 500,
+    )
+
+    @Test
+    fun `a stored endpoint connects without consulting mDNS`() = runBlocking {
+        val env = Env()
+        val session = env.sessionWith(MemoryStore("192.168.1.5" to 42000), reconnectTimeout = 5_000)
+        session.start()
+        session.await { it is SelfAdbState.Connected }
+        assertEquals(listOf("192.168.1.5" to 42000), env.connectCalls)
+        env.scope.cancel()
+    }
+
+    @Test
+    fun `a stored endpoint on a foreign host is not dialled`() = runBlocking {
+        val env = Env()
+        val session = env.sessionWith(MemoryStore("192.168.1.77" to 42000))
+        session.start()
+        session.await { it == SelfAdbState.WaitingForPairingService }
+        assertTrue(env.connectCalls.isEmpty())
+        env.scope.cancel()
+    }
+
+    @Test
+    fun `a failing stored endpoint falls back to mDNS and is not reported as a rejected key`() {
+        val failures = listOf<(Env) -> Unit>(
+            { it.refusedPorts += 42001 },
+            { it.failConnectFor(42001, javax.net.ssl.SSLException("certificate unknown")) },
+            { it.failConnectFor(42001, java.net.SocketTimeoutException("timed out")) },
+        )
+        for (arrange in failures) runBlocking {
+            val env = Env()
+            arrange(env)
+            env.connect.value = listOf(AdbService("me", "192.168.1.5", 41300, AdbServiceType.CONNECT))
+            val store = MemoryStore("127.0.0.1" to 42001)
+            val session = env.sessionWith(store)
+            session.start()
+            session.await { it is SelfAdbState.Connected }
+            assertEquals("127.0.0.1" to 42001, env.connectCalls.first())
+            assertEquals("127.0.0.1" to 41300, env.connectCalls.last())
+            assertEquals(2, env.connectCalls.size)
+            assertTrue(env.logLines.none { it.startsWith("reconnect failed") })
+            assertEquals("127.0.0.1" to 41300, store.endpoint)
+            env.scope.cancel()
+        }
+    }
+
+    private fun Env.failConnectFor(port: Int, error: Throwable) {
+        failPorts[port] = error
+    }
+
+    @Test
+    fun `a successful connect saves the endpoint actually used, including the announced address`() = runBlocking {
+        val env = Env()
+        env.refusedOnLoopback += 41400
+        env.connect.value = listOf(AdbService("me", "192.168.1.5", 41400, AdbServiceType.CONNECT))
+        val store = MemoryStore()
+        val session = env.sessionWith(store)
+        session.start()
+        session.await { it is SelfAdbState.Connected }
+        assertEquals("192.168.1.5" to 41400, store.endpoint)
+        env.scope.cancel()
+    }
+
+    @Test
+    fun `pairing path saves the endpoint too`() = runBlocking {
+        val env = Env()
+        val store = MemoryStore()
+        val session = env.sessionWith(store)
+        session.start()
+        env.pairing.value = listOf(AdbService("p", "192.168.1.5", 40500, AdbServiceType.PAIRING))
+        session.await { it is SelfAdbState.WaitingForCode }
+        session.submitCode("123456")
+        env.connect.value = listOf(AdbService("me", "192.168.1.5", 41500, AdbServiceType.CONNECT))
+        session.await { it is SelfAdbState.Connected }
+        assertEquals("127.0.0.1" to 41500, store.endpoint)
+        env.scope.cancel()
+    }
+
+    @Test
+    fun `a connect service that appears while waiting for pairing connects with the stored key`() = runBlocking {
+        val env = Env()
+        val session = env.sessionWith(null)
+        session.start()
+        session.await { it == SelfAdbState.WaitingForPairingService }
+        env.pairing.value = listOf(AdbService("p", "192.168.1.5", 40600, AdbServiceType.PAIRING))
+        session.await { it is SelfAdbState.WaitingForCode }
+        env.connect.value = listOf(AdbService("me", "192.168.1.5", 41600, AdbServiceType.CONNECT))
+        session.await { it is SelfAdbState.Connected }
+        assertTrue(env.pairCalls.isEmpty())
+        env.scope.cancel()
+    }
+
+    @Test
+    fun `a connect service that rejects the key leaves the pairing state`() = runBlocking {
+        val env = Env()
+        val session = env.sessionWith(null)
+        session.start()
+        session.await { it == SelfAdbState.WaitingForPairingService }
+        env.failConnect = javax.net.ssl.SSLException("certificate unknown")
+        env.connect.value = listOf(AdbService("me", "192.168.1.5", 41700, AdbServiceType.CONNECT))
+        val deadline = System.nanoTime() + 3_000_000_000
+        while (env.connectCalls.isEmpty() && System.nanoTime() < deadline) Thread.sleep(10)
+        Thread.sleep(150)
+        assertEquals(SelfAdbState.WaitingForPairingService, session.state.value)
+        env.pairing.value = listOf(AdbService("p", "192.168.1.5", 40700, AdbServiceType.PAIRING))
+        session.await { it == SelfAdbState.WaitingForCode(40700) }
+        assertEquals(1, env.connectCalls.size)
+        env.scope.cancel()
+    }
+
+    @Test
+    fun `a code submitted while a follower dial is pending closes the stale result`() = runBlocking {
+        val env = Env()
+        val session = env.sessionWith(null)
+        session.start()
+        env.pairing.value = listOf(AdbService("p", "192.168.1.5", 40800, AdbServiceType.PAIRING))
+        session.await { it is SelfAdbState.WaitingForCode }
+        val gate = java.util.concurrent.CountDownLatch(1)
+        val transports = java.util.Collections.synchronizedList(mutableListOf<FakeTransport>())
+        env.connectGate = gate
+        env.transports = transports
+        env.pairGate = java.util.concurrent.CountDownLatch(1) // keep the submitted code in flight
+        env.connect.value = listOf(AdbService("me", "192.168.1.5", 41800, AdbServiceType.CONNECT))
+        val deadline = System.nanoTime() + 3_000_000_000
+        while (env.connectCalls.isEmpty() && System.nanoTime() < deadline) Thread.sleep(10)
+        assertTrue(session.submitCode("123456") != null)
+        gate.countDown() // the follower dial now completes with a stale generation
+        Thread.sleep(300)
+        assertTrue(session.state.value !is SelfAdbState.Connected)
+        assertEquals(1, transports.size)
+        assertTrue(!transports.single().isConnected)
+        env.pairGate!!.countDown()
         env.scope.cancel()
     }
 }

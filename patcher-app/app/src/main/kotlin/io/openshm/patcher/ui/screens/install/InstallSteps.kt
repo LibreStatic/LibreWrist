@@ -1,5 +1,6 @@
 package io.openshm.patcher.ui.screens.install
 
+import io.openshm.patcher.ui.components.UnattendedRun
 import androidx.annotation.StringRes
 import io.openshm.patcher.R
 import io.openshm.patcher.adb.Grant as AdbGrant
@@ -20,8 +21,10 @@ import kotlinx.coroutines.flow.update
 internal fun InstallUiState.updateItem(index: Int, change: (InstallItem) -> InstallItem) =
     copy(items = items.mapIndexed { i, item -> if (i == index) change(item) else item })
 
+/** Shows an install error; it also ends an unattended run. */
 internal fun fail(state: MutableStateFlow<InstallUiState>, @StringRes res: Int, detail: String? = null) {
     state.update { it.copy(errorRes = res, errorDetail = detail) }
+    UnattendedRun.fail()
 }
 
 /** The message for a refused install; a copy with another signature is called out. */

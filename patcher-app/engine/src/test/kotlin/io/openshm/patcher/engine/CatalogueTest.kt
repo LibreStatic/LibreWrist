@@ -223,7 +223,7 @@ class CatalogueTest {
 
     @Test fun duplicateKeysAreRejected() {
         try {
-            Catalogue.parse("{\"schema\": 1, \"schema\": 1}")
+            Catalogue.parse("{\"schema\": 2, \"schema\": 2}")
             fail()
         } catch (e: CatalogueException) {
             // expected

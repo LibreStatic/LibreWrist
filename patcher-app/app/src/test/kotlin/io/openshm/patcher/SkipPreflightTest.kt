@@ -42,6 +42,7 @@ class SkipPreflightTest {
         wearableReady: Boolean,
         rec: Recorder,
         announced: DetectedWatch? = null,
+        autoSkip: Boolean = false,
     ): SkipPreflight {
         val p = SkipPreflight(
             backgroundScope,
@@ -51,6 +52,7 @@ class SkipPreflightTest {
             apply = { steps, w -> rec.applied = steps; rec.appliedWatch = w },
             announced = { announced },
             setManual = { rec.manual = it },
+            autoSkip = { autoSkip },
         )
         backgroundScope.launch { p.go.collect { rec.went++ } }
         return p
@@ -61,7 +63,7 @@ class SkipPreflightTest {
         val steps = skippableSteps(watch, wearableReady = true)
         assertEquals(listOf(Route.Profile, Route.WearablePairing, Route.WatchPair), steps.map { it.route })
         assertEquals(watch, steps.first().watch)
-        assertEquals(Route.Acquire, SetupFlow.next(Route.Welcome, steps.map { it.route }.toSet()))
+        assertEquals(Route.Acquire, SetupFlow.next(Route.PhoneAdb, steps.map { it.route }.toSet()))
     }
 
     @Test
@@ -69,7 +71,7 @@ class SkipPreflightTest {
         val steps = skippableSteps(null, wearableReady = true)
         assertEquals(listOf(Route.WearablePairing), steps.map { it.route })
         val skipped = steps.map { it.route }.toSet()
-        assertEquals(Route.Profile, SetupFlow.next(Route.Welcome, skipped))
+        assertEquals(Route.Profile, SetupFlow.next(Route.PhoneAdb, skipped))
         assertEquals(Route.WatchPair, SetupFlow.next(Route.Profile, skipped))
         assertTrue(skippableSteps(null, wearableReady = false).isEmpty())
     }
@@ -97,6 +99,19 @@ class SkipPreflightTest {
         assertEquals(watch, rec.appliedWatch)
         assertEquals(1, rec.went)
         assertNull(p.dialog.value)
+    }
+
+    @Test
+    fun unattendedModeSkipsTheDoneStepsWithoutTheDialog() = runTest {
+        val rec = Recorder()
+        val p = preflight(remembered = true, detect = { watch }, wearableReady = true, rec = rec, autoSkip = true)
+        p.start()
+        runCurrent()
+        assertNull(p.dialog.value)
+        assertEquals(listOf(Route.Profile, Route.WearablePairing, Route.WatchPair), rec.applied!!.map { it.route })
+        assertEquals(watch, rec.appliedWatch)
+        assertEquals(false, rec.manual)
+        assertEquals(1, rec.went)
     }
 
     @Test
@@ -232,7 +247,7 @@ class SkipPreflightTest {
         val steps = skippableSteps(announcedWatch, wearableReady = false)
         assertEquals(listOf(Route.Profile), steps.map { it.route })
         assertEquals(io.openshm.patcher.R.string.skip_reason_profile_network, steps.single().reason)
-        assertEquals(Route.WearablePairing, SetupFlow.next(Route.Welcome, steps.map { it.route }.toSet()))
+        assertEquals(Route.WearablePairing, SetupFlow.next(Route.PhoneAdb, steps.map { it.route }.toSet()))
         val withWearable = skippableSteps(announcedWatch, wearableReady = true)
         assertEquals(listOf(Route.Profile, Route.WearablePairing), withWearable.map { it.route })
     }

@@ -102,7 +102,7 @@ class PatcherTest {
         } else ""
         val text = """
 {
-  "schema": 1, "serial": 1, "minAppVersion": 1,
+  "schema": 2, "serial": 1, "minAppVersion": 1,
   "inputs": [{"id": "syn", "file": "syn.apk", "sha256": "${sha(apk)}", "label": "Synthetic", "package": "com.example.syn",
     "versionName": "1", "versionCode": 1, "minSdk": 21, "targetSdk": 21, "abis": [], "dpi": "nodpi", "format": "apk",
     "target": "phone", "role": "patched"}],
@@ -112,7 +112,7 @@ class PatcherTest {
   "patterns": {"greet": {"families": ["syn"], "title": "Greeting", "description": "changes the greeting", "optional": false,
     "ops": [{"op": "replaceInClass", "className": "com/example/syn/Main", "old": "$old", "new": "$patchNew"}]}$extraPatterns},
   "outputs": [{"id": "syn-out", "device": "phone", "package": "com.example.syn", "from": {"input": "syn", "profile": "p"}}],
-  "installOrder": [{"output": "syn-out"}], "grants": {"syn-out": []}, "stockAppsToDisable": []
+  "installOrder": [{"output": "syn-out"}], "grants": {"syn-out": []}, "stockAppsToDisable": []${schema2Tail("syn-out")}
 }"""
         return Catalogue.parse(text)
     }

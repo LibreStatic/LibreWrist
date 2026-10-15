@@ -57,7 +57,8 @@ class SetupFlowTest {
     fun orderFollowsTheGuidedSetup() {
         assertEquals(Route.Welcome, SetupFlow.order.first())
         assertEquals(Route.Home, SetupFlow.order.last())
-        assertEquals(Route.Profile, SetupFlow.next(Route.Welcome))
+        assertEquals(Route.PhoneAdb, SetupFlow.next(Route.Welcome))
+        assertEquals(Route.Profile, SetupFlow.next(Route.PhoneAdb))
         assertEquals(Route.Customize, SetupFlow.next(Route.Acquire))
         assertEquals(Route.Build, SetupFlow.next(Route.Customize))
         assertNull(SetupFlow.next(Route.Home))
@@ -69,7 +70,7 @@ class SetupFlowTest {
 class CustomizeStateTest {
     @Before fun catalogue() = TestCatalogue.install()
 
-    private val session = SessionState(watchProfile = WatchProfile.WearOs5, packagePrefix = "io.openshm.u3fa91c", samsungHealth = false)
+    private val session = SessionState(watchProfile = WatchProfile.WearOs5, packagePrefix = "io.openshm.u3fa91c", skippedApps = setOf("samsung-health"))
 
     private val optionalIds = setOf(
         "shm-min-age-22-to-16", "watch-min-age-22-to-16", "shm-setup-network-gate", "shm-sleep-apnea-support", "watch-apnea-country",
@@ -93,7 +94,7 @@ class CustomizeStateTest {
         assertEquals(Preset.Recommended, s.preset)
         assertTrue(s.disabledIds.isEmpty())
         val expected = AppCatalogue.current.patchSets
-            .filter { it.inputId in session.watchProfile.inputIds }
+            .filter { it.inputId in session.inputIds }
             .sumOf { it.patches.size }
         assertEquals(expected, s.enabledPatchCount)
         assertTrue(s.canBuild)
@@ -143,9 +144,9 @@ class CustomizeStateTest {
     @Test
     fun skippedPatchesAreNotCounted() {
         val c = AppCatalogue.current
-        val all = c.patternCount(session.watchProfile.inputIds)
-        assertEquals(all - 3, c.patternCount(session.watchProfile.inputIds, apneaIds))
-        assertEquals(all - 1, c.patternCount(session.watchProfile.inputIds, setOf("alarm-relabel", "generic-vendor-check", "nope")))
+        val all = c.patternCount(session.inputIds)
+        assertEquals(all - 3, c.patternCount(session.inputIds, apneaIds))
+        assertEquals(all - 1, c.patternCount(session.inputIds, setOf("alarm-relabel", "generic-vendor-check", "nope")))
     }
 
     @Test

@@ -80,7 +80,7 @@ fun DisableStockScreen(
         secondary = { if (LocalTwoPane.current) HeroCard() },
         footer = {
             if (state.nothingLeft) {
-                PrimaryAction(stringResource(R.string.action_continue), onSkip, accent = Accent.Tertiary)
+                PrimaryAction(stringResource(R.string.action_continue), onSkip, accent = Accent.Tertiary, auto = true)
             } else {
                 ActionRow {
                     PrimaryAction(
@@ -88,6 +88,7 @@ fun DisableStockScreen(
                         { onEvent(DisableStockEvent.Disable) },
                         enabled = state.selectedCount > 0 && !state.running,
                         accent = Accent.Tertiary,
+                        auto = true,
                     )
                     QuietAction(stringResource(R.string.action_skip), onSkip, accent = Accent.Tertiary)
                 }

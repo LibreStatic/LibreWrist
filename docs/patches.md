@@ -25,7 +25,7 @@ scripts/build_shm_watch.sh        # -> $DIST_DIR/shm-watch-1.5.1.022-gms.apk
 `catalogue/catalogue.json` (indent 2, key order preserved; `scripts/catalogue.py` writes it):
 
 ```
-{ "schema": 1, "serial": N, "minAppVersion": 1,
+{ "schema": 2, "serial": N, "minAppVersion": 1,
   "inputs":   [ ...copy of apks/inputs.json "inputs" (scripts/catalogue.py sync-inputs) ],
   "families": [ {"id", "package", "markerClass"?}, ... ],       first match wins
   "profiles": { "<name>": {"description", "families": {"<family>": ["<pattern id>", ...]},
@@ -33,7 +33,8 @@ scripts/build_shm_watch.sh        # -> $DIST_DIR/shm-watch-1.5.1.022-gms.apk
   "patterns": { "<id>": {"families": [...] | "*", "title", "description", "optional": false,
                          "optionGroup"?: "<kebab-case group>", "offByDefault"?: true,
                          "ops": [ {"op": "<name>", ...args}, ... ]} },
-  "outputs", "installOrder", "grants", "stockAppsToDisable": install section, see below }
+  "outputs", "installOrder", "grants", "stockAppsToDisable": install section, see below,
+  "apps", "strings", "platform": what the app shows and which platform packages it knows (schema 2) }
 ```
 
 - **Install section** (top level, same file): what to install and how, for the app that drives
@@ -47,7 +48,7 @@ scripts/build_shm_watch.sh        # -> $DIST_DIR/shm-watch-1.5.1.022-gms.apk
                            | {"ownApp": "<repo-relative dir>"} } ],               (our own app)
   "installOrder": [ {"output": "<output id>", "then"?: "userOnboarding"} ],   every output once
   "grants":       { "<output id>": [ <grant>, ... ] },
-  "stockAppsToDisable": [ {"device", "package", "optional": bool, "reason"} ]
+  "stockAppsToDisable": [ {"device", "package", "optional": bool, "reason", "replacedBy"?: "<output id>"} ]
   ```
 
   - `outputs[].package` is the package of the built APK; `${PKG_PREFIX}` is the only placeholder.
@@ -56,7 +57,8 @@ scripts/build_shm_watch.sh        # -> $DIST_DIR/shm-watch-1.5.1.022-gms.apk
   - `installOrder` lists every output exactly once; `then` is a follow-up the app performs after
     that install (`userOnboarding` = the user completes the in-app onboarding).
   - `grants`: closed set of kinds, each with exactly these fields plus the optional
-    `"optional": true` (best effort / recommended) and `"note"` (one line, <= 300 chars):
+    `"optional": true` (best effort / recommended), `"note"` (one line, <= 300 chars; a technical
+    note) and `"why"` (a key of `strings.en`: the plain-language reason shown to the user):
 
     | `kind` | fields | meaning (adb equivalent) |
     |---|---|---|
@@ -81,7 +83,41 @@ scripts/build_shm_watch.sh        # -> $DIST_DIR/shm-watch-1.5.1.022-gms.apk
     is a list of hidden-API member prefixes, not a `secure` user preference, and it is appended to,
     never overwritten.)
   - `stockAppsToDisable`: stock system apps that should be disabled on a device
-    (`pm disable-user --user 0 <package>`); `optional` apps are offered, not forced.
+    (`pm disable-user --user 0 <package>`); `optional` apps are offered, not forced. `replacedBy`
+    names the output that replaces the stock app (the step is skipped when that output is not built).
+  - `outputs[]` may also carry (schema 2, all optional): `start` = `{"receiver": ".Class",
+    "action": "<action>"}` (the broadcast that starts an installed bridge; `${PKG_PREFIX}` allowed in
+    the action), `companionLink` (the app talks to the companion app), `knownSigner` (may be signed
+    by a key other than the catalogue's own), `statusAuthority` (content authority where the app
+    publishes its status; `${PKG_PREFIX}` allowed) and `singleCopy` (copies under another package
+    prefix are leftovers).
+
+- **Schema 2 top-level keys** (the app reads these instead of hard-coding them; an engine that does
+  not know the schema rejects the file):
+  - `apps`: `[{"id", "outputs": [<output id>, ...], "optional": bool, "icon"}]`, the user-facing
+    groups, in the order the app shows them. Every output is in exactly one app; `icon` is one of
+    `monitor-heart`, `favorite`, `alarm`, `swap`.
+  - `strings`: `{"<locale>": {"<key>": "<text>"}}`, locales are BCP-47 tags (`en`, `es`, `id`,
+    `zh-CN`, `zh-TW`, ...). `en` is required and holds every key; the other locales only hold keys
+    that exist in `en` (the app falls back to `en` for a missing one). Texts are plain single-line
+    Unicode (no Android escapes, no control characters). Keys by convention: `app.<id>.title` and
+    `app.<id>.summary`, `output.<id>.label` and `.purpose`, `pattern.<id>.description`,
+    `inject.<name>.title` and `.description`, `stock.<package>.label` and `.reason`, and the shared
+    grant reasons `grant.why.<name>` (referenced from `grants[].why`). The validator requires
+    `app.<id>.title`, `app.<id>.summary` and `output.<id>.label` in `en` for every app and output,
+    and every `why` to resolve. `scripts/migrate_catalogue_strings.py` produced the first table from
+    the app's `strings.xml` files.
+  - `platform`: Samsung platform facts, so no package name lives in the app:
+    `companionApp` = `{"package", "watchPlugins": [<package>, ...]}` (Galaxy Wearable and one plugin
+    per watch family: waterplugin = Watch4/4 Classic/FE, heartplugin = Watch5/5 Pro, watch6plugin =
+    Watch6/6 Classic, watch7plugin = Watch7/Ultra, watchuniteplugin = Watch8/8 Classic/Ultra 2025 and
+    newer); `healthPlatform` = `{"package", "settingsAction", "settingsComponent" ("pkg/.Class"),
+    "titleViewId", "devModeViewId" ("ns:id/name"), "taps": 1..50, "requiredBy": [<output id>, ...]}`
+    (the Health Platform service whose developer mode the user enables; `requiredBy` lists the
+    outputs that need it); `logPackages` = `{"phone": [...], "watch": [...]}` (packages whose logs
+    the app collects); `revertSettings` = `[{"device", "kind": "secureSetting", "key", "default",
+    "why"?}]` (settings the revert puts back; the hidden-API exemption it removes is derived from
+    the `globalSetting` grants).
 
 - **Family detection**: the first rule whose `package` equals the manifest `package` and, if
   `markerClass` is set (a class type without `L`/`;`), whose class exists in any `smali*` dir.
@@ -357,8 +393,10 @@ scripts/build_shealth.sh                # -> $DIST_DIR/shealth-7.00.6.011-shealt
 SHEALTH_OOBE_LOCAL=1 scripts/build_shealth.sh   # include the optional Local-only mode
 ```
 
-In the patcher app it is opt-out: the "Samsung Health" switch on the Acquire step adds the input,
-its patterns appear in Customize and the output joins the phone install.
+In the patcher app it is opt-out like every optional app (the other is Health Monitor, `shm-phone` +
+`shm-watch`, one switch): the "Samsung Health+" switch on the Acquire step controls the input, its patterns
+appear in Customize and the output joins the phone install. Only the bridges and, on Wear OS 5, the alarm
+fork (`alarm-watch`) are mandatory.
 
 Why two apps: the watch's Samsung Health pins the phone app's certificate
 (`wear-trusted-peer-packages` = `com.sec.android.app.shealth` with Samsung's digest) and silently

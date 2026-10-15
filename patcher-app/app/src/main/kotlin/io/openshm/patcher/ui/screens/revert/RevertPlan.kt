@@ -59,20 +59,6 @@ data class RevertCandidate(val device: Device, val label: String, val pkg: Strin
  * makes candidates. Probing the devices and acting is [RevertRunner]'s job.
  */
 object RevertPlan {
-    /** The secure setting the earlier catalogue changed on the watch, and the default it is put back to. */
-    const val ALWAYS_ON_KEY = "doze_always_on"
-    const val ALWAYS_ON_DEFAULT = "1"
-
-    /** The global setting and the entry the `shm-watch` globalSetting grant appends to it. */
-    const val HIDDEN_API_KEY = "hidden_api_blacklist_exemptions"
-    const val HIDDEN_API_ENTRY = "Lcom/samsung/android/hardware/sensormanager/"
-
-    /**
-     * The watch Health Monitor output. The stock-app, always-on and hidden-API entries undo what its
-     * install changed: the stock app it replaces, its globalSetting grant and the old always-on change.
-     */
-    const val SHM_WATCH_OUTPUT = "shm-watch"
-
     private const val PLACEHOLDER = "\${PKG_PREFIX}"
 
     /**
@@ -94,8 +80,8 @@ object RevertPlan {
             for (pkg in packages) {
                 if (!pkg.endsWith(suffix)) continue
                 val prefix = pkg.removeSuffix(suffix)
-                // Only a prefix the patcher itself would accept: this keeps out vendor namespaces, e.g. the
-                // stock com.sec.android.app.shealth must never yield "com.sec.android.app".
+                // Only a prefix the patcher itself would accept: this keeps out vendor namespaces, so a
+                // vendor package never yields its own namespace as a prefix.
                 if (PackagePrefix.validate(prefix) == null) found += prefix
             }
         }
@@ -120,7 +106,7 @@ object RevertPlan {
         return result
     }
 
-    /** What follows the placeholder in [out]'s package template (e.g. `.shmbridge.watch`), or null when the package does not depend on the prefix. */
+    /** What follows the placeholder in [out]'s package template (e.g. `.bridge.watch`), or null when the package does not depend on the prefix. */
     internal fun suffixOf(out: OutputApp): String? {
         val at = out.packageTemplate.indexOf(PLACEHOLDER)
         if (at < 0) return null

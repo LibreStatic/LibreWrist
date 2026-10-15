@@ -81,7 +81,12 @@ import io.openshm.patcher.ui.theme.PatcherTheme
  * Drawn in the screen's own window (a scrim and a centered card), not as a platform dialog.
  */
 @Composable
-internal fun SkipStepsOverlay(dialog: SkipDialog?, onConfirm: () -> Unit, onCancel: () -> Unit, onManual: () -> Unit) {
+internal fun SkipStepsOverlay(
+    dialog: SkipDialog?,
+    onConfirm: () -> Unit,
+    onCancel: () -> Unit,
+    onManual: () -> Unit,
+) {
     // Keeps the last content while the overlay fades out.
     var last by remember { mutableStateOf(dialog) }
     if (dialog != null) last = dialog

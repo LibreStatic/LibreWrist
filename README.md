@@ -51,7 +51,7 @@ The app guides you through these steps:
    watch.
 2. **Inputs**: getting the official APKs (from APKMirror, a file, or pulled from your own watch or
    phone). Each one is checked against the hashes in the catalogue.
-3. **Build**: patching, signing and verifying five APKs (six with Samsung Health+) with a key that is created on, and stays on,
+3. **Build**: patching, signing and verifying up to six APKs (Health Monitor and Samsung Health+ are optional) with a key that is created on, and stays on,
    your phone:
    - SHM for the phone and for the watch;
    - the phone and watch bridges;
@@ -356,9 +356,21 @@ be retried or skipped; the result is then marked as partial. After a complete re
 prefix is unlocked and the stored builds are cleared. The last step offers to uninstall LibreWrist
 Patcher itself.
 
-### Optional: Samsung Health+
+### Optional apps
 
-On the **Official apps** step, a switch (on by default) adds **Samsung Health** as an extra input. The patcher
+The catalogue declares the apps (`apps` in `catalogue/catalogue.json`, with their texts and icons), so the list
+below follows it. On the **Official apps** step each optional app has its own switch, all on by default (opt-out):
+
+- **Samsung Health Monitor** (phone and watch together, one switch);
+- **Samsung Health+** (below).
+
+Always included, with no switch: our two bridge apps (phone and watch) and, on Wear OS 5 and newer, the
+phone-alarm fork. With Health Monitor off, the Health Platform developer-mode and stock-app steps are
+passed over, since they only matter for it.
+
+#### Samsung Health+
+
+The Samsung Health switch adds **Samsung Health** as an extra input. The patcher
 builds it as **Samsung Health+**: renamed to `<prefix>.shealth` and signed with your key, so it
 installs **next to** the stock Samsung Health from the Play Store instead of replacing it.
 

@@ -10,8 +10,8 @@ import io.openshm.patcher.data.DownloadRequest
 import io.openshm.patcher.data.ImportResult
 import io.openshm.patcher.data.InputApp
 import io.openshm.patcher.data.InputStore
+import io.openshm.patcher.data.LoadedCatalogue
 import io.openshm.patcher.data.RejectReason
-import io.openshm.patcher.data.SAMSUNG_HEALTH_INPUT
 import io.openshm.patcher.data.SetupSession
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -29,7 +29,20 @@ internal fun AcquireUiState.reduce(event: AcquireEvent): AcquireUiState = when (
     is AcquireEvent.ToggleMoreWays -> updateCard(event.inputId) { it.copy(moreWaysExpanded = !it.moreWaysExpanded) }
     is AcquireEvent.UseFile -> updateCard(event.inputId) { it.copy(moreWaysExpanded = false) }
     is AcquireEvent.OpenMirror -> this
-    is AcquireEvent.ToggleSamsungHealth -> this
+    is AcquireEvent.ToggleApp -> this
+}
+
+/** [id] removed from this set when present, added when absent. */
+internal fun Set<String>.symmetricDifference(id: String): Set<String> = if (id in this) this - id else this + id
+
+/**
+ * The switches of the optional catalogue apps that have at least one output for a watch with SDK
+ * [watchSdk], on unless listed in [skipped].
+ */
+internal fun optionalToggles(catalogue: LoadedCatalogue, watchSdk: Int, skipped: Set<String>): List<OptionalAppToggle> {
+    val available = catalogue.selectedOutputs(watchSdk, emptySet()).map { it.id }.toSet()
+    return catalogue.apps.filter { app -> app.optional && app.outputIds.any { it in available } }
+        .map { OptionalAppToggle(it, it.id !in skipped) }
 }
 
 /**
@@ -74,8 +87,7 @@ class AcquireViewModel(application: Application) : AndroidViewModel(application)
     init {
         _state.value = AcquireUiState(
             cards = cardsFor(emptyList()),
-            samsungHealthOffered = AppCatalogue.current.hasInput(SAMSUNG_HEALTH_INPUT),
-            samsungHealth = SetupSession.state.value.samsungHealth,
+            optionalApps = optionalToggles(AppCatalogue.current, SetupSession.state.value.watchProfile.sdk, SetupSession.state.value.skippedApps),
         )
     }
 
@@ -84,9 +96,11 @@ class AcquireViewModel(application: Application) : AndroidViewModel(application)
     ) { input -> store.verifiedSize(input)?.let { AcquireProgress.Verified(it) } ?: AcquireProgress.Missing }
 
     fun onEvent(event: AcquireEvent) {
-        if (event is AcquireEvent.ToggleSamsungHealth) {
-            SetupSession.update { it.copy(samsungHealth = !it.samsungHealth) }
-            _state.update { it.copy(cards = cardsFor(it.cards), samsungHealth = SetupSession.state.value.samsungHealth) }
+        if (event is AcquireEvent.ToggleApp) {
+            SetupSession.update { it.copy(skippedApps = it.skippedApps.symmetricDifference(event.appId)) }
+            _state.update {
+                it.copy(cards = cardsFor(it.cards), optionalApps = optionalToggles(AppCatalogue.current, SetupSession.state.value.watchProfile.sdk, SetupSession.state.value.skippedApps))
+            }
             return
         }
         _state.update { it.reduce(event) }

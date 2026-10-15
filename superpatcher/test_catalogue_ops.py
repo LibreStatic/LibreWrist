@@ -189,6 +189,11 @@ class Interpreter(Tree):
         out['from']['profile'] = 'p'
         cat.update(outputs=[out], installOrder=[{'output': out['id']}],
                    grants={out['id']: []}, stockAppsToDisable=[])
+        cat['apps'] = [{'id': 'syn', 'outputs': [out['id']], 'optional': False, 'icon': 'swap'}]
+        cat['strings'] = {'en': {'app.syn.title': 'Syn', 'app.syn.summary': 'Synthetic',
+                                 f'output.{out["id"]}.label': 'Out'}}
+        cat['platform']['healthPlatform']['requiredBy'] = []
+        cat['platform']['revertSettings'] = []
         self.assertEqual(P.validate_catalogue(cat), [])
         return cat
 

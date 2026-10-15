@@ -4,7 +4,9 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import io.openshm.patcher.data.AppCatalogue
+import io.openshm.patcher.data.Automation
 import io.openshm.patcher.data.Device
+import io.openshm.patcher.data.InputStore
 import io.openshm.patcher.data.SessionState
 import io.openshm.patcher.data.SetupSession
 import io.openshm.patcher.data.WatchProfile
@@ -17,6 +19,7 @@ import io.openshm.patcher.ui.screens.wearable.readWearableFacts
 import io.openshm.patcher.ui.screens.wearable.wearableState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -29,15 +32,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 /** What the build installs, grants and turns off on each device, from the catalogue and the chosen prefix. */
-internal fun buildChanges(prefix: String, profile: WatchProfile, samsungHealth: Boolean = true): List<DeviceChanges> {
+internal fun buildChanges(prefix: String, profile: WatchProfile, skippedApps: Set<String> = emptySet()): List<DeviceChanges> {
     val catalogue = AppCatalogue.current
-    val ids = SessionState(watchProfile = profile, samsungHealth = samsungHealth).outputIds
+    val ids = SessionState(watchProfile = profile, skippedApps = skippedApps).outputIds
     val outputs = catalogue.outputs.filter { it.id in ids }
     return Device.entries.map { device ->
         DeviceChanges(
             device = device,
             apps = outputs.filter { it.device == device }.map { out ->
-                AppChange(out.id, out.label, out.packageName(prefix), catalogue.grants[out.id].orEmpty())
+                AppChange(out.id, out.label, out.packageName(prefix), catalogue.grants[out.id].orEmpty(), out.purpose, catalogue.appOf(out.id)?.icon.orEmpty())
             },
             disables = catalogue.stockAppsToDisable.filter { it.device == device },
         )
@@ -46,7 +49,7 @@ internal fun buildChanges(prefix: String, profile: WatchProfile, samsungHealth: 
 
 class WelcomeViewModel(application: Application) : AndroidViewModel(application) {
     private val _state = MutableStateFlow(
-        SetupSession.state.value.let { WelcomeUiState(changes = buildChanges(it.packagePrefix, it.watchProfile, it.samsungHealth)) },
+        SetupSession.state.value.let { WelcomeUiState(changes = buildChanges(it.packagePrefix, it.watchProfile, it.skippedApps), automation = Automation.state.value) },
     )
     val state: StateFlow<WelcomeUiState> = _state.asStateFlow()
     private val link = WatchLink.get(application)
@@ -58,13 +61,14 @@ class WelcomeViewModel(application: Application) : AndroidViewModel(application)
             WatchDetection.start(link)
             withTimeoutOrNull(DETECT_WAIT_MILLIS) { WatchDetection.state.first { !it.running } }?.watch
         },
-        wearableReady = { withContext(Dispatchers.Default) { wearableState(readWearableFacts(application)).allPassed } },
+        wearableReady = { withContext(Dispatchers.Default) { AppCatalogue.current.platform.companionApp.let { wearableState(readWearableFacts(application, it), it) }.allPassed } },
         apply = { steps, watch ->
             StepSkips.current = steps
             if (watch != null) SetupSession.update { it.copy(watchProfile = watch.profile) }
         },
         announced = { WatchAnnouncements.state.value },
         setManual = { StepSkips.manual = it },
+        autoSkip = { Automation.state.value.unattended },
     )
 
     /** Open the next step that still needs the user; the nav host follows it. */
@@ -77,6 +81,18 @@ class WelcomeViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch {
             SetupSession.state.map { it.prefixLocked }.distinctUntilChanged()
                 .collect { locked -> _state.update { it.copy(canRevert = locked) } }
+        }
+        viewModelScope.launch { Automation.state.collect { a -> _state.update { it.copy(automation = a) } } }
+        // The apps notice only matters while an official app this setup needs is still missing.
+        val inputs = InputStore(application)
+        val missingInputs = SetupSession.state.map { it.inputIds }.distinctUntilChanged().map { ids ->
+            withContext(Dispatchers.IO) {
+                ids.filter(AppCatalogue.current::hasInput).any { inputs.verifiedSize(AppCatalogue.current.input(it)) == null }
+            }
+        }
+        viewModelScope.launch {
+            combine(Automation.state, missingInputs) { a, missing -> a.appsNoticePending && missing }
+                .collect { show -> _state.update { it.copy(appsNotice = show) } }
         }
         viewModelScope.launch { preflight.dialog.collect { d -> _state.update { it.copy(skip = d) } } }
         refreshLogsLink()
@@ -99,6 +115,24 @@ class WelcomeViewModel(application: Application) : AndroidViewModel(application)
             WelcomeEvent.ConfirmSkip -> preflight.confirm()
             WelcomeEvent.CancelSkip -> preflight.cancel()
             WelcomeEvent.ManualSetup -> preflight.manual()
+            is WelcomeEvent.SetUnattended -> Automation.setUnattended(event.on)
+            is WelcomeEvent.SetFreeRun ->
+                // Turning it on asks first unless the user already chose not to be asked again.
+                if (event.on && !Automation.state.value.freeRunWarningHidden) {
+                    _state.update { it.copy(freeRunWarning = true) }
+                } else {
+                    Automation.setFreeRun(event.on)
+                }
+            is WelcomeEvent.SetUninstallMismatch -> Automation.setUninstallMismatch(event.on)
+            is WelcomeEvent.ShowHelp -> _state.update { it.copy(help = event.help) }
+            WelcomeEvent.HideHelp -> _state.update { it.copy(help = null) }
+            is WelcomeEvent.ConfirmFreeRun -> {
+                if (event.dontShowAgain) Automation.hideFreeRunWarning()
+                Automation.setFreeRun(true)
+                _state.update { it.copy(freeRunWarning = false) }
+            }
+            WelcomeEvent.CancelFreeRun -> _state.update { it.copy(freeRunWarning = false) }
+            WelcomeEvent.AcknowledgeAppsNotice -> Automation.acknowledgeAppsNotice()
         }
     }
 

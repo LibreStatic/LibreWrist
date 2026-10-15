@@ -106,7 +106,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             update = updateOfferFor(AppCatalogue.current, BuildStorage(getApplication()).record.read(), outputIds),
             builds = AppCatalogue.current.outputs
                 .filter { it.id in outputIds }
-                .map { InstalledBuild(it.id, it.label, it.packageName(session.packagePrefix), it.device) },
+                .map { InstalledBuild(it.id, it.label, it.packageName(session.packagePrefix), it.device, customizable = it.inputId != null) },
         )
     }
 

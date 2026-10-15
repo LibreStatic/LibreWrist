@@ -135,7 +135,7 @@ fun BuildDoneScreen(
                 }
             }
             Column(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp)) {
-                PrimaryAction(stringResource(R.string.build_done_install), onInstall)
+                PrimaryAction(stringResource(R.string.build_done_install), onInstall, auto = true)
             }
         }
     }

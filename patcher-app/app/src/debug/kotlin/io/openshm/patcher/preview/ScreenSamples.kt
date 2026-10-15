@@ -27,6 +27,8 @@ import io.openshm.patcher.ui.screens.selftest.AllSetScreen
 import io.openshm.patcher.ui.screens.selftest.SelfTestScreen
 import io.openshm.patcher.ui.screens.signingkey.SigningKeyForm
 import io.openshm.patcher.ui.screens.signingkey.SigningKeyScreen
+import io.openshm.patcher.ui.screens.phoneadb.PhoneAdbScreen
+import io.openshm.patcher.ui.screens.phoneadb.PhoneAdbUiState
 import io.openshm.patcher.ui.screens.watchpair.LocalFrozenGuideSubStep
 import io.openshm.patcher.ui.screens.watchpair.WatchPairScreen
 import io.openshm.patcher.ui.screens.watchpair.WatchPairUiState
@@ -39,6 +41,15 @@ import io.openshm.patcher.ui.screens.devicelogs.DeviceLogsUiState
 import io.openshm.patcher.ui.screens.revert.RevertScreen
 import io.openshm.patcher.ui.screens.revert.RevertUiState
 import io.openshm.patcher.ui.screens.welcome.WelcomeScreen
+import io.openshm.patcher.data.AutomationState
+import io.openshm.patcher.ui.screens.welcome.AutomationHelp
+import io.openshm.patcher.ui.components.Accent
+import io.openshm.patcher.ui.components.AutoTextButtonContent
+import io.openshm.patcher.ui.components.PrimaryActionPill
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import io.openshm.patcher.ui.screens.build.AppIconLoader
 import io.openshm.patcher.ui.screens.build.BuildStage
 import io.openshm.patcher.ui.screens.build.LocalAppIconLoader
@@ -49,8 +60,30 @@ import io.openshm.patcher.ui.screens.build.LocalAppIconLoader
  */
 
 @Composable
-internal fun WelcomeSample(sheet: Boolean = false, skip: SkipDialog? = null, logsAvailable: Boolean = false, canRevert: Boolean = false) =
-    WelcomeScreen(PreviewData.welcome(sheet, logsAvailable, canRevert).copy(skip = skip), {}, {}, {})
+internal fun WelcomeSample(
+    sheet: Boolean = false,
+    skip: SkipDialog? = null,
+    logsAvailable: Boolean = false,
+    canRevert: Boolean = false,
+    automation: AutomationState = AutomationState(),
+    help: AutomationHelp? = null,
+    freeRunWarning: Boolean = false,
+    appsNotice: Boolean = false,
+) = WelcomeScreen(
+    PreviewData.welcome(sheet, logsAvailable, canRevert)
+        .copy(skip = skip, automation = automation, help = help, freeRunWarning = freeRunWarning, appsNotice = appsNotice),
+    {}, {}, {},
+)
+
+/** The countdown bar frozen at [progress] on the main action and on a dialog text button. */
+@Composable
+internal fun CountdownSample(progress: Float?) =
+    Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        PrimaryActionPill("Continue", {}, progress)
+        PrimaryActionPill("Continue", {}, progress, accent = Accent.Tertiary)
+        PrimaryActionPill("Continue", {}, null, enabled = false)
+        Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) { AutoTextButtonContent("Turn on", {}, progress) }
+    }
 
 @Composable
 internal fun RevertSample(state: RevertUiState) = RevertScreen(state, {}, {}, {})
@@ -156,11 +189,12 @@ internal fun SelfTestSample(variant: SelfTestVariant = SelfTestVariant.Passed) =
         SelfTestVariant.Passed -> PreviewData.selfTest()
         SelfTestVariant.Failures -> PreviewData.selfTestFailures()
         SelfTestVariant.WatchOff -> PreviewData.selfTestWatchOff()
+        SelfTestVariant.Reused -> PreviewData.selfTestReused()
     },
     {}, {}, {},
 )
 
-internal enum class SelfTestVariant { Passed, Failures, WatchOff }
+internal enum class SelfTestVariant { Passed, Failures, WatchOff, Reused }
 
 @Composable
 internal fun AllSetSample(logsAvailable: Boolean = false) = AllSetScreen(PreviewData.allSet(logsAvailable), {}, {})
@@ -169,7 +203,7 @@ internal fun AllSetSample(logsAvailable: Boolean = false) = AllSetScreen(Preview
 internal fun DeviceLogsSample(state: DeviceLogsUiState = PreviewData.deviceLogs()) = DeviceLogsScreen(state, {}, {})
 
 @Composable
-internal fun HomeSample(restoreSheet: Boolean = false, menu: Boolean = false, patchesOnly: Boolean = false, restoreOf: String = "shm-watch") =
+internal fun HomeSample(restoreSheet: Boolean = false, menu: Boolean = false, patchesOnly: Boolean = false, restoreOf: String = SampleApps.watchMain.id) =
     HomeScreen(PreviewData.home(restoreSheet = restoreSheet, menu = menu, patchesOnly = patchesOnly, restoreOf = restoreOf), {})
 
 @Composable
@@ -179,3 +213,9 @@ internal fun SigningKeySample(
     formError: Int? = null,
     confirmation: Boolean = false,
 ) = SigningKeyScreen(PreviewData.signingKey(keyExists, form, formError, confirmation = confirmation), {}, {})
+
+@Composable
+internal fun PhoneAdbSample(state: PhoneAdbUiState, subStep: Int = 2) =
+    CompositionLocalProvider(LocalFrozenGuideSubStep provides subStep) {
+        PhoneAdbScreen(state, onConnect = {}, onSubmitCode = {}, onCancel = {}, onOpenWirelessDebugging = {}, onBack = {})
+    }

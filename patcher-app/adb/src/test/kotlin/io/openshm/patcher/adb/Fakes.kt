@@ -8,6 +8,8 @@ import java.util.concurrent.CountDownLatch
 class FakeChannel(
     private val input: ByteArray = ByteArray(0),
     private val blockUntilClosed: Boolean = false,
+    /** After [input] is drained, block until closed instead of reporting EOF (libadb's lost close). */
+    private val hangAtEnd: Boolean = false,
 ) : AdbChannel {
     val written = ByteArrayOutputStream()
     private var pos = 0
@@ -22,7 +24,10 @@ class FakeChannel(
             closedLatch.await()
             return -1
         }
-        if (pos >= input.size) return -1
+        if (pos >= input.size) {
+            if (hangAtEnd) closedLatch.await()
+            return -1
+        }
         val n = minOf(length, input.size - pos, 7) // small reads exercise reassembly
         System.arraycopy(input, pos, buffer, offset, n)
         pos += n
@@ -72,6 +77,20 @@ fun v2Frames(stdout: String = "", stderr: String = "", exit: Int = 0): ByteArray
     if (stdout.isNotEmpty()) frame(1, stdout.toByteArray())
     if (stderr.isNotEmpty()) frame(2, stderr.toByteArray())
     frame(3, byteArrayOf(exit.toByte()))
+    return out.toByteArray()
+}
+
+/** The stdin bytes inside `shell,v2` packets sent by the client; fails on any other packet id. */
+fun v2Stdin(sent: ByteArray): ByteArray {
+    val out = ByteArrayOutputStream()
+    var pos = 0
+    while (pos < sent.size) {
+        check(sent[pos].toInt() == 0) { "packet id ${sent[pos]} at $pos is not stdin" }
+        val length = (sent[pos + 1].toInt() and 0xff) or ((sent[pos + 2].toInt() and 0xff) shl 8) or
+            ((sent[pos + 3].toInt() and 0xff) shl 16) or ((sent[pos + 4].toInt() and 0xff) shl 24)
+        out.write(sent, pos + 5, length)
+        pos += 5 + length
+    }
     return out.toByteArray()
 }
 

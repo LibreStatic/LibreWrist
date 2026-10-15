@@ -49,13 +49,20 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import io.openshm.patcher.ui.components.AutoAdvanceController
+import io.openshm.patcher.ui.components.LocalAutoAdvance
+import io.openshm.patcher.ui.components.observeUserInput
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import io.openshm.patcher.R
 import io.openshm.patcher.data.AppCatalogue
+import io.openshm.patcher.data.Automation
 import io.openshm.patcher.data.InputStore
 import io.openshm.patcher.data.RebuildScope
 import io.openshm.patcher.data.SetupSession
+import io.openshm.patcher.ui.screens.phoneadb.PhoneAdbScreen
+import io.openshm.patcher.ui.screens.phoneadb.PhoneAdbViewModel
 import io.openshm.patcher.data.requestedRebuildScope
 import io.openshm.patcher.ui.screens.settings.SettingsScreen
 import io.openshm.patcher.ui.screens.settings.SettingsViewModel
@@ -119,6 +126,9 @@ import io.openshm.patcher.ui.components.ContentColumn
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavGraphBuilder
 import androidx.compose.ui.Alignment
+import io.openshm.patcher.ui.components.UnattendedRunOverlay
+import io.openshm.patcher.ui.components.rememberUnattendedPhase
+import io.openshm.patcher.ui.components.unattendedSaturation
 
 /**
  * A destination for a screen without [io.openshm.patcher.ui.components.StepScreenScaffold]: its
@@ -135,7 +145,10 @@ fun PatcherNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
 ) {
-    fun go(target: Route) = navController.navigate(target.path) {
+    fun go(target: Route, leaving: Route? = null) = navController.navigate(target.path) {
+        // A step that is walked once leaves no entry: Back from the next one skips it. The phone's own ADB
+        // pairing, and the build: a finished build forwards at once, so Back onto it would bounce forward again.
+        if (leaving == Route.PhoneAdb || leaving == Route.Build) popUpTo(leaving.path) { inclusive = true }
         // Home is the end of the guided setup: it replaces the whole stack. Welcome may already be gone
         // (a returning user lands on Home from it, and a rebuild starts on Home), so pop the whole graph.
         if (target == Route.Home) popUpTo(navController.graph.id) { inclusive = true }
@@ -144,18 +157,23 @@ fun PatcherNavHost(
     fun passedOver(): Set<Route> {
         val session = SetupSession.state.value
         val scope = RebuildScope.scope?.minus(session.restoredOutputs)
-        return StepSkips.routes + rebuildSkippedRoutes(AppCatalogue.current.outputs, scope)
+        val catalogue = AppCatalogue.current
+        val devMode = catalogue.platform.healthPlatform.requiredBy
+        return StepSkips.routes + rebuildSkippedRoutes(catalogue.outputs, scope, devMode, catalogue.stockAppsToDisable) +
+            automationSkippedRoutes(Automation.state.value.unattended) +
+            selectionSkippedRoutes(session.outputIds, devMode, catalogue.stockAppsToDisable)
     }
     // A run of skipped steps right after the current one, announced before it is passed over. The
     // welcome screen announces its own run (together with the watch check), so it never lands here.
+    // Unattended mode passes over them without announcing: they only list steps that are already done.
     var announcing by remember { mutableStateOf<Pair<Route, List<SkippedStep>>?>(null) }
     fun next(from: Route) {
-        val run = if (from == Route.Welcome) emptyList() else skippedRunAfter(from, StepSkips.current)
-        if (run.isNotEmpty()) {
+        val run = if (from == Route.Welcome || from == Route.PhoneAdb) emptyList() else skippedRunAfter(from, StepSkips.current)
+        if (run.isNotEmpty() && !Automation.state.value.unattended) {
             announcing = from to run
             return
         }
-        go(SetupFlow.next(from, passedOver()) ?: return)
+        go(SetupFlow.next(from, passedOver()) ?: return, leaving = from)
     }
     val back: () -> Unit = { navController.popBackStack() }
     // The device logs notification opens the app on its screen.
@@ -171,11 +189,18 @@ fun PatcherNavHost(
         rtl = LocalLayoutDirection.current == LayoutDirection.Rtl,
     )
     // Screens cap and center their own column; the skip overlay covers the whole window.
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+    val autoAdvance = remember { AutoAdvanceController() }
+    val currentEntry by navController.currentBackStackEntryAsState()
+    // Before the destinations compose, so a new step starts unpaused. The entry id also changes when
+    // the same route is entered again.
+    autoAdvance.onRouteChanged(currentEntry?.id)
+    val unattendedPhase = rememberUnattendedPhase(currentEntry?.destination?.route)
+    CompositionLocalProvider(LocalAutoAdvance provides autoAdvance) {
+    Box(Modifier.fillMaxSize().observeUserInput(autoAdvance), contentAlignment = Alignment.TopCenter) {
         NavHost(
             navController,
             startDestination = Route.Welcome.path,
-            modifier = modifier,
+            modifier = modifier.unattendedSaturation(unattendedPhase),
             enterTransition = { pages.enter(forward = true) },
             exitTransition = { pages.exit(forward = true) },
             popEnterTransition = { pages.enter(forward = false) },
@@ -200,6 +225,32 @@ fun PatcherNavHost(
                     onSettings = { navController.navigate(Route.Settings.path) },
                     onDeviceLogs = { navController.navigate(Route.DeviceLogs.path) },
                     onRevert = { navController.navigate(Route.Revert.path) },
+                )
+            }
+            composable(Route.PhoneAdb.path) {
+                val vm: PhoneAdbViewModel = viewModel()
+                val state by vm.state.collectAsStateWithLifecycle()
+                val context = LocalContext.current
+                LaunchedEffect(vm) {
+                    vm.launches.collect { request ->
+                        try {
+                            context.startActivity(request.intent)
+                        } catch (e: ActivityNotFoundException) {
+                            request.fallback?.let { runCatching { context.startActivity(it) } }
+                        }
+                    }
+                }
+                val whenNotificationsAllowed = rememberNotificationGate()
+                // The step starts by itself on entering (a paired phone connects with no code).
+                LaunchedEffect(vm) { whenNotificationsAllowed { vm.begin() } }
+                LaunchedEffect(state.done) { if (state.done) next(Route.PhoneAdb) }
+                PhoneAdbScreen(
+                    state,
+                    onConnect = { whenNotificationsAllowed { vm.begin() } },
+                    onSubmitCode = vm::submitCode,
+                    onCancel = vm::cancel,
+                    onOpenWirelessDebugging = vm::openWirelessDebugging,
+                    onBack = back,
                 )
             }
             composable(Route.Profile.path) {
@@ -616,7 +667,7 @@ fun PatcherNavHost(
             onConfirm = {
                 val from = announcing?.first
                 announcing = null
-                if (from != null) SetupFlow.next(from, passedOver())?.let(::go)
+                if (from != null) SetupFlow.next(from, passedOver())?.let { go(it, leaving = from) }
             },
             onCancel = { announcing = null },
             onManual = {
@@ -626,9 +677,11 @@ fun PatcherNavHost(
                 val manual = run.mapTo(mutableSetOf()) { it.route }
                 if (Route.Profile in manual) StepSkips.manual = true
                 StepSkips.current = StepSkips.current.filter { it.route !in manual }
-                SetupFlow.next(from)?.let(::go)
+                SetupFlow.next(from, automationSkippedRoutes(Automation.state.value.unattended))?.let { go(it, leaving = from) }
             },
         )
+        UnattendedRunOverlay(unattendedPhase)
+    }
     }
 }
 

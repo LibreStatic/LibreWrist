@@ -7,6 +7,7 @@ import io.openshm.patcher.adb.GrantReport
 import io.openshm.patcher.adb.InstallResult
 import io.openshm.patcher.adb.SelfAdbState
 import io.openshm.patcher.build.BuiltBuild
+import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.Device
 import io.openshm.patcher.data.OutputApp
 import io.openshm.patcher.device.PackageKind
@@ -44,7 +45,7 @@ internal fun SelfAdbState.toPhase(): SelfAdbPhase? = when (this) {
  * package is installed, and [refresh] updates the rows when the screen is shown again.
  */
 internal class PhoneInstallRunner(
-    private val installer: PhoneInstaller,
+    installer: PhoneInstaller,
     private val grants: PhoneGrants,
     private val build: () -> BuiltBuild?,
     private val prefix: () -> String,
@@ -56,6 +57,17 @@ internal class PhoneInstallRunner(
     /** Called with the output id once that output is installed (Home's restored outputs forget it). */
     private val onInstalled: (String) -> Unit = {},
 ) {
+    private val platformInstaller = installer
+
+    /**
+     * Replaces the installer for the runs that follow (unattended mode installs through the phone's
+     * own ADB session); null goes back to the platform installer given at construction.
+     */
+    @Volatile
+    var installerOverride: PhoneInstaller? = null
+
+    private val installer: PhoneInstaller get() = installerOverride ?: platformInstaller
+
     private var locked = false
 
     suspend fun run(state: MutableStateFlow<InstallUiState>) {
@@ -146,9 +158,11 @@ internal class PhoneInstallRunner(
      * then on). The grants the user still has to give do not matter for this. Never fails the run.
      */
     private fun startBridge(item: InstallItem) {
-        if (item.outputId != BridgeStart.PHONE_OUTPUT) return
+        val out = AppCatalogue.current.outputs.firstOrNull { it.id == item.outputId } ?: return
+        val start = out.start ?: return
+        val action = out.startAction(prefix()) ?: return
         try {
-            installer.startBridge(item.packageName, BridgeStart.PHONE_RECEIVER, BridgeStart.action(prefix()))
+            installer.startBridge(item.packageName, start.receiver, BridgeStart.requireAction(action))
         } catch (e: RuntimeException) {
             log("start request for ${item.outputId} failed: ${e.javaClass.simpleName}")
         }

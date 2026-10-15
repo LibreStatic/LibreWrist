@@ -16,7 +16,10 @@ import org.junit.Before
 import org.junit.Test
 
 class RebuildScopeTest {
-    private val catalogue = TestCatalogue.load()
+    // Installed here too: the session below reads the catalogue while the test is constructed, before @Before.
+    private val catalogue = TestCatalogue.load().also { io.openshm.patcher.data.AppCatalogue.install(it) }
+    private val devMode = catalogue.platform.healthPlatform.requiredBy
+    private val stock = catalogue.stockAppsToDisable
     private val session = SessionState()
     private val sessionIds = session.outputIds
 
@@ -46,23 +49,23 @@ class RebuildScopeTest {
     fun aPhoneOnlyScopeSkipsTheWatchSteps() {
         assertEquals(
             setOf(Route.WatchInstall, Route.DevMode, Route.DisableStock),
-            rebuildSkippedRoutes(catalogue.outputs, setOf("shm-phone", "bridge-phone")),
+            rebuildSkippedRoutes(catalogue.outputs, setOf("shm-phone", "bridge-phone"), devMode, stock),
         )
     }
 
     @Test
     fun aWatchOnlyScopeSkipsThePhoneInstall() {
-        assertEquals(setOf(Route.InstallPhone, Route.DevMode, Route.DisableStock), rebuildSkippedRoutes(catalogue.outputs, setOf("alarm-fork")))
+        assertEquals(setOf(Route.InstallPhone, Route.DevMode, Route.DisableStock), rebuildSkippedRoutes(catalogue.outputs, setOf("alarm-fork"), devMode, stock))
     }
 
     @Test
     fun theWatchMonitorKeepsDeveloperModeAndStockApps() {
-        assertEquals(setOf(Route.InstallPhone), rebuildSkippedRoutes(catalogue.outputs, setOf("shm-watch")))
+        assertEquals(setOf(Route.InstallPhone), rebuildSkippedRoutes(catalogue.outputs, setOf("shm-watch"), devMode, stock))
     }
 
     @Test
     fun noRebuildSkipsNothing() {
-        assertTrue(rebuildSkippedRoutes(catalogue.outputs, null).isEmpty())
+        assertTrue(rebuildSkippedRoutes(catalogue.outputs, null, devMode, stock).isEmpty())
     }
 
     @Test

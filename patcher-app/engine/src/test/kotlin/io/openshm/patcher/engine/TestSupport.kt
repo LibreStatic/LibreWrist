@@ -107,3 +107,16 @@ internal class Fixture(
     fun apply(name: String, argsJson: String): List<String> = op(name, argsJson).apply(ctx)
     fun verify(name: String, argsJson: String): List<String> = op(name, argsJson).verifyApplied(ctx)
 }
+
+/** The schema-2 top-level keys (apps, strings, platform) for a synthetic catalogue with the given output ids. */
+internal fun schema2Tail(vararg outputIds: String): String {
+    val outs = outputIds.joinToString(", ") { "\"$it\"" }
+    val labels = outputIds.joinToString(", ") { "\"output.$it.label\": \"$it\"" }
+    return """, "apps": [{"id": "syn", "outputs": [$outs], "optional": false, "icon": "swap"}],
+  "strings": {"en": {"app.syn.title": "Syn", "app.syn.summary": "Synthetic", $labels}},
+  "platform": {"companionApp": {"package": "com.example.companion", "watchPlugins": []},
+    "healthPlatform": {"package": "com.example.health", "settingsAction": "com.example.health.SETTINGS",
+      "settingsComponent": "com.example.health/.Main", "titleViewId": "app:id/title", "devModeViewId": "app:id/sub",
+      "taps": 10, "requiredBy": []},
+    "logPackages": {"phone": [], "watch": []}, "revertSettings": []}"""
+}

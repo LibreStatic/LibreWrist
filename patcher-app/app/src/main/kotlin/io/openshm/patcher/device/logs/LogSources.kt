@@ -9,6 +9,7 @@ import io.openshm.patcher.adb.AdbKeyStore
 import io.openshm.patcher.adb.AdbServiceType
 import io.openshm.patcher.adb.AndroidOwnAddresses
 import io.openshm.patcher.adb.LibAdbBackend
+import io.openshm.patcher.adb.PrefsSelfAdbEndpointStore
 import io.openshm.patcher.adb.SelfAdbSession
 import io.openshm.patcher.adb.SelfAdbState
 import io.openshm.patcher.device.DisconnectReason
@@ -81,6 +82,7 @@ internal class PhoneLogSource(context: Context) : DeviceLogSource {
                     keyRejected.set(true)
                 }
             },
+            endpointStore = PrefsSelfAdbEndpointStore(app),
         )
         var handedOut = false
         try {

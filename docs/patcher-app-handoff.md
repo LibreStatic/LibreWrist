@@ -265,15 +265,18 @@ are the three APKs only.
 - **Watch**: ADB over Wi-Fi.
   - Pair (TLS + SPAKE2 pairing code; discover via the mDNS service `_adb-tls-pairing._tcp`), then
     connect (`_adb-tls-connect._tcp`).
-  - Install through `exec:cmd package install-create / install-write / install-commit`, streamed.
+  - Install through `cmd package install-create / install-write / install-commit`, streamed. The
+    write runs on `shell,v2,raw:` (APK bytes in stdin packets) and ends on the exit packet, never on
+    the stream closing: libadb 3.1.1 can lose a close that arrives with output still queued, and a
+    read to EOF then never returns (the cause of the uncommitted, 100%-streamed watch installs).
   - Keep the ADB RSA key in app storage. Revoking is done on the watch.
   - At the end, offer to turn wireless debugging off: open the watch's settings
     (`settings put global adb_wifi_enabled 0` would cut our own connection, so do it last, or
     guide the user).
 - **Debug-only fixed watch.** Debug builds read the system property `debug.openshm.watch_adb`
-  (`host:port`) at start-up (`PatcherApplication`). When it is set, `AdbDiscovery` reports that
-  address as the only watch instead of searching mDNS, `WatchLink` remembers it as the paired watch,
-  and the Galaxy Wearable step reports the pairing as done. Release builds ignore it. Example with
+  (`host:port`) at start-up (`PatcherApplication`). When it is set, `AdbDiscovery` adds that
+  address to what mDNS finds (so the phone still finds its own Wireless debugging), `WatchLink`
+  remembers it as the paired watch, and the Galaxy Wearable step reports the pairing as done. Release builds ignore it. Example with
   an emulated phone and watch: `adb -s <watch> tcpip 5555`,
   `adb -s <watch> forward tcp:15555 tcp:5555`, then
   `adb -s <phone> shell setprop debug.openshm.watch_adb 10.0.2.2:15555` and restart the patcher.
@@ -379,7 +382,7 @@ Independent slices can run in parallel. Arrows show dependencies.
    `apks/SHA256SUMS`.
    Implemented so far (`patcher-app/app/own-code.gradle.kts`, task `:app:ownCodeAssets`, run by every
    variant's asset merge): `assets/owncode/injections/{watch-mod,alarm-fork}.dex` and
-   `assets/owncode/apps/bridge-{watch,phone}.apk` (unsigned), all in **placeholder form** (package
+   `assets/owncode/apps/shm-bridge-{watch,phone}.apk` (unsigned), all in **placeholder form** (package
    `shminterop`; the engine applies the real prefix on the phone), plus the signed catalogue under
    `assets/catalogue/`. The tasks mirror `watch-mod/build-watch-mod.sh`, `java_to_smali` and
    `build-bridge.sh` (same platform jar, build-tools and javac/d8/aapt2 flags; `ANDROID_HOME`,

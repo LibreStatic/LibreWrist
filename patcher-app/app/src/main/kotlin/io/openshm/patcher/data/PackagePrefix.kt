@@ -10,7 +10,7 @@ object PackagePrefix {
     const val DEFAULT_BASE = "io.openshm"
     private const val HEX_LENGTH = 6
 
-    /** Longest allowed prefix: the longest suffix is `.shmbridge.watch` and Android caps names at 255. */
+    /** Longest allowed prefix: leaves room for the longest package suffix of the catalogue; Android caps names at 255. */
     private const val MAX_LENGTH = 200
 
     private val segment = Regex("[a-z][a-z0-9_]*")
