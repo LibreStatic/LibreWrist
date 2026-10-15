@@ -61,3 +61,27 @@ To render a screen without an emulator (Compose Driver, dev-only, needs a JDK 21
 - Every uploaded build has a `versionName` that no earlier upload used. This applies to every Play track (internal, closed, open, production) and to GitHub releases. Two builds with the same name are never allowed, not even a rebuild, a hotfix or a re-upload after a rejected or broken build. A new `versionCode` alone is not enough. Before uploading, check the release list for the name. If the name is already taken, bump the version again.
 - Every push to `main` that touches `patcher-app/`, `watch-mod/`, `shm-bridge/` or `catalogue/` publishes a GitHub release (`.github/workflows/patcher-release.yml`), so pushing such a commit is an upload. The workflow fails before building when the `versionName` was already released.
 - Bump `versionName` in `app/build.gradle.kts` in its own commit whenever you commit a change that affects the app (its code, resources or bundled data, including the directories above), right after that change, even when no upload is planned yet. Also bump it before an upload if the current name was already uploaded. Patch (`x.y.Z`) for fixes and small, self-contained changes (including a single small feature), minor (`x.Y.0`) for medium changes (several features, a reworked screen or flow), major (`X.0.0`) for a large overhaul; keep the pre-release suffix (e.g. `-beta`). The `versionCode` must also be higher than the last uploaded one.
+
+## Known issues (`README.md`)
+
+The README has a `## Known issues` section, between "How to check that it works" and "How it
+works". It lists real bugs reported on GitHub (`gh issue list --repo LibreStatic/LibreWrist`).
+
+- **Only real bugs.** Leave out questions, usage help and expected behaviour, even when they were
+  filed as issues. For example, #1 ("the bridge has no launcher icon") is by design, so it is not
+  listed. The `bug` / `confirmed` labels help, but read the thread to decide.
+- One bullet per issue. Start it with the status emoji, then a bold one-line summary, then a link
+  to the issue (`[#N](https://github.com/LibreStatic/LibreWrist/issues/N)`). After that, add the
+  cause in plain words, the version that fixes it (or that it is in progress), and a workaround
+  when there is one.
+- Status emojis. Keep the legend line under the intro in sync with them:
+  - `:construction:` means the fix is in progress.
+  - `:hourglass_flowing_sand:` means the fix is released and waiting for user confirmation. Here,
+    "confirmation" means a user saw the fix working on their device. It never means confirming that
+    the bug exists. Word the entry that way: the bug is confirmed, the fix shipped in X, and an
+    affected user still needs to report that it works.
+- Remove an entry once the issue is closed or a user confirms the fix works.
+- **On every request to push**, check the open issues (and any closed since the last update) with
+  `gh issue view N --comments` before pushing. Add new real bugs, update statuses and versions, and
+  drop resolved entries. Commit README changes in their own commit. If nothing changed, say so
+  briefly.
