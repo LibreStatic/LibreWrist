@@ -31,6 +31,9 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.sample
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -60,6 +63,8 @@ class BuildService : Service() {
             return START_NOT_STICKY
         }
         createChannel()
+        // The result of an earlier build is stale once a new one starts.
+        getSystemService(NotificationManager::class.java).cancel(RESULT_NOTIFICATION_ID)
         startForeground(NOTIFICATION_ID, progressNotification(BuildController.state.value), ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
         if (job?.isActive == true || BuildController.state.value.phase == BuildRunPhase.Running) return START_NOT_STICKY
         val session = SetupSession.state.value
@@ -74,7 +79,15 @@ class BuildService : Service() {
                 .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "openshm:build")
             lock.acquire(WAKE_LOCK_TIMEOUT_MS)
             wakeLock = lock
-            val notifier = launch { BuildController.state.collect { notify(progressNotification(it)) } }
+            // Only what the notification shows, at most once per interval: every log line changes the
+            // state, and the system drops updates to an unfinished progress notification above ~5/s.
+            val notifier = launch {
+                BuildController.state
+                    .map { ProgressView(it.outputId, it.stage, (it.progress * PROGRESS_MAX).toInt()) }
+                    .distinctUntilChanged()
+                    .sample(NOTIFICATION_INTERVAL_MS)
+                    .collect { notify(NOTIFICATION_ID, progressNotification(it)) }
+            }
             try {
                 execute(key, session.packagePrefix, outputIds, disabled)
             } catch (e: Throwable) {
@@ -183,14 +196,17 @@ class BuildService : Service() {
         storage.record.write(BuiltBuild("", prefix, serial, System.currentTimeMillis(), records))
     }
 
+    /**
+     * Always removes the progress notification (a removal is never rate-limited) and posts the result
+     * as a new notification under its own id: as an update of the progress one it could be dropped by
+     * the system's rate limit, leaving the ongoing "Building your apps" notification behind for good.
+     * A cancelled build gets no result notification: the user knows.
+     */
     private fun finish() {
         val state = BuildController.state.value
-        if (state.phase == BuildRunPhase.Cancelled) {
-            // The user knows: no "done" notification, just take the progress one away.
-            stopForeground(STOP_FOREGROUND_REMOVE)
-        } else {
-            stopForeground(STOP_FOREGROUND_DETACH)
-            notify(finalNotification(state.phase == BuildRunPhase.Succeeded))
+        stopForeground(STOP_FOREGROUND_REMOVE)
+        if (state.phase != BuildRunPhase.Cancelled) {
+            notify(RESULT_NOTIFICATION_ID, resultNotification(state.phase == BuildRunPhase.Succeeded))
         }
         stopSelf()
     }
@@ -203,25 +219,31 @@ class BuildService : Service() {
         )
     }
 
-    private fun notify(notification: Notification) {
+    private fun notify(id: Int, notification: Notification) {
         // Without the notification permission this is silently dropped; the build does not depend on it.
-        getSystemService(NotificationManager::class.java).notify(NOTIFICATION_ID, notification)
+        getSystemService(NotificationManager::class.java).notify(id, notification)
     }
 
     private fun builder(): Notification.Builder = Notification.Builder(this, CHANNEL_ID)
         .setSmallIcon(android.R.drawable.stat_notify_sync)
-        .setContentTitle(getString(R.string.build_notification_title))
         .setContentIntent(
             PendingIntent.getActivity(this, 0, Intent(this, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE),
         )
 
-    private fun progressNotification(state: BuildRunState): Notification {
-        val b = builder().setOngoing(true).setOnlyAlertOnce(true).addAction(cancelAction())
-        val stage = state.stage
-        val outputId = state.outputId
+    /** The part of [BuildRunState] the progress notification shows. */
+    private data class ProgressView(val outputId: String?, val stage: BuildStage?, val progress: Int)
+
+    private fun progressNotification(state: BuildRunState): Notification =
+        progressNotification(ProgressView(state.outputId, state.stage, (state.progress * PROGRESS_MAX).toInt()))
+
+    private fun progressNotification(view: ProgressView): Notification {
+        val b = builder().setContentTitle(getString(R.string.build_notification_title))
+            .setOngoing(true).setOnlyAlertOnce(true).addAction(cancelAction())
+        val stage = view.stage
+        val outputId = view.outputId
         if (stage != null && outputId != null) {
             b.setContentText(getString(R.string.build_notification_progress, AppCatalogue.current.output(outputId).label, getString(stage.titleRes())))
-            b.setProgress(PROGRESS_MAX, (state.progress * PROGRESS_MAX).toInt(), false)
+            b.setProgress(PROGRESS_MAX, view.progress, false)
         } else {
             b.setProgress(0, 0, true)
         }
@@ -237,23 +259,27 @@ class BuildService : Service() {
         ).build()
     }
 
-    private fun finalNotification(ok: Boolean): Notification = builder()
+    /** Not titled "Building your apps": the build is over. */
+    private fun resultNotification(ok: Boolean): Notification = builder()
+        .setSmallIcon(if (ok) android.R.drawable.stat_sys_download_done else android.R.drawable.stat_notify_error)
         .setOngoing(false)
         .setAutoCancel(true)
-        .setContentText(getString(if (ok) R.string.build_notification_done else R.string.build_notification_failed))
+        .setContentTitle(getString(if (ok) R.string.build_notification_done else R.string.build_notification_failed))
         .build()
 
     companion object {
         private const val ACTION_CANCEL = "io.openshm.patcher.action.CANCEL_BUILD"
         private const val CHANNEL_ID = "build"
         private const val NOTIFICATION_ID = 1
+        private const val RESULT_NOTIFICATION_ID = 2
+        private const val NOTIFICATION_INTERVAL_MS = 1_000L
         private const val PROGRESS_MAX = 1000
         private const val WAKE_LOCK_TIMEOUT_MS = 30L * 60 * 1000
 
         /**
          * Removes a progress notification left by an earlier process (killed mid-build, or a late
          * update that outlived the service). Call it when the process starts: no build can be
-         * running then. The "done" and "failed" notifications are not ongoing and stay.
+         * running then. The "done" and "failed" notifications have their own id and stay.
          */
         fun clearStaleProgress(context: Context) {
             if (BuildController.state.value.phase == BuildRunPhase.Running) return
