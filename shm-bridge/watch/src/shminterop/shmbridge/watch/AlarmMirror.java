@@ -168,6 +168,11 @@ public final class AlarmMirror {
         Log.i(BridgeHub.TAG, "alarm/stop id=" + id);
         AlarmFork.stop(c, id);
         AlarmRinger.stopFromPhone(c, id);
+        // A copy of this alarm in Samsung's own Alarm app would keep ringing otherwise.
+        long ringAt = prefs(c).getLong(K_RING_AT, 0);
+        if (syncEnabled(c) && ringAt > 0 && System.currentTimeMillis() - ringAt < SamsungAlarm.USAGE_LOOKBACK_MS) {
+            SamsungAlarm.dismissDuplicate(c, ringAt);
+        }
     }
 
     /** Snooze an alarm that rang only locally (no ring from the phone). */

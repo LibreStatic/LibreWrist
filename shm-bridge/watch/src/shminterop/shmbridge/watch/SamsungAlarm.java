@@ -3,6 +3,8 @@ package shminterop.shmbridge.watch;
 import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.usage.UsageEvents;
+import android.app.usage.UsageStatsManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -44,6 +46,10 @@ import java.util.Set;
  *   {@code alarm/snooze} / {@code alarm/dismiss} is forwarded with the phone's ring id.</li>
  *   <li><b>Fallback:</b> the own alarm stays scheduled at {@code t + 5 s} and only rings if
  *   Samsung's did not; an {@code alarm/ring} without Samsung's ringing at 5 s also uses the own one.</li>
+ *   <li><b>Watch-only copy:</b> Samsung's app may hold its own copy of a phone alarm (e.g. left over
+ *   from a Samsung phone) that rings next to the fork. Its alert posts no visible notification,
+ *   so {@link SamsungAlarmListener} misses it; {@link #dismissDuplicate} reads the usage events of
+ *   its alert service instead (appop {@code GET_USAGE_STATS}).</li>
  * </ul>
  */
 final class SamsungAlarm {
@@ -283,6 +289,78 @@ final class SamsungAlarm {
         if (near(when, p.getLong(AlarmMirror.K_T, 0)) || near(when, p.getLong(K_LAST_RANG, 0))) return;
         Log.i(BridgeHub.TAG, "samsung: rings " + key + " from the bridge but the phone no longer has it → dismiss");
         command(c, false);
+    }
+
+    // ---- watch-only copy of the phone alarm --------------------------------------------------
+
+    static final String ALERT_SERVICE = PKG + ".viewmodel.AlarmService";
+    /** How far back the usage events are read. */
+    static final long USAGE_LOOKBACK_MS = 30 * 60_000L;
+    /** A Samsung ring that started up to this much before the phone's ring is taken as its copy. */
+    static final long COPY_BEFORE_MS = 2 * 60_000L;
+    /** Second look, in case the start event was not recorded yet. */
+    static final long COPY_RECHECK_MS = 4000;
+
+    /**
+     * {@code alarm/stop}: if Samsung's app is ringing a copy of the phone alarm (it started around
+     * the phone's ring at {@code ringAt}), it is dismissed (also when the phone snoozed: the fork
+     * rings the snooze, a snoozed copy would ring twice again). {@code DISMISS_ALARM} with nothing
+     * ringing opens Samsung's alarm list, so it is only sent when the alert service is running.
+     */
+    static void dismissDuplicate(final Context c, final long ringAt) {
+        if (ringAt <= 0) return;
+        if (!hasUsageAccess(c)) {
+            Log.i(BridgeHub.TAG, "samsung: no usage access (appops GET_USAGE_STATS), copies not checked");
+            return;
+        }
+        if (dismissCopy(c, ringAt)) return;
+        main.postDelayed(new Runnable() {
+            @Override public void run() { dismissCopy(c, ringAt); }
+        }, COPY_RECHECK_MS);
+    }
+
+    /** true if Samsung's alert service is running (whether or not it was dismissed). */
+    private static boolean dismissCopy(Context c, long ringAt) {
+        long started = alertStartedAt(c);
+        if (started < 0) return false;
+        if (started < ringAt - COPY_BEFORE_MS) {
+            Log.i(BridgeHub.TAG, "samsung: Samsung's alarm rings since before the phone's, left alone");
+            return true;
+        }
+        Log.i(BridgeHub.TAG, "samsung: Samsung's alarm rings a copy of the phone's → dismiss");
+        command(c, false);
+        return true;
+    }
+
+    /** Start time of Samsung's alert service if it is running now, otherwise -1. */
+    static long alertStartedAt(Context c) {
+        try {
+            UsageStatsManager usm = c.getSystemService(UsageStatsManager.class);
+            long now = System.currentTimeMillis();
+            UsageEvents events = usm.queryEvents(now - USAGE_LOOKBACK_MS, now + 1000);
+            UsageEvents.Event e = new UsageEvents.Event();
+            long started = -1;
+            while (events != null && events.hasNextEvent()) {
+                events.getNextEvent(e);
+                if (!PKG.equals(e.getPackageName()) || !ALERT_SERVICE.equals(e.getClassName())) continue;
+                if (e.getEventType() == UsageEvents.Event.FOREGROUND_SERVICE_START) started = e.getTimeStamp();
+                else if (e.getEventType() == UsageEvents.Event.FOREGROUND_SERVICE_STOP) started = -1;
+            }
+            return started;
+        } catch (Exception ex) {
+            Log.w(BridgeHub.TAG, "samsung: usage events: " + ex);
+            return -1;
+        }
+    }
+
+    static boolean hasUsageAccess(Context c) {
+        try {
+            android.app.AppOpsManager ops = c.getSystemService(android.app.AppOpsManager.class);
+            return ops.checkOpNoThrow(android.app.AppOpsManager.OPSTR_GET_USAGE_STATS,
+                    android.os.Process.myUid(), c.getPackageName()) == android.app.AppOpsManager.MODE_ALLOWED;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     // ---- utilities -------------------------------------------------------------------------

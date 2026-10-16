@@ -28,7 +28,7 @@ BRIDGE_ONLY=phone ./shm-bridge/scripts/build-bridge.sh   # only one of them (wat
 ```
 
 It signs with the local keystore (`KEYSTORE` in `config.env`, generated if missing).
-`versionCode` / `versionName` come from each `AndroidManifest.xml` (watch 16 / 1.15, phone 10 / 1.9).
+`versionCode` / `versionName` come from each `AndroidManifest.xml` (watch 17 / 1.16, phone 10 / 1.9).
 Optional `PATCHER_CERT_SHA256`: see "Status provider" below.
 
 ## Install and grants
@@ -44,7 +44,7 @@ repeated after every reinstall. The equivalent manual commands, derived from the
 W=shminterop.shmbridge.watch
 for p in POST_NOTIFICATIONS BLUETOOTH_CONNECT READ_PHONE_STATE ANSWER_PHONE_CALLS; do
   adb -s $WATCH shell pm grant $W android.permission.$p; done
-for op in SCHEDULE_EXACT_ALARM USE_FULL_SCREEN_INTENT SYSTEM_ALERT_WINDOW MANAGE_ONGOING_CALLS; do
+for op in SCHEDULE_EXACT_ALARM USE_FULL_SCREEN_INTENT SYSTEM_ALERT_WINDOW MANAGE_ONGOING_CALLS GET_USAGE_STATS; do
   adb -s $WATCH shell appops set $W $op allow; done
 adb -s $WATCH shell cmd notification allow_listener $W/$W.SamsungAlarmListener
 adb -s $WATCH shell dumpsys deviceidle whitelist +$W
