@@ -444,14 +444,18 @@ These come from user reports. Each one links to its GitHub issue, where progress
 
 :construction: fix in progress · :hourglass_flowing_sand: fix released, waiting for user confirmation
 
-- :construction: **Irregular heart rhythm notifications fire too often, and they cannot be cleared from the
-  watch** ([#5](https://github.com/LibreStatic/LibreWrist/issues/5)). The vendor software denies
-  the feature access to the sensor, the sensor returns negative values, and Samsung Health Monitor
-  treats each failed reading as an alert. These are false alarms, not a health finding. A custom
-  sensor translation layer is in progress. Until it ships, turn irregular heart rhythm
-  notifications off in the phone app.
+- :hourglass_flowing_sand: **Irregular heart rhythm notifications fire too often, and they cannot be
+  cleared from the watch** ([#5](https://github.com/LibreStatic/LibreWrist/issues/5)). The vendor
+  software denies the feature access to its sensor, and Samsung Health Monitor treated each failed
+  reading as an alert. These were false alarms, not a health finding. The bug is confirmed and a fix
+  shipped in 0.7.0: the watch app now reads the heart rhythm from the raw optical and motion sensors
+  of the Health Tracking service, its background checks no longer show a permanent notification,
+  and a real alert can still open on the watch. Update the patcher, run the patches again, then turn
+  irregular heart rhythm notifications back on in the phone app. We are still waiting for an
+  affected user to report that the false alerts are gone.
 - :hourglass_flowing_sand: **Building the watch app fails at step 6 in 0.6.0**
-  ([#6](https://github.com/LibreStatic/LibreWrist/issues/6)) with "verify-anchors: BUILD FAILED -
+  ([#6](https://github.com/LibreStatic/LibreWrist/issues/6), also reported in
+  [#7](https://github.com/LibreStatic/LibreWrist/issues/7)) with "verify-anchors: BUILD FAILED -
   pattern 'watch-ecg-sensor-adapter'". The watch app was patched correctly, but the final check
   only looked for the ECG patch at the very start of a method, and the new SpO2 patch puts its own
   code in front of it there. The bug is confirmed and a fix shipped in 0.6.1: update the patcher
