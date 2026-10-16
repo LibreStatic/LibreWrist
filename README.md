@@ -444,30 +444,7 @@ These come from user reports. Each one links to its GitHub issue, where progress
 
 :construction: fix in progress · :hourglass_flowing_sand: fix released, waiting for user confirmation
 
-- :hourglass_flowing_sand: **Irregular heart rhythm notifications fire too often, and they cannot be
-  cleared from the watch** ([#5](https://github.com/LibreStatic/LibreWrist/issues/5)). The vendor
-  software denies the feature access to its sensor, and Samsung Health Monitor treated each failed
-  reading as an alert. These were false alarms, not a health finding. The bug is confirmed and a fix
-  shipped in 0.7.0: the watch app now reads the heart rhythm from the raw optical and motion sensors
-  of the Health Tracking service, its background checks no longer show a permanent notification,
-  and a real alert can still open on the watch. Update the patcher, run the patches again, then turn
-  irregular heart rhythm notifications back on in the phone app. We are still waiting for an
-  affected user to report that the false alerts are gone.
-- :hourglass_flowing_sand: **Sleep apnea detection is missing**
-  ([#3](https://github.com/LibreStatic/LibreWrist/issues/3)). The apps hid it outside Samsung's
-  country list, and a re-signed watch app cannot read the privileged sleep SpO2 sensor. The bug is
-  confirmed and a fix shipped in 0.6.0: the regional checks are disabled, and our SpO2 adapter
-  computes the overnight blood oxygen from the raw red and infrared signals of the Health Tracking
-  service. Update the patcher to 0.6.1 or later (0.6.0 cannot build the watch app) and run
-  the patches again. We are still waiting for an affected user
-  to report that a night's result shows up on their phone. The SpO2 values have been compared with
-  the stock reading on one session so far, so treat them as indicative. The irregular heartbeat
-  toggle from that report works since 0.4.0, and feature level 1.3 is the highest one available.
-- :hourglass_flowing_sand: **Blood pressure calibration stuck at 0% with the PPG LEDs off**
-  ([#2](https://github.com/LibreStatic/LibreWrist/issues/2)), reported on a Galaxy Watch4 Classic
-  (SM-R890) with One UI Watch 8 and patcher 0.3.7. The bug is confirmed and a fix shipped in
-  0.3.8: update the patcher and run the patches again. We are still waiting for an affected user to
-  report that calibration now completes on their watch.
+There are no open bugs right now.
 
 ## How it works
 
