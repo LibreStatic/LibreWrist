@@ -251,6 +251,9 @@ class SchemaTwo(unittest.TestCase):
         en = self.cat['strings']['en']
         for loc, table in self.cat['strings'].items():
             self.assertLessEqual(set(table), set(en), loc)
+            # The patch list shows this text; without it the app falls back to the technical note.
+            missing = [p for p in self.cat['patterns'] if f'pattern.{p}.description' not in table]
+            self.assertEqual(missing, [], loc)
 
     def test_unknown_icon(self):
         self.app('alarm')['icon'] = 'rocket'
