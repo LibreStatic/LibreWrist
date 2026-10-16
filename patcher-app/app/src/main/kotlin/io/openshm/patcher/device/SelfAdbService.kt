@@ -12,12 +12,14 @@ import android.os.IBinder
 import android.util.Log
 import io.openshm.patcher.MainActivity
 import io.openshm.patcher.R
+import io.openshm.patcher.adb.AdbClient
 import io.openshm.patcher.adb.AdbException
 import io.openshm.patcher.adb.AdbKeyStore
 import io.openshm.patcher.adb.LibAdbBackend
 import io.openshm.patcher.adb.SelfAdbPairingNotifier
 import io.openshm.patcher.adb.SelfAdbState
 import io.openshm.patcher.adb.SelfAdbTexts
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -64,8 +66,14 @@ class SelfAdbService : Service() {
         SelfAdbController.setCodeSink { fresh.session.submitCode(it) }
         job = scope.launch {
             val follow = launch {
+                val returnAfterPairing = ReturnAfterPairing()
                 fresh.session.state.collect {
-                    if (it is SelfAdbState.Connected) SelfAdbTrust.record(this@SelfAdbService)
+                    val comeBack = returnAfterPairing.onState(it)
+                    if (it is SelfAdbState.Connected) {
+                        SelfAdbTrust.record(this@SelfAdbService)
+                        // Before the owner takes the connection, so its work runs with the app in view.
+                        if (comeBack) bringAppToFront(it.client)
+                    }
                     SelfAdbController.onSession(it)
                     Log.i(LOG_TAG, "attempt phase=${SelfAdbController.state.value.phase}")
                 }
@@ -90,6 +98,18 @@ class SelfAdbService : Service() {
         scope.cancel()
         releaseNotifier()
         super.onDestroy()
+    }
+
+    /** The user paired (or turned Wireless debugging on) in Settings: show the app again. Best effort. */
+    private suspend fun bringAppToFront(client: AdbClient) {
+        try {
+            val result = client.shell(ReturnAfterPairing.command(packageName, MainActivity::class.java.name), FRONT_TIMEOUT_MS)
+            Log.i(LOG_TAG, "app brought to front, exit=${result.exitCode}")
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Log.w(LOG_TAG, "could not bring the app to front: ${e.javaClass.simpleName}")
+        }
     }
 
     private fun end() {
@@ -138,6 +158,7 @@ class SelfAdbService : Service() {
         private const val CHANNEL_ID = "selfadb_service"
         private const val NOTIFICATION_ID = 2
         const val TIMEOUT_MS = 10L * 60 * 1000
+        private const val FRONT_TIMEOUT_MS = 5_000L
 
         /** Removes notifications left by an earlier process; call it when the process starts. */
         fun clearStale(context: Context) {
