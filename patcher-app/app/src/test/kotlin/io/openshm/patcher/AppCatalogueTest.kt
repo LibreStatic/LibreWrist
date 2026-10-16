@@ -15,7 +15,7 @@ class AppCatalogueTest {
 
     @Test
     fun serialAndInputs() {
-        assertEquals(50L, c.serial)
+        assertEquals(51L, c.serial)
         assertEquals(
             listOf(
                 listOf("shm-phone", "Samsung Health Monitor (phone)", "1.4.6.001", "Phone",
@@ -109,7 +109,7 @@ class AppCatalogueTest {
         assertEquals(
             listOf("Permission:POST_NOTIFICATIONS:false", "Permission:BLUETOOTH_CONNECT:false", "Permission:READ_PHONE_STATE:false",
                 "Permission:ANSWER_PHONE_CALLS:false", "AppOp:SCHEDULE_EXACT_ALARM:false", "AppOp:USE_FULL_SCREEN_INTENT:false",
-                "AppOp:SYSTEM_ALERT_WINDOW:false", "AppOp:MANAGE_ONGOING_CALLS:false",
+                "AppOp:SYSTEM_ALERT_WINDOW:false", "AppOp:GET_USAGE_STATS:false", "AppOp:MANAGE_ONGOING_CALLS:false",
                 "NotificationListener:.SamsungAlarmListener:false", "BatteryExemption:deviceIdleWhitelist:false"),
             names("bridge-watch"),
         )
