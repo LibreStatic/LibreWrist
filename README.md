@@ -453,20 +453,12 @@ These come from user reports. Each one links to its GitHub issue, where progress
   and a real alert can still open on the watch. Update the patcher, run the patches again, then turn
   irregular heart rhythm notifications back on in the phone app. We are still waiting for an
   affected user to report that the false alerts are gone.
-- :hourglass_flowing_sand: **Building the watch app fails at step 6 in 0.6.0**
-  ([#6](https://github.com/LibreStatic/LibreWrist/issues/6), also reported in
-  [#7](https://github.com/LibreStatic/LibreWrist/issues/7)) with "verify-anchors: BUILD FAILED -
-  pattern 'watch-ecg-sensor-adapter'". The watch app was patched correctly, but the final check
-  only looked for the ECG patch at the very start of a method, and the new SpO2 patch puts its own
-  code in front of it there. The bug is confirmed and a fix shipped in 0.6.1: update the patcher
-  and run the patches again. We are still waiting for an affected user to report that the build now
-  completes.
 - :hourglass_flowing_sand: **Sleep apnea detection is missing**
   ([#3](https://github.com/LibreStatic/LibreWrist/issues/3)). The apps hid it outside Samsung's
   country list, and a re-signed watch app cannot read the privileged sleep SpO2 sensor. The bug is
   confirmed and a fix shipped in 0.6.0: the regional checks are disabled, and our SpO2 adapter
   computes the overnight blood oxygen from the raw red and infrared signals of the Health Tracking
-  service. Update the patcher to 0.6.1 or later (0.6.0 cannot build the watch app, see #6) and run
+  service. Update the patcher to 0.6.1 or later (0.6.0 cannot build the watch app) and run
   the patches again. We are still waiting for an affected user
   to report that a night's result shows up on their phone. The SpO2 values have been compared with
   the stock reading on one session so far, so treat them as indicative. The irregular heartbeat
