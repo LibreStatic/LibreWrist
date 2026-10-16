@@ -1,10 +1,16 @@
 package shminterop.watch;
 
+import android.app.Notification;
+import android.app.Service;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import com.samsung.android.hardware.sensormanager.SemSensorListener;
 
 import shminterop.bp.BpAdapter;
+import shminterop.ihrn.IhrnAdapter;
 import shminterop.spo2.ApneaTestDriver;
 import shminterop.spo2.SpO2Adapter;
 
@@ -17,7 +23,9 @@ import java.lang.reflect.Method;
  * sensorAvailability(): availability exemption for the sensor wrapper (sa2.a) for IHRN
  * (0x25) and SpO2/apnea (0x31). Sensor 0x1b (ECG) is resolved earlier in the wrapper
  * (EcgAdapter) and never gets here. The remaining calls of 0x31 (registerListener, setAttribute,
- * unregisterListener of sa2) are answered by SpO2Adapter (pattern watch-spo2-sensor-adapter).
+ * unregisterListener of sa2) are answered by SpO2Adapter (pattern watch-spo2-sensor-adapter),
+ * and those of 0x25 (registerListener, setAttribute) by IhrnAdapter (pattern
+ * watch-ihrn-sensor-adapter); its unregister arrives through unregisterListener() below.
  *
  * unregisterListener(): replaces every direct SemSensorManager.unregisterListener(listener, int)
  * call (pattern watch-sensor-unregister-compat). On One UI 8 Watch, hidden-API enforcement
@@ -26,7 +34,13 @@ import java.lang.reflect.Method;
  * routed to BpAdapter.stop instead: that sensor is never registered with the framework manager
  * (BpAdapter owns it through the Health Tracking service), and sl.i must keep running to
  * unregister OffBody and cancel the timer. Sensor 0x31 is routed to SpO2Adapter.unregister
- * for the same reason.
+ * for the same reason, and sensor 0x25 to IhrnAdapter.unregister.
+ *
+ * startService() / startForegroundIfRequired(): the IHRN background services (pattern
+ * watch-ihrn-quiet-services). They start as plain services, which needs the app on the Doze
+ * allowlist; when the system refuses a background start the call falls back to a foreground
+ * start and remembers it, and only then does the service call startForeground (and post its
+ * notification). Otherwise no notification is shown.
  *
  * makeHrSensorAttribute(): builds a SemHrSensorAttribute by reflection for the BP calibration
  * path (pattern watch-bp-attribute-guard); returns null when hidden-API enforcement denies
@@ -62,6 +76,12 @@ public final class WatchOverrides {
             // there; BpAdapter tears down the Health Tracking tracker. sl.i keeps going (it
             // still has to unregister OffBody and cancel its timer).
             BpAdapter.stop(listener, type);
+            return;
+        }
+        if (type == SENSOR_TYPE_IHRN) {
+            // Never registered with the framework manager (IhrnAdapter answers sa2.c/d for 0x25);
+            // this stops its session and the Health Tracking trackers.
+            IhrnAdapter.unregister(listener, type);
             return;
         }
         if (type == SENSOR_TYPE_SPO2) {
@@ -105,6 +125,43 @@ public final class WatchOverrides {
                     + " may deny it on One UI 8 Watch); returning null");
         }
         return attribute;
+    }
+
+    /**
+     * Replaces Context.startForegroundService for the IHRN services: a plain startService first
+     * (no notification; works when the app is on the Doze allowlist), and on the system's
+     * background-start refusal (IllegalStateException) a foreground start, remembered per service
+     * class so that its onCreate posts the notification. Returns the component like the original.
+     */
+    public static ComponentName startService(Context context, Intent intent) {
+        String key = serviceKey(intent);
+        ForegroundRequired.set(key, false);
+        try {
+            return context.startService(intent);
+        } catch (IllegalStateException backgroundDenied) {
+            Log.i(TAG, "service: background start of " + key + " denied (" + backgroundDenied
+                    + "); starting as foreground service");
+            ForegroundRequired.set(key, true);
+            return context.startForegroundService(intent);
+        }
+    }
+
+    /**
+     * Replaces Service.startForeground in the IHRN services' onCreate: only when the service was
+     * started with startForegroundService (see {@link #startService}); otherwise nothing, so no
+     * notification is shown.
+     */
+    public static void startForegroundIfRequired(Service service, int id, Notification notification) {
+        if (ForegroundRequired.isRequired(service.getClass().getName())) {
+            service.startForeground(id, notification);
+        } else {
+            Log.i(TAG, "service: " + service.getClass().getName() + " runs without a notification");
+        }
+    }
+
+    private static String serviceKey(Intent intent) {
+        ComponentName c = intent == null ? null : intent.getComponent();
+        return c == null ? null : c.getClassName();
     }
 
     /**

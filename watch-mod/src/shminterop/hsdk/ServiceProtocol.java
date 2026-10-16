@@ -31,11 +31,19 @@ public final class ServiceProtocol {
     /** setPpgType channel names for the red and infrared LEDs (the SpO2 adapter uses these two). */
     public static final String PPG_TYPE_RED = "RED";
     public static final String PPG_TYPE_IR = "IR";
+    /**
+     * Continuous green PPG tracker (values: green ADC int, status int) and accelerometer tracker
+     * (values: x, y, z raw int counts). Both come from the same sensor-hub stream, so samples of
+     * one hub event carry the same timestamp (protocol 4.5). Flush is allowed for both.
+     */
+    public static final String TRACKER_PPG_GREEN = "PPG_GREEN";
+    public static final String TRACKER_ACCELEROMETER = "ACCELEROMETER";
 
     // service transactions
     public static final int TX_CREATE = 1;
     public static final int TX_SET_LISTENER = 2;
     public static final int TX_UNSET_LISTENER = 3;
+    public static final int TX_FLUSH = 4;
     public static final int TX_SUPPORTED_TYPES = 5;
     public static final int TX_SET_PPG_TYPE = 8;
     // listener transactions
@@ -59,6 +67,14 @@ public final class ServiceProtocol {
     /** Receives the decoded PPG listener callbacks (same transaction codes, PPG data layout). */
     public interface PpgSink {
         void onBatch(PpgBatch batch);
+        void onError(HealthError error);
+        /** The batch did not match the documented layout and was dropped. */
+        void onMalformed(String reason);
+    }
+
+    /** Receives the decoded ACCELEROMETER listener callbacks (same transaction codes). */
+    public interface AccelSink {
+        void onBatch(AccelBatch batch);
         void onError(HealthError error);
         /** The batch did not match the documented layout and was dropped. */
         void onMalformed(String reason);
@@ -106,6 +122,13 @@ public final class ServiceProtocol {
         w.writeString(appId);
         w.writeString(trackerType);
         writeStringList(w, ppgTypes);
+    }
+
+    /** Code 4: asks the hub to deliver what it has batched. Allowed for PPG_GREEN and ACCELEROMETER. */
+    public static void writeFlushRequest(WireWriter w, String appId, String trackerType) {
+        w.writeInterfaceToken(SERVICE_DESCRIPTOR);
+        w.writeString(appId);
+        w.writeString(trackerType);
     }
 
     /** Reply of code 5 (after the exception header): int count (-1 = null) then the strings. */
@@ -183,6 +206,67 @@ public final class ServiceProtocol {
             default: // onFlushCompleted: flush is not allowed for PPG_ON_DEMAND; ignore the rest
                 break;
         }
+    }
+
+    /**
+     * {@link #handleEvent} for an ACCELEROMETER tracker registration: same callback codes,
+     * CB_DATA carries the accelerometer value layout (protocol 4.5).
+     *
+     * @param hasLengthField true when the writer runs on API 33+ (length int after the Parcelable tag)
+     */
+    public static void handleAccelEvent(int code, WireReader data, boolean hasLengthField, AccelSink sink) {
+        switch (code) {
+            case CB_DATA:
+                AccelBatch batch;
+                try {
+                    batch = parseAccelBatch(data, hasLengthField);
+                } catch (WireFormatException e) {
+                    sink.onMalformed(e.getMessage());
+                    return;
+                }
+                if (batch != null) sink.onBatch(batch);
+                break;
+            case CB_ERROR:
+                sink.onError(HealthError.fromWireCode(data.readInt()));
+                break;
+            default: // onFlushCompleted carries nothing the client needs; ignore the rest
+                break;
+        }
+    }
+
+    /**
+     * Parses an {@code onDataUpdated} payload (protocol 4.5, 4.1 framing).
+     *
+     * @return the batch, or null when the list is null (-1), empty, or has no usable sample
+     * @throws WireFormatException when the layout cannot be followed
+     */
+    public static AccelBatch parseAccelBatch(WireReader r, boolean hasLengthField) {
+        int n = r.readInt();
+        if (n <= 0) return null;
+        if (n > MAX_POINTS) throw new WireFormatException("too many data points: " + n);
+
+        List<AccelSample> samples = new ArrayList<AccelSample>(n);
+        for (int i = 0; i < n; i++) {
+            if (r.dataAvail() <= 0) throw new WireFormatException("truncated at data point " + i);
+            if (r.readInt() == 0) continue; // null element
+            long ts = r.readLong();
+            int m = r.readInt();
+            if (m < 0) continue;            // null value list
+            if (m > MAX_VALUES) throw new WireFormatException("too many values: " + m);
+
+            boolean[] ok = new boolean[m];
+            int[] ints = new int[m];
+            float[] floats = new float[m];
+            for (int k = 0; k < m; k++) {
+                readValueElement(r, hasLengthField, ok, ints, floats, k);
+            }
+
+            // Positions 0..2 = x, y, z as integer fields; a point lacking any axis is not usable.
+            if (m < 3 || !ok[0] || !ok[1] || !ok[2]) continue;
+            samples.add(new AccelSample(ts, ints[0], ints[1], ints[2]));
+        }
+        if (samples.isEmpty()) return null;
+        return new AccelBatch(samples.toArray(new AccelSample[0]));
     }
 
     /**

@@ -144,6 +144,14 @@ public final class HealthClient {
         }, null);
     }
 
+    /** Code 4: asks the service to deliver what the hub has batched (PPG_GREEN, ACCELEROMETER). */
+    public void flush(final String trackerType) throws RemoteException {
+        final String app = packageName();
+        call(ServiceProtocol.TX_FLUSH, new Request() {
+            @Override public void write(WireWriter w) { ServiceProtocol.writeFlushRequest(w, app, trackerType); }
+        }, null);
+    }
+
     /**
      * Code 8: selects the LED channels of a PPG tracker type. Must run before
      * {@link #setEventListener} for that tracker, or the service keeps the previous channels.

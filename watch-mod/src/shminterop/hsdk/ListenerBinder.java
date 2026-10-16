@@ -9,7 +9,7 @@ import android.util.Log;
 /**
  * Client-side callback object passed to the service (descriptor IServiceEventListener). One
  * instance per tracker registration: the sink given at construction decides whether CB_DATA
- * carries ECG or PPG batches, since the wire callback codes are shared.
+ * carries ECG, PPG or accelerometer batches, since the wire callback codes are shared.
  */
 final class ListenerBinder extends Binder {
     private static final String TAG = "HealthClient";
@@ -18,18 +18,25 @@ final class ListenerBinder extends Binder {
 
     private final ServiceProtocol.EventSink ecgSink;
     private final ServiceProtocol.PpgSink ppgSink;
+    private final ServiceProtocol.AccelSink accelSink;
 
     ListenerBinder(ServiceProtocol.EventSink sink) {
-        this(sink, null);
+        this(sink, null, null);
     }
 
     ListenerBinder(ServiceProtocol.PpgSink sink) {
-        this(null, sink);
+        this(null, sink, null);
     }
 
-    private ListenerBinder(ServiceProtocol.EventSink ecgSink, ServiceProtocol.PpgSink ppgSink) {
+    ListenerBinder(ServiceProtocol.AccelSink sink) {
+        this(null, null, sink);
+    }
+
+    private ListenerBinder(ServiceProtocol.EventSink ecgSink, ServiceProtocol.PpgSink ppgSink,
+                           ServiceProtocol.AccelSink accelSink) {
         this.ecgSink = ecgSink;
         this.ppgSink = ppgSink;
+        this.accelSink = accelSink;
         attachInterface(null, ServiceProtocol.LISTENER_DESCRIPTOR);
     }
 
@@ -42,7 +49,10 @@ final class ListenerBinder extends Binder {
         if (code >= FIRST_CALL && code <= LAST_CALL) {
             data.enforceInterface(ServiceProtocol.LISTENER_DESCRIPTOR);
             try {
-                if (ppgSink != null) {
+                if (accelSink != null) {
+                    ServiceProtocol.handleAccelEvent(code, new ParcelWire(data),
+                            Build.VERSION.SDK_INT >= 33, accelSink);
+                } else if (ppgSink != null) {
                     ServiceProtocol.handlePpgEvent(code, new ParcelWire(data),
                             Build.VERSION.SDK_INT >= 33, ppgSink);
                 } else {

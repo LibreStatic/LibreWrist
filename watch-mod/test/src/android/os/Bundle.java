@@ -30,5 +30,8 @@ public class Bundle {
     public void putShortArray(String key, short[] value) { map.put(key, value); }
     public short[] getShortArray(String key) { return (short[]) map.get(key); }
 
+    public void putBooleanArray(String key, boolean[] value) { map.put(key, value); }
+    public boolean[] getBooleanArray(String key) { return (boolean[]) map.get(key); }
+
     public boolean containsKey(String key) { return map.containsKey(key); }
 }

@@ -15,7 +15,7 @@ class AppCatalogueTest {
 
     @Test
     fun serialAndInputs() {
-        assertEquals(47L, c.serial)
+        assertEquals(49L, c.serial)
         assertEquals(
             listOf(
                 listOf("shm-phone", "Samsung Health Monitor (phone)", "1.4.6.001", "Phone",
@@ -78,7 +78,7 @@ class AppCatalogueTest {
             c.patches("shm-phone").map { it.id },
         )
         val watch = c.patches("shm-watch")
-        assertEquals(17, watch.size)
+        assertEquals(20, watch.size)
         assertEquals("watch-mod", watch.last().id)
         assertEquals("Health Tracking module", watch.last().title)
         assertTrue(watch.last().injection)
@@ -89,7 +89,7 @@ class AppCatalogueTest {
         assertEquals(18, alarm.size)
         assertEquals("alarm-fork", alarm.last().id)
         assertEquals("Alarm link module", alarm.last().title)
-        assertEquals(20 + 16 + 17, c.patternCount(listOf("shm-phone", "shm-watch", "alarm-watch")))
+        assertEquals(20 + 19 + 17, c.patternCount(listOf("shm-phone", "shm-watch", "alarm-watch")))
         assertTrue(c.patchSets.flatMap { it.patches }.all { it.description.isNotBlank() })
     }
 
@@ -102,7 +102,8 @@ class AppCatalogueTest {
                 "Permission:READ_OXYGEN_SATURATION:false", "Permission:ACTIVITY_RECOGNITION:false", "Permission:BLUETOOTH_CONNECT:false",
                 "Permission:POST_NOTIFICATIONS:false", "Permission:READ_ADDITIONAL_HEALTH_DATA:true",
                 "AppOp:SCHEDULE_EXACT_ALARM:false",
-                "GlobalSetting:hidden_api_blacklist_exemptions:false"),
+                "GlobalSetting:hidden_api_blacklist_exemptions:false", "BatteryExemption:deviceIdleWhitelist:false",
+                "AppOp:SYSTEM_ALERT_WINDOW:false"),
             names("shm-watch"),
         )
         assertEquals(

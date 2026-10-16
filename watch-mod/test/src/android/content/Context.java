@@ -16,6 +16,11 @@ public class Context {
         return Context.class.getClassLoader();
     }
 
-    public void startForegroundService(Intent intent) {
+    public ComponentName startService(Intent intent) {
+        return intent.getComponent();
+    }
+
+    public ComponentName startForegroundService(Intent intent) {
+        return intent.getComponent();
     }
 }

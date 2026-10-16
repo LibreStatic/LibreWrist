@@ -1,6 +1,6 @@
 {
   "schema": 2,
-  "serial": 47,
+  "serial": 49,
   "minAppVersion": 29,
   "inputs": [
     {
@@ -150,7 +150,10 @@
           "watch-min-age-22-to-16",
           "watch-ecg-sensor-adapter",
           "watch-spo2-sensor-adapter",
+          "watch-ihrn-sensor-adapter",
           "watch-sensor-unregister-compat",
+          "watch-ihrn-quiet-services",
+          "watch-ihrn-alert-overlay",
           "watch-bp-attribute-guard",
           "watch-bp-sensor-adapter",
           "watch-apnea-country",
@@ -973,6 +976,62 @@
         }
       ]
     },
+    "watch-ihrn-sensor-adapter": {
+      "families": [
+        "shm-watch"
+      ],
+      "title": "Irregular rhythm sensor",
+      "description": "Watch: the irregular heart rhythm sensor (0x25) is answered by IhrnAdapter (green PPG and accelerometer from the Health Tracking Service, repackaged as SHM's own IHRN events) instead of the privileged SemSensorManager: sa2.c (register) and sa2.d (setAttribute: single-sample mode and batch mode); unregister reaches IhrnAdapter through the sensor unregister compatibility pattern",
+      "optional": false,
+      "ops": [
+        {
+          "op": "insertAtMethodStart",
+          "sigRegex": "public final \\w+\\(Lcom/samsung/android/hardware/sensormanager/SemSensorListener;I\\)Z",
+          "bodyAll": [
+            "Lcom/samsung/android/hardware/sensormanager/SemSensorManager;->registerListener("
+          ],
+          "expect": 1,
+          "insert": [
+            "",
+            "    const/16 v0, 0x25",
+            "",
+            "    if-ne p2, v0, :ss_skip_ihrn_c",
+            "",
+            "    invoke-static {p1, p2}, L${PKG_PATH}/ihrn/IhrnAdapter;->register(Lcom/samsung/android/hardware/sensormanager/SemSensorListener;I)Z",
+            "",
+            "    move-result v0",
+            "",
+            "    return v0",
+            "",
+            "    :ss_skip_ihrn_c",
+            ""
+          ]
+        },
+        {
+          "op": "insertAtMethodStart",
+          "sigRegex": "public final \\w+\\(Lcom/samsung/android/hardware/sensormanager/SemSensorListener;ILcom/samsung/android/hardware/sensormanager/SemSensorAttribute;\\)Z",
+          "bodyAll": [
+            "Lcom/samsung/android/hardware/sensormanager/SemSensorManager;->setAttribute("
+          ],
+          "expect": 1,
+          "insert": [
+            "",
+            "    const/16 v0, 0x25",
+            "",
+            "    if-ne p2, v0, :ss_skip_ihrn_d",
+            "",
+            "    invoke-static {p1, p2, p3}, L${PKG_PATH}/ihrn/IhrnAdapter;->setAttribute(Lcom/samsung/android/hardware/sensormanager/SemSensorListener;ILcom/samsung/android/hardware/sensormanager/SemSensorAttribute;)Z",
+            "",
+            "    move-result v0",
+            "",
+            "    return v0",
+            "",
+            "    :ss_skip_ihrn_d",
+            ""
+          ]
+        }
+      ]
+    },
     "watch-sensor-unregister-compat": {
       "families": [
         "shm-watch"
@@ -1001,6 +1060,111 @@
           "old": "invoke-virtual {v4, v1, v2}, Lcom/samsung/android/hardware/sensormanager/SemSensorManager;->unregisterListener(Lcom/samsung/android/hardware/sensormanager/SemSensorListener;I)V",
           "new": "invoke-static {v4, v1, v2}, L${PKG_PATH}/watch/WatchOverrides;->unregisterListener(Ljava/lang/Object;Lcom/samsung/android/hardware/sensormanager/SemSensorListener;I)V",
           "expect": 1
+        }
+      ]
+    },
+    "watch-ihrn-quiet-services": {
+      "families": [
+        "shm-watch"
+      ],
+      "title": "Quiet IHRN services",
+      "description": "Watch: the two irregular-rhythm services (IhrnServiceActivity, BodyOffDetectServiceActivity) start as plain services and call startForeground (and so show their notification) only when the system refused the background start; the three start sites go through WatchOverrides.startService and both onCreate startForeground calls through WatchOverrides.startForegroundIfRequired. The notification channel of the fallback is low importance",
+      "optional": false,
+      "ops": [
+        {
+          "op": "replaceInClass",
+          "className": "tm0",
+          "old": "    invoke-virtual {p0, v0}, Landroid/content/Context;->startForegroundService(Landroid/content/Intent;)Landroid/content/ComponentName;",
+          "new": "    invoke-static {p0, v0}, L${PKG_PATH}/watch/WatchOverrides;->startService(Landroid/content/Context;Landroid/content/Intent;)Landroid/content/ComponentName;",
+          "count": 1
+        },
+        {
+          "op": "replaceInClass",
+          "className": "p00",
+          "old": "    invoke-virtual {v0, v4}, Landroid/content/Context;->startForegroundService(Landroid/content/Intent;)Landroid/content/ComponentName;",
+          "new": "    invoke-static {v0, v4}, L${PKG_PATH}/watch/WatchOverrides;->startService(Landroid/content/Context;Landroid/content/Intent;)Landroid/content/ComponentName;",
+          "count": 1
+        },
+        {
+          "op": "replaceInClass",
+          "className": "com/samsung/android/shealthmonitor/ihrn/alarm/IhrnAlarmReceiver",
+          "old": "    invoke-virtual {p1, p0}, Landroid/content/Context;->startForegroundService(Landroid/content/Intent;)Landroid/content/ComponentName;",
+          "new": "    invoke-static {p1, p0}, L${PKG_PATH}/watch/WatchOverrides;->startService(Landroid/content/Context;Landroid/content/Intent;)Landroid/content/ComponentName;",
+          "count": 1
+        },
+        {
+          "op": "replaceInClass",
+          "className": "com/samsung/android/shealthmonitor/ihrn/manager/IhrnServiceActivity",
+          "old": "    invoke-virtual {p0, v3, v5}, Landroid/app/Service;->startForeground(ILandroid/app/Notification;)V",
+          "new": "    invoke-static {p0, v3, v5}, L${PKG_PATH}/watch/WatchOverrides;->startForegroundIfRequired(Landroid/app/Service;ILandroid/app/Notification;)V",
+          "count": 1
+        },
+        {
+          "op": "replaceInClass",
+          "className": "com/samsung/android/shealthmonitor/ihrn/manager/BodyOffDetectServiceActivity",
+          "old": "    invoke-virtual {p0, v3, v5}, Landroid/app/Service;->startForeground(ILandroid/app/Notification;)V",
+          "new": "    invoke-static {p0, v3, v5}, L${PKG_PATH}/watch/WatchOverrides;->startForegroundIfRequired(Landroid/app/Service;ILandroid/app/Notification;)V",
+          "count": 1
+        },
+        {
+          "op": "replaceInClass",
+          "className": "com/samsung/android/shealthmonitor/ihrn/manager/IhrnServiceActivity",
+          "old": [
+            "    const-string v8, \"ihrn\"",
+            "",
+            "    const/4 v9, 0x4"
+          ],
+          "new": [
+            "    const-string v8, \"ihrn\"",
+            "",
+            "    const/4 v9, 0x2"
+          ],
+          "count": 1
+        },
+        {
+          "op": "replaceInClass",
+          "className": "com/samsung/android/shealthmonitor/ihrn/manager/BodyOffDetectServiceActivity",
+          "old": [
+            "    const-string v9, \"ihrn\"",
+            "",
+            "    const/4 v10, 0x4"
+          ],
+          "new": [
+            "    const-string v9, \"ihrn\"",
+            "",
+            "    const/4 v10, 0x2"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    "watch-ihrn-alert-overlay": {
+      "families": [
+        "shm-watch"
+      ],
+      "title": "IHRN alert permission",
+      "description": "Manifest: add SYSTEM_ALERT_WINDOW so that, with the matching app-op grant, the irregular-rhythm alert screen (IhrnAlertActivity) may open from the background. The vendor build relies on START_ACTIVITIES_FROM_BACKGROUND, a privileged permission a re-signed app does not get",
+      "optional": false,
+      "ops": [
+        {
+          "op": "manifestExpect",
+          "select": {
+            "path": "uses-permission",
+            "attr": {
+              "android:name": "android.permission.SYSTEM_ALERT_WINDOW"
+            }
+          },
+          "expect": 0
+        },
+        {
+          "op": "manifestAddChild",
+          "parent": {
+            "path": "."
+          },
+          "tag": "uses-permission",
+          "attrs": {
+            "android:name": "android.permission.SYSTEM_ALERT_WINDOW"
+          }
         }
       ]
     },
@@ -3366,6 +3530,18 @@
         "value": "Lcom/samsung/android/hardware/sensormanager/",
         "note": "One UI 8 Watch (Android 16) denies the watch app's sensor-manager calls as blocked hidden API; this exemption lets it use them for ECG, blood pressure and sleep apnea.",
         "why": "grant.why.hidden_api"
+      },
+      {
+        "kind": "deviceIdleWhitelist",
+        "note": "Battery (Doze) exemption so the irregular-rhythm services can start in the background without a foreground-service notification.",
+        "why": "grant.why.battery_shm_watch"
+      },
+      {
+        "kind": "appop",
+        "op": "SYSTEM_ALERT_WINDOW",
+        "mode": "allow",
+        "note": "Background activity launch exemption for the irregular-rhythm alert screen.",
+        "why": "grant.why.overlay_shm_watch"
       }
     ],
     "bridge-watch": [
@@ -3679,6 +3855,7 @@
       "grant.why.exact_alarm_bridge": "Ring alarms at the exact minute.",
       "grant.why.full_screen_bridge": "Show alarms and incoming calls full screen.",
       "grant.why.overlay_watch": "Bring up the alarm and call screens even when another app is open.",
+      "grant.why.overlay_shm_watch": "Bring up the irregular rhythm alert even when another app is open.",
       "grant.why.ongoing_calls": "Show and control the call in progress on the watch.",
       "grant.why.listener_watch": "Notice when the watch's own alarm rings, to tell the phone.",
       "grant.why.battery_bridge": "Keep the Bluetooth link alive while the watch saves battery.",
@@ -3693,7 +3870,8 @@
       "grant.why.notifications_shealth": "Show notifications from Samsung Health+.",
       "grant.why.always_on": "Keeps the always-on screen from putting the watch to sleep during a measurement.",
       "pattern.shm-ihrn-countries.description": "Turns on irregular heart rhythm notifications in countries where Samsung offers ECG without them, using the newer ECG version.",
-      "pattern.shm-bp-worldwide.description": "Shows blood pressure in every country, including those where Samsung doesn't offer it."
+      "pattern.shm-bp-worldwide.description": "Shows blood pressure in every country, including those where Samsung doesn't offer it.",
+      "grant.why.battery_shm_watch": "Run the irregular rhythm checks in the background without a permanent notification."
     },
     "ar": {
       "app.health-monitor.summary": "يُنشئ نسخًا مُصحَّحة من Samsung Health Monitor للهاتف وللساعة (تخطيط القلب وضغط الدم وبقية مستشعرات الساعة). أوقف التبديل لاستثنائها.",
@@ -3785,6 +3963,7 @@
       "grant.why.exact_alarm_bridge": "تشغيل المنبّهات في الدقيقة المحددة تمامًا.",
       "grant.why.full_screen_bridge": "عرض المنبّهات والمكالمات الواردة بملء الشاشة.",
       "grant.why.overlay_watch": "إظهار شاشتي المنبّه والمكالمة حتى عند فتح تطبيق آخر.",
+      "grant.why.overlay_shm_watch": "إظهار تنبيه عدم انتظام ضربات القلب حتى عند فتح تطبيق آخر.",
       "grant.why.ongoing_calls": "عرض المكالمة الجارية على الساعة والتحكم فيها.",
       "grant.why.listener_watch": "ملاحظة رنين منبّه الساعة نفسها لإبلاغ الهاتف.",
       "grant.why.battery_bridge": "إبقاء اتصال Bluetooth قائمًا بينما توفّر الساعة البطارية.",
@@ -3799,7 +3978,8 @@
       "grant.why.notifications_shealth": "عرض الإشعارات من Samsung Health+.",
       "grant.why.always_on": "يمنع الشاشة الدائمة التشغيل من إدخال الساعة في وضع السكون أثناء القياس.",
       "pattern.shm-ihrn-countries.description": "يفعّل إشعارات عدم انتظام ضربات القلب في الدول التي تقدّم فيها Samsung تخطيط القلب بدونها، باستخدام الإصدار الأحدث من تخطيط القلب.",
-      "pattern.shm-bp-worldwide.description": "يعرض ضغط الدم في كل الدول، بما فيها الدول التي لا تقدّمه فيها Samsung."
+      "pattern.shm-bp-worldwide.description": "يعرض ضغط الدم في كل الدول، بما فيها الدول التي لا تقدّمه فيها Samsung.",
+      "grant.why.battery_shm_watch": "تشغيل فحوصات النظم غير المنتظم في الخلفية دون إشعار دائم."
     },
     "de": {
       "app.health-monitor.summary": "Erstellt gepatchte Samsung-Health-Monitor-Apps für Smartphone und Uhr (EKG, Blutdruck und weitere Uhrensensoren). Ausschalten, um sie wegzulassen.",
@@ -3891,6 +4071,7 @@
       "grant.why.exact_alarm_bridge": "Wecker auf die Minute genau klingeln lassen.",
       "grant.why.full_screen_bridge": "Wecker und eingehende Anrufe im Vollbild anzeigen.",
       "grant.why.overlay_watch": "Wecker- und Anrufbildschirm einblenden, auch wenn eine andere App geöffnet ist.",
+      "grant.why.overlay_shm_watch": "Die Warnung bei unregelmäßigem Herzrhythmus einblenden, auch wenn eine andere App geöffnet ist.",
       "grant.why.ongoing_calls": "Den laufenden Anruf auf der Uhr anzeigen und steuern.",
       "grant.why.listener_watch": "Bemerken, wenn der Wecker der Uhr klingelt, um es dem Smartphone mitzuteilen.",
       "grant.why.battery_bridge": "Die Bluetooth-Verbindung aufrechterhalten, während die Uhr Akku spart.",
@@ -3905,7 +4086,8 @@
       "grant.why.notifications_shealth": "Benachrichtigungen von Samsung Health+ anzeigen.",
       "grant.why.always_on": "Verhindert, dass das Always-on-Display die Uhr während einer Messung in den Ruhemodus schickt.",
       "pattern.shm-ihrn-countries.description": "Aktiviert Benachrichtigungen über unregelmäßigen Herzrhythmus in Ländern, in denen Samsung EKG ohne sie anbietet, mit der neueren EKG-Version.",
-      "pattern.shm-bp-worldwide.description": "Zeigt den Blutdruck in jedem Land an, auch dort, wo Samsung ihn nicht anbietet."
+      "pattern.shm-bp-worldwide.description": "Zeigt den Blutdruck in jedem Land an, auch dort, wo Samsung ihn nicht anbietet.",
+      "grant.why.battery_shm_watch": "Die Prüfungen auf unregelmäßigen Herzrhythmus im Hintergrund ohne dauerhafte Benachrichtigung ausführen."
     },
     "es": {
       "app.health-monitor.summary": "Crea copias parcheadas de Samsung Health Monitor para el teléfono y el reloj (ECG, presión arterial y otros sensores del reloj). Desactívalo para omitirlas.",
@@ -3997,6 +4179,7 @@
       "grant.why.exact_alarm_bridge": "Hacer sonar las alarmas en el minuto exacto.",
       "grant.why.full_screen_bridge": "Mostrar las alarmas y las llamadas entrantes en pantalla completa.",
       "grant.why.overlay_watch": "Mostrar las pantallas de alarma y de llamada aunque haya otra app abierta.",
+      "grant.why.overlay_shm_watch": "Mostrar la alerta de ritmo irregular aunque haya otra app abierta.",
       "grant.why.ongoing_calls": "Mostrar y controlar en el reloj la llamada en curso.",
       "grant.why.listener_watch": "Detectar cuándo suena la alarma propia del reloj, para avisarle al teléfono.",
       "grant.why.battery_bridge": "Mantener activo el enlace Bluetooth mientras el reloj ahorra batería.",
@@ -4011,7 +4194,8 @@
       "grant.why.notifications_shealth": "Mostrar las notificaciones de Samsung Health+.",
       "grant.why.always_on": "Evita que la pantalla siempre activa ponga el reloj en reposo durante una medición.",
       "pattern.shm-ihrn-countries.description": "Activa las notificaciones de ritmo cardíaco irregular en los países donde Samsung ofrece el ECG sin ellas, usando la versión más reciente del ECG.",
-      "pattern.shm-bp-worldwide.description": "Muestra la presión arterial en todos los países, incluidos aquellos donde Samsung no la ofrece."
+      "pattern.shm-bp-worldwide.description": "Muestra la presión arterial en todos los países, incluidos aquellos donde Samsung no la ofrece.",
+      "grant.why.battery_shm_watch": "Ejecutar las comprobaciones de ritmo irregular en segundo plano sin una notificación permanente."
     },
     "fr": {
       "app.health-monitor.summary": "Crée des copies modifiées de Samsung Health Monitor pour le téléphone et la montre (ECG, tension artérielle et autres capteurs de la montre). Désactivez pour les ignorer.",
@@ -4103,6 +4287,7 @@
       "grant.why.exact_alarm_bridge": "Faire sonner les alarmes à la minute près.",
       "grant.why.full_screen_bridge": "Afficher les alarmes et les appels entrants en plein écran.",
       "grant.why.overlay_watch": "Afficher les écrans d'alarme et d'appel même quand une autre app est ouverte.",
+      "grant.why.overlay_shm_watch": "Afficher l'alerte de rythme irrégulier même quand une autre app est ouverte.",
       "grant.why.ongoing_calls": "Afficher et contrôler l'appel en cours sur la montre.",
       "grant.why.listener_watch": "Repérer quand l'alarme propre à la montre sonne, pour en informer le téléphone.",
       "grant.why.battery_bridge": "Maintenir la liaison Bluetooth active quand la montre économise la batterie.",
@@ -4117,7 +4302,8 @@
       "grant.why.notifications_shealth": "Afficher les notifications de Samsung Health+.",
       "grant.why.always_on": "Empêche l'écran toujours actif de mettre la montre en veille pendant une mesure.",
       "pattern.shm-ihrn-countries.description": "Active les notifications de rythme cardiaque irrégulier dans les pays où Samsung propose l'ECG sans elles, avec la version la plus récente de l'ECG.",
-      "pattern.shm-bp-worldwide.description": "Affiche la tension artérielle dans tous les pays, y compris ceux où Samsung ne la propose pas."
+      "pattern.shm-bp-worldwide.description": "Affiche la tension artérielle dans tous les pays, y compris ceux où Samsung ne la propose pas.",
+      "grant.why.battery_shm_watch": "Exécuter les contrôles du rythme irrégulier en arrière-plan sans notification permanente."
     },
     "hi": {
       "app.health-monitor.summary": "फ़ोन और घड़ी के लिए Samsung Health Monitor की पैच की गई कॉपियाँ बनाता है (ECG, रक्तचाप और घड़ी के अन्य सेंसर)। इन्हें छोड़ने के लिए बंद करें।",
@@ -4209,6 +4395,7 @@
       "grant.why.exact_alarm_bridge": "अलार्म ठीक उसी मिनट पर बजाना।",
       "grant.why.full_screen_bridge": "अलार्म और आने वाली कॉल फ़ुल स्क्रीन में दिखाना।",
       "grant.why.overlay_watch": "कोई दूसरा ऐप खुला होने पर भी अलार्म और कॉल की स्क्रीन सामने लाना।",
+      "grant.why.overlay_shm_watch": "कोई दूसरा ऐप खुला होने पर भी अनियमित धड़कन की चेतावनी सामने लाना।",
       "grant.why.ongoing_calls": "घड़ी पर चालू कॉल दिखाना और उसे कंट्रोल करना।",
       "grant.why.listener_watch": "घड़ी का अपना अलार्म बजने पर पता लगाना, ताकि फ़ोन को बता सके।",
       "grant.why.battery_bridge": "घड़ी के बैटरी बचाने पर भी ब्लूटूथ कनेक्शन बनाए रखना।",
@@ -4223,7 +4410,8 @@
       "grant.why.notifications_shealth": "Samsung Health+ की सूचनाएँ दिखाना।",
       "grant.why.always_on": "माप के दौरान Always-on स्क्रीन को घड़ी को स्लीप में जाने से रोकता है।",
       "pattern.shm-ihrn-countries.description": "उन देशों में अनियमित हृदय गति की सूचनाएँ चालू करता है जहाँ Samsung इनके बिना ईसीजी देता है, ईसीजी के नए संस्करण का उपयोग करके।",
-      "pattern.shm-bp-worldwide.description": "हर देश में ब्लड प्रेशर दिखाता है, उन देशों में भी जहाँ Samsung इसे नहीं देता।"
+      "pattern.shm-bp-worldwide.description": "हर देश में ब्लड प्रेशर दिखाता है, उन देशों में भी जहाँ Samsung इसे नहीं देता।",
+      "grant.why.battery_shm_watch": "अनियमित लय की जाँच बिना स्थायी सूचना के बैकग्राउंड में चलाएँ।"
     },
     "id": {
       "app.health-monitor.summary": "Membuat salinan Samsung Health Monitor yang dipatch untuk ponsel dan jam (EKG, tekanan darah, dan sensor jam lainnya). Matikan untuk melewatkannya.",
@@ -4315,6 +4503,7 @@
       "grant.why.exact_alarm_bridge": "Membunyikan alarm tepat pada menitnya.",
       "grant.why.full_screen_bridge": "Menampilkan alarm dan panggilan masuk dalam layar penuh.",
       "grant.why.overlay_watch": "Memunculkan layar alarm dan panggilan meski aplikasi lain sedang terbuka.",
+      "grant.why.overlay_shm_watch": "Memunculkan peringatan ritme tidak teratur meski aplikasi lain sedang terbuka.",
       "grant.why.ongoing_calls": "Menampilkan dan mengontrol panggilan yang sedang berlangsung di jam tangan.",
       "grant.why.listener_watch": "Mengetahui saat alarm bawaan jam tangan berbunyi, untuk memberi tahu ponsel.",
       "grant.why.battery_bridge": "Menjaga koneksi Bluetooth tetap hidup saat jam tangan menghemat baterai.",
@@ -4329,7 +4518,8 @@
       "grant.why.notifications_shealth": "Menampilkan notifikasi dari Samsung Health+.",
       "grant.why.always_on": "Mencegah layar always-on membuat jam tangan tidur saat pengukuran.",
       "pattern.shm-ihrn-countries.description": "Mengaktifkan notifikasi irama jantung tidak teratur di negara tempat Samsung menyediakan EKG tanpa fitur itu, menggunakan versi EKG yang lebih baru.",
-      "pattern.shm-bp-worldwide.description": "Menampilkan tekanan darah di semua negara, termasuk negara tempat Samsung tidak menyediakannya."
+      "pattern.shm-bp-worldwide.description": "Menampilkan tekanan darah di semua negara, termasuk negara tempat Samsung tidak menyediakannya.",
+      "grant.why.battery_shm_watch": "Jalankan pemeriksaan ritme tidak teratur di latar belakang tanpa notifikasi permanen."
     },
     "it": {
       "app.health-monitor.summary": "Crea copie modificate di Samsung Health Monitor per telefono e orologio (ECG, pressione sanguigna e altri sensori dell'orologio). Disattiva per ometterle.",
@@ -4421,6 +4611,7 @@
       "grant.why.exact_alarm_bridge": "Far suonare le sveglie al minuto esatto.",
       "grant.why.full_screen_bridge": "Mostrare sveglie e chiamate in arrivo a schermo intero.",
       "grant.why.overlay_watch": "Mostrare le schermate di sveglia e chiamata anche quando è aperta un'altra app.",
+      "grant.why.overlay_shm_watch": "Mostrare l'avviso di ritmo irregolare anche quando è aperta un'altra app.",
       "grant.why.ongoing_calls": "Mostrare e controllare sull'orologio la chiamata in corso.",
       "grant.why.listener_watch": "Accorgersi quando suona la sveglia dell'orologio, per avvisare il telefono.",
       "grant.why.battery_bridge": "Mantenere attivo il collegamento Bluetooth mentre l'orologio risparmia batteria.",
@@ -4435,7 +4626,8 @@
       "grant.why.notifications_shealth": "Mostrare le notifiche di Samsung Health+.",
       "grant.why.always_on": "Evita che l'always-on display metta l'orologio in sospensione durante una misurazione.",
       "pattern.shm-ihrn-countries.description": "Attiva le notifiche di ritmo cardiaco irregolare nei paesi in cui Samsung offre l'ECG senza di esse, usando la versione più recente dell'ECG.",
-      "pattern.shm-bp-worldwide.description": "Mostra la pressione sanguigna in tutti i paesi, compresi quelli in cui Samsung non la offre."
+      "pattern.shm-bp-worldwide.description": "Mostra la pressione sanguigna in tutti i paesi, compresi quelli in cui Samsung non la offre.",
+      "grant.why.battery_shm_watch": "Eseguire i controlli del ritmo irregolare in background senza una notifica permanente."
     },
     "ja": {
       "app.health-monitor.summary": "スマートフォンとウォッチ向けのパッチ適用済み Samsung Health Monitor を作成します（心電図、血圧、その他のウォッチのセンサー）。含めない場合はオフにしてください。",
@@ -4527,6 +4719,7 @@
       "grant.why.exact_alarm_bridge": "アラームを正確な時刻に鳴らします。",
       "grant.why.full_screen_bridge": "アラームと着信を全画面で表示します。",
       "grant.why.overlay_watch": "別のアプリを開いていても、アラームと通話の画面を表示します。",
+      "grant.why.overlay_shm_watch": "別のアプリを開いていても、不規則な心拍リズムの通知画面を表示します。",
       "grant.why.ongoing_calls": "ウォッチで通話中の内容を表示し、操作します。",
       "grant.why.listener_watch": "ウォッチ自身のアラームが鳴ったことを検知して、スマートフォンに知らせます。",
       "grant.why.battery_bridge": "ウォッチがバッテリーを節約している間も、Bluetooth接続を維持します。",
@@ -4541,7 +4734,8 @@
       "grant.why.notifications_shealth": "Samsung Health+からの通知を表示します。",
       "grant.why.always_on": "測定中に常時表示画面でウォッチがスリープしないようにします。",
       "pattern.shm-ihrn-countries.description": "Samsung が不規則な心拍リズム通知なしで心電図を提供している国で、新しい心電図バージョンを使ってこの通知を有効にします。",
-      "pattern.shm-bp-worldwide.description": "Samsung が提供していない国も含め、すべての国で血圧を表示します。"
+      "pattern.shm-bp-worldwide.description": "Samsung が提供していない国も含め、すべての国で血圧を表示します。",
+      "grant.why.battery_shm_watch": "不規則な心拍リズムのチェックを、常時表示の通知なしでバックグラウンドで実行します。"
     },
     "ko": {
       "app.health-monitor.summary": "휴대전화와 워치용 패치된 Samsung Health Monitor를 빌드합니다(ECG, 혈압 및 기타 워치 센서). 제외하려면 끄세요.",
@@ -4633,6 +4827,7 @@
       "grant.why.exact_alarm_bridge": "알람을 정확한 시각에 울립니다.",
       "grant.why.full_screen_bridge": "알람과 걸려 오는 전화를 전체 화면으로 표시합니다.",
       "grant.why.overlay_watch": "다른 앱이 열려 있어도 알람과 통화 화면을 띄웁니다.",
+      "grant.why.overlay_shm_watch": "다른 앱이 열려 있어도 불규칙 심장 리듬 알림 화면을 띄웁니다.",
       "grant.why.ongoing_calls": "워치에서 진행 중인 통화를 표시하고 제어합니다.",
       "grant.why.listener_watch": "워치 자체 알람이 울리는 것을 알아내 휴대전화에 알립니다.",
       "grant.why.battery_bridge": "워치가 배터리를 아끼는 동안에도 블루투스 연결을 유지합니다.",
@@ -4647,7 +4842,8 @@
       "grant.why.notifications_shealth": "Samsung Health+의 알림을 표시합니다.",
       "grant.why.always_on": "측정 중에 상시 표시 화면 때문에 워치가 절전 모드로 들어가지 않게 합니다.",
       "pattern.shm-ihrn-countries.description": "Samsung이 불규칙한 심장 리듬 알림 없이 심전도를 제공하는 국가에서, 최신 심전도 버전을 사용해 이 알림을 켭니다.",
-      "pattern.shm-bp-worldwide.description": "Samsung이 제공하지 않는 국가를 포함해 모든 국가에서 혈압을 표시합니다."
+      "pattern.shm-bp-worldwide.description": "Samsung이 제공하지 않는 국가를 포함해 모든 국가에서 혈압을 표시합니다.",
+      "grant.why.battery_shm_watch": "불규칙 리듬 검사를 상시 알림 없이 백그라운드에서 실행합니다."
     },
     "nl": {
       "app.health-monitor.summary": "Bouwt gepatchte Samsung Health Monitor-apps voor de telefoon en het horloge (ECG, bloeddruk en andere sensoren van het horloge). Zet uit om ze over te slaan.",
@@ -4739,6 +4935,7 @@
       "grant.why.exact_alarm_bridge": "Wekkers op de minuut nauwkeurig laten afgaan.",
       "grant.why.full_screen_bridge": "Wekkers en inkomende gesprekken op volledig scherm tonen.",
       "grant.why.overlay_watch": "Het wekker- en gesprekscherm tonen, ook als er een andere app open is.",
+      "grant.why.overlay_shm_watch": "De melding voor een onregelmatig hartritme tonen, ook als er een andere app open is.",
       "grant.why.ongoing_calls": "Het lopende gesprek op het horloge tonen en bedienen.",
       "grant.why.listener_watch": "Merken wanneer de eigen wekker van het horloge afgaat, om het de telefoon te laten weten.",
       "grant.why.battery_bridge": "De Bluetooth-verbinding actief houden terwijl het horloge batterij bespaart.",
@@ -4753,7 +4950,8 @@
       "grant.why.notifications_shealth": "Meldingen van Samsung Health+ tonen.",
       "grant.why.always_on": "Voorkomt dat het always-on display het horloge tijdens een meting in slaap brengt.",
       "pattern.shm-ihrn-countries.description": "Schakelt meldingen voor onregelmatig hartritme in voor landen waar Samsung ECG zonder deze meldingen aanbiedt, met de nieuwere ECG-versie.",
-      "pattern.shm-bp-worldwide.description": "Toont bloeddruk in elk land, ook waar Samsung het niet aanbiedt."
+      "pattern.shm-bp-worldwide.description": "Toont bloeddruk in elk land, ook waar Samsung het niet aanbiedt.",
+      "grant.why.battery_shm_watch": "De controles op onregelmatig hartritme op de achtergrond uitvoeren zonder permanente melding."
     },
     "pl": {
       "app.health-monitor.summary": "Tworzy zmodyfikowane aplikacje Samsung Health Monitor na telefon i zegarek (EKG, ciśnienie krwi i inne czujniki zegarka). Wyłącz, aby je pominąć.",
@@ -4845,6 +5043,7 @@
       "grant.why.exact_alarm_bridge": "Uruchamia alarmy co do minuty.",
       "grant.why.full_screen_bridge": "Pokazuje alarmy i połączenia przychodzące na pełnym ekranie.",
       "grant.why.overlay_watch": "Wyświetla ekrany alarmu i połączenia, nawet gdy otwarta jest inna aplikacja.",
+      "grant.why.overlay_shm_watch": "Wyświetla alert nieregularnego rytmu, nawet gdy otwarta jest inna aplikacja.",
       "grant.why.ongoing_calls": "Pokazuje i obsługuje na zegarku trwające połączenie.",
       "grant.why.listener_watch": "Zauważa, kiedy dzwoni własny budzik zegarka, by powiadomić telefon.",
       "grant.why.battery_bridge": "Utrzymuje połączenie Bluetooth, gdy zegarek oszczędza baterię.",
@@ -4859,7 +5058,8 @@
       "grant.why.notifications_shealth": "Pokazuje powiadomienia z Samsung Health+.",
       "grant.why.always_on": "Zapobiega usypianiu zegarka przez ekran Always On podczas pomiaru.",
       "pattern.shm-ihrn-countries.description": "Włącza powiadomienia o nieregularnym rytmie serca w krajach, w których Samsung oferuje EKG bez nich, korzystając z nowszej wersji EKG.",
-      "pattern.shm-bp-worldwide.description": "Pokazuje ciśnienie krwi w każdym kraju, także tam, gdzie Samsung go nie oferuje."
+      "pattern.shm-bp-worldwide.description": "Pokazuje ciśnienie krwi w każdym kraju, także tam, gdzie Samsung go nie oferuje.",
+      "grant.why.battery_shm_watch": "Uruchamiać kontrole nieregularnego rytmu w tle bez stałego powiadomienia."
     },
     "pt": {
       "app.health-monitor.summary": "Cria cópias modificadas do Samsung Health Monitor para o celular e o relógio (ECG, pressão arterial e outros sensores do relógio). Desative para omiti-las.",
@@ -4951,6 +5151,7 @@
       "grant.why.exact_alarm_bridge": "Tocar os alarmes no minuto exato.",
       "grant.why.full_screen_bridge": "Mostrar alarmes e chamadas recebidas em tela inteira.",
       "grant.why.overlay_watch": "Exibir as telas de alarme e de chamada mesmo com outro app aberto.",
+      "grant.why.overlay_shm_watch": "Exibir o alerta de ritmo irregular mesmo com outro app aberto.",
       "grant.why.ongoing_calls": "Mostrar e controlar no relógio a chamada em andamento.",
       "grant.why.listener_watch": "Perceber quando o alarme do próprio relógio toca, para avisar o celular.",
       "grant.why.battery_bridge": "Manter o link Bluetooth ativo enquanto o relógio economiza bateria.",
@@ -4965,7 +5166,8 @@
       "grant.why.notifications_shealth": "Mostrar as notificações do Samsung Health+.",
       "grant.why.always_on": "Impede que a tela sempre ativa coloque o relógio em repouso durante uma medição.",
       "pattern.shm-ihrn-countries.description": "Ativa as notificações de ritmo cardíaco irregular nos países em que a Samsung oferece o ECG sem elas, usando a versão mais recente do ECG.",
-      "pattern.shm-bp-worldwide.description": "Mostra a pressão arterial em todos os países, inclusive onde a Samsung não a oferece."
+      "pattern.shm-bp-worldwide.description": "Mostra a pressão arterial em todos os países, inclusive onde a Samsung não a oferece.",
+      "grant.why.battery_shm_watch": "Executar as verificações de ritmo irregular em segundo plano sem uma notificação permanente."
     },
     "ru": {
       "app.health-monitor.summary": "Собирает пропатченные приложения Samsung Health Monitor для телефона и часов (ЭКГ, давление и другие датчики часов). Выключите, чтобы пропустить их.",
@@ -5057,6 +5259,7 @@
       "grant.why.exact_alarm_bridge": "Включать будильники ровно в нужную минуту.",
       "grant.why.full_screen_bridge": "Показывать будильники и входящие звонки на весь экран.",
       "grant.why.overlay_watch": "Показывать экраны будильника и звонка, даже когда открыто другое приложение.",
+      "grant.why.overlay_shm_watch": "Показывать предупреждение о нерегулярном ритме, даже когда открыто другое приложение.",
       "grant.why.ongoing_calls": "Показывать на часах текущий звонок и управлять им.",
       "grant.why.listener_watch": "Замечать, когда звонит будильник самих часов, чтобы сообщить телефону.",
       "grant.why.battery_bridge": "Поддерживать связь по Bluetooth, пока часы экономят заряд.",
@@ -5071,7 +5274,8 @@
       "grant.why.notifications_shealth": "Показывать уведомления от Samsung Health+.",
       "grant.why.always_on": "Не даёт всегда включённому экрану усыплять часы во время измерения.",
       "pattern.shm-ihrn-countries.description": "Включает уведомления о нерегулярном сердечном ритме в странах, где Samsung предлагает ЭКГ без них, используя более новую версию ЭКГ.",
-      "pattern.shm-bp-worldwide.description": "Показывает давление во всех странах, включая те, где Samsung его не предлагает."
+      "pattern.shm-bp-worldwide.description": "Показывает давление во всех странах, включая те, где Samsung его не предлагает.",
+      "grant.why.battery_shm_watch": "Выполнять проверки нерегулярного ритма в фоне без постоянного уведомления."
     },
     "tr": {
       "app.health-monitor.summary": "Telefon ve saat için yamalı Samsung Health Monitor uygulamaları oluşturur (EKG, tansiyon ve saatin diğer sensörleri). Atlamak için kapatın.",
@@ -5163,6 +5367,7 @@
       "grant.why.exact_alarm_bridge": "Alarmları tam dakikasında çaldırmak.",
       "grant.why.full_screen_bridge": "Alarmları ve gelen aramaları tam ekranda göstermek.",
       "grant.why.overlay_watch": "Başka bir uygulama açıkken bile alarm ve arama ekranlarını öne getirmek.",
+      "grant.why.overlay_shm_watch": "Başka bir uygulama açıkken bile düzensiz ritim uyarısını öne getirmek.",
       "grant.why.ongoing_calls": "Saatte süren aramayı göstermek ve yönetmek.",
       "grant.why.listener_watch": "Saatin kendi alarmı çaldığında fark edip telefona bildirmek.",
       "grant.why.battery_bridge": "Saat pil tasarrufu yaparken Bluetooth bağlantısını canlı tutmak.",
@@ -5177,7 +5382,8 @@
       "grant.why.notifications_shealth": "Samsung Health+ bildirimlerini göstermek.",
       "grant.why.always_on": "Her zaman açık ekranın, ölçüm sırasında saati uykuya almasını önler.",
       "pattern.shm-ihrn-countries.description": "Samsung'un EKG'yi bu bildirimler olmadan sunduğu ülkelerde, daha yeni EKG sürümünü kullanarak düzensiz kalp ritmi bildirimlerini açar.",
-      "pattern.shm-bp-worldwide.description": "Samsung'un sunmadığı ülkeler de dahil olmak üzere her ülkede tansiyonu gösterir."
+      "pattern.shm-bp-worldwide.description": "Samsung'un sunmadığı ülkeler de dahil olmak üzere her ülkede tansiyonu gösterir.",
+      "grant.why.battery_shm_watch": "Düzensiz ritim kontrollerini kalıcı bildirim olmadan arka planda çalıştır."
     },
     "uk": {
       "app.health-monitor.summary": "Збирає пропатчені застосунки Samsung Health Monitor для телефона й годинника (ЕКГ, тиск та інші датчики годинника). Вимкніть, щоб пропустити їх.",
@@ -5269,6 +5475,7 @@
       "grant.why.exact_alarm_bridge": "Вмикати будильники рівно у потрібну хвилину.",
       "grant.why.full_screen_bridge": "Показувати будильники та вхідні дзвінки на весь екран.",
       "grant.why.overlay_watch": "Показувати екрани будильника й дзвінка, навіть коли відкрито інший застосунок.",
+      "grant.why.overlay_shm_watch": "Показувати попередження про нерегулярний ритм, навіть коли відкрито інший застосунок.",
       "grant.why.ongoing_calls": "Показувати на годиннику поточний дзвінок і керувати ним.",
       "grant.why.listener_watch": "Помічати, коли дзвонить будильник самого годинника, щоб повідомити телефон.",
       "grant.why.battery_bridge": "Підтримувати зв'язок через Bluetooth, поки годинник економить заряд.",
@@ -5283,7 +5490,8 @@
       "grant.why.notifications_shealth": "Показувати сповіщення від Samsung Health+.",
       "grant.why.always_on": "Не дає завжди ввімкненому екрану присипляти годинник під час вимірювання.",
       "pattern.shm-ihrn-countries.description": "Вмикає сповіщення про нерегулярний серцевий ритм у країнах, де Samsung пропонує ЕКГ без них, використовуючи новішу версію ЕКГ.",
-      "pattern.shm-bp-worldwide.description": "Показує тиск у всіх країнах, зокрема там, де Samsung його не пропонує."
+      "pattern.shm-bp-worldwide.description": "Показує тиск у всіх країнах, зокрема там, де Samsung його не пропонує.",
+      "grant.why.battery_shm_watch": "Виконувати перевірки нерегулярного ритму у фоні без постійного сповіщення."
     },
     "zh-CN": {
       "app.health-monitor.summary": "为手机和手表构建打补丁的 Samsung Health Monitor 应用（心电图、血压及手表的其他传感器）。关闭即可不包含它们。",
@@ -5375,6 +5583,7 @@
       "grant.why.exact_alarm_bridge": "让闹钟在准确的时间响起。",
       "grant.why.full_screen_bridge": "以全屏方式显示闹钟和来电。",
       "grant.why.overlay_watch": "即使正在使用其他应用，也能显示闹钟和通话界面。",
+      "grant.why.overlay_shm_watch": "即使正在使用其他应用，也能显示心律不齐提醒界面。",
       "grant.why.ongoing_calls": "在手表上显示并控制正在进行的通话。",
       "grant.why.listener_watch": "发现手表自带的闹钟响起，并告知手机。",
       "grant.why.battery_bridge": "在手表节电时，保持蓝牙连接不断开。",
@@ -5389,7 +5598,8 @@
       "grant.why.notifications_shealth": "显示来自 Samsung Health+ 的通知。",
       "grant.why.always_on": "避免息屏显示在测量期间让手表进入休眠。",
       "pattern.shm-ihrn-countries.description": "在三星仅提供心电图、不提供心律不齐通知的国家/地区，使用较新的心电图版本开启心律不齐通知。",
-      "pattern.shm-bp-worldwide.description": "在所有国家/地区显示血压，包括三星未提供该功能的国家/地区。"
+      "pattern.shm-bp-worldwide.description": "在所有国家/地区显示血压，包括三星未提供该功能的国家/地区。",
+      "grant.why.battery_shm_watch": "在后台运行不规则心律检查，无需常驻通知。"
     },
     "zh-TW": {
       "app.health-monitor.summary": "為手機和手錶建置修補過的 Samsung Health Monitor 應用程式（心電圖、血壓及手錶的其他感測器）。關閉即可不包含它們。",
@@ -5481,6 +5691,7 @@
       "grant.why.exact_alarm_bridge": "讓鬧鐘在準確的時間響起。",
       "grant.why.full_screen_bridge": "以全螢幕方式顯示鬧鐘和來電。",
       "grant.why.overlay_watch": "即使正在使用其他應用程式，也能顯示鬧鐘和通話畫面。",
+      "grant.why.overlay_shm_watch": "即使正在使用其他應用程式，也能顯示心律不整提醒畫面。",
       "grant.why.ongoing_calls": "在手錶上顯示並控制進行中的通話。",
       "grant.why.listener_watch": "偵測到手錶自己的鬧鐘響起，並告知手機。",
       "grant.why.battery_bridge": "在手錶節電時，保持藍牙連線不中斷。",
@@ -5495,7 +5706,8 @@
       "grant.why.notifications_shealth": "顯示來自 Samsung Health+ 的通知。",
       "grant.why.always_on": "避免螢幕常亮顯示在測量期間讓手錶進入休眠。",
       "pattern.shm-ihrn-countries.description": "在三星僅提供心電圖、不提供心律不整通知的國家/地區，使用較新的心電圖版本開啟心律不整通知。",
-      "pattern.shm-bp-worldwide.description": "在所有國家/地區顯示血壓，包括三星未提供此功能的國家/地區。"
+      "pattern.shm-bp-worldwide.description": "在所有國家/地區顯示血壓，包括三星未提供此功能的國家/地區。",
+      "grant.why.battery_shm_watch": "在背景執行不規則心律檢查，無需常駐通知。"
     }
   }
 }
