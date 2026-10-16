@@ -83,16 +83,20 @@ internal class InsertAtMethodStart(a: Args) : Op("insertAtMethodStart") {
         return done
     }
 
+    /**
+     * The insert must be in the method, not necessarily first: a later pattern inserting at the
+     * start of the same method (e.g. the ECG and SpO2 sensor adapters on the register wrapper)
+     * puts its own block in front of this one.
+     */
     override fun verifyApplied(ctx: PatchContext): List<String> {
         val done = ArrayList<String>()
         for (hit in sel.select(ctx.smali, ignoreBodyNone = true)) {
             val src = ctx.smali.read(hit.path)
             for (sig in hit.sigs) {
-                if (!SmaliText.startsWithInsert(src, sig, ctx.canon(insert), afterDirectives = true)) continue
-                if (!tail.isNullOrEmpty()) {
-                    val span = SmaliText.methodSpan(src, sig) ?: continue
-                    if (ctx.canon(tail) !in src.substring(span[0], span[1])) continue
-                }
+                val span = SmaliText.methodSpan(src, sig) ?: continue
+                val method = src.substring(span[0], span[1])
+                if (ctx.canon(insert) !in method) continue
+                if (!tail.isNullOrEmpty() && ctx.canon(tail) !in method) continue
                 done.add(site(hit.path, sig))
             }
         }

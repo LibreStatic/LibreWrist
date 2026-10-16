@@ -228,6 +228,40 @@ class PatcherTest {
         }
     }
 
+    /** A required pattern that inserts a sensor-style dispatch block at the start of greeting(). */
+    private fun stackedPattern(value: String, label: String) =
+        """{"families": ["syn"], "title": "t", "description": "d", "optional": false,
+    "ops": [{"op": "insertAtMethodStart", "sigRegex": "public static greeting\\(\\)Ljava/lang/String;", "expect": 1,
+      "insert": ["", "    const/16 v0, $value", "", "    if-nez v0, :$label", "", "    const-string v0, \"$label\"", "",
+        "    return-object v0", "", "    :$label", ""]}]}"""
+
+    @Test fun stackedInsertsAtTheSameMethodStartVerify() {
+        // Two patterns insert at the start of the same method: the second one's block lands in front
+        // of the first one's, which must still count as applied after the rebuilt dex is disassembled.
+        val apk = File(dir, "syn.apk").also { syntheticApk(it) }
+        val text = """
+{
+  "schema": 2, "serial": 1, "minAppVersion": 1,
+  "inputs": [{"id": "syn", "file": "syn.apk", "sha256": "${sha(apk)}", "label": "Synthetic", "package": "com.example.syn",
+    "versionName": "1", "versionCode": 1, "minSdk": 21, "targetSdk": 21, "abis": [], "dpi": "nodpi", "format": "apk",
+    "target": "phone", "role": "patched"}],
+  "families": [{"id": "syn", "package": "com.example.syn"}],
+  "profiles": {"p": {"description": "synthetic", "families": {"syn": ["first", "second"]}, "inject": {"syn": ["extra"]}}},
+  "patterns": {"first": ${stackedPattern("0x1b", "skip_first")}, "second": ${stackedPattern("0x31", "skip_second")}},
+  "outputs": [{"id": "syn-out", "device": "phone", "package": "com.example.syn", "from": {"input": "syn", "profile": "p"}}],
+  "installOrder": [{"output": "syn-out"}], "grants": {"syn-out": []}, "stockAppsToDisable": []${schema2Tail("syn-out")}
+}"""
+        val out = File(dir, "out.apk")
+        val report = Patcher(Catalogue.parse(text)).patch(request(apk, out, key()))
+        assertTrue(report.text(), report.ok)
+        assertEquals(listOf("first", "second"), report.verification.map { it.id })
+        ZipReader(out).use { z ->
+            val tree = DexTree(listOf("classes.dex" to z.read("classes.dex")), api)
+            val main = tree.read(tree.classPath("com/example/syn/Main")!!)
+            assertTrue(main, main.indexOf("0x31") in 0 until main.indexOf("0x1b"))
+        }
+    }
+
     @Test fun analyzeChangesNothingOnDisk() {
         val apk = File(dir, "syn.apk").also { syntheticApk(it) }
         val before = apk.readBytes()
