@@ -74,7 +74,7 @@ internal class WatchInstallRunner(
                 if (!install(state, index, files.getValue(item.outputId))) return
             }
             if (!grant(state, index)) return
-            startBridge(item)
+            startBridge(state, index)
         }
     }
 
@@ -121,13 +121,27 @@ internal class WatchInstallRunner(
         }
     }
 
-    /** Starts a bridge once it is installed and granted (clears the stopped state). Never fails the run. */
-    private suspend fun startBridge(item: InstallItem) {
+    /**
+     * Starts a bridge once it is installed and granted (clears the stopped state). Never fails the run.
+     * The start and the companion link can take most of a minute on a slow watch (it waits for the
+     * bridge to reach the phone), so the item shows as working meanwhile instead of a screen that seems idle.
+     */
+    private suspend fun startBridge(state: MutableStateFlow<InstallUiState>, index: Int) {
+        val item = state.value.items[index]
         val out = AppCatalogue.current.outputs.firstOrNull { it.id == item.outputId } ?: return
         val start = out.start ?: return
         val action = out.startAction(prefix()) ?: return
+        state.update { it.updateItem(index) { i -> i.copy(status = CheckStatus.Running, progress = null) } }
         try {
-            device.startBridge(item.packageName, start.receiver, action, startExtras(out))
+            startAndLink(item, out, start.receiver, action)
+        } finally {
+            state.update { it.updateItem(index) { i -> i.copy(status = CheckStatus.Passed) } }
+        }
+    }
+
+    private suspend fun startAndLink(item: InstallItem, out: OutputApp, receiver: String, action: String) {
+        try {
+            device.startBridge(item.packageName, receiver, action, startExtras(out))
         } catch (e: IOException) {
             log("start request for ${item.outputId} failed: ${e.javaClass.simpleName}")
             return
@@ -135,7 +149,7 @@ internal class WatchInstallRunner(
             log("start request for ${item.outputId} rejected: ${e.javaClass.simpleName}")
             return
         }
-        if (out.companionLink) CompanionLinker(device, log, pause).link(item.packageName, start.receiver, action)
+        if (out.companionLink) CompanionLinker(device, log, pause).link(item.packageName, receiver, action)
     }
 
     /** True when the package is installed. */

@@ -184,7 +184,12 @@ private class FakeDevice : WatchDevice {
     val companionCalls = mutableListOf<String>()
     var associateThrows: RuntimeException? = null
 
-    override suspend fun phoneMac(pkg: String): String? = macs[minOf(macPolls++, macs.lastIndex)]
+    var onMac: () -> Unit = {}
+
+    override suspend fun phoneMac(pkg: String): String? {
+        onMac()
+        return macs[minOf(macPolls++, macs.lastIndex)]
+    }
     override suspend fun companionAssociations(): List<CompanionAssociation> = associations.toList()
 
     override suspend fun associateCompanion(pkg: String, mac: String) {
@@ -403,6 +408,20 @@ class WatchInstallRunnerTest {
         val s = state(item("bridge-watch"))
         runBlocking { runner(device, built("bridge-watch")).run(s) }
         return s
+    }
+
+    @Test
+    fun theBridgeShowsAsRunningWhileItIsLinkedToThePhone() {
+        val s = state(item("bridge-watch"))
+        val seen = mutableListOf<CheckStatus>()
+        val device = FakeDevice().apply {
+            macs = listOf(null, mac)
+            onMac = { seen += s.value.items.single().status }
+        }
+        runBlocking { runner(device, built("bridge-watch")).run(s) }
+        assertEquals(listOf(CheckStatus.Running, CheckStatus.Running), seen)
+        assertEquals(CheckStatus.Passed, s.value.items.single().status)
+        assertTrue(s.value.done)
     }
 
     @Test
