@@ -56,6 +56,7 @@ import androidx.compose.runtime.DisposableEffect
 import io.openshm.patcher.R
 import io.openshm.patcher.data.PickedPassword
 import io.openshm.patcher.ui.screens.build.ManualBackupDialog
+import io.openshm.patcher.ui.components.ContainerTextAction
 import io.openshm.patcher.ui.components.FooterHint
 import io.openshm.patcher.ui.components.IconAction
 import io.openshm.patcher.ui.components.InfoChip
@@ -246,17 +247,18 @@ private fun KeyCard(state: SigningKeyUiState) {
 @Composable
 private fun MessageCard(message: SigningKeyMessage, onDismiss: () -> Unit) {
     val colors = MaterialTheme.colorScheme
+    val onColor = if (message.isError) colors.onErrorContainer else colors.onSecondaryContainer
     Surface(
         shape = RoundedCornerShape(20.dp),
         color = if (message.isError) colors.errorContainer else colors.secondaryContainer,
-        contentColor = if (message.isError) colors.onErrorContainer else colors.onSecondaryContainer,
+        contentColor = onColor,
     ) {
         Row(
             Modifier.fillMaxWidth().padding(start = 16.dp, top = 4.dp, bottom = 4.dp, end = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(stringResource(message.text), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
-            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_close)) }
+            ContainerTextAction(stringResource(R.string.action_close), onDismiss, onColor)
         }
     }
 }

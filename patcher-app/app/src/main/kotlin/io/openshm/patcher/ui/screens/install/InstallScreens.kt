@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
@@ -27,6 +28,7 @@ import io.openshm.patcher.ui.components.OutlinedAction
 import io.openshm.patcher.ui.components.SuccessOverlay
 import io.openshm.patcher.ui.components.PAIRING_CODE_LENGTH
 import io.openshm.patcher.ui.components.PairingCodeField
+import io.openshm.patcher.ui.components.ContainerTextAction
 import io.openshm.patcher.ui.components.QuietAction
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
@@ -262,7 +264,12 @@ private fun LeftoverRemovalCard(removing: List<String>, kept: List<String>, foun
             )
             packages.forEach { PackageId(it, maxLines = 2) }
             if (!isRemoving) {
-                QuietAction(stringResource(R.string.leftover_remove_action), onRemove)
+                ContainerTextAction(
+                    stringResource(R.string.leftover_remove_action),
+                    onRemove,
+                    PatcherTheme.status.onWarningContainer,
+                    Modifier.fillMaxWidth().heightIn(min = 48.dp),
+                )
             }
         }
     }
