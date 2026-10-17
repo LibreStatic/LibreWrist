@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_ui_pet_description">Tic、セットアップガイド</string>
+    <string name="guide_ui_chip_tic">私がやります</string>
+    <string name="guide_ui_chip_user">あなたの番です</string>
+    <string name="guide_ui_strip_controlling">Tic が画面を操作しています。タッチすると一時停止します。</string>
+    <string name="guide_ui_strip_paused">Tic は一時停止中です。タップすると再開します。</string>
+    <string name="guide_ui_code_description">ペアリングコード（6桁）</string>
+    <string name="guide_ui_code_not_now">今はしない</string>
+</resources>

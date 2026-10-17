@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_ui_pet_description">Tic, pemandu penyiapan Anda</string>
+    <string name="guide_ui_chip_tic">Saya yang lakukan</string>
+    <string name="guide_ui_chip_user">Giliran Anda</string>
+    <string name="guide_ui_strip_controlling">Tic sedang mengontrol layar Anda. Sentuh untuk menjeda.</string>
+    <string name="guide_ui_strip_paused">Tic dijeda. Ketuk untuk melanjutkan.</string>
+    <string name="guide_ui_code_description">Kode penyandingan, enam digit</string>
+    <string name="guide_ui_code_not_now">Jangan sekarang</string>
+</resources>

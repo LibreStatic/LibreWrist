@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_ui_pet_description">Tic, आपका सेटअप गाइड</string>
+    <string name="guide_ui_chip_tic">यह मैं करता हूँ</string>
+    <string name="guide_ui_chip_user">अब आपकी बारी</string>
+    <string name="guide_ui_strip_controlling">Tic आपकी स्क्रीन को नियंत्रित कर रहा है। रोकने के लिए स्क्रीन को छुएँ।</string>
+    <string name="guide_ui_strip_paused">Tic रुका हुआ है। जारी रखने के लिए इसे टैप करें।</string>
+    <string name="guide_ui_code_description">पेयरिंग कोड, छह अंक</string>
+    <string name="guide_ui_code_not_now">अभी नहीं</string>
+</resources>

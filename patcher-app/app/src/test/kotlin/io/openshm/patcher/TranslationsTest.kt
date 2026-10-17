@@ -51,17 +51,44 @@ class TranslationsTest {
     private fun args(text: String): List<String> =
         formatArg.findAll(text).map { it.value }.filter { it != "%%" }.sorted().toList()
 
-    private fun translations(): List<File> =
+    /** Every base `values/strings*.xml`, found by glob so split files are covered without listing them. */
+    private fun baseFiles(): List<File> =
+        File(res, "values").listFiles().orEmpty()
+            .filter { it.isFile && it.name.startsWith("strings") && it.name.endsWith(".xml") }
+            .sortedBy { it.name }
+
+    /** Locale directories: the `values-*` ones that carry a `strings.xml` (so `values-night` is not one). */
+    private fun localeDirs(): List<File> =
         res.listFiles().orEmpty()
             .filter { it.isDirectory && it.name.startsWith("values-") && File(it, "strings.xml").exists() }
-            .map { File(it, "strings.xml") }
+            .sortedBy { it.name }
+
+    /** Every translated file, which must exist for each base file in each locale. */
+    private fun translations(): List<File> =
+        baseFiles().flatMap { base -> localeDirs().map { File(it, base.name) } }.filter { it.exists() }
+
+    @Test fun everyBaseFileHasAllTranslations() {
+        val missing = baseFiles().flatMap { base ->
+            localeDirs().filter { !File(it, base.name).exists() }.map { "${it.name}/${base.name} is missing" }
+        }
+        if (missing.isNotEmpty()) fail(missing.joinToString("\n"))
+    }
 
     @Test fun translationsMatchTheEnglishStrings() {
-        val english = load(File(res, "values/strings.xml"))
         val problems = mutableListOf<String>()
-        for (file in translations()) {
-            val locale = file.parentFile.name.removePrefix("values-")
-            val t = load(file)
+        for (base in baseFiles()) {
+            val english = load(base)
+            for (dir in localeDirs()) {
+                val file = File(dir, base.name)
+                if (!file.exists()) continue
+                checkTranslation(english, load(file), "${dir.name.removePrefix("values-")}/${base.name}", problems)
+            }
+        }
+        if (problems.isNotEmpty()) fail(problems.joinToString("\n"))
+    }
+
+    private fun checkTranslation(english: Strings, t: Strings, locale: String, problems: MutableList<String>) {
+        run {
             val expected = english.strings.keys - english.fixed
             (expected - t.strings.keys).forEach { problems += "$locale: missing string $it" }
             (t.strings.keys - english.strings.keys).forEach { problems += "$locale: unknown string $it" }
@@ -84,15 +111,14 @@ class TranslationsTest {
                 }
             }
         }
-        if (problems.isNotEmpty()) fail(problems.joinToString("\n"))
     }
 
     @Test fun apostrophesAreEscaped() {
         val unescaped = Regex("""(?<!\\)'""")
-        val problems = (listOf(File(res, "values/strings.xml")) + translations()).flatMap { file ->
+        val problems = (baseFiles() + translations()).flatMap { file ->
             file.readLines().mapIndexedNotNull { index, line ->
                 val text = line.substringAfter('>', "").substringBeforeLast('<', "")
-                if (unescaped.containsMatchIn(text)) "${file.parentFile.name}:${index + 1}: $line" else null
+                if (unescaped.containsMatchIn(text)) "${file.parentFile.name}/${file.name}:${index + 1}: $line" else null
             }
         }
         assertTrue(problems.joinToString("\n"), problems.isEmpty())

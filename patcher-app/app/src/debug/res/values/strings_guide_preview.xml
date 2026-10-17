@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Debug-only fake bubble texts for the guide drivers. -->
+<resources>
+    <string name="guide_preview_point" translatable="false">Tap %1$s to turn it on.</string>
+    <string name="guide_preview_tap" translatable="false">I\'ll open %1$s for you.</string>
+    <string name="guide_preview_sad" translatable="false">I can\'t find %1$s. Look for a row like this one.</string>
+    <string name="guide_preview_code" translatable="false">Type the six-digit code that Settings shows.</string>
+    <string name="guide_preview_done" translatable="false">All done! Back to LibreWrist.</string>
+</resources>

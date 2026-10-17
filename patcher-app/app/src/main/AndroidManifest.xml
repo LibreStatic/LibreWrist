@@ -38,6 +38,8 @@
         <intent>
             <action android:name="android.service.notification.NotificationListenerService" />
         </intent>
+        <!-- The interactive guide reads Settings' own labels, so it matches them in the user's language and skin. -->
+        <package android:name="com.android.settings" />
     </queries>
 
     <application
@@ -93,6 +95,19 @@
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="Streams diagnostic logs from the user's own watch and phone over ADB for troubleshooting" />
+        </service>
+        <!-- Tic, the interactive guide: points at (and taps the safe) setup steps in Settings. Inert until the app starts a guided hand-off. -->
+        <service
+            android:name=".device.guide.GuideAccessibilityService"
+            android:exported="true"
+            android:label="@string/automation_guide_title"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/guide_accessibility" />
         </service>
     </application>
 </manifest>

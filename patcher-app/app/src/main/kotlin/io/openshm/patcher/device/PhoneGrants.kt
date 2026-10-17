@@ -1,5 +1,6 @@
 package io.openshm.patcher.device
 
+import io.openshm.patcher.device.guide.GuideRequest
 import android.app.AppOpsManager
 import android.content.Context
 import android.content.Intent
@@ -140,8 +141,11 @@ class AndroidPhoneProbe(context: Context) : PhoneProbe {
     private fun opString(op: String) = "android:" + op.lowercase()
 }
 
-/** The system screens behind [SettingsTarget]; [fallback] is tried when the first one is not available. */
-data class LaunchRequest(val intent: Intent, val fallback: Intent? = null)
+/**
+ * The system screens behind [SettingsTarget]; [fallback] is tried when the first one is not available.
+ * [guide] names the walk-through Tic runs on that screen when the interactive guide is on.
+ */
+data class LaunchRequest(val intent: Intent, val fallback: Intent? = null, val guide: GuideRequest? = null)
 
 object PhoneSettings {
     /**
@@ -154,7 +158,7 @@ object PhoneSettings {
             .putExtra(FRAGMENT_ARGS_KEY, WIRELESS_DEBUGGING_KEY)
             .putExtra(SHOW_FRAGMENT_ARGS, target)
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        return LaunchRequest(intent, Intent(Settings.ACTION_SETTINGS))
+        return LaunchRequest(intent, Intent(Settings.ACTION_SETTINGS), GuideRequest.WirelessDebugging)
     }
 
     private const val FRAGMENT_ARGS_KEY = ":settings:fragment_args_key"
@@ -166,17 +170,22 @@ object PhoneSettings {
         return when (target) {
             SettingsTarget.AppDetails -> LaunchRequest(details)
             SettingsTarget.Overlay ->
-                LaunchRequest(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$pkg")), details)
+                LaunchRequest(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$pkg")), details, GuideRequest.Permission(target, pkg))
             // The system list of apps with battery optimisation; the user switches this one to "Not optimised".
-            SettingsTarget.Battery -> LaunchRequest(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS), details)
+            SettingsTarget.Battery ->
+                LaunchRequest(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS), details, GuideRequest.Permission(target, pkg))
             SettingsTarget.ListenerDetail -> LaunchRequest(
                 Intent(Settings.ACTION_NOTIFICATION_LISTENER_DETAIL_SETTINGS)
                     .putExtra(Settings.EXTRA_NOTIFICATION_LISTENER_COMPONENT_NAME, "$pkg/${listenerClass ?: ""}"),
                 Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS),
+                GuideRequest.Permission(target),
             )
         }
     }
 
     fun unknownSources(context: Context): LaunchRequest =
-        LaunchRequest(Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:${context.packageName}")))
+        LaunchRequest(
+            Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:${context.packageName}")),
+            guide = GuideRequest.UnknownSources,
+        )
 }

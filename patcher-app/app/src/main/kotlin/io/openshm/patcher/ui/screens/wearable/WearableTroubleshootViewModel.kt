@@ -1,5 +1,6 @@
 package io.openshm.patcher.ui.screens.wearable
 
+import io.openshm.patcher.device.guide.GuideRequest
 import android.app.Application
 import android.content.Intent
 import android.net.Uri
@@ -69,4 +70,5 @@ class WearableTroubleshootViewModel(application: Application) : AndroidViewModel
 internal fun playServicesSettings() = LaunchRequest(
     Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$GMS_PACKAGE")).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
     fallback = Intent(Settings.ACTION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+    guide = GuideRequest.PlayServicesClearData,
 )

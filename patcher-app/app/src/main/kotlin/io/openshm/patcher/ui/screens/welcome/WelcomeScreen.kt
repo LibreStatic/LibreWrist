@@ -29,6 +29,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
@@ -79,6 +80,7 @@ import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import io.openshm.patcher.R
 import io.openshm.patcher.data.AutomationState
 import io.openshm.patcher.data.Device
@@ -135,6 +137,7 @@ sealed interface WelcomeEvent {
     data object ConfirmSkip : WelcomeEvent
     data object CancelSkip : WelcomeEvent
     data object ManualSetup : WelcomeEvent
+    data class SetGuidePet(val on: Boolean) : WelcomeEvent
     data class SetUnattended(val on: Boolean) : WelcomeEvent
     data class SetFreeRun(val on: Boolean) : WelcomeEvent
     data class SetUninstallMismatch(val on: Boolean) : WelcomeEvent
@@ -203,17 +206,21 @@ private fun WelcomeBody(
                     }
                 }
             } else {
-                // One scroll for everything, but the hero gives way first: it shrinks so the actions (with the
-                // device logs and undo links) still fit on a short screen, and only below its minimum height
-                // does the screen scroll, as one piece.
+                // One scroll for everything, but the hero gives way first: it shrinks, then goes, then the
+                // words and actions tighten (compact), so everything fits on a tall narrow phone; only when
+                // even that does not fit does the screen scroll, as one piece.
                 BoxWithConstraints(Modifier.weight(1f).fillMaxWidth()) {
                     val padding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp)
                     NarrowWelcome(
                         height = maxHeight - padding.calculateTopPadding() - padding.calculateBottomPadding(),
                         header = { WelcomeHeader(onSettings, Modifier.padding(start = 8.dp, top = 8.dp)) },
                         hero = { WelcomeHero() },
-                        text = { Column(verticalArrangement = Arrangement.spacedBy(20.dp)) { WelcomeText() } },
-                        actions = { WelcomeActions(state.logsAvailable, state.canRevert, state.automation, onEvent, onGetStarted, onDeviceLogs, onRevert) },
+                        text = { compact ->
+                            Column(verticalArrangement = Arrangement.spacedBy(if (compact) 12.dp else 20.dp)) { WelcomeText(compact) }
+                        },
+                        actions = { compact ->
+                            WelcomeActions(state.logsAvailable, state.canRevert, state.automation, onEvent, onGetStarted, onDeviceLogs, onRevert, compact = compact)
+                        },
                         modifier = Modifier.verticalScroll(rememberScrollState()).padding(padding),
                     )
                 }
@@ -250,22 +257,25 @@ private val NarrowHeroMaxHeight = 220.dp
 /**
  * The single-column welcome: header, hero, text, and the actions at the bottom. The hero gets the room
  * the rest leaves out of [height] (the visible height), up to [NarrowHeroMaxHeight]. When that is less
- * than [NarrowHeroMinHeight] the hero is left out if that lets everything fit; only when nothing fits
- * does it stay at its minimum, with the layout taller than [height] (it scrolls). Otherwise the layout
- * is exactly [height] tall, with the actions at the bottom.
+ * than [NarrowHeroMinHeight] the hero is left out if that lets everything fit; failing that, the text
+ * and actions switch to their compact form (one recomposition, remembered for this [height]). Only
+ * when even that does not fit does the layout grow taller than [height] (it scrolls), compact and
+ * without the hero. Otherwise the layout is exactly [height] tall, with the actions at the bottom.
  */
 @Composable
 private fun NarrowWelcome(
     height: Dp,
     header: @Composable () -> Unit,
     hero: @Composable () -> Unit,
-    text: @Composable () -> Unit,
-    actions: @Composable () -> Unit,
+    text: @Composable (compact: Boolean) -> Unit,
+    actions: @Composable (compact: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Layout(listOf(header, hero, text, actions), modifier) { (headerM, heroM, textM, actionsM), constraints ->
+    // Only one form is ever composed, so the switches and links exist once (for TalkBack too).
+    var compact by remember(height) { mutableStateOf(false) }
+    Layout(listOf(header, hero, { text(compact) }, { actions(compact) }), modifier) { (headerM, heroM, textM, actionsM), constraints ->
         val width = constraints.maxWidth
-        val gap = 20.dp.roundToPx()
+        val gap = (if (compact) 12.dp else 20.dp).roundToPx()
         val loose = Constraints(maxWidth = width)
         val headerP = headerM.single().measure(loose)
         val textP = textM.single().measure(loose)
@@ -273,11 +283,8 @@ private fun NarrowWelcome(
         val fixed = headerP.height + textP.height + actionsP.height + 2 * gap
         val visible = height.roundToPx()
         val room = visible - fixed - gap
-        val heroHeight = when {
-            room >= NarrowHeroMinHeight.roundToPx() -> minOf(room, NarrowHeroMaxHeight.roundToPx())
-            room + gap >= 0 -> 0
-            else -> NarrowHeroMinHeight.roundToPx()
-        }
+        val heroHeight = if (!compact && room >= NarrowHeroMinHeight.roundToPx()) minOf(room, NarrowHeroMaxHeight.roundToPx()) else 0
+        if (!compact && heroHeight == 0 && room + gap < 0) compact = true
         // A shrunk hero narrows in proportion, so the panel keeps its shape instead of stretching wide.
         val heroWidth = (width.toLong() * heroHeight / NarrowHeroMaxHeight.roundToPx()).toInt().coerceAtMost(width)
         val heroP = if (heroHeight > 0) heroM.single().measure(Constraints.fixed(heroWidth, heroHeight)) else null
@@ -296,20 +303,22 @@ private fun NarrowWelcome(
     }
 }
 
+/** The title and the three promises; [compact] sets them smaller for a screen they would not fit. */
 @Composable
-private fun WelcomeText() {
+private fun WelcomeText(compact: Boolean = false) {
+    val title = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold)
     Text(
         stringResource(R.string.welcome_title),
-        style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+        style = if (compact) title.copy(fontSize = 28.sp, lineHeight = 36.sp) else title,
         modifier = Modifier.padding(horizontal = 8.dp).semantics { heading() },
     )
-    Column(Modifier.padding(horizontal = 8.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(Modifier.padding(horizontal = 8.dp), verticalArrangement = Arrangement.spacedBy(if (compact) 8.dp else 12.dp)) {
         Promise(Icons.Rounded.Download, R.string.welcome_promise_download,
-            MaterialTheme.colorScheme.primaryContainer, MaterialTheme.colorScheme.onPrimaryContainer)
+            MaterialTheme.colorScheme.primaryContainer, MaterialTheme.colorScheme.onPrimaryContainer, compact)
         Promise(Icons.Rounded.Tune, R.string.welcome_promise_patch,
-            MaterialTheme.colorScheme.secondaryContainer, MaterialTheme.colorScheme.onSecondaryContainer)
+            MaterialTheme.colorScheme.secondaryContainer, MaterialTheme.colorScheme.onSecondaryContainer, compact)
         Promise(Icons.Rounded.Undo, R.string.welcome_promise_undo,
-            MaterialTheme.colorScheme.tertiaryContainer, MaterialTheme.colorScheme.onTertiaryContainer)
+            MaterialTheme.colorScheme.tertiaryContainer, MaterialTheme.colorScheme.onTertiaryContainer, compact)
     }
 }
 
@@ -323,6 +332,7 @@ private fun WelcomeActions(
     onDeviceLogs: () -> Unit,
     onRevert: () -> Unit,
     modifier: Modifier = Modifier,
+    compact: Boolean = false,
 ) {
     Column(modifier) {
         ActionRow {
@@ -330,18 +340,28 @@ private fun WelcomeActions(
             QuietAction(stringResource(R.string.welcome_what_changes), { onEvent(WelcomeEvent.ShowChanges) })
         }
         AutomationToggles(automation, onEvent, Modifier.padding(top = 4.dp))
-        if (logsAvailable) SubtleLink(stringResource(R.string.device_logs_link), onDeviceLogs, Modifier.padding(top = 4.dp), Icons.Rounded.Terminal)
-        if (canRevert) SubtleLink(stringResource(R.string.revert_title), onRevert, Modifier.padding(top = 4.dp), Icons.Rounded.Undo)
+        if (compact && logsAvailable && canRevert) {
+            // Compact: both links share one row, with their short labels.
+            Row(Modifier.padding(top = 4.dp)) {
+                SubtleLink(stringResource(R.string.device_logs_link_short), onDeviceLogs, Modifier.weight(1f), Icons.Rounded.Terminal)
+                SubtleLink(stringResource(R.string.revert_title_short), onRevert, Modifier.weight(1f), Icons.Rounded.Undo)
+            }
+        } else {
+            val top = Modifier.padding(top = if (compact) 0.dp else 4.dp)
+            if (logsAvailable) SubtleLink(stringResource(R.string.device_logs_link), onDeviceLogs, top, Icons.Rounded.Terminal)
+            if (canRevert) SubtleLink(stringResource(R.string.revert_title), onRevert, top, Icons.Rounded.Undo)
+        }
     }
 }
 
 @Composable
-private fun Promise(icon: ImageVector, textRes: Int, container: Color, content: Color) {
+private fun Promise(icon: ImageVector, textRes: Int, container: Color, content: Color, compact: Boolean = false) {
     Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
-        Box(Modifier.size(40.dp).background(container, CircleShape), contentAlignment = Alignment.Center) {
-            Icon(icon, contentDescription = null, tint = content)
+        Box(Modifier.size(if (compact) 32.dp else 40.dp).background(container, CircleShape), contentAlignment = Alignment.Center) {
+            Icon(icon, contentDescription = null, tint = content, modifier = Modifier.size(if (compact) 20.dp else 24.dp))
         }
-        Text(stringResource(textRes), style = MaterialTheme.typography.bodyLarge)
+        val body = MaterialTheme.typography.bodyLarge
+        Text(stringResource(textRes), style = if (compact) body.copy(fontSize = 14.sp, lineHeight = 20.sp) else body)
     }
 }
 

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_enable_title">Tic, de gids, aanzetten?</string>
+    <string name="guide_enable_message">Om je door Instellingen te leiden, heeft Tic de toegankelijkheidsservice van LibreWrist nodig. Hij kijkt alleen naar de schermen van Instellingen die LibreWrist opent en tikt nooit zelf op iets dat gegevens wist of beveiliging bevestigt.</string>
+    <string name="guide_enable_restricted">Is de schakelaar grijs? Open App-info, tik op ⋮ en kies \"Beperkte instellingen toestaan\", en probeer het opnieuw.</string>
+    <string name="guide_enable_open">Aanzetten</string>
+    <string name="guide_enable_app_info">App-info</string>
+    <string name="guide_enable_not_now">Niet nu</string>
+    <string name="guide_service_description">Laat Tic, de gids van LibreWrist, de stappen van de LibreWrist-installatie in Instellingen aanwijzen en aantikken. Werkt alleen tijdens een begeleide stap en leest verder niets.</string>
+    <string name="guide_wake_description">Maak Tic wakker zodat hij verdergaat</string>
+</resources>

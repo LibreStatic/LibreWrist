@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_ui_pet_description">Tic, kurulum rehberiniz</string>
+    <string name="guide_ui_chip_tic">Ben yaparım</string>
+    <string name="guide_ui_chip_user">Sıra sizde</string>
+    <string name="guide_ui_strip_controlling">Tic ekranınızı kontrol ediyor. Duraklatmak için dokunun.</string>
+    <string name="guide_ui_strip_paused">Tic duraklatıldı. Devam etmesi için dokunun.</string>
+    <string name="guide_ui_code_description">Eşleştirme kodu, altı hane</string>
+    <string name="guide_ui_code_not_now">Şimdi değil</string>
+</resources>

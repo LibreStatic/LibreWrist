@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.IBinder
+import android.os.SystemClock
 import android.util.Log
 import io.openshm.patcher.MainActivity
 import io.openshm.patcher.R
@@ -19,6 +20,7 @@ import io.openshm.patcher.adb.LibAdbBackend
 import io.openshm.patcher.adb.SelfAdbPairingNotifier
 import io.openshm.patcher.adb.SelfAdbState
 import io.openshm.patcher.adb.SelfAdbTexts
+import io.openshm.patcher.device.guide.GuideSession
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -102,6 +104,9 @@ class SelfAdbService : Service() {
 
     /** The user paired (or turned Wireless debugging on) in Settings: show the app again. Best effort. */
     private suspend fun bringAppToFront(client: AdbClient) {
+        // Tic just read the code out loud: let that be read before the app covers it.
+        val hold = GuideSession.holdReturnUntil - SystemClock.uptimeMillis()
+        if (hold > 0) delay(hold)
         try {
             val result = client.shell(ReturnAfterPairing.command(packageName, MainActivity::class.java.name), FRONT_TIMEOUT_MS)
             Log.i(LOG_TAG, "app brought to front, exit=${result.exitCode}")

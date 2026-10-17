@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_build_number_hello">Hoi! Ik ben Tic. Je ontwikkelaarsopties zijn verborgen. Ik ontgrendel ze door 7 keer op %1$s te tikken…</string>
+    <string name="guide_software_info">Je telefoon bewaart het buildnummer in %1$s. Ik open het…</string>
+    <string name="guide_pin">Android vraagt om je pincode ter bevestiging. Dit is aan jou: ik zie niet wat je intikt. Tik daarna op Bevestigen.</string>
+    <string name="guide_unlocked_opening">Je bent nu ontwikkelaar! Ik open de ontwikkelaarsopties…</string>
+    <string name="guide_tic_opens">Ik open %1$s…</string>
+    <string name="guide_tic_taps">Ik tik op %1$s…</string>
+    <string name="guide_devopts_on">De ontwikkelaarsopties staan uit. Ik zet %1$s aan…</string>
+    <string name="guide_wireless_tap">Hoi! Ik ben Tic. De makkelijke tikken doe ik: ik tik op %1$s…</string>
+    <string name="guide_wireless_switch">Ik zet %1$s aan…</string>
+    <string name="guide_wireless_allow">Dit is aan jou: Android vraagt of je dit wifi-netwerk vertrouwt. Is het je thuisnetwerk, tik dan op %1$s.</string>
+    <string name="guide_pair_tap">Bedankt! Vanaf hier neem ik over: ik tik op %1$s…</string>
+    <string name="guide_code_searching">Ik zoek de koppelcode…</string>
+    <string name="guide_code_found">Gevonden! Je code is %1$s. Koppelen…</string>
+    <string name="guide_code_entry">Ik kan de code hier niet lezen. Typ hem voor me in! Het zijn de 6 cijfers in het vak.</string>
+    <string name="guide_code_thanks">Bedankt! Koppelen…</string>
+    <string name="guide_paired">Gekoppeld! Je hoefde niets in te typen.</string>
+    <string name="guide_perm_overlay">Zodat de app zijn meldingen kan tonen, zet ik %1$s aan…</string>
+    <string name="guide_perm_unknown">Om installeren vanuit deze app toe te staan, zet ik %1$s aan…</string>
+    <string name="guide_perm_battery">Zodat de app op de achtergrond blijft werken, kies ik %1$s…</string>
+    <string name="guide_perm_app_details">Zoek %1$s op dit scherm en zet het aan.</string>
+    <string name="guide_perm_listener">Ik zet %1$s aan zodat de app meldingen kan lezen…</string>
+    <string name="guide_perm_listener_confirm">Dit is aan jou: Android vraagt om bevestiging. Tik op %1$s.</string>
+    <string name="guide_restricted_menu">Android blokkeert deze machtiging tot je haar toestaat. Jouw beurt: tik rechtsboven op het menu ⋮ (%1$s).</string>
+    <string name="guide_restricted_allow">Jouw beurt: tik op %1$s en bevestig met je pincode.</string>
+    <string name="guide_back_done">Klaar! Ik ga terug met Terug…</string>
+    <string name="guide_gms_clear">Dit is aan jou. Hiermee wis je de gegevens van Google Play-services. Tik op %1$s als je er klaar voor bent.</string>
+    <string name="guide_gms_confirm">Bevestig met %1$s. De tik is altijd van jou: ik wijs alleen aan.</string>
+    <string name="guide_user_taps">Jouw beurt: tik op %1$s.</string>
+    <string name="guide_user_toggles">Jouw beurt: zet %1$s aan.</string>
+    <string name="guide_searching">Ik zoek %1$s…</string>
+    <string name="guide_not_found">Ik vind %1$s niet. Kun jij het zoeken? Het ziet er ongeveer zo uit:</string>
+    <string name="guide_done">Klaar! Ga terug naar LibreWrist wanneer je wilt.</string>
+    <string name="guide_enabled_hello">Klaar, je hebt Tic aangezet!</string>
+    <string name="guide_farewell_attended">Klaar! Nu ben jij aan de beurt.</string>
+    <string name="guide_farewell_unattended">Klaar! LibreWrist gaat vanaf hier zelf verder.</string>
+    <string name="guide_debugging_disallowed">Deze telefoon staat geen foutopsporingsfuncties toe (een werkprofiel of een beperking blokkeert ze), dus ik kan niet verder.</string>
+</resources>

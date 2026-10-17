@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_build_number_hello">नमस्ते! मैं टिक हूँ। आपके डेवलपर विकल्प छिपे हैं। मैं «%1$s» पर 7 बार टैप करके उन्हें खोलता हूँ…</string>
+    <string name="guide_software_info">आपका फ़ोन बिल्ड नंबर «%1$s» के अंदर रखता है। मैं उसे खोलता हूँ…</string>
+    <string name="guide_pin">Android पुष्टि के लिए आपका PIN माँग रहा है। यह आपका काम है: आप जो लिखते हैं वह मुझे नहीं दिखता। फिर «पुष्टि करें» पर टैप करें।</string>
+    <string name="guide_unlocked_opening">अब आप डेवलपर हैं! मैं डेवलपर के लिए सेटिंग और टूल खोलता हूँ…</string>
+    <string name="guide_tic_opens">मैं «%1$s» खोलता हूँ…</string>
+    <string name="guide_tic_taps">मैं «%1$s» पर टैप करता हूँ…</string>
+    <string name="guide_devopts_on">डेवलपर विकल्प बंद हैं। मैं «%1$s» चालू करता हूँ…</string>
+    <string name="guide_wireless_tap">नमस्ते! मैं टिक हूँ। आसान टैप मैं करता हूँ: मैं «%1$s» पर टैप करता हूँ…</string>
+    <string name="guide_wireless_switch">मैं «%1$s» चालू करता हूँ…</string>
+    <string name="guide_wireless_allow">यह आपका काम है: Android पूछ रहा है कि क्या आप इस Wi-Fi नेटवर्क पर भरोसा करते हैं। अगर यह आपका घर का नेटवर्क है, तो «%1$s» पर टैप करें।</string>
+    <string name="guide_pair_tap">धन्यवाद! अब मैं संभालता हूँ: मैं «%1$s» पर टैप करता हूँ…</string>
+    <string name="guide_code_searching">पेयरिंग कोड ढूँढ रहा हूँ…</string>
+    <string name="guide_code_found">मिल गया! आपका कोड %1$s है। पेयर कर रहा हूँ…</string>
+    <string name="guide_code_entry">मैं यहाँ से कोड नहीं पढ़ पा रहा। इसे मेरे लिए लिखें! यह बॉक्स के 6 अंक हैं।</string>
+    <string name="guide_code_thanks">धन्यवाद! पेयर कर रहा हूँ…</string>
+    <string name="guide_paired">पेयर हो गया! आपको कुछ भी लिखना नहीं पड़ा।</string>
+    <string name="guide_perm_overlay">ताकि ऐप अपनी सूचनाएँ दिखा सके, मैं «%1$s» चालू करता हूँ…</string>
+    <string name="guide_perm_unknown">इस ऐप से इंस्टॉल करने की अनुमति देने के लिए, मैं «%1$s» चालू करता हूँ…</string>
+    <string name="guide_perm_battery">ताकि ऐप बैकग्राउंड में चलता रहे, मैं «%1$s» चुनता हूँ…</string>
+    <string name="guide_perm_app_details">इस स्क्रीन पर «%1$s» ढूँढें और उसे चालू करें।</string>
+    <string name="guide_perm_listener">मैं «%1$s» चालू करता हूँ ताकि ऐप सूचनाएँ पढ़ सके…</string>
+    <string name="guide_perm_listener_confirm">यह आपका काम है: Android आपसे पुष्टि माँग रहा है। «%1$s» पर टैप करें।</string>
+    <string name="guide_restricted_menu">जब तक आप अनुमति नहीं देते, Android यह अनुमति रोके रखता है। आपकी बारी: ऊपर दाईं ओर ⋮ मेनू («%1$s») पर टैप करें।</string>
+    <string name="guide_restricted_allow">आपकी बारी: «%1$s» पर टैप करें और अपने PIN से पुष्टि करें।</string>
+    <string name="guide_back_done">हो गया! मैं «वापस» से लौटता हूँ…</string>
+    <string name="guide_gms_clear">यह आपका काम है। इससे Google Play services का डेटा मिट जाता है। तैयार हों तो «%1$s» पर टैप करें।</string>
+    <string name="guide_gms_confirm">«%1$s» से पुष्टि करें। टैप हमेशा आपका होता है: मैं बस इशारा करता हूँ।</string>
+    <string name="guide_user_taps">आपकी बारी: «%1$s» पर टैप करें।</string>
+    <string name="guide_user_toggles">आपकी बारी: «%1$s» चालू करें।</string>
+    <string name="guide_searching">«%1$s» ढूँढ रहा हूँ…</string>
+    <string name="guide_not_found">मुझे «%1$s» नहीं मिल रहा। क्या आप उसे ढूँढ सकते हैं? वह कुछ ऐसा दिखना चाहिए:</string>
+    <string name="guide_done">सब हो गया! तैयार हों तो LibreWrist पर लौट आएँ।</string>
+    <string name="guide_enabled_hello">हो गया, आपने Tic चालू कर दिया!</string>
+    <string name="guide_farewell_attended">हो गया! अब आपकी बारी है।</string>
+    <string name="guide_farewell_unattended">हो गया! अब LibreWrist खुद आगे बढ़ेगा।</string>
+    <string name="guide_debugging_disallowed">यह फ़ोन डीबगिंग सुविधाओं की अनुमति नहीं देता (कोई वर्क प्रोफ़ाइल या प्रतिबंध उन्हें रोक रहा है), इसलिए मैं आगे नहीं बढ़ सकता।</string>
+</resources>

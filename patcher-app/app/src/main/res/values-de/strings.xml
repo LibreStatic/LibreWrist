@@ -49,6 +49,8 @@
     <string name="welcome_promise_undo">Jede Änderung lässt sich rückgängig machen, und die Original-Apps werden nie deinstalliert.</string>
     <string name="welcome_get_started">Los geht\'s</string>
     <string name="welcome_what_changes">Was ändert sich auf meinen Geräten?</string>
+    <string name="automation_guide_title">Interaktive Anleitung</string>
+    <string name="automation_guide_help">Tic, eine kleine Uhr, erscheint auf den Android-Einstellungsseiten, zu denen LibreWrist dich schickt. Sie sagt dir, was du antippen sollst, und erledigt einfache Tipps selbst; Sicherheitsbestätigungen und alles, was Daten löscht, bleiben bei dir. Sie braucht den Bedienungshilfendienst, den sie nur auf diesen Seiten nutzt.</string>
     <string name="automation_unattended_title">Unbeaufsichtigter Modus</string>
     <string name="automation_unattended_help">Im unbeaufsichtigten Modus erledigt LibreWrist alles, was sich automatisieren lässt (installieren, Berechtigungen erteilen, Optionen aktivieren), per ADB auf dem Smartphone und auf der Uhr und macht ohne ADB-Verbindung zu beiden nicht weiter. Zwischen den Schritten wartet es ein paar Sekunden (standardmäßig 5, in den Einstellungen anpassbar): Wenn du den Bildschirm berührst oder scrollst, während sich der Balken auf der Schaltfläche füllt, pausiert es und du machst von Hand weiter; die folgenden Schritte laufen wieder von selbst weiter.</string>
     <string name="settings_advance_wait">Wartezeit zwischen Schritten</string>
@@ -667,6 +669,7 @@
     <string name="device_logs_action_open">Öffnen</string>
     <string name="device_logs_title">Geräteprotokolle</string>
     <string name="device_logs_link">Geräteprotokolle ansehen</string>
+    <string name="device_logs_link_short">Geräteprotokolle</string>
     <string name="device_logs_status_streaming">Verbunden · Übertragung läuft</string>
     <string name="device_logs_status_disconnected">Getrennt · zum Verbinden tippen</string>
     <string name="device_logs_status_connecting">Verbindung wird hergestellt…</string>
@@ -692,6 +695,7 @@
     <string name="device_logs_sheet_phone_untrusted">Debugging über WLAN ist aktiv, aber dieses Smartphone vertraut dem Patcher noch nicht. Tippe auf Koppeln und gib den Kopplungscode in der erscheinenden Benachrichtigung ein.</string>
     <string name="device_logs_sheet_phone_pair">Dieses Smartphone koppeln</string>
     <string name="revert_title">Alle Änderungen rückgängig machen</string>
+    <string name="revert_title_short">Änderungen rückgängig</string>
     <string name="revert_intro">Dadurch wird entfernt, was LibreWrist auf deinem Smartphone und deiner Uhr installiert hat, und Geändertes wird zurückgesetzt. Es wird nur angefasst, was wirklich installiert ist, und System-Apps werden nie entfernt.</string>
     <string name="revert_probing">Installierte Apps werden geprüft…</string>
     <string name="revert_action_remove">Entfernen</string>

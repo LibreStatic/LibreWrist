@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_build_number_hello">Merhaba! Ben Tic. Geliştirici seçeneklerin gizli. %1$s öğesine 7 kez dokunarak onları açacağım…</string>
+    <string name="guide_software_info">Telefonun derleme numarasını %1$s içinde tutuyor. Açıyorum…</string>
+    <string name="guide_pin">Android onay için PIN\'ini istiyor. Bu senin işin: ne yazdığını görmüyorum. Sonra Onayla\'ya dokun.</string>
+    <string name="guide_unlocked_opening">Artık geliştiricisin! Geliştirici seçeneklerini açıyorum…</string>
+    <string name="guide_tic_opens">%1$s öğesini açıyorum…</string>
+    <string name="guide_tic_taps">%1$s öğesine dokunuyorum…</string>
+    <string name="guide_devopts_on">Geliştirici seçenekleri kapalı. %1$s öğesini açıyorum…</string>
+    <string name="guide_wireless_tap">Merhaba! Ben Tic. Kolay dokunuşlar bende: %1$s öğesine dokunuyorum…</string>
+    <string name="guide_wireless_switch">%1$s öğesini açıyorum…</string>
+    <string name="guide_wireless_allow">Bu senin işin: Android bu Wi-Fi ağına güvenip güvenmediğini soruyor. Evdeki ağınsa %1$s öğesine dokun.</string>
+    <string name="guide_pair_tap">Teşekkürler! Buradan sonrasını ben yaparım: %1$s öğesine dokunuyorum…</string>
+    <string name="guide_code_searching">Eşleme kodunu arıyorum…</string>
+    <string name="guide_code_found">Buldum! Kodun %1$s. Eşliyorum…</string>
+    <string name="guide_code_entry">Kodu buradan okuyamıyorum. Benim için yaz! Kutudaki 6 rakam.</string>
+    <string name="guide_code_thanks">Teşekkürler! Eşliyorum…</string>
+    <string name="guide_paired">Eşlendi! Hiçbir şey yazman gerekmedi.</string>
+    <string name="guide_perm_overlay">Uygulama bildirimlerini gösterebilsin diye %1$s öğesini açıyorum…</string>
+    <string name="guide_perm_unknown">Bu uygulamadan yükleme yapılabilsin diye %1$s öğesini açıyorum…</string>
+    <string name="guide_perm_battery">Uygulama arka planda çalışmaya devam etsin diye %1$s seçeneğini seçiyorum…</string>
+    <string name="guide_perm_app_details">Bu ekranda %1$s öğesini bul ve aç.</string>
+    <string name="guide_perm_listener">Uygulama bildirimleri okuyabilsin diye %1$s öğesini açıyorum…</string>
+    <string name="guide_perm_listener_confirm">Bu senin işin: Android onay istiyor. %1$s öğesine dokun.</string>
+    <string name="guide_restricted_menu">Android, sen izin verene kadar bu izni engelliyor. Sıra sende: sağ üstteki ⋮ menüsüne (%1$s) dokun.</string>
+    <string name="guide_restricted_allow">Sıra sende: %1$s öğesine dokun ve PIN\'inle onayla.</string>
+    <string name="guide_back_done">Tamam! Geri tuşuyla dönüyorum…</string>
+    <string name="guide_gms_clear">Bu senin işin. Bu, Google Play Hizmetleri verilerini siler. Hazır olduğunda %1$s öğesine dokun.</string>
+    <string name="guide_gms_confirm">%1$s ile onayla. Dokunuş her zaman senin: ben sadece gösteririm.</string>
+    <string name="guide_user_taps">Sıra sende: %1$s öğesine dokun.</string>
+    <string name="guide_user_toggles">Sıra sende: %1$s öğesini aç.</string>
+    <string name="guide_searching">%1$s öğesini arıyorum…</string>
+    <string name="guide_not_found">%1$s öğesini bulamıyorum. Sen arayabilir misin? Şuna benzemeli:</string>
+    <string name="guide_done">Hepsi bu kadar! Hazır olduğunda LibreWrist\'e dön.</string>
+    <string name="guide_enabled_hello">Tamam, Tic\'i açtın!</string>
+    <string name="guide_farewell_attended">Tamam! Şimdi sıra sende.</string>
+    <string name="guide_farewell_unattended">Tamam! LibreWrist buradan sonrasını kendisi halleder.</string>
+    <string name="guide_debugging_disallowed">Bu telefon hata ayıklama özelliklerine izin vermiyor (bir iş profili veya kısıtlama bunları engelliyor), bu yüzden devam edemem.</string>
+</resources>

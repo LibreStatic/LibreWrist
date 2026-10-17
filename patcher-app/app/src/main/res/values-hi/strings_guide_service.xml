@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_enable_title">गाइड Tic को चालू करें?</string>
+    <string name="guide_enable_message">सेटिंग्स में आपको रास्ता दिखाने के लिए Tic को LibreWrist की सुलभता सेवा चाहिए। यह सिर्फ़ वही सेटिंग्स स्क्रीन देखता है जो LibreWrist खोलता है, और डेटा मिटाने या सुरक्षा की पुष्टि करने वाली किसी चीज़ पर कभी ख़ुद टैप नहीं करता।</string>
+    <string name="guide_enable_restricted">अगर स्विच धूसर है: ऐप की जानकारी खोलें, ⋮ पर टैप करें और \"प्रतिबंधित सेटिंग की अनुमति दें\" चुनें, फिर दोबारा कोशिश करें।</string>
+    <string name="guide_enable_open">चालू करें</string>
+    <string name="guide_enable_app_info">ऐप की जानकारी</string>
+    <string name="guide_enable_not_now">अभी नहीं</string>
+    <string name="guide_service_description">LibreWrist के गाइड Tic को सेटिंग्स में LibreWrist सेटअप के चरण दिखाने और उन पर टैप करने देता है। यह सिर्फ़ गाइड वाले चरण के दौरान काम करता है और कुछ और नहीं पढ़ता।</string>
+    <string name="guide_wake_description">Tic को जगाएँ ताकि वह आगे बढ़े</string>
+</resources>

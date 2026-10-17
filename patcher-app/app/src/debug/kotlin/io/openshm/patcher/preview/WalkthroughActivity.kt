@@ -84,6 +84,13 @@ private fun WalkthroughScreen(name: String) {
         "HomeDriver" -> HomeDriver()
         "InstallPhoneAdbReadyDriver" -> InstallPhoneAdbReadyDriver()
         "InstallPhoneAdbSuccessDriver" -> InstallPhoneAdbSuccessDriver()
+        "GuidePetPointingDriver" -> GuidePetPointingDriver()
+        "GuidePetTappingDriver" -> GuidePetTappingDriver()
+        "GuidePetSadDriver" -> GuidePetSadDriver()
+        "GuidePetSleepingDriver" -> GuidePetSleepingDriver()
+        "GuidePetCodeEntryDriver" -> GuidePetCodeEntryDriver()
+        "GuidePetFarewellDriver" -> GuidePetFarewellDriver()
+        "GuidePetBowDriver" -> GuidePetBowDriver()
         "SelfAdbLive" -> PreviewHost(ColorMode.Fallback) { SelfAdbLive() }
         else -> PreviewHost(ColorMode.Fallback) { Text("Unknown screen: $name") }
     }

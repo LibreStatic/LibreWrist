@@ -49,6 +49,8 @@
     <string name="welcome_promise_undo">Chaque modification peut être annulée, et les apps d\'origine ne sont jamais désinstallées.</string>
     <string name="welcome_get_started">Commencer</string>
     <string name="welcome_what_changes">Qu\'est-ce qui va changer sur mes appareils ?</string>
+    <string name="automation_guide_title">Guide interactif</string>
+    <string name="automation_guide_help">Tic, une petite montre, apparaît sur les écrans des Paramètres Android vers lesquels LibreWrist vous envoie. Il vous dit quoi toucher et fait lui-même les appuis simples ; les confirmations de sécurité et tout ce qui efface des données restent entre vos mains. Il a besoin du service d\'accessibilité, qu\'il n\'utilise que sur ces écrans.</string>
     <string name="automation_unattended_title">Mode autonome</string>
     <string name="automation_unattended_help">En mode autonome, LibreWrist fait par ADB tout ce qui peut être automatisé (installer, accorder des autorisations, activer des options) sur le téléphone et sur la montre, et n\'avance pas sans connexion ADB aux deux. Entre deux étapes, il attend quelques secondes (5 par défaut, réglable dans les réglages) : si vous touchez ou faites défiler l\'écran pendant que la barre du bouton se remplit, il se met en pause et vous continuez à la main ; les étapes suivantes avancent de nouveau seules.</string>
     <string name="settings_advance_wait">Attente entre les étapes</string>
@@ -676,6 +678,7 @@
     <string name="device_logs_action_open">Ouvrir</string>
     <string name="device_logs_title">Journaux de l\'appareil</string>
     <string name="device_logs_link">Voir les journaux de l\'appareil</string>
+    <string name="device_logs_link_short">Journaux</string>
     <string name="device_logs_status_streaming">Connecté · réception en cours</string>
     <string name="device_logs_status_disconnected">Déconnecté · appuyez pour vous connecter</string>
     <string name="device_logs_status_connecting">Connexion…</string>
@@ -701,6 +704,7 @@
     <string name="device_logs_sheet_phone_untrusted">Le débogage sans fil est activé, mais ce téléphone ne fait pas encore confiance au patcher. Appuyez sur Associer, puis saisissez le code d\'association dans la notification qui apparaît.</string>
     <string name="device_logs_sheet_phone_pair">Associer ce téléphone</string>
     <string name="revert_title">Annuler toutes les modifications</string>
+    <string name="revert_title_short">Annuler les modifs</string>
     <string name="revert_intro">Cela retire ce qu\'LibreWrist a installé sur votre téléphone et votre montre et rétablit ce qu\'il a modifié. Seul ce qui est réellement installé est touché, et les apps système ne sont jamais supprimées.</string>
     <string name="revert_probing">Vérification de ce qui est installé…</string>
     <string name="revert_action_remove">Supprimer</string>

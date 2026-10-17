@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_enable_title">Tic, den Guide, einschalten?</string>
+    <string name="guide_enable_message">Damit Tic dich durch die Einstellungen führen kann, braucht er den Bedienungshilfe-Dienst von LibreWrist. Er sieht nur die Einstellungsseiten, die LibreWrist öffnet, und tippt nie selbst auf etwas, das Daten löscht oder die Sicherheit bestätigt.</string>
+    <string name="guide_enable_restricted">Wenn der Schalter ausgegraut ist: Öffne App-Info, tippe auf ⋮ und wähle „Eingeschränkte Einstellungen zulassen“, dann versuch es erneut.</string>
+    <string name="guide_enable_open">Einschalten</string>
+    <string name="guide_enable_app_info">App-Info</string>
+    <string name="guide_enable_not_now">Nicht jetzt</string>
+    <string name="guide_service_description">Lässt Tic, den Guide von LibreWrist, auf die Schritte der LibreWrist-Einrichtung in den Einstellungen zeigen und tippen. Er arbeitet nur während eines geführten Schritts und liest sonst nichts.</string>
+    <string name="guide_wake_description">Tic aufwecken, damit er weitermacht</string>
+</resources>

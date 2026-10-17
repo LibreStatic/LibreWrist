@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_enable_title">Activer Tic, le guide ?</string>
+    <string name="guide_enable_message">Pour vous guider dans les Paramètres, Tic a besoin du service d\'accessibilité de LibreWrist. Il ne regarde que les écrans des Paramètres ouverts par LibreWrist et ne touche jamais seul à ce qui efface des données ou confirme la sécurité.</string>
+    <string name="guide_enable_restricted">Si l\'interrupteur est grisé : ouvrez Infos sur l\'appli, touchez ⋮ et choisissez « Autoriser les paramètres restreints », puis réessayez.</string>
+    <string name="guide_enable_open">Activer</string>
+    <string name="guide_enable_app_info">Infos sur l\'appli</string>
+    <string name="guide_enable_not_now">Plus tard</string>
+    <string name="guide_service_description">Permet à Tic, le guide de LibreWrist, de montrer et de toucher les étapes de la configuration de LibreWrist dans les Paramètres. Il ne fonctionne que pendant une étape guidée et ne lit rien d\'autre.</string>
+    <string name="guide_wake_description">Réveiller Tic pour qu\'il continue</string>
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_enable_title">要开启向导 Tic 吗？</string>
+    <string name="guide_enable_message">为了在“设置”中为你引路，Tic 需要 LibreWrist 的无障碍服务。它只查看 LibreWrist 打开的设置页面，绝不会自己点按任何会删除数据或确认安全的内容。</string>
+    <string name="guide_enable_restricted">如果开关是灰色的：打开“应用信息”，点按 ⋮ 并选择“允许受限制的设置”，然后再试一次。</string>
+    <string name="guide_enable_open">开启</string>
+    <string name="guide_enable_app_info">应用信息</string>
+    <string name="guide_enable_not_now">以后再说</string>
+    <string name="guide_service_description">让 LibreWrist 的向导 Tic 在“设置”中指出并点按 LibreWrist 的设置步骤。它只在有引导步骤打开时工作，不读取其他任何内容。</string>
+    <string name="guide_wake_description">唤醒 Tic 让它继续</string>
+</resources>

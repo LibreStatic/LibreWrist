@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_build_number_hello">¡Hola! Soy Tic. Tus opciones para desarrolladores están ocultas. Las activo tocando %1$s 7 veces…</string>
+    <string name="guide_software_info">Tu teléfono guarda el número de compilación dentro de %1$s. Lo abro…</string>
+    <string name="guide_pin">Android pide tu PIN para confirmar. Esto te toca a ti: yo no veo lo que escribes. Cuando termines, toca Confirmar.</string>
+    <string name="guide_unlocked_opening">¡Ya eres desarrollador! Abro las opciones para desarrolladores…</string>
+    <string name="guide_tic_opens">Abro %1$s…</string>
+    <string name="guide_tic_taps">Toco %1$s…</string>
+    <string name="guide_devopts_on">Las opciones para desarrolladores están desactivadas. Activo %1$s…</string>
+    <string name="guide_wireless_tap">¡Hola! Soy Tic. Los toques fáciles los hago yo: toco %1$s…</string>
+    <string name="guide_wireless_switch">Activo %1$s…</string>
+    <string name="guide_wireless_allow">Esta te toca a ti: Android pregunta si confías en esta red Wi-Fi. Si es tu red de casa, toca %1$s.</string>
+    <string name="guide_pair_tap">¡Gracias! Sigo yo: toco %1$s…</string>
+    <string name="guide_code_searching">Buscando el código de vinculación…</string>
+    <string name="guide_code_found">¡Lo encontré! Tu código es %1$s. Vinculando…</string>
+    <string name="guide_code_entry">No puedo leer el código desde aquí. ¡Escríbemelo! Son los 6 dígitos del cuadro.</string>
+    <string name="guide_code_thanks">¡Gracias! Vinculando…</string>
+    <string name="guide_paired">¡Vinculado! No tuviste que escribir nada.</string>
+    <string name="guide_perm_overlay">Para que la app pueda mostrar sus avisos, activo %1$s…</string>
+    <string name="guide_perm_unknown">Para permitir instalar desde esta app, activo %1$s…</string>
+    <string name="guide_perm_battery">Para que la app siga funcionando en segundo plano, elijo %1$s…</string>
+    <string name="guide_perm_app_details">Busca %1$s en esta pantalla y actívalo.</string>
+    <string name="guide_perm_listener">Activo %1$s para que la app pueda leer las notificaciones…</string>
+    <string name="guide_perm_listener_confirm">Esta te toca a ti: Android te pide confirmar. Toca %1$s.</string>
+    <string name="guide_restricted_menu">Android bloquea este permiso hasta que lo autorices. Te toca: toca el menú ⋮ (%1$s) arriba a la derecha.</string>
+    <string name="guide_restricted_allow">Te toca: toca %1$s y confirma con tu PIN.</string>
+    <string name="guide_back_done">¡Listo! Vuelvo con Atrás…</string>
+    <string name="guide_gms_clear">Esta te toca a ti. Esto borra los datos de los Servicios de Google Play. Cuando estés listo, toca %1$s.</string>
+    <string name="guide_gms_confirm">Confirma con %1$s. El toque siempre es tuyo: yo solo te señalo.</string>
+    <string name="guide_user_taps">Te toca: toca %1$s.</string>
+    <string name="guide_user_toggles">Te toca: activa %1$s.</string>
+    <string name="guide_searching">Buscando %1$s…</string>
+    <string name="guide_not_found">No encuentro %1$s. ¿Lo buscas tú? Tendría que verse parecido a esto:</string>
+    <string name="guide_done">¡Listo! Vuelve a LibreWrist cuando quieras.</string>
+    <string name="guide_enabled_hello">¡Listo, activaste Tic!</string>
+    <string name="guide_farewell_attended">¡Listo! Ahora te toca a ti.</string>
+    <string name="guide_farewell_unattended">¡Listo! LibreWrist sigue solo con los pasos.</string>
+    <string name="guide_debugging_disallowed">Este teléfono no permite las funciones de depuración (un perfil de trabajo o una restricción las bloquea), así que no puedo continuar.</string>
+</resources>

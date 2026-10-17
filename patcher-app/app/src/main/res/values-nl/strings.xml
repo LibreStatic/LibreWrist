@@ -49,6 +49,8 @@
     <string name="welcome_promise_undo">Elke wijziging kan ongedaan worden gemaakt, en de originele apps worden nooit verwijderd.</string>
     <string name="welcome_get_started">Aan de slag</string>
     <string name="welcome_what_changes">Wat verandert er op mijn apparaten?</string>
+    <string name="automation_guide_title">Interactieve gids</string>
+    <string name="automation_guide_help">Tic, een klein horloge, verschijnt op de Android-instellingenschermen waar LibreWrist je naartoe stuurt. Het vertelt je waarop je moet tikken en doet de eenvoudige tikken zelf; beveiligingsbevestigingen en alles wat gegevens wist, blijven bij jou. Het heeft de toegankelijkheidsservice nodig, die het alleen op die schermen gebruikt.</string>
     <string name="automation_unattended_title">Onbeheerde modus</string>
     <string name="automation_unattended_help">In de onbeheerde modus doet LibreWrist alles wat te automatiseren valt (installeren, rechten verlenen, opties inschakelen) via ADB op de telefoon en op het horloge, en gaat het niet verder zonder ADB-verbinding met beide. Tussen de stappen wacht het een paar seconden (standaard 5, aanpasbaar in Instellingen): als je het scherm aanraakt of scrolt terwijl de balk op de knop zich vult, pauzeert het en ga je zelf verder; de volgende stappen gaan weer vanzelf verder.</string>
     <string name="settings_advance_wait">Wachttijd tussen stappen</string>
@@ -667,6 +669,7 @@
     <string name="device_logs_action_open">Openen</string>
     <string name="device_logs_title">Apparaatlogs</string>
     <string name="device_logs_link">Apparaatlogs bekijken</string>
+    <string name="device_logs_link_short">Logboeken</string>
     <string name="device_logs_status_streaming">Verbonden · ontvangt gegevens</string>
     <string name="device_logs_status_disconnected">Verbinding verbroken · tik om te verbinden</string>
     <string name="device_logs_status_connecting">Verbinden…</string>
@@ -692,6 +695,7 @@
     <string name="device_logs_sheet_phone_untrusted">Draadloze foutopsporing staat aan, maar deze telefoon vertrouwt de patcher nog niet. Tik op Koppelen en typ de koppelcode in de melding die verschijnt.</string>
     <string name="device_logs_sheet_phone_pair">Deze telefoon koppelen</string>
     <string name="revert_title">Alle wijzigingen ongedaan maken</string>
+    <string name="revert_title_short">Wijzigingen ongedaan</string>
     <string name="revert_intro">Hiermee verwijder je wat LibreWrist op je telefoon en horloge heeft geïnstalleerd en worden de gewijzigde instellingen teruggezet. Alleen wat echt geïnstalleerd is wordt aangeraakt en systeem-apps worden nooit verwijderd.</string>
     <string name="revert_probing">Controleren wat er is geïnstalleerd…</string>
     <string name="revert_action_remove">Verwijderen</string>

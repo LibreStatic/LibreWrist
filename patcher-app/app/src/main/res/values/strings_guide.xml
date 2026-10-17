@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_build_number_hello">Hi! I\'m Tic. Your developer options are hidden. I\'ll unlock them by tapping %1$s 7 times…</string>
+    <string name="guide_software_info">Your phone keeps the build number inside %1$s. I\'m opening it…</string>
+    <string name="guide_pin">Android asks for your PIN to confirm. This one is yours: I can\'t see what you type. When you are done, tap Confirm.</string>
+    <string name="guide_unlocked_opening">You\'re a developer now! I\'m opening the developer options…</string>
+    <string name="guide_tic_opens">I\'m opening %1$s…</string>
+    <string name="guide_tic_taps">I\'m tapping %1$s…</string>
+    <string name="guide_devopts_on">Developer options are switched off. I\'m turning on %1$s…</string>
+    <string name="guide_wireless_tap">Hi! I\'m Tic. I do the easy taps: I\'m tapping %1$s…</string>
+    <string name="guide_wireless_switch">I\'m turning on %1$s…</string>
+    <string name="guide_wireless_allow">This one is yours: Android asks if you trust this Wi-Fi network. If it is your home network, tap %1$s.</string>
+    <string name="guide_pair_tap">Thanks! I\'ll take it from here: I\'m tapping %1$s…</string>
+    <string name="guide_code_searching">Looking for the pairing code…</string>
+    <string name="guide_code_found">Found it! Your code is %1$s. Pairing…</string>
+    <string name="guide_code_entry">I can\'t read the code from here. Type it for me! It is the 6 digits in the box.</string>
+    <string name="guide_code_thanks">Thanks! Pairing…</string>
+    <string name="guide_paired">Paired! You didn\'t have to type anything.</string>
+    <string name="guide_perm_overlay">To let the app show its alerts, I\'m turning on %1$s…</string>
+    <string name="guide_perm_unknown">To allow installing from this app, I\'m turning on %1$s…</string>
+    <string name="guide_perm_battery">So the app keeps working in the background, I\'m choosing %1$s…</string>
+    <string name="guide_perm_app_details">Look for %1$s on this screen and turn it on.</string>
+    <string name="guide_perm_listener">I\'m turning on %1$s so the app can read notifications…</string>
+    <string name="guide_perm_listener_confirm">This one is yours: Android asks you to confirm. Tap %1$s.</string>
+    <string name="guide_restricted_menu">Android blocks this permission until you allow it. Your turn: tap the ⋮ menu (%1$s) at the top right.</string>
+    <string name="guide_restricted_allow">Your turn: tap %1$s and confirm with your PIN.</string>
+    <string name="guide_back_done">Done! I\'m going back with Back…</string>
+    <string name="guide_gms_clear">This one is yours. It erases the data of Google Play services. When you are ready, tap %1$s.</string>
+    <string name="guide_gms_confirm">Confirm with %1$s. The tap is always yours: I only point.</string>
+    <string name="guide_user_taps">Your turn: tap %1$s.</string>
+    <string name="guide_user_toggles">Your turn: turn on %1$s.</string>
+    <string name="guide_searching">Looking for %1$s…</string>
+    <string name="guide_not_found">I can\'t find %1$s. Can you look for it? It should look something like this:</string>
+    <string name="guide_done">All done! Head back to LibreWrist when you are ready.</string>
+    <string name="guide_enabled_hello">Done, you turned Tic on!</string>
+    <string name="guide_farewell_attended">Done! Now it\'s your turn.</string>
+    <string name="guide_farewell_unattended">Done! LibreWrist takes it from here.</string>
+    <string name="guide_debugging_disallowed">This phone doesn\'t allow debugging features (a work profile or a restriction blocks them), so I can\'t continue.</string>
+</resources>

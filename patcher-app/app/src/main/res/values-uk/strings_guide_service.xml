@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_enable_title">Увімкнути Тіка, гіда?</string>
+    <string name="guide_enable_message">Щоб провести вас налаштуваннями, Тіку потрібна служба спеціальних можливостей LibreWrist. Він дивиться лише на екрани налаштувань, які відкриває LibreWrist, і ніколи сам не натискає те, що видаляє дані чи підтверджує безпеку.</string>
+    <string name="guide_enable_restricted">Якщо перемикач сірий: відкрийте «Про додаток», натисніть ⋮ і виберіть «Дозволити обмежені налаштування», потім спробуйте ще раз.</string>
+    <string name="guide_enable_open">Увімкнути</string>
+    <string name="guide_enable_app_info">Про додаток</string>
+    <string name="guide_enable_not_now">Не зараз</string>
+    <string name="guide_service_description">Дозволяє Тіку, гіду LibreWrist, показувати й натискати кроки налаштування LibreWrist у «Налаштуваннях». Працює лише під час кроку з підказками й більше нічого не читає.</string>
+    <string name="guide_wake_description">Розбудити Тіка, щоб він продовжив</string>
+</resources>

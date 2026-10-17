@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_enable_title">Turn on Tic, the guide?</string>
+    <string name="guide_enable_message">To show you around Settings, Tic needs LibreWrist\'s accessibility service. It only looks at the Settings screens that LibreWrist opens, and it never taps anything that deletes data or confirms security on its own.</string>
+    <string name="guide_enable_restricted">If the switch is greyed out: open App info, tap ⋮ and choose \"Allow restricted settings\", then try again.</string>
+    <string name="guide_enable_open">Turn on</string>
+    <string name="guide_enable_app_info">App info</string>
+    <string name="guide_enable_not_now">Not now</string>
+    <string name="guide_service_description">Lets Tic, the LibreWrist guide, point at and tap the steps of LibreWrist\'s setup in Settings. It only works while a guided step is open and reads nothing else.</string>
+    <string name="guide_wake_description">Wake Tic up so it carries on</string>
+</resources>

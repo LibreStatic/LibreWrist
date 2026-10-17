@@ -668,4 +668,19 @@ class SelfAdbControllerTest {
         SelfAdbController.submitCode("654321")
         assertEquals(listOf("123456"), got)
     }
+
+    @Test
+    fun aCodeReadBeforeTheSessionWaitsIsSubmittedOnceItDoes() {
+        SelfAdbController.begin(SelfAdbPurpose.Setup)
+        val got = mutableListOf<String>()
+        SelfAdbController.setCodeSink { got += it }
+        SelfAdbController.submitCode("123456") // the session is still looking for the pairing service
+        SelfAdbController.onSession(SelfAdbState.WaitingForCode(37000))
+        SelfAdbController.onSession(SelfAdbState.Pairing)
+        // The pairing failed and a new code is awaited: the old one is not tried again.
+        SelfAdbController.onSession(SelfAdbState.WaitingForCode(37000))
+        SelfAdbController.setCodeSink(null)
+        SelfAdbController.finish()
+        assertEquals(listOf("123456"), got)
+    }
 }

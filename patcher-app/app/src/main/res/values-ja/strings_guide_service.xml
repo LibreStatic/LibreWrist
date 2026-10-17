@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_enable_title">ガイドのTicをオンにしますか？</string>
+    <string name="guide_enable_message">設定アプリを案内するために、TicにはLibreWristのユーザー補助サービスが必要です。LibreWristが開いた設定画面だけを見て、データを消去する操作やセキュリティの確認を自分でタップすることはありません。</string>
+    <string name="guide_enable_restricted">スイッチがグレーの場合：アプリ情報を開いて ⋮ をタップし、「制限付き設定を許可」を選んでから、もう一度お試しください。</string>
+    <string name="guide_enable_open">オンにする</string>
+    <string name="guide_enable_app_info">アプリ情報</string>
+    <string name="guide_enable_not_now">後で</string>
+    <string name="guide_service_description">LibreWristのガイドであるTicが、設定アプリでLibreWristのセットアップ手順を指し示したりタップしたりできるようにします。ガイド付きの手順を開いている間だけ動作し、それ以外は何も読み取りません。</string>
+    <string name="guide_wake_description">Ticを起こして続けてもらう</string>
+</resources>

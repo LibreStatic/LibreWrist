@@ -49,6 +49,8 @@
     <string name="welcome_promise_undo">모든 변경은 되돌릴 수 있으며, 원래 앱은 절대 제거되지 않습니다.</string>
     <string name="welcome_get_started">시작하기</string>
     <string name="welcome_what_changes">내 기기에서 무엇이 바뀌나요?</string>
+    <string name="automation_guide_title">대화형 가이드</string>
+    <string name="automation_guide_help">작은 시계 Tic이 LibreWrist가 여는 Android 설정 화면에 나타납니다. 무엇을 탭해야 하는지 알려 주고 간단한 탭은 직접 합니다. 보안 확인과 데이터를 삭제하는 작업은 직접 하셔야 합니다. 접근성 서비스가 필요하며, 이 화면에서만 사용합니다.</string>
     <string name="automation_unattended_title">무인 모드</string>
     <string name="automation_unattended_help">무인 모드에서 LibreWrist는 자동화할 수 있는 모든 작업(설치, 권한 부여, 옵션 켜기)을 휴대전화와 워치에서 ADB로 수행하며, 둘 다 ADB에 연결되어 있지 않으면 진행하지 않습니다. 단계 사이에 몇 초(기본 5초, 설정에서 변경 가능) 기다립니다. 버튼의 막대가 차는 동안 화면을 터치하거나 스크롤하면 일시 중지되고 직접 이어서 진행합니다. 이후 단계는 다시 자동으로 진행됩니다.</string>
     <string name="settings_advance_wait">단계 사이 대기 시간</string>
@@ -658,6 +660,7 @@
     <string name="device_logs_action_open">열기</string>
     <string name="device_logs_title">기기 로그</string>
     <string name="device_logs_link">기기 로그 보기</string>
+    <string name="device_logs_link_short">로그</string>
     <string name="device_logs_status_streaming">연결됨 · 수신 중</string>
     <string name="device_logs_status_disconnected">연결 끊김 · 탭하여 연결</string>
     <string name="device_logs_status_connecting">연결 중…</string>
@@ -683,6 +686,7 @@
     <string name="device_logs_sheet_phone_untrusted">무선 디버깅은 켜져 있지만 이 휴대전화가 아직 패처를 신뢰하지 않습니다. 페어링을 탭한 다음 표시되는 알림에 페어링 코드를 입력하세요.</string>
     <string name="device_logs_sheet_phone_pair">이 휴대전화 페어링</string>
     <string name="revert_title">모든 변경 사항 되돌리기</string>
+    <string name="revert_title_short">변경 취소</string>
     <string name="revert_intro">LibreWrist가 휴대전화와 워치에 설치한 항목을 제거하고 변경한 설정을 되돌립니다. 실제로 설치된 항목만 처리하며 시스템 앱은 절대 제거하지 않습니다.</string>
     <string name="revert_probing">설치된 항목을 확인하는 중…</string>
     <string name="revert_action_remove">제거</string>

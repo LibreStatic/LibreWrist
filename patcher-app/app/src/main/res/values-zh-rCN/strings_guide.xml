@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_build_number_hello">你好！我是 Tic。你的开发者选项被隐藏了。我会连续点按“%1$s”7 次来解锁…</string>
+    <string name="guide_software_info">你的手机把版本号放在“%1$s”里。我来打开它…</string>
+    <string name="guide_pin">Android 需要你的 PIN 码来确认。这一步轮到你：我看不到你输入的内容。完成后点按“确认”。</string>
+    <string name="guide_unlocked_opening">你现在是开发者了！我来打开“开发者选项”…</string>
+    <string name="guide_tic_opens">我来打开“%1$s”…</string>
+    <string name="guide_tic_taps">我来点按“%1$s”…</string>
+    <string name="guide_devopts_on">开发者选项是关闭的。我来打开“%1$s”…</string>
+    <string name="guide_wireless_tap">你好！我是 Tic。简单的点按由我来做：我来点按“%1$s”…</string>
+    <string name="guide_wireless_switch">我来打开“%1$s”…</string>
+    <string name="guide_wireless_allow">这一步轮到你：Android 在问你是否信任此 Wi-Fi 网络。如果是你家里的网络，请点按“%1$s”。</string>
+    <string name="guide_pair_tap">谢谢！接下来交给我：我来点按“%1$s”…</string>
+    <string name="guide_code_searching">正在查找配对码…</string>
+    <string name="guide_code_found">找到了！你的配对码是 %1$s。正在配对…</string>
+    <string name="guide_code_entry">我在这里读不到配对码。请帮我输入！就是框里的 6 位数字。</string>
+    <string name="guide_code_thanks">谢谢！正在配对…</string>
+    <string name="guide_paired">配对成功！你什么都不用输入。</string>
+    <string name="guide_perm_overlay">为了让应用能显示提醒，我来打开“%1$s”…</string>
+    <string name="guide_perm_unknown">为了允许从此应用安装，我来打开“%1$s”…</string>
+    <string name="guide_perm_battery">为了让应用能在后台继续运行，我来选择“%1$s”…</string>
+    <string name="guide_perm_app_details">在此屏幕上找到“%1$s”并将其打开。</string>
+    <string name="guide_perm_listener">我来打开“%1$s”，这样应用就能读取通知…</string>
+    <string name="guide_perm_listener_confirm">这一步轮到你：Android 要你确认。请点按“%1$s”。</string>
+    <string name="guide_restricted_menu">在你允许之前，Android 会阻止此权限。轮到你了：点按右上角的 ⋮ 菜单（%1$s）。</string>
+    <string name="guide_restricted_allow">轮到你了：点按“%1$s”，并用 PIN 码确认。</string>
+    <string name="guide_back_done">完成！我用“返回”退回去…</string>
+    <string name="guide_gms_clear">这一步轮到你。这会清除 Google Play 服务的数据。准备好后，请点按“%1$s”。</string>
+    <string name="guide_gms_confirm">用“%1$s”确认。点按始终由你来做：我只负责指给你看。</string>
+    <string name="guide_user_taps">轮到你了：点按“%1$s”。</string>
+    <string name="guide_user_toggles">轮到你了：打开“%1$s”。</string>
+    <string name="guide_searching">正在查找“%1$s”…</string>
+    <string name="guide_not_found">我找不到“%1$s”。你能找一下吗？它看起来大概是这样：</string>
+    <string name="guide_done">全部完成！准备好后回到 LibreWrist。</string>
+    <string name="guide_enabled_hello">好了，你已开启 Tic！</string>
+    <string name="guide_farewell_attended">完成！现在轮到你了。</string>
+    <string name="guide_farewell_unattended">完成！接下来 LibreWrist 会自动继续。</string>
+    <string name="guide_debugging_disallowed">此手机不允许使用调试功能（工作资料或某项限制阻止了它），所以我无法继续。</string>
+</resources>

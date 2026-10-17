@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Tic, the interactive guide. Limited to the screens LibreWrist's setup hands off to (Settings, Google Play
+  services, the permission controller and the package installer) plus our own app, to notice the user is back.
+-->
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accessibilityEventTypes="typeWindowStateChanged|typeWindowContentChanged|typeViewScrolled|typeNotificationStateChanged"
+    android:accessibilityFeedbackType="feedbackGeneric"
+    android:accessibilityFlags="flagReportViewIds|flagRetrieveInteractiveWindows"
+    android:canRetrieveWindowContent="true"
+    android:canPerformGestures="false"
+    android:description="@string/guide_service_description"
+    android:notificationTimeout="150"
+    android:packageNames="com.android.settings,com.android.systemui,com.google.android.gms,com.google.android.permissioncontroller,com.android.permissioncontroller,com.google.android.packageinstaller,com.android.packageinstaller,io.openshm.patcher" />

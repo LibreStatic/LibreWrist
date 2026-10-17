@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_ui_pet_description">Tic, votre guide de configuration</string>
+    <string name="guide_ui_chip_tic">Je m\'en occupe</string>
+    <string name="guide_ui_chip_user">À vous de jouer</string>
+    <string name="guide_ui_strip_controlling">Tic contrôle votre écran. Touchez-le pour mettre en pause.</string>
+    <string name="guide_ui_strip_paused">Tic est en pause. Touchez-le pour continuer.</string>
+    <string name="guide_ui_code_description">Code d\'association à six chiffres</string>
+    <string name="guide_ui_code_not_now">Pas maintenant</string>
+</resources>

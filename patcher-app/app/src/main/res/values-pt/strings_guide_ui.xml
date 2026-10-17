@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_ui_pet_description">Tic, seu guia de configuração</string>
+    <string name="guide_ui_chip_tic">Eu faço</string>
+    <string name="guide_ui_chip_user">Sua vez</string>
+    <string name="guide_ui_strip_controlling">O Tic está controlando sua tela. Toque nela para pausar.</string>
+    <string name="guide_ui_strip_paused">O Tic está em pausa. Toque nele para continuar.</string>
+    <string name="guide_ui_code_description">Código de pareamento, seis dígitos</string>
+    <string name="guide_ui_code_not_now">Agora não</string>
+</resources>

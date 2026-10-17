@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_build_number_hello">Привіт! Я Тік. Параметри розробника приховано. Я відкрию їх, натиснувши «%1$s» 7 разів…</string>
+    <string name="guide_software_info">Номер збірки у вашому телефоні лежить у розділі «%1$s». Відкриваю його…</string>
+    <string name="guide_pin">Android просить ваш PIN-код. Це вам: я не бачу, що ви вводите. Потім натисніть «Підтвердити».</string>
+    <string name="guide_unlocked_opening">Тепер ви розробник! Відкриваю параметри розробника…</string>
+    <string name="guide_tic_opens">Відкриваю «%1$s»…</string>
+    <string name="guide_tic_taps">Натискаю «%1$s»…</string>
+    <string name="guide_devopts_on">Параметри розробника вимкнено. Вмикаю «%1$s»…</string>
+    <string name="guide_wireless_tap">Привіт! Я Тік. Прості натискання беру на себе: натискаю «%1$s»…</string>
+    <string name="guide_wireless_switch">Вмикаю «%1$s»…</string>
+    <string name="guide_wireless_allow">Це вам: Android питає, чи довіряєте ви цій мережі Wi-Fi. Якщо це ваша домашня мережа, натисніть «%1$s».</string>
+    <string name="guide_pair_tap">Дякую! Далі я: натискаю «%1$s»…</string>
+    <string name="guide_code_searching">Шукаю код зв\'язування…</string>
+    <string name="guide_code_found">Знайшов! Ваш код: %1$s. Зв\'язую…</string>
+    <string name="guide_code_entry">Звідси я не можу прочитати код. Введіть його за мене! Це 6 цифр у полі.</string>
+    <string name="guide_code_thanks">Дякую! Зв\'язую…</string>
+    <string name="guide_paired">Зв\'язано! Вам нічого не довелося вводити.</string>
+    <string name="guide_perm_overlay">Щоб застосунок міг показувати свої сповіщення, вмикаю «%1$s»…</string>
+    <string name="guide_perm_unknown">Щоб дозволити встановлення з цього застосунку, вмикаю «%1$s»…</string>
+    <string name="guide_perm_battery">Щоб застосунок працював у фоні, обираю «%1$s»…</string>
+    <string name="guide_perm_app_details">Знайдіть «%1$s» на цьому екрані та ввімкніть.</string>
+    <string name="guide_perm_listener">Вмикаю «%1$s», щоб застосунок міг читати сповіщення…</string>
+    <string name="guide_perm_listener_confirm">Це вам: Android просить підтвердити. Натисніть «%1$s».</string>
+    <string name="guide_restricted_menu">Android блокує цей дозвіл, доки ви його не дозволите. Ваш хід: натисніть меню ⋮ («%1$s») угорі праворуч.</string>
+    <string name="guide_restricted_allow">Ваш хід: натисніть «%1$s» і підтвердьте PIN-кодом.</string>
+    <string name="guide_back_done">Готово! Повертаюся кнопкою «Назад»…</string>
+    <string name="guide_gms_clear">Це вам. Так видаляються дані сервісів Google Play. Коли будете готові, натисніть «%1$s».</string>
+    <string name="guide_gms_confirm">Підтвердьте кнопкою «%1$s». Натискання завжди ваше: я лише показую.</string>
+    <string name="guide_user_taps">Ваш хід: натисніть «%1$s».</string>
+    <string name="guide_user_toggles">Ваш хід: увімкніть «%1$s».</string>
+    <string name="guide_searching">Шукаю «%1$s»…</string>
+    <string name="guide_not_found">Не можу знайти «%1$s». Пошукаєте самі? Виглядати це має приблизно так:</string>
+    <string name="guide_done">Усе готово! Повертайтеся до LibreWrist, коли будете готові.</string>
+    <string name="guide_enabled_hello">Готово, ви ввімкнули Tic!</string>
+    <string name="guide_farewell_attended">Готово! Тепер твоя черга.</string>
+    <string name="guide_farewell_unattended">Готово! Далі LibreWrist впорається сам.</string>
+    <string name="guide_debugging_disallowed">Цей телефон не дозволяє функції налагодження (їх блокує робочий профіль або обмеження), тому я не можу продовжити.</string>
+</resources>

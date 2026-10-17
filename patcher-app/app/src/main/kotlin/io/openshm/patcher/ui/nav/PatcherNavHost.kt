@@ -1,5 +1,6 @@
 package io.openshm.patcher.ui.nav
 
+import io.openshm.patcher.device.guide.rememberSettingsLauncher
 import android.Manifest
 import io.openshm.patcher.data.KEY_BACKUP_FOLDER
 import android.content.ActivityNotFoundException
@@ -232,14 +233,9 @@ fun PatcherNavHost(
                 val vm: PhoneAdbViewModel = viewModel()
                 val state by vm.state.collectAsStateWithLifecycle()
                 val context = LocalContext.current
+                val launchSettings = rememberSettingsLauncher()
                 LaunchedEffect(vm) {
-                    vm.launches.collect { request ->
-                        try {
-                            context.startActivity(request.intent)
-                        } catch (e: ActivityNotFoundException) {
-                            request.fallback?.let { runCatching { context.startActivity(it) } }
-                        }
-                    }
+                    vm.launches.collect { launchSettings(it) }
                 }
                 val whenNotificationsAllowed = rememberNotificationGate()
                 // The step starts by itself on entering (a paired phone connects with no code).
@@ -328,14 +324,9 @@ fun PatcherNavHost(
                 val vm: WearableTroubleshootViewModel = viewModel()
                 val state by vm.state.collectAsStateWithLifecycle()
                 val context = LocalContext.current
+                val launchSettings = rememberSettingsLauncher()
                 LaunchedEffect(vm) {
-                    vm.launches.collect { request ->
-                        try {
-                            context.startActivity(request.intent)
-                        } catch (e: ActivityNotFoundException) {
-                            request.fallback?.let { runCatching { context.startActivity(it) } }
-                        }
-                    }
+                    vm.launches.collect { launchSettings(it) }
                 }
                 val whenNotificationsAllowed = rememberNotificationGate()
                 WearableTroubleshootScreen(
@@ -436,14 +427,9 @@ fun PatcherNavHost(
                 val vm: InstallPhoneViewModel = viewModel()
                 val state by vm.state.collectAsStateWithLifecycle()
                 val activity = LocalContext.current
+                val launchSettings = rememberSettingsLauncher()
                 LaunchedEffect(vm) {
-                    vm.launches.collect { request ->
-                        try {
-                            activity.startActivity(request.intent)
-                        } catch (e: ActivityNotFoundException) {
-                            request.fallback?.let { runCatching { activity.startActivity(it) } }
-                        }
-                    }
+                    vm.launches.collect { launchSettings(it) }
                 }
                 // Settings are changed outside the app: read them again when the screen is back.
                 LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { vm.onEvent(InstallEvent.Refresh) }
@@ -539,14 +525,9 @@ fun PatcherNavHost(
                 val state by vm.state.collectAsStateWithLifecycle()
                 val context = LocalContext.current
                 // The system's removal confirmations must be started from the activity.
+                val launchSettings = rememberSettingsLauncher()
                 LaunchedEffect(vm) {
-                    vm.launches.collect { request ->
-                        try {
-                            context.startActivity(request.intent)
-                        } catch (e: ActivityNotFoundException) {
-                            request.fallback?.let { runCatching { context.startActivity(it) } }
-                        }
-                    }
+                    vm.launches.collect { launchSettings(it) }
                 }
                 RevertScreen(
                     state,
@@ -616,14 +597,9 @@ fun PatcherNavHost(
                 val createDocument = rememberLauncherForActivityResult(
                     ActivityResultContracts.CreateDocument(TEXT_MIME), vm::export,
                 )
+                val launchSettings = rememberSettingsLauncher()
                 LaunchedEffect(vm) {
-                    vm.launches.collect { request ->
-                        try {
-                            context.startActivity(request.intent)
-                        } catch (e: ActivityNotFoundException) {
-                            request.fallback?.let { runCatching { context.startActivity(it) } }
-                        }
-                    }
+                    vm.launches.collect { launchSettings(it) }
                 }
                 // The pairing code is typed into a notification.
                 val whenNotificationsAllowed = rememberNotificationGate()

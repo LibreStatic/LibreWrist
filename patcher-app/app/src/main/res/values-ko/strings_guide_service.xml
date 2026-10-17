@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_enable_title">가이드 Tic을 켤까요?</string>
+    <string name="guide_enable_message">설정에서 안내하려면 Tic에게 LibreWrist의 접근성 서비스가 필요합니다. LibreWrist가 연 설정 화면만 보고, 데이터를 삭제하거나 보안을 확인하는 항목은 절대 스스로 탭하지 않습니다.</string>
+    <string name="guide_enable_restricted">스위치가 회색이면: 앱 정보를 열고 ⋮을 탭한 뒤 \"제한된 설정 허용\"을 선택하고 다시 시도하세요.</string>
+    <string name="guide_enable_open">켜기</string>
+    <string name="guide_enable_app_info">앱 정보</string>
+    <string name="guide_enable_not_now">나중에</string>
+    <string name="guide_service_description">LibreWrist의 가이드 Tic이 설정에서 LibreWrist 설정 단계를 가리키고 탭할 수 있게 합니다. 안내 단계가 열려 있을 때만 작동하며 그 밖의 내용은 읽지 않습니다.</string>
+    <string name="guide_wake_description">Tic을 깨워 계속하게 하기</string>
+</resources>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_build_number_hello">Привет! Я Тик. Параметры разработчика скрыты. Я открою их, нажав на «%1$s» 7 раз…</string>
+    <string name="guide_software_info">Номер сборки в вашем телефоне находится в разделе «%1$s». Открываю его…</string>
+    <string name="guide_pin">Android просит ваш PIN-код. Это вам: я не вижу, что вы вводите. Потом нажмите «Подтвердить».</string>
+    <string name="guide_unlocked_opening">Теперь вы разработчик! Открываю раздел «Для разработчиков»…</string>
+    <string name="guide_tic_opens">Открываю «%1$s»…</string>
+    <string name="guide_tic_taps">Нажимаю «%1$s»…</string>
+    <string name="guide_devopts_on">Параметры разработчика выключены. Включаю «%1$s»…</string>
+    <string name="guide_wireless_tap">Привет! Я Тик. Простые нажатия беру на себя: нажимаю «%1$s»…</string>
+    <string name="guide_wireless_switch">Включаю «%1$s»…</string>
+    <string name="guide_wireless_allow">Это вам: Android спрашивает, доверяете ли вы этой сети Wi-Fi. Если это ваша домашняя сеть, нажмите «%1$s».</string>
+    <string name="guide_pair_tap">Спасибо! Дальше я: нажимаю «%1$s»…</string>
+    <string name="guide_code_searching">Ищу код сопряжения…</string>
+    <string name="guide_code_found">Нашёл! Ваш код: %1$s. Выполняю сопряжение…</string>
+    <string name="guide_code_entry">Отсюда я не могу прочитать код. Введите его за меня! Это 6 цифр в поле.</string>
+    <string name="guide_code_thanks">Спасибо! Выполняю сопряжение…</string>
+    <string name="guide_paired">Сопряжено! Вам ничего не пришлось вводить.</string>
+    <string name="guide_perm_overlay">Чтобы приложение могло показывать свои уведомления, включаю «%1$s»…</string>
+    <string name="guide_perm_unknown">Чтобы разрешить установку из этого приложения, включаю «%1$s»…</string>
+    <string name="guide_perm_battery">Чтобы приложение работало в фоне, выбираю «%1$s»…</string>
+    <string name="guide_perm_app_details">Найдите «%1$s» на этом экране и включите.</string>
+    <string name="guide_perm_listener">Включаю «%1$s», чтобы приложение могло читать уведомления…</string>
+    <string name="guide_perm_listener_confirm">Это вам: Android просит подтвердить. Нажмите «%1$s».</string>
+    <string name="guide_restricted_menu">Android блокирует это разрешение, пока вы его не разрешите. Ваш ход: нажмите меню ⋮ («%1$s») в правом верхнем углу.</string>
+    <string name="guide_restricted_allow">Ваш ход: нажмите «%1$s» и подтвердите PIN-кодом.</string>
+    <string name="guide_back_done">Готово! Возвращаюсь кнопкой «Назад»…</string>
+    <string name="guide_gms_clear">Это вам. Так удаляются данные сервисов Google Play. Когда будете готовы, нажмите «%1$s».</string>
+    <string name="guide_gms_confirm">Подтвердите кнопкой «%1$s». Нажатие всегда ваше: я только показываю.</string>
+    <string name="guide_user_taps">Ваш ход: нажмите «%1$s».</string>
+    <string name="guide_user_toggles">Ваш ход: включите «%1$s».</string>
+    <string name="guide_searching">Ищу «%1$s»…</string>
+    <string name="guide_not_found">Не могу найти «%1$s». Поищете сами? Выглядеть это должно примерно так:</string>
+    <string name="guide_done">Всё готово! Возвращайтесь в LibreWrist, когда будете готовы.</string>
+    <string name="guide_enabled_hello">Готово, вы включили Tic!</string>
+    <string name="guide_farewell_attended">Готово! Теперь твоя очередь.</string>
+    <string name="guide_farewell_unattended">Готово! Дальше LibreWrist справится сам.</string>
+    <string name="guide_debugging_disallowed">Этот телефон не разрешает функции отладки (их блокирует рабочий профиль или ограничение), поэтому я не могу продолжить.</string>
+</resources>

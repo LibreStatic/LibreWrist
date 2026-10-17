@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_build_number_hello">Hai! Aku Tic. Opsi pengembang kamu tersembunyi. Aku akan membukanya dengan mengetuk %1$s 7 kali…</string>
+    <string name="guide_software_info">Ponselmu menyimpan nomor build di dalam %1$s. Aku membukanya…</string>
+    <string name="guide_pin">Android meminta PIN kamu untuk konfirmasi. Yang ini bagianmu: aku tidak bisa melihat apa yang kamu ketik. Setelah itu ketuk Konfirmasi.</string>
+    <string name="guide_unlocked_opening">Sekarang kamu pengembang! Aku membuka opsi developer…</string>
+    <string name="guide_tic_opens">Aku membuka %1$s…</string>
+    <string name="guide_tic_taps">Aku mengetuk %1$s…</string>
+    <string name="guide_devopts_on">Opsi pengembang sedang mati. Aku menyalakan %1$s…</string>
+    <string name="guide_wireless_tap">Hai! Aku Tic. Ketukan yang mudah aku yang kerjakan: aku mengetuk %1$s…</string>
+    <string name="guide_wireless_switch">Aku menyalakan %1$s…</string>
+    <string name="guide_wireless_allow">Yang ini bagianmu: Android bertanya apakah kamu memercayai jaringan Wi-Fi ini. Kalau itu jaringan rumahmu, ketuk %1$s.</string>
+    <string name="guide_pair_tap">Terima kasih! Aku lanjutkan: aku mengetuk %1$s…</string>
+    <string name="guide_code_searching">Mencari kode penyandingan…</string>
+    <string name="guide_code_found">Ketemu! Kodemu %1$s. Menyandingkan…</string>
+    <string name="guide_code_entry">Aku tidak bisa membaca kodenya dari sini. Ketikkan untukku! Itu 6 digit di kotak.</string>
+    <string name="guide_code_thanks">Terima kasih! Menyandingkan…</string>
+    <string name="guide_paired">Tersandingkan! Kamu tidak perlu mengetik apa pun.</string>
+    <string name="guide_perm_overlay">Agar aplikasi bisa menampilkan peringatannya, aku menyalakan %1$s…</string>
+    <string name="guide_perm_unknown">Agar bisa memasang dari aplikasi ini, aku menyalakan %1$s…</string>
+    <string name="guide_perm_battery">Agar aplikasi tetap berjalan di latar belakang, aku memilih %1$s…</string>
+    <string name="guide_perm_app_details">Cari %1$s di layar ini lalu nyalakan.</string>
+    <string name="guide_perm_listener">Aku menyalakan %1$s agar aplikasi bisa membaca notifikasi…</string>
+    <string name="guide_perm_listener_confirm">Yang ini bagianmu: Android meminta konfirmasi. Ketuk %1$s.</string>
+    <string name="guide_restricted_menu">Android memblokir izin ini sampai kamu mengizinkannya. Giliranmu: ketuk menu ⋮ (%1$s) di kanan atas.</string>
+    <string name="guide_restricted_allow">Giliranmu: ketuk %1$s lalu konfirmasi dengan PIN-mu.</string>
+    <string name="guide_back_done">Selesai! Aku kembali dengan Kembali…</string>
+    <string name="guide_gms_clear">Yang ini bagianmu. Ini menghapus data Layanan Google Play. Kalau sudah siap, ketuk %1$s.</string>
+    <string name="guide_gms_confirm">Konfirmasi dengan %1$s. Ketukannya selalu milikmu: aku hanya menunjuk.</string>
+    <string name="guide_user_taps">Giliranmu: ketuk %1$s.</string>
+    <string name="guide_user_toggles">Giliranmu: nyalakan %1$s.</string>
+    <string name="guide_searching">Mencari %1$s…</string>
+    <string name="guide_not_found">Aku tidak menemukan %1$s. Bisa kamu carikan? Seharusnya tampilannya kira-kira seperti ini:</string>
+    <string name="guide_done">Selesai! Kembali ke LibreWrist kapan pun kamu siap.</string>
+    <string name="guide_enabled_hello">Beres, kamu sudah mengaktifkan Tic!</string>
+    <string name="guide_farewell_attended">Selesai! Sekarang giliranmu.</string>
+    <string name="guide_farewell_unattended">Selesai! LibreWrist lanjut sendiri dari sini.</string>
+    <string name="guide_debugging_disallowed">Ponsel ini tidak mengizinkan fitur debugging (profil kerja atau pembatasan memblokirnya), jadi aku tidak bisa melanjutkan.</string>
+</resources>

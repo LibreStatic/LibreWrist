@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_ui_pet_description">Tic, 설정 안내 도우미</string>
+    <string name="guide_ui_chip_tic">제가 할게요</string>
+    <string name="guide_ui_chip_user">당신 차례예요</string>
+    <string name="guide_ui_strip_controlling">Tic이 화면을 제어하고 있습니다. 화면을 터치하면 일시중지됩니다.</string>
+    <string name="guide_ui_strip_paused">Tic이 일시중지되었습니다. 탭하면 계속합니다.</string>
+    <string name="guide_ui_code_description">페어링 코드, 6자리</string>
+    <string name="guide_ui_code_not_now">나중에</string>
+</resources>

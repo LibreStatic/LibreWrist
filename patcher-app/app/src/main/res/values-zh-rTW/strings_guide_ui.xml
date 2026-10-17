@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_ui_pet_description">Tic，你的設定精靈</string>
+    <string name="guide_ui_chip_tic">我來操作</string>
+    <string name="guide_ui_chip_user">輪到你了</string>
+    <string name="guide_ui_strip_controlling">Tic 正在控制你的螢幕。觸碰螢幕即可暫停。</string>
+    <string name="guide_ui_strip_paused">Tic 已暫停。點一下即可繼續。</string>
+    <string name="guide_ui_code_description">配對碼，共六位數字</string>
+    <string name="guide_ui_code_not_now">以後再說</string>
+</resources>

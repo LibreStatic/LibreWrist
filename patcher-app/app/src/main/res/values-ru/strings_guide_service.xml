@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_enable_title">Включить Тика, гида?</string>
+    <string name="guide_enable_message">Чтобы провести вас по настройкам, Тику нужна служба специальных возможностей LibreWrist. Он смотрит только на экраны настроек, которые открывает LibreWrist, и никогда сам не нажимает то, что удаляет данные или подтверждает безопасность.</string>
+    <string name="guide_enable_restricted">Если переключатель серый: откройте «О приложении», нажмите ⋮ и выберите «Разрешить доступ к настройкам», затем попробуйте снова.</string>
+    <string name="guide_enable_open">Включить</string>
+    <string name="guide_enable_app_info">О приложении</string>
+    <string name="guide_enable_not_now">Не сейчас</string>
+    <string name="guide_service_description">Позволяет Тику, гиду LibreWrist, указывать и нажимать шаги настройки LibreWrist в приложении «Настройки». Работает только во время шага с подсказками и больше ничего не читает.</string>
+    <string name="guide_wake_description">Разбудить Тика, чтобы он продолжил</string>
+</resources>

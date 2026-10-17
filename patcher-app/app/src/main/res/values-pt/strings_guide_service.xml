@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_enable_title">Ativar o Tic, o guia?</string>
+    <string name="guide_enable_message">Para te guiar pelas Configurações, o Tic precisa do serviço de acessibilidade do LibreWrist. Ele só olha as telas de Configurações que o LibreWrist abre e nunca toca sozinho em nada que apague dados ou confirme algo de segurança.</string>
+    <string name="guide_enable_restricted">Se o interruptor estiver cinza: abra Informações do app, toque em ⋮ e escolha \"Permitir configurações restritas\"; depois tente de novo.</string>
+    <string name="guide_enable_open">Ativar</string>
+    <string name="guide_enable_app_info">Info do app</string>
+    <string name="guide_enable_not_now">Agora não</string>
+    <string name="guide_service_description">Permite que o Tic, o guia do LibreWrist, aponte e toque nos passos da configuração do LibreWrist nas Configurações. Só funciona enquanto há um passo guiado aberto e não lê mais nada.</string>
+    <string name="guide_wake_description">Acorde o Tic para ele continuar</string>
+</resources>

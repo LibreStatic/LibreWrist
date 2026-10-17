@@ -115,6 +115,7 @@ class WelcomeViewModel(application: Application) : AndroidViewModel(application)
             WelcomeEvent.ConfirmSkip -> preflight.confirm()
             WelcomeEvent.CancelSkip -> preflight.cancel()
             WelcomeEvent.ManualSetup -> preflight.manual()
+            is WelcomeEvent.SetGuidePet -> Automation.setGuidePet(event.on)
             is WelcomeEvent.SetUnattended -> Automation.setUnattended(event.on)
             is WelcomeEvent.SetFreeRun ->
                 // Turning it on asks first unless the user already chose not to be asked again.

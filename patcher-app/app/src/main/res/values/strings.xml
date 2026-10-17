@@ -51,6 +51,8 @@
     <string name="welcome_promise_undo">Every change can be undone, and the original apps are never uninstalled.</string>
     <string name="welcome_get_started">Get started</string>
     <string name="welcome_what_changes">What will change on my devices?</string>
+    <string name="automation_guide_title">Interactive guide</string>
+    <string name="automation_guide_help">Tic, a small watch, appears on the Android Settings screens LibreWrist sends you to. It tells you what to tap and does the simple taps itself; security confirmations and anything that deletes data stay with you. It needs the accessibility service, which it only uses on those screens.</string>
     <string name="automation_unattended_title">Unattended mode</string>
     <string name="automation_unattended_help">In unattended mode LibreWrist does over ADB everything that can be automated (installing, granting permissions, turning options on) on the phone and on the watch, and it does not go on without an ADB connection to both. Between steps it waits a few seconds (5 by default, adjustable in Settings): if you touch or scroll the screen while the bar on the button is filling, it pauses and you continue by hand; the following steps go on by themselves again.</string>
     <string name="settings_advance_wait">Wait between steps</string>
@@ -669,6 +671,7 @@
     <string name="device_logs_action_open">Open</string>
     <string name="device_logs_title">Device logs</string>
     <string name="device_logs_link">View device logs</string>
+    <string name="device_logs_link_short">Device logs</string>
     <string name="device_logs_status_streaming">Connected · streaming</string>
     <string name="device_logs_status_disconnected">Disconnected · tap to connect</string>
     <string name="device_logs_status_connecting">Connecting…</string>
@@ -694,6 +697,7 @@
     <string name="device_logs_sheet_phone_untrusted">Wireless debugging is on, but this phone has not trusted the patcher yet. Tap Pair, then type the pairing code into the notification that appears.</string>
     <string name="device_logs_sheet_phone_pair">Pair this phone</string>
     <string name="revert_title">Undo all changes</string>
+    <string name="revert_title_short">Undo changes</string>
     <string name="revert_intro">This removes what LibreWrist installed on your phone and your watch and puts back what it changed. Only what is really installed is touched, and system apps are never removed.</string>
     <string name="revert_probing">Checking what is installed…</string>
     <string name="revert_action_remove">Remove</string>

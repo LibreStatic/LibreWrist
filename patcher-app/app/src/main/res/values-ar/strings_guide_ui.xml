@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_ui_pet_description">Tic، دليلك للإعداد</string>
+    <string name="guide_ui_chip_tic">سأفعلها أنا</string>
+    <string name="guide_ui_chip_user">دورك الآن</string>
+    <string name="guide_ui_strip_controlling">Tic يتحكم في شاشتك. المسها لإيقافه مؤقتًا.</string>
+    <string name="guide_ui_strip_paused">توقف Tic مؤقتًا. المسه ليتابع العمل.</string>
+    <string name="guide_ui_code_description">رمز الاقتران، ستة أرقام</string>
+    <string name="guide_ui_code_not_now">ليس الآن</string>
+</resources>

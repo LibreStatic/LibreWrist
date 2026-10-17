@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_ui_pet_description">Tic, ваш помічник із налаштування</string>
+    <string name="guide_ui_chip_tic">Я сам</string>
+    <string name="guide_ui_chip_user">Ваша черга</string>
+    <string name="guide_ui_strip_controlling">Tic керує вашим екраном. Торкніться екрана, щоб призупинити.</string>
+    <string name="guide_ui_strip_paused">Tic призупинено. Торкніться його, щоб продовжити.</string>
+    <string name="guide_ui_code_description">Код підключення, шість цифр</string>
+    <string name="guide_ui_code_not_now">Не зараз</string>
+</resources>

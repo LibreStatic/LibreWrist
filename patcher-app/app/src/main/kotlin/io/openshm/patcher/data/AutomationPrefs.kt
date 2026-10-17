@@ -17,6 +17,8 @@ const val ADVANCE_SECONDS_DEFAULT = 5
  * [uninstallActive]).
  */
 data class AutomationState(
+    /** Tic, the guide pet, walks the user through the Android Settings screens the app sends them to. */
+    val guidePet: Boolean = true,
     /** Do everything that can be automated over ADB and advance between steps on a countdown. */
     val unattended: Boolean = true,
     /** Do not stop at operation confirmations (skipped steps, profile correction, notices). */
@@ -46,6 +48,7 @@ data class AutomationState(
  */
 object Automation {
     private const val PREFS = "automation"
+    private const val KEY_GUIDE_PET = "guidePet"
     private const val KEY_UNATTENDED = "unattended"
     private const val KEY_FREE_RUN = "freeRun"
     private const val KEY_UNINSTALL_MISMATCH = "uninstallMismatch"
@@ -63,6 +66,7 @@ object Automation {
         val p = context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         val d = AutomationState()
         _state.value = AutomationState(
+            guidePet = p.getBoolean(KEY_GUIDE_PET, d.guidePet),
             unattended = p.getBoolean(KEY_UNATTENDED, d.unattended),
             freeRun = p.getBoolean(KEY_FREE_RUN, d.freeRun),
             uninstallMismatch = p.getBoolean(KEY_UNINSTALL_MISMATCH, d.uninstallMismatch),
@@ -72,6 +76,8 @@ object Automation {
         )
         prefs = p
     }
+
+    fun setGuidePet(value: Boolean) = update { it.copy(guidePet = value) }
 
     fun setUnattended(value: Boolean) = update { it.copy(unattended = value) }
 
@@ -90,6 +96,7 @@ object Automation {
         val next = transform(_state.value)
         _state.value = next
         prefs?.edit()
+            ?.putBoolean(KEY_GUIDE_PET, next.guidePet)
             ?.putBoolean(KEY_UNATTENDED, next.unattended)
             ?.putBoolean(KEY_FREE_RUN, next.freeRun)
             ?.putBoolean(KEY_UNINSTALL_MISMATCH, next.uninstallMismatch)

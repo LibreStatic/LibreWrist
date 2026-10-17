@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_build_number_hello">안녕! 나는 틱이야. 개발자 옵션이 숨겨져 있어. \'%1$s\'을(를) 7번 눌러서 열어 줄게…</string>
+    <string name="guide_software_info">이 휴대전화는 빌드 번호를 \'%1$s\' 안에 두고 있어. 열어 볼게…</string>
+    <string name="guide_pin">Android가 확인을 위해 PIN을 요청해. 이건 네 차례야. 나는 네가 입력하는 걸 볼 수 없어. 끝나면 \'확인\'을 눌러 줘.</string>
+    <string name="guide_unlocked_opening">이제 개발자가 되었어! 개발자 옵션을 열게…</string>
+    <string name="guide_tic_opens">\'%1$s\'을(를) 열게…</string>
+    <string name="guide_tic_taps">\'%1$s\'을(를) 누를게…</string>
+    <string name="guide_devopts_on">개발자 옵션이 꺼져 있어. \'%1$s\'을(를) 켤게…</string>
+    <string name="guide_wireless_tap">안녕! 나는 틱이야. 쉬운 터치는 내가 할게. \'%1$s\'을(를) 누를게…</string>
+    <string name="guide_wireless_switch">\'%1$s\'을(를) 켤게…</string>
+    <string name="guide_wireless_allow">이건 네 차례야. Android가 이 Wi-Fi 네트워크를 신뢰하는지 묻고 있어. 집 네트워크라면 \'%1$s\'을(를) 눌러 줘.</string>
+    <string name="guide_pair_tap">고마워! 이제부터는 내가 할게. \'%1$s\'을(를) 누를게…</string>
+    <string name="guide_code_searching">페어링 코드를 찾는 중이야…</string>
+    <string name="guide_code_found">찾았다! 코드는 %1$s이야. 페어링 중…</string>
+    <string name="guide_code_entry">여기서는 코드를 읽을 수 없어. 대신 입력해 줘! 상자에 있는 6자리 숫자야.</string>
+    <string name="guide_code_thanks">고마워! 페어링 중…</string>
+    <string name="guide_paired">페어링 완료! 아무것도 입력하지 않아도 됐어.</string>
+    <string name="guide_perm_overlay">앱이 알림을 표시할 수 있도록 \'%1$s\'을(를) 켤게…</string>
+    <string name="guide_perm_unknown">이 앱에서 설치할 수 있도록 \'%1$s\'을(를) 켤게…</string>
+    <string name="guide_perm_battery">앱이 백그라운드에서 계속 동작하도록 \'%1$s\'을(를) 선택할게…</string>
+    <string name="guide_perm_app_details">이 화면에서 \'%1$s\'을(를) 찾아 켜 줘.</string>
+    <string name="guide_perm_listener">앱이 알림을 읽을 수 있도록 \'%1$s\'을(를) 켤게…</string>
+    <string name="guide_perm_listener_confirm">이건 네 차례야. Android가 확인을 요청하고 있어. \'%1$s\'을(를) 눌러 줘.</string>
+    <string name="guide_restricted_menu">Android는 네가 허용할 때까지 이 권한을 막아 둬. 네 차례야. 오른쪽 위의 ⋮ 메뉴(%1$s)를 눌러 줘.</string>
+    <string name="guide_restricted_allow">네 차례야. \'%1$s\'을(를) 누르고 PIN으로 확인해 줘.</string>
+    <string name="guide_back_done">끝났어! \'뒤로\'로 돌아갈게…</string>
+    <string name="guide_gms_clear">이건 네 차례야. Google Play 서비스의 데이터가 지워져. 준비되면 \'%1$s\'을(를) 눌러 줘.</string>
+    <string name="guide_gms_confirm">\'%1$s\'(으)로 확인해 줘. 터치는 항상 네 몫이야. 나는 가리키기만 해.</string>
+    <string name="guide_user_taps">네 차례야. \'%1$s\'을(를) 눌러 줘.</string>
+    <string name="guide_user_toggles">네 차례야. \'%1$s\'을(를) 켜 줘.</string>
+    <string name="guide_searching">\'%1$s\'을(를) 찾는 중이야…</string>
+    <string name="guide_not_found">\'%1$s\'을(를) 찾을 수 없어. 네가 찾아 줄래? 대략 이렇게 보여야 해:</string>
+    <string name="guide_done">모두 끝났어! 준비되면 LibreWrist로 돌아가 줘.</string>
+    <string name="guide_enabled_hello">좋아, Tic을 켰어!</string>
+    <string name="guide_farewell_attended">완료! 이제 당신 차례예요.</string>
+    <string name="guide_farewell_unattended">완료! 이제 LibreWrist가 알아서 진행해요.</string>
+    <string name="guide_debugging_disallowed">이 휴대전화는 디버깅 기능을 허용하지 않아(업무용 프로필이나 제한이 막고 있어). 그래서 계속할 수 없어.</string>
+</resources>

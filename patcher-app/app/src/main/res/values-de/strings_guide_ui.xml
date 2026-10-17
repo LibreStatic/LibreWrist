@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_ui_pet_description">Tic, dein Einrichtungsguide</string>
+    <string name="guide_ui_chip_tic">Mache ich</string>
+    <string name="guide_ui_chip_user">Du bist dran</string>
+    <string name="guide_ui_strip_controlling">Tic steuert deinen Bildschirm. Tippe darauf, um zu pausieren.</string>
+    <string name="guide_ui_strip_paused">Tic pausiert. Tippe darauf, damit es weitergeht.</string>
+    <string name="guide_ui_code_description">Kopplungscode, sechs Ziffern</string>
+    <string name="guide_ui_code_not_now">Nicht jetzt</string>
+</resources>

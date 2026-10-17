@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_enable_title">هل تريد تشغيل تيك، المرشد؟</string>
+    <string name="guide_enable_message">ليرشدك في الإعدادات، يحتاج تيك إلى خدمة تسهيل الاستخدام في LibreWrist. لا يرى إلا شاشات الإعدادات التي يفتحها LibreWrist، ولا يلمس من تلقاء نفسه أبدًا أي شيء يحذف البيانات أو يؤكد الأمان.</string>
+    <string name="guide_enable_restricted">إذا كان المفتاح رماديًا: افتح معلومات التطبيق، واضغط على ⋮ واختر \"السماح بالإعدادات المحظورة\"، ثم حاول مرة أخرى.</string>
+    <string name="guide_enable_open">تشغيل</string>
+    <string name="guide_enable_app_info">معلومات التطبيق</string>
+    <string name="guide_enable_not_now">ليس الآن</string>
+    <string name="guide_service_description">يتيح لتيك، مرشد LibreWrist، الإشارة إلى خطوات إعداد LibreWrist في الإعدادات ولمسها. يعمل فقط أثناء خطوة إرشادية مفتوحة ولا يقرأ أي شيء آخر.</string>
+    <string name="guide_wake_description">أيقظ تيك ليتابع</string>
+</resources>

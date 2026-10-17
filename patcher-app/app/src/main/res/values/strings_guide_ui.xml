@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_ui_pet_description">Tic, your setup guide</string>
+    <string name="guide_ui_chip_tic">I\'ll do it</string>
+    <string name="guide_ui_chip_user">Your turn</string>
+    <string name="guide_ui_strip_controlling">Tic is controlling your screen. Touch it to pause.</string>
+    <string name="guide_ui_strip_paused">Tic paused. Tap it to keep going.</string>
+    <string name="guide_ui_code_description">Pairing code, six digits</string>
+    <string name="guide_ui_code_not_now">Not now</string>
+</resources>

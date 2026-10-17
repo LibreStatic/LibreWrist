@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_ui_pet_description">Tic, ваш помощник по настройке</string>
+    <string name="guide_ui_chip_tic">Я сам</string>
+    <string name="guide_ui_chip_user">Ваш ход</string>
+    <string name="guide_ui_strip_controlling">Tic управляет вашим экраном. Коснитесь экрана, чтобы приостановить.</string>
+    <string name="guide_ui_strip_paused">Tic приостановлен. Коснитесь его, чтобы продолжить.</string>
+    <string name="guide_ui_code_description">Код сопряжения, шесть цифр</string>
+    <string name="guide_ui_code_not_now">Не сейчас</string>
+</resources>

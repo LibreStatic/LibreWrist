@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_build_number_hello">مرحبًا! أنا تيك. خيارات المطوّر مخفية. سأفتحها بالنقر على «%1$s» 7 مرات…</string>
+    <string name="guide_software_info">يحتفظ هاتفك برقم الإصدار داخل «%1$s». سأفتحه…</string>
+    <string name="guide_pin">يطلب Android رمز PIN للتأكيد. هذه الخطوة عليك أنت: لا أستطيع رؤية ما تكتبه. بعد ذلك انقر على «تأكيد».</string>
+    <string name="guide_unlocked_opening">أصبحت الآن مطوّرًا! سأفتح خيارات المطوّرين…</string>
+    <string name="guide_tic_opens">سأفتح «%1$s»…</string>
+    <string name="guide_tic_taps">سأنقر على «%1$s»…</string>
+    <string name="guide_devopts_on">خيارات المطوّر متوقفة. سأشغّل «%1$s»…</string>
+    <string name="guide_wireless_tap">مرحبًا! أنا تيك. النقرات السهلة عليّ: سأنقر على «%1$s»…</string>
+    <string name="guide_wireless_switch">سأشغّل «%1$s»…</string>
+    <string name="guide_wireless_allow">هذه الخطوة عليك أنت: يسأل Android إن كنت تثق بشبكة Wi-Fi هذه. إن كانت شبكة منزلك فانقر على «%1$s».</string>
+    <string name="guide_pair_tap">شكرًا! سأكمل من هنا: سأنقر على «%1$s»…</string>
+    <string name="guide_code_searching">أبحث عن رمز الاقتران…</string>
+    <string name="guide_code_found">وجدته! رمزك هو %1$s. جارٍ الاقتران…</string>
+    <string name="guide_code_entry">لا أستطيع قراءة الرمز من هنا. اكتبه لي! هو الأرقام الستة في المربع.</string>
+    <string name="guide_code_thanks">شكرًا! جارٍ الاقتران…</string>
+    <string name="guide_paired">تم الاقتران! لم تحتج إلى كتابة أي شيء.</string>
+    <string name="guide_perm_overlay">لكي يعرض التطبيق تنبيهاته، سأشغّل «%1$s»…</string>
+    <string name="guide_perm_unknown">للسماح بالتثبيت من هذا التطبيق، سأشغّل «%1$s»…</string>
+    <string name="guide_perm_battery">لكي يواصل التطبيق العمل في الخلفية، سأختار «%1$s»…</string>
+    <string name="guide_perm_app_details">ابحث عن «%1$s» في هذه الشاشة وشغّله.</string>
+    <string name="guide_perm_listener">سأشغّل «%1$s» لكي يقرأ التطبيق الإشعارات…</string>
+    <string name="guide_perm_listener_confirm">هذه الخطوة عليك أنت: يطلب منك Android التأكيد. انقر على «%1$s».</string>
+    <string name="guide_restricted_menu">يحجب Android هذا الإذن حتى تسمح به. دورك: انقر على قائمة ⋮ («%1$s») في أعلى اليمين.</string>
+    <string name="guide_restricted_allow">دورك: انقر على «%1$s» وأكّد برمز PIN.</string>
+    <string name="guide_back_done">تم! سأعود بزر «رجوع»…</string>
+    <string name="guide_gms_clear">هذه الخطوة عليك أنت. ستحذف بيانات خدمات Google Play. عندما تكون مستعدًا انقر على «%1$s».</string>
+    <string name="guide_gms_confirm">أكّد بالنقر على «%1$s». النقرة دائمًا لك: أنا أشير فقط.</string>
+    <string name="guide_user_taps">دورك: انقر على «%1$s».</string>
+    <string name="guide_user_toggles">دورك: شغّل «%1$s».</string>
+    <string name="guide_searching">أبحث عن «%1$s»…</string>
+    <string name="guide_not_found">لا أجد «%1$s». هل يمكنك البحث عنه؟ يجب أن يبدو شبيهًا بهذا:</string>
+    <string name="guide_done">انتهى كل شيء! عد إلى LibreWrist عندما تكون جاهزًا.</string>
+    <string name="guide_enabled_hello">تم، لقد فعّلت Tic!</string>
+    <string name="guide_farewell_attended">تمّ! الآن دورك.</string>
+    <string name="guide_farewell_unattended">تمّ! سيتابع LibreWrist الخطوات وحده.</string>
+    <string name="guide_debugging_disallowed">لا يسمح هذا الهاتف بميزات تصحيح الأخطاء (يحجبها ملف العمل أو قيد ما)، لذا لا أستطيع المتابعة.</string>
+</resources>

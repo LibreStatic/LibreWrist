@@ -22,6 +22,21 @@ class AutomationStateTest {
     }
 
     @Test
+    fun guidePetIsOnByDefaultAndIndependentOfUnattended() {
+        assertTrue(AutomationState().guidePet)
+        try {
+            Automation.setUnattended(false)
+            assertTrue(Automation.state.value.guidePet)
+            Automation.setGuidePet(false)
+            assertFalse(Automation.state.value.guidePet)
+            assertFalse(Automation.state.value.unattended)
+        } finally {
+            Automation.setGuidePet(true)
+            Automation.setUnattended(true)
+        }
+    }
+
+    @Test
     fun advanceSecondsIsCoercedIntoRange() {
         try {
             Automation.setAdvanceSeconds(1)

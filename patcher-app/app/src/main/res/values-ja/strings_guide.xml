@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_build_number_hello">こんにちは！ティックだよ。開発者向けオプションは隠れているので、「%1$s」を7回タップして出すね…</string>
+    <string name="guide_software_info">このスマホではビルド番号が「%1$s」の中にあるよ。開くね…</string>
+    <string name="guide_pin">Androidが確認のためPINを求めているよ。ここはあなたの番：入力内容は私には見えないよ。終わったら「確認」をタップしてね。</string>
+    <string name="guide_unlocked_opening">開発者になったよ！開発者向けオプションを開くね…</string>
+    <string name="guide_tic_opens">「%1$s」を開くね…</string>
+    <string name="guide_tic_taps">「%1$s」をタップするね…</string>
+    <string name="guide_devopts_on">開発者向けオプションがオフだよ。「%1$s」をオンにするね…</string>
+    <string name="guide_wireless_tap">こんにちは！ティックだよ。かんたんなタップは私がやるね：「%1$s」をタップするよ…</string>
+    <string name="guide_wireless_switch">「%1$s」をオンにするね…</string>
+    <string name="guide_wireless_allow">ここはあなたの番：このWi-Fiネットワークを信頼するかAndroidが聞いているよ。自宅のネットワークなら「%1$s」をタップしてね。</string>
+    <string name="guide_pair_tap">ありがとう！ここからは私がやるね：「%1$s」をタップするよ…</string>
+    <string name="guide_code_searching">ペア設定コードを探しているよ…</string>
+    <string name="guide_code_found">見つけた！コードは %1$s だよ。ペア設定中…</string>
+    <string name="guide_code_entry">ここからはコードが読めないみたい。代わりに入力してね！ボックスの6桁の数字だよ。</string>
+    <string name="guide_code_thanks">ありがとう！ペア設定中…</string>
+    <string name="guide_paired">ペア設定できたよ！何も入力しなくてよかったね。</string>
+    <string name="guide_perm_overlay">アプリが通知を表示できるように、「%1$s」をオンにするね…</string>
+    <string name="guide_perm_unknown">このアプリからのインストールを許可するために、「%1$s」をオンにするね…</string>
+    <string name="guide_perm_battery">アプリがバックグラウンドで動き続けるように、「%1$s」を選ぶね…</string>
+    <string name="guide_perm_app_details">この画面で「%1$s」を探してオンにしてね。</string>
+    <string name="guide_perm_listener">アプリが通知を読めるように、「%1$s」をオンにするね…</string>
+    <string name="guide_perm_listener_confirm">ここはあなたの番：Androidが確認を求めているよ。「%1$s」をタップしてね。</string>
+    <string name="guide_restricted_menu">この権限は、あなたが許可するまでAndroidがブロックしているよ。あなたの番：右上の⋮メニュー（%1$s）をタップしてね。</string>
+    <string name="guide_restricted_allow">あなたの番：「%1$s」をタップして、PINで確認してね。</string>
+    <string name="guide_back_done">できた！「戻る」で戻るね…</string>
+    <string name="guide_gms_clear">ここはあなたの番。Google Playサービスのデータが消えるよ。準備ができたら「%1$s」をタップしてね。</string>
+    <string name="guide_gms_confirm">「%1$s」で確認してね。タップはいつもあなたの番：私は指し示すだけだよ。</string>
+    <string name="guide_user_taps">あなたの番：「%1$s」をタップしてね。</string>
+    <string name="guide_user_toggles">あなたの番：「%1$s」をオンにしてね。</string>
+    <string name="guide_searching">「%1$s」を探しているよ…</string>
+    <string name="guide_not_found">「%1$s」が見つからないよ。探してくれる？こんな感じに見えるはずだよ：</string>
+    <string name="guide_done">全部終わったよ！準備ができたらLibreWristに戻ってね。</string>
+    <string name="guide_enabled_hello">できた！Ticをオンにしてくれたね！</string>
+    <string name="guide_farewell_attended">できた！ここからはきみの番だよ。</string>
+    <string name="guide_farewell_unattended">できた！あとはLibreWristが自動で進めるよ。</string>
+    <string name="guide_debugging_disallowed">このスマホではデバッグ機能が許可されていません（仕事用プロファイルか制限がブロックしています）。続けられないよ。</string>
+</resources>

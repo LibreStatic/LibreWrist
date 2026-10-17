@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_enable_title">Rehber Tic açılsın mı?</string>
+    <string name="guide_enable_message">Seni Ayarlar\'da yönlendirmek için Tic\'in LibreWrist erişilebilirlik hizmetine ihtiyacı var. Yalnızca LibreWrist\'in açtığı Ayarlar ekranlarına bakar ve veri silen ya da güvenliği onaylayan hiçbir şeye kendi başına dokunmaz.</string>
+    <string name="guide_enable_restricted">Düğme griyse: Uygulama bilgileri\'ni aç, ⋮ simgesine dokun ve \"Kısıtlanmış ayarlara izin ver\"i seç, sonra tekrar dene.</string>
+    <string name="guide_enable_open">Aç</string>
+    <string name="guide_enable_app_info">Uygulama bilgileri</string>
+    <string name="guide_enable_not_now">Şimdi değil</string>
+    <string name="guide_service_description">LibreWrist rehberi Tic\'in, Ayarlar\'daki LibreWrist kurulum adımlarını göstermesine ve onlara dokunmasına izin verir. Yalnızca rehberli bir adım açıkken çalışır ve başka hiçbir şeyi okumaz.</string>
+    <string name="guide_wake_description">Devam etmesi için Tic\'i uyandır</string>
+</resources>

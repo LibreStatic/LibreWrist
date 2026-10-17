@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_enable_title">Aktifkan Tic, sang pemandu?</string>
+    <string name="guide_enable_message">Untuk memandu Anda di Setelan, Tic memerlukan layanan aksesibilitas LibreWrist. Tic hanya melihat layar Setelan yang dibuka LibreWrist dan tidak pernah mengetuk sendiri apa pun yang menghapus data atau mengonfirmasi keamanan.</string>
+    <string name="guide_enable_restricted">Jika tombolnya abu-abu: buka Info aplikasi, ketuk ⋮ lalu pilih \"Izinkan setelan terbatas\", lalu coba lagi.</string>
+    <string name="guide_enable_open">Aktifkan</string>
+    <string name="guide_enable_app_info">Info aplikasi</string>
+    <string name="guide_enable_not_now">Lain kali</string>
+    <string name="guide_service_description">Memungkinkan Tic, pemandu LibreWrist, menunjuk dan mengetuk langkah penyiapan LibreWrist di Setelan. Hanya bekerja selama langkah terpandu terbuka dan tidak membaca hal lain.</string>
+    <string name="guide_wake_description">Bangunkan Tic agar melanjutkan</string>
+</resources>

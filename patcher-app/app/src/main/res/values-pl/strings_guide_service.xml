@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_enable_title">Włączyć Tica, przewodnika?</string>
+    <string name="guide_enable_message">Aby prowadzić Cię po Ustawieniach, Tic potrzebuje usługi ułatwień dostępu LibreWrist. Patrzy tylko na ekrany Ustawień otwarte przez LibreWrist i nigdy sam nie dotyka niczego, co usuwa dane lub potwierdza zabezpieczenia.</string>
+    <string name="guide_enable_restricted">Jeśli przełącznik jest szary: otwórz Informacje o aplikacji, dotknij ⋮ i wybierz „Zezwól na ustawienia z ograniczonym dostępem”, a potem spróbuj ponownie.</string>
+    <string name="guide_enable_open">Włącz</string>
+    <string name="guide_enable_app_info">Informacje o aplikacji</string>
+    <string name="guide_enable_not_now">Nie teraz</string>
+    <string name="guide_service_description">Pozwala Ticowi, przewodnikowi LibreWrist, wskazywać i dotykać kroków konfiguracji LibreWrist w Ustawieniach. Działa tylko podczas kroku z przewodnikiem i nie odczytuje niczego innego.</string>
+    <string name="guide_wake_description">Obudź Tica, żeby kontynuował</string>
+</resources>

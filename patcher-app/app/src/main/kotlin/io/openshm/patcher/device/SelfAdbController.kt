@@ -41,17 +41,40 @@ object SelfAdbController {
     @Volatile
     private var codeSink: ((String) -> Unit)? = null
 
+    /**
+     * A code that arrived before the session was ready for it: the guide reads it from the pairing
+     * dialog the moment it opens, while the session still needs a moment to discover the pairing service.
+     */
+    @Volatile
+    private var pendingCode: String? = null
+
+    /** The session's latest state is [SelfAdbState.WaitingForCode]: a code goes straight in. */
+    @Volatile
+    private var waitingForCode = false
+
     /** Starts an attempt for [purpose]; false (nothing changes) when one is already under way. */
     fun begin(purpose: SelfAdbPurpose): Boolean {
         while (true) {
             val current = _state.value
             if (current.active) return false
-            if (_state.compareAndSet(current, SelfAdbSnapshot(purpose, SelfAdbPhase.Reconnecting))) return true
+            if (_state.compareAndSet(current, SelfAdbSnapshot(purpose, SelfAdbPhase.Reconnecting))) {
+                pendingCode = null
+                return true
+            }
         }
     }
 
     /** Follows the session. [SelfAdbState.Idle] (before start, after stop) is not progress and is ignored. */
     fun onSession(session: SelfAdbState) {
+        when (session) {
+            // Handed over once: a failed pairing waits for a new code, never the same one again.
+            is SelfAdbState.WaitingForCode -> pendingCode?.let { code ->
+                pendingCode = null
+                codeSink?.invoke(code)
+            }
+            else -> Unit
+        }
+        waitingForCode = session is SelfAdbState.WaitingForCode
         val phase = session.toPhase() ?: return
         _state.update { current ->
             if (!current.active) return@update current // stopped or failed already: late states do not revive it
@@ -77,11 +100,13 @@ object SelfAdbController {
     }
 
     fun fail(message: String?, needsNotifications: Boolean = false) {
+        pendingCode = null
         _state.update { SelfAdbSnapshot(it.purpose, SelfAdbPhase.Failed, error = message, needsNotifications = needsNotifications) }
     }
 
     /** The attempt is over (grants done, or the user cancelled): back to idle; the service stops. */
     fun finish() {
+        pendingCode = null
         _state.value = SelfAdbSnapshot()
     }
 
@@ -91,7 +116,7 @@ object SelfAdbController {
     }
 
     fun submitCode(code: String) {
-        codeSink?.invoke(code)
+        if (waitingForCode) codeSink?.invoke(code) else pendingCode = code
     }
 
     internal fun setCodeSink(sink: ((String) -> Unit)?) {

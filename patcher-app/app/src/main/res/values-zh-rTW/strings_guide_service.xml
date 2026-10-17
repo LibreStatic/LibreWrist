@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_enable_title">要開啟嚮導 Tic 嗎？</string>
+    <string name="guide_enable_message">為了在「設定」中為你帶路，Tic 需要 LibreWrist 的無障礙服務。它只查看 LibreWrist 開啟的設定畫面，絕不會自己輕觸任何會刪除資料或確認安全性的內容。</string>
+    <string name="guide_enable_restricted">如果開關是灰色的：開啟「應用程式資訊」，輕觸 ⋮ 並選擇「允許受限制的設定」，然後再試一次。</string>
+    <string name="guide_enable_open">開啟</string>
+    <string name="guide_enable_app_info">應用程式資訊</string>
+    <string name="guide_enable_not_now">以後再說</string>
+    <string name="guide_service_description">讓 LibreWrist 的嚮導 Tic 在「設定」中指出並輕觸 LibreWrist 的設定步驟。它只在有引導步驟開啟時運作，不讀取其他任何內容。</string>
+    <string name="guide_wake_description">喚醒 Tic 讓它繼續</string>
+</resources>

@@ -45,6 +45,14 @@ import io.openshm.patcher.device.LogLinkStatus
 @Composable
 fun WelcomeDriver() = PreviewHost(ColorMode.Fallback) { WelcomeSample() }
 
+/** A returning user: both side links (device logs, undo) under the switches, the tallest Welcome. */
+@Composable
+fun WelcomeReturningDriver() = PreviewHost(ColorMode.Fallback) { WelcomeSample(logsAvailable = true, canRevert = true) }
+
+/** The (?) of the interactive guide switch. */
+@Composable
+fun WelcomeGuideHelpDriver() = PreviewHost(ColorMode.Fallback) { WelcomeSample(help = AutomationHelp.Guide) }
+
 /** Welcome over the floating backdrop, as PatcherApp layers them (still, like every driver). */
 /** Unattended mode off: the two dependent switches are disabled and shown off. */
 @Composable

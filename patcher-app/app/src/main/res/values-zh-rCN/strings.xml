@@ -49,6 +49,8 @@
     <string name="welcome_promise_undo">所有更改都可以撤销，原始应用绝不会被卸载。</string>
     <string name="welcome_get_started">开始使用</string>
     <string name="welcome_what_changes">我的设备上会有什么变化？</string>
+    <string name="automation_guide_title">互动向导</string>
+    <string name="automation_guide_help">小手表 Tic 会出现在 LibreWrist 带你前往的 Android 设置页面上。它会告诉你该点哪里，并自己完成简单的点按；安全确认和任何会删除数据的操作都由你来完成。它需要无障碍服务，且只在这些页面上使用。</string>
     <string name="automation_unattended_title">无人值守模式</string>
     <string name="automation_unattended_help">在无人值守模式下，LibreWrist 会通过 ADB 在手机和手表上完成所有可以自动化的操作（安装、授予权限、开启选项），并且在没有与两者建立 ADB 连接时不会继续。步骤之间会等待几秒（默认 5 秒，可在设置中调整）：如果在按钮上的进度条填充期间触摸或滚动屏幕，就会暂停，由你手动继续；之后的步骤会再次自动前进。</string>
     <string name="settings_advance_wait">步骤之间的等待时间</string>
@@ -658,6 +660,7 @@
     <string name="device_logs_action_open">打开</string>
     <string name="device_logs_title">设备日志</string>
     <string name="device_logs_link">查看设备日志</string>
+    <string name="device_logs_link_short">设备日志</string>
     <string name="device_logs_status_streaming">已连接 · 正在接收</string>
     <string name="device_logs_status_disconnected">已断开 · 点按以连接</string>
     <string name="device_logs_status_connecting">正在连接…</string>
@@ -683,6 +686,7 @@
     <string name="device_logs_sheet_phone_untrusted">无线调试已开启，但此手机尚未信任补丁工具。点按“配对”，然后在出现的通知中输入配对码。</string>
     <string name="device_logs_sheet_phone_pair">配对此手机</string>
     <string name="revert_title">撤销所有更改</string>
+    <string name="revert_title_short">撤销更改</string>
     <string name="revert_intro">这会移除 LibreWrist 在你的手机和手表上安装的内容，并还原它所改动的设置。只会处理实际已安装的项目，系统应用绝不会被移除。</string>
     <string name="revert_probing">正在检查已安装的内容…</string>
     <string name="revert_action_remove">移除</string>

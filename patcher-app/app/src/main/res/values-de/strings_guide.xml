@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_build_number_hello">Hallo! Ich bin Tic. Deine Entwickleroptionen sind versteckt. Ich schalte sie frei, indem ich 7-mal auf %1$s tippe…</string>
+    <string name="guide_software_info">Dein Telefon versteckt die Build-Nummer unter %1$s. Ich öffne das…</string>
+    <string name="guide_pin">Android fragt nach deiner PIN. Das ist dein Teil: Ich sehe nicht, was du eingibst. Tippe danach auf Bestätigen.</string>
+    <string name="guide_unlocked_opening">Du bist jetzt Entwickler! Ich öffne die Entwickleroptionen…</string>
+    <string name="guide_tic_opens">Ich öffne %1$s…</string>
+    <string name="guide_tic_taps">Ich tippe auf %1$s…</string>
+    <string name="guide_devopts_on">Die Entwickleroptionen sind ausgeschaltet. Ich schalte %1$s ein…</string>
+    <string name="guide_wireless_tap">Hallo! Ich bin Tic. Die einfachen Tipper mache ich: Ich tippe auf %1$s…</string>
+    <string name="guide_wireless_switch">Ich schalte %1$s ein…</string>
+    <string name="guide_wireless_allow">Das ist dein Teil: Android fragt, ob du diesem WLAN vertraust. Wenn es dein Heimnetz ist, tippe auf %1$s.</string>
+    <string name="guide_pair_tap">Danke! Ab hier übernehme ich: Ich tippe auf %1$s…</string>
+    <string name="guide_code_searching">Ich suche den Kopplungscode…</string>
+    <string name="guide_code_found">Gefunden! Dein Code ist %1$s. Ich koppele…</string>
+    <string name="guide_code_entry">Ich kann den Code von hier aus nicht lesen. Gib ihn mir ein! Es sind die 6 Ziffern im Feld.</string>
+    <string name="guide_code_thanks">Danke! Ich koppele…</string>
+    <string name="guide_paired">Gekoppelt! Du musstest nichts eintippen.</string>
+    <string name="guide_perm_overlay">Damit die App ihre Hinweise anzeigen kann, schalte ich %1$s ein…</string>
+    <string name="guide_perm_unknown">Damit von dieser App aus installiert werden kann, schalte ich %1$s ein…</string>
+    <string name="guide_perm_battery">Damit die App im Hintergrund weiterläuft, wähle ich %1$s…</string>
+    <string name="guide_perm_app_details">Suche auf diesem Bildschirm nach %1$s und schalte es ein.</string>
+    <string name="guide_perm_listener">Ich schalte %1$s ein, damit die App Benachrichtigungen lesen kann…</string>
+    <string name="guide_perm_listener_confirm">Das ist dein Teil: Android bittet um Bestätigung. Tippe auf %1$s.</string>
+    <string name="guide_restricted_menu">Android sperrt diese Berechtigung, bis du sie erlaubst. Du bist dran: Tippe oben rechts auf das Menü ⋮ (%1$s).</string>
+    <string name="guide_restricted_allow">Du bist dran: Tippe auf %1$s und bestätige mit deiner PIN.</string>
+    <string name="guide_back_done">Fertig! Ich gehe mit Zurück weiter…</string>
+    <string name="guide_gms_clear">Das ist dein Teil. Dadurch werden die Daten der Google Play-Dienste gelöscht. Wenn du bereit bist, tippe auf %1$s.</string>
+    <string name="guide_gms_confirm">Bestätige mit %1$s. Das Tippen ist immer deins: Ich zeige nur darauf.</string>
+    <string name="guide_user_taps">Du bist dran: Tippe auf %1$s.</string>
+    <string name="guide_user_toggles">Du bist dran: Schalte %1$s ein.</string>
+    <string name="guide_searching">Ich suche %1$s…</string>
+    <string name="guide_not_found">Ich finde %1$s nicht. Kannst du danach suchen? Es sollte ungefähr so aussehen:</string>
+    <string name="guide_done">Alles erledigt! Kehre zu LibreWrist zurück, wenn du so weit bist.</string>
+    <string name="guide_enabled_hello">Fertig, du hast Tic eingeschaltet!</string>
+    <string name="guide_farewell_attended">Fertig! Jetzt bist du dran.</string>
+    <string name="guide_farewell_unattended">Fertig! LibreWrist macht ab hier allein weiter.</string>
+    <string name="guide_debugging_disallowed">Dieses Telefon erlaubt keine Debugging-Funktionen (ein Arbeitsprofil oder eine Einschränkung sperrt sie), daher kann ich nicht weitermachen.</string>
+</resources>

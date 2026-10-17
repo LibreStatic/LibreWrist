@@ -49,6 +49,8 @@
     <string name="welcome_promise_undo">يمكن التراجع عن كل تغيير، ولا تُزال التطبيقات الأصلية أبدًا.</string>
     <string name="welcome_get_started">ابدأ الآن</string>
     <string name="welcome_what_changes">ما الذي سيتغير على أجهزتي؟</string>
+    <string name="automation_guide_title">الدليل التفاعلي</string>
+    <string name="automation_guide_help">يظهر Tic، وهو ساعة صغيرة، في شاشات إعدادات Android التي يرسلك إليها LibreWrist. يخبرك بما يجب أن تلمسه ويقوم باللمسات البسيطة بنفسه؛ أما تأكيدات الأمان وكل ما يحذف البيانات فتبقى لك. يحتاج إلى خدمة تسهيل الاستخدام، ولا يستخدمها إلا في تلك الشاشات.</string>
     <string name="automation_unattended_title">الوضع التلقائي</string>
     <string name="automation_unattended_help">في الوضع التلقائي ينفّذ LibreWrist عبر ADB كل ما يمكن أتمتته (التثبيت ومنح الأذونات وتفعيل الخيارات) على الهاتف وعلى الساعة، ولا يتابع من دون اتصال ADB بكليهما. ينتظر بضع ثوانٍ بين الخطوات (5 افتراضيًا، ويمكن تعديلها من الإعدادات): إذا لمست الشاشة أو مررتها بينما يمتلئ الشريط على الزر، يتوقف مؤقتًا وتتابع أنت يدويًا؛ وتعود الخطوات التالية إلى التقدم تلقائيًا.</string>
     <string name="settings_advance_wait">الانتظار بين الخطوات</string>
@@ -703,6 +705,7 @@
     <string name="device_logs_action_open">فتح</string>
     <string name="device_logs_title">سجلات الأجهزة</string>
     <string name="device_logs_link">عرض سجلات الأجهزة</string>
+    <string name="device_logs_link_short">السجلات</string>
     <string name="device_logs_status_streaming">متصل · البث جارٍ</string>
     <string name="device_logs_status_disconnected">غير متصل · اضغط للاتصال</string>
     <string name="device_logs_status_connecting">جارٍ الاتصال…</string>
@@ -728,6 +731,7 @@
     <string name="device_logs_sheet_phone_untrusted">تصحيح الأخطاء اللاسلكي مفعّل لكن هذا الهاتف لا يثق بالمُصحِّح بعد. اضغط على إقران ثم اكتب رمز الإقران في الإشعار الذي يظهر.</string>
     <string name="device_logs_sheet_phone_pair">إقران هذا الهاتف</string>
     <string name="revert_title">التراجع عن كل التغييرات</string>
+    <string name="revert_title_short">التراجع عن التغييرات</string>
     <string name="revert_intro">يزيل هذا ما ثبّته LibreWrist على هاتفك وساعتك ويعيد ما غيّره. لا يُمَسّ إلا ما هو مثبّت فعلًا، ولا تُزال تطبيقات النظام أبدًا.</string>
     <string name="revert_probing">جارٍ التحقق مما هو مثبّت…</string>
     <string name="revert_action_remove">إزالة</string>

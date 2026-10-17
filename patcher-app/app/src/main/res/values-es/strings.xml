@@ -49,6 +49,8 @@
     <string name="welcome_promise_undo">Todos los cambios se pueden deshacer, y las apps originales nunca se desinstalan.</string>
     <string name="welcome_get_started">Comenzar</string>
     <string name="welcome_what_changes">¿Qué cambiará en mis dispositivos?</string>
+    <string name="automation_guide_title">Guía interactiva</string>
+    <string name="automation_guide_help">Tic, un relojito, aparece en las pantallas de Ajustes de Android a las que te manda LibreWrist. Te dice qué tocar y hace él mismo los toques sencillos; las confirmaciones de seguridad y lo que borra datos quedan en tus manos. Necesita el servicio de accesibilidad, que solo usa en esas pantallas.</string>
     <string name="automation_unattended_title">Modo desatendido</string>
     <string name="automation_unattended_help">En modo desatendido LibreWrist hace por ADB todo lo que se puede automatizar (instalar, dar permisos, activar opciones) en el teléfono y en el reloj, y no avanza sin conexión ADB con ambos. Entre paso y paso espera unos segundos (5 por defecto, ajustable en Ajustes): si tocas o desplazas la pantalla mientras se llena la barra del botón, se pausa y continúas tú; los pasos siguientes vuelven a avanzar solos.</string>
     <string name="settings_advance_wait">Espera entre pasos</string>
@@ -667,6 +669,7 @@
     <string name="device_logs_action_open">Abrir</string>
     <string name="device_logs_title">Registros de dispositivos</string>
     <string name="device_logs_link">Ver registros del dispositivo</string>
+    <string name="device_logs_link_short">Registros</string>
     <string name="device_logs_status_streaming">Conectado · transmitiendo</string>
     <string name="device_logs_status_disconnected">Desconectado · toca para conectar</string>
     <string name="device_logs_status_connecting">Conectando…</string>
@@ -692,6 +695,7 @@
     <string name="device_logs_sheet_phone_untrusted">Depuración inalámbrica está activada, pero este teléfono aún no confía en el parcheador. Toca Vincular y escribe el código de vinculación en la notificación que aparezca.</string>
     <string name="device_logs_sheet_phone_pair">Vincular este teléfono</string>
     <string name="revert_title">Deshacer todos los cambios</string>
+    <string name="revert_title_short">Deshacer cambios</string>
     <string name="revert_intro">Esto quita lo que LibreWrist instaló en tu teléfono y en tu reloj y devuelve lo que cambió. Solo se toca lo que realmente está instalado y nunca se quitan las apps del sistema.</string>
     <string name="revert_probing">Comprobando qué está instalado…</string>
     <string name="revert_action_remove">Quitar</string>

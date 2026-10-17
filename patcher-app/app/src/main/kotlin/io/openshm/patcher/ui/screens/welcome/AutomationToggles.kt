@@ -39,14 +39,15 @@ import io.openshm.patcher.data.AutomationState
 
 /** The explanation dialogs behind the (?) of each automation switch. */
 enum class AutomationHelp(@StringRes val title: Int, @StringRes val body: Int) {
+    Guide(R.string.automation_guide_title, R.string.automation_guide_help),
     Unattended(R.string.automation_unattended_title, R.string.automation_unattended_help),
     FreeRun(R.string.automation_free_run_title, R.string.automation_free_run_help),
     Uninstall(R.string.automation_uninstall_title, R.string.automation_uninstall_help),
 }
 
 /**
- * The three automation switches under "Get started". The two dependent ones are shown off and
- * disabled while unattended mode is off.
+ * The automation switches under "Get started": the guide pet first, then unattended mode and its two
+ * dependent switches, which are shown off and disabled while unattended mode is off.
  */
 @Composable
 internal fun AutomationToggles(
@@ -56,6 +57,13 @@ internal fun AutomationToggles(
 ) {
     val dependent = automation.unattended
     Column(modifier.fillMaxWidth()) {
+        AutomationRow(
+            label = R.string.automation_guide_title,
+            checked = automation.guidePet,
+            enabled = true,
+            onChange = { onEvent(WelcomeEvent.SetGuidePet(it)) },
+            onHelp = { onEvent(WelcomeEvent.ShowHelp(AutomationHelp.Guide)) },
+        )
         AutomationRow(
             label = R.string.automation_unattended_title,
             checked = automation.unattended,
