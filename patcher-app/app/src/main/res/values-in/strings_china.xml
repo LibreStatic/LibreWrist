@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="automation_china_title">Mode China</string>
+    <string name="automation_china_help">Aktif dengan sendirinya saat ponsel ini tampaknya berada di Tiongkok daratan (SIM, jaringan, atau pengaturan wilayah). Patcher lalu membuka 应用宝 lebih dulu untuk mengunduh aplikasi resmi yang didukung di sana, dan memakai Samsung Health versi Tiongkok daratan bila tersedia, yang berfungsi dengan akun Samsung yang terdaftar di Tiongkok. Matikan untuk memakai APKMirror dan versi internasional.</string>
+</resources>

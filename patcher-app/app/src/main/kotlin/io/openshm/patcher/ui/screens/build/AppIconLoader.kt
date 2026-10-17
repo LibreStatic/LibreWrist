@@ -7,6 +7,8 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.graphics.drawable.toBitmap
 import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.InputStore
+import io.openshm.patcher.data.effectiveChinaMode
+import io.openshm.patcher.data.sourceInputId
 import java.util.concurrent.ConcurrentHashMap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -29,15 +31,17 @@ class ApkIconLoader(private val context: Context) : AppIconLoader {
     private val missing = ConcurrentHashMap.newKeySet<String>()
 
     override suspend fun load(outputId: String): ImageBitmap? {
-        cache[outputId]?.let { return it }
-        if (outputId in missing) return null
-        val icon = withContext(Dispatchers.IO) { read(outputId) }
-        if (icon != null) cache[outputId] = icon else missing += outputId
+        // keyed by the input too: China mode changes which official APK the icon is read from
+        val inputId = AppCatalogue.current.output(outputId).sourceInputId(effectiveChinaMode()) ?: return null
+        val key = "$outputId|$inputId"
+        cache[key]?.let { return it }
+        if (key in missing) return null
+        val icon = withContext(Dispatchers.IO) { read(inputId) }
+        if (icon != null) cache[key] = icon else missing += key
         return icon
     }
 
-    private fun read(outputId: String): ImageBitmap? = try {
-        val inputId = AppCatalogue.current.output(outputId).inputId ?: return null
+    private fun read(inputId: String): ImageBitmap? = try {
         val file = InputStore(context).file(inputId)
         if (!file.isFile) return null
         val path = file.path

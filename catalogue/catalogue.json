@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "serial": 51,
-  "minAppVersion": 29,
+  "serial": 55,
+  "minAppVersion": 45,
   "inputs": [
     {
       "id": "shm-phone",
@@ -90,6 +90,30 @@
         "note": "APKMirror release (same zip entries as the Galaxy Store install; only the signing block differs)",
         "apkmirror": "samsung-electronics-co-ltd/s-health",
         "apkmirrorRelease": "samsung-health-7-00-6-011-release"
+      }
+    },
+    {
+      "id": "shealth-phone-cn",
+      "file": "shealth-7.00.6.012-cn.apk",
+      "sha256": "b40e9bc5e927db43dadbe5d5c41d2c99d7f7787c44c6d5bb664bceb5686e77ca",
+      "label": "Samsung Health (China)",
+      "package": "com.sec.android.app.shealth",
+      "versionName": "7.00.6.012",
+      "versionCode": 7006012,
+      "minSdk": 29,
+      "targetSdk": 36,
+      "abis": [
+        "arm64-v8a",
+        "armeabi-v7a"
+      ],
+      "dpi": "nodpi",
+      "format": "apk",
+      "target": "phone",
+      "role": "patched",
+      "obtain": {
+        "note": "China build (flavor chinaFinalRelease), not on APKMirror: 应用宝 (YingYongBao) mobile page a.app.qq.com/o/simple.jsp?pkgname=com.sec.android.app.shealth, single APK from the imtt*.dd.qq.com CDN",
+        "onApkMirror": false,
+        "yyb": true
       }
     }
   ],
@@ -197,7 +221,7 @@
       }
     },
     "shealth": {
-      "description": "Samsung Health+, a renamed copy of Samsung Health (${PKG_PREFIX}.shealth) that installs next to the stock app from Play, which stays connected to the watch. It reads the same data from the Samsung cloud and unlocks the local feature-flag UI, the Energy Score tile, Vitals, Training load and the fitness index. The optional Local-only pattern (off by default) removes the mandatory Samsung Account sign-in; enable it if sign-in does not work on this device.",
+      "description": "Samsung Health+, a renamed copy of Samsung Health (${PKG_PREFIX}.shealth) that installs next to the stock app from Play, which stays connected to the watch. It reads the same data from the Samsung cloud and unlocks the local feature-flag UI, the Energy Score tile, Vitals, Training load and the fitness index. The optional Local-only pattern (off by default) removes the mandatory Samsung Account sign-in; enable it if sign-in does not work on this device. The optional China account pattern (experimental, off by default) lets this international build open with a Samsung Account registered in mainland China.",
       "families": {
         "shealth-phone": [
           "shealth-res-webp",
@@ -210,7 +234,26 @@
           "shealth-capability-gates",
           "shealth-shm-providers",
           "shealth-launcher-badge",
-          "shealth-oobe-local"
+          "shealth-oobe-local",
+          "shealth-china-account-gate"
+        ]
+      },
+      "inject": {}
+    },
+    "shealth-cn": {
+      "description": "Samsung Health+ built from the Samsung Health build for mainland China (7.00.6.012 from 应用宝), for Samsung accounts registered in China: same package and patches as the international build, but it talks to Samsung's China servers. The account sign-in is already optional on this build, so the Local-only and China account patterns are not part of it.",
+      "families": {
+        "shealth-phone": [
+          "shealth-res-webp",
+          "shealth-ai-provider-start",
+          "shealth-feature-dev-ui",
+          "shealth-vitality-tile",
+          "shealth-rename-manifest",
+          "shealth-rename-code",
+          "shealth-rename-account-xml",
+          "shealth-capability-gates",
+          "shealth-shm-providers",
+          "shealth-launcher-badge"
         ]
       },
       "inject": {}
@@ -2212,25 +2255,19 @@
       "optional": false,
       "ops": [
         {
-          "op": "replaceInClass",
-          "old": [
-            "    const-string v4, \"vitality_show_tile_without_capabilities\"",
-            "",
-            "    const-string v6, \"Show Vitality tile without capabilities\"",
-            "",
-            "    invoke-static {v4, v6, v2, v5, v5}, Lgz6;->g(Ljava/lang/String;Ljava/lang/String;Lcom/samsung/android/app/shealth/config/Feature$Type;ZZ)Lcom/samsung/android/app/shealth/config/Feature;"
+          "op": "insertInMethodAtMatch",
+          "fileRegex": "/com/samsung/android/app/shealth/config/FeatureGroup\\.smali$",
+          "sigRegex": "private static final getGroupVitality\\(\\)Lcom/samsung/android/app/shealth/config/Feature\\$Group;",
+          "bodyAll": [
+            "\"vitality_show_tile_without_capabilities\"",
+            "\"Show Vitality tile without capabilities\""
           ],
-          "new": [
-            "    const-string v4, \"vitality_show_tile_without_capabilities\"",
-            "",
-            "    const-string v6, \"Show Vitality tile without capabilities\"",
-            "",
-            "    const/4 v5, 0x1",
-            "",
-            "    invoke-static {v4, v6, v2, v5, v5}, Lgz6;->g(Ljava/lang/String;Ljava/lang/String;Lcom/samsung/android/app/shealth/config/Feature$Type;ZZ)Lcom/samsung/android/app/shealth/config/Feature;"
+          "pattern": "const-string v\\d+, \"Show Vitality tile without capabilities\"\\n\\n(?:    const/4 v\\d+, 0x1\\n\\n)?(?P<at>)    invoke-static \\{v\\d+, v\\d+, v\\d+, (?P<r>v\\d+), (?P=r)\\}, L\\w+;->\\w+\\(Ljava/lang/String;Ljava/lang/String;Lcom/samsung/android/app/shealth/config/Feature\\$Type;ZZ\\)",
+          "insert": [
+            "    const/4 {{r}}, 0x1",
+            ""
           ],
-          "count": 1,
-          "className": "com/samsung/android/app/shealth/config/FeatureGroup"
+          "expect": 1
         }
       ]
     },
@@ -2239,14 +2276,13 @@
         "shealth-phone"
       ],
       "title": "Local-only mode (no Samsung Account)",
-      "description": "SamsungAccountManager.s0 reports LOG_IN, so the mandatory sign-in stop state right after OOBE never fires; the app runs account-less with no cloud sync",
+      "description": "The SamsungAccountManager state getter (j9v.s0 in 7.00.6.011) reports LOG_IN, so the mandatory sign-in stop state right after OOBE never fires; the app runs account-less with no cloud sync",
       "optional": true,
       "offByDefault": true,
       "ops": [
         {
           "op": "setMethodBody",
-          "fileRegex": "/j9v\\.smali$",
-          "sigRegex": "public final s0\\(\\)La11;",
+          "sigRegex": "public final \\w+\\(\\)L\\w+;",
           "body": [
             "    .locals 1",
             "",
@@ -2254,6 +2290,29 @@
             "",
             "    return-object v0"
           ],
+          "expect": 1,
+          "bodyAll": [
+            "SamsungAccountManager$State;->LOG_IN:",
+            "SamsungAccountManager$State;->LOG_OUT:",
+            "\"getContext(...)\""
+          ]
+        }
+      ]
+    },
+    "shealth-china-account-gate": {
+      "families": [
+        "shealth-phone"
+      ],
+      "title": "China Samsung account (experimental)",
+      "description": "Regional check disabled: the post-sign-in OOBE coroutine (log \"Global APK, China SACC, NO Smart Switch\") sees the account-country check (ozn.Y) as false, so the international build no longer closes itself with HomeAppCloseActivity for a Samsung Account registered in CN. The build still uses the international servers, so cloud sync for a CN account may not work",
+      "optional": true,
+      "offByDefault": true,
+      "ops": [
+        {
+          "op": "forceInvokeResult",
+          "fileAnchor": "Global APK, China SACC, NO Smart Switch",
+          "invokeRegex": "Lozn;->Y\\(Landroid/content/Context;\\)Z",
+          "value": "0x0",
           "expect": 1
         }
       ]
@@ -2301,7 +2360,7 @@
           "fileRegex": "/home/settings/advanced/generativeinsight/GenerativeAiProvider\\.smali$",
           "sigRegex": "public final a\\(\\)V",
           "bodyAll": [
-            "Lup1;-><init>(Ljava/lang/Object;Lkotlin/coroutines/Continuation;I)V"
+            "-><init>(Ljava/lang/Object;Lkotlin/coroutines/Continuation;I)V"
           ],
           "needRegs": 1,
           "insert": [
@@ -2868,7 +2927,7 @@
         "shealth-phone"
       ],
       "title": "Watch capability gates",
-      "description": "Every inlined check of the watch-advertised service list (service_capability_list contains tracker.vitals / tracker.training_load / program.fitness_index) -> true, and the per-sleep Vitals device check (xvx.K0) -> true: Vitals, Training load and the fitness index compute on the phone from the synced history without a Galaxy Watch8/Ultra model whitelist",
+      "description": "Every inlined check of the watch-advertised service list (service_capability_list contains tracker.vitals / tracker.training_load / program.fitness_index) -> true, and the per-sleep Vitals device check (the Vitals availability helper, SHEALTH#Vitals#AvailabilityHelper) -> true: Vitals, Training load and the fitness index compute on the phone from the synced history without a Galaxy Watch8/Ultra model whitelist",
       "optional": true,
       "ops": [
         {
@@ -2890,11 +2949,11 @@
         },
         {
           "op": "setMethodBody",
-          "fileRegex": "/xvx\\.smali$",
-          "sigRegex": "public K0\\(Lcom/samsung/android/app/shealth/sleep/data/SleepItem;Lgc5;\\)Ljava/lang/Object;",
+          "sigRegex": "public \\w+\\(Lcom/samsung/android/app/shealth/sleep/data/SleepItem;L\\w+;\\)Ljava/lang/Object;",
           "bodyAll": [
             "\"SHEALTH#Vitals#AvailabilityHelper\"",
-            "\"tracker.vitals\""
+            "\"tracker.vitals\"",
+            "getSleepTrackDeviceList("
           ],
           "body": [
             "    .locals 0",
@@ -3040,7 +3099,7 @@
               }
             ]
           },
-          "expect": 9
+          "expect": "atLeastOne"
         }
       ]
     },
@@ -3441,7 +3500,11 @@
         "input": "shealth-phone",
         "profile": "shealth"
       },
-      "singleCopy": true
+      "singleCopy": true,
+      "chinaFrom": {
+        "input": "shealth-phone-cn",
+        "profile": "shealth-cn"
+      }
     }
   ],
   "installOrder": [
@@ -3847,6 +3910,7 @@
       "pattern.shealth-feature-dev-ui.description": "Shows the feature list in Settings > About without Samsung developer mode.",
       "pattern.shealth-vitality-tile.description": "Shows the Energy Score tile without waiting for the watch to advertise the capability.",
       "pattern.shealth-oobe-local.description": "Off by default. Skips the Samsung Account sign-in requirement and runs the app locally without cloud sync, so it does not get the data that the Samsung Health app from Google Play uploads. Only turn it on if sign-in does not work.",
+      "pattern.shealth-china-account-gate.description": "Experimental. Lets this international build open with a Samsung account from mainland China instead of closing at sign-in. It still talks to Samsung's international servers, so cloud sync for a China account may not work.",
       "pattern.shealth-res-webp.description": "Fixes four images stored with the wrong file extension so the app can be rebuilt (no visible change).",
       "pattern.shealth-ai-provider-start.description": "Fixes a crash of Samsung Health+ when it starts (no visible change).",
       "pattern.shealth-rename-manifest.description": "Gives the app its own package name and label (Samsung Health+) so it installs next to the original.",
@@ -3963,6 +4027,7 @@
       "pattern.shealth-feature-dev-ui.description": "يعرض قائمة الميزات في الإعدادات > حول دون وضع المطوّر من Samsung.",
       "pattern.shealth-vitality-tile.description": "يعرض بطاقة درجة الطاقة دون انتظار أن تعلن الساعة عن القدرة.",
       "pattern.shealth-oobe-local.description": "معطّل افتراضيًا. يتخطى شرط تسجيل الدخول إلى Samsung Account ويشغّل التطبيق محليًا دون مزامنة سحابية، لذا لا يحصل على البيانات التي يرفعها تطبيق Samsung Health من Google Play. فعّله فقط إذا لم يعمل تسجيل الدخول.",
+      "pattern.shealth-china-account-gate.description": "تجريبي. يتيح لهذا الإصدار الدولي أن يفتح بحساب Samsung من البر الرئيسي للصين بدل أن يُغلق عند تسجيل الدخول. لكنه يظل يتصل بخوادم Samsung الدولية، لذا قد لا تعمل المزامنة السحابية لحساب صيني.",
       "pattern.shealth-res-webp.description": "يصلح أربع صور محفوظة بامتداد ملف خاطئ حتى يمكن إعادة بناء التطبيق (بلا تغيير مرئي).",
       "pattern.shealth-ai-provider-start.description": "يصلح تعطّل Samsung Health+ عند بدء تشغيله (بلا تغيير مرئي).",
       "pattern.shealth-rename-manifest.description": "يمنح التطبيق اسم حزمة وتسمية خاصين به (Samsung Health+) ليُثبَّت بجوار الأصلي.",
@@ -4079,6 +4144,7 @@
       "pattern.shealth-feature-dev-ui.description": "Zeigt die Funktionsliste unter Einstellungen > Info ohne den Samsung-Entwicklermodus.",
       "pattern.shealth-vitality-tile.description": "Zeigt die Kachel „Energiewert“, ohne darauf zu warten, dass die Uhr die Funktion meldet.",
       "pattern.shealth-oobe-local.description": "Standardmäßig aus. Überspringt die Pflicht zur Anmeldung mit dem Samsung-Konto und führt die App lokal ohne Cloud-Synchronisierung aus, daher erhält sie nicht die Daten, die die Samsung-Health-App aus Google Play hochlädt. Schalte das nur ein, wenn die Anmeldung nicht funktioniert.",
+      "pattern.shealth-china-account-gate.description": "Experimentell. Lässt diese internationale Version mit einem Samsung-Konto aus Festlandchina starten, statt sich bei der Anmeldung zu schließen. Sie verbindet sich weiterhin mit Samsungs internationalen Servern, daher funktioniert die Cloud-Synchronisierung für ein chinesisches Konto eventuell nicht.",
       "pattern.shealth-res-webp.description": "Korrigiert vier Bilder mit falscher Dateiendung, damit die App neu gebaut werden kann (keine sichtbare Änderung).",
       "pattern.shealth-ai-provider-start.description": "Behebt einen Absturz von Samsung Health+ beim Start (keine sichtbare Änderung).",
       "pattern.shealth-rename-manifest.description": "Gibt der App einen eigenen Paketnamen und eine eigene Bezeichnung (Samsung Health+), damit sie neben dem Original installiert wird.",
@@ -4195,6 +4261,7 @@
       "pattern.shealth-feature-dev-ui.description": "Muestra la lista de funciones en Ajustes > Acerca de sin el modo de desarrollador de Samsung.",
       "pattern.shealth-vitality-tile.description": "Muestra el mosaico de Puntuación de energía sin esperar a que el reloj anuncie la capacidad.",
       "pattern.shealth-oobe-local.description": "Desactivado de forma predeterminada. Omite el requisito de iniciar sesión con la cuenta Samsung y ejecuta la app de forma local sin sincronización con la nube, así que no recibe los datos que sube la app Samsung Health de Google Play. Actívalo solo si el inicio de sesión no funciona.",
+      "pattern.shealth-china-account-gate.description": "Experimental. Permite que esta versión internacional se abra con una cuenta Samsung de China continental en lugar de cerrarse al iniciar sesión. Sigue usando los servidores internacionales de Samsung, así que la sincronización en la nube de una cuenta china puede no funcionar.",
       "pattern.shealth-res-webp.description": "Corrige cuatro imágenes guardadas con la extensión equivocada para poder reconstruir la app (sin cambios visibles).",
       "pattern.shealth-ai-provider-start.description": "Corrige un cierre inesperado de Samsung Health+ al iniciarse (sin cambios visibles).",
       "pattern.shealth-rename-manifest.description": "Le da a la app su propio nombre de paquete y etiqueta (Samsung Health+) para que se instale junto a la original.",
@@ -4311,6 +4378,7 @@
       "pattern.shealth-feature-dev-ui.description": "Affiche la liste des fonctions dans Paramètres > À propos sans le mode développeur Samsung.",
       "pattern.shealth-vitality-tile.description": "Affiche la tuile Score d'énergie sans attendre que la montre annonce la capacité.",
       "pattern.shealth-oobe-local.description": "Désactivé par défaut. Ignore l'obligation de se connecter avec le compte Samsung et exécute l'app en local, sans synchronisation cloud : elle ne reçoit donc pas les données envoyées par l'app Samsung Health de Google Play. À n'activer que si la connexion ne fonctionne pas.",
+      "pattern.shealth-china-account-gate.description": "Expérimental. Permet à cette version internationale de s'ouvrir avec un compte Samsung de Chine continentale au lieu de se fermer à la connexion. Elle utilise toujours les serveurs internationaux de Samsung : la synchronisation cloud d'un compte chinois peut donc ne pas fonctionner.",
       "pattern.shealth-res-webp.description": "Corrige quatre images enregistrées avec la mauvaise extension pour pouvoir reconstruire l'app (aucun changement visible).",
       "pattern.shealth-ai-provider-start.description": "Corrige un plantage de Samsung Health+ au démarrage (aucun changement visible).",
       "pattern.shealth-rename-manifest.description": "Donne à l'app son propre nom de paquet et son propre libellé (Samsung Health+) pour qu'elle s'installe à côté de l'original.",
@@ -4427,6 +4495,7 @@
       "pattern.shealth-feature-dev-ui.description": "Samsung डेवलपर मोड के बिना सेटिंग > के बारे में में सुविधाओं की सूची दिखाता है।",
       "pattern.shealth-vitality-tile.description": "घड़ी के क्षमता बताने का इंतज़ार किए बिना एनर्जी स्कोर टाइल दिखाता है।",
       "pattern.shealth-oobe-local.description": "डिफ़ॉल्ट रूप से बंद। Samsung Account से साइन इन की ज़रूरत छोड़ देता है और ऐप को क्लाउड सिंक के बिना लोकल रूप से चलाता है, इसलिए उसे वह डेटा नहीं मिलता जो Google Play वाला Samsung Health ऐप अपलोड करता है। इसे तभी चालू करें जब साइन इन काम न करे।",
+      "pattern.shealth-china-account-gate.description": "प्रायोगिक। इस अंतरराष्ट्रीय बिल्ड को मुख्यभूमि चीन के Samsung खाते के साथ साइन इन पर बंद होने के बजाय खुलने देता है। यह फिर भी Samsung के अंतरराष्ट्रीय सर्वर से जुड़ता है, इसलिए चीनी खाते का क्लाउड सिंक शायद काम न करे।",
       "pattern.shealth-res-webp.description": "गलत फ़ाइल एक्सटेंशन वाली चार इमेज ठीक करता है ताकि ऐप दोबारा बनाया जा सके (कोई दिखने वाला बदलाव नहीं)।",
       "pattern.shealth-ai-provider-start.description": "शुरू होते समय Samsung Health+ के क्रैश होने की समस्या ठीक करता है (कोई दिखने वाला बदलाव नहीं)।",
       "pattern.shealth-rename-manifest.description": "ऐप को अपना पैकेज नाम और लेबल (Samsung Health+) देता है ताकि वह मूल ऐप के बगल में इंस्टॉल हो सके।",
@@ -4543,6 +4612,7 @@
       "pattern.shealth-feature-dev-ui.description": "Menampilkan daftar fitur di Pengaturan > Tentang tanpa mode pengembang Samsung.",
       "pattern.shealth-vitality-tile.description": "Menampilkan kartu Skor Energi tanpa menunggu jam mengumumkan kemampuannya.",
       "pattern.shealth-oobe-local.description": "Nonaktif secara default. Melewati keharusan login dengan akun Samsung dan menjalankan aplikasi secara lokal tanpa sinkronisasi cloud, jadi aplikasi ini tidak mendapatkan data yang diunggah aplikasi Samsung Health dari Google Play. Aktifkan hanya jika login tidak berhasil.",
+      "pattern.shealth-china-account-gate.description": "Eksperimental. Membuat build internasional ini bisa dibuka dengan akun Samsung dari Tiongkok daratan, bukan tertutup saat login. Build ini tetap memakai server internasional Samsung, jadi sinkronisasi cloud untuk akun Tiongkok mungkin tidak berfungsi.",
       "pattern.shealth-res-webp.description": "Memperbaiki empat gambar yang tersimpan dengan ekstensi file yang salah agar aplikasi dapat dibangun ulang (tidak ada perubahan yang terlihat).",
       "pattern.shealth-ai-provider-start.description": "Memperbaiki Samsung Health+ yang mogok saat dimulai (tidak ada perubahan yang terlihat).",
       "pattern.shealth-rename-manifest.description": "Memberi aplikasi nama paket dan label sendiri (Samsung Health+) agar terpasang berdampingan dengan aslinya.",
@@ -4659,6 +4729,7 @@
       "pattern.shealth-feature-dev-ui.description": "Mostra l'elenco delle funzioni in Impostazioni > Info senza la modalità sviluppatore Samsung.",
       "pattern.shealth-vitality-tile.description": "Mostra il riquadro Punteggio energia senza aspettare che l'orologio annunci la funzione.",
       "pattern.shealth-oobe-local.description": "Disattivato per impostazione predefinita. Salta l'obbligo di accedere con l'account Samsung ed esegue l'app in locale senza sincronizzazione cloud, quindi non riceve i dati che carica l'app Samsung Health di Google Play. Attivalo solo se l'accesso non funziona.",
+      "pattern.shealth-china-account-gate.description": "Sperimentale. Consente a questa versione internazionale di aprirsi con un account Samsung della Cina continentale invece di chiudersi all'accesso. Continua a usare i server internazionali di Samsung, quindi la sincronizzazione cloud di un account cinese potrebbe non funzionare.",
       "pattern.shealth-res-webp.description": "Corregge quattro immagini salvate con l'estensione sbagliata per poter ricostruire l'app (nessuna modifica visibile).",
       "pattern.shealth-ai-provider-start.description": "Corregge un arresto anomalo di Samsung Health+ all'avvio (nessuna modifica visibile).",
       "pattern.shealth-rename-manifest.description": "Dà all'app un proprio nome di pacchetto e un'etichetta (Samsung Health+) per installarla accanto all'originale.",
@@ -4775,6 +4846,7 @@
       "pattern.shealth-feature-dev-ui.description": "Samsung の開発者モードなしで、設定 > 概要に機能一覧を表示します。",
       "pattern.shealth-vitality-tile.description": "ウォッチが機能を通知するのを待たずに、エネルギースコアのタイルを表示します。",
       "pattern.shealth-oobe-local.description": "初期設定ではオフ。Samsung アカウントでのサインイン要件を省略し、クラウド同期なしでアプリをローカルで実行します。そのため、Google Play の Samsung Health アプリがアップロードしたデータは取得されません。サインインできない場合のみオンにしてください。",
+      "pattern.shealth-china-account-gate.description": "試験的な機能。中国本土の Samsung アカウントでも、この国際版がサインイン時に終了せず起動できるようにします。接続先は引き続き Samsung の国際サーバーのため、中国アカウントのクラウド同期は動作しない可能性があります。",
       "pattern.shealth-res-webp.description": "誤ったファイル拡張子で保存されている4つの画像を修正し、アプリを再ビルドできるようにします（見た目の変化はありません）。",
       "pattern.shealth-ai-provider-start.description": "Samsung Health+ が起動時にクラッシュする問題を修正します（見た目の変化はありません）。",
       "pattern.shealth-rename-manifest.description": "アプリに独自のパッケージ名とラベル（Samsung Health+）を与え、元のアプリの隣にインストールできるようにします。",
@@ -4891,6 +4963,7 @@
       "pattern.shealth-feature-dev-ui.description": "삼성 개발자 모드 없이 설정 > 정보에 기능 목록을 표시합니다.",
       "pattern.shealth-vitality-tile.description": "워치가 기능을 알릴 때까지 기다리지 않고 에너지 점수 타일을 표시합니다.",
       "pattern.shealth-oobe-local.description": "기본값은 꺼짐입니다. 삼성 계정 로그인 요구를 건너뛰고 클라우드 동기화 없이 앱을 로컬로 실행하므로, Google Play에서 받은 Samsung Health 앱이 업로드하는 데이터를 받지 못합니다. 로그인이 되지 않을 때만 켜세요.",
+      "pattern.shealth-china-account-gate.description": "실험적 기능입니다. 중국 본토 삼성 계정으로도 이 글로벌 버전이 로그인 시 종료되지 않고 열리게 합니다. 여전히 삼성 글로벌 서버에 연결되므로 중국 계정의 클라우드 동기화는 작동하지 않을 수 있습니다.",
       "pattern.shealth-res-webp.description": "잘못된 파일 확장자로 저장된 이미지 4개를 고쳐 앱을 다시 빌드할 수 있게 합니다(눈에 보이는 변화 없음).",
       "pattern.shealth-ai-provider-start.description": "Samsung Health+가 시작할 때 비정상 종료되는 문제를 고칩니다(눈에 보이는 변화 없음).",
       "pattern.shealth-rename-manifest.description": "앱에 고유한 패키지 이름과 레이블(Samsung Health+)을 부여하여 원본 옆에 설치되도록 합니다.",
@@ -5007,6 +5080,7 @@
       "pattern.shealth-feature-dev-ui.description": "Toont de functielijst in Instellingen > Over zonder de Samsung-ontwikkelaarsmodus.",
       "pattern.shealth-vitality-tile.description": "Toont de tegel Energiescore zonder te wachten tot het horloge de mogelijkheid meldt.",
       "pattern.shealth-oobe-local.description": "Standaard uit. Slaat de verplichting over om in te loggen met het Samsung-account en draait de app lokaal zonder cloudsynchronisatie, dus hij krijgt de gegevens niet die de Samsung Health-app uit Google Play uploadt. Zet dit alleen aan als inloggen niet werkt.",
+      "pattern.shealth-china-account-gate.description": "Experimenteel. Laat deze internationale versie openen met een Samsung-account uit het Chinese vasteland in plaats van te sluiten bij het inloggen. Hij praat nog steeds met de internationale servers van Samsung, dus cloudsynchronisatie voor een Chinees account werkt mogelijk niet.",
       "pattern.shealth-res-webp.description": "Herstelt vier afbeeldingen met de verkeerde bestandsextensie zodat de app opnieuw kan worden gebouwd (geen zichtbare wijziging).",
       "pattern.shealth-ai-provider-start.description": "Verhelpt een crash van Samsung Health+ bij het opstarten (geen zichtbare wijziging).",
       "pattern.shealth-rename-manifest.description": "Geeft de app een eigen pakketnaam en label (Samsung Health+) zodat ze naast het origineel wordt geïnstalleerd.",
@@ -5123,6 +5197,7 @@
       "pattern.shealth-feature-dev-ui.description": "Pokazuje listę funkcji w Ustawieniach > Informacje bez trybu programisty Samsung.",
       "pattern.shealth-vitality-tile.description": "Pokazuje kafelek Wynik energii bez czekania, aż zegarek zgłosi tę możliwość.",
       "pattern.shealth-oobe-local.description": "Domyślnie wyłączone. Pomija wymóg logowania na konto Samsung i uruchamia aplikację lokalnie bez synchronizacji z chmurą, więc nie otrzymuje ona danych przesyłanych przez aplikację Samsung Health z Google Play. Włącz tylko wtedy, gdy logowanie nie działa.",
+      "pattern.shealth-china-account-gate.description": "Eksperymentalne. Pozwala tej międzynarodowej wersji uruchomić się z kontem Samsung z Chin kontynentalnych, zamiast zamykać się przy logowaniu. Nadal łączy się z międzynarodowymi serwerami Samsunga, więc synchronizacja z chmurą dla chińskiego konta może nie działać.",
       "pattern.shealth-res-webp.description": "Naprawia cztery obrazy zapisane z błędnym rozszerzeniem, aby można było przebudować aplikację (bez widocznych zmian).",
       "pattern.shealth-ai-provider-start.description": "Naprawia awarię Samsung Health+ podczas uruchamiania (bez widocznych zmian).",
       "pattern.shealth-rename-manifest.description": "Nadaje aplikacji własną nazwę pakietu i etykietę (Samsung Health+), aby instalowała się obok oryginału.",
@@ -5239,6 +5314,7 @@
       "pattern.shealth-feature-dev-ui.description": "Mostra a lista de recursos em Configurações > Sobre sem o modo de desenvolvedor da Samsung.",
       "pattern.shealth-vitality-tile.description": "Mostra o bloco Pontuação de energia sem esperar que o relógio anuncie o recurso.",
       "pattern.shealth-oobe-local.description": "Desativado por padrão. Dispensa a exigência de entrar com a conta Samsung e executa o app localmente, sem sincronização na nuvem, então ele não recebe os dados que o app Samsung Health do Google Play envia. Ative somente se o login não funcionar.",
+      "pattern.shealth-china-account-gate.description": "Experimental. Permite que esta versão internacional abra com uma conta Samsung da China continental em vez de fechar ao entrar. Ela continua usando os servidores internacionais da Samsung, então a sincronização na nuvem de uma conta chinesa pode não funcionar.",
       "pattern.shealth-res-webp.description": "Corrige quatro imagens salvas com a extensão errada para que o app possa ser reconstruído (sem mudança visível).",
       "pattern.shealth-ai-provider-start.description": "Corrige uma falha do Samsung Health+ ao iniciar (sem mudança visível).",
       "pattern.shealth-rename-manifest.description": "Dá ao app seu próprio nome de pacote e rótulo (Samsung Health+) para que seja instalado ao lado do original.",
@@ -5355,6 +5431,7 @@
       "pattern.shealth-feature-dev-ui.description": "Показывает список функций в Настройках > О приложении без режима разработчика Samsung.",
       "pattern.shealth-vitality-tile.description": "Показывает плитку «Энергетический балл», не дожидаясь, пока часы сообщат о поддержке.",
       "pattern.shealth-oobe-local.description": "По умолчанию выключено. Пропускает обязательный вход в Samsung Account и запускает приложение локально, без облачной синхронизации, поэтому оно не получает данные, которые загружает приложение Samsung Health из Google Play. Включайте, только если вход не работает.",
+      "pattern.shealth-china-account-gate.description": "Экспериментально. Позволяет этой международной версии открываться с аккаунтом Samsung из материкового Китая, а не закрываться при входе. Она по-прежнему работает с международными серверами Samsung, поэтому облачная синхронизация для китайского аккаунта может не работать.",
       "pattern.shealth-res-webp.description": "Исправляет четыре изображения с неверным расширением файла, чтобы приложение можно было пересобрать (видимых изменений нет).",
       "pattern.shealth-ai-provider-start.description": "Исправляет сбой Samsung Health+ при запуске (видимых изменений нет).",
       "pattern.shealth-rename-manifest.description": "Даёт приложению собственное имя пакета и название (Samsung Health+), чтобы оно устанавливалось рядом с оригиналом.",
@@ -5471,6 +5548,7 @@
       "pattern.shealth-feature-dev-ui.description": "Özellik listesini Samsung geliştirici modu olmadan Ayarlar > Hakkında bölümünde gösterir.",
       "pattern.shealth-vitality-tile.description": "Enerji Skoru kutucuğunu, saatin özelliği bildirmesini beklemeden gösterir.",
       "pattern.shealth-oobe-local.description": "Varsayılan olarak kapalı. Samsung hesabıyla oturum açma zorunluluğunu atlar ve uygulamayı bulut eşitlemesi olmadan yerel olarak çalıştırır; bu yüzden Google Play'deki Samsung Health uygulamasının yüklediği verileri almaz. Yalnızca oturum açma çalışmıyorsa açın.",
+      "pattern.shealth-china-account-gate.description": "Deneysel. Bu uluslararası sürümün, Çin anakarasına ait bir Samsung hesabıyla oturum açarken kapanmak yerine açılmasını sağlar. Yine de Samsung'un uluslararası sunucularına bağlanır, bu yüzden Çin hesabı için bulut eşitlemesi çalışmayabilir.",
       "pattern.shealth-res-webp.description": "Yanlış dosya uzantısıyla saklanan dört görseli düzeltir, böylece uygulama yeniden derlenebilir (görünür bir değişiklik yok).",
       "pattern.shealth-ai-provider-start.description": "Samsung Health+ uygulamasının açılırken çökmesini düzeltir (görünür bir değişiklik yok).",
       "pattern.shealth-rename-manifest.description": "Uygulamaya, orijinalinin yanına kurulabilmesi için kendi paket adını ve etiketini (Samsung Health+) verir.",
@@ -5587,6 +5665,7 @@
       "pattern.shealth-feature-dev-ui.description": "Показує список функцій у Налаштуваннях > Про застосунок без режиму розробника Samsung.",
       "pattern.shealth-vitality-tile.description": "Показує плитку «Показник енергії», не чекаючи, поки годинник повідомить про підтримку.",
       "pattern.shealth-oobe-local.description": "За замовчуванням вимкнено. Пропускає обов'язковий вхід у Samsung Account і запускає застосунок локально, без хмарної синхронізації, тому він не отримує даних, які вивантажує застосунок Samsung Health з Google Play. Вмикайте, лише якщо вхід не працює.",
+      "pattern.shealth-china-account-gate.description": "Експериментально. Дає цій міжнародній версії відкриватися з обліковим записом Samsung із материкового Китаю, а не закриватися під час входу. Вона й далі працює з міжнародними серверами Samsung, тому хмарна синхронізація для китайського облікового запису може не працювати.",
       "pattern.shealth-res-webp.description": "Виправляє чотири зображення з помилковим розширенням файлу, щоб застосунок можна було перебудувати (видимих змін немає).",
       "pattern.shealth-ai-provider-start.description": "Виправляє збій Samsung Health+ під час запуску (видимих змін немає).",
       "pattern.shealth-rename-manifest.description": "Надає застосунку власну назву пакета й мітку (Samsung Health+), щоб він встановлювався поруч з оригіналом.",
@@ -5703,6 +5782,7 @@
       "pattern.shealth-feature-dev-ui.description": "无需三星开发者模式，即可在“设置 > 关于”中显示功能列表。",
       "pattern.shealth-vitality-tile.description": "无需等待手表声明该能力，即可显示“能量得分”磁贴。",
       "pattern.shealth-oobe-local.description": "默认关闭。跳过三星账号登录要求，在本地运行应用且不进行云同步，因此无法获得来自 Google Play 的 Samsung Health 应用上传的数据。仅在无法登录时开启。",
+      "pattern.shealth-china-account-gate.description": "实验性功能。让此国际版在使用中国大陆三星账号登录时不再自动关闭。它仍连接三星国际服务器，因此中国账号的云同步可能无法使用。",
       "pattern.shealth-res-webp.description": "修复四张文件扩展名错误的图片，使应用可以重新构建（无可见变化）。",
       "pattern.shealth-ai-provider-start.description": "修复 Samsung Health+ 启动时崩溃的问题（无可见变化）。",
       "pattern.shealth-rename-manifest.description": "为应用提供独立的包名和标签（Samsung Health+），使其可安装在原应用旁边。",
@@ -5819,6 +5899,7 @@
       "pattern.shealth-feature-dev-ui.description": "無需三星開發人員模式，即可在「設定 > 關於」中顯示功能清單。",
       "pattern.shealth-vitality-tile.description": "無需等待手錶宣告該能力，即可顯示「能量分數」圖磚。",
       "pattern.shealth-oobe-local.description": "預設關閉。略過三星帳戶登入要求，在本機執行應用程式且不進行雲端同步，因此無法取得來自 Google Play 的 Samsung Health 應用程式上傳的資料。僅在無法登入時開啟。",
+      "pattern.shealth-china-account-gate.description": "實驗性功能。讓此國際版在使用中國大陸三星帳戶登入時不再自動關閉。它仍連線至三星國際伺服器，因此中國帳戶的雲端同步可能無法使用。",
       "pattern.shealth-res-webp.description": "修正四張副檔名錯誤的圖片，讓應用程式可以重新建置（無可見變化）。",
       "pattern.shealth-ai-provider-start.description": "修正 Samsung Health+ 啟動時當機的問題（無可見變化）。",
       "pattern.shealth-rename-manifest.description": "為應用程式提供獨立的套件名稱和標籤（Samsung Health+），使其可安裝在原應用程式旁邊。",

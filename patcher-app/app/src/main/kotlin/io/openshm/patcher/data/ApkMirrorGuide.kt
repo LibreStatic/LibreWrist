@@ -13,14 +13,14 @@ enum class DownloadVerdict { Ok, NotHttps, Bundle }
  * Pure rules for the guided APKMirror browser: where the WebView may go, which step of the walk-through a
  * page is, and which downloads are worth fetching. No Android types, so it is unit-tested on the JVM.
  */
-object ApkMirrorGuide {
+object ApkMirrorGuide : SiteGuide {
     const val HOST = "apkmirror.com"
     private const val RELEASE_SUFFIX = "-release"
     private const val APP_SEGMENTS = 3 // apk / <developer> / <app>
     private val BUNDLE_EXTENSIONS = listOf(".apkm", ".xapk", ".apks", ".zip")
 
     /** The release page of the exact version when the catalogue knows it, else the app's page. */
-    fun startUrl(input: InputApp): String {
+    override fun startUrl(input: InputApp): String {
         val base = "https://www.$HOST/apk/${input.apkMirrorSlug.trim('/')}/"
         val release = input.apkMirrorRelease?.trim('/')?.takeIf { it.isNotEmpty() && '/' !in it }
         return if (release != null) "$base$release/" else base
@@ -47,13 +47,13 @@ object ApkMirrorGuide {
     }
 
     /** An https URL on APKMirror without credentials; everything else is not loaded in the WebView. */
-    fun isAllowedNavigation(url: String): Boolean {
+    override fun isAllowedNavigation(url: String): Boolean {
         val uri = parse(url) ?: return false
         return uri.scheme == "https" && uri.userInfo == null && (uri.port == -1 || uri.port == 443) &&
             isApkMirrorHost(uri.host)
     }
 
-    fun coachStep(url: String, input: InputApp): CoachState {
+    override fun coachStep(url: String, input: InputApp): CoachState {
         val uri = parse(url)?.takeIf { isAllowedNavigation(url) } ?: return CoachState(1)
         val segments = uri.rawPath.orEmpty().split('/').filter { it.isNotEmpty() }
         val app = ("apk/" + input.apkMirrorSlug.trim('/')).split('/')
@@ -66,17 +66,30 @@ object ApkMirrorGuide {
         return CoachState(if (segments.size > APP_SEGMENTS + 1) 3 else 2)
     }
 
-    fun isAcceptableDownload(url: String, contentDisposition: String?, mimeType: String?): DownloadVerdict {
+    override fun isAcceptableDownload(url: String, contentDisposition: String?, mimeType: String?): DownloadVerdict {
         val uri = parse(url)
         if (uri == null || uri.scheme != "https" || uri.userInfo != null) return DownloadVerdict.NotHttps
+        return if (isBundle(uri, contentDisposition, mimeType)) DownloadVerdict.Bundle else DownloadVerdict.Ok
+    }
+
+    /** True for a bundle (.apkm, .xapk, .apks, .zip) by its file name or MIME type; shared by every source. */
+    internal fun isBundle(uri: URI, contentDisposition: String?, mimeType: String?): Boolean {
         val names = listOfNotNull(
             fileNameFromDisposition(contentDisposition),
             uri.rawPath?.substringAfterLast('/'),
         ).map { it.lowercase(Locale.ROOT).trimEnd('"', ' ', ';') }
-        if (names.any { name -> BUNDLE_EXTENSIONS.any { name.endsWith(it) } }) return DownloadVerdict.Bundle
-        if (mimeType?.lowercase(Locale.ROOT)?.contains("apkm") == true) return DownloadVerdict.Bundle
-        return DownloadVerdict.Ok
+        if (names.any { name -> BUNDLE_EXTENSIONS.any { name.endsWith(it) } }) return true
+        return mimeType?.lowercase(Locale.ROOT)?.contains("apkm") == true
     }
+
+    override fun hostIsSource(host: String?): Boolean = isApkMirrorHost(host)
+
+    override fun mayDownloadFrom(url: String): Boolean = isApkMirrorHost(hostOf(url))
+
+    override fun normalizeDownloadUrl(url: String): String = url
+
+    override fun acceptsRedirectHop(url: String, isRedirect: Boolean, chainFromSource: Boolean): Boolean =
+        isAcceptableRedirectHop(url, isRedirect, chainFromSource)
 
     internal fun fileNameFromDisposition(disposition: String?): String? {
         if (disposition == null) return null
@@ -95,43 +108,44 @@ object ApkMirrorGuide {
 enum class NavDecision { Allow, AllowRedirectHop, Block }
 
 /**
- * Tracks one navigation chain of the guided browser: an off-APKMirror redirect hop is only accepted
- * while the chain began on an APKMirror page, and a download from such a host only if that host was
- * the accepted hop. No Android types.
+ * Tracks one navigation chain of the guided browser for one [SiteGuide]: an off-site redirect hop is
+ * only accepted while the chain began on a page of the source, and a download from such a host only if
+ * that host was the accepted hop. No Android types.
  */
-class RedirectChain {
-    private var fromApkMirror = false
+class RedirectChain(private val guide: SiteGuide = ApkMirrorGuide) {
+    private var fromSource = false
     private var hopHost: String? = null
 
     /** Called for every main-frame navigation request. */
     fun onNavigation(url: String, isRedirect: Boolean): NavDecision {
-        if (ApkMirrorGuide.isAllowedNavigation(url)) {
-            fromApkMirror = true
+        if (guide.isAllowedNavigation(url)) {
+            fromSource = true
             hopHost = null
             return NavDecision.Allow
         }
-        if (ApkMirrorGuide.isAcceptableRedirectHop(url, isRedirect, fromApkMirror)) {
+        if (guide.isDirectDownloadLink(url)) return NavDecision.Allow
+        if (guide.acceptsRedirectHop(url, isRedirect, fromSource)) {
             hopHost = ApkMirrorGuide.hostOf(url)
             return NavDecision.AllowRedirectHop
         }
         return NavDecision.Block
     }
 
-    /** True when [url] is on APKMirror or on the host the chain was redirected to. */
+    /** True when [url] is on the source, a download host of it, or the host the chain was redirected to. */
     fun mayDownloadFrom(url: String): Boolean {
         val host = ApkMirrorGuide.hostOf(url) ?: return false
-        return ApkMirrorGuide.isApkMirrorHost(host) || (hopHost != null && host == hopHost)
+        return guide.mayDownloadFrom(guide.normalizeDownloadUrl(url)) || (hopHost != null && host == hopHost)
     }
 
     /** An accepted off-site hop rendered as a page: the chain is over. */
     fun onOffSitePage() {
-        fromApkMirror = false
+        fromSource = false
         hopHost = null
     }
 
-    /** True for a URL that is an accepted hop host rather than APKMirror (a page, not a download). */
+    /** True for a URL that is an accepted hop host rather than the source (a page, not a download). */
     fun isHopHost(url: String): Boolean {
         val host = ApkMirrorGuide.hostOf(url) ?: return false
-        return hopHost != null && host == hopHost && !ApkMirrorGuide.isApkMirrorHost(host)
+        return hopHost != null && host == hopHost && !guide.hostIsSource(host)
     }
 }

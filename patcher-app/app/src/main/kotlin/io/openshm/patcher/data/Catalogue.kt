@@ -24,6 +24,8 @@ data class InputApp(
     val apkMirrorRelease: String? = null,
     /** False when this version is not published on APKMirror (`obtain.onApkMirror`). */
     val onApkMirror: Boolean = true,
+    /** True when this version is on YingYongBao (`obtain.yyb`); off until a catalogue entry opts in. */
+    val onYyb: Boolean = false,
     /** The lowest Android SDK the app runs on (`minSdk`); 0 when unknown. */
     val minSdk: Int = 0,
     /** The ABIs of the expected build, for the on-screen target line. */
@@ -62,6 +64,8 @@ data class OutputApp(
     /** Package name; `${PKG_PREFIX}` is replaced by the chosen prefix. */
     val packageTemplate: String,
     val inputId: String?,
+    /** The input this app is built from instead of [inputId] when China mode is on (`chinaFrom`), or null. */
+    val chinaInputId: String? = null,
     /** One plain-language line on what this app is for (the Welcome changes list); empty when the catalogue has none. */
     val purpose: String = "",
     /** How the installed app is started (`start`), or null when it needs no start. */

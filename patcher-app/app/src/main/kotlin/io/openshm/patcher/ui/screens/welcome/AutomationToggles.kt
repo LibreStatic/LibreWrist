@@ -36,6 +36,9 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import io.openshm.patcher.R
 import io.openshm.patcher.data.AutomationState
+import io.openshm.patcher.data.Region
+import io.openshm.patcher.data.chinaModeActive
+import io.openshm.patcher.data.chinaModeToggleVisible
 
 /** The explanation dialogs behind the (?) of each automation switch. */
 enum class AutomationHelp(@StringRes val title: Int, @StringRes val body: Int) {
@@ -43,11 +46,13 @@ enum class AutomationHelp(@StringRes val title: Int, @StringRes val body: Int) {
     Unattended(R.string.automation_unattended_title, R.string.automation_unattended_help),
     FreeRun(R.string.automation_free_run_title, R.string.automation_free_run_help),
     Uninstall(R.string.automation_uninstall_title, R.string.automation_uninstall_help),
+    China(R.string.automation_china_title, R.string.automation_china_help),
 }
 
 /**
  * The automation switches under "Get started": the guide pet first, then unattended mode and its two
- * dependent switches, which are shown off and disabled while unattended mode is off.
+ * dependent switches, which are shown off and disabled while unattended mode is off, and China mode
+ * where it was detected or ever set.
  */
 @Composable
 internal fun AutomationToggles(
@@ -86,6 +91,15 @@ internal fun AutomationToggles(
             onChange = { onEvent(WelcomeEvent.SetUninstallMismatch(it)) },
             onHelp = { onEvent(WelcomeEvent.ShowHelp(AutomationHelp.Uninstall)) },
         )
+        if (chinaModeToggleVisible(Region.detected, automation.chinaMode)) {
+            AutomationRow(
+                label = R.string.automation_china_title,
+                checked = automation.chinaModeActive(Region.detected),
+                enabled = true,
+                onChange = { onEvent(WelcomeEvent.SetChinaMode(it)) },
+                onHelp = { onEvent(WelcomeEvent.ShowHelp(AutomationHelp.China)) },
+            )
+        }
     }
 }
 

@@ -44,8 +44,55 @@ class CatalogueTest {
 
     @Test fun committedCatalogueParses() {
         val c = Catalogue.parse(String(catalogueBytes, Charsets.UTF_8))
-        assertEquals(65, c.patterns.size)
-        assertEquals(setOf("gms", "alarm", "shealth"), c.profiles.keys)
+        assertEquals(66, c.patterns.size)
+        assertEquals(setOf("gms", "alarm", "shealth", "shealth-cn"), c.profiles.keys)
+    }
+
+    @Test fun chinaFromIsParsedOnSamsungHealth() {
+        val c = Catalogue.parse(String(catalogueBytes, Charsets.UTF_8))
+        val out = c.outputs.first { it.id == "shealth-phone" }
+        assertEquals(OutputSource.Patched("shealth-phone-cn", "shealth-cn"), out.chinaFrom)
+        assertEquals(out.from, out.sourceFor(false))
+        assertEquals(out.chinaFrom, out.sourceFor(true))
+        assertEquals(1, c.outputs.count { it.chinaFrom != null })
+        val bridge = c.outputs.first { it.from is OutputSource.OwnApp }
+        assertEquals("no chinaFrom: the one source in either mode", bridge.from, bridge.sourceFor(true))
+    }
+
+    private val chinaFromJson = "\"input\": \"shealth-phone-cn\",\n        \"profile\": \"shealth-cn\""
+
+    private fun assertChinaFromRejected(replacement: String, needle: String) {
+        val text = mutated { it.replace(chinaFromJson, replacement) }
+        assertTrue("the mutation did not apply", text != String(catalogueBytes, Charsets.UTF_8))
+        try {
+            Catalogue.parse(text)
+            fail("accepted: $replacement")
+        } catch (e: CatalogueException) {
+            assertTrue(e.problems.toString(), e.problems.any { needle in it })
+        }
+    }
+
+    @Test fun chinaFromIsValidated() {
+        assertChinaFromRejected("\"input\": \"nope\", \"profile\": \"shealth-cn\"", "chinaFrom.input 'nope' is not in inputs")
+        assertChinaFromRejected("\"input\": \"shm-phone\", \"profile\": \"shealth-cn\"", "has another package than")
+        assertChinaFromRejected("\"input\": \"shm-watch\", \"profile\": \"shealth-cn\"", "targets 'watch'")
+        assertChinaFromRejected("\"input\": \"shealth-phone-cn\", \"profile\": \"nope\"", "chinaFrom.profile 'nope' is not in profiles")
+        assertChinaFromRejected("\"input\": \"shealth-phone-cn\", \"profile\": \"gms\"", "has no patterns for the family")
+        assertChinaFromRejected("\"input\": \"shealth-phone\", \"profile\": \"shealth-cn\"", "chinaFrom.input must differ from from.input")
+        assertChinaFromRejected("\"input\": \"shealth-phone-cn\"", "chinaFrom must be")
+    }
+
+    @Test fun chinaFromIsRefusedOnAnOwnApp() {
+        val text = mutated {
+            it.replaceFirst(Regex("(\"from\": \\{\\s*\"ownApp\": \"[^\"]+\"\\s*\\})"), "$1, \"chinaFrom\": {\"input\": \"shealth-phone-cn\", \"profile\": \"shealth-cn\"}")
+        }
+        assertTrue("the mutation did not apply", text != String(catalogueBytes, Charsets.UTF_8))
+        try {
+            Catalogue.parse(text)
+            fail()
+        } catch (e: CatalogueException) {
+            assertTrue(e.problems.toString(), e.problems.any { "chinaFrom is only allowed on an output built from an input" in it })
+        }
     }
 
     private fun mutated(edit: (String) -> String) =
@@ -146,7 +193,8 @@ class CatalogueTest {
             setOf(
                 "shm-min-age-22-to-16", "watch-min-age-22-to-16", "shm-setup-network-gate", "shm-sleep-apnea-support", "shm-sleep-countries", "watch-apnea-country",
                 "watch-apnea-reeval-not-supported", "alarm-force-sound-vibrate", "alarm-hide-launcher", "alarm-relabel",
-                "shealth-oobe-local", "shealth-capability-gates", "shealth-launcher-badge", "shm-launcher-badge",
+                "shealth-oobe-local", "shealth-china-account-gate", "shealth-capability-gates", "shealth-launcher-badge",
+                "shm-launcher-badge",
             ),
             c.patterns.values.filter { it.optional }.map { it.id }.toSet(),
         )
@@ -159,7 +207,7 @@ class CatalogueTest {
             c.patterns.values.filter { it.optionGroup == "minimum-age" }.map { it.id }.toSet(),
         )
         assertEquals(
-            setOf("shealth-oobe-local"),
+            setOf("shealth-oobe-local", "shealth-china-account-gate"),
             c.patterns.values.filter { it.offByDefault }.map { it.id }.toSet(),
         )
         c.requireDisablable(c.patterns.values.filter { it.optional }.map { it.id }.toSet())
@@ -211,7 +259,7 @@ class CatalogueTest {
 
     @Test fun parseSignedVerifiesBeforeParsing() {
         val key = CatalogueVerifier.parsePublicKey(pem)
-        assertEquals(65, Catalogue.parseSigned(catalogueBytes, signature, key).patterns.size)
+        assertEquals(66, Catalogue.parseSigned(catalogueBytes, signature, key).patterns.size)
         val tampered = catalogueBytes.copyOf().also { it[100] = (it[100].toInt() xor 1).toByte() }
         try {
             Catalogue.parseSigned(tampered, signature, key)

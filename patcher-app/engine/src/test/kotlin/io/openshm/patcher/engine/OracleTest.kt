@@ -14,13 +14,13 @@ import org.w3c.dom.Node
  *
  * Opt-in: runs only when SHM_ORACLE_APKS points at a directory with the official APKs
  * (`alarm-watch-1.3.05.5.apk`, `shm-watch-1.5.1.022.apk`, `shm-phone-1.4.6.001.apk`,
- * `shealth-7.00.6.011.apk`). It needs
+ * `shealth-7.00.6.011.apk`, and `shealth-7.00.6.012-cn.apk` for the `shealth-cn` subset, the China build). It needs
  * the tools of the scripts (python3, bash, apktool, Android build tools, javac), takes minutes and
  * several GB of memory (apktool runs one at a time, 4 GB heap). Variables:
  *
  *   SHM_ORACLE_APKS   directory with the official APKs (also gives APKS_DIR to the scripts)
  *   SHM_ORACLE_WORK   scratch directory (default ~/.cache/shm-interop/oracle-kotlin)
- *   SHM_ORACLE_ONLY   comma separated subset of: alarm, watch, phone, shealth, bridge-watch, bridge-phone
+ *   SHM_ORACLE_ONLY   comma separated subset of: alarm, watch, phone, shealth, shealth-cn, bridge-watch, bridge-phone
  *   SHM_TEST_HEAP     heap of the test JVM (default 3g); 512m checks that the Kotlin engine fits a phone
  *   SHM_ORACLE_OWNCODE  opt-in Phase 2: the output directory of the app's `ownCodeAssets` Gradle task
  *                     (contains `owncode/` or is that directory: the `injections` and `apps` directories).
@@ -75,6 +75,7 @@ class OracleTest {
         Target("watch", "shm-watch-1.5.1.022.apk", "shm-watch", "gms", "watch-mod"),
         Target("phone", "shm-phone-1.4.6.001.apk", "shm-phone", "gms", null),
         Target("shealth", "shealth-7.00.6.011.apk", "shealth-phone", "shealth", null, relaxed = true),
+        Target("shealth-cn", "shealth-7.00.6.012-cn.apk", "shealth-phone-cn", "shealth-cn", null, relaxed = true),
         Target("bridge-watch", "", "bridge-watch", "", null),
         Target("bridge-phone", "", "bridge-phone", "", null),
     )

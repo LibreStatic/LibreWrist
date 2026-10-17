@@ -25,6 +25,8 @@
           paired?" screen, and launching Galaxy Wearable from it.
         -->
         <package android:name="com.samsung.android.app.watchmanager" />
+        <!-- Stock Samsung Health: its versionName tells a China build, for China mode detection. -->
+        <package android:name="com.sec.android.app.shealth" />
         <!-- One watch plugin per model family; keep in sync with WATCH_PLUGIN_PACKAGES. -->
         <package android:name="com.samsung.android.waterplugin" />
         <package android:name="com.samsung.android.heartplugin" />

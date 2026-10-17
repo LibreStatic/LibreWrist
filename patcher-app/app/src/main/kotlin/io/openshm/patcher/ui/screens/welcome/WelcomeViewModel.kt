@@ -85,7 +85,7 @@ class WelcomeViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch { Automation.state.collect { a -> _state.update { it.copy(automation = a) } } }
         // The apps notice only matters while an official app this setup needs is still missing.
         val inputs = InputStore(application)
-        val missingInputs = SetupSession.state.map { it.inputIds }.distinctUntilChanged().map { ids ->
+        val missingInputs = combine(SetupSession.state, Automation.state) { s, _ -> s.inputIds }.distinctUntilChanged().map { ids ->
             withContext(Dispatchers.IO) {
                 ids.filter(AppCatalogue.current::hasInput).any { inputs.verifiedSize(AppCatalogue.current.input(it)) == null }
             }
@@ -116,6 +116,7 @@ class WelcomeViewModel(application: Application) : AndroidViewModel(application)
             WelcomeEvent.CancelSkip -> preflight.cancel()
             WelcomeEvent.ManualSetup -> preflight.manual()
             is WelcomeEvent.SetGuidePet -> Automation.setGuidePet(event.on)
+            is WelcomeEvent.SetChinaMode -> Automation.setChinaMode(event.on)
             is WelcomeEvent.SetUnattended -> Automation.setUnattended(event.on)
             is WelcomeEvent.SetFreeRun ->
                 // Turning it on asks first unless the user already chose not to be asked again.

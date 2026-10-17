@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="automation_china_title">Chinamodus</string>
+    <string name="automation_china_help">Gaat vanzelf aan als deze telefoon zich op het Chinese vasteland lijkt te bevinden (SIM, netwerk of regio-instellingen). De patcher opent dan eerst 应用宝 om de officiële apps te downloaden die daar worden ondersteund, en gebruikt de Samsung Health-versie voor het Chinese vasteland als die beschikbaar is. Die werkt met Samsung-accounts die in China zijn geregistreerd. Zet de modus uit om in plaats daarvan APKMirror en de internationale versie te gebruiken.</string>
+</resources>

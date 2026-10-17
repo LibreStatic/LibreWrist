@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="automation_china_title">Modalità Cina</string>
+    <string name="automation_china_help">Si attiva da sola quando questo telefono sembra trovarsi nella Cina continentale (SIM, rete o impostazioni regionali). Il patcher apre quindi prima 应用宝 per scaricare le app ufficiali che supporta lì e usa la versione di Samsung Health per la Cina continentale quando disponibile, che funziona con gli account Samsung registrati in Cina. Disattivala per usare APKMirror e la versione internazionale.</string>
+</resources>

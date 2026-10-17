@@ -18,6 +18,8 @@ import io.openshm.patcher.data.InputStore
 import io.openshm.patcher.data.RebuildScope
 import io.openshm.patcher.data.SetupSession
 import io.openshm.patcher.data.cloudKeyBackup
+import io.openshm.patcher.data.effectiveChinaMode
+import io.openshm.patcher.data.sourceInputId
 import io.openshm.patcher.data.CloudRestoreResult
 import io.openshm.patcher.data.signingKeyStore
 import kotlinx.coroutines.runBlocking
@@ -70,7 +72,8 @@ class BuildService : Service() {
         val session = SetupSession.state.value
         val outputIds = session.outputIds
         val disabled = AppCatalogue.current.effectiveDisabled(session.disabledPatches)
-        val key = buildKey(AppCatalogue.current.serial, session.packagePrefix, outputIds, disabled)
+        val chinaMode = effectiveChinaMode()
+        val key = buildKey(AppCatalogue.current.serial, session.packagePrefix, outputIds, disabled, chinaMode)
         if (!BuildController.tryBegin(key)) return START_NOT_STICKY
         val keepAlive = WatchKeepAlive.get(this)
         keepAlive.start()
@@ -89,7 +92,7 @@ class BuildService : Service() {
                     .collect { notify(NOTIFICATION_ID, progressNotification(it)) }
             }
             try {
-                execute(key, session.packagePrefix, outputIds, disabled)
+                execute(key, session.packagePrefix, outputIds, disabled, chinaMode)
             } catch (e: Throwable) {
                 // The message of an engine or platform error; key material is never part of one.
                 BuildController.onLog("FAILED: ${e.javaClass.simpleName}: ${e.message}")
@@ -124,10 +127,10 @@ class BuildService : Service() {
         super.onDestroy()
     }
 
-    private fun execute(key: String, prefix: String, outputIds: List<String>, disabled: Set<String>) {
+    private fun execute(key: String, prefix: String, outputIds: List<String>, disabled: Set<String>, chinaMode: Boolean) {
         val catalogue = AppCatalogue.current
         val inputs = InputStore(this)
-        for (id in outputIds.mapNotNull { catalogue.output(it).inputId }.distinct()) {
+        for (id in outputIds.mapNotNull { catalogue.output(it).sourceInputId(chinaMode) }.distinct()) {
             if (inputs.verifiedSize(catalogue.input(id)) == null) {
                 BuildController.onLog("FAILED: input '$id' is missing or does not match; import it again")
                 BuildController.fail("Input '$id' is missing or does not match the expected file.")
@@ -149,7 +152,7 @@ class BuildService : Service() {
         val storage = BuildStorage(this)
         // The previous record tells which outputs can be kept; read it before it is cleared.
         val reusable = storage.record.read()?.takeIf { it.prefix == prefix }?.outputs?.associateBy { it.outputId }.orEmpty()
-        val fingerprints = currentFingerprints(this, catalogue, prefix, outputIds, disabled)
+        val fingerprints = currentFingerprints(this, catalogue, prefix, outputIds, disabled, chinaMode)
         storage.record.clear()
         val runner = BuildRunner(
             catalogue = catalogue.engine,
@@ -167,7 +170,7 @@ class BuildService : Service() {
             override fun onLog(line: String) = BuildController.onLog(line)
         }
         val outcome = runner.run(
-            BuildRequest(outputIds, prefix, signingKey, ownCertificateSha256(this), disabled, fingerprints, reusable), sink,
+            BuildRequest(outputIds, prefix, signingKey, ownCertificateSha256(this), disabled, fingerprints, reusable, chinaMode), sink,
         )
         val records = outcome.files.map { BuiltRecord(it.outputId, it.file.path, it.sizeBytes, it.sha256, it.fingerprint, it.reused) }
         if (outcome.cancelled) {
@@ -176,7 +179,7 @@ class BuildService : Service() {
             BuildController.cancelled()
         } else if (outcome.ok) {
             storage.record.write(
-                BuiltBuild(key, prefix, catalogue.serial, System.currentTimeMillis(), records, buildFacts(catalogue, outputIds)),
+                BuiltBuild(key, prefix, catalogue.serial, System.currentTimeMillis(), records, buildFacts(catalogue, outputIds, chinaMode)),
             )
             // A rebuild from Home also installs every app this run patched again instead of reusing it.
             RebuildScope.addRebuilt(records.filterNot { it.reused }.map { it.outputId })

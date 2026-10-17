@@ -63,6 +63,7 @@ class LoadedCatalogue(val engine: Catalogue, val locales: List<Locale>) {
     fun selectedOutputs(watchSdk: Int, skippedApps: Set<String>): List<OutputApp> {
         val inScope = apps.filter { !it.optional || it.id !in skippedApps }.flatMap { it.outputIds }.toSet()
         return outputs.filter { out ->
+            // mode-independent: an output's China input is the same app for the same device
             out.id in inScope && (out.inputId?.let(::input)?.let { it.device == Device.Phone || it.minSdk <= watchSdk } ?: true)
         }
     }
@@ -89,6 +90,9 @@ class LoadedCatalogue(val engine: Catalogue, val locales: List<Locale>) {
 
     fun input(id: String): InputApp = inputs.first { it.id == id }
 
+    /** The Samsung Health versions that are China builds (the ones published on YingYongBao). */
+    val chinaShealthVersions: Set<String> get() = chinaShealthVersions(inputs)
+
     fun hasInput(id: String): Boolean = inputs.any { it.id == id }
 
     /** The outputs, in the catalogue `installOrder` order. */
@@ -98,11 +102,11 @@ class LoadedCatalogue(val engine: Catalogue, val locales: List<Locale>) {
 
     fun output(id: String): OutputApp = outputs.first { it.id == id }
 
-    /** Patches per input that some output is built from, in profile order, injections last. */
+    /** Patches per input that some output is built from (by `from` or `chinaFrom`), in profile order, injections last. */
     val patchSets: List<PatchSet> = engine.outputs
-        .mapNotNull { (it.from as? OutputSource.Patched) }
-        .distinctBy { it.input }
-        .map { from -> PatchSet(from.input, patchesOf(from)) }
+        .flatMap { out -> listOfNotNull(out.from as? OutputSource.Patched, out.chinaFrom).map { src -> src to out.family!! } }
+        .distinctBy { (src, _) -> src.input }
+        .map { (src, family) -> PatchSet(src.input, patchesOf(src, family)) }
 
     fun patches(inputId: String): List<PatchInfo> = patchSets.first { it.inputId == inputId }.patches
 
@@ -137,16 +141,17 @@ class LoadedCatalogue(val engine: Catalogue, val locales: List<Locale>) {
         return patchSets.filter { it.inputId in inputIds }.sumOf { set -> set.patches.count { !it.injection && it.id !in skipped } }
     }
 
-    private fun patchesOf(from: OutputSource.Patched): List<PatchInfo> {
+    /** The patches of [from]'s profile for [family], the key the profile lists them under. */
+    private fun patchesOf(from: OutputSource.Patched, family: String): List<PatchInfo> {
         val profile = engine.profile(from.profile)
-        val patterns = profile.families[from.input].orEmpty().map { id ->
+        val patterns = profile.families[family].orEmpty().map { id ->
             val pattern = engine.patterns.getValue(id)
             PatchInfo(
                 id, pattern.title, text.text("pattern.$id.description", pattern.description),
                 optional = pattern.optional, optionGroup = pattern.optionGroup,
             )
         }
-        val injections = profile.inject[from.input].orEmpty().map { id ->
+        val injections = profile.inject[family].orEmpty().map { id ->
             PatchInfo(id, text.text("inject.$id.title", id), text.text("inject.$id.description", ""), injection = true)
         }
         return patterns + injections
@@ -165,6 +170,7 @@ class LoadedCatalogue(val engine: Catalogue, val locales: List<Locale>) {
             variantChips = chipsOf(input.raw),
             apkMirrorRelease = (obtain?.get("apkmirrorRelease") as? String)?.trim('/')?.takeIf { it.isNotEmpty() },
             onApkMirror = obtain?.get("onApkMirror") != false,
+            onYyb = obtain?.get("yyb").let { it != null && it != false },
             minSdk = (input.raw["minSdk"] as? Number)?.toInt() ?: 0,
             abis = (input.raw["abis"] as? List<*>)?.filterIsInstance<String>().orEmpty(),
         )
@@ -176,6 +182,7 @@ class LoadedCatalogue(val engine: Catalogue, val locales: List<Locale>) {
         device = device(out.device),
         packageTemplate = out.packageName,
         inputId = (out.from as? OutputSource.Patched)?.input,
+        chinaInputId = out.chinaFrom?.input,
         purpose = text.text("output.${out.id}.purpose", ""),
         start = out.start,
         companionLink = out.companionLink,

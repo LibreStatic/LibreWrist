@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="automation_china_title">中國模式</string>
+    <string name="automation_china_help">當這支手機看起來位於中國大陸時（依據 SIM 卡、網路或地區設定判斷），會自動開啟。開啟後，修補工具會優先開啟 应用宝，下載其中提供的受支援官方應用程式，並在有中國大陸版 Samsung Health 時使用它，該版本適用於在中國註冊的三星帳號。關閉後將改用 APKMirror 與國際版。</string>
+</resources>

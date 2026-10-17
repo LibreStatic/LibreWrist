@@ -94,5 +94,6 @@ object BuildController {
 }
 
 /** Identifies what a build is for: the same key means the same inputs, prefix, outputs and skipped patches, so a finished build is still good. */
-fun buildKey(catalogueSerial: Long, prefix: String, outputIds: Collection<String>, disabledPatches: Collection<String> = emptySet()): String =
-    "$catalogueSerial|$prefix|${outputIds.sorted().joinToString(",")}|${disabledPatches.sorted().joinToString(",")}"
+fun buildKey(catalogueSerial: Long, prefix: String, outputIds: Collection<String>, disabledPatches: Collection<String> = emptySet(), chinaMode: Boolean = false): String =
+    "$catalogueSerial|$prefix|${outputIds.sorted().joinToString(",")}|${disabledPatches.sorted().joinToString(",")}" +
+        if (chinaMode) "|china" else ""

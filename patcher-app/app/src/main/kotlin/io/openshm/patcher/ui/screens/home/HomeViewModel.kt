@@ -10,6 +10,7 @@ import io.openshm.patcher.data.CatalogueUpdates
 import io.openshm.patcher.data.RebuildScope
 import io.openshm.patcher.data.UpdateResult
 import io.openshm.patcher.data.SetupSession
+import io.openshm.patcher.data.effectiveChinaMode
 import io.openshm.patcher.ui.components.CheckStatus
 import io.openshm.patcher.ui.screens.selftest.PrefsSelfTestRecord
 import io.openshm.patcher.ui.screens.selftest.SelfTestRecord
@@ -103,7 +104,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         val outputIds = session.activeOutputIds
         return current.copy(
             status = homeStatusOf(record.last(), System.currentTimeMillis()),
-            update = updateOfferFor(AppCatalogue.current, BuildStorage(getApplication()).record.read(), outputIds),
+            update = updateOfferFor(AppCatalogue.current, BuildStorage(getApplication()).record.read(), outputIds, effectiveChinaMode()),
             builds = AppCatalogue.current.outputs
                 .filter { it.id in outputIds }
                 .map { InstalledBuild(it.id, it.label, it.packageName(session.packagePrefix), it.device, customizable = it.inputId != null) },

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="acquire_open_yyb">Apri su 应用宝 (YingYongBao)</string>
+    <string name="acquire_source_yyb">应用宝 / YingYongBao</string>
+    <string name="browser_yyb_coach_1_title">Trova il pulsante di download</string>
+    <string name="browser_yyb_coach_1_body">Nella pagina 应用宝 di %1$s, tocca **通过第三方浏览器下载** (Scarica con un browser di terze parti).</string>
+    <string name="browser_yyb_coach_2_title">Torna alla pagina dell’app</string>
+    <string name="browser_yyb_coach_2_body">Questa pagina non ha un download diretto. Torna alla pagina 应用宝 di %1$s e tocca **通过第三方浏览器下载** (Scarica con un browser di terze parti).</string>
+</resources>

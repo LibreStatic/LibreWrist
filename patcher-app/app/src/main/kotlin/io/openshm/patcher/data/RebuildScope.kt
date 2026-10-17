@@ -47,8 +47,13 @@ object RebuildScope {
     fun includes(outputId: String): Boolean = scope?.contains(outputId) ?: true
 }
 
-/** The outputs a rebuild of [outputId] covers: the session outputs built from the same input; a bridge has no input and stands alone. */
-fun requestedRebuildScope(outputs: List<OutputApp>, outputId: String, sessionOutputIds: Collection<String>): Set<String> {
-    val inputId = outputs.firstOrNull { it.id == outputId }?.inputId ?: return setOf(outputId)
-    return outputs.filter { it.inputId == inputId && it.id in sessionOutputIds }.mapTo(linkedSetOf()) { it.id } + outputId
+/**
+ * The outputs a rebuild of [outputId] covers: the session outputs built from the same input in the given
+ * [chinaMode]; a bridge has no input and stands alone.
+ */
+fun requestedRebuildScope(
+    outputs: List<OutputApp>, outputId: String, sessionOutputIds: Collection<String>, chinaMode: Boolean = false,
+): Set<String> {
+    val inputId = outputs.firstOrNull { it.id == outputId }?.sourceInputId(chinaMode) ?: return setOf(outputId)
+    return outputs.filter { it.sourceInputId(chinaMode) == inputId && it.id in sessionOutputIds }.mapTo(linkedSetOf()) { it.id } + outputId
 }

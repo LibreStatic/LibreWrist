@@ -6,6 +6,8 @@ import io.openshm.patcher.data.PackagePrefix
 import io.openshm.patcher.data.RebuildScope
 import io.openshm.patcher.data.SessionState
 import io.openshm.patcher.data.SetupSession
+import io.openshm.patcher.data.effectiveChinaMode
+import io.openshm.patcher.data.sourceInputId
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -97,7 +99,7 @@ internal fun CustomizeUiState.reduce(event: CustomizeEvent, regenerate: () -> St
 /** During a rebuild, the inputs of the requested outputs; null for the normal flow. */
 private fun rebuildFocus(): Set<String>? {
     val requested = RebuildScope.state.value?.requested ?: return null
-    return requested.mapNotNullTo(mutableSetOf()) { AppCatalogue.current.output(it).inputId }
+    return requested.mapNotNullTo(mutableSetOf()) { AppCatalogue.current.output(it).sourceInputId(effectiveChinaMode()) }
 }
 
 class CustomizeViewModel : ViewModel() {

@@ -57,7 +57,18 @@ data class CatalogueOutput(
     val statusAuthority: String? = null,
     /** Copies of this app under other package prefixes are leftovers. */
     val singleCopy: Boolean = false,
-)
+    /** Source used instead of [from] when China mode is active (same app, built from the China input). */
+    val chinaFrom: OutputSource.Patched? = null,
+) {
+    /**
+     * The family key of this output's patches in a profile (`families` / `inject`): the input of [from], which
+     * [chinaFrom] shares (it is the same app), so a China input is looked up under the key of the global one.
+     */
+    val family: String? get() = (from as? OutputSource.Patched)?.input
+
+    /** What this output is built from: [chinaFrom] when [chinaMode] is on and the output has one, [from] otherwise. */
+    fun sourceFor(chinaMode: Boolean): OutputSource = if (chinaMode) chinaFrom ?: from else from
+}
 
 data class InstallStep(val output: String, val then: String?)
 
@@ -157,7 +168,7 @@ class Catalogue private constructor(
             "patterns", "outputs", "installOrder", "grants", "stockAppsToDisable", "apps", "strings", "platform")
         /** The closed vocabulary of [CatalogueApp.icon]. */
         val APP_ICONS = listOf("monitor-heart", "favorite", "alarm", "swap")
-        private val OUTPUT_OPTIONAL_KEYS = listOf("start", "companionLink", "knownSigner", "statusAuthority", "singleCopy")
+        private val OUTPUT_OPTIONAL_KEYS = listOf("start", "companionLink", "knownSigner", "statusAuthority", "singleCopy", "chinaFrom")
         private val LOCALE_RE = Regex("^[a-z]{2,3}(-[A-Z][A-Za-z]{1,3})?$")
         private val STRING_KEY_RE = Regex("^[a-z][A-Za-z0-9_.-]{0,199}$")
         private val TEXT_RE = Regex("^[^\\u0000-\\u001f\\u007f]{1,4000}$")
@@ -294,8 +305,41 @@ class Catalogue private constructor(
             return out
         }
 
+        /** Port of `_validate_china_from`: an alternative `{input, profile}` source that is the same app as `from`. */
+        private fun validateChinaFrom(
+            where: String, cf: Any?, src: Map<*, *>, device: Any?, inputTargets: Map<String, Any?>,
+            inputPackages: Map<String, Any?>, profiles: Map<*, *>,
+        ): List<String> {
+            if (cf !is Map<*, *> || cf.keys != setOf("input", "profile") || cf["input"] !is String || cf["profile"] !is String) {
+                return listOf("$where: chinaFrom must be {\"input\", \"profile\"} with string values")
+            }
+            val input = cf["input"] as String
+            val profile = cf["profile"] as String
+            val fromInput = src["input"]
+            val out = ArrayList<String>()
+            if (input !in inputTargets) {
+                out.add("$where: chinaFrom.input '$input' is not in inputs")
+            } else {
+                if (inputTargets[input] != device) out.add("$where: chinaFrom.input '$input' targets '${inputTargets[input]}', not '$device'")
+                if (inputPackages[input] != inputPackages[fromInput]) {
+                    out.add("$where: chinaFrom.input '$input' has another package than from.input '$fromInput'")
+                }
+            }
+            if (input == fromInput) out.add("$where: chinaFrom.input must differ from from.input")
+            if (profile !in profiles) {
+                out.add("$where: chinaFrom.profile '$profile' is not in profiles")
+            } else if (fromInput !in profileFamilies(profiles[profile])) {
+                // profiles are keyed by family, which the China input shares with the input of `from`
+                out.add("$where: profile '$profile' has no patterns for the family '$fromInput' of '$input'")
+            }
+            return out
+        }
+
         /** Port of `_validate_install`: problems of outputs / installOrder / grants / stockAppsToDisable. */
-        private fun validateInstall(cat: Map<*, *>, inputTargets: Map<String, Any?>, profiles: Map<*, *>): List<String> {
+        private fun validateInstall(
+            cat: Map<*, *>, inputTargets: Map<String, Any?>, profiles: Map<*, *>,
+            inputPackages: Map<String, Any?> = emptyMap(),
+        ): List<String> {
             val problems = ArrayList<String>()
             var outputs = cat["outputs"]
             val optionalApps = (cat["apps"] as? List<*>).orEmpty().mapNotNull { a ->
@@ -350,7 +394,11 @@ class Catalogue private constructor(
                             problems.add("$where: profile '$profile' has no patterns for '$input'")
                         }
                     }
+                    if ("chinaFrom" in o) {
+                        problems.addAll(validateChinaFrom(where, o["chinaFrom"], src, o["device"], inputTargets, inputPackages, profiles))
+                    }
                 } else if (src is Map<*, *> && src.keys == setOf("ownApp")) {
+                    if ("chinaFrom" in o) problems.add("$where: chinaFrom is only allowed on an output built from an input")
                     val a = src["ownApp"]
                     if (a !is String || !OWN_APP_RE.matches(a)) problems.add("$where: from.ownApp must match ${OWN_APP_RE.pattern}")
                 } else {
@@ -772,8 +820,12 @@ class Catalogue private constructor(
             val inputs = cat["inputs"]
             if (inputs is List<*>) {
                 val targets = LinkedHashMap<String, Any?>()
-                for (i in inputs) if (i is Map<*, *> && i["id"] is String) targets[i["id"] as String] = i["target"]
-                problems.addAll(validateInstall(cat, targets, profiles))
+                val packages = LinkedHashMap<String, Any?>()
+                for (i in inputs) if (i is Map<*, *> && i["id"] is String) {
+                    targets[i["id"] as String] = i["target"]
+                    packages[i["id"] as String] = i["package"]
+                }
+                problems.addAll(validateInstall(cat, targets, profiles, packages))
             }
             return problems
         }
@@ -816,7 +868,10 @@ class Catalogue private constructor(
                     else OutputSource.Patched(from.getValue("input"), from.getValue("profile")),
                     start = start, companionLink = o["companionLink"] as? Boolean ?: false,
                     knownSigner = o["knownSigner"] as? Boolean ?: false,
-                    statusAuthority = o["statusAuthority"] as String?, singleCopy = o["singleCopy"] as? Boolean ?: false)
+                    statusAuthority = o["statusAuthority"] as String?, singleCopy = o["singleCopy"] as? Boolean ?: false,
+                    chinaFrom = (o["chinaFrom"] as Map<String, String>?)?.let {
+                        OutputSource.Patched(it.getValue("input"), it.getValue("profile"))
+                    })
             }
             val order = (cat["installOrder"] as List<Map<String, Any?>>).map { InstallStep(it["output"] as String, it["then"] as String?) }
             val grants = (cat["grants"] as Map<String, List<Map<String, Any?>>>).mapValues { (_, l) ->

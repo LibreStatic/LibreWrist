@@ -1,5 +1,6 @@
 package io.openshm.patcher.ui.nav
 
+import io.openshm.patcher.data.InputSource
 import io.openshm.patcher.ui.screens.revert.RevertScope
 
 /** Every destination of the single activity. [path] is the Navigation Compose route. */
@@ -13,7 +14,7 @@ enum class Route(val path: String) {
     WearableTroubleshoot("wearable-troubleshoot"),
     WatchPair("watch-pair"),
     Acquire("acquire"),
-    GuidedBrowser("guided-browser/{inputId}"),
+    GuidedBrowser("guided-browser/{inputId}?source={source}"),
     Customize("customize"),
     Build("build"),
     BuildDone("build-done"),
@@ -40,7 +41,11 @@ enum class Route(val path: String) {
     companion object {
         const val INPUT_ID_ARG = "inputId"
 
-        fun guidedBrowser(inputId: String) = "guided-browser/$inputId"
+        const val SOURCE_ARG = "source"
+
+        /** The guided browser for [inputId] on [source] (`apkmirror` or `yyb`). */
+        fun guidedBrowser(inputId: String, source: InputSource = InputSource.ApkMirror) =
+            "guided-browser/$inputId?$SOURCE_ARG=${source.arg}"
 
         const val REVERT_SCOPE_ARG = "scope"
         const val REVERT_CONFIRMED_ARG = "confirmed"

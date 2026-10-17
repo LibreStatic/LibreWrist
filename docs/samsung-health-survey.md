@@ -210,6 +210,47 @@ Two phone-side levers still exist:
    *measurement* must run on the watch (antioxidant) need the watch-side app to cooperate; that
    is a separate project (watch APK not surveyed).
 
+## 5. China build 7.00.6.012 (issue #8)
+
+Why it matters: the international build closes itself after sign-in with a Samsung Account
+registered in mainland China (`lcf`, log `"Global APK, China SACC, NO Smart Switch"` →
+`HomeAppCloseActivity`, `OOBE_GLOBAL_APK_CHINA_SACC_APP_CLOSE`) when the build flavor
+(`fs90.u()`) is not China and the account country (`ozn.Y`) is `CN`. The optional
+`shealth-china-account-gate` pattern skips that check, but the server split is fixed by the
+flavor at build time, so the international build keeps talking to the international servers
+while a CN account's data lives on Samsung's China infrastructure. The China build is the real fix.
+
+Source: not on APKMirror (the 7.00.6.012 release page is 404). 应用宝 (YingYongBao) serves it as a
+single APK (no splits): flavor `chinaFinalRelease`, sha256
+`b40e9bc5e927db43dadbe5d5c41d2c99d7f7787c44c6d5bb664bceb5686e77ca`, 365,359,180 bytes. Decoded
+with apktool into `$WORK_DIR/shealth-cn-survey/tree`.
+
+Findings (non-Samsung phone, re-signed, renamed):
+- **Flavor check**: `wr50.Y()` (flavor contains `chinaFinal`), 51 call sites; it selects the
+  `*.samsunghealthcn.com` servers, and sasdk uses `account.samsung.cn`.
+- **Account optional**: `q7v` is `SamsungAccountManager` here; `q7v.q0` skips the
+  `LOG_OUT` stop state on China, so the `shealth-oobe-local` pattern is redundant (left out of the
+  `shealth-cn` profile) and so is the China account gate (the check does not exist on this flavor).
+- **Same sasdk `CLIENT_ID`** as 011 (`1y90e30264`), so sign-in behaves like the international
+  build after re-signing (see §1).
+- **ChinaMinorAge** reads `Settings.Secure` `minors_mode`, which a non-Samsung ROM does not have:
+  no block.
+- No signature, manufacturer or CSC gates were found beyond what 011 has.
+
+Anchors: every `shealth` pattern applies to both builds once the obfuscated names are replaced
+with content selectors (checked with `superpatcher.py analyze` on both APKs):
+
+| Pattern | 011 site | 012 site | Selector change |
+|---|---|---|---|
+| `shealth-ai-provider-start` | `GenerativeAiProvider.a()` (lambda `up1`) | same (lambda `lp1`) | `bodyAll` without the lambda class |
+| `shealth-vitality-tile` | `FeatureGroup.getGroupVitality` (factory `gz6.g`) | same (factory `rt.g`) | `insertInMethodAtMatch` on the literal, any registers and factory class |
+| `shealth-capability-gates` step 2 | `xvx.K0(SleepItem, gc5)` | `wvo.Q(SleepItem, …)` | no file; signature shape + `getSleepTrackDeviceList(` |
+| `shealth-launcher-badge` | 9 icons | 12 icons (3 extra unused `mipmap-anydpi*/ic_launcher*`) | `expect: atLeastOne` |
+| `shealth-oobe-local` | `j9v.s0()La11;` | `q7v.n0()Lw01;` | no file; body has `LOG_IN`/`LOG_OUT` + `"getContext(...)"` |
+
+Not verified yet: sign-in and cloud sync with a China account on the patched build (we have no
+CN account; it needs the reporter or a CN account on a test device).
+
 ## Go / no-go and effort
 
 | Part | Verdict | Rough effort (owner-time excluded) |

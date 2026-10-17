@@ -92,8 +92,14 @@ scripts/build_shm_watch.sh        # -> $DIST_DIR/shm-watch-1.5.1.022-gms.apk
     only when that app is switched off and offered for the watch, `true` otherwise),
     `companionLink` (the app talks to the companion app), `knownSigner` (may be signed
     by a key other than the catalogue's own), `statusAuthority` (content authority where the app
-    publishes its status; `${PKG_PREFIX}` allowed) and `singleCopy` (copies under another package
-    prefix are leftovers).
+    publishes its status; `${PKG_PREFIX}` allowed), `singleCopy` (copies under another package
+    prefix are leftovers) and `chinaFrom` = `{"input", "profile"}` (only on an output with
+    `from.input`: when the app's China mode is active the output is acquired and built from this
+    source instead of `from`; the output id, package, install, grants and self-test stay the same.
+    The input must exist, have the same `package` and `target` as the `from` input and differ from
+    it; the profile must exist and cover the same family as `from.profile`. Samsung Health+ uses it:
+    `shealth-phone-cn` + `shealth-cn`, the China build without the Local-only and China account
+    patterns).
 
 - **Schema 2 top-level keys** (the app reads these instead of hard-coding them; an engine that does
   not know the schema rejects the file):
@@ -135,14 +141,14 @@ scripts/build_shm_watch.sh        # -> $DIST_DIR/shm-watch-1.5.1.022-gms.apk
   and the patterns that do run keep the "anchor must match, otherwise abort" rule. The optional
   patterns are the minimum-age group below, `shm-setup-network-gate`, the sleep-apnea group below,
   `alarm-force-sound-vibrate`, `alarm-hide-launcher`, `alarm-relabel`, `shm-launcher-badge`,
-  `shealth-launcher-badge` and `shealth-oobe-local`.
+  `shealth-launcher-badge`, `shealth-oobe-local` and `shealth-china-account-gate`.
 - **Off-by-default patterns** (`"offByDefault": true`, optional patterns only): the build leaves
   them out unless the user turns them on — the patcher app switches each one off the first time
   it sees it (it remembers the optional ids it already knows, so a catalogue update never undoes
   the user's own choices), and `scripts/build_shealth.sh` skips them unless the environment
   variable named after the id is `1` (`shealth-oobe-local` -> `SHEALTH_OOBE_LOCAL=1`).
   Flip the flag to `false` (or drop it) to make the same pattern ship enabled by default. The
-  only user is `shealth-oobe-local` (see "Samsung Health" below).
+  users are `shealth-oobe-local` and `shealth-china-account-gate` (see "Samsung Health" below).
 - **Option groups** (`"optionGroup": "<name>"`, optional patterns only, at least two members):
   the members are always on or off together, across inputs, so a partial skip is an error. The
   groups are `sleep-apnea`: `shm-sleep-apnea-support` and `shm-sleep-countries` (phone SHM) with `watch-apnea-country` and
@@ -212,6 +218,10 @@ higher serial (app update) replaces a stored one. Home offers an "update" only w
 changes an input hash or the patches of the user's last build; nothing is downloaded automatically
 (the user fetches changed inputs on the Acquire screen, then rebuilds). Never rotate the key this way:
 a new key needs a new app release.
+
+`minAppVersion` is 45 because the catalogue uses `outputs[].chinaFrom` and an input with
+`obtain.yyb`: apps built before CI run 45 do not know them, so they would build Samsung Health+ only
+from the global input and offer no China download. Run 45 is the release that adds both.
 
 **Regression oracle** for engine changes: build everything before and after with the same
 `PKG_PREFIX`, then `scripts/oracle_decoded_diff.sh <distBefore> <distAfter>` decodes both with
@@ -409,6 +419,7 @@ so it installs next to the stock, Samsung-signed app. Rationale and per-feature 
 ```bash
 scripts/build_shealth.sh                # -> $DIST_DIR/shealth-7.00.6.011-shealth.apk
 SHEALTH_OOBE_LOCAL=1 scripts/build_shealth.sh   # include the optional Local-only mode
+SHEALTH_CHINA_ACCOUNT_GATE=1 scripts/build_shealth.sh   # include the experimental China account pattern
 ```
 
 In the patcher app it is opt-out like every optional app (the other is Health Monitor, `shm-phone` +
@@ -437,16 +448,32 @@ app that started the sign-in.
 | 5 | `shealth-rename-manifest` | `manifestRebrand` `com.sec.android.app.shealth` -> `${PKG_PREFIX}.shealth` (package, own-namespace permissions and authorities); the 11 `com.samsung.android.app.shealth.*` authorities -> `${PKG_PREFIX}.shealth.app.*`; the 7 custom permissions outside the package namespace -> `${PKG_PREFIX}.shealth.permission.<NAME>` (declarations and the activity/provider attributes using them); application and launcher label -> "Samsung Health+" (literal: the app engine does not load the 175 MB resource table) | Android refuses a second package that declares the same authority or permission with another certificate |
 | 6 | `shealth-rename-code` | smali: every exact `"com.sec.android.app.shealth"` const-string, every authority literal (bare and `content://` prefix), the OOBE broadcast permission, the account type `com.samsung.health.auth`, the app-settings URI `package:<pkg>` and the `:remote` process name -> the new names | Keeps the code consistent with the renamed manifest (self package checks, content URIs, sync authority, AccountManager type, permission prompts that open the app settings page, remote-process checks) |
 | 7 | `shealth-rename-account-xml` | `resXmlReplaceString`: account type `com.samsung.health.auth` (3 authenticator configs + sync adapter) and sync authority `com.sec.android.app.shealth.datastore` (2 sync adapters) -> the new names | Only one package can register an authenticator type; the sync adapter must point at the renamed datastore provider or cloud sync never runs |
-| 8 | `shealth-capability-gates` *(optional)* | every inlined `service_capability_list` check (`getServiceList` + `List.contains`; 3 sites: Vitals `xvx.J0`, Training load `t950`, fitness index `xao`) is forced true, and the per-sleep Vitals device check `xvx.K0` returns `TRUE` | The watch advertises its service list from `model_service_capability.json`, which only whitelists Galaxy Watch8/Ultra-class models, and the patched copy has no watch at all; these features compute on the phone from synced sleep/exercise history. Heart health score, BP trend and hearing stay off: they need a live connected watch node |
+| 8 | `shealth-capability-gates` *(optional)* | every inlined `service_capability_list` check (`getServiceList` + `List.contains`; 3 sites on 7.00.6.011: Vitals `xvx.J0`, Training load `t950`, fitness index `xao`) is forced true, and the per-sleep Vitals device check (`xvx.K0`; `wvo.Q` on the China build) returns `TRUE` | The watch advertises its service list from `model_service_capability.json`, which only whitelists Galaxy Watch8/Ultra-class models, and the patched copy has no watch at all; these features compute on the phone from synced sleep/exercise history. Heart health score, BP trend and hearing stay off: they need a live connected watch node |
 | 9 | `shealth-shm-providers` | the `content://com.samsung.android.shealthmonitor.sleep` and `.bp` URIs and the two `uses-permission` entries guarding them (`sleep.READ_SLEEP_APNEA_STATUS`, `bp.READ_MEASURE_FLAG`) -> `com.samsung.android.shealthmonitors.*` | The phone Health Monitor is renamed (`phone-rebrand-gms`), so Samsung Health+ asked a provider that does not exist and showed no Sleep apnea card under Sleep. Pairs with `shm-provider-callers` on the Health Monitor side |
-| 10 | `shealth-launcher-badge` *(optional)* | `adaptiveIconBadge`: the 9 adaptive icons (app icon, 4 widget icons, 4 shortcut icons) get a small LibreWrist badge at the bottom-right of the foreground layer and, for the app icon, of the monochrome (themed) layer | The renamed copy installs next to the stock app and would otherwise look identical in the launcher |
-| 11 | `shealth-oobe-local` *(optional, off by default)* | `SamsungAccountManager.s0` reports `LOG_IN`, so the mandatory sign-in stop state right after OOBE never fires | For running the app without a Samsung Account; the first-run wizard itself has no sign-in step, this only removes the gate after it. Off by default: cloud sign-in is expected to work on the re-signed copy (the code has no signature gate); enable it (or flip `offByDefault` in the catalogue) if sign-in does not work on this device |
+| 10 | `shealth-launcher-badge` *(optional)* | `adaptiveIconBadge`: the adaptive icons (9 on 7.00.6.011: app icon, 4 widget icons, 4 shortcut icons; 12 on the China build, which keeps 3 unused `mipmap-anydpi*/ic_launcher*` copies) get a small LibreWrist badge at the bottom-right of the foreground layer and, for the app icon, of the monochrome (themed) layer | The renamed copy installs next to the stock app and would otherwise look identical in the launcher |
+| 11 | `shealth-oobe-local` *(optional, off by default)* | the Samsung Account state getter (`j9v.s0`) reports `LOG_IN`, so the mandatory sign-in stop state right after OOBE never fires | For running the app without a Samsung Account; the first-run wizard itself has no sign-in step, this only removes the gate after it. Off by default: cloud sign-in is expected to work on the re-signed copy (the code has no signature gate); enable it (or flip `offByDefault` in the catalogue) if sign-in does not work on this device |
+| 12 | `shealth-china-account-gate` *(optional, off by default, experimental)* | regional check disabled: in the OOBE coroutine that runs right after sign-in (`lcf`, log `Global APK, China SACC, NO Smart Switch`), the result of the account-country check `ozn.Y` (`CountryLookup.getAccountCountryCode == "CN"`) is forced false, so the app no longer opens `HomeAppCloseActivity` with `OOBE_GLOBAL_APK_CHINA_SACC_APP_CLOSE` ("phone must be purchased in the country/region where your Samsung account was created") | The international build closes itself for a Samsung Account registered in mainland China ([#8](https://github.com/LibreStatic/LibreWrist/issues/8)). Only this call site is touched: `ozn.Y` has ~20 other callers that switch China-account features. Experimental: the China/international server split is the build flavor (`fs90.u()`, fixed at compile time), so this build keeps talking to the international servers and cloud sync for a CN account may not work; the real fix is a China build input |
 
 Anchors: semantic method names and literals of the official APK (`isEnabled()Z`, `L1()Z`,
-`vitality_show_tile_without_capabilities`) plus two obfuscated names pinned by the input hash:
-`j9v.s0()La11;` (the Samsung Account state getter), `xvx.K0` (per-sleep Vitals check), the
-`getServiceList: size=` log literal of the inlined capability checks and the four drawable names. A new Samsung
-Health version needs those re-anchored; the engines fail instead of guessing.
+`getGroupVitality`, `vitality_show_tile_without_capabilities`), content selectors in place of
+obfuscated names (the Samsung Account state getter is the method that names both
+`SamsungAccountManager$State` `LOG_IN` and `LOG_OUT` plus `"getContext(...)"`; the per-sleep Vitals
+check is the `(SleepItem, …)Object` method that logs `SHEALTH#Vitals#AvailabilityHelper` and reads
+`getSleepTrackDeviceList`), the `getServiceList: size=` log literal of the inlined capability checks,
+the four drawable names and one obfuscated name pinned by the input hash: `ozn.Y` (account country is
+CN, inside the file holding the `Global APK, China SACC` log). The same patterns apply to the
+international 7.00.6.011 and the China 7.00.6.012 build (obfuscated names differ: `j9v.s0` / `q7v.n0`,
+`xvx.K0` / `wvo.Q`); the vitality-tile pattern also matches its own patched form (the optional
+`const/4` before `at`) so the app engine's applied-mode self-check finds it. A new Samsung Health
+version needs the anchors checked; the engines fail instead of guessing.
+
+China build: profile `shealth-cn` builds the same Samsung Health+ from input `shealth-phone-cn`
+(7.00.6.012, flavor `chinaFinalRelease`, from 应用宝), selected through the output's `chinaFrom` when
+China mode is on. It carries patterns 1-10: the account sign-in is already optional on that flavor
+(so no `shealth-oobe-local`), and its China-account check does not exist (so no
+`shealth-china-account-gate`). It talks to Samsung's China servers (`*.samsunghealthcn.com`). Survey:
+[samsung-health-survey.md](samsung-health-survey.md) section 5.
+`SHEALTH_*` env vars work the same: `scripts/build_shealth.sh shealth-cn`.
 
 `renameFile` only changes the extension (`<stem>.<ext>` -> `<stem>.<new ext>`). The Python engine
 renames the file in the apktool tree (apktool paths); the app engine resolves the same

@@ -10,18 +10,19 @@ import java.security.MessageDigest
  * the old one: per patched input the file hash and version (`input.<id>` = `sha256|versionName`) and
  * a fingerprint of the patterns and injections applied to it (`patches.<id>`). Plain JVM code.
  */
-fun buildFacts(catalogue: LoadedCatalogue, outputIds: Collection<String>): Map<String, String> {
+fun buildFacts(catalogue: LoadedCatalogue, outputIds: Collection<String>, chinaMode: Boolean = false): Map<String, String> {
     val engine = catalogue.engine
     val facts = sortedMapOf<String, String>()
-    val patched = engine.outputs.filter { it.id in outputIds }.mapNotNull { it.from as? OutputSource.Patched }
-    for (from in patched.distinctBy { it.input }) {
+    val patched = engine.outputs.filter { it.id in outputIds }
+        .mapNotNull { out -> (out.sourceFor(chinaMode) as? OutputSource.Patched)?.let { it to out.family } }
+    for ((from, family) in patched.distinctBy { it.first.input }) {
         val input = catalogue.input(from.input)
         facts["input.${from.input}"] = "${input.sha256}|${input.versionName}"
         val profile = engine.profile(from.profile)
-        val families = profile.families[from.input].orEmpty()
+        val families = profile.families[family].orEmpty()
         val canonical = buildString {
             for (id in families) append("pattern:").append(id).append('=').append(engine.patterns[id]).append('\n')
-            for (id in profile.inject[from.input].orEmpty()) append("inject:").append(id).append('\n')
+            for (id in profile.inject[family].orEmpty()) append("inject:").append(id).append('\n')
         }
         facts["patches.${from.input}"] =
             MessageDigest.getInstance("SHA-256").digest(canonical.toByteArray()).joinToString("") { "%02x".format(it) }
@@ -37,7 +38,8 @@ const val FINGERPRINT_VERSION = 1
  * same fingerprint produce the same APK, so a stored one can be reused instead of patching again.
  * [signingCertSha256] is the certificate of the signing key, [engineFingerprint] the hash of the engine and
  * build code (`BuildConfig.ENGINE_FINGERPRINT`), [ownCertSha256] the patcher's own certificate (it ends up
- * in the phone bridge), [openAsset] opens the built-in injection and own-app assets. Plain JVM code.
+ * in the phone bridge), [openAsset] opens the built-in injection and own-app assets, [chinaMode] picks the
+ * `chinaFrom` source of an output that has one. Plain JVM code.
  */
 fun outputFingerprint(
     catalogue: LoadedCatalogue,
@@ -48,6 +50,7 @@ fun outputFingerprint(
     engineFingerprint: String,
     ownCertSha256: String?,
     openAsset: (path: String) -> InputStream,
+    chinaMode: Boolean = false,
 ): String {
     val engine = catalogue.engine
     val out = engine.outputs.first { it.id == outputId }
@@ -57,16 +60,16 @@ fun outputFingerprint(
     canonical.append("prefix=").append(prefix).append('\n')
     canonical.append("cert=").append(signingCertSha256).append('\n')
     canonical.append("engine=").append(engineFingerprint).append('\n')
-    when (val from = out.from) {
+    when (val from = out.sourceFor(chinaMode)) {
         is OutputSource.Patched -> {
             val input = catalogue.input(from.input)
             canonical.append("input=").append(from.input).append('=').append(input.sha256).append('|').append(input.versionName).append('\n')
             canonical.append("profile=").append(from.profile).append('\n')
             val profile = engine.profile(from.profile)
-            val families = profile.families[from.input].orEmpty()
+            val families = profile.families[out.family].orEmpty()
             for (id in families) canonical.append("pattern:").append(id).append('=').append(engine.patterns[id]).append('\n')
             for (id in disabled.filter { it in families }.toSortedSet()) canonical.append("disabled:").append(id).append('\n')
-            for (name in profile.inject[from.input].orEmpty()) {
+            for (name in profile.inject[out.family].orEmpty()) {
                 canonical.append("inject:").append(name).append('=').append(sha256Of(openAsset(BuildAssets.injection(name)))).append('\n')
             }
         }

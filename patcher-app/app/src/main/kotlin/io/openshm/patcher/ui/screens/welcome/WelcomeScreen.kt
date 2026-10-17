@@ -138,6 +138,7 @@ sealed interface WelcomeEvent {
     data object CancelSkip : WelcomeEvent
     data object ManualSetup : WelcomeEvent
     data class SetGuidePet(val on: Boolean) : WelcomeEvent
+    data class SetChinaMode(val on: Boolean) : WelcomeEvent
     data class SetUnattended(val on: Boolean) : WelcomeEvent
     data class SetFreeRun(val on: Boolean) : WelcomeEvent
     data class SetUninstallMismatch(val on: Boolean) : WelcomeEvent

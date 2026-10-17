@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="automation_china_title">中国模式</string>
+    <string name="automation_china_help">当这部手机看起来位于中国大陆时（根据 SIM 卡、网络或地区设置判断），会自动开启。开启后，补丁工具会优先打开 应用宝，下载其中提供的受支持官方应用，并在有中国大陆版 Samsung Health 时使用它，该版本适用于在中国注册的三星账号。关闭后将改用 APKMirror 和国际版。</string>
+</resources>

@@ -95,6 +95,27 @@ and calls natively, so by default the phone only announces `caps=["alarm"]`.
 ### Privacy
 Notification bodies, names and numbers are never logged: only id, package, path and lengths.
 
+## Acquiring input APKs (patcher app)
+
+The Acquire step verifies every input against the catalogue sha256 (the only trust anchor) whether it
+comes from a picked file or a download. Downloads come from the guided browser: one WebView
+(`ApkMirrorWebView`), one coach UI (`GuidedBrowserHost`) and one `RedirectChain`, all parameterized by a
+`SiteGuide` (`data/SiteGuide.kt`, pure JVM): start URL, navigation allow-list, coach step, download
+verdict, which hosts may serve the file, and `normalizeDownloadUrl`. `InputSource` (`ApkMirror`, `Yyb`)
+maps a navigation argument (`Route.guidedBrowser(inputId, source)`) to its guide, and `InputApp.sources()`
+lists the sources an input is on, primary first (the first one is the main button on the card, the rest
+go in the "more ways" menu).
+
+- `ApkMirrorGuide`: https `apkmirror.com` pages, 3-step coach, redirect hop to its CDN.
+- `QqGuide` (YingYongBao, opt-in per input with `obtain.yyb`): start page
+  `https://a.app.qq.com/o/simple.jsp?pkgname=<package>`, pages on `a.app.qq.com` / `sj.qq.com` only.
+  The page links straight to `imtt[N].dd.qq.com/.../<32 hex>.apk` over http; that link is upgraded to https
+  (the CDN serves the same file) and accepted only for a whole-file name, never `_offset_` partial
+  mirrors or `microdown.myapp.com`. No redirect hops, no cookies. 2-step coach; no version parsing, the
+  sha256 decides.
+
+Both end in `AcquireViewModel.downloadFrom` -> `InputStore.download` over `ApkDownloader` (https only).
+
 ## Device-free tests
 
 - `shm-bridge/watch/test/run-tests.sh` — watch mux.

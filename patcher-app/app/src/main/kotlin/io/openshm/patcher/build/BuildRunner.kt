@@ -69,6 +69,8 @@ class BuildRequest(
     val fingerprints: Map<String, String> = emptyMap(),
     /** Outputs of the last build that may be kept as they are, by output id; used only when the fingerprint and the file still match. */
     val reusable: Map<String, BuiltRecord> = emptyMap(),
+    /** China mode is on: an output with a `chinaFrom` is built from that source instead of `from`. */
+    val chinaMode: Boolean = false,
 )
 
 /** One finished output; [reused] means the file of an earlier build was kept, [fingerprint] is what it was built from. */
@@ -136,7 +138,7 @@ class BuildRunner(
         val missing = request.outputIds.filter { id -> outputs.none { it.id == id } }
         if (missing.isNotEmpty()) return fail(sink, "unknown outputs: ${missing.joinToString()}", emptyList())
         for (out in outputs) {
-            val from = out.from
+            val from = out.sourceFor(request.chinaMode)
             if (from is OutputSource.Patched && !inputFile(from.input).isFile) {
                 return fail(sink, "input '${from.input}' is missing; import it again", emptyList())
             }
@@ -186,9 +188,9 @@ class BuildRunner(
     }
 
     private fun buildOne(out: CatalogueOutput, request: BuildRequest, target: File, listener: PatchListener): StepResult =
-        when (val from = out.from) {
+        when (val from = out.sourceFor(request.chinaMode)) {
             is OutputSource.Patched -> {
-                val names = catalogue.profile(from.profile).inject[from.input].orEmpty()
+                val names = catalogue.profile(from.profile).inject[out.family].orEmpty()
                 val injections: Map<String, InjectionSource> = names.associateWith { name ->
                     DexInjection(readAsset(BuildAssets.injection(name)), request.prefix)
                 }

@@ -39,7 +39,7 @@ _GLOBAL_SETTING_VALUE_RE = re.compile(r'^L[a-zA-Z0-9_/$-]{0,127}$', re.ASCII)
 _COMPONENT_RE = re.compile(r'^(\.[A-Za-z]\w*)+$|^[A-Za-z]\w*(\.[A-Za-z]\w*)+$', re.ASCII)
 _NOTE_RE = re.compile(r'^[^\x00-\x1f\x7f]{1,300}$', re.ASCII)
 _APP_ICONS = ('monitor-heart', 'favorite', 'alarm', 'swap')   # closed vocabulary of apps[].icon
-_OUTPUT_OPTIONAL_KEYS = ('start', 'companionLink', 'knownSigner', 'statusAuthority', 'singleCopy')
+_OUTPUT_OPTIONAL_KEYS = ('start', 'companionLink', 'knownSigner', 'statusAuthority', 'singleCopy', 'chinaFrom')
 _LOCALE_RE = re.compile(r'^[a-z]{2,3}(-[A-Z][A-Za-z]{1,3})?$', re.ASCII)
 _STRING_KEY_RE = re.compile(r'^[a-z][A-Za-z0-9_.-]{0,199}$', re.ASCII)
 _TEXT_RE = re.compile(r'^[^\x00-\x1f\x7f]{1,4000}$')
@@ -170,7 +170,34 @@ def _validate_output_extras(where, o, optional_apps=frozenset()):
     return out
 
 
-def _validate_install(cat, input_targets, profiles):
+def _validate_china_from(where, cf, src, device, input_targets, input_packages, profiles):
+    """Problems of an output's `chinaFrom`: an alternative {"input", "profile"} source (China mode) that must
+    be the same app as `from` (same package and target) but another input."""
+    if not isinstance(cf, dict) or set(cf) != {'input', 'profile'} \
+            or not isinstance(cf['input'], str) or not isinstance(cf['profile'], str):
+        return [f'{where}: chinaFrom must be {{"input", "profile"}} with string values']
+    out = []
+    if cf['input'] not in input_targets:
+        out.append(f'{where}: chinaFrom.input {cf["input"]!r} is not in inputs')
+    else:
+        if input_targets[cf['input']] != device:
+            out.append(f'{where}: chinaFrom.input {cf["input"]!r} targets '
+                       f'{input_targets[cf["input"]]!r}, not {device!r}')
+        if input_packages.get(cf['input']) != input_packages.get(src.get('input')):
+            out.append(f'{where}: chinaFrom.input {cf["input"]!r} has another package than '
+                       f'from.input {src.get("input")!r}')
+    if cf['input'] == src.get('input'):
+        out.append(f'{where}: chinaFrom.input must differ from from.input')
+    if cf['profile'] not in profiles:
+        out.append(f'{where}: chinaFrom.profile {cf["profile"]!r} is not in profiles')
+    elif src.get('input') not in _profile_families(profiles[cf['profile']]):
+        # profiles are keyed by family, which the China input shares with the input of `from`
+        out.append(f'{where}: profile {cf["profile"]!r} has no patterns for the family '
+                   f'{src.get("input")!r} of {cf["input"]!r}')
+    return out
+
+
+def _validate_install(cat, input_targets, profiles, input_packages=None):
     """Problems of outputs / installOrder / grants / stockAppsToDisable. `input_targets` maps
     input id -> device, `profiles` is the (dict) profiles section."""
     problems = []
@@ -223,7 +250,12 @@ def _validate_install(cat, input_targets, profiles):
                 elif src['input'] not in _profile_families(profiles[src['profile']]):
                     problems.append(f'{where}: profile {src["profile"]!r} has no patterns for '
                                     f'{src["input"]!r}')
+            if 'chinaFrom' in o:
+                problems.extend(_validate_china_from(where, o['chinaFrom'], src, o['device'],
+                                                     input_targets, input_packages or {}, profiles))
         elif isinstance(src, dict) and set(src) == {'ownApp'}:
+            if 'chinaFrom' in o:
+                problems.append(f'{where}: chinaFrom is only allowed on an output built from an input')
             a = src['ownApp']
             if not isinstance(a, str) or not _OWN_APP_RE.fullmatch(a):
                 problems.append(f'{where}: from.ownApp must match {_OWN_APP_RE.pattern}')
@@ -554,7 +586,9 @@ def validate_catalogue(cat):
     if isinstance(cat['inputs'], list):
         targets = {i['id']: i.get('target') for i in cat['inputs']
                    if isinstance(i, dict) and isinstance(i.get('id'), str)}
-        problems.extend(_validate_install(cat, targets, profiles))
+        packages = {i['id']: i.get('package') for i in cat['inputs']
+                    if isinstance(i, dict) and isinstance(i.get('id'), str)}
+        problems.extend(_validate_install(cat, targets, profiles, packages))
     return problems
 
 

@@ -13,6 +13,7 @@ import io.openshm.patcher.build.currentFingerprints
 import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.RebuildScope
 import io.openshm.patcher.data.SetupSession
+import io.openshm.patcher.data.effectiveChinaMode
 import io.openshm.patcher.ui.components.CheckStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -91,7 +92,7 @@ class BuildViewModel(application: Application) : AndroidViewModel(application) {
     private val storage = BuildStorage(application)
     private val patchCount = SetupSession.state.value.let { AppCatalogue.current.patternCount(it.inputIds, it.disabledPatches) }
     private val key = SetupSession.state.value.let {
-        buildKey(AppCatalogue.current.serial, it.packagePrefix, it.outputIds, AppCatalogue.current.effectiveDisabled(it.disabledPatches))
+        buildKey(AppCatalogue.current.serial, it.packagePrefix, it.outputIds, AppCatalogue.current.effectiveDisabled(it.disabledPatches), effectiveChinaMode())
     }
     private val logVisible = MutableStateFlow(false)
 
@@ -153,7 +154,7 @@ class BuildViewModel(application: Application) : AndroidViewModel(application) {
         val current = try {
             currentFingerprints(
                 getApplication(), AppCatalogue.current, session.packagePrefix, session.outputIds,
-                AppCatalogue.current.effectiveDisabled(session.disabledPatches),
+                AppCatalogue.current.effectiveDisabled(session.disabledPatches), effectiveChinaMode(),
             )
         } catch (e: Exception) {
             return false

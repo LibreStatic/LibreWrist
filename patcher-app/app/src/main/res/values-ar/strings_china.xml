@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="automation_china_title">وضع الصين</string>
+    <string name="automation_china_help">يُفعَّل تلقائيًا عندما يبدو أن الهاتف موجود في البر الرئيسي للصين (بطاقة SIM أو الشبكة أو إعدادات المنطقة). عندها يفتح المُصلِح 应用宝 أولًا لتنزيل التطبيقات الرسمية المتوفرة هناك، ويستخدم إصدار Samsung Health الخاص بالبر الرئيسي للصين عند توفره، وهو يعمل مع حسابات Samsung المسجلة في الصين. أوقفه لاستخدام APKMirror والإصدار الدولي بدلًا من ذلك.</string>
+</resources>

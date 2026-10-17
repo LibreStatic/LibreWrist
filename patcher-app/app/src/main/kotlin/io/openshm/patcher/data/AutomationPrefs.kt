@@ -31,6 +31,8 @@ data class AutomationState(
     val appsNoticeSeen: Boolean = false,
     /** Seconds a countdown takes before a step continues by itself, when Advance freely is off. */
     val advanceSeconds: Int = ADVANCE_SECONDS_DEFAULT,
+    /** China mode chosen by the user; null follows the region detection ([Region.detected]). */
+    val chinaMode: Boolean? = null,
 ) {
     val freeRunActive: Boolean get() = unattended && freeRun
     val uninstallActive: Boolean get() = unattended && uninstallMismatch
@@ -41,6 +43,12 @@ data class AutomationState(
      */
     val appsNoticePending: Boolean get() = unattended && !appsNoticeSeen
 }
+
+/** Whether China mode is on: the user's choice when there is one, the detection otherwise. */
+fun AutomationState.chinaModeActive(detected: Boolean): Boolean = chinaMode ?: detected
+
+/** The China mode switch is shown where it was detected, or where the user ever set it (to turn it back). */
+fun chinaModeToggleVisible(detected: Boolean, stored: Boolean?): Boolean = detected || stored != null
 
 /**
  * Process-wide automation settings, persisted in SharedPreferences once [init] has run (the app does
@@ -55,6 +63,7 @@ object Automation {
     private const val KEY_WARNING_HIDDEN = "freeRunWarningHidden"
     private const val KEY_APPS_NOTICE_SEEN = "appsNoticeSeen"
     private const val KEY_ADVANCE_SECONDS = "advanceSeconds"
+    private const val KEY_CHINA_MODE = "chinaMode"
 
     private val _state = MutableStateFlow(AutomationState())
     val state: StateFlow<AutomationState> = _state.asStateFlow()
@@ -73,6 +82,7 @@ object Automation {
             freeRunWarningHidden = p.getBoolean(KEY_WARNING_HIDDEN, d.freeRunWarningHidden),
             appsNoticeSeen = p.getBoolean(KEY_APPS_NOTICE_SEEN, d.appsNoticeSeen),
             advanceSeconds = p.getInt(KEY_ADVANCE_SECONDS, d.advanceSeconds).coerceIn(ADVANCE_SECONDS_MIN, ADVANCE_SECONDS_MAX),
+            chinaMode = if (p.contains(KEY_CHINA_MODE)) p.getBoolean(KEY_CHINA_MODE, false) else null,
         )
         prefs = p
     }
@@ -91,11 +101,14 @@ object Automation {
 
     fun setAdvanceSeconds(value: Int) = update { it.copy(advanceSeconds = value.coerceIn(ADVANCE_SECONDS_MIN, ADVANCE_SECONDS_MAX)) }
 
+    fun setChinaMode(value: Boolean) = update { it.copy(chinaMode = value) }
+
     @Synchronized
     private fun update(transform: (AutomationState) -> AutomationState) {
         val next = transform(_state.value)
         _state.value = next
-        prefs?.edit()
+        val editor = prefs?.edit()
+        editor
             ?.putBoolean(KEY_GUIDE_PET, next.guidePet)
             ?.putBoolean(KEY_UNATTENDED, next.unattended)
             ?.putBoolean(KEY_FREE_RUN, next.freeRun)
@@ -103,6 +116,8 @@ object Automation {
             ?.putBoolean(KEY_WARNING_HIDDEN, next.freeRunWarningHidden)
             ?.putBoolean(KEY_APPS_NOTICE_SEEN, next.appsNoticeSeen)
             ?.putInt(KEY_ADVANCE_SECONDS, next.advanceSeconds)
-            ?.apply()
+        // Absent means "follow the detection".
+        if (next.chinaMode != null) editor?.putBoolean(KEY_CHINA_MODE, next.chinaMode) else editor?.remove(KEY_CHINA_MODE)
+        editor?.apply()
     }
 }

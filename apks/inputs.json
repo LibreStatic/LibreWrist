@@ -89,6 +89,30 @@
         "apkmirror": "samsung-electronics-co-ltd/s-health",
         "apkmirrorRelease": "samsung-health-7-00-6-011-release"
       }
+    },
+    {
+      "id": "shealth-phone-cn",
+      "file": "shealth-7.00.6.012-cn.apk",
+      "sha256": "b40e9bc5e927db43dadbe5d5c41d2c99d7f7787c44c6d5bb664bceb5686e77ca",
+      "label": "Samsung Health (China)",
+      "package": "com.sec.android.app.shealth",
+      "versionName": "7.00.6.012",
+      "versionCode": 7006012,
+      "minSdk": 29,
+      "targetSdk": 36,
+      "abis": [
+        "arm64-v8a",
+        "armeabi-v7a"
+      ],
+      "dpi": "nodpi",
+      "format": "apk",
+      "target": "phone",
+      "role": "patched",
+      "obtain": {
+        "note": "China build (flavor chinaFinalRelease), not on APKMirror: 应用宝 (YingYongBao) mobile page a.app.qq.com/o/simple.jsp?pkgname=com.sec.android.app.shealth, single APK from the imtt*.dd.qq.com CDN",
+        "onApkMirror": false,
+        "yyb": true
+      }
     }
   ]
 }

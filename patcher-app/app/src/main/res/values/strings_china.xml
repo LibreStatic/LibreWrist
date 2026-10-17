@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="automation_china_title">China mode</string>
+    <string name="automation_china_help">Turns on by itself when this phone looks like it is in mainland China (SIM, network or region settings). The patcher then opens 应用宝 first to download the official apps it supports there, and uses the Samsung Health build for mainland China when one is available, which works with Samsung accounts registered in China. Turn it off to use APKMirror and the international build instead.</string>
+</resources>

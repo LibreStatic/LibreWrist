@@ -128,6 +128,31 @@ class BuildRunnerTest {
         assertTrue(phone.outputApk!!.name.endsWith(".apk.part"))
     }
 
+    @Test fun chinaModeBuildsSamsungHealthFromTheChinaInput() {
+        val engine = FakeEngine()
+        val outcome = runner(engine).run(BuildRequest(allIds, "com.example", key, null, chinaMode = true), Sink())
+        assertTrue(outcome.error, outcome.ok)
+        assertEquals(allIds.sorted(), outcome.files.map { it.outputId }.sorted()) // the output id is the same
+        assertTrue(engine.patches.none { it.inputId == "shealth-phone" })
+        val shealth = engine.patches.single { it.inputId == "shealth-phone-cn" }
+        assertEquals("shealth-cn", shealth.profile)
+        assertEquals(File(root, "inputs/shealth-phone-cn.apk"), shealth.inputApk)
+        // the other apps do not change
+        assertEquals(setOf("shm-phone", "shm-watch", "alarm-watch", "shealth-phone-cn"), engine.patches.map { it.inputId }.toSet())
+    }
+
+    @Test fun chinaModeNeedsTheChinaInputFile() {
+        File(root, "inputs/shealth-phone-cn.apk").delete()
+        val engine = FakeEngine()
+        val sink = Sink()
+        val outcome = runner(engine).run(BuildRequest(allIds, "com.example", key, null, chinaMode = true), sink)
+        assertFalse(outcome.ok)
+        assertTrue(outcome.error, "shealth-phone-cn" in outcome.error.orEmpty())
+        assertTrue(engine.patches.isEmpty())
+        // outside China mode the global input is the one that counts
+        assertTrue(runner(FakeEngine()).run(request(allIds), Sink()).ok)
+    }
+
     @Test fun disabledPatternsReachEveryPatchedOutput() {
         val engine = FakeEngine()
         val disabled = setOf("shm-sleep-apnea-support", "shm-sleep-countries", "watch-apnea-country", "watch-apnea-reeval-not-supported", "alarm-relabel")

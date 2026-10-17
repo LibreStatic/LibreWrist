@@ -3,9 +3,12 @@ package io.openshm.patcher
 import io.openshm.patcher.data.ADVANCE_SECONDS_DEFAULT
 import io.openshm.patcher.data.Automation
 import io.openshm.patcher.data.AutomationState
+import io.openshm.patcher.data.chinaModeActive
+import io.openshm.patcher.data.chinaModeToggleVisible
 import org.junit.Test
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 
 class AutomationStateTest {
@@ -73,5 +76,37 @@ class AutomationStateTest {
     @Test
     fun appsNoticeWaitsWhileUnattendedIsOff() {
         assertFalse(AutomationState(unattended = false).appsNoticePending)
+    }
+
+    @Test
+    fun chinaModeFollowsDetectionUntilTheUserChooses() {
+        assertNull(AutomationState().chinaMode)
+        assertTrue(AutomationState(chinaMode = null).chinaModeActive(detected = true))
+        assertFalse(AutomationState(chinaMode = null).chinaModeActive(detected = false))
+        assertTrue(AutomationState(chinaMode = true).chinaModeActive(detected = true))
+        assertTrue(AutomationState(chinaMode = true).chinaModeActive(detected = false))
+        assertFalse(AutomationState(chinaMode = false).chinaModeActive(detected = true))
+        assertFalse(AutomationState(chinaMode = false).chinaModeActive(detected = false))
+    }
+
+    @Test
+    fun chinaModeSwitchShowsWhereDetectedOrOnceSet() {
+        assertFalse(chinaModeToggleVisible(detected = false, stored = null))
+        assertTrue(chinaModeToggleVisible(detected = true, stored = null))
+        assertTrue(chinaModeToggleVisible(detected = false, stored = true))
+        assertTrue(chinaModeToggleVisible(detected = false, stored = false))
+        assertTrue(chinaModeToggleVisible(detected = true, stored = false))
+    }
+
+    @Test
+    fun setChinaModeStoresTheChoice() {
+        try {
+            Automation.setChinaMode(false)
+            assertEquals(false, Automation.state.value.chinaMode)
+            Automation.setChinaMode(true)
+            assertEquals(true, Automation.state.value.chinaMode)
+        } finally {
+            Automation.setChinaMode(false)
+        }
     }
 }

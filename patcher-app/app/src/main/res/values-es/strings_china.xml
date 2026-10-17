@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="automation_china_title">Modo China</string>
+    <string name="automation_china_help">Se activa solo cuando este teléfono parece estar en China continental (SIM, red o ajustes de región). El parcheador abre primero 应用宝 para descargar las apps oficiales que admite allí y usa la versión de Samsung Health para China continental cuando hay una disponible, que funciona con cuentas de Samsung registradas en China. Desactívalo para usar APKMirror y la versión internacional.</string>
+</resources>

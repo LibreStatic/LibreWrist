@@ -231,6 +231,42 @@ class InstallSection(unittest.TestCase):
             json.loads('{"schema": 1, "schema": 2}', object_pairs_hook=P.no_duplicate_keys)
 
 
+    def china_output(self):
+        return next(o for o in self.cat['outputs'] if o['id'] == 'shealth-phone')
+
+    def test_china_from(self):
+        out = self.china_output()
+        self.assertEqual(out['chinaFrom'], {'input': 'shealth-phone-cn', 'profile': 'shealth-cn'})
+        self.assertEqual(self.problems(), [])
+        # an unknown input
+        out['chinaFrom'] = {'input': 'nope', 'profile': 'shealth-cn'}
+        self.assertRejected('chinaFrom.input')
+        self.assertRejected('is not in inputs')
+        # an input of another package (same target)
+        out['chinaFrom'] = {'input': 'shm-phone', 'profile': 'shealth-cn'}
+        self.assertRejected('has another package than')
+        # an input of another target
+        out['chinaFrom'] = {'input': 'shm-watch', 'profile': 'shealth-cn'}
+        self.assertRejected('targets')
+        # an unknown profile, one without patterns for the family
+        out['chinaFrom'] = {'input': 'shealth-phone-cn', 'profile': 'nope'}
+        self.assertRejected('chinaFrom.profile')
+        out['chinaFrom'] = {'input': 'shealth-phone-cn', 'profile': 'gms'}
+        self.assertRejected('has no patterns for the family')
+        # the same input as from
+        out['chinaFrom'] = {'input': 'shealth-phone', 'profile': 'shealth-cn'}
+        self.assertRejected('must differ from from.input')
+        # wrong shape
+        for bad in ('x', {'input': 'shealth-phone-cn'}, {'input': 1, 'profile': 2}):
+            out['chinaFrom'] = bad
+            self.assertRejected('chinaFrom must be')
+
+    def test_china_from_needs_a_patched_output(self):
+        out = next(o for o in self.cat['outputs'] if 'ownApp' in o['from'])
+        out['chinaFrom'] = {'input': 'shealth-phone-cn', 'profile': 'shealth-cn'}
+        self.assertRejected('chinaFrom is only allowed on an output built from an input')
+
+
 class SchemaTwo(unittest.TestCase):
     """apps / strings / platform and the optional output, stock and grant fields."""
 

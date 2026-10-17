@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="automation_china_title">Tryb Chiny</string>
+    <string name="automation_china_help">Włącza się sam, gdy ten telefon wygląda na znajdujący się w Chinach kontynentalnych (karta SIM, sieć lub ustawienia regionu). Patcher otwiera wtedy najpierw 应用宝, aby pobrać obsługiwane tam oficjalne aplikacje, i używa wersji Samsung Health dla Chin kontynentalnych, gdy jest dostępna. Działa ona z kontami Samsung zarejestrowanymi w Chinach. Wyłącz, aby zamiast tego używać APKMirror i wersji międzynarodowej.</string>
+</resources>

@@ -31,6 +31,8 @@ import io.openshm.patcher.R
 import io.openshm.patcher.data.AppGroup
 import io.openshm.patcher.data.Device
 import io.openshm.patcher.data.InputApp
+import io.openshm.patcher.data.InputSource
+import io.openshm.patcher.data.sources
 import io.openshm.patcher.data.VariantChip
 import io.openshm.patcher.ui.components.CheckStatus
 import io.openshm.patcher.ui.components.FooterHint
@@ -71,12 +73,14 @@ data class AcquireUiState(
     val cards: List<AcquireCard> = emptyList(),
     /** One switch per optional app the catalogue offers. */
     val optionalApps: List<OptionalAppToggle> = emptyList(),
+    /** China mode is on: YingYongBao is the primary source where an app is published there. */
+    val chinaMode: Boolean = false,
 ) {
     val waiting: Int get() = cards.count { it.progress !is AcquireProgress.Verified }
 }
 
 sealed interface AcquireEvent {
-    data class OpenMirror(val inputId: String) : AcquireEvent
+    data class OpenMirror(val inputId: String, val source: InputSource = InputSource.ApkMirror) : AcquireEvent
     data class ToggleMoreWays(val inputId: String) : AcquireEvent
     data class UseFile(val inputId: String) : AcquireEvent
     data class ToggleApp(val appId: String) : AcquireEvent
@@ -106,7 +110,7 @@ fun AcquireScreen(
         },
         // The cards split across the panes (first half beside the intro); narrow, the same single column.
         secondary = {
-            state.cards.drop((state.cards.size + 1) / 2).forEach { AcquireCardView(it, onEvent) }
+            state.cards.drop((state.cards.size + 1) / 2).forEach { AcquireCardView(it, state.chinaMode, onEvent) }
             NoteRow(Icons.Rounded.VerifiedUser, stringResource(R.string.acquire_verify_note))
         },
     ) {
@@ -117,7 +121,7 @@ fun AcquireScreen(
         )
         // The switches come first: they decide which cards below are needed.
         state.optionalApps.forEach { OptionalAppCard(it, onEvent) }
-        state.cards.take((state.cards.size + 1) / 2).forEach { AcquireCardView(it, onEvent) }
+        state.cards.take((state.cards.size + 1) / 2).forEach { AcquireCardView(it, state.chinaMode, onEvent) }
     }
 }
 
@@ -139,7 +143,7 @@ private fun OptionalAppCard(toggle: OptionalAppToggle, onEvent: (AcquireEvent) -
 }
 
 @Composable
-private fun AcquireCardView(card: AcquireCard, onEvent: (AcquireEvent) -> Unit) {
+private fun AcquireCardView(card: AcquireCard, chinaMode: Boolean, onEvent: (AcquireEvent) -> Unit) {
     val input = card.input
     Surface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(28.dp), color = MaterialTheme.colorScheme.surfaceContainerLow) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -165,7 +169,7 @@ private fun AcquireCardView(card: AcquireCard, onEvent: (AcquireEvent) -> Unit) 
                             Text(stringResource(progress.reason), style = MaterialTheme.typography.bodySmall)
                         }
                     }
-                    GetActions(card, onEvent)
+                    GetActions(card, chinaMode, onEvent)
                 }
                 is AcquireProgress.Downloading -> {
                     Text(
@@ -195,9 +199,12 @@ private fun AcquireCardView(card: AcquireCard, onEvent: (AcquireEvent) -> Unit) 
 }
 
 @Composable
-private fun GetActions(card: AcquireCard, onEvent: (AcquireEvent) -> Unit) {
+private fun GetActions(card: AcquireCard, chinaMode: Boolean, onEvent: (AcquireEvent) -> Unit) {
     val id = card.input.id
-    if (!card.input.onApkMirror) {
+    // The first source is the primary button, the others go in the menu; the order is decided by sources().
+    val sources = card.input.sources(chinaMode)
+    val primary = sources.firstOrNull()
+    if (primary == null) {
         Text(
             stringResource(R.string.acquire_not_on_mirror, card.input.versionName),
             style = MaterialTheme.typography.bodyMedium,
@@ -207,14 +214,21 @@ private fun GetActions(card: AcquireCard, onEvent: (AcquireEvent) -> Unit) {
     }
     Column {
         SplitAction(
-            text = stringResource(R.string.acquire_open_mirror),
+            text = stringResource(primary.openLabelRes()),
             icon = Icons.Rounded.OpenInBrowser,
-            onClick = { onEvent(AcquireEvent.OpenMirror(id)) },
+            onClick = { onEvent(AcquireEvent.OpenMirror(id, primary)) },
             moreDescription = stringResource(R.string.acquire_more_ways),
             expanded = card.moreWaysExpanded,
             onToggleMore = { onEvent(AcquireEvent.ToggleMoreWays(id)) },
         )
         DropdownMenu(expanded = card.moreWaysExpanded, onDismissRequest = { onEvent(AcquireEvent.ToggleMoreWays(id)) }) {
+            sources.drop(1).forEach { other ->
+                DropdownMenuItem(
+                    text = { Text(stringResource(other.menuLabelRes())) },
+                    leadingIcon = { Icon(Icons.Rounded.OpenInBrowser, contentDescription = null) },
+                    onClick = { onEvent(AcquireEvent.OpenMirror(id, other)) },
+                )
+            }
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.acquire_use_file)) },
                 leadingIcon = { Icon(Icons.Rounded.FolderOpen, contentDescription = null) },
@@ -222,6 +236,16 @@ private fun GetActions(card: AcquireCard, onEvent: (AcquireEvent) -> Unit) {
             )
         }
     }
+}
+
+private fun InputSource.openLabelRes() = when (this) {
+    InputSource.ApkMirror -> R.string.acquire_open_mirror
+    InputSource.Yyb -> R.string.acquire_open_yyb
+}
+
+private fun InputSource.menuLabelRes() = when (this) {
+    InputSource.ApkMirror -> R.string.acquire_open_mirror
+    InputSource.Yyb -> R.string.acquire_source_yyb
 }
 
 private const val MEGABYTE = 1024L * 1024L

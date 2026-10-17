@@ -13,16 +13,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import io.openshm.patcher.R
-import io.openshm.patcher.data.ApkMirrorGuide
 import io.openshm.patcher.data.CoachState
 import io.openshm.patcher.data.DownloadRequest
 import io.openshm.patcher.data.DownloadVerdict
 import io.openshm.patcher.data.InputApp
+import io.openshm.patcher.data.InputSource
 import io.openshm.patcher.data.VariantChip
 import java.net.URI
 
-private const val BROWSER_HOST = "www.apkmirror.com"
-private const val COACH_TOTAL = 3
+private const val MIRROR_COACH_TOTAL = 3
+private const val YYB_COACH_TOTAL = 2
 
 /** What the notice over the page is about; kept apart from its text so it survives a language change. */
 private sealed interface Notice {
@@ -39,15 +39,19 @@ private sealed interface Notice {
 @Composable
 fun GuidedBrowserHost(
     input: InputApp,
+    source: InputSource,
     onDownload: (DownloadRequest) -> Unit,
     onUseFile: () -> Unit,
     onClose: () -> Unit,
 ) {
     val context = LocalContext.current
     val controller = remember { ApkMirrorWebController() }
-    var currentUrl by rememberSaveable { mutableStateOf(ApkMirrorGuide.startUrl(input)) }
+    val guide = source.guide
+    val isMirror = source == InputSource.ApkMirror
+    var currentUrl by rememberSaveable(source) { mutableStateOf(guide.startUrl(input)) }
     var notice by remember { mutableStateOf<Notice?>(null) }
-    val coach = if (input.onApkMirror) ApkMirrorGuide.coachStep(currentUrl, input) else CoachState(1)
+    val coach = if (isMirror && !input.onApkMirror) CoachState(1) else guide.coachStep(currentUrl, input)
+    val noMirror = isMirror && !input.onApkMirror
     val chips = input.variantChips.filter { it == VariantChip.ApkNotBundle || it == VariantChip.NoDpi }
         .map { stringResource(it.labelRes()) }
     val target = (listOf(input.versionName) + chips + listOfNotNull(input.abis.takeIf { it.isNotEmpty() }?.joinToString(" + ")))
@@ -55,13 +59,20 @@ fun GuidedBrowserHost(
 
     GuidedBrowserScreen(
         state = GuidedBrowserUiState(
-            host = hostOf(currentUrl) ?: BROWSER_HOST,
+            host = hostOf(currentUrl) ?: hostOf(guide.startUrl(input)).orEmpty(),
             appLabel = input.label,
             coachStep = coach.step,
-            coachTotal = COACH_TOTAL,
-            coachTitle = stringResource(if (input.onApkMirror) coachTitle(coach.step) else R.string.browser_coach_no_mirror_title),
+            coachTotal = if (isMirror) MIRROR_COACH_TOTAL else YYB_COACH_TOTAL,
+            coachTitle = stringResource(
+                when {
+                    noMirror -> R.string.browser_coach_no_mirror_title
+                    isMirror -> coachTitle(coach.step)
+                    else -> yybCoachTitle(coach.step)
+                },
+            ),
             coachBody = when {
-                !input.onApkMirror -> stringResource(R.string.browser_coach_no_mirror_body, input.versionName)
+                noMirror -> stringResource(R.string.browser_coach_no_mirror_body, input.versionName)
+                !isMirror -> stringResource(yybCoachBody(coach.step), input.label)
                 coach.wrongVersion -> stringResource(R.string.browser_coach_wrong_version_body, input.versionName)
                 else -> stringResource(coachBody(coach.step), input.versionName)
             },
@@ -73,7 +84,7 @@ fun GuidedBrowserHost(
                 GuidedBrowserEvent.Close -> onClose()
                 GuidedBrowserEvent.UseFile -> onUseFile()
                 GuidedBrowserEvent.Reload -> controller.reload()
-                GuidedBrowserEvent.BackToRightPage -> controller.load(ApkMirrorGuide.startUrl(input))
+                GuidedBrowserEvent.BackToRightPage -> controller.load(guide.startUrl(input))
                 GuidedBrowserEvent.OpenInBrowser -> openExternally(context, currentUrl)
                 GuidedBrowserEvent.OpenNoticeExternally -> {
                     (notice as? Notice.Blocked)?.let { openExternally(context, it.url) }
@@ -84,15 +95,17 @@ fun GuidedBrowserHost(
         },
         page = {
             ApkMirrorWebView(
+                guide = guide,
                 initialUrl = currentUrl,
                 controller = controller,
                 onPage = { url ->
-                    if (ApkMirrorGuide.isAllowedNavigation(url)) currentUrl = url
+                    if (guide.isAllowedNavigation(url)) currentUrl = url
                 },
                 onBlocked = { notice = Notice.Blocked(it) },
                 onDownload = { request ->
-                    when (ApkMirrorGuide.isAcceptableDownload(request.url, request.contentDisposition, request.mimeType)) {
-                        DownloadVerdict.Ok -> onDownload(request)
+                    // The request carries the normalized URL (e.g. https for an http CDN link).
+                    when (guide.isAcceptableDownload(request.url, request.contentDisposition, request.mimeType)) {
+                        DownloadVerdict.Ok -> onDownload(request.copy(url = guide.normalizeDownloadUrl(request.url)))
                         DownloadVerdict.Bundle -> notice = Notice.Bundle
                         DownloadVerdict.NotHttps -> notice = Notice.NotHttps
                     }
@@ -136,3 +149,7 @@ private fun coachBody(step: Int) = when (step) {
     2 -> R.string.browser_coach_2_body_version
     else -> R.string.browser_coach_3_body
 }
+
+private fun yybCoachTitle(step: Int) = if (step == 1) R.string.browser_yyb_coach_1_title else R.string.browser_yyb_coach_2_title
+
+private fun yybCoachBody(step: Int) = if (step == 1) R.string.browser_yyb_coach_1_body else R.string.browser_yyb_coach_2_body

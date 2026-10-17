@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="automation_china_title">China-Modus</string>
+    <string name="automation_china_help">Schaltet sich von selbst ein, wenn dieses Telefon offenbar in Festlandchina ist (SIM, Netz oder Regionseinstellungen). Der Patcher öffnet dann zuerst 应用宝, um die dort unterstützten offiziellen Apps herunterzuladen, und verwendet die Samsung-Health-Version für das chinesische Festland, sofern verfügbar. Sie funktioniert mit in China registrierten Samsung-Konten. Schalte den Modus aus, um stattdessen APKMirror und die internationale Version zu nutzen.</string>
+</resources>

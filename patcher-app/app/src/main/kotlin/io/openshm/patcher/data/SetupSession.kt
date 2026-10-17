@@ -35,12 +35,14 @@ data class SessionState(
     val outputIds: List<String>
         get() = AppCatalogue.current.selectedOutputs(watchProfile.sdk, skippedApps).map { it.id }
 
-    /** The official apps this setup needs: the inputs of [outputIds], in catalogue order. */
-    val inputIds: List<String>
-        get() {
-            val needed = AppCatalogue.current.selectedOutputs(watchProfile.sdk, skippedApps).mapNotNull { it.inputId }.toSet()
-            return AppCatalogue.current.inputs.map { it.id }.filter { it in needed }
-        }
+    /** The official apps this setup needs: the inputs of [outputIds] in the current China mode, in catalogue order. */
+    val inputIds: List<String> get() = inputIds(effectiveChinaMode())
+
+    /** [inputIds] for an explicit China mode: an app with a `chinaFrom` needs that input instead of its usual one. */
+    fun inputIds(chinaMode: Boolean): List<String> {
+        val needed = AppCatalogue.current.selectedOutputs(watchProfile.sdk, skippedApps).mapNotNull { it.sourceInputId(chinaMode) }.toSet()
+        return AppCatalogue.current.inputs.map { it.id }.filter { it in needed }
+    }
 
     /** [outputIds] without the ones the user restored from Home: they are left out until installed again. */
     val activeOutputIds: List<String> get() = outputIds.filter { it !in restoredOutputs }

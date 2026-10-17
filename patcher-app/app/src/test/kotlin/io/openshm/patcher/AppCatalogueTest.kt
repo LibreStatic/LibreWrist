@@ -15,7 +15,8 @@ class AppCatalogueTest {
 
     @Test
     fun serialAndInputs() {
-        assertEquals(51L, c.serial)
+        assertEquals(55L, c.serial)
+        assertEquals("chinaFrom / obtain.yyb need CI run 45", 45L, c.engine.minAppVersion)
         assertEquals(
             listOf(
                 listOf("shm-phone", "Samsung Health Monitor (phone)", "1.4.6.001", "Phone",
@@ -30,6 +31,10 @@ class AppCatalogueTest {
                 listOf("shealth-phone", "Samsung Health", "7.00.6.011", "Phone",
                     "e58c39dcdf4856510d487fae30ee52d1514198b58ca388c9be9753828f4fec89", "com.sec.android.app.shealth",
                     "samsung-electronics-co-ltd/s-health", "[ApkNotBundle, NoDpi]"),
+                // the China build: only on YingYongBao, so no APKMirror slug
+                listOf("shealth-phone-cn", "Samsung Health (China)", "7.00.6.012", "Phone",
+                    "b40e9bc5e927db43dadbe5d5c41d2c99d7f7787c44c6d5bb664bceb5686e77ca", "com.sec.android.app.shealth",
+                    "", "[ApkNotBundle, NoDpi]"),
             ),
             c.inputs.map {
                 listOf(it.id, it.label, it.versionName, it.device.name, it.sha256, it.packageName, it.apkMirrorSlug,
@@ -49,7 +54,8 @@ class AppCatalogueTest {
             ),
             c.inputs.filter { it.onApkMirror }.map { io.openshm.patcher.data.ApkMirrorGuide.startUrl(it) },
         )
-        assertEquals(listOf(true, true, true, true), c.inputs.map { it.onApkMirror })
+        assertEquals(listOf(true, true, true, true, false), c.inputs.map { it.onApkMirror })
+        assertEquals(listOf(false, false, false, false, true), c.inputs.map { it.onYyb })
         assertEquals(listOf("arm64-v8a", "armeabi-v7a"), c.input("shm-phone").abis)
     }
 

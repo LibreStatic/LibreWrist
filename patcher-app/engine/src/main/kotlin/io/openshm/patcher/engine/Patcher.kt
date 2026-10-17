@@ -341,7 +341,9 @@ class Patcher(private val catalogue: Catalogue) {
             phase("verify-package") { d ->
                 val expected = catalogue.outputs.firstOrNull {
                     val from = it.from
-                    from is OutputSource.Patched && from.input == req.inputId && from.profile == req.profile
+                    val china = it.chinaFrom
+                    (from is OutputSource.Patched && from.input == req.inputId && from.profile == req.profile) ||
+                        (china != null && china.input == req.inputId && china.profile == req.profile)
                 }?.let { Catalogue.expand(it.packageName, req.prefix) as String }
                 val actual = manifest.packageName
                 if (expected == null) {

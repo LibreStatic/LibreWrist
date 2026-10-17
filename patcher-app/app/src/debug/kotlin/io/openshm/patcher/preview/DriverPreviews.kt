@@ -62,6 +62,10 @@ fun WelcomeUnattendedOffDriver() = PreviewHost(ColorMode.Fallback) { WelcomeSamp
 @Composable
 fun WelcomeAutomationOnDriver() = PreviewHost(ColorMode.Fallback) { WelcomeSample(automation = AutomationState(freeRun = true, uninstallMismatch = true)) }
 
+/** China mode set by the user: its row shows even though previews never detect China. */
+@Composable
+fun WelcomeChinaModeDriver() = PreviewHost(ColorMode.Fallback) { WelcomeSample(automation = AutomationState(chinaMode = true)) }
+
 /** The warning shown before "Advance freely" is turned on. */
 @Composable
 fun WelcomeFreeRunWarningDriver() = PreviewHost(ColorMode.Fallback) { WelcomeSample(freeRunWarning = true) }

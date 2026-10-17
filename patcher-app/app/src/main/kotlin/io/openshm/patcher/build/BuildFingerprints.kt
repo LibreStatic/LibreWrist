@@ -14,11 +14,12 @@ fun currentFingerprints(
     prefix: String,
     outputIds: Collection<String>,
     disabled: Collection<String>,
+    chinaMode: Boolean = false,
 ): Map<String, String> {
     val signingCert = signingKeyStore(context).certificateSha256()
     val ownCert = ownCertificateSha256(context)
     return outputIds.associateWith { id ->
-        outputFingerprint(catalogue, id, prefix, disabled, signingCert, BuildConfig.ENGINE_FINGERPRINT, ownCert, context.assets::open)
+        outputFingerprint(catalogue, id, prefix, disabled, signingCert, BuildConfig.ENGINE_FINGERPRINT, ownCert, context.assets::open, chinaMode)
     }
 }
 

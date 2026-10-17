@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="automation_china_title">Çin modu</string>
+    <string name="automation_china_help">Bu telefon anakara Çin\'de görünüyorsa (SIM, ağ veya bölge ayarları) kendiliğinden açılır. Yama aracı bu durumda orada desteklenen resmi uygulamaları indirmek için önce 应用宝\'yi açar ve varsa anakara Çin için Samsung Health sürümünü kullanır; bu sürüm Çin\'de kayıtlı Samsung hesaplarıyla çalışır. Bunun yerine APKMirror\'ı ve uluslararası sürümü kullanmak için kapatın.</string>
+</resources>

@@ -6,13 +6,17 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import io.openshm.patcher.R
 import io.openshm.patcher.data.AppCatalogue
+import io.openshm.patcher.data.Automation
 import io.openshm.patcher.data.DownloadRequest
 import io.openshm.patcher.data.ImportResult
 import io.openshm.patcher.data.InputApp
 import io.openshm.patcher.data.InputStore
 import io.openshm.patcher.data.LoadedCatalogue
 import io.openshm.patcher.data.RejectReason
+import io.openshm.patcher.data.Region
 import io.openshm.patcher.data.SetupSession
+import io.openshm.patcher.data.chinaModeActive
+import io.openshm.patcher.data.effectiveChinaMode
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -88,11 +92,18 @@ class AcquireViewModel(application: Application) : AndroidViewModel(application)
         _state.value = AcquireUiState(
             cards = cardsFor(emptyList()),
             optionalApps = optionalToggles(AppCatalogue.current, SetupSession.state.value.watchProfile.sdk, SetupSession.state.value.skippedApps),
+            chinaMode = Automation.state.value.chinaModeActive(Region.detected),
         )
+        viewModelScope.launch {
+            // China mode also swaps the official app Samsung Health+ is acquired from, so the cards follow it
+            Automation.state.collect { a ->
+                _state.update { it.copy(chinaMode = a.chinaModeActive(Region.detected), cards = cardsFor(it.cards)) }
+            }
+        }
     }
 
     private fun cardsFor(existing: List<AcquireCard>) = buildCards(
-        SetupSession.state.value.inputIds, existing, AppCatalogue.current::input,
+        SetupSession.state.value.inputIds(effectiveChinaMode()), existing, AppCatalogue.current::input,
     ) { input -> store.verifiedSize(input)?.let { AcquireProgress.Verified(it) } ?: AcquireProgress.Missing }
 
     fun onEvent(event: AcquireEvent) {

@@ -59,13 +59,16 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import io.openshm.patcher.R
 import io.openshm.patcher.data.AppCatalogue
+import io.openshm.patcher.data.InputSource
 import io.openshm.patcher.data.Automation
 import io.openshm.patcher.data.InputStore
 import io.openshm.patcher.data.RebuildScope
 import io.openshm.patcher.data.SetupSession
 import io.openshm.patcher.ui.screens.phoneadb.PhoneAdbScreen
 import io.openshm.patcher.ui.screens.phoneadb.PhoneAdbViewModel
+import io.openshm.patcher.data.effectiveChinaMode
 import io.openshm.patcher.data.requestedRebuildScope
+import io.openshm.patcher.data.sourceInputId
 import io.openshm.patcher.ui.screens.settings.SettingsScreen
 import io.openshm.patcher.ui.screens.settings.SettingsViewModel
 import io.openshm.patcher.ui.update.AppUpdateViewModel
@@ -363,7 +366,7 @@ fun PatcherNavHost(
                 AcquireScreen(
                     state,
                     onEvent = { event ->
-                        if (event is AcquireEvent.OpenMirror) navController.navigate(Route.guidedBrowser(event.inputId))
+                        if (event is AcquireEvent.OpenMirror) navController.navigate(Route.guidedBrowser(event.inputId, event.source))
                         else vm.onEvent(event)
                     },
                     onContinue = { next(Route.Acquire) },
@@ -372,7 +375,10 @@ fun PatcherNavHost(
             }
             columnComposable(
                 Route.GuidedBrowser.path,
-                arguments = listOf(navArgument(Route.INPUT_ID_ARG) { type = NavType.StringType }),
+                arguments = listOf(
+                    navArgument(Route.INPUT_ID_ARG) { type = NavType.StringType },
+                    navArgument(Route.SOURCE_ARG) { type = NavType.StringType; defaultValue = InputSource.ApkMirror.arg },
+                ),
             ) { entry -> GuidedBrowserDestination(entry, navController) }
             composable(Route.Customize.path) {
                 val vm: CustomizeViewModel = viewModel()
@@ -679,6 +685,7 @@ private fun GuidedBrowserDestination(entry: NavBackStackEntry, navController: Na
     val acquire: AcquireViewModel = viewModel(acquireEntry)
     GuidedBrowserHost(
         input = input,
+        source = InputSource.fromArg(entry.arguments?.getString(Route.SOURCE_ARG)),
         onDownload = { request ->
             acquire.downloadFrom(inputId, request)
             navController.popBackStack()
@@ -701,8 +708,9 @@ private fun rebuildStartRoute(outputId: String, inputs: InputStore): Route? {
     val catalogue = AppCatalogue.current
     val session = SetupSession.state.value
     if (catalogue.outputs.none { it.id == outputId }) return null
-    RebuildScope.begin(requestedRebuildScope(catalogue.outputs, outputId, session.outputIds))
-    val inputId = catalogue.output(outputId).inputId ?: return Route.Build
+    val chinaMode = effectiveChinaMode()
+    RebuildScope.begin(requestedRebuildScope(catalogue.outputs, outputId, session.outputIds, chinaMode))
+    val inputId = catalogue.output(outputId).sourceInputId(chinaMode) ?: return Route.Build
     return if (inputs.verifiedSize(catalogue.input(inputId)) == null) Route.Acquire else Route.Customize
 }
 

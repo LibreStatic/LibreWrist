@@ -8,6 +8,7 @@ import io.openshm.patcher.adb.AdbServiceType
 import io.openshm.patcher.build.BuildService
 import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.Automation
+import io.openshm.patcher.data.Region
 import io.openshm.patcher.data.SetupSession
 import io.openshm.patcher.device.SelfAdbService
 
@@ -19,6 +20,7 @@ class PatcherApplication : Application() {
         AppCatalogue.ensure(this)
         SetupSession.init(this)
         Automation.init(this)
+        Region.init(this)
         BuildService.clearStaleProgress(this)
         SelfAdbService.clearStale(this)
     }

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="automation_china_title">中国モード</string>
+    <string name="automation_china_help">この端末が中国本土にあると思われるとき（SIM、ネットワーク、地域設定から判断）、自動的にオンになります。パッチャーは対応する公式アプリを 应用宝 から先にダウンロードし、中国本土向けの Samsung Health があればそれを使います。中国で登録した Samsung アカウントで利用できます。オフにすると、代わりに APKMirror と国際版を使います。</string>
+</resources>
