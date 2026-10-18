@@ -40,7 +40,8 @@ final class NotifCodec {
 
     static final int ICON_MAX = 4096;
     static final Pattern SNOOZE = Pattern.compile(
-            "snooze|pospon|repetir|aplazar|dormir|sp[aä]ter|r[eé]p[eé]ter|rinvia", Pattern.CASE_INSENSITIVE);
+            "snooze|pospon|repetir|aplazar|dormir|sp[aä]ter|r[eé]p[eé]ter|rinvia|贪睡|稍后|再响",
+            Pattern.CASE_INSENSITIVE);
     static final Pattern DISMISS = Pattern.compile(
             "dismiss|descart|detener|stop|apagar|parar|desactivar|cerrar|close|ignorar",
             Pattern.CASE_INSENSITIVE);
@@ -83,14 +84,33 @@ final class NotifCodec {
         return rm.getRanking(sbn.getKey(), r) ? r : null;
     }
 
-    /** Ringing alarm of the Clock app: category alarm with full-screen intent or ongoing. */
+    /**
+     * Ringing alarm of the Clock app: category alarm with a full-screen intent or the insistent
+     * flag, or ongoing with a snooze action. Ongoing alone is not enough: the "upcoming alarm"
+     * reminder (and the "snoozed" entry) of some Clock apps is ongoing, category alarm too.
+     */
     static boolean isRingingAlarm(StatusBarNotification sbn, String clockPkg) {
-        if (sbn == null) return false;
+        Notification n = clockAlarm(sbn, clockPkg);
+        if (n == null) return false;
+        if (n.fullScreenIntent != null || (n.flags & Notification.FLAG_INSISTENT) != 0) return true;
+        return (n.flags & Notification.FLAG_ONGOING_EVENT) != 0 && actionIndex(n, SNOOZE) >= 0;
+    }
+
+    /** Signals isRingingAlarm() looked at, for the log (no content); null if not a Clock alarm. */
+    static String alarmSignals(StatusBarNotification sbn, String clockPkg) {
+        Notification n = clockAlarm(sbn, clockPkg);
+        if (n == null) return null;
+        return "fsi=" + (n.fullScreenIntent != null)
+                + " insistent=" + ((n.flags & Notification.FLAG_INSISTENT) != 0)
+                + " ongoing=" + ((n.flags & Notification.FLAG_ONGOING_EVENT) != 0)
+                + " snooze=" + (actionIndex(n, SNOOZE) >= 0);
+    }
+
+    private static Notification clockAlarm(StatusBarNotification sbn, String clockPkg) {
+        if (sbn == null) return null;
         Notification n = sbn.getNotification();
-        if (n == null || !Notification.CATEGORY_ALARM.equals(n.category)) return false;
-        if (!isClockPackage(sbn.getPackageName(), clockPkg)) return false;
-        return n.fullScreenIntent != null || (n.flags & Notification.FLAG_ONGOING_EVENT) != 0
-                || (n.flags & Notification.FLAG_INSISTENT) != 0;
+        if (n == null || !Notification.CATEGORY_ALARM.equals(n.category)) return null;
+        return isClockPackage(sbn.getPackageName(), clockPkg) ? n : null;
     }
 
     static boolean isClockPackage(String pkg, String clockPkg) {

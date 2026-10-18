@@ -379,6 +379,8 @@ final class CommsHub implements BridgeLink.Listener {
         handler.post(() -> {
             try {
                 String id = NotifCodec.idOf(sbn.getKey());
+                String signals = NotifCodec.alarmSignals(sbn, clockPackage());
+                if (signals != null) Log.i(TAG, "alarm/seen id=" + id + " " + signals);
                 if (NotifCodec.isRingingAlarm(sbn, clockPackage())) {
                     keys.put(id, sbn.getKey());
                     if (ringing.add(id)) {
