@@ -81,7 +81,20 @@ Service labels IR behaves as red and vice versa. As labelled, R is about 1.75 at
 on-wrist dataset of 20 s probes (`GREEN,RED,IR` at ~100 Hz, each followed by the stock one-shot
 result). The adapter therefore feeds the labelled-IR channel as red and the labelled-red channel as
 IR, behind the named constant `SpO2Adapter.SWAP_RED_IR`. The median R is logged once a minute
-(tag `SpO2Adapter`, `stats:` lines) so a wrong orientation is visible in logcat.
+(tag `SpO2Adapter`, `stats:` lines, which also print the current `swap` value) so a wrong
+orientation is visible in logcat.
+
+`SWAP_RED_IR` is only the default. Each recording checks it on its own: the adapter collects the
+ratio R of the first 120 seconds for which the estimator reports a finite value (also seconds
+that failed a gate and got 0). If the median is above 1.2 the orientation is wrong (a wrong
+orientation gives about 1 / R_true, 1.75 against 0.52 on the SM-R920; 1.2 would be about 82 %
+SpO2 sustained at rest, which is not physiological), so the adapter flips it, starts a fresh
+estimator and logs `orientation: median R <x> over 120 s, swapping red/IR (swap=<new>)`. The
+choice is written to `<filesDir>/shminterop-spo2/orientation` (`swap=true` or `swap=false`) and is
+the starting orientation of later nights (`SWAP_RED_IR` when the file is missing or unreadable).
+The decision is taken at most once per recording; with a median of 1.2 or less it logs
+`orientation: median R <x>, keeping swap=<cur>` and writes nothing. Seconds already stored are not
+rewritten.
 
 ## 4. Recording
 
@@ -94,11 +107,53 @@ restart mid-night does not lose the night. Unregistering the recording listener 
 but keeps the data for the GET_DATA that follows.
 
 A new SET_OPERATION_MODE clears the store and the file, with one refinement: if the newest stored
-second is less than 30 minutes old (a restart of the SHM process during the night re-issues the
-command) the night is resumed instead. Do not run it together with the BP flow: both use the same
+second is less than 6 hours old (`RESUME_MS`) the night is resumed instead. GET_DATA only returns
+seconds inside the requested window, so keeping older seconds never pollutes an answer; clearing
+only bounds the file, and a new night always starts more than 6 h after the last recorded second
+of the previous one. A brief awakening (AWAKE, GET_DATA, unregister, then SLEEPING again) therefore
+keeps the earlier part of the night. Do not run it together with the BP flow: both use the same
 `PPG_ON_DEMAND` tracker of the service.
 
 Battery: the red and IR LEDs run at ~100 Hz all night while recording.
+
+### Wake lock
+
+While recording the adapter holds a `PARTIAL_WAKE_LOCK` (tag `shminterop:spo2`, not reference
+counted, 12 h timeout as a safety net), acquired in `startRecording` and released on stop. The
+watchdog executor needs the CPU awake during Doze. The SHM twin already holds `WAKE_LOCK`. A
+failure to get the lock is logged, never thrown.
+
+### Auto-resume after a process restart
+
+On start the adapter writes the marker file `<filesDir>/shminterop-spo2/recording`; it is deleted
+when the recording stops. In a new process, on the first entry (`register` or `setAttribute`), if
+the marker exists and the newest stored second is less than 30 minutes old (`AUTO_RESUME_MS`), the
+adapter records again without a listener and logs `start: auto-resuming after a process restart`.
+A stale marker is deleted; with no marker nothing is resumed. The next listener that calls
+`register` adopts the recorder role (its `unregister` then stops the recording). A listener that
+sends GET_VERSION gives the adopted role up again, so the version detector SHM runs at app open
+(register, GET_VERSION, unregister) does not stop a resumed night. SET_OPERATION_MODE ties the
+recording to its sender as usual, and GET_DATA is answered normally. A GET_DATA while no listener
+owns the recording (the restarted process's first call is the morning request) also stops it, as
+nothing would unregister it otherwise.
+
+### Fallback start
+
+SHM's sleep start (`cc.start()`) registers a listener and then sends SET_OPERATION_MODE, but skips
+the latter when its stored apnea version is not V1/V2 ("Skipping operation mode: final apnea
+version not ready"). So 5 s (`FALLBACK_START_MS`) after each `register` a one-shot check runs: if
+that listener is still registered, nothing is recording and the listener has sent neither
+SET_OPERATION_MODE, GET_VERSION nor GET_DATA since registering, the adapter starts recording tied
+to it and logs `start: no SET_OPERATION_MODE <n> s after register; recording anyway`. The version
+detector (GET_VERSION within about 2 s, then unregister) never triggers it.
+
+### GET_DATA coverage log
+
+The answer is the dense 1 Hz grid of the window with 0 for every second without a valid value;
+holes are never filled, because SHM itself treats 0 as an invalid second and its 70 % threshold
+is what guards the result against an unreliable night. The log line reports the share of non-zero
+seconds, e.g. `GET_DATA a..b -> 3 event(s), coverage 64.2% (SHM needs 70%)`, so a rejected night
+can be told apart from a recording that did not run.
 
 ## 5. Simulation mode (end-to-end test without sleeping)
 
@@ -148,8 +203,10 @@ Things that get in the way of a run:
 
 ## 7. Tests
 
-`watch-mod/test/run-tests.sh` covers the estimator (known R, every gate, bucketing, gap), the
-synthetic night, the answer chunking and the store, the adapter flow with doubles, the driver
+`watch-mod/test/run-tests.sh` covers the estimator (known R, every gate,
+bucketing, gap), the synthetic night, the answer chunking and the store, the
+adapter flow with doubles (including the 6 h resume, auto-resume, fallback start, orientation
+check, wake lock and coverage), the driver
 logic and the red/IR parsing. The host tool `shminterop.spo2.Spo2CsvCheck <probe.csv>` runs the
 estimator with the adapter's orientation over a probe CSV, to compare with
 `analyze.py --swap`.

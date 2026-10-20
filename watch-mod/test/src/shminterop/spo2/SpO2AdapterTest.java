@@ -10,6 +10,10 @@ import com.samsung.android.hardware.sensormanager.SemSleepWatchSpO2SensorParam;
 import shminterop.hsdk.PpgBatch;
 import shminterop.hsdk.PpgSample;
 
+import android.content.Context;
+import android.os.PowerManager;
+
+import java.io.File;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -32,10 +36,17 @@ public final class SpO2AdapterTest {
                 return SpO2Adapter.SIM_PROP.equals(key) ? simValue : "";
             }
         };
+        SpO2Adapter.fallbackDelayMs = 3_600_000L; // the tests call fallbackCheck directly
         versionEvent();
         fullFlow();
         simulation();
         unknownCommands();
+        answerCoverage();
+        resumeWindow();
+        autoResume();
+        fallbackStart();
+        orientationFlip();
+        orientationKept();
         SpO2Adapter.resetForTest();
         System.out.println(failures == 0 ? "ALL PASSED" : failures + " FAILED");
         System.exit(failures == 0 ? 0 : 1);
@@ -252,5 +263,252 @@ public final class SpO2AdapterTest {
         check(SpO2Adapter.setAttribute(l, 49, a), "garbage cmd returns true");
         SpO2Adapter.unregister(l, 49); // never registered: harmless
         SpO2Adapter.unregister(null, 49);
+    }
+
+    // ------------------------------------------------------------ night robustness (issue #13)
+
+    static final class TestContext extends Context {
+        final File dir;
+        final PowerManager pm = new PowerManager();
+
+        TestContext(String name) {
+            File base = new File(System.getProperty("test.tmp", "."), "spo2-adapter-test");
+            dir = new File(base, name + "-" + System.nanoTime());
+            dir.mkdirs();
+        }
+
+        @Override public File getFilesDir() {
+            return dir;
+        }
+
+        @Override public Object getSystemService(String name) {
+            return POWER_SERVICE.equals(name) ? pm : null;
+        }
+    }
+
+    static final Object SOM_MODE = SemSleepWatchSpO2SensorParam.OperationMode.HM_SPO2_VERSION_1;
+
+    static void startNight(SemSensorListener l) {
+        SpO2Adapter.setAttribute(l, 49, attr(EnumSet.of(Cmd.SET_OPERATION_MODE), "mode", SOM_MODE));
+    }
+
+    static long nowSecond() {
+        return System.currentTimeMillis() / 1000L * 1000L;
+    }
+
+    static File spo2Dir(TestContext c) {
+        return new File(c.dir, "shminterop-spo2");
+    }
+
+    static void answerCoverage() throws Exception {
+        SpO2Adapter.resetForTest();
+        Recorder l = new Recorder();
+        SpO2Adapter.register(l, 49);
+        startNight(l);
+        // 100 s window: head zeros 0..9, value 96 at 10..19, hole 20..29, value 90 at 30..39, tail zeros.
+        // Holes are answered as 0, never filled: SHM treats 0 as an invalid second.
+        for (int i = 10; i < 20; i++) SpO2Adapter.store.put(T0 + i * 1000L, 96);
+        for (int i = 30; i < 40; i++) SpO2Adapter.store.put(T0 + i * 1000L, 90);
+        getData(l, T0, T0 + 99_000L);
+        List<Bundle> ev = l.await(1);
+        eq(1, ev.size(), "one chunk");
+        int[] v = ev.get(0).getIntArray("secSpO2List");
+        eq(100, v.length, "dense window");
+        for (int i = 0; i < 10; i++) eq(0, v[i], "head second " + i + " stays 0");
+        eq(96, v[19], "value before the hole");
+        for (int i = 20; i < 30; i++) eq(0, v[i], "hole second " + i + " stays 0");
+        eq(90, v[30], "value after the hole");
+        for (int i = 40; i < 100; i++) eq(0, v[i], "tail second " + i + " stays 0");
+        eq("coverage 20.0% (SHM needs 70%)", SpO2Adapter.lastCoverage, "coverage text");
+        SpO2Adapter.unregister(l, 49);
+    }
+
+    static void resumeWindow() {
+        try {
+            for (long ageH : new long[] {3L, 7L}) {
+                SpO2Adapter.contextOverride = new TestContext("resume-" + ageH);
+                SpO2Adapter.resetForTest();
+                Recorder a = new Recorder(), b = new Recorder();
+                SpO2Adapter.register(a, 49);
+                startNight(a);
+                long t = nowSecond() - ageH * 3600_000L;
+                SpO2Adapter.store.put(t, 95);
+                SpO2Adapter.unregister(a, 49);
+                SpO2Adapter.register(b, 49);
+                startNight(b);
+                eq(ageH < 6 ? 95 : 0, SpO2Adapter.store.get(t),
+                        "second " + ageH + " h old after a new SET_OPERATION_MODE");
+                SpO2Adapter.unregister(b, 49);
+            }
+        } finally {
+            SpO2Adapter.contextOverride = null;
+            SpO2Adapter.resetForTest();
+        }
+    }
+
+    /** Simulates a process death mid-night: state reset, files kept. */
+    static TestContext killedMidNight(String name, long newestAgeMs, boolean marker) {
+        TestContext c = new TestContext(name);
+        SpO2Adapter.contextOverride = c;
+        SpO2Adapter.resetForTest();
+        Recorder a = new Recorder();
+        SpO2Adapter.register(a, 49);
+        startNight(a);
+        check(new File(spo2Dir(c), "recording").exists(), name + ": marker written on start");
+        SpO2Adapter.store.put(nowSecond() - newestAgeMs, 96);
+        SpO2Adapter.store.flush();
+        SpO2Adapter.resetForTest(); // the "death": nothing is stopped, the marker stays
+        if (!marker) new File(spo2Dir(c), "recording").delete();
+        return c;
+    }
+
+    static void autoResume() throws Exception {
+        try {
+            // Fresh night and marker: the first register resumes and adopts the recorder role.
+            TestContext c = killedMidNight("auto-fresh", 5 * 60_000L, true);
+            check(!SpO2Adapter.isRecording(), "not recording right after the restart");
+            Recorder l = new Recorder();
+            SpO2Adapter.register(l, 49);
+            check(SpO2Adapter.isRecording(), "auto-resumed with a fresh night and a marker");
+            check(PowerManager.last != null && PowerManager.last.held, "wake lock held while recording");
+            eq("shminterop:spo2", PowerManager.last.tag, "wake lock tag");
+            eq(PowerManager.PARTIAL_WAKE_LOCK, PowerManager.last.level, "partial wake lock");
+            check(!PowerManager.last.referenceCounted, "wake lock is not reference counted");
+            eq(12L * 3600_000L, PowerManager.last.timeoutMs, "wake lock timeout 12 h");
+            check(getData(l, nowSecond() - 100_000L, nowSecond()), "GET_DATA still answered");
+            check(l.await(1).size() == 1, "GET_DATA event delivered after auto-resume");
+            SpO2Adapter.unregister(l, 49);
+            check(!SpO2Adapter.isRecording(), "adopting listener's unregister stops the recording");
+            check(!new File(spo2Dir(c), "recording").exists(), "marker deleted on stop");
+            check(!PowerManager.last.held, "wake lock released on stop");
+
+            // A version probe by the adopting listener gives the role up.
+            killedMidNight("auto-probe", 60_000L, true);
+            Recorder probe = new Recorder();
+            SpO2Adapter.register(probe, 49);
+            check(SpO2Adapter.isRecording(), "auto-resumed (probe case)");
+            SpO2Adapter.setAttribute(probe, 49, attr(EnumSet.of(Cmd.GET_VERSION),
+                    "versionType", SemSleepWatchSpO2SensorParam.VersionType.values()[0]));
+            SpO2Adapter.unregister(probe, 49);
+            check(SpO2Adapter.isRecording(), "a GET_VERSION listener does not stop an auto-resumed night");
+            Recorder sleeper = new Recorder();
+            SpO2Adapter.register(sleeper, 49);
+            startNight(sleeper);
+            SpO2Adapter.unregister(sleeper, 49);
+            check(!SpO2Adapter.isRecording(), "the SET_OPERATION_MODE listener owns the recording");
+
+            // Restart whose first call is the morning GET_DATA: answered, then nothing keeps recording.
+            TestContext morning = killedMidNight("auto-morning", 60_000L, true);
+            Recorder m = new Recorder();
+            check(getData(m, nowSecond() - 100_000L, nowSecond()), "morning GET_DATA answered");
+            check(m.await(1).size() == 1, "morning GET_DATA event delivered");
+            check(!SpO2Adapter.isRecording(), "GET_DATA stops an unowned auto-resumed recording");
+            check(!new File(spo2Dir(morning), "recording").exists(), "marker deleted after the morning GET_DATA");
+
+            // Stale night: not resumed, marker removed.
+            TestContext stale = killedMidNight("auto-stale", 45 * 60_000L, true);
+            Recorder s = new Recorder();
+            SpO2Adapter.register(s, 49);
+            check(!SpO2Adapter.isRecording(), "stale night is not resumed");
+            check(!new File(spo2Dir(stale), "recording").exists(), "stale marker deleted");
+
+            // No marker: not resumed even with fresh data.
+            killedMidNight("auto-nomarker", 60_000L, false);
+            Recorder n = new Recorder();
+            SpO2Adapter.register(n, 49);
+            check(!SpO2Adapter.isRecording(), "no marker, no auto-resume");
+        } finally {
+            SpO2Adapter.contextOverride = null;
+            SpO2Adapter.resetForTest();
+        }
+    }
+
+    static void fallbackStart() {
+        SpO2Adapter.resetForTest();
+        Recorder silent = new Recorder(), probe = new Recorder(), gone = new Recorder(), data = new Recorder();
+        SpO2Adapter.register(probe, 49);
+        SpO2Adapter.setAttribute(probe, 49, attr(EnumSet.of(Cmd.GET_VERSION),
+                "versionType", SemSleepWatchSpO2SensorParam.VersionType.values()[0]));
+        SpO2Adapter.fallbackCheck(probe);
+        check(!SpO2Adapter.isRecording(), "no fallback start for a listener that sent GET_VERSION");
+
+        SpO2Adapter.register(gone, 49);
+        SpO2Adapter.unregister(gone, 49);
+        SpO2Adapter.fallbackCheck(gone);
+        check(!SpO2Adapter.isRecording(), "no fallback start for a listener that unregistered");
+
+        SpO2Adapter.register(data, 49);
+        getData(data, T0, T0 + 5000L);
+        SpO2Adapter.fallbackCheck(data);
+        check(!SpO2Adapter.isRecording(), "no fallback start for a listener that sent GET_DATA");
+
+        SpO2Adapter.register(silent, 49);
+        SpO2Adapter.fallbackCheck(silent);
+        check(SpO2Adapter.isRecording(), "fallback start for a listener that stays silent");
+        SpO2Adapter.unregister(silent, 49);
+        check(!SpO2Adapter.isRecording(), "the fallback listener owns the recording");
+        SpO2Adapter.unregister(probe, 49);
+        SpO2Adapter.unregister(data, 49);
+    }
+
+    static void feedPulses(int seconds, double r) {
+        for (int i = 0; i < seconds * 100; i += 50) {
+            SpO2Adapter.trackerListener().onBatch(pulses(i, 50, r));
+        }
+    }
+
+    static void orientationFlip() throws Exception {
+        TestContext c = new TestContext("orient-flip");
+        SpO2Adapter.contextOverride = c;
+        try {
+            SpO2Adapter.resetForTest();
+            Recorder l = new Recorder();
+            SpO2Adapter.register(l, 49);
+            startNight(l);
+            check(SpO2Adapter.currentSwap() == SpO2Adapter.SWAP_RED_IR, "starts with the default orientation");
+            // Wrong orientation: the adapter sees R about 1.75 for 140 s.
+            feedPulses(140, 1.75);
+            check(SpO2Adapter.currentSwap() != SpO2Adapter.SWAP_RED_IR, "orientation flipped");
+            File f = new File(spo2Dir(c), "orientation");
+            check(f.isFile(), "orientation persisted");
+            eq("swap=" + !SpO2Adapter.SWAP_RED_IR, new String(java.nio.file.Files.readAllBytes(f.toPath()), "UTF-8").trim(),
+                    "persisted text");
+            int expected = Spo2Estimator.fromR(1 / 1.75);
+            int v = SpO2Adapter.store.get(T0 + 135_000L);
+            check(Math.abs(v - expected) <= 1, "values after the flip use the new orientation: " + v + " ~ " + expected);
+            SpO2Adapter.unregister(l, 49);
+
+            // A later night starts from the persisted orientation.
+            SpO2Adapter.resetForTest();
+            Recorder m = new Recorder();
+            SpO2Adapter.register(m, 49);
+            startNight(m);
+            check(SpO2Adapter.currentSwap() != SpO2Adapter.SWAP_RED_IR, "persisted orientation read back");
+            SpO2Adapter.unregister(m, 49);
+        } finally {
+            SpO2Adapter.contextOverride = null;
+            SpO2Adapter.resetForTest();
+        }
+    }
+
+    static void orientationKept() throws Exception {
+        TestContext c = new TestContext("orient-keep");
+        SpO2Adapter.contextOverride = c;
+        try {
+            SpO2Adapter.resetForTest();
+            Recorder l = new Recorder();
+            SpO2Adapter.register(l, 49);
+            startNight(l);
+            feedPulses(140, 0.52);
+            check(SpO2Adapter.currentSwap() == SpO2Adapter.SWAP_RED_IR, "R 0.52 keeps the orientation");
+            check(!new File(spo2Dir(c), "orientation").exists(), "nothing persisted when kept");
+            int expected = Spo2Estimator.fromR(0.52);
+            int v = SpO2Adapter.store.get(T0 + 135_000L);
+            check(Math.abs(v - expected) <= 1, "value " + v + " ~ " + expected);
+            SpO2Adapter.unregister(l, 49);
+        } finally {
+            SpO2Adapter.contextOverride = null;
+            SpO2Adapter.resetForTest();
+        }
     }
 }

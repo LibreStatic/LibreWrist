@@ -8,6 +8,12 @@ import java.io.File;
  * returns null, which is the service-missing path.
  */
 public class Context {
+    public static final String POWER_SERVICE = "power";
+
+    public Object getSystemService(String name) {
+        return null;
+    }
+
     public File getFilesDir() {
         return new File(".");
     }

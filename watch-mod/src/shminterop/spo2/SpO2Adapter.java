@@ -2,6 +2,7 @@ package shminterop.spo2;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -16,6 +17,8 @@ import shminterop.hsdk.PpgTracker;
 import shminterop.hsdk.ServiceProtocol;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.util.Locale;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -56,8 +59,19 @@ public final class SpO2Adapter {
      * convention: as labelled, R is about 1.75 at a stock-measured 97 %, which no physiology
      * explains; swapped, R is about 0.52, which maps to 98 % (on-wrist dataset, see
      * docs/spo2-adapter.md). Remove the swap if another model labels the channels the usual way.
+     * This is only the default: each night checks the orientation (see ORIENTATION_*) and the
+     * choice is persisted.
      */
     static final boolean SWAP_RED_IR = true;
+
+    /** SHM's V1 evaluation needs this share of the window with a value (for the coverage log). */
+    static final double SHM_MIN_COVERAGE_PCT = 70.0;
+
+    // Red/IR orientation check: median R over the first finite seconds of a recording. A wrong
+    // orientation gives about 1/R_true (1.75 versus 0.52 on the SM-R920); 1.2 would be about
+    // 82 % SpO2 sustained at rest, which is not physiological.
+    static final int ORIENTATION_SAMPLES = 120;
+    static final double ORIENTATION_FLIP_R = 1.2;
 
     static final String SIM_PROP = "debug.shminterop.spo2_sim";
     static final String PKG = "com.samsung.android.hardware.sensormanager.";
@@ -67,7 +81,19 @@ public final class SpO2Adapter {
     static final int[] VERSION_CALCULATION = {1, 11, 1};
     static final int[] VERSION_SIGNALCHECK = {1, 0, 0};
 
-    static final long RESUME_MS = 30L * 60L * 1000L;     // a restart this soon continues the night
+    /**
+     * A SET_OPERATION_MODE while the newest stored second is younger than this resumes the night
+     * instead of clearing it. GET_DATA only returns seconds inside the requested window, so keeping
+     * older seconds never pollutes an answer; clearing only bounds the file, and a new night is
+     * always more than 6 h after the last recorded second of the previous one. A brief awakening
+     * (AWAKE, GET_DATA, unregister, then SLEEPING again) therefore keeps the earlier part.
+     */
+    static final long RESUME_MS = 6L * 60L * 60L * 1000L;
+    /** After a process restart, recording resumes by itself if the marker exists and the newest second is this fresh. */
+    static final long AUTO_RESUME_MS = 30L * 60L * 1000L;
+    /** If SHM skips SET_OPERATION_MODE, a listener silent for this long after register starts recording. */
+    static final long FALLBACK_START_MS = 5000L;
+    static final long WAKE_LOCK_TIMEOUT_MS = 12L * 60L * 60L * 1000L;
     static final long LIVENESS_MS = 15000L;
     static final long WATCHDOG_TICK_MS = 5000L;
     static final long FLUSH_MS = 60000L;
@@ -80,6 +106,20 @@ public final class SpO2Adapter {
     static final Spo2Store store = new Spo2Store();
 
     private static SemSensorListener recorder;
+    private static boolean recorderAdopted; // recorder role taken at register, not by SET_OPERATION_MODE
+    // Listeners that sent SET_OPERATION_MODE, GET_VERSION or GET_DATA since they registered.
+    private static final Set<SemSensorListener> commanded =
+            Collections.newSetFromMap(new IdentityHashMap<SemSensorListener, Boolean>());
+    private static boolean autoResumeChecked;
+    private static File markerFile;
+    private static File orientationFile;
+    private static PowerManager.WakeLock wakeLock;
+    private static ScheduledExecutorService fallback;
+    /** Test hooks: the application context, and the delay of the fallback start check. */
+    static volatile Context contextOverride;
+    static volatile long fallbackDelayMs = FALLBACK_START_MS;
+    /** Coverage text of the last GET_DATA answer (log and tests). */
+    static volatile String lastCoverage = "";
     private static PpgTracker tracker;
     private static ScheduledExecutorService watchdog;
     private static volatile boolean recording;
@@ -93,6 +133,10 @@ public final class SpO2Adapter {
     private static int statSeconds, statValid;
     private static final List<Double> statR = new ArrayList<Double>();
 
+    private static boolean swap = SWAP_RED_IR;
+    private static boolean orientDecided;
+    private static final List<Double> orientR = new ArrayList<Double>();
+
     private static final Spo2Estimator.Output OUT = new Spo2Estimator.Output() {
         @Override public void onSecond(long secondEpochMs, int value, double r) {
             store.put(secondEpochMs, value);
@@ -101,8 +145,74 @@ public final class SpO2Adapter {
                 statValid++;
                 statR.add(r);
             }
+            if (!orientDecided && !Double.isNaN(r) && !Double.isInfinite(r)) {
+                orientR.add(r);
+                if (orientR.size() >= ORIENTATION_SAMPLES) decideOrientation();
+            }
         }
     };
+
+    static Spo2Estimator newEstimator() {
+        return new Spo2Estimator(OUT);
+    }
+
+    /** Called under FEED_LOCK once enough finite R values were collected; decides once. */
+    private static void decideOrientation() {
+        orientDecided = true;
+        List<Double> s = new ArrayList<Double>(orientR);
+        orientR.clear();
+        Collections.sort(s);
+        double med = s.get(s.size() / 2);
+        if (med > ORIENTATION_FLIP_R) {
+            swap = !swap;
+            estimator = newEstimator();
+            log(String.format(Locale.ROOT,
+                    "orientation: median R %.3f over %d s, swapping red/IR (swap=%b)",
+                    med, ORIENTATION_SAMPLES, swap));
+            writeOrientation(swap);
+        } else {
+            log(String.format(Locale.ROOT, "orientation: median R %.3f, keeping swap=%b", med, swap));
+        }
+    }
+
+    private static void writeOrientation(boolean value) {
+        File f = orientationFile;
+        if (f == null) return;
+        try {
+            File dir = f.getParentFile();
+            if (dir != null && !dir.isDirectory()) dir.mkdirs();
+            FileOutputStream o = new FileOutputStream(f);
+            try {
+                o.write(("swap=" + value + "\n").getBytes("UTF-8"));
+            } finally {
+                o.close();
+            }
+        } catch (Throwable t) {
+            log("orientation not persisted: " + t);
+        }
+    }
+
+    /** The persisted orientation, or SWAP_RED_IR when missing or unreadable. */
+    private static boolean readOrientation(File f) {
+        if (f == null || !f.isFile()) return SWAP_RED_IR;
+        try {
+            java.io.BufferedReader r = new java.io.BufferedReader(
+                    new java.io.InputStreamReader(new java.io.FileInputStream(f), "UTF-8"));
+            try {
+                String line = r.readLine();
+                if (line != null) {
+                    line = line.trim();
+                    if (line.equals("swap=true")) return true;
+                    if (line.equals("swap=false")) return false;
+                }
+            } finally {
+                r.close();
+            }
+        } catch (Throwable t) {
+            log("orientation unreadable: " + t);
+        }
+        return SWAP_RED_IR;
+    }
 
     private static final PpgTracker.Listener CONN = new Conn();
 
@@ -116,8 +226,18 @@ public final class SpO2Adapter {
             ApneaTestDriver.ensureStarted();
             log("register: listener=" + listener + " type=" + type);
             synchronized (LOCK) {
-                if (listener != null) listeners.add(listener);
+                maybeAutoResume();
+                if (listener != null) {
+                    listeners.add(listener);
+                    commanded.remove(listener);
+                    if (recording && recorder == null) {
+                        recorder = listener;
+                        recorderAdopted = true;
+                        log("register: now tied to the auto-resumed recording: " + listener);
+                    }
+                }
             }
+            if (listener != null) scheduleFallback(listener);
         } catch (Throwable t) {
             log("register failed: " + t);
         }
@@ -131,6 +251,9 @@ public final class SpO2Adapter {
     public static boolean setAttribute(SemSensorListener listener, int type, SemSensorAttribute attribute) {
         try {
             ApneaTestDriver.ensureStarted();
+            synchronized (LOCK) {
+                maybeAutoResume();
+            }
             Bundle b = attribute == null ? null : attribute.getAttribute(TYPE);
             if (b == null) {
                 log("setAttribute: no attribute bundle for type " + type + "; ignored");
@@ -138,6 +261,17 @@ public final class SpO2Adapter {
             }
             Set<String> cmds = commandNames(b.getSerializable("cmd"));
             log("setAttribute: listener=" + listener + " cmds=" + cmds);
+            if (listener != null && (cmds.contains("SET_OPERATION_MODE")
+                    || cmds.contains("GET_VERSION") || cmds.contains("GET_DATA"))) {
+                synchronized (LOCK) {
+                    commanded.add(listener);
+                    // A version probe is not the sleep start: do not keep the adopted recorder role.
+                    if (cmds.contains("GET_VERSION") && listener == recorder && recorderAdopted) {
+                        recorder = null;
+                        recorderAdopted = false;
+                    }
+                }
+            }
             if (cmds.contains("SET_OPERATION_MODE")) {
                 log("SET_OPERATION_MODE mode=" + b.getSerializable("mode"));
                 startRecording(listener);
@@ -147,6 +281,7 @@ public final class SpO2Adapter {
             }
             if (cmds.contains("GET_DATA")) {
                 answerData(listener, b.getLong("startTimestamp"), b.getLong("endTimestamp"));
+                stopOrphanRecording();
             }
             if (cmds.contains("FLUSH")) {
                 log("FLUSH accepted (nothing to flush)");
@@ -167,8 +302,12 @@ public final class SpO2Adapter {
             boolean wasRecorder;
             synchronized (LOCK) {
                 listeners.remove(listener);
+                commanded.remove(listener);
                 wasRecorder = listener != null && listener == recorder;
-                if (wasRecorder) recorder = null;
+                if (wasRecorder) {
+                    recorder = null;
+                    recorderAdopted = false;
+                }
             }
             if (wasRecorder) stopRecording();
         } catch (Throwable t) {
@@ -221,7 +360,8 @@ public final class SpO2Adapter {
 
     static void answerData(SemSensorListener listener, long startMs, long endMs) {
         List<Bundle> events = dataEvents(startMs, endMs);
-        log("GET_DATA " + startMs + ".." + endMs + " -> " + events.size() + " event(s)");
+        log("GET_DATA " + startMs + ".." + endMs + " -> " + events.size() + " event(s)"
+                + (lastCoverage.isEmpty() ? "" : ", " + lastCoverage));
         deliver(listener, events);
     }
 
@@ -230,6 +370,7 @@ public final class SpO2Adapter {
         List<Bundle> events = new ArrayList<Bundle>();
         int[] sim = SyntheticNight.parseSpec(SysProp.get(SIM_PROP));
         List<Spo2Answer.Chunk> chunks;
+        lastCoverage = "";
         if (sim != null) {
             final int[] night = SyntheticNight.generate(sim[0], sim[1]);
             final long last = Math.floorDiv(endMs, 1000L) * 1000L;
@@ -247,6 +388,15 @@ public final class SpO2Adapter {
             chunks = Spo2Answer.build(startMs, endMs, new Spo2Answer.Source() {
                 @Override public int valueAt(long secondMs) { return store.get(secondMs); }
             });
+            int total = 0, valid = 0;
+            for (Spo2Answer.Chunk c : chunks) {
+                total += c.size;
+                for (int v : c.spo2) if (v != 0) valid++;
+            }
+            if (total > 0) {
+                lastCoverage = String.format(Locale.ROOT, "coverage %.1f%% (SHM needs %.0f%%)",
+                        100.0 * valid / total, SHM_MIN_COVERAGE_PCT);
+            }
         }
         Object normal = enumConstant(DATA_TYPE_CLASS, "NORMAL");
         Object empty = enumConstant(DATA_TYPE_CLASS, "EMPTY");
@@ -338,6 +488,7 @@ public final class SpO2Adapter {
     static void startRecording(SemSensorListener listener) {
         synchronized (LOCK) {
             recorder = listener;
+            recorderAdopted = false;
             if (recording) {
                 log("start: already recording; now tied to " + listener);
                 return;
@@ -345,7 +496,10 @@ public final class SpO2Adapter {
             Context ctx = appContext();
             if (ctx != null) {
                 try {
-                    store.attach(new File(new File(ctx.getFilesDir(), "shminterop-spo2"), "night.bin"));
+                    File dir = new File(ctx.getFilesDir(), "shminterop-spo2");
+                    store.attach(new File(dir, "night.bin"));
+                    markerFile = new File(dir, "recording");
+                    orientationFile = new File(dir, "orientation");
                 } catch (Throwable t) {
                     log("no persistence: " + t);
                 }
@@ -360,12 +514,17 @@ public final class SpO2Adapter {
                 log("start: new night");
             }
             synchronized (FEED_LOCK) {
-                estimator = new Spo2Estimator(OUT);
+                swap = readOrientation(orientationFile);
+                orientDecided = false;
+                orientR.clear();
+                estimator = newEstimator();
                 statSeconds = 0;
                 statValid = 0;
                 statR.clear();
             }
             recording = true;
+            writeMarker();
+            acquireWakeLock(ctx);
             long e = SystemClock.elapsedRealtime();
             lastBatchMs = 0L;
             lastArmMs = e;
@@ -386,6 +545,118 @@ public final class SpO2Adapter {
             if (w != null) w.shutdownNow();
             logStats();
             store.flush();
+            deleteMarker();
+            releaseWakeLock();
+        }
+    }
+
+    private static void writeMarker() {
+        File m = markerFile;
+        if (m == null) return;
+        try {
+            File dir = m.getParentFile();
+            if (dir != null && !dir.isDirectory()) dir.mkdirs();
+            new FileOutputStream(m).close();
+        } catch (Throwable t) {
+            log("recording marker not written: " + t);
+        }
+    }
+
+    private static void deleteMarker() {
+        File m = markerFile;
+        if (m != null && m.exists() && !m.delete()) log("recording marker not deleted");
+    }
+
+    /**
+     * Keeps the CPU awake while recording: the watchdog executor and the PPG batches rely on it
+     * during Doze. The 12 h timeout is a safety net only; stopRecording releases it.
+     */
+    private static void acquireWakeLock(Context ctx) {
+        if (ctx == null) return;
+        try {
+            Object pm = ctx.getSystemService(Context.POWER_SERVICE);
+            if (!(pm instanceof PowerManager)) {
+                log("no PowerManager; recording without a wake lock");
+                return;
+            }
+            releaseWakeLock();
+            PowerManager.WakeLock wl =
+                    ((PowerManager) pm).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "shminterop:spo2");
+            wl.setReferenceCounted(false);
+            wl.acquire(WAKE_LOCK_TIMEOUT_MS);
+            wakeLock = wl;
+        } catch (Throwable t) {
+            log("wake lock not acquired: " + t);
+        }
+    }
+
+    private static void releaseWakeLock() {
+        PowerManager.WakeLock wl = wakeLock;
+        wakeLock = null;
+        if (wl != null) {
+            try { if (wl.isHeld()) wl.release(); } catch (Throwable t) { log("wake lock release: " + t); }
+        }
+    }
+
+    /**
+     * Once per process, on the first entry: if the previous process died while recording (marker
+     * file) and the stored night is fresh, record again without a listener. Under LOCK.
+     */
+    private static void maybeAutoResume() {
+        if (autoResumeChecked || recording) return;
+        Context ctx = appContext();
+        if (ctx == null) return;
+        autoResumeChecked = true;
+        try {
+            File dir = new File(ctx.getFilesDir(), "shminterop-spo2");
+            File marker = new File(dir, "recording");
+            if (!marker.exists()) return;
+            store.attach(new File(dir, "night.bin"));
+            store.load();
+            long now = System.currentTimeMillis();
+            if (store.size() > 0 && now - store.newest() < AUTO_RESUME_MS) {
+                log("start: auto-resuming after a process restart");
+                startRecording(null);
+            } else {
+                log("stale recording marker removed");
+                marker.delete();
+            }
+        } catch (Throwable t) {
+            log("auto-resume failed: " + t);
+        }
+    }
+
+    /**
+     * GET_DATA marks the end of the night. A recording no listener owns (auto-resumed, not yet
+     * adopted) would never see the unregister that normally stops it, so it stops here.
+     */
+    private static void stopOrphanRecording() {
+        synchronized (LOCK) {
+            if (!recording || recorder != null) return;
+            log("GET_DATA with no recording listener; stopping the auto-resumed recording");
+            stopRecording();
+        }
+    }
+
+    /** One-shot check FALLBACK_START_MS after register, for SHM paths that skip SET_OPERATION_MODE. */
+    private static synchronized void scheduleFallback(final SemSensorListener listener) {
+        if (fallback == null) {
+            fallback = Executors.newSingleThreadScheduledExecutor(daemons("SpO2Adapter-fallback"));
+        }
+        fallback.schedule(new Runnable() {
+            @Override public void run() {
+                try { fallbackCheck(listener); } catch (Throwable t) { log("fallback: " + t); }
+            }
+        }, fallbackDelayMs, TimeUnit.MILLISECONDS);
+    }
+
+    /** Package-visible for tests: the body of the fallback timer. */
+    static void fallbackCheck(SemSensorListener listener) {
+        synchronized (LOCK) {
+            if (recording || !listeners.contains(listener) || commanded.contains(listener)) return;
+            log("start: no SET_OPERATION_MODE " + fallbackDelayMs / 1000
+                    + " s after register; recording anyway");
+            startRecording(listener);
         }
     }
 
@@ -452,7 +723,7 @@ public final class SpO2Adapter {
                 med = s.get(s.size() / 2);
             }
             log(String.format("stats: valid %d/%d s, median R %.3f (swap=%b), stored %d s",
-                    statValid, statSeconds, med, SWAP_RED_IR, store.size()));
+                    statValid, statSeconds, med, swap, store.size()));
             statSeconds = 0;
             statValid = 0;
             statR.clear();
@@ -461,8 +732,9 @@ public final class SpO2Adapter {
 
     /** Feeds one service sample to the estimator, applying the channel orientation. */
     static void feed(Spo2Estimator est, PpgSample s) {
-        int red = SWAP_RED_IR ? s.irAdc : s.redAdc;
-        int ir = SWAP_RED_IR ? s.redAdc : s.irAdc;
+        boolean sw = swap;
+        int red = sw ? s.irAdc : s.redAdc;
+        int ir = sw ? s.redAdc : s.irAdc;
         est.add(s.timestampMs, red, ir, s.isRedNormal() && s.isIrNormal());
     }
 
@@ -481,9 +753,12 @@ public final class SpO2Adapter {
             if (!recording || batch == null) return;
             lastBatchMs = SystemClock.elapsedRealtime();
             synchronized (FEED_LOCK) {
-                Spo2Estimator est = estimator;
-                if (est == null) return;
-                for (PpgSample s : batch.samples) feed(est, s);
+                // Re-read per sample: an orientation flip replaces the estimator mid-batch.
+                for (PpgSample s : batch.samples) {
+                    Spo2Estimator est = estimator;
+                    if (est == null) return;
+                    feed(est, s);
+                }
             }
         }
     }
@@ -495,6 +770,12 @@ public final class SpO2Adapter {
         return CONN;
     }
 
+    static boolean currentSwap() {
+        synchronized (FEED_LOCK) {
+            return swap;
+        }
+    }
+
     static boolean isRecording() {
         return recording;
     }
@@ -504,7 +785,13 @@ public final class SpO2Adapter {
         synchronized (LOCK) {
             recording = false;
             recorder = null;
+            recorderAdopted = false;
             listeners.clear();
+            commanded.clear();
+            autoResumeChecked = false;
+            markerFile = null;
+            orientationFile = null;
+            releaseWakeLock();
             stopTracker();
             ScheduledExecutorService w = watchdog;
             watchdog = null;
@@ -512,6 +799,9 @@ public final class SpO2Adapter {
         }
         synchronized (FEED_LOCK) {
             estimator = null;
+            swap = SWAP_RED_IR;
+            orientDecided = false;
+            orientR.clear();
             statSeconds = 0;
             statValid = 0;
             statR.clear();
@@ -521,6 +811,8 @@ public final class SpO2Adapter {
     }
 
     static Context appContext() {
+        Context o = contextOverride;
+        if (o != null) return o;
         try {
             Class<?> at = Class.forName("android.app.ActivityThread");
             Object app = at.getMethod("currentApplication").invoke(null);

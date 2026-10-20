@@ -43,5 +43,5 @@ java -Xmx256m -cp "$OUT/classes" shminterop.spo2.Spo2EstimatorTest || FAILED=1
 java -Xmx256m -cp "$OUT/classes" shminterop.spo2.SyntheticNightTest || FAILED=1
 java -Xmx256m -Dtest.tmp="$OUT" -cp "$OUT/classes" shminterop.spo2.Spo2AnswerTest || FAILED=1
 java -Xmx256m -cp "$OUT/classes" shminterop.spo2.ApneaTestDriverTest || FAILED=1
-java -Xmx256m -cp "$OUT/classes" shminterop.spo2.SpO2AdapterTest || FAILED=1
+java -Xmx256m -Dtest.tmp="$OUT" -cp "$OUT/classes" shminterop.spo2.SpO2AdapterTest || FAILED=1
 exit "$FAILED"
