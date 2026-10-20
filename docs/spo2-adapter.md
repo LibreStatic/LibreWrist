@@ -179,7 +179,9 @@ a daemon thread polls it every 3 s and on each CHANGE of the value (the first va
 - Sending is what the app's own forwarder does (smali `c72`): an `Intent` for the class
   `com.samsung.android.shealthmonitor.apnea.control.ApneaMonitoringService` (loaded by name through
   the application class loader), action `com.samsung.android.shealthmonitor.apnea.whs.activity`,
-  int extra `sleep_state`, long extra `sleep_time`, `startForegroundService`.
+  int extra `sleep_state`, long extra `sleep_time`, started through `WatchOverrides.startService`
+  like the app's own starts (pattern `watch-apnea-quiet-service`: a plain start, a foreground start
+  only when the system refuses it).
 - `sleep_time` is now, except for SLEEPING while the simulation of section 5 is on: then it is now
   minus the simulated night's length, so the sleep window matches the synthetic data. The apnea
   library ignores sleep shorter than 1 h.
@@ -191,9 +193,9 @@ property is set.
 
 Things that get in the way of a run:
 
-- Android refuses `startForegroundService` from a background app
-  (`ForegroundServiceStartNotAllowedException` in the driver's log), so keep SHM open on the watch
-  when the property changes.
+- Without the Doze allowlist grant the plain start is refused and Android also refuses the
+  foreground start from a background app (`ForegroundServiceStartNotAllowedException` in the
+  driver's log), so then keep SHM open on the watch when the property changes.
 - Health Services re-delivers its last real sleep state when SHM's listener reconnects; a stale
   AWAKE can arrive right after the driver's SLEEPING.
 - After a night is evaluated the library closes the day: it asks for a 7.5 h timer

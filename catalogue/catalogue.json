@@ -1,6 +1,6 @@
 {
   "schema": 2,
-  "serial": 60,
+  "serial": 61,
   "minAppVersion": 45,
   "inputs": [
     {
@@ -179,6 +179,7 @@
           "watch-sensor-unregister-compat",
           "watch-ihrn-quiet-services",
           "watch-ihrn-alert-overlay",
+          "watch-apnea-quiet-service",
           "watch-bp-attribute-guard",
           "watch-bp-sensor-adapter",
           "watch-apnea-country",
@@ -1181,6 +1182,84 @@
             "    const/4 v10, 0x2"
           ],
           "count": 1
+        }
+      ]
+    },
+    "watch-apnea-quiet-service": {
+      "families": [
+        "shm-watch"
+      ],
+      "title": "Quiet sleep apnea service",
+      "description": "Watch: the sleep apnea service (ApneaMonitoringService) starts as a plain service and calls startForeground (and so shows its notification) only when the system refused the background start, like the IHRN services: the five start sites (WHS sleep listener, apnea alarm receiver, finish analysis, runtime reconcile, test emulator) go through WatchOverrides.startService, onCreate calls WatchOverrides.startApneaForegroundIfRequired (which also gives the title-less vendor notification SHM's own 'Sleep apnea' title) and onStartCommand calls WatchOverrides.ensureForegroundIfRequired for a fallback start of the running service. The notification channel of the fallback is low importance",
+      "optional": false,
+      "ops": [
+        {
+          "op": "replaceInClass",
+          "className": "com/samsung/android/shealthmonitor/apnea/control/WhsSleepActivityListenerService",
+          "old": "    invoke-virtual {p0, v1}, Landroid/content/Context;->startForegroundService(Landroid/content/Intent;)Landroid/content/ComponentName;",
+          "new": "    invoke-static {p0, v1}, L${PKG_PATH}/watch/WatchOverrides;->startService(Landroid/content/Context;Landroid/content/Intent;)Landroid/content/ComponentName;",
+          "count": 1
+        },
+        {
+          "op": "replaceInClass",
+          "className": "com/samsung/android/shealthmonitor/apnea/alarm/ApneaAlarmReceiver",
+          "old": "    invoke-virtual {p1, v0}, Landroid/content/Context;->startForegroundService(Landroid/content/Intent;)Landroid/content/ComponentName;",
+          "new": "    invoke-static {p1, v0}, L${PKG_PATH}/watch/WatchOverrides;->startService(Landroid/content/Context;Landroid/content/Intent;)Landroid/content/ComponentName;",
+          "count": 1
+        },
+        {
+          "op": "replaceInClass",
+          "className": "f9",
+          "old": "    invoke-virtual {p0, v0}, Landroid/content/Context;->startForegroundService(Landroid/content/Intent;)Landroid/content/ComponentName;",
+          "new": "    invoke-static {p0, v0}, L${PKG_PATH}/watch/WatchOverrides;->startService(Landroid/content/Context;Landroid/content/Intent;)Landroid/content/ComponentName;",
+          "count": 1
+        },
+        {
+          "op": "replaceInClass",
+          "className": "sd2",
+          "old": "    invoke-virtual {p0, v0}, Landroid/content/Context;->startForegroundService(Landroid/content/Intent;)Landroid/content/ComponentName;",
+          "new": "    invoke-static {p0, v0}, L${PKG_PATH}/watch/WatchOverrides;->startService(Landroid/content/Context;Landroid/content/Intent;)Landroid/content/ComponentName;",
+          "count": 1
+        },
+        {
+          "op": "replaceInClass",
+          "className": "c72",
+          "old": "    invoke-virtual {p0, v0}, Landroid/content/Context;->startForegroundService(Landroid/content/Intent;)Landroid/content/ComponentName;",
+          "new": "    invoke-static {p0, v0}, L${PKG_PATH}/watch/WatchOverrides;->startService(Landroid/content/Context;Landroid/content/Intent;)Landroid/content/ComponentName;",
+          "count": 1
+        },
+        {
+          "op": "replaceInClass",
+          "className": "com/samsung/android/shealthmonitor/apnea/control/ApneaMonitoringService",
+          "old": "    invoke-virtual {p0, v1, v2}, Landroid/app/Service;->startForeground(ILandroid/app/Notification;)V",
+          "new": "    invoke-static {p0, v1, v2}, L${PKG_PATH}/watch/WatchOverrides;->startApneaForegroundIfRequired(Landroid/app/Service;ILandroid/app/Notification;)V",
+          "count": 1
+        },
+        {
+          "op": "replaceInClass",
+          "className": "com/samsung/android/shealthmonitor/apnea/control/ApneaMonitoringService",
+          "old": [
+            "    const-string v5, \"Common\"",
+            "",
+            "    const/4 v6, 0x4"
+          ],
+          "new": [
+            "    const-string v5, \"Common\"",
+            "",
+            "    const/4 v6, 0x2"
+          ],
+          "count": 1
+        },
+        {
+          "op": "insertAtMethodStart",
+          "fileRegex": "/apnea/control/ApneaMonitoringService\\.smali$",
+          "sigRegex": ".*onStartCommand\\(Landroid/content/Intent;II\\)I",
+          "insert": [
+            "",
+            "    invoke-static/range {p0 .. p0}, L${PKG_PATH}/watch/WatchOverrides;->ensureForegroundIfRequired(Landroid/app/Service;)V",
+            ""
+          ],
+          "expect": 1
         }
       ]
     },
@@ -4068,6 +4147,7 @@
       "pattern.watch-ihrn-sensor-adapter.description": "Reads the irregular heart rhythm sensor through the Health Tracking service, because the watch does not let a re-signed app use it directly.",
       "pattern.watch-sensor-unregister-compat.description": "Stops sensor clean-up from closing the app on watches with a different sensor framework, such as the Galaxy Watch8.",
       "pattern.watch-ihrn-quiet-services.description": "Runs the irregular heart rhythm checks in the background without a permanent notification. A low-priority notification appears only when the watch requires one.",
+      "pattern.watch-apnea-quiet-service.description": "Runs the overnight sleep apnea monitoring in the background without a notification that can't be cleared. A low-priority notification titled \"Sleep apnea\" appears only when the watch requires one.",
       "pattern.watch-ihrn-alert-overlay.description": "Lets the irregular heart rhythm alert open on the watch screen while the app is in the background.",
       "pattern.watch-bp-attribute-guard.description": "Stops blood pressure calibration from closing the app on watches that block the sensor setup it uses (One UI 8 Watch). The app shows its normal sensor error instead.",
       "pattern.watch-bp-sensor-adapter.description": "Reads the blood pressure sensor through the Health Tracking service, because the watch does not let a re-signed app use it directly.",
@@ -4187,6 +4267,7 @@
       "pattern.watch-ihrn-sensor-adapter.description": "يقرأ مستشعر عدم انتظام ضربات القلب عبر خدمة Health Tracking، لأن الساعة لا تسمح لتطبيق أُعيد توقيعه باستخدامه مباشرةً.",
       "pattern.watch-sensor-unregister-compat.description": "يمنع إغلاق التطبيق عند إيقاف المستشعرات في الساعات ذات إطار مستشعرات مختلف، مثل Galaxy Watch8.",
       "pattern.watch-ihrn-quiet-services.description": "يشغّل فحوصات عدم انتظام ضربات القلب في الخلفية دون إشعار دائم. لا يظهر إشعار منخفض الأولوية إلا عندما تتطلبه الساعة.",
+      "pattern.watch-apnea-quiet-service.description": "يشغّل مراقبة انقطاع النفس أثناء النوم ليلاً في الخلفية دون إشعار لا يمكن مسحه. لا يظهر إشعار منخفض الأولوية بعنوان \"انقطاع النفس أثناء النوم\" إلا عندما تتطلبه الساعة.",
       "pattern.watch-ihrn-alert-overlay.description": "يسمح بفتح تنبيه عدم انتظام ضربات القلب على شاشة الساعة بينما يعمل التطبيق في الخلفية.",
       "pattern.watch-bp-attribute-guard.description": "يمنع معايرة ضغط الدم من إغلاق التطبيق على الساعات التي تحظر إعداد المستشعر الذي تستخدمه (One UI 8 Watch). ويعرض التطبيق بدلًا من ذلك خطأ المستشعر المعتاد.",
       "pattern.watch-bp-sensor-adapter.description": "يقرأ مستشعر ضغط الدم عبر خدمة Health Tracking، لأن الساعة لا تسمح لتطبيق أُعيد توقيعه باستخدامه مباشرةً.",
@@ -4306,6 +4387,7 @@
       "pattern.watch-ihrn-sensor-adapter.description": "Liest den Sensor für unregelmäßigen Herzrhythmus über den Health-Tracking-Dienst aus, weil die Uhr einer neu signierten App den direkten Zugriff nicht erlaubt.",
       "pattern.watch-sensor-unregister-compat.description": "Verhindert, dass die App beim Beenden der Sensoren auf Uhren mit anderem Sensor-Framework wie der Galaxy Watch8 abstürzt.",
       "pattern.watch-ihrn-quiet-services.description": "Führt die Prüfungen auf unregelmäßigen Herzrhythmus im Hintergrund ohne dauerhafte Benachrichtigung aus. Eine Benachrichtigung mit niedriger Priorität erscheint nur, wenn die Uhr eine verlangt.",
+      "pattern.watch-apnea-quiet-service.description": "Führt die nächtliche Schlafapnoe-Überwachung im Hintergrund aus, ohne Benachrichtigung, die sich nicht löschen lässt. Eine Benachrichtigung mit niedriger Priorität und dem Titel „Schlafapnoe“ erscheint nur, wenn die Uhr eine verlangt.",
       "pattern.watch-ihrn-alert-overlay.description": "Erlaubt, dass sich die Warnung bei unregelmäßigem Herzrhythmus auf dem Uhrdisplay öffnet, während die App im Hintergrund läuft.",
       "pattern.watch-bp-attribute-guard.description": "Verhindert, dass die Blutdruckkalibrierung die App auf Uhren schließt, die die verwendete Sensoreinrichtung blockieren (One UI 8 Watch). Die App zeigt stattdessen ihren normalen Sensorfehler an.",
       "pattern.watch-bp-sensor-adapter.description": "Liest den Blutdrucksensor über den Health-Tracking-Dienst aus, weil die Uhr einer neu signierten App den direkten Zugriff nicht erlaubt.",
@@ -4425,6 +4507,7 @@
       "pattern.watch-ihrn-sensor-adapter.description": "Lee el sensor de ritmo cardíaco irregular a través del servicio Health Tracking, porque el reloj no deja que una app firmada de nuevo lo use directamente.",
       "pattern.watch-sensor-unregister-compat.description": "Evita que la app se cierre al detener los sensores en relojes con otro framework de sensores, como el Galaxy Watch8.",
       "pattern.watch-ihrn-quiet-services.description": "Ejecuta las comprobaciones de ritmo cardíaco irregular en segundo plano sin una notificación permanente. Solo aparece una notificación de baja prioridad cuando el reloj la exige.",
+      "pattern.watch-apnea-quiet-service.description": "Ejecuta el monitoreo nocturno de la apnea del sueño en segundo plano, sin una notificación que no se puede borrar. Solo aparece una notificación de baja prioridad titulada \"Apnea del sueño\" cuando el reloj la exige.",
       "pattern.watch-ihrn-alert-overlay.description": "Permite que la alerta de ritmo cardíaco irregular se abra en la pantalla del reloj mientras la app está en segundo plano.",
       "pattern.watch-bp-attribute-guard.description": "Evita que la calibración de la presión arterial cierre la app en relojes que bloquean la configuración del sensor que usa (One UI 8 Watch). En su lugar, la app muestra su error de sensor habitual.",
       "pattern.watch-bp-sensor-adapter.description": "Lee el sensor de presión arterial a través del servicio Health Tracking, porque el reloj no deja que una app firmada de nuevo lo use directamente.",
@@ -4544,6 +4627,7 @@
       "pattern.watch-ihrn-sensor-adapter.description": "Lit le capteur de rythme cardiaque irrégulier via le service Health Tracking, car la montre ne laisse pas une app re-signée l'utiliser directement.",
       "pattern.watch-sensor-unregister-compat.description": "Empêche l'app de se fermer à l'arrêt des capteurs sur les montres dont le framework de capteurs diffère, comme la Galaxy Watch8.",
       "pattern.watch-ihrn-quiet-services.description": "Exécute les vérifications du rythme cardiaque irrégulier en arrière-plan sans notification permanente. Une notification de faible priorité n'apparaît que lorsque la montre l'exige.",
+      "pattern.watch-apnea-quiet-service.description": "Exécute la surveillance nocturne de l'apnée du sommeil en arrière-plan, sans notification impossible à effacer. Une notification de faible priorité intitulée « Apnée du sommeil » n'apparaît que lorsque la montre l'exige.",
       "pattern.watch-ihrn-alert-overlay.description": "Permet à l'alerte de rythme cardiaque irrégulier de s'ouvrir sur l'écran de la montre pendant que l'app est en arrière-plan.",
       "pattern.watch-bp-attribute-guard.description": "Empêche l'étalonnage de la tension artérielle de fermer l'app sur les montres qui bloquent la configuration du capteur qu'elle utilise (One UI 8 Watch). L'app affiche à la place son erreur de capteur habituelle.",
       "pattern.watch-bp-sensor-adapter.description": "Lit le capteur de tension artérielle via le service Health Tracking, car la montre ne laisse pas une app re-signée l'utiliser directement.",
@@ -4663,6 +4747,7 @@
       "pattern.watch-ihrn-sensor-adapter.description": "Health Tracking सेवा के ज़रिए अनियमित हृदय गति सेंसर पढ़ता है, क्योंकि घड़ी दोबारा साइन किए गए ऐप को इसे सीधे इस्तेमाल नहीं करने देती।",
       "pattern.watch-sensor-unregister-compat.description": "Galaxy Watch8 जैसी अलग सेंसर फ़्रेमवर्क वाली घड़ियों पर सेंसर बंद करते समय ऐप को बंद होने से रोकता है।",
       "pattern.watch-ihrn-quiet-services.description": "अनियमित हृदय गति की जाँच बिना स्थायी सूचना के बैकग्राउंड में चलाता है। कम प्राथमिकता वाली सूचना तभी दिखती है जब घड़ी इसकी माँग करती है।",
+      "pattern.watch-apnea-quiet-service.description": "रात भर की स्लीप एप्निया निगरानी को बैकग्राउंड में चलाता है, बिना ऐसी सूचना के जिसे हटाया न जा सके। \"स्लीप एप्निया\" शीर्षक वाली कम प्राथमिकता की सूचना तभी दिखती है जब घड़ी इसकी माँग करती है।",
       "pattern.watch-ihrn-alert-overlay.description": "ऐप के बैकग्राउंड में होने पर भी अनियमित हृदय गति की चेतावनी को घड़ी की स्क्रीन पर खुलने देता है।",
       "pattern.watch-bp-attribute-guard.description": "जो घड़ियाँ ब्लड प्रेशर कैलिब्रेशन का इस्तेमाल किया जाने वाला सेंसर सेटअप ब्लॉक करती हैं (One UI 8 Watch), उन पर कैलिब्रेशन को ऐप बंद करने से रोकता है। इसके बजाय ऐप अपनी सामान्य सेंसर त्रुटि दिखाता है।",
       "pattern.watch-bp-sensor-adapter.description": "Health Tracking सेवा के ज़रिए ब्लड प्रेशर सेंसर पढ़ता है, क्योंकि घड़ी दोबारा साइन किए गए ऐप को इसे सीधे इस्तेमाल नहीं करने देती।",
@@ -4782,6 +4867,7 @@
       "pattern.watch-ihrn-sensor-adapter.description": "Membaca sensor irama jantung tidak teratur lewat layanan Health Tracking, karena jam tidak mengizinkan aplikasi yang ditandatangani ulang memakainya secara langsung.",
       "pattern.watch-sensor-unregister-compat.description": "Mencegah aplikasi tertutup saat sensor dihentikan di jam tangan dengan framework sensor berbeda, seperti Galaxy Watch8.",
       "pattern.watch-ihrn-quiet-services.description": "Menjalankan pemeriksaan irama jantung tidak teratur di latar belakang tanpa notifikasi permanen. Notifikasi berprioritas rendah hanya muncul saat jam mengharuskannya.",
+      "pattern.watch-apnea-quiet-service.description": "Menjalankan pemantauan apnea tidur semalaman di latar belakang tanpa notifikasi yang tidak bisa dihapus. Notifikasi berprioritas rendah berjudul \"Apnea tidur\" hanya muncul saat jam mengharuskannya.",
       "pattern.watch-ihrn-alert-overlay.description": "Memungkinkan peringatan irama jantung tidak teratur terbuka di layar jam saat aplikasi berjalan di latar belakang.",
       "pattern.watch-bp-attribute-guard.description": "Mencegah kalibrasi tekanan darah menutup aplikasi di jam yang memblokir penyiapan sensor yang dipakainya (One UI 8 Watch). Aplikasi akan menampilkan kesalahan sensor seperti biasa.",
       "pattern.watch-bp-sensor-adapter.description": "Membaca sensor tekanan darah lewat layanan Health Tracking, karena jam tidak mengizinkan aplikasi yang ditandatangani ulang memakainya secara langsung.",
@@ -4901,6 +4987,7 @@
       "pattern.watch-ihrn-sensor-adapter.description": "Legge il sensore del ritmo cardiaco irregolare tramite il servizio Health Tracking, perché l'orologio non consente a un'app rifirmata di usarlo direttamente.",
       "pattern.watch-sensor-unregister-compat.description": "Evita che l'app si chiuda all'arresto dei sensori sugli orologi con un framework dei sensori diverso, come il Galaxy Watch8.",
       "pattern.watch-ihrn-quiet-services.description": "Esegue i controlli del ritmo cardiaco irregolare in background senza una notifica permanente. Una notifica a bassa priorità compare solo quando l'orologio la richiede.",
+      "pattern.watch-apnea-quiet-service.description": "Esegue il monitoraggio notturno dell'apnea notturna in background, senza una notifica impossibile da cancellare. Una notifica a bassa priorità intitolata \"Apnea notturna\" compare solo quando l'orologio la richiede.",
       "pattern.watch-ihrn-alert-overlay.description": "Consente all'avviso di ritmo cardiaco irregolare di aprirsi sullo schermo dell'orologio mentre l'app è in background.",
       "pattern.watch-bp-attribute-guard.description": "Impedisce che la calibrazione della pressione arteriosa chiuda l'app sugli orologi che bloccano la configurazione del sensore che usa (One UI 8 Watch). L'app mostra invece il suo normale errore del sensore.",
       "pattern.watch-bp-sensor-adapter.description": "Legge il sensore della pressione arteriosa tramite il servizio Health Tracking, perché l'orologio non consente a un'app rifirmata di usarlo direttamente.",
@@ -5020,6 +5107,7 @@
       "pattern.watch-ihrn-sensor-adapter.description": "ウォッチでは再署名したアプリが不規則な心拍リズムのセンサーを直接使用できないため、Health Trackingサービス経由で読み取ります。",
       "pattern.watch-sensor-unregister-compat.description": "Galaxy Watch8 など、センサーフレームワークが異なるウォッチでセンサー停止時にアプリが終了しないようにします。",
       "pattern.watch-ihrn-quiet-services.description": "不規則な心拍リズムのチェックを、常時表示の通知なしでバックグラウンドで実行します。ウォッチが必要とする場合にのみ、優先度の低い通知が表示されます。",
+      "pattern.watch-apnea-quiet-service.description": "夜間の睡眠時無呼吸のモニタリングを、消去できない通知なしでバックグラウンドで実行します。ウォッチが必要とする場合にのみ、「睡眠時無呼吸」という優先度の低い通知が表示されます。",
       "pattern.watch-ihrn-alert-overlay.description": "アプリがバックグラウンドにあるときでも、不規則な心拍リズムのアラートをウォッチの画面に表示できるようにします。",
       "pattern.watch-bp-attribute-guard.description": "使用するセンサー設定がブロックされているウォッチ（One UI 8 Watch）で、血圧のキャリブレーション中にアプリが終了しないようにします。代わりに通常のセンサーエラーが表示されます。",
       "pattern.watch-bp-sensor-adapter.description": "ウォッチでは再署名したアプリが血圧センサーを直接使用できないため、Health Trackingサービス経由で読み取ります。",
@@ -5139,6 +5227,7 @@
       "pattern.watch-ihrn-sensor-adapter.description": "워치에서 재서명된 앱이 불규칙한 심장 리듬 센서를 직접 사용할 수 없으므로 Health Tracking 서비스를 통해 읽습니다.",
       "pattern.watch-sensor-unregister-compat.description": "Galaxy Watch8처럼 센서 프레임워크가 다른 워치에서 센서를 중지할 때 앱이 종료되지 않도록 합니다.",
       "pattern.watch-ihrn-quiet-services.description": "불규칙한 심장 리듬 검사를 상시 알림 없이 백그라운드에서 실행합니다. 워치가 요구할 때만 우선순위가 낮은 알림이 표시됩니다.",
+      "pattern.watch-apnea-quiet-service.description": "밤새 수면 무호흡 모니터링을 지울 수 없는 알림 없이 백그라운드에서 실행합니다. 워치가 요구할 때만 \"수면 무호흡\"이라는 우선순위가 낮은 알림이 표시됩니다.",
       "pattern.watch-ihrn-alert-overlay.description": "앱이 백그라운드에 있을 때도 불규칙한 심장 리듬 경고가 워치 화면에 열리도록 합니다.",
       "pattern.watch-bp-attribute-guard.description": "사용하는 센서 설정이 차단된 워치(One UI 8 Watch)에서 혈압 보정 중에 앱이 종료되지 않도록 합니다. 대신 일반 센서 오류가 표시됩니다.",
       "pattern.watch-bp-sensor-adapter.description": "워치에서 재서명된 앱이 혈압 센서를 직접 사용할 수 없으므로 Health Tracking 서비스를 통해 읽습니다.",
@@ -5258,6 +5347,7 @@
       "pattern.watch-ihrn-sensor-adapter.description": "Leest de sensor voor onregelmatig hartritme uit via de Health Tracking-service, omdat het horloge een opnieuw ondertekende app er niet rechtstreeks gebruik van laat maken.",
       "pattern.watch-sensor-unregister-compat.description": "Voorkomt dat de app sluit bij het stoppen van sensoren op horloges met een ander sensorframework, zoals de Galaxy Watch8.",
       "pattern.watch-ihrn-quiet-services.description": "Voert de controles op onregelmatig hartritme op de achtergrond uit zonder permanente melding. Een melding met lage prioriteit verschijnt alleen als het horloge erom vraagt.",
+      "pattern.watch-apnea-quiet-service.description": "Voert de nachtelijke bewaking van slaapapneu op de achtergrond uit, zonder melding die niet te wissen is. Een melding met lage prioriteit met de titel \"Slaapapneu\" verschijnt alleen als het horloge erom vraagt.",
       "pattern.watch-ihrn-alert-overlay.description": "Laat de waarschuwing voor onregelmatig hartritme op het horlogescherm openen terwijl de app op de achtergrond draait.",
       "pattern.watch-bp-attribute-guard.description": "Voorkomt dat de bloeddrukkalibratie de app sluit op horloges die de sensorinstelling blokkeren die de app gebruikt (One UI 8 Watch). De app toont in plaats daarvan zijn normale sensorfout.",
       "pattern.watch-bp-sensor-adapter.description": "Leest de bloeddruksensor uit via de Health Tracking-service, omdat het horloge een opnieuw ondertekende app er niet rechtstreeks gebruik van laat maken.",
@@ -5377,6 +5467,7 @@
       "pattern.watch-ihrn-sensor-adapter.description": "Odczytuje czujnik nieregularnego rytmu serca przez usługę Health Tracking, ponieważ zegarek nie pozwala aplikacji podpisanej ponownie używać go bezpośrednio.",
       "pattern.watch-sensor-unregister-compat.description": "Zapobiega zamykaniu aplikacji przy wyłączaniu czujników na zegarkach z innym frameworkiem czujników, np. Galaxy Watch8.",
       "pattern.watch-ihrn-quiet-services.description": "Wykonuje sprawdzanie nieregularnego rytmu serca w tle bez stałego powiadomienia. Powiadomienie o niskim priorytecie pojawia się tylko wtedy, gdy wymaga go zegarek.",
+      "pattern.watch-apnea-quiet-service.description": "Wykonuje nocne monitorowanie bezdechu sennego w tle, bez powiadomienia, którego nie da się usunąć. Powiadomienie o niskim priorytecie z tytułem „Bezdech senny” pojawia się tylko wtedy, gdy wymaga go zegarek.",
       "pattern.watch-ihrn-alert-overlay.description": "Pozwala, aby alert o nieregularnym rytmie serca otworzył się na ekranie zegarka, gdy aplikacja działa w tle.",
       "pattern.watch-bp-attribute-guard.description": "Zapobiega zamykaniu aplikacji przez kalibrację ciśnienia krwi na zegarkach, które blokują używaną przez nią konfigurację czujnika (One UI 8 Watch). Zamiast tego aplikacja pokazuje swój zwykły błąd czujnika.",
       "pattern.watch-bp-sensor-adapter.description": "Odczytuje czujnik ciśnienia krwi przez usługę Health Tracking, ponieważ zegarek nie pozwala aplikacji podpisanej ponownie używać go bezpośrednio.",
@@ -5496,6 +5587,7 @@
       "pattern.watch-ihrn-sensor-adapter.description": "Lê o sensor de ritmo cardíaco irregular pelo serviço Health Tracking, porque o relógio não deixa um app assinado novamente usá-lo diretamente.",
       "pattern.watch-sensor-unregister-compat.description": "Evita que o app feche ao parar os sensores em relógios com outro framework de sensores, como o Galaxy Watch8.",
       "pattern.watch-ihrn-quiet-services.description": "Executa as verificações de ritmo cardíaco irregular em segundo plano sem uma notificação permanente. Uma notificação de baixa prioridade só aparece quando o relógio a exige.",
+      "pattern.watch-apnea-quiet-service.description": "Executa a monitorização noturna da apneia do sono em segundo plano, sem uma notificação que não pode ser apagada. Uma notificação de baixa prioridade com o título \"Apneia do sono\" só aparece quando o relógio a exige.",
       "pattern.watch-ihrn-alert-overlay.description": "Permite que o alerta de ritmo cardíaco irregular abra na tela do relógio enquanto o app está em segundo plano.",
       "pattern.watch-bp-attribute-guard.description": "Impede que a calibração da pressão arterial feche o app em relógios que bloqueiam a configuração do sensor que ele usa (One UI 8 Watch). Em vez disso, o app mostra o erro de sensor normal dele.",
       "pattern.watch-bp-sensor-adapter.description": "Lê o sensor de pressão arterial pelo serviço Health Tracking, porque o relógio não deixa um app assinado novamente usá-lo diretamente.",
@@ -5615,6 +5707,7 @@
       "pattern.watch-ihrn-sensor-adapter.description": "Считывает датчик нерегулярного сердечного ритма через службу Health Tracking, потому что часы не дают переподписанному приложению использовать его напрямую.",
       "pattern.watch-sensor-unregister-compat.description": "Не даёт приложению закрываться при остановке датчиков на часах с другим фреймворком датчиков, например Galaxy Watch8.",
       "pattern.watch-ihrn-quiet-services.description": "Выполняет проверки нерегулярного сердечного ритма в фоне без постоянного уведомления. Уведомление с низким приоритетом появляется, только когда этого требуют часы.",
+      "pattern.watch-apnea-quiet-service.description": "Выполняет ночной мониторинг апноэ сна в фоне без уведомления, которое нельзя смахнуть. Уведомление с низким приоритетом и заголовком «Апноэ сна» появляется, только когда этого требуют часы.",
       "pattern.watch-ihrn-alert-overlay.description": "Позволяет предупреждению о нерегулярном сердечном ритме открываться на экране часов, пока приложение работает в фоне.",
       "pattern.watch-bp-attribute-guard.description": "Не даёт калибровке давления закрывать приложение на часах, которые блокируют используемую ею настройку датчика (One UI 8 Watch). Вместо этого приложение показывает свою обычную ошибку датчика.",
       "pattern.watch-bp-sensor-adapter.description": "Считывает датчик давления через службу Health Tracking, потому что часы не дают переподписанному приложению использовать его напрямую.",
@@ -5734,6 +5827,7 @@
       "pattern.watch-ihrn-sensor-adapter.description": "Saat, yeniden imzalanmış bir uygulamanın düzensiz kalp ritmi sensörünü doğrudan kullanmasına izin vermediği için sensörü Health Tracking hizmeti üzerinden okur.",
       "pattern.watch-sensor-unregister-compat.description": "Galaxy Watch8 gibi farklı sensör altyapısına sahip saatlerde sensörler durdurulurken uygulamanın kapanmasını önler.",
       "pattern.watch-ihrn-quiet-services.description": "Düzensiz kalp ritmi kontrollerini kalıcı bir bildirim olmadan arka planda çalıştırır. Düşük öncelikli bir bildirim yalnızca saat gerektirdiğinde görünür.",
+      "pattern.watch-apnea-quiet-service.description": "Gece boyunca uyku apnesi izlemesini, temizlenemeyen bir bildirim olmadan arka planda çalıştırır. \"Uyku apnesi\" başlıklı düşük öncelikli bir bildirim yalnızca saat gerektirdiğinde görünür.",
       "pattern.watch-ihrn-alert-overlay.description": "Uygulama arka plandayken düzensiz kalp ritmi uyarısının saat ekranında açılmasına izin verir.",
       "pattern.watch-bp-attribute-guard.description": "Kullandığı sensör kurulumunu engelleyen saatlerde (One UI 8 Watch) tansiyon kalibrasyonunun uygulamayı kapatmasını önler. Uygulama bunun yerine normal sensör hatasını gösterir.",
       "pattern.watch-bp-sensor-adapter.description": "Saat, yeniden imzalanmış bir uygulamanın tansiyon sensörünü doğrudan kullanmasına izin vermediği için sensörü Health Tracking hizmeti üzerinden okur.",
@@ -5853,6 +5947,7 @@
       "pattern.watch-ihrn-sensor-adapter.description": "Зчитує датчик нерегулярного серцевого ритму через службу Health Tracking, бо годинник не дозволяє переподписаному застосунку використовувати його напряму.",
       "pattern.watch-sensor-unregister-compat.description": "Не дає застосунку закриватися під час зупинки датчиків на годинниках з іншим фреймворком датчиків, як-от Galaxy Watch8.",
       "pattern.watch-ihrn-quiet-services.description": "Виконує перевірки нерегулярного серцевого ритму у фоні без постійного сповіщення. Сповіщення з низьким пріоритетом з'являється, лише коли цього вимагає годинник.",
+      "pattern.watch-apnea-quiet-service.description": "Виконує нічний моніторинг апное сну у фоні без сповіщення, яке не можна прибрати. Сповіщення з низьким пріоритетом і заголовком «Апное сну» з'являється, лише коли цього вимагає годинник.",
       "pattern.watch-ihrn-alert-overlay.description": "Дозволяє попередженню про нерегулярний серцевий ритм відкриватися на екрані годинника, поки застосунок працює у фоні.",
       "pattern.watch-bp-attribute-guard.description": "Не дає калібруванню тиску закривати застосунок на годинниках, які блокують потрібне йому налаштування датчика (One UI 8 Watch). Натомість застосунок показує свою звичайну помилку датчика.",
       "pattern.watch-bp-sensor-adapter.description": "Зчитує датчик тиску через службу Health Tracking, бо годинник не дозволяє переподписаному застосунку використовувати його напряму.",
@@ -5972,6 +6067,7 @@
       "pattern.watch-ihrn-sensor-adapter.description": "通过 Health Tracking 服务读取心律不齐传感器，因为手表不允许重新签名的应用直接使用它。",
       "pattern.watch-sensor-unregister-compat.description": "防止在传感器框架不同的手表（如 Galaxy Watch8）上停止传感器时应用关闭。",
       "pattern.watch-ihrn-quiet-services.description": "在后台运行心律不齐检查，不显示常驻通知。只有在手表要求时才会显示一条低优先级通知。",
+      "pattern.watch-apnea-quiet-service.description": "在后台运行夜间睡眠呼吸暂停监测，不显示无法清除的通知。只有在手表要求时才会显示一条标题为“睡眠呼吸暂停”的低优先级通知。",
       "pattern.watch-ihrn-alert-overlay.description": "允许在应用处于后台时，在手表屏幕上打开心律不齐提醒。",
       "pattern.watch-bp-attribute-guard.description": "在会阻止其所用传感器设置的手表（One UI 8 Watch）上，防止血压校准导致应用关闭。应用会改为显示常规的传感器错误。",
       "pattern.watch-bp-sensor-adapter.description": "通过 Health Tracking 服务读取血压传感器，因为手表不允许重新签名的应用直接使用它。",
@@ -6091,6 +6187,7 @@
       "pattern.watch-ihrn-sensor-adapter.description": "透過 Health Tracking 服務讀取心律不整感測器，因為手錶不允許重新簽署的應用程式直接使用它。",
       "pattern.watch-sensor-unregister-compat.description": "避免在感測器框架不同的手錶（例如 Galaxy Watch8）上停止感測器時應用程式關閉。",
       "pattern.watch-ihrn-quiet-services.description": "在背景執行心律不整檢查，不顯示常駐通知。只有在手錶要求時才會顯示一則低優先順序通知。",
+      "pattern.watch-apnea-quiet-service.description": "在背景執行夜間睡眠呼吸中止監測，不顯示無法清除的通知。只有在手錶要求時才會顯示一則標題為「睡眠呼吸中止」的低優先順序通知。",
       "pattern.watch-ihrn-alert-overlay.description": "允許在應用程式處於背景時，於手錶螢幕上開啟心律不整警示。",
       "pattern.watch-bp-attribute-guard.description": "在會封鎖其所用感測器設定的手錶（One UI 8 Watch）上，避免血壓校正導致應用程式關閉。應用程式會改為顯示一般的感測器錯誤。",
       "pattern.watch-bp-sensor-adapter.description": "透過 Health Tracking 服務讀取血壓感測器，因為手錶不允許重新簽署的應用程式直接使用它。",

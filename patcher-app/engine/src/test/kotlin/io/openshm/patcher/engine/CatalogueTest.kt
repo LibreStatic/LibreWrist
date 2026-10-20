@@ -44,7 +44,7 @@ class CatalogueTest {
 
     @Test fun committedCatalogueParses() {
         val c = Catalogue.parse(String(catalogueBytes, Charsets.UTF_8))
-        assertEquals(68, c.patterns.size)
+        assertEquals(69, c.patterns.size)
         assertEquals(setOf("gms", "alarm", "shealth", "shealth-cn"), c.profiles.keys)
     }
 
@@ -259,7 +259,7 @@ class CatalogueTest {
 
     @Test fun parseSignedVerifiesBeforeParsing() {
         val key = CatalogueVerifier.parsePublicKey(pem)
-        assertEquals(68, Catalogue.parseSigned(catalogueBytes, signature, key).patterns.size)
+        assertEquals(69, Catalogue.parseSigned(catalogueBytes, signature, key).patterns.size)
         val tampered = catalogueBytes.copyOf().also { it[100] = (it[100].toInt() xor 1).toByte() }
         try {
             Catalogue.parseSigned(tampered, signature, key)

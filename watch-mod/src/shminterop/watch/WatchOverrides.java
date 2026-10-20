@@ -40,7 +40,10 @@ import java.lang.reflect.Method;
  * watch-ihrn-quiet-services). They start as plain services, which needs the app on the Doze
  * allowlist; when the system refuses a background start the call falls back to a foreground
  * start and remembers it, and only then does the service call startForeground (and post its
- * notification). Otherwise no notification is shown.
+ * notification). Otherwise no notification is shown. The sleep apnea service (pattern
+ * watch-apnea-quiet-service) goes through the same pair, plus startApneaForegroundIfRequired()
+ * (gives the vendor's title-less notification a title) and ensureForegroundIfRequired() (a
+ * foreground start that reaches an already running service, where onCreate does not run again).
  *
  * makeHrSensorAttribute(): builds a SemHrSensorAttribute by reflection for the BP calibration
  * path (pattern watch-bp-attribute-guard); returns null when hidden-API enforcement denies
@@ -128,7 +131,7 @@ public final class WatchOverrides {
     }
 
     /**
-     * Replaces Context.startForegroundService for the IHRN services: a plain startService first
+     * Replaces Context.startForegroundService for the IHRN and apnea services: a plain startService first
      * (no notification; works when the app is on the Doze allowlist), and on the system's
      * background-start refusal (IllegalStateException) a foreground start, remembered per service
      * class so that its onCreate posts the notification. Returns the component like the original.
@@ -152,10 +155,58 @@ public final class WatchOverrides {
      * notification is shown.
      */
     public static void startForegroundIfRequired(Service service, int id, Notification notification) {
-        if (ForegroundRequired.isRequired(service.getClass().getName())) {
+        String key = service.getClass().getName();
+        ForegroundRequired.remember(key, id, notification);
+        if (ForegroundRequired.isRequired(key)) {
             service.startForeground(id, notification);
         } else {
-            Log.i(TAG, "service: " + service.getClass().getName() + " runs without a notification");
+            Log.i(TAG, "service: " + key + " runs without a notification");
+        }
+    }
+
+    /**
+     * Called at the start of the service's onStartCommand. A start that had to fall back to
+     * startForegroundService while the service was already running (as a plain service) does not
+     * run onCreate again, so startForeground is called here with the notification onCreate built;
+     * otherwise the system would stop the app for not calling it.
+     */
+    public static void ensureForegroundIfRequired(Service service) {
+        String key = service.getClass().getName();
+        if (!ForegroundRequired.isRequired(key)) return;
+        ForegroundRequired.Notice notice = ForegroundRequired.remembered(key);
+        if (notice == null) return;
+        service.startForeground(notice.id, notice.notification);
+    }
+
+    /**
+     * Replaces Service.startForeground in ApneaMonitoringService.onCreate. The vendor notification
+     * has no title or text, so the watch shows the app name twice; when it has to be shown it gets
+     * SHM's own translated "Sleep apnea" string as its title.
+     */
+    public static void startApneaForegroundIfRequired(Service service, int id, Notification notification) {
+        if (ForegroundRequired.isRequired(service.getClass().getName())) {
+            addTitle(service, notification, APNEA_TITLE_RES);
+        }
+        startForegroundIfRequired(service, id, notification);
+    }
+
+    static final String APNEA_TITLE_RES = "apnea_sleep_apnea";
+    private static final String VENDOR_PACKAGE = "com.samsung.android.shealthmonitor";
+
+    /** Sets the notification's title from the app's string [resName] if it has none. Never throws. */
+    static void addTitle(Context context, Notification notification, String resName) {
+        try {
+            if (notification.extras == null
+                    || notification.extras.getCharSequence(Notification.EXTRA_TITLE) != null) {
+                return;
+            }
+            android.content.res.Resources res = context.getResources();
+            int resId = res.getIdentifier(resName, "string", context.getPackageName());
+            if (resId == 0) resId = res.getIdentifier(resName, "string", VENDOR_PACKAGE);
+            if (resId == 0) return;
+            notification.extras.putCharSequence(Notification.EXTRA_TITLE, res.getString(resId));
+        } catch (Throwable t) {
+            Log.w(TAG, "service: could not set the notification title: " + t);
         }
     }
 

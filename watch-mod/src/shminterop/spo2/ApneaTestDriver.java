@@ -27,8 +27,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * library evaluates matches the synthetic data (it ignores sleep shorter than 1 h). AWAKE always
  * carries the current time.
  *
- * Android refuses startForegroundService from a background app, so SHM must be in the
- * foreground (open on the watch) when the property changes.
+ * The intent goes through WatchOverrides.startService like SHM's own starts of the service
+ * (pattern watch-apnea-quiet-service): a plain start on the Doze allowlist, otherwise a foreground
+ * start, which Android refuses from a background app, so then SHM must be in the foreground (open
+ * on the watch) when the property changes.
  */
 public final class ApneaTestDriver {
     static final String TAG = "ApneaTestDriver";
@@ -144,7 +146,7 @@ public final class ApneaTestDriver {
             intent.putExtra(EXTRA_STATE, state);
             long time = eventTime(state, System.currentTimeMillis(), SysProp.get(SpO2Adapter.SIM_PROP));
             intent.putExtra(EXTRA_TIME, time);
-            ctx.startForegroundService(intent);
+            shminterop.watch.WatchOverrides.startService(ctx, intent);
             Log.i(TAG, "sent sleep_state " + state + " (sleep_time " + time + ") to " + SERVICE_CLASS);
         } catch (Throwable t) {
             Log.w(TAG, "send failed: " + t);

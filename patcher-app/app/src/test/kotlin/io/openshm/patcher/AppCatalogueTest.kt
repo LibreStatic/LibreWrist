@@ -15,7 +15,7 @@ class AppCatalogueTest {
 
     @Test
     fun serialAndInputs() {
-        assertEquals(60L, c.serial)
+        assertEquals(61L, c.serial)
         assertEquals("chinaFrom / obtain.yyb need CI run 45", 45L, c.engine.minAppVersion)
         assertEquals(
             listOf(
@@ -84,7 +84,7 @@ class AppCatalogueTest {
             c.patches("shm-phone").map { it.id },
         )
         val watch = c.patches("shm-watch")
-        assertEquals(20, watch.size)
+        assertEquals(21, watch.size)
         assertEquals("watch-mod", watch.last().id)
         assertEquals("Health Tracking module", watch.last().title)
         assertTrue(watch.last().injection)
@@ -95,7 +95,7 @@ class AppCatalogueTest {
         assertEquals(18, alarm.size)
         assertEquals("alarm-fork", alarm.last().id)
         assertEquals("Alarm link module", alarm.last().title)
-        assertEquals(20 + 20 + 17, c.patternCount(listOf("shm-phone", "shm-watch", "alarm-watch")))
+        assertEquals(20 + 21 + 17, c.patternCount(listOf("shm-phone", "shm-watch", "alarm-watch")))
         assertTrue(c.patchSets.flatMap { it.patches }.all { it.description.isNotBlank() })
     }
 

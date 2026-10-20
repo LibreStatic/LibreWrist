@@ -33,5 +33,8 @@ public class Bundle {
     public void putBooleanArray(String key, boolean[] value) { map.put(key, value); }
     public boolean[] getBooleanArray(String key) { return (boolean[]) map.get(key); }
 
+    public void putCharSequence(String key, CharSequence value) { map.put(key, value); }
+    public CharSequence getCharSequence(String key) { return (CharSequence) map.get(key); }
+
     public boolean containsKey(String key) { return map.containsKey(key); }
 }

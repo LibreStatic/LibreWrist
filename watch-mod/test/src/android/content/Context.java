@@ -22,6 +22,14 @@ public class Context {
         return Context.class.getClassLoader();
     }
 
+    public String getPackageName() {
+        return "shminterop.test";
+    }
+
+    public android.content.res.Resources getResources() {
+        return new android.content.res.Resources();
+    }
+
     public ComponentName startService(Intent intent) {
         return intent.getComponent();
     }
