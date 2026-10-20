@@ -282,7 +282,7 @@ class Interpreter(Tree):
             'watch-apnea-country', 'watch-apnea-reeval-not-supported',
             'alarm-force-sound-vibrate', 'alarm-hide-launcher', 'alarm-relabel',
             'shealth-oobe-local', 'shealth-china-account-gate', 'shealth-capability-gates',
-            'shealth-launcher-badge', 'shm-launcher-badge'})
+            'shealth-launcher-badge', 'shm-launcher-badge', 'shm-samsung-health-link-off'})
         self.assertEqual({i for i, p in pats.items() if p.get('offByDefault')},
                          {'shealth-oobe-local', 'shealth-china-account-gate'})
         self.assertEqual({i for i, p in pats.items() if p.get('optionGroup') == 'sleep-apnea'},

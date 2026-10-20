@@ -1,6 +1,6 @@
 {
   "schema": 2,
-  "serial": 55,
+  "serial": 56,
   "minAppVersion": 45,
   "inputs": [
     {
@@ -158,6 +158,7 @@
           "shm-ihrn-countries",
           "shm-bp-worldwide",
           "shm-provider-callers",
+          "shm-samsung-health-link-off",
           "phone-rebrand-gms",
           "shm-wear-trusted-peers",
           "shm-launcher-badge"
@@ -3341,6 +3342,65 @@
         }
       ]
     },
+    "shm-samsung-health-link-off": {
+      "families": [
+        "shm-phone"
+      ],
+      "title": "Samsung Health link popup",
+      "description": "The Samsung Health data link permission popup is no longer shown: the request (SamsungHealthDataSyncManager.n, v8/l) reports a denied result to its listener at once, and apnea onboarding (SleepTurnOn, de/d) goes straight on as if the write permission were granted. The stock Samsung Health does not recognise the renamed, re-signed app and lists no data types, so the link could never be turned on",
+      "optional": true,
+      "ops": [
+        {
+          "op": "insertAtMethodStart",
+          "fileRegex": "/v8/l\\.smali$",
+          "sigRegex": "public final n\\(Ljava/util/Set;Landroid/app/Activity;\\)V",
+          "bodyAll": [
+            "HealthPermissionManager;->requestPermissions(Ljava/util/Set;Landroid/app/Activity;)",
+            "Lv8/l;->k:Ljava/lang/ref/WeakReference;"
+          ],
+          "insert": [
+            "",
+            "    const/4 v0, 0x0",
+            "",
+            "    iput-object v0, p0, Lv8/l;->g:Ljava/util/Set;",
+            "",
+            "    iget-object v0, p0, Lv8/l;->k:Ljava/lang/ref/WeakReference;",
+            "",
+            "    if-eqz v0, :interop_sh_link_off",
+            "",
+            "    invoke-virtual {v0}, Ljava/lang/ref/Reference;->get()Ljava/lang/Object;",
+            "",
+            "    move-result-object v0",
+            "",
+            "    check-cast v0, Lv8/j;",
+            "",
+            "    if-eqz v0, :interop_sh_link_off",
+            "",
+            "    const/4 v1, 0x0",
+            "",
+            "    invoke-interface {v0, v1, v1}, Lv8/j;->a(ZZ)V",
+            "",
+            "    :interop_sh_link_off",
+            "",
+            "    return-void",
+            ""
+          ],
+          "expect": 1
+        },
+        {
+          "op": "replaceInClass",
+          "className": "de/d",
+          "old": [
+            "    if-eqz v0, :cond_0",
+            "",
+            "    const-string p1, \"Has apnea write permission\""
+          ],
+          "new": [
+            "    const-string p1, \"Has apnea write permission\""
+          ]
+        }
+      ]
+    },
     "shm-launcher-badge": {
       "families": [
         "shm-phone"
@@ -3921,6 +3981,7 @@
       "pattern.shealth-launcher-badge.description": "Adds a small LibreWrist badge to the app icon so you can tell it apart from the original.",
       "pattern.shm-home-tabs-fallback.description": "Shows blood pressure and ECG on the home screen when the country is on no feature list, instead of closing.",
       "pattern.shm-launcher-badge.description": "Adds a small LibreWrist badge to the app icon so you can tell it apart from the original.",
+      "pattern.shm-samsung-health-link-off.description": "Hides the Samsung Health data link prompt, which cannot be turned on with this build. Switch off to show it again.",
       "grant.why.bluetooth_phone": "Connect to the watch over Bluetooth.",
       "grant.why.bluetooth_watch": "Connect to the phone over Bluetooth.",
       "grant.why.notifications_shm": "Show notifications from Health Monitor.",
@@ -4038,6 +4099,7 @@
       "pattern.shealth-launcher-badge.description": "يضيف شارة LibreWrist صغيرة إلى أيقونة التطبيق لتتمكن من تمييزه عن الأصلي.",
       "pattern.shm-home-tabs-fallback.description": "يعرض ضغط الدم وتخطيط القلب في الشاشة الرئيسية عندما لا تكون الدولة في أي قائمة ميزات، بدلًا من إغلاق التطبيق.",
       "pattern.shm-launcher-badge.description": "يضيف شارة LibreWrist صغيرة إلى أيقونة التطبيق لتتمكن من تمييزه عن الأصلي.",
+      "pattern.shm-samsung-health-link-off.description": "يخفي طلب ربط بيانات Samsung Health الذي لا يمكن تفعيله في هذا الإصدار. أوقف الخيار لإظهاره مجددًا.",
       "grant.why.bluetooth_phone": "الاتصال بالساعة عبر Bluetooth.",
       "grant.why.bluetooth_watch": "الاتصال بالهاتف عبر Bluetooth.",
       "grant.why.notifications_shm": "عرض الإشعارات من Health Monitor.",
@@ -4155,6 +4217,7 @@
       "pattern.shealth-launcher-badge.description": "Fügt dem App-Symbol ein kleines LibreWrist-Abzeichen hinzu, damit du es vom Original unterscheiden kannst.",
       "pattern.shm-home-tabs-fallback.description": "Zeigt Blutdruck und EKG auf dem Startbildschirm, wenn das Land auf keiner Funktionsliste steht, statt die App zu schließen.",
       "pattern.shm-launcher-badge.description": "Fügt dem App-Symbol ein kleines LibreWrist-Abzeichen hinzu, damit du es vom Original unterscheiden kannst.",
+      "pattern.shm-samsung-health-link-off.description": "Blendet die Abfrage zur Datenverknüpfung mit Samsung Health aus, die sich mit diesem Build nicht aktivieren lässt. Ausschalten, um sie wieder anzuzeigen.",
       "grant.why.bluetooth_phone": "Per Bluetooth mit der Uhr verbinden.",
       "grant.why.bluetooth_watch": "Per Bluetooth mit dem Smartphone verbinden.",
       "grant.why.notifications_shm": "Benachrichtigungen von Health Monitor anzeigen.",
@@ -4272,6 +4335,7 @@
       "pattern.shealth-launcher-badge.description": "Agrega una pequeña insignia de LibreWrist al ícono de la app para distinguirla de la original.",
       "pattern.shm-home-tabs-fallback.description": "Muestra la presión arterial y el ECG en la pantalla principal cuando el país no figura en ninguna lista de funciones, en lugar de cerrarse.",
       "pattern.shm-launcher-badge.description": "Agrega una pequeña insignia de LibreWrist al ícono de la app para distinguirla de la original.",
+      "pattern.shm-samsung-health-link-off.description": "Oculta el aviso de vinculación de datos con Samsung Health, que no se puede activar con esta compilación. Desactivá la opción para volver a mostrarlo.",
       "grant.why.bluetooth_phone": "Conectarse al reloj por Bluetooth.",
       "grant.why.bluetooth_watch": "Conectarse al teléfono por Bluetooth.",
       "grant.why.notifications_shm": "Mostrar las notificaciones de Health Monitor.",
@@ -4389,6 +4453,7 @@
       "pattern.shealth-launcher-badge.description": "Ajoute un petit badge LibreWrist à l'icône de l'app pour la distinguer de l'originale.",
       "pattern.shm-home-tabs-fallback.description": "Affiche la tension artérielle et l'ECG sur l'écran d'accueil quand le pays ne figure dans aucune liste de fonctions, au lieu de se fermer.",
       "pattern.shm-launcher-badge.description": "Ajoute un petit badge LibreWrist à l'icône de l'app pour la distinguer de l'originale.",
+      "pattern.shm-samsung-health-link-off.description": "Masque l'invite de liaison des données avec Samsung Health, qui ne peut pas être activée avec cette version. Désactivez l'option pour l'afficher à nouveau.",
       "grant.why.bluetooth_phone": "Se connecter à la montre par Bluetooth.",
       "grant.why.bluetooth_watch": "Se connecter au téléphone par Bluetooth.",
       "grant.why.notifications_shm": "Afficher les notifications de Health Monitor.",
@@ -4506,6 +4571,7 @@
       "pattern.shealth-launcher-badge.description": "ऐप आइकन में एक छोटा LibreWrist बैज जोड़ता है, ताकि आप इसे मूल ऐप से अलग पहचान सकें।",
       "pattern.shm-home-tabs-fallback.description": "जब देश किसी भी फ़ीचर सूची में नहीं होता, तो ऐप बंद होने के बजाय होम स्क्रीन पर ब्लड प्रेशर और ईसीजी दिखाता है।",
       "pattern.shm-launcher-badge.description": "ऐप आइकन में एक छोटा LibreWrist बैज जोड़ता है, ताकि आप इसे मूल ऐप से अलग पहचान सकें।",
+      "pattern.shm-samsung-health-link-off.description": "Samsung Health डेटा लिंक का प्रॉम्प्ट छिपाता है, जिसे इस बिल्ड में चालू नहीं किया जा सकता। इसे फिर से दिखाने के लिए बंद करें।",
       "grant.why.bluetooth_phone": "ब्लूटूथ से घड़ी से जुड़ना।",
       "grant.why.bluetooth_watch": "ब्लूटूथ से फ़ोन से जुड़ना।",
       "grant.why.notifications_shm": "Health Monitor की सूचनाएँ दिखाना।",
@@ -4623,6 +4689,7 @@
       "pattern.shealth-launcher-badge.description": "Menambahkan lencana LibreWrist kecil pada ikon aplikasi agar mudah dibedakan dari aslinya.",
       "pattern.shm-home-tabs-fallback.description": "Menampilkan tekanan darah dan EKG di layar utama saat negara tidak ada di daftar fitur mana pun, alih-alih menutup aplikasi.",
       "pattern.shm-launcher-badge.description": "Menambahkan lencana LibreWrist kecil pada ikon aplikasi agar mudah dibedakan dari aslinya.",
+      "pattern.shm-samsung-health-link-off.description": "Menyembunyikan permintaan tautan data Samsung Health, yang tidak dapat diaktifkan dengan build ini. Matikan untuk menampilkannya lagi.",
       "grant.why.bluetooth_phone": "Terhubung ke jam tangan lewat Bluetooth.",
       "grant.why.bluetooth_watch": "Terhubung ke ponsel lewat Bluetooth.",
       "grant.why.notifications_shm": "Menampilkan notifikasi dari Health Monitor.",
@@ -4740,6 +4807,7 @@
       "pattern.shealth-launcher-badge.description": "Aggiunge un piccolo badge LibreWrist all'icona dell'app per distinguerla dall'originale.",
       "pattern.shm-home-tabs-fallback.description": "Mostra la pressione sanguigna e l'ECG nella schermata principale quando il paese non è in nessun elenco di funzioni, invece di chiudersi.",
       "pattern.shm-launcher-badge.description": "Aggiunge un piccolo badge LibreWrist all'icona dell'app per distinguerla dall'originale.",
+      "pattern.shm-samsung-health-link-off.description": "Nasconde la richiesta di collegamento dei dati con Samsung Health, che non può essere attivata con questa build. Disattiva per mostrarla di nuovo.",
       "grant.why.bluetooth_phone": "Connettersi all'orologio tramite Bluetooth.",
       "grant.why.bluetooth_watch": "Connettersi al telefono tramite Bluetooth.",
       "grant.why.notifications_shm": "Mostrare le notifiche di Health Monitor.",
@@ -4857,6 +4925,7 @@
       "pattern.shealth-launcher-badge.description": "アプリのアイコンに小さな LibreWrist バッジを追加し、元のアプリと見分けられるようにします。",
       "pattern.shm-home-tabs-fallback.description": "国がどの機能リストにも含まれない場合、アプリを終了せずにホーム画面に血圧と心電図を表示します。",
       "pattern.shm-launcher-badge.description": "アプリのアイコンに小さな LibreWrist バッジを追加し、元のアプリと見分けられるようにします。",
+      "pattern.shm-samsung-health-link-off.description": "このビルドでは有効にできない Samsung Health データ連携の確認を非表示にします。再び表示するにはオフにしてください。",
       "grant.why.bluetooth_phone": "Bluetoothでウォッチに接続します。",
       "grant.why.bluetooth_watch": "Bluetoothでスマートフォンに接続します。",
       "grant.why.notifications_shm": "Health Monitorからの通知を表示します。",
@@ -4974,6 +5043,7 @@
       "pattern.shealth-launcher-badge.description": "앱 아이콘에 작은 LibreWrist 배지를 추가하여 원본 앱과 구별할 수 있게 합니다.",
       "pattern.shm-home-tabs-fallback.description": "국가가 어떤 기능 목록에도 없을 때 앱을 종료하는 대신 홈 화면에 혈압과 심전도를 표시합니다.",
       "pattern.shm-launcher-badge.description": "앱 아이콘에 작은 LibreWrist 배지를 추가하여 원본 앱과 구별할 수 있게 합니다.",
+      "pattern.shm-samsung-health-link-off.description": "이 빌드에서는 켤 수 없는 Samsung Health 데이터 연결 안내를 숨깁니다. 다시 표시하려면 끄세요.",
       "grant.why.bluetooth_phone": "블루투스로 워치에 연결합니다.",
       "grant.why.bluetooth_watch": "블루투스로 휴대전화에 연결합니다.",
       "grant.why.notifications_shm": "Health Monitor의 알림을 표시합니다.",
@@ -5091,6 +5161,7 @@
       "pattern.shealth-launcher-badge.description": "Voegt een kleine LibreWrist-badge toe aan het app-pictogram, zodat je het van het origineel kunt onderscheiden.",
       "pattern.shm-home-tabs-fallback.description": "Toont bloeddruk en ECG op het startscherm als het land op geen enkele functielijst staat, in plaats van te sluiten.",
       "pattern.shm-launcher-badge.description": "Voegt een kleine LibreWrist-badge toe aan het app-pictogram, zodat je het van het origineel kunt onderscheiden.",
+      "pattern.shm-samsung-health-link-off.description": "Verbergt de melding voor het koppelen van gegevens met Samsung Health, die met deze build niet kan worden ingeschakeld. Zet uit om hem weer te tonen.",
       "grant.why.bluetooth_phone": "Via Bluetooth verbinden met het horloge.",
       "grant.why.bluetooth_watch": "Via Bluetooth verbinden met de telefoon.",
       "grant.why.notifications_shm": "Meldingen van Health Monitor tonen.",
@@ -5208,6 +5279,7 @@
       "pattern.shealth-launcher-badge.description": "Dodaje małą odznakę LibreWrist do ikony aplikacji, aby można ją było odróżnić od oryginału.",
       "pattern.shm-home-tabs-fallback.description": "Pokazuje ciśnienie krwi i EKG na ekranie głównym, gdy kraju nie ma na żadnej liście funkcji, zamiast zamykać aplikację.",
       "pattern.shm-launcher-badge.description": "Dodaje małą odznakę LibreWrist do ikony aplikacji, aby można ją było odróżnić od oryginału.",
+      "pattern.shm-samsung-health-link-off.description": "Ukrywa monit o połączenie danych z Samsung Health, którego nie da się włączyć w tej wersji. Wyłącz, aby znów go pokazywać.",
       "grant.why.bluetooth_phone": "Łączy się z zegarkiem przez Bluetooth.",
       "grant.why.bluetooth_watch": "Łączy się z telefonem przez Bluetooth.",
       "grant.why.notifications_shm": "Pokazuje powiadomienia z Health Monitor.",
@@ -5325,6 +5397,7 @@
       "pattern.shealth-launcher-badge.description": "Adiciona um pequeno emblema do LibreWrist ao ícone do app para você distingui-lo do original.",
       "pattern.shm-home-tabs-fallback.description": "Mostra a pressão arterial e o ECG na tela inicial quando o país não está em nenhuma lista de recursos, em vez de fechar.",
       "pattern.shm-launcher-badge.description": "Adiciona um pequeno emblema do LibreWrist ao ícone do app para você distingui-lo do original.",
+      "pattern.shm-samsung-health-link-off.description": "Oculta o aviso de vinculação de dados com o Samsung Health, que não pode ser ativado com esta versão. Desative para mostrá-lo novamente.",
       "grant.why.bluetooth_phone": "Conectar-se ao relógio por Bluetooth.",
       "grant.why.bluetooth_watch": "Conectar-se ao celular por Bluetooth.",
       "grant.why.notifications_shm": "Mostrar as notificações do Health Monitor.",
@@ -5442,6 +5515,7 @@
       "pattern.shealth-launcher-badge.description": "Добавляет на значок приложения небольшой бейдж LibreWrist, чтобы его можно было отличить от оригинала.",
       "pattern.shm-home-tabs-fallback.description": "Показывает давление и ЭКГ на главном экране, если страны нет ни в одном списке функций, вместо закрытия приложения.",
       "pattern.shm-launcher-badge.description": "Добавляет на значок приложения небольшой бейдж LibreWrist, чтобы его можно было отличить от оригинала.",
+      "pattern.shm-samsung-health-link-off.description": "Скрывает запрос на связь данных с Samsung Health, который нельзя включить в этой сборке. Выключите, чтобы показывать его снова.",
       "grant.why.bluetooth_phone": "Подключаться к часам по Bluetooth.",
       "grant.why.bluetooth_watch": "Подключаться к телефону по Bluetooth.",
       "grant.why.notifications_shm": "Показывать уведомления от Health Monitor.",
@@ -5559,6 +5633,7 @@
       "pattern.shealth-launcher-badge.description": "Orijinalinden ayırt edebilmeniz için uygulama simgesine küçük bir LibreWrist rozeti ekler.",
       "pattern.shm-home-tabs-fallback.description": "Ülke hiçbir özellik listesinde yoksa uygulamayı kapatmak yerine ana ekranda tansiyon ve EKG'yi gösterir.",
       "pattern.shm-launcher-badge.description": "Orijinalinden ayırt edebilmeniz için uygulama simgesine küçük bir LibreWrist rozeti ekler.",
+      "pattern.shm-samsung-health-link-off.description": "Bu sürümde açılamayan Samsung Health veri bağlantısı isteğini gizler. Yeniden göstermek için kapatın.",
       "grant.why.bluetooth_phone": "Saate Bluetooth ile bağlanmak.",
       "grant.why.bluetooth_watch": "Telefona Bluetooth ile bağlanmak.",
       "grant.why.notifications_shm": "Health Monitor bildirimlerini göstermek.",
@@ -5676,6 +5751,7 @@
       "pattern.shealth-launcher-badge.description": "Додає на значок застосунку невеликий бейдж LibreWrist, щоб його можна було відрізнити від оригіналу.",
       "pattern.shm-home-tabs-fallback.description": "Показує тиск і ЕКГ на головному екрані, якщо країни немає в жодному списку функцій, замість закриття застосунку.",
       "pattern.shm-launcher-badge.description": "Додає на значок застосунку невеликий бейдж LibreWrist, щоб його можна було відрізнити від оригіналу.",
+      "pattern.shm-samsung-health-link-off.description": "Приховує запит на зв’язок даних із Samsung Health, який неможливо ввімкнути в цій збірці. Вимкніть, щоб показувати його знову.",
       "grant.why.bluetooth_phone": "Підключатися до годинника через Bluetooth.",
       "grant.why.bluetooth_watch": "Підключатися до телефона через Bluetooth.",
       "grant.why.notifications_shm": "Показувати сповіщення від Health Monitor.",
@@ -5793,6 +5869,7 @@
       "pattern.shealth-launcher-badge.description": "在应用图标上添加一个小的 LibreWrist 角标，方便与原版区分。",
       "pattern.shm-home-tabs-fallback.description": "当国家/地区不在任何功能列表中时，在主屏幕显示血压和心电图，而不是关闭应用。",
       "pattern.shm-launcher-badge.description": "在应用图标上添加一个小的 LibreWrist 角标，方便与原版区分。",
+      "pattern.shm-samsung-health-link-off.description": "隐藏 Samsung Health 数据关联提示，此版本无法开启该关联。关闭后可再次显示。",
       "grant.why.bluetooth_phone": "通过蓝牙连接手表。",
       "grant.why.bluetooth_watch": "通过蓝牙连接手机。",
       "grant.why.notifications_shm": "显示来自 Health Monitor 的通知。",
@@ -5910,6 +5987,7 @@
       "pattern.shealth-launcher-badge.description": "在應用程式圖示上加入一個小的 LibreWrist 角標，方便與原版區分。",
       "pattern.shm-home-tabs-fallback.description": "當國家/地區不在任何功能清單中時，在主畫面顯示血壓與心電圖，而不是關閉應用程式。",
       "pattern.shm-launcher-badge.description": "在應用程式圖示上加入一個小的 LibreWrist 角標，方便與原版區分。",
+      "pattern.shm-samsung-health-link-off.description": "隱藏 Samsung Health 資料連結提示，此版本無法開啟該連結。關閉後可再次顯示。",
       "grant.why.bluetooth_phone": "透過藍牙連線手錶。",
       "grant.why.bluetooth_watch": "透過藍牙連線手機。",
       "grant.why.notifications_shm": "顯示來自 Health Monitor 的通知。",

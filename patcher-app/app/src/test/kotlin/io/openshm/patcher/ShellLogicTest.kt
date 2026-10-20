@@ -74,7 +74,7 @@ class CustomizeStateTest {
 
     private val optionalIds = setOf(
         "shm-min-age-22-to-16", "watch-min-age-22-to-16", "shm-setup-network-gate", "shm-sleep-apnea-support", "shm-sleep-countries", "watch-apnea-country",
-        "watch-apnea-reeval-not-supported", "alarm-force-sound-vibrate", "alarm-hide-launcher", "alarm-relabel", "shm-launcher-badge",
+        "watch-apnea-reeval-not-supported", "alarm-force-sound-vibrate", "alarm-hide-launcher", "alarm-relabel", "shm-launcher-badge", "shm-samsung-health-link-off",
     )
     private val apneaIds = setOf("shm-sleep-apnea-support", "shm-sleep-countries", "watch-apnea-country", "watch-apnea-reeval-not-supported")
 

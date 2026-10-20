@@ -15,7 +15,7 @@ class AppCatalogueTest {
 
     @Test
     fun serialAndInputs() {
-        assertEquals(55L, c.serial)
+        assertEquals(56L, c.serial)
         assertEquals("chinaFrom / obtain.yyb need CI run 45", 45L, c.engine.minAppVersion)
         assertEquals(
             listOf(
@@ -79,7 +79,7 @@ class AppCatalogueTest {
         assertEquals(
             listOf("generic-manufacturer-check", "generic-vendor-check", "shm-min-age-22-to-16", "shm-supported-type-ordinals",
                 "shm-region-supportedtype", "shm-region-countrylist", "shm-root-packagevalidator", "shm-force-update-response",
-                "shm-force-update-pref", "shm-main-gates", "shm-setup-network-gate", "shm-sleep-apnea-support", "shm-sleep-countries", "shm-home-tabs-fallback", "shm-ihrn-countries", "shm-bp-worldwide", "shm-provider-callers", "phone-rebrand-gms", "shm-wear-trusted-peers",
+                "shm-force-update-pref", "shm-main-gates", "shm-setup-network-gate", "shm-sleep-apnea-support", "shm-sleep-countries", "shm-home-tabs-fallback", "shm-ihrn-countries", "shm-bp-worldwide", "shm-provider-callers", "shm-samsung-health-link-off", "phone-rebrand-gms", "shm-wear-trusted-peers",
                 "shm-launcher-badge"),
             c.patches("shm-phone").map { it.id },
         )
@@ -95,7 +95,7 @@ class AppCatalogueTest {
         assertEquals(18, alarm.size)
         assertEquals("alarm-fork", alarm.last().id)
         assertEquals("Alarm link module", alarm.last().title)
-        assertEquals(20 + 19 + 17, c.patternCount(listOf("shm-phone", "shm-watch", "alarm-watch")))
+        assertEquals(20 + 20 + 17, c.patternCount(listOf("shm-phone", "shm-watch", "alarm-watch")))
         assertTrue(c.patchSets.flatMap { it.patches }.all { it.description.isNotBlank() })
     }
 
