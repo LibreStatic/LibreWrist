@@ -277,4 +277,60 @@ class CatalogueTest {
             // expected
         }
     }
+
+    /** The stored-account-type step must still match its own patched form: the post-build
+     *  self-check re-runs the pattern on the recompiled APK (issue #19 build failure). */
+    @Test fun samsungAccountTypeStepVerifiesAfterApply() {
+        @Suppress("UNCHECKED_CAST")
+        val patterns = (Json.parse(String(catalogueBytes)) as Map<String, Any?>)["patterns"] as Map<String, Any?>
+        @Suppress("UNCHECKED_CAST")
+        val ops = (patterns["shealth-samsung-account-absent"] as Map<String, Any?>)["ops"] as List<Map<String, Any?>>
+        val step = ops.single { it["op"] == "insertInMethodAtMatch" }
+        val path = "smali/com/samsung/android/service/health/server/account/SHealthAccountManager.smali"
+        val f = Fixture()
+        f.smali.put(path, ACCOUNT_MANAGER_SMALI)
+        val op = OpRegistry.prepare("insertInMethodAtMatch", step - "op")
+        assertEquals(1, op.apply(f.ctx).size)
+        val patched = f.smali.get(path)!!
+        assertTrue("move-result v2\n\n    const/4 v2, 0x0\n\n    if-eqz v2, :cond_5" in patched)
+        assertFalse("move-result v7\n\n    const/4 v7, 0x0" in patched)
+        assertEquals(1, op.verifyApplied(f.ctx).size)
+        op.apply(f.ctx)
+        assertEquals(patched, f.smali.get(path))
+    }
+
+    private companion object {
+        val ACCOUNT_MANAGER_SMALI = """
+            .class public Lcom/samsung/android/service/health/server/account/SHealthAccountManager;
+            .super Ljava/lang/Object;
+
+            .method public static initializeHealthAccount(Landroid/content/Context;)V
+                .locals 9
+
+                const-string v7, "com.osp.app.signin"
+
+                invoke-virtual {v7, v6}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+
+                move-result v7
+
+                if-eqz v7, :cond_0
+
+                if-eqz v5, :cond_1
+
+                :cond_4
+                const-string v2, "com.osp.app.signin"
+
+                invoke-virtual {v2, v6}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+
+                move-result v2
+
+                if-eqz v2, :cond_5
+
+                invoke-static {v6}, Lcom/samsung/android/service/health/server/account/AccountType;->getAccountType(Ljava/lang/String;)Lcom/samsung/android/service/health/server/account/AccountType;
+
+                :cond_5
+                return-void
+            .end method
+        """.trimIndent() + "\n"
+    }
 }
