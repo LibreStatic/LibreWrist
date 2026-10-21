@@ -72,6 +72,8 @@ public final class EcgAdapter {
     static volatile long lastRealMs;
     static ScheduledExecutorService keepalive;
     static final AtomicInteger seq = new AtomicInteger(0);
+    static final LeadDebouncer LEAD = new LeadDebouncer(EcgAdapter::log);
+    static final BeatMonitor BEATS = new BeatMonitor();
 
     private EcgAdapter() {}
 
@@ -87,6 +89,7 @@ public final class EcgAdapter {
         ema = Double.NaN;
         statBatches = 0;
         lastRealMs = 0L;
+        synchronized (DELIVERY_LOCK) { LEAD.reset(); BEATS.reset(); }
         Context ctx = appContext();
         log("start: sink=" + listener + " ctx=" + ctx);
         if (ctx == null) {
@@ -165,7 +168,8 @@ public final class EcgAdapter {
             // already extracts it from there). The previous implementation read the last
             // point, which is always -1, so it effectively always reported contact.
             // Normalization is unchanged: 5 stays 5, anything else (0, absent) is 0.
-            int leadNorm = (batch.leadOff == 5) ? 5 : 0;
+            // Short no-contact blips are held back so they do not cancel a running measurement.
+            int leadNorm = LEAD.next((batch.leadOff == 5) ? 5 : 0);
             // DC filter: filtered sample = mv - EMA(mv). The native pipeline
             // expects the signal as the Samsung front-end delivers it (AC).
             double a = 0.001; // EMA alpha (time constant ~2 s at 500 Hz)
@@ -176,6 +180,7 @@ public final class EcgAdapter {
                 double f = v - ema;
                 mv[i] = (int) Math.round(ADC_CENTER + f / LSB_MV);
                 if (leadNorm != 5) {
+                    BEATS.feed(f);
                     statN++; statSum += f; statSumSq += f * f;
                     if (f < statMin) statMin = f;
                     if (f > statMax) statMax = f;
@@ -187,6 +192,8 @@ public final class EcgAdapter {
                 double rms = Math.sqrt(statSumSq / statN - mean * mean);
                 log(String.format("stats: n=%d min=%.3f max=%.3f mean=%.4f rms=%.3f mV (ema=%.3f)",
                         statN, statMin, statMax, mean, rms, ema));
+                String beats = BEATS.summary();
+                if (beats != null) log(beats);
                 statN = 0; statSum = 0; statSumSq = 0;
                 statMin = Double.MAX_VALUE; statMax = -Double.MAX_VALUE;
             }

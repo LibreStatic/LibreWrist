@@ -22,6 +22,7 @@ javac --release 11 -nowarn -encoding UTF-8 -d "$OUT/classes" \
   ../src/shminterop/watch/HrSensorAttributeFactory.java \
   ../src/shminterop/watch/ForegroundRequired.java \
   ../src/shminterop/watch/WatchOverrides.java \
+  ../src/shminterop/ecg/LeadDebouncer.java ../src/shminterop/ecg/BeatMonitor.java \
   $(find ../src/shminterop/ihrn -name '*.java') \
   $(find ../src/shminterop/bp -name '*.java') \
   $(find ../src/shminterop/spo2 -name '*.java') \
@@ -31,6 +32,8 @@ FAILED=0
 java -Xmx256m -cp "$OUT/classes" shminterop.hsdk.ServiceProtocolTest || FAILED=1
 java -Xmx256m -cp "$OUT/classes" shminterop.hsdk.ServiceProtocolPpgTest || FAILED=1
 java -Xmx256m -cp "$OUT/classes" shminterop.hsdk.ServiceProtocolAccelTest || FAILED=1
+java -Xmx256m -cp "$OUT/classes" shminterop.ecg.LeadDebouncerTest || FAILED=1
+java -Xmx256m -cp "$OUT/classes" shminterop.ecg.BeatMonitorTest || FAILED=1
 java -Xmx256m -cp "$OUT/classes" shminterop.ihrn.IhrnAdapterTest || FAILED=1
 java -Xmx256m -cp "$OUT/classes" shminterop.watch.WatchOverridesServiceTest || FAILED=1
 java -Xmx256m -cp "$OUT/classes" shminterop.watch.UnregisterMethodTest || FAILED=1

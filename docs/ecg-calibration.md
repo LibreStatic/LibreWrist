@@ -371,6 +371,16 @@ DC-coupled (−142…−31 mV observed) whereas the stock front-end couples the 
 10 Hz `lead = 5` keepalive to feed the pipeline watchdog until real data flows. None of these changes
 the `pl`-visible raw contract.
 
+**Lead-off debounce (adapter choice, 2026-10-20).** SHM's lead state machine needs 50 consecutive
+`lead = 0` events to reach `LEAD_ON_CHECKED`, but from there a **single** `lead != 0` event cancels the
+measurement (`LEAD_OFF`) [V smali `f8.c` / `k51.c`]. Field logs (issue #13, SM-L7050) show lone
+lead-off events 37–900 ms after contact aborting otherwise good runs, and §5a saw an isolated `5` right
+after settle. `LeadDebouncer` forwards a `0 → 5` transition only after 4 consecutive `lead = 5` batches
+(~80 ms); `5 → 0` passes at once, so the contact check is unchanged. Every transition and every ignored
+blip is logged (`lead: …`). `BeatMonitor` is a logging-only beat detector on the filtered signal: each
+stats window logs the beat-to-beat rate and the beats' polarity (`beats: …`), to compare against the rate
+SHM displays. Neither changes the raw sample values.
+
 **Verdict:** the adapter's output is a **faithful reconstruction** of the stock v1 event at the `pl`
 boundary, with the four report-only divergences above [D]. The one item that is not a code question —
 the actual delivered rate/timeline — is now measured for the rate (§5a); the adapter's own timeline
