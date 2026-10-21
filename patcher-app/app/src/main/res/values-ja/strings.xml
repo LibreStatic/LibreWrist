@@ -288,7 +288,7 @@
     <string name="leftover_found_title">以前のセットアップの古いコピー</string>
     <string name="install_phone_note">権限、他のアプリの上に重ねて表示、通知へのアクセス、バッテリー使用量の制限なし、制限付き設定は、ご自身でオンにしてください。その後この画面に戻ると、再確認されます。</string>
     <string name="install_watch_title">ウォッチにインストール</string>
-    <string name="install_watch_intro">Wi-Fi経由で、Health Monitor、ブリッジ、スマートフォンアラームの順にインストールします。</string>
+    <string name="install_watch_intro">Wi-Fi経由で、下に表示された順に1つずつインストールします。</string>
     <string name="install_watch_note">実行中は、ウォッチをスリープさせず、Wi-Fiに接続したままにしてください。</string>
     <string name="install_start">インストールを開始</string>
     <string name="install_error_build_missing">ビルドが見つからないか、このセットアップと一致しません。もう一度ビルドしてからインストールしてください。</string>

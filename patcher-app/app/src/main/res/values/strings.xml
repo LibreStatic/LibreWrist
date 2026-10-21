@@ -402,7 +402,7 @@
     <string name="leftover_found_title">Old copies from an earlier setup</string>
     <string name="install_phone_note">Permissions, display over other apps, notification access, unrestricted battery use and restricted settings are switched on by you. Come back to this screen afterwards and it checks again.</string>
     <string name="install_watch_title">Install on your watch</string>
-    <string name="install_watch_intro">Installed over Wi-Fi in this order: Health Monitor, the bridge, then phone alarms.</string>
+    <string name="install_watch_intro">Installed over Wi-Fi, one app at a time, in the order shown below.</string>
     <string name="install_watch_note">Keep the watch awake and on Wi-Fi while this runs.</string>
     <string name="install_start">Start installing</string>
     <string name="install_error_build_missing">The build is missing or does not match this setup. Build again, then install.</string>

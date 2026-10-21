@@ -309,7 +309,7 @@
     <string name="leftover_found_title">Stare kopie z wcześniejszej konfiguracji</string>
     <string name="install_phone_note">Uprawnienia, wyświetlanie nad innymi aplikacjami, dostęp do powiadomień, nieograniczone użycie baterii i ustawienia z ograniczeniami włączasz samodzielnie. Potem wróć do tego ekranu, a sprawdzi je ponownie.</string>
     <string name="install_watch_title">Instalacja na zegarku</string>
-    <string name="install_watch_intro">Instalacja przez Wi-Fi w tej kolejności: Health Monitor, mostek, a potem alarmy z telefonu.</string>
+    <string name="install_watch_intro">Instalacja przez Wi-Fi, aplikacja po aplikacji, w kolejności pokazanej poniżej.</string>
     <string name="install_watch_note">Podczas tej operacji trzymaj zegarek z włączonym ekranem i połączony z Wi-Fi.</string>
     <string name="install_start">Rozpocznij instalację</string>
     <string name="install_error_build_missing">Brak kompilacji lub nie pasuje do tej konfiguracji. Zbuduj ponownie, a potem zainstaluj.</string>

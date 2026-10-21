@@ -309,7 +309,7 @@
     <string name="leftover_found_title">Старі копії попереднього налаштування</string>
     <string name="install_phone_note">Дозволи, показ поверх інших застосунків, доступ до сповіщень, використання акумулятора без обмежень і обмежені налаштування вмикаєте ви. Поверніться потім на цей екран, і він перевірить усе знову.</string>
     <string name="install_watch_title">Встановлення на годинник</string>
-    <string name="install_watch_intro">Встановлення через Wi-Fi у такому порядку: Health Monitor, міст, потім будильники телефона.</string>
+    <string name="install_watch_intro">Встановлення через Wi-Fi, по одному застосунку, у порядку, показаному нижче.</string>
     <string name="install_watch_note">Поки це виконується, не давайте годиннику заснути й тримайте його в мережі Wi-Fi.</string>
     <string name="install_start">Почати встановлення</string>
     <string name="install_error_build_missing">Збірка відсутня або не відповідає цьому налаштуванню. Зберіть знову, потім встановіть.</string>

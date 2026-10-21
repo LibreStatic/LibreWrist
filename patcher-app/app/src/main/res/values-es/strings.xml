@@ -295,7 +295,7 @@
     <string name="leftover_found_title">Copias antiguas de una configuración anterior</string>
     <string name="install_phone_note">Los permisos, mostrar sobre otras apps, el acceso a notificaciones, el uso de batería sin restricciones y la configuración restringida los activas tú. Vuelve a esta pantalla después y se comprobará de nuevo.</string>
     <string name="install_watch_title">Instalar en tu reloj</string>
-    <string name="install_watch_intro">Se instala por Wi-Fi en este orden: Health Monitor, el puente y luego las alarmas del teléfono.</string>
+    <string name="install_watch_intro">Se instala por Wi-Fi, una app tras otra, en el orden que se muestra abajo.</string>
     <string name="install_watch_note">Mantén el reloj con la pantalla encendida y conectado a Wi-Fi mientras esto se ejecuta.</string>
     <string name="install_start">Comenzar instalación</string>
     <string name="install_error_build_missing">Falta la compilación o no coincide con esta configuración. Compila de nuevo y luego instala.</string>

@@ -295,7 +295,7 @@
     <string name="leftover_found_title">पिछले सेटअप की पुरानी प्रतियाँ</string>
     <string name="install_phone_note">अनुमतियाँ, दूसरे ऐप के ऊपर दिखाना, सूचना एक्सेस, बैटरी का बिना पाबंदी उपयोग और प्रतिबंधित सेटिंग आप खुद चालू करते हैं। बाद में इस स्क्रीन पर लौटें, यह फिर से जाँच करेगी।</string>
     <string name="install_watch_title">अपनी घड़ी पर इंस्टॉल करें</string>
-    <string name="install_watch_intro">Wi-Fi पर इस क्रम में इंस्टॉल होता है: Health Monitor, ब्रिज, फिर फ़ोन अलार्म।</string>
+    <string name="install_watch_intro">Wi-Fi पर एक-एक करके, नीचे दिखाए गए क्रम में इंस्टॉल होता है।</string>
     <string name="install_watch_note">जब तक यह चल रहा है, घड़ी को जगाए रखें और Wi-Fi पर रखें।</string>
     <string name="install_start">इंस्टॉल शुरू करें</string>
     <string name="install_error_build_missing">बिल्ड मौजूद नहीं है या इस सेटअप से मेल नहीं खाता। दोबारा बिल्ड करें, फिर इंस्टॉल करें।</string>

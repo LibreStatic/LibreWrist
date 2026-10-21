@@ -295,7 +295,7 @@
     <string name="leftover_found_title">Alte Kopien einer früheren Einrichtung</string>
     <string name="install_phone_note">Berechtigungen, Über anderen Apps einblenden, Benachrichtigungszugriff, uneingeschränkte Akkunutzung und eingeschränkte Einstellungen schaltest du selbst ein. Komm danach zu diesem Bildschirm zurück, dann wird erneut geprüft.</string>
     <string name="install_watch_title">Auf deiner Uhr installieren</string>
-    <string name="install_watch_intro">Installation über WLAN in dieser Reihenfolge: Health Monitor, die Bridge, dann Smartphone-Wecker.</string>
+    <string name="install_watch_intro">Installation über WLAN, eine App nach der anderen, in der unten gezeigten Reihenfolge.</string>
     <string name="install_watch_note">Halte die Uhr wach und im WLAN, solange das läuft.</string>
     <string name="install_start">Installation starten</string>
     <string name="install_error_build_missing">Der Build fehlt oder passt nicht zu dieser Einrichtung. Erstelle ihn neu und installiere dann.</string>

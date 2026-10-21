@@ -288,7 +288,7 @@
     <string name="leftover_found_title">이전 설정에서 남은 복사본</string>
     <string name="install_phone_note">권한, 다른 앱 위에 표시, 알림 액세스, 배터리 사용 제한 없음, 제한된 설정은 직접 켜야 합니다. 그런 다음 이 화면으로 돌아오면 다시 확인합니다.</string>
     <string name="install_watch_title">워치에 설치</string>
-    <string name="install_watch_intro">Wi-Fi를 통해 Health Monitor, 브리지, 휴대전화 알람 순서로 설치합니다.</string>
+    <string name="install_watch_intro">Wi-Fi를 통해 아래에 표시된 순서대로 하나씩 설치합니다.</string>
     <string name="install_watch_note">진행되는 동안 워치 화면이 꺼지지 않게 하고 Wi-Fi 연결을 유지하세요.</string>
     <string name="install_start">설치 시작</string>
     <string name="install_error_build_missing">빌드가 없거나 이 설정과 일치하지 않습니다. 다시 빌드한 다음 설치하세요.</string>

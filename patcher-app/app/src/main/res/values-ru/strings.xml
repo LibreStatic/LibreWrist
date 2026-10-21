@@ -309,7 +309,7 @@
     <string name="leftover_found_title">Старые копии прежней настройки</string>
     <string name="install_phone_note">Разрешения, показ поверх других приложений, доступ к уведомлениям, использование батареи без ограничений и ограниченные настройки включаете вы. Вернитесь потом на этот экран, и он проверит всё снова.</string>
     <string name="install_watch_title">Установка на часы</string>
-    <string name="install_watch_intro">Установка по Wi-Fi в таком порядке: Health Monitor, мост, затем будильники телефона.</string>
+    <string name="install_watch_intro">Установка по Wi-Fi, по одному приложению, в порядке, показанном ниже.</string>
     <string name="install_watch_note">Пока это выполняется, не давайте часам заснуть и держите их в сети Wi-Fi.</string>
     <string name="install_start">Начать установку</string>
     <string name="install_error_build_missing">Сборка отсутствует или не соответствует этой настройке. Соберите заново, затем установите.</string>

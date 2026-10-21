@@ -323,7 +323,7 @@
     <string name="leftover_found_title">نسخ قديمة من إعداد سابق</string>
     <string name="install_phone_note">الأذونات والعرض فوق التطبيقات الأخرى والوصول إلى الإشعارات واستخدام البطارية دون قيود والإعدادات المقيّدة تفعّلها أنت. عُد إلى هذه الشاشة بعد ذلك وستتحقق منها مرة أخرى.</string>
     <string name="install_watch_title">التثبيت على ساعتك</string>
-    <string name="install_watch_intro">يُثبَّت عبر Wi-Fi بهذا الترتيب: Health Monitor، ثم الجسر، ثم منبّهات الهاتف.</string>
+    <string name="install_watch_intro">يُثبَّت عبر Wi-Fi تطبيقًا تلو الآخر، بالترتيب الظاهر أدناه.</string>
     <string name="install_watch_note">أبقِ الساعة نشطة ومتصلة بشبكة Wi-Fi أثناء ذلك.</string>
     <string name="install_start">بدء التثبيت</string>
     <string name="install_error_build_missing">الإصدار المبني غير موجود أو لا يطابق هذا الإعداد. ابنِ مرة أخرى ثم ثبّت.</string>

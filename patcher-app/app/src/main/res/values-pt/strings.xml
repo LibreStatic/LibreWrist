@@ -296,7 +296,7 @@
     <string name="leftover_found_title">Cópias antigas de uma configuração anterior</string>
     <string name="install_phone_note">As permissões, a sobreposição a outros apps, o acesso às notificações, o uso irrestrito da bateria e as configurações restritas são ativados por você. Depois, volte a esta tela e ela verifica de novo.</string>
     <string name="install_watch_title">Instalar no seu relógio</string>
-    <string name="install_watch_intro">Instalação por Wi-Fi nesta ordem: Health Monitor, a ponte e depois os alarmes do celular.</string>
+    <string name="install_watch_intro">Instalação por Wi-Fi, um app de cada vez, na ordem mostrada abaixo.</string>
     <string name="install_watch_note">Mantenha o relógio com a tela ativa e conectado ao Wi-Fi enquanto isso é executado.</string>
     <string name="install_start">Iniciar instalação</string>
     <string name="install_error_build_missing">A compilação não existe ou não corresponde a esta configuração. Compile de novo e depois instale.</string>

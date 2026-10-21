@@ -288,7 +288,7 @@
     <string name="leftover_found_title">早先设置留下的旧副本</string>
     <string name="install_phone_note">权限、显示在其他应用的上层、通知使用权、不受限制的电池使用以及受限制的设置，都需要由你自行开启。之后回到此界面，它会重新检查。</string>
     <string name="install_watch_title">安装到你的手表</string>
-    <string name="install_watch_intro">通过 Wi-Fi 按以下顺序安装：Health Monitor、桥接应用，然后是手机闹钟。</string>
+    <string name="install_watch_intro">通过 Wi-Fi 按下方显示的顺序逐个安装。</string>
     <string name="install_watch_note">运行期间，请保持手表处于唤醒状态并连接 Wi-Fi。</string>
     <string name="install_start">开始安装</string>
     <string name="install_error_build_missing">构建缺失，或与此次设置不匹配。请重新构建后再安装。</string>

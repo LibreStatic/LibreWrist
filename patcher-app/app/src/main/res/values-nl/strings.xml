@@ -295,7 +295,7 @@
     <string name="leftover_found_title">Oude kopieën van een eerdere installatie</string>
     <string name="install_phone_note">Machtigingen, weergeven over andere apps, toegang tot meldingen, onbeperkt batterijgebruik en beperkte instellingen zet je zelf aan. Kom daarna terug naar dit scherm, dan wordt het opnieuw gecontroleerd.</string>
     <string name="install_watch_title">Installeren op je horloge</string>
-    <string name="install_watch_intro">Via Wi-Fi geïnstalleerd in deze volgorde: Health Monitor, de bridge en dan telefoonwekkers.</string>
+    <string name="install_watch_intro">Via Wi-Fi geïnstalleerd, één app tegelijk, in de volgorde hieronder.</string>
     <string name="install_watch_note">Houd het horloge wakker en op Wi-Fi terwijl dit loopt.</string>
     <string name="install_start">Installatie starten</string>
     <string name="install_error_build_missing">De build ontbreekt of past niet bij deze configuratie. Bouw opnieuw en installeer dan.</string>

@@ -302,7 +302,7 @@
     <string name="leftover_found_title">Anciennes copies d\'une configuration précédente</string>
     <string name="install_phone_note">Les autorisations, l\'affichage par-dessus d\'autres applis, l\'accès aux notifications, l\'utilisation illimitée de la batterie et les paramètres restreints sont à activer par vous. Revenez ensuite sur cet écran, il vérifiera à nouveau.</string>
     <string name="install_watch_title">Installer sur votre montre</string>
-    <string name="install_watch_intro">Installation via Wi-Fi dans cet ordre : Health Monitor, le pont, puis les alarmes du téléphone.</string>
+    <string name="install_watch_intro">Installation via Wi-Fi, une app après l\'autre, dans l\'ordre indiqué ci-dessous.</string>
     <string name="install_watch_note">Gardez l\'écran de la montre allumé et la montre connectée au Wi-Fi pendant l\'opération.</string>
     <string name="install_start">Lancer l\'installation</string>
     <string name="install_error_build_missing">La compilation est absente ou ne correspond pas à cette configuration. Compilez à nouveau, puis installez.</string>

@@ -288,7 +288,7 @@
     <string name="leftover_found_title">先前設定留下的舊副本</string>
     <string name="install_phone_note">權限、顯示在其他應用程式上層、通知存取權、電池使用不受限制以及受限制的設定，都需要由你自行開啟。之後回到此畫面，它會重新檢查。</string>
     <string name="install_watch_title">安裝到你的手錶</string>
-    <string name="install_watch_intro">透過 Wi-Fi 依以下順序安裝：Health Monitor、橋接應用程式，然後是手機鬧鐘。</string>
+    <string name="install_watch_intro">透過 Wi-Fi 依下方顯示的順序逐一安裝。</string>
     <string name="install_watch_note">執行期間，請讓手錶保持喚醒狀態並連上 Wi-Fi。</string>
     <string name="install_start">開始安裝</string>
     <string name="install_error_build_missing">建置遺失，或與此次設定不符。請重新建置後再安裝。</string>

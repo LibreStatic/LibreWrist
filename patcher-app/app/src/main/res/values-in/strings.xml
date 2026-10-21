@@ -288,7 +288,7 @@
     <string name="leftover_found_title">Salinan lama dari penyiapan sebelumnya</string>
     <string name="install_phone_note">Izin, tampilkan di atas aplikasi lain, akses notifikasi, penggunaan baterai tanpa batasan, dan setelan terbatas Anda aktifkan sendiri. Setelah itu, kembali ke layar ini dan semuanya akan diperiksa lagi.</string>
     <string name="install_watch_title">Pasang di jam Anda</string>
-    <string name="install_watch_intro">Dipasang lewat Wi-Fi dengan urutan ini: Health Monitor, bridge, lalu alarm ponsel.</string>
+    <string name="install_watch_intro">Dipasang lewat Wi-Fi satu per satu, sesuai urutan di bawah.</string>
     <string name="install_watch_note">Biarkan layar jam tetap menyala dan terhubung ke Wi-Fi selama proses ini berjalan.</string>
     <string name="install_start">Mulai memasang</string>
     <string name="install_error_build_missing">Build tidak ada atau tidak cocok dengan penyiapan ini. Bangun lagi, lalu pasang.</string>

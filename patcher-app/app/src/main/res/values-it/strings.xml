@@ -296,7 +296,7 @@
     <string name="leftover_found_title">Vecchie copie di una configurazione precedente</string>
     <string name="install_phone_note">Le autorizzazioni, la visualizzazione sopra altre app, l\'accesso alle notifiche, l\'uso della batteria senza limitazioni e le impostazioni con restrizioni li attivi tu. Poi torna a questa schermata e verrà ricontrollato tutto.</string>
     <string name="install_watch_title">Installa sul tuo orologio</string>
-    <string name="install_watch_intro">Installazione via Wi-Fi in quest\'ordine: Health Monitor, il bridge, poi le sveglie del telefono.</string>
+    <string name="install_watch_intro">Installazione via Wi-Fi, un\'app alla volta, nell\'ordine mostrato qui sotto.</string>
     <string name="install_watch_note">Tieni l\'orologio con lo schermo acceso e connesso al Wi-Fi mentre l\'operazione è in corso.</string>
     <string name="install_start">Avvia l\'installazione</string>
     <string name="install_error_build_missing">La build manca o non corrisponde a questa configurazione. Compila di nuovo, poi installa.</string>

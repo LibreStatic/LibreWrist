@@ -294,7 +294,7 @@
     <string name="leftover_found_title">Önceki kurulumdan eski kopyalar</string>
     <string name="install_phone_note">İzinleri, diğer uygulamaların üzerinde göstermeyi, bildirim erişimini, kısıtlamasız pil kullanımını ve kısıtlanmış ayarları siz açarsınız. Ardından bu ekrana dönün, yeniden kontrol edilir.</string>
     <string name="install_watch_title">Saatinize kurun</string>
-    <string name="install_watch_intro">Wi-Fi üzerinden şu sırayla kurulur: Health Monitor, köprü, sonra telefon alarmları.</string>
+    <string name="install_watch_intro">Wi-Fi üzerinden, aşağıda gösterilen sırayla tek tek kurulur.</string>
     <string name="install_watch_note">Bu işlem sürerken saatin ekranını açık ve saati Wi-Fi\'ye bağlı tutun.</string>
     <string name="install_start">Kurulumu başlat</string>
     <string name="install_error_build_missing">Derleme yok veya bu kurulumla uyuşmuyor. Yeniden derleyin, sonra kurun.</string>
