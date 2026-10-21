@@ -295,6 +295,9 @@ class CatalogueTest {
         assertTrue("move-result v2\n\n    const/4 v2, 0x0\n\n    if-eqz v2, :cond_5" in patched)
         assertFalse("move-result v7\n\n    const/4 v7, 0x0" in patched)
         assertEquals(1, op.verifyApplied(f.ctx).size)
+        // the on-device self-check reads the rebuilt APK, where every label is `:L`
+        val rebuilt = PatchContext(CanonicalLabelsTree(f.smali), { error("no manifest") }, { error("no resources") }, canon = SmaliText::canonLabels)
+        assertEquals(1, op.verifyApplied(rebuilt).size)
         op.apply(f.ctx)
         assertEquals(patched, f.smali.get(path))
     }

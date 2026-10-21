@@ -1,6 +1,6 @@
 {
   "schema": 2,
-  "serial": 59,
+  "serial": 60,
   "minAppVersion": 45,
   "inputs": [
     {
@@ -3035,7 +3035,7 @@
           "op": "insertInMethodAtMatch",
           "fileRegex": "com/samsung/android/service/health/server/account/SHealthAccountManager\\.smali$",
           "sigRegex": "public static initializeHealthAccount\\(Landroid/content/Context;\\)V",
-          "pattern": "const-string (?P<r>v\\d+), \"com\\.osp\\.app\\.signin\"\\n\\n    invoke-virtual \\{(?P=r), v\\d+\\}, Ljava/lang/String;->equals\\(Ljava/lang/Object;\\)Z\\n\\n    move-result (?P=r)\\n(?P<at>)(?:\\n    const/4 (?P=r), 0x0\\n)?\\n    if-eqz (?P=r), :cond_\\w+\\n\\n    invoke-static \\{v\\d+\\}, Lcom/samsung/android/service/health/server/account/AccountType;->getAccountType",
+          "pattern": "const-string (?P<r>v\\d+), \"com\\.osp\\.app\\.signin\"\\n\\n    invoke-virtual \\{(?P=r), v\\d+\\}, Ljava/lang/String;->equals\\(Ljava/lang/Object;\\)Z\\n\\n    move-result (?P=r)\\n(?P<at>)(?:\\n    const/4 (?P=r), 0x0\\n)?\\n    if-eqz (?P=r), :\\w+\\n\\n    invoke-static \\{v\\d+\\}, Lcom/samsung/android/service/health/server/account/AccountType;->getAccountType",
           "insert": [
             "",
             "    const/4 {{r}}, 0x0",
