@@ -55,6 +55,12 @@ name crosses a trust boundary are local, not cloud:
   here — and on a non-Samsung phone the SA app is absent, so `DataConfig` flips
   `SAMSUNG_ACCOUNT_CLIENT=false` and the app uses the **embedded Custom-Tab flow**, which is
   fully self-contained (the redirect scheme is a static literal, not derived from the package).
+  On a **Samsung** phone the SA app is present, so the app took the handoff path and failed
+  (issue #19: the SA app refuses the renamed, re-signed copy and answers that a Samsung account
+  already exists). Pattern `shealth-samsung-account-absent` makes the app behave as if the SA
+  app were absent on every phone: the package check in `DataConfig`, the `AccountManagerProvider`
+  metadata checks, the embedded SDK's SA-presence checks and the stored account type
+  (`pref_health_account_type`) are all neutralised.
 - **SakAttestation** (`SakAttestation` sets `AttestationParameterSpec.setPackageName(...)`,
   literal): a renamed app attesting the stock name produces a key-attestation chain that doesn't
   match its UID package. Only matters if/when a server-side flow uses that attestation.
