@@ -42,6 +42,7 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.ui.unit.dp
 import io.openshm.patcher.R
 import io.openshm.patcher.data.AppCatalogue
+import io.openshm.patcher.data.SetupSession
 import io.openshm.patcher.data.Device
 import io.openshm.patcher.data.PackagePrefix
 import io.openshm.patcher.data.PatchInfo
@@ -343,7 +344,8 @@ private fun AdvancedCard(state: CustomizeUiState, onEvent: (CustomizeEvent) -> U
                         },
                     )
                     // An example of what the prefix names: the package of the app that carries the known signer.
-                    AppCatalogue.current.outputs.firstOrNull { it.knownSigner }?.let { PackageId(it.packageName(state.packagePrefix)) }
+                    AppCatalogue.current.outputs.filter { it.id in SetupSession.state.value.outputIds }
+                        .let { chosen -> chosen.firstOrNull { it.knownSigner } ?: chosen.firstOrNull() }?.let { PackageId(it.packageName(state.packagePrefix)) }
                 }
             }
         }

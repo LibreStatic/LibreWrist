@@ -4,7 +4,10 @@ import io.openshm.patcher.R
 import io.openshm.patcher.adb.ShellResult
 import io.openshm.patcher.build.BuiltBuild
 import io.openshm.patcher.build.BuiltRecord
+import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.LoadedCatalogue
+import io.openshm.patcher.data.SessionState
+import io.openshm.patcher.data.WatchProfile
 import io.openshm.patcher.device.PhoneGrants
 import io.openshm.patcher.device.PhoneProbe
 import io.openshm.patcher.ui.components.CheckStatus
@@ -159,9 +162,9 @@ private class World(val catalogue: LoadedCatalogue) {
 
     private fun listenOf() = listenerOn.toList()
 
-    fun runner() = SelfTestRunner(
+    fun runner(outputIds: List<String> = PHONE_OUTPUTS + WATCH_OUTPUTS) = SelfTestRunner(
         catalogue = catalogue,
-        outputIds = PHONE_OUTPUTS + WATCH_OUTPUTS,
+        outputIds = outputIds,
         prefix = PREFIX,
         build = { build },
         signingCertSha256 = { cert },
@@ -229,6 +232,21 @@ class SelfTestRunnerTest {
             listOf("phone-pkg-shm-phone", "phone-pkg-bridge-phone"),
             state.rows().filter { it.id.startsWith("phone-pkg-") }.map { it.id },
         )
+    }
+
+    @Test
+    fun `a setup without the bridge has no bridge rows, grants or link check`() {
+        AppCatalogue.install(world.catalogue)
+        // skipping the bridge also skips the alarm app that needs it
+        val ids = SessionState(watchProfile = WatchProfile.WearOs5, skippedApps = setOf("bridge")).activeOutputIds
+        assertEquals(listOf("shm-phone", "shm-watch", "shealth-phone"), ids)
+        val runner = world.runner(ids)
+        val initial = runner.initial().rows().map { it.id }
+        assertTrue(initial.toString(), initial.none { "bridge" in it || "alarm" in it })
+        val state = MutableStateFlow(runner.initial())
+        runBlocking { runner.run(state) }
+        assertTrue(world.queriedAuthorities.isEmpty())
+        assertTrue(state.value.rows().none { "bridge" in it.id })
     }
 
     @Test

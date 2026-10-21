@@ -45,8 +45,19 @@ internal fun Set<String>.symmetricDifference(id: String): Set<String> = if (id i
  */
 internal fun optionalToggles(catalogue: LoadedCatalogue, watchSdk: Int, skipped: Set<String>): List<OptionalAppToggle> {
     val available = catalogue.selectedOutputs(watchSdk, emptySet()).map { it.id }.toSet()
+    val effective = catalogue.effectiveSkipped(skipped)
     return catalogue.apps.filter { app -> app.optional && app.outputIds.any { it in available } }
-        .map { OptionalAppToggle(it, it.id !in skipped) }
+        .map { OptionalAppToggle(it, it.id !in effective) }
+}
+
+/**
+ * [skipped] after the user flips [appId]: switching an app off also switches off every app that
+ * requires it, switching it on also switches on the apps it requires. An app whose requirement is
+ * off counts as off ([LoadedCatalogue.effectiveSkipped]).
+ */
+internal fun toggledSkips(catalogue: LoadedCatalogue, skipped: Set<String>, appId: String): Set<String> {
+    val effective = catalogue.effectiveSkipped(skipped)
+    return if (appId in effective) effective - catalogue.withRequirements(appId) else effective + catalogue.withDependents(appId)
 }
 
 /**
@@ -108,7 +119,7 @@ class AcquireViewModel(application: Application) : AndroidViewModel(application)
 
     fun onEvent(event: AcquireEvent) {
         if (event is AcquireEvent.ToggleApp) {
-            SetupSession.update { it.copy(skippedApps = it.skippedApps.symmetricDifference(event.appId)) }
+            SetupSession.update { it.copy(skippedApps = toggledSkips(AppCatalogue.current, it.skippedApps, event.appId)) }
             _state.update {
                 it.copy(cards = cardsFor(it.cards), optionalApps = optionalToggles(AppCatalogue.current, SetupSession.state.value.watchProfile.sdk, SetupSession.state.value.skippedApps))
             }

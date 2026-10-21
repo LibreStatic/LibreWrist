@@ -368,10 +368,12 @@ The catalogue declares the apps (`apps` in `catalogue/catalogue.json`, with thei
 below follows it. On the **Official apps** step each optional app has its own switch, all on by default (opt-out):
 
 - **Samsung Health Monitor** (phone and watch together, one switch);
+- **Bridge** (our phone and watch apps that send notifications, calls and alarms to the watch, one switch);
+- **Phone alarms on the watch** (on Wear OS 5 and newer, the phone-alarm fork). It needs the Bridge: switching
+  the Bridge off switches it off too, and switching it on switches the Bridge on;
 - **Samsung Health+** (below).
 
-Always included, with no switch: our two bridge apps (phone and watch) and, on Wear OS 5 and newer, the
-phone-alarm fork. With Health Monitor off, the Health Platform developer-mode and stock-app steps are
+With Health Monitor off, the Health Platform developer-mode and stock-app steps are
 passed over, since they only matter for it.
 
 #### Samsung Health+

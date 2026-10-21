@@ -105,7 +105,11 @@ scripts/build_shm_watch.sh        # -> $DIST_DIR/shm-watch-1.5.1.022-gms.apk
   not know the schema rejects the file):
   - `apps`: `[{"id", "outputs": [<output id>, ...], "optional": bool, "icon"}]`, the user-facing
     groups, in the order the app shows them. Every output is in exactly one app; `icon` is one of
-    `monitor-heart`, `favorite`, `alarm`, `swap`.
+    `monitor-heart`, `favorite`, `alarm`, `swap`. An app may also carry `"requires": [<app id>, ...]`
+    (non-empty, distinct, existing, not itself, no cycles, and both ends `optional`): it cannot work
+    without those apps, so switching one off also leaves this one out and switching this one on also
+    switches them on (the Phone alarms app requires the Bridge). The app computes that in one place
+    (`LoadedCatalogue.effectiveSkipped`), which also feeds the `start.switches` extras.
   - `strings`: `{"<locale>": {"<key>": "<text>"}}`, locales are BCP-47 tags (`en`, `es`, `id`,
     `zh-CN`, `zh-TW`, ...). `en` is required and holds every key; the other locales only hold keys
     that exist in `en` (the app falls back to `en` for a missing one). Texts are plain single-line
@@ -425,8 +429,9 @@ SHEALTH_CHINA_ACCOUNT_GATE=1 scripts/build_shealth.sh   # include the experiment
 
 In the patcher app it is opt-out like every optional app (the other is Health Monitor, `shm-phone` +
 `shm-watch`, one switch): the "Samsung Health+" switch on the Acquire step controls the input, its patterns
-appear in Customize and the output joins the phone install. Only the bridges and, on Wear OS 5, the alarm
-fork (`alarm-watch`) are mandatory.
+appear in Customize and the output joins the phone install. Every app is optional: the Bridge
+(`bridge-phone` + `bridge-watch`) and, on Wear OS 5, the alarm fork (`alarm-watch`) have their own switches,
+and the alarm fork requires the Bridge (see `apps[].requires`).
 
 Why two apps: the watch's Samsung Health pins the phone app's certificate
 (`wear-trusted-peer-packages` = `com.sec.android.app.shealth` with Samsung's digest) and silently

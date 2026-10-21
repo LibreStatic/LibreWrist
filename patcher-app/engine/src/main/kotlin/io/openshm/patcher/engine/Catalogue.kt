@@ -85,7 +85,11 @@ data class StockApp(
 )
 
 /** A user-facing group of outputs; [icon] is one of [Catalogue.APP_ICONS]. */
-data class CatalogueApp(val id: String, val outputs: List<String>, val optional: Boolean, val icon: String)
+data class CatalogueApp(
+    val id: String, val outputs: List<String>, val optional: Boolean, val icon: String,
+    /** Ids of the apps this one cannot work without (`requires`); both ends are optional apps. */
+    val requires: List<String> = emptyList(),
+)
 
 data class CompanionApp(val packageName: String, val watchPlugins: List<String>)
 
@@ -537,8 +541,9 @@ class Catalogue private constructor(
             val owner = HashMap<String, String>()
             for ((i, a) in apps.withIndex()) {
                 val where = "apps[$i]"
-                if (a !is Map<*, *> || a.keys != setOf("id", "outputs", "optional", "icon")) {
-                    problems.add("$where: expected exactly id, outputs, optional, icon")
+                if (a !is Map<*, *> || !a.keys.containsAll(setOf("id", "outputs", "optional", "icon")) ||
+                    !setOf("id", "outputs", "optional", "icon", "requires").containsAll(a.keys)) {
+                    problems.add("$where: expected id, outputs, optional, icon and optionally requires")
                     continue
                 }
                 val id = a["id"]
@@ -559,6 +564,46 @@ class Catalogue private constructor(
                 }
             }
             for (oid in outIds) if (oid !in owner) problems.add("apps: output '$oid' is in no app")
+            problems.addAll(validateRequires(apps, ids))
+            return problems
+        }
+
+        /** `requires` lists app ids: existing, not self, distinct, no cycles, and both ends optional. */
+        private fun validateRequires(apps: List<*>, ids: List<String>): List<String> {
+            val problems = ArrayList<String>()
+            val optional = HashMap<String, Boolean>()
+            for (a in apps) if (a is Map<*, *> && a["id"] in ids && a["optional"] is Boolean) optional[a["id"] as String] = a["optional"] as Boolean
+            val graph = HashMap<String, List<String>>()
+            for ((i, a) in apps.withIndex()) {
+                if (a !is Map<*, *> || "requires" !in a || a["id"] !in ids) continue
+                val where = "apps[$i]"
+                val id = a["id"] as String
+                val req = a["requires"]
+                if (req !is List<*> || req.isEmpty() || req.size != req.toSet().size) {
+                    problems.add("$where: requires must be a non-empty list of distinct app ids")
+                    continue
+                }
+                val edges = ArrayList<String>()
+                for (r in req) {
+                    if (r !is String || r !in ids) problems.add("$where: requires unknown app '$r'")
+                    else if (r == id) problems.add("$where: app '$r' requires itself")
+                    else {
+                        edges.add(r)
+                        if (optional[id] != true) problems.add("$where: an app that requires another must be optional")
+                        if (optional[r] != true) problems.add("$where: required app '$r' must be optional")
+                    }
+                }
+                graph[id] = edges
+            }
+            val state = HashMap<String, Int>()
+            fun cyclic(n: String): Boolean {
+                when (state[n]) { 2 -> return false; 1 -> return true }
+                state[n] = 1
+                val cycle = graph[n].orEmpty().any(::cyclic)
+                state[n] = 2
+                return cycle
+            }
+            if (graph.keys.toList().any(::cyclic)) problems.add("apps: requires has a cycle")
             return problems
         }
 
@@ -886,7 +931,10 @@ class Catalogue private constructor(
                     it["replacedBy"] as String?)
             }
             val apps = (cat["apps"] as List<Map<String, Any?>>).map {
-                CatalogueApp(it["id"] as String, it["outputs"] as List<String>, it["optional"] as Boolean, it["icon"] as String)
+                CatalogueApp(
+                    it["id"] as String, it["outputs"] as List<String>, it["optional"] as Boolean, it["icon"] as String,
+                    (it["requires"] as List<String>?).orEmpty(),
+                )
             }
             val strings = (cat["strings"] as Map<String, Map<String, String>>)
             val pl = cat["platform"] as Map<String, Any?>

@@ -337,8 +337,9 @@ def _validate_apps(cat, out_ids):
     problems, ids, owner = [], [], {}
     for i, a in enumerate(apps):
         where = f'apps[{i}]'
-        if not isinstance(a, dict) or set(a) != {'id', 'outputs', 'optional', 'icon'}:
-            problems.append(f'{where}: expected exactly id, outputs, optional, icon')
+        if not isinstance(a, dict) or not {'id', 'outputs', 'optional', 'icon'} <= set(a) <= {
+                'id', 'outputs', 'optional', 'icon', 'requires'}:
+            problems.append(f'{where}: expected id, outputs, optional, icon and optionally requires')
             continue
         if not isinstance(a['id'], str) or not _ID_RE.fullmatch(a['id']):
             problems.append(f'{where}: id must match {_ID_RE.pattern}')
@@ -364,6 +365,47 @@ def _validate_apps(cat, out_ids):
     for oid in out_ids:
         if oid not in owner:
             problems.append(f'apps: output {oid!r} is in no app')
+    problems.extend(_validate_requires(apps, ids))
+    return problems
+
+
+def _validate_requires(apps, ids):
+    """`requires` lists app ids: existing, not self, distinct, no cycles, and both ends optional."""
+    problems, graph = [], {}
+    optional = {a['id']: a['optional'] for a in apps
+                if isinstance(a, dict) and a.get('id') in ids and isinstance(a.get('optional'), bool)}
+    for i, a in enumerate(apps):
+        if not isinstance(a, dict) or 'requires' not in a or a.get('id') not in ids:
+            continue
+        where, req = f'apps[{i}]', a['requires']
+        if not isinstance(req, list) or not req or len(set(map(str, req))) != len(req):
+            problems.append(f'{where}: requires must be a non-empty list of distinct app ids')
+            continue
+        graph[a['id']] = []
+        for r in req:
+            if r not in ids:
+                problems.append(f'{where}: requires unknown app {r!r}')
+            elif r == a['id']:
+                problems.append(f'{where}: app {r!r} requires itself')
+            else:
+                graph[a['id']].append(r)
+                if not optional.get(a['id']):
+                    problems.append(f'{where}: an app that requires another must be optional')
+                if not optional.get(r):
+                    problems.append(f'{where}: required app {r!r} must be optional')
+    state = {}
+
+    def visit(n):
+        if state.get(n) == 2:
+            return False
+        if state.get(n) == 1:
+            return True
+        state[n] = 1
+        cyc = any(visit(m) for m in graph.get(n, []))
+        state[n] = 2
+        return cyc
+    if any(visit(n) for n in list(graph)):
+        problems.append('apps: requires has a cycle')
     return problems
 
 

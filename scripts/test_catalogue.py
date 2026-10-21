@@ -305,6 +305,31 @@ class SchemaTwo(unittest.TestCase):
         self.app('alarm')['outputs'] = ['nope']
         self.assertRejected("unknown output 'nope'")
 
+    def test_requires(self):
+        self.assertEqual(self.app('alarm')['requires'], ['bridge'])
+        self.assertEqual(P.validate_catalogue(self.cat), [])
+        self.app('alarm')['requires'] = ['nope']
+        self.assertRejected("requires unknown app 'nope'")
+        self.app('alarm')['requires'] = ['alarm']
+        self.assertRejected("app 'alarm' requires itself")
+        self.app('alarm')['requires'] = []
+        self.assertRejected('non-empty list')
+        self.app('alarm')['requires'] = ['bridge', 'bridge']
+        self.assertRejected('distinct app ids')
+        self.app('alarm')['requires'] = ['bridge']
+        self.app('bridge')['requires'] = ['alarm']
+        self.assertRejected('requires has a cycle')
+        del self.app('bridge')['requires']
+        self.app('bridge')['optional'] = False
+        self.assertRejected("required app 'bridge' must be optional")
+        self.app('bridge')['optional'] = True
+        self.app('alarm')['optional'] = False
+        self.assertRejected('an app that requires another must be optional')
+
+    def test_unknown_app_key(self):
+        self.app('alarm')['extra'] = 1
+        self.assertRejected('expected id, outputs, optional, icon')
+
     def test_missing_required_english_key(self):
         del self.cat['strings']['en']['app.alarm.title']
         self.assertRejected("missing required key 'app.alarm.title'")
@@ -365,7 +390,6 @@ class SchemaTwo(unittest.TestCase):
                          ({'1a': 'alarm'}, 'not a valid extra name'),
                          ({'a b': 'alarm'}, 'not a valid extra name'),
                          ({'alarms': 'nope'}, 'id of an optional app'),
-                         ({'alarms': 'bridge'}, 'id of an optional app'),
                          ({'alarms': 5}, 'id of an optional app')):
             out['start']['switches'] = bad
             self.assertRejected(msg)

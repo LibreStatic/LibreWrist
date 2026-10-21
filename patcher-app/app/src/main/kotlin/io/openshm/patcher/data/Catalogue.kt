@@ -98,6 +98,8 @@ data class AppGroup(
     val optional: Boolean,
     val icon: String,
     val outputIds: List<String>,
+    /** Ids of the apps this one needs (`requires`); skipping one of them skips this app too. */
+    val requires: List<String> = emptyList(),
 )
 
 data class StockApp(

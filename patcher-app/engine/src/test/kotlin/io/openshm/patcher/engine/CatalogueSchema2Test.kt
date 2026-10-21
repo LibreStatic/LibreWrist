@@ -33,7 +33,9 @@ class CatalogueSchema2Test {
         val c = parsed()
         assertEquals(2, c.schema)
         assertEquals(listOf("health-monitor", "alarm", "bridge", "samsung-health"), c.apps.map { it.id })
-        assertEquals(listOf(true, true, false, true), c.apps.map { it.optional })
+        assertEquals(listOf(true, true, true, true), c.apps.map { it.optional })
+        assertEquals(listOf("bridge"), c.apps.single { it.id == "alarm" }.requires)
+        assertTrue(c.apps.filter { it.id != "alarm" }.all { it.requires.isEmpty() })
         assertEquals(listOf("shm-phone", "shm-watch"), c.apps.first().outputs)
         assertEquals("com.samsung.android.app.watchmanager", c.platform.companionApp.packageName)
         assertEquals(5, c.platform.companionApp.watchPlugins.size)
@@ -68,6 +70,27 @@ class CatalogueSchema2Test {
     @Test fun outputInNoAppIsRejected() {
         val text = mutated("\"outputs\": [\n        \"alarm-fork\"\n      ]", "\"outputs\": [\n        \"bridge-phone\"\n      ]")
         assertRejected(text, "output 'alarm-fork' is in no app")
+    }
+
+    private val alarmRequires = "\"icon\": \"alarm\",\n      \"requires\": [\n        \"bridge\"\n      ]"
+
+    @Test fun requiresMustNameAnotherExistingApp() {
+        assertRejected(mutated(alarmRequires, alarmRequires.replace("\"bridge\"", "\"nope\"")), "requires unknown app 'nope'")
+        assertRejected(mutated(alarmRequires, alarmRequires.replace("\"bridge\"", "\"alarm\"")), "app 'alarm' requires itself")
+        assertRejected(mutated(alarmRequires, alarmRequires.replace("\"bridge\"", "\"bridge\", \"bridge\"")), "distinct app ids")
+        assertRejected(mutated(alarmRequires, alarmRequires.replace("[\n        \"bridge\"\n      ]", "[]")), "non-empty list")
+    }
+
+    @Test fun requiresNeedsOptionalAppsOnBothEnds() {
+        val bridgeRequired = mutated("\"optional\": true,\n      \"icon\": \"swap\"", "\"optional\": false,\n      \"icon\": \"swap\"")
+        assertRejected(bridgeRequired, "required app 'bridge' must be optional")
+        val alarmRequired = mutated("\"optional\": true,\n      \"icon\": \"alarm\"", "\"optional\": false,\n      \"icon\": \"alarm\"")
+        assertRejected(alarmRequired, "an app that requires another must be optional")
+    }
+
+    @Test fun requiresCycleIsRejected() {
+        val cyc = mutated("\"icon\": \"swap\"", "\"icon\": \"swap\",\n      \"requires\": [\n        \"alarm\"\n      ]")
+        assertRejected(cyc, "requires has a cycle")
     }
 
     @Test fun appWithUnknownOutputIsRejected() {
@@ -122,7 +145,6 @@ class CatalogueSchema2Test {
         assertRejected(mutated(ok, "\"Alarms\": \"alarm\""), "not a valid extra name")
         assertRejected(mutated(ok, "\"1a\": \"alarm\""), "not a valid extra name")
         assertRejected(mutated(ok, "\"alarms\": \"nope\""), "id of an optional app")
-        assertRejected(mutated(ok, "\"alarms\": \"bridge\""), "id of an optional app")
         assertRejected(mutated(ok, "\"alarms\": 5"), "id of an optional app")
         assertRejected(mutated("\"switches\": {", "\"other\": 1,\n        \"switches\": {"), "optionally \"switches\"")
     }

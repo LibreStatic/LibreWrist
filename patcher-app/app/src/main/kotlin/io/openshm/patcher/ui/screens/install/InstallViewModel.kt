@@ -100,7 +100,8 @@ class InstallPhoneViewModel(application: Application) : AndroidViewModel(applica
         lockPrefix = { SetupSession.update { it.copy(prefixLocked = true) } },
         onInstalled = { id -> SetupSession.update { it.copy(restoredOutputs = it.restoredOutputs - id) } },
         log = { Log.w("BridgeStart", it) },
-        outputs = AppCatalogue.current.outputs,
+        // only the apps this setup builds: an app the user skipped is not replaced, so its older copies stay
+        outputs = AppCatalogue.current.outputs.filter { it.id in SetupSession.state.value.outputIds },
         ownPackage = application.packageName,
     )
 
@@ -300,7 +301,8 @@ class InstallWatchViewModel(application: Application) : AndroidViewModel(applica
         lockPrefix = { SetupSession.update { it.copy(prefixLocked = true) } },
         onInstalled = { id -> SetupSession.update { it.copy(restoredOutputs = it.restoredOutputs - id) } },
         log = { Log.w("BridgeStart", it) },
-        outputs = AppCatalogue.current.outputs,
+        // only the apps this setup builds: an app the user skipped is not replaced, so its older copies stay
+        outputs = AppCatalogue.current.outputs.filter { it.id in SetupSession.state.value.outputIds },
         ownPackage = application.packageName,
         startExtras = { out ->
             val session = SetupSession.state.value

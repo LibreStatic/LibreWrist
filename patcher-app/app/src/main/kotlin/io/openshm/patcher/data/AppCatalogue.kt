@@ -37,6 +37,7 @@ class LoadedCatalogue(val engine: Catalogue, val locales: List<Locale>) {
             optional = app.optional,
             icon = app.icon,
             outputIds = app.outputs,
+            requires = app.requires,
         )
     }
 
@@ -56,12 +57,36 @@ class LoadedCatalogue(val engine: Catalogue, val locales: List<Locale>) {
         .mapValues { (_, entries) -> entries.distinct() }
 
     /**
+     * The apps left out for the user's choice [skippedApps]: those plus every app that (transitively)
+     * requires one of them. Every selection and start switch goes through this, so none can diverge.
+     */
+    fun effectiveSkipped(skippedApps: Set<String>): Set<String> {
+        val skipped = skippedApps.toMutableSet()
+        do {
+            val grew = apps.filter { it.id !in skipped && it.requires.any { r -> r in skipped } }.map { skipped.add(it.id) }.isNotEmpty()
+        } while (grew)
+        return skipped
+    }
+
+    /** [appId] and every app that (transitively) requires it: what switching [appId] off switches off. */
+    fun withDependents(appId: String): Set<String> = effectiveSkipped(setOf(appId))
+
+    /** [appId] and every app it (transitively) requires: what switching [appId] on switches on. */
+    fun withRequirements(appId: String): Set<String> {
+        val out = mutableSetOf<String>()
+        fun walk(id: String) { if (out.add(id)) apps.firstOrNull { it.id == id }?.requires?.forEach(::walk) }
+        walk(appId)
+        return out
+    }
+
+    /**
      * The outputs a setup builds, in `installOrder` order: those of every required app plus every
-     * optional app not in [skippedApps], limited to outputs whose official input can run on a
+     * optional app not in [skippedApps] (or requiring one that is), limited to outputs whose official input can run on a
      * phone or on a watch with SDK [watchSdk] (the input's `minSdk` is not above it).
      */
     fun selectedOutputs(watchSdk: Int, skippedApps: Set<String>): List<OutputApp> {
-        val inScope = apps.filter { !it.optional || it.id !in skippedApps }.flatMap { it.outputIds }.toSet()
+        val skipped = effectiveSkipped(skippedApps)
+        val inScope = apps.filter { !it.optional || it.id !in skipped }.flatMap { it.outputIds }.toSet()
         return outputs.filter { out ->
             // mode-independent: an output's China input is the same app for the same device
             out.id in inScope && (out.inputId?.let(::input)?.let { it.device == Device.Phone || it.minSdk <= watchSdk } ?: true)
@@ -77,9 +102,10 @@ class LoadedCatalogue(val engine: Catalogue, val locales: List<Locale>) {
         val switches = output.start?.switches.orEmpty()
         if (switches.isEmpty()) return emptyMap()
         val offered = selectedOutputs(watchSdk, emptySet()).map { it.id }.toSet()
+        val skipped = effectiveSkipped(skippedApps)
         return switches.mapValues { (_, appId) ->
             val app = apps.firstOrNull { it.id == appId }
-            !(app != null && app.optional && app.outputIds.any { it in offered } && appId in skippedApps)
+            !(app != null && app.optional && app.outputIds.any { it in offered } && appId in skipped)
         }
     }
 

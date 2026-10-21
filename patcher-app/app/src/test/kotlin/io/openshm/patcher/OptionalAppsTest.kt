@@ -11,6 +11,7 @@ import io.openshm.patcher.ui.screens.acquire.AcquireProgress
 import io.openshm.patcher.ui.screens.acquire.buildCards
 import io.openshm.patcher.ui.screens.acquire.optionalToggles
 import io.openshm.patcher.ui.screens.acquire.symmetricDifference
+import io.openshm.patcher.ui.screens.acquire.toggledSkips
 import io.openshm.patcher.ui.screens.customize.customizeStateFor
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -47,10 +48,49 @@ class OptionalAppsTest {
     }
 
     @Test
-    fun everythingOffOnWearOs3Or4LeavesOnlyTheBridges() {
+    fun everythingOffLeavesNothingToBuild() {
         val s = SessionState(watchProfile = WatchProfile.WearOs3Or4, skippedApps = all)
         assertTrue(s.inputIds.isEmpty())
-        assertEquals(listOf("bridge-phone", "bridge-watch").sorted(), s.outputIds.sorted())
+        assertTrue(s.outputIds.isEmpty())
+    }
+
+    @Test
+    fun bridgeOffDropsItsOutputsAndTheAppsThatRequireIt() {
+        val s = SessionState(watchProfile = WatchProfile.WearOs5, skippedApps = setOf("bridge"))
+        assertEquals(listOf("shm-phone", "shm-watch", "shealth-phone"), s.outputIds)
+        assertEquals(setOf("bridge", "alarm"), catalogue.effectiveSkipped(setOf("bridge")))
+        assertEquals(setOf("alarm"), catalogue.effectiveSkipped(setOf("alarm")))
+        assertEquals(listOf("shm-phone", "shm-watch", "shealth-phone"), s.inputIds.map { id -> catalogue.outputs.first { it.inputId == id }.id })
+    }
+
+    @Test
+    fun alarmsSwitchIsOffWhenTheAlarmAppIsSkippedOrTheBridgeIs() {
+        val bridgeWatch = catalogue.output("bridge-watch")
+        val sdk = WatchProfile.WearOs5.sdk
+        assertEquals(mapOf("alarms" to true), catalogue.startSwitches(bridgeWatch, sdk, emptySet()))
+        assertEquals(mapOf("alarms" to false), catalogue.startSwitches(bridgeWatch, sdk, setOf("alarm")))
+        assertEquals(mapOf("alarms" to false), catalogue.startSwitches(bridgeWatch, sdk, setOf("bridge")))
+        // a watch that cannot run the alarm fork keeps the bridge's fallback
+        assertEquals(mapOf("alarms" to true), catalogue.startSwitches(bridgeWatch, WatchProfile.WearOs3Or4.sdk, setOf("bridge")))
+    }
+
+    @Test
+    fun togglingFollowsTheRequirements() {
+        val sdk = WatchProfile.WearOs5.sdk
+        // bridge off takes the alarm app with it, and both show as off
+        val off = toggledSkips(catalogue, emptySet(), "bridge")
+        assertEquals(setOf("bridge", "alarm"), off)
+        assertEquals(listOf(true, false, false, true), optionalToggles(catalogue, sdk, off).map { it.enabled })
+        // bridge back on leaves the alarm app off
+        assertEquals(setOf("alarm"), toggledSkips(catalogue, off, "bridge"))
+        // alarm on pulls the bridge on
+        assertEquals(emptySet<String>(), toggledSkips(catalogue, off, "alarm"))
+        // alarm off alone keeps the bridge
+        assertEquals(setOf("alarm"), toggledSkips(catalogue, emptySet(), "alarm"))
+        // an app without requirements is a plain flip
+        assertEquals(setOf("samsung-health"), toggledSkips(catalogue, emptySet(), "samsung-health"))
+        // a stored skip set that only lists the bridge already shows the alarm app off
+        assertEquals(listOf(true, false, false, true), optionalToggles(catalogue, sdk, setOf("bridge")).map { it.enabled })
     }
 
     @Test
@@ -64,7 +104,7 @@ class OptionalAppsTest {
     fun theToggleFlipsTheIdInTheSkippedSet() {
         assertEquals(setOf("samsung-health"), emptySet<String>().symmetricDifference("samsung-health"))
         assertEquals(emptySet<String>(), setOf("samsung-health").symmetricDifference("samsung-health"))
-        assertEquals(listOf(true, false), optionalToggles(catalogue, WatchProfile.WearOs3Or4.sdk, setOf("samsung-health")).map { it.enabled })
+        assertEquals(listOf(true, true, false), optionalToggles(catalogue, WatchProfile.WearOs3Or4.sdk, setOf("samsung-health")).map { it.enabled })
     }
 
     @Test

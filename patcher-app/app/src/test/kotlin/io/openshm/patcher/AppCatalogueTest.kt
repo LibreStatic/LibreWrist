@@ -15,7 +15,7 @@ class AppCatalogueTest {
 
     @Test
     fun serialAndInputs() {
-        assertEquals(56L, c.serial)
+        assertEquals(57L, c.serial)
         assertEquals("chinaFrom / obtain.yyb need CI run 45", 45L, c.engine.minAppVersion)
         assertEquals(
             listOf(

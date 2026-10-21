@@ -1,6 +1,6 @@
 {
   "schema": 2,
-  "serial": 56,
+  "serial": 57,
   "minAppVersion": 45,
   "inputs": [
     {
@@ -3832,7 +3832,10 @@
         "alarm-fork"
       ],
       "optional": true,
-      "icon": "alarm"
+      "icon": "alarm",
+      "requires": [
+        "bridge"
+      ]
     },
     {
       "id": "bridge",
@@ -3840,7 +3843,7 @@
         "bridge-phone",
         "bridge-watch"
       ],
-      "optional": false,
+      "optional": true,
       "icon": "swap"
     },
     {
@@ -3895,9 +3898,9 @@
       "app.health-monitor.title": "Samsung Health Monitor",
       "app.health-monitor.summary": "Builds patched Samsung Health Monitor apps for the phone and the watch (ECG, blood pressure and the other watch sensors). Switch off to leave them out.",
       "app.alarm.title": "Phone alarms on the watch",
-      "app.alarm.summary": "Rings your phone's alarms on the watch with Samsung's alarm screen. Switch off to turn alarm sync off.",
+      "app.alarm.summary": "Rings your phone's alarms on the watch with Samsung's alarm screen. Switch off to turn alarm sync off. It needs the Bridge, so it follows that switch.",
       "app.bridge.title": "Bridge",
-      "app.bridge.summary": "Sends your phone's notifications, calls and alarms to the watch over Bluetooth.",
+      "app.bridge.summary": "Sends your phone's notifications, calls and alarms to the watch over Bluetooth. Switch off to leave it out (the phone alarms on the watch need it and go with it).",
       "app.samsung-health.title": "Samsung Health+",
       "app.samsung-health.summary": "Also build a patched copy of the Samsung Health phone app, \"Samsung Health+\", with features turned on that otherwise need a newer Galaxy Watch. It installs next to the Samsung Health app from Google Play, which you keep: that one stays connected to the watch and uploads to your Samsung Account, and Samsung Health+ downloads the same data from the cloud after you sign in with the same account (it can lag behind by a while).",
       "output.shm-phone.label": "Samsung Health Monitor (patched)",
