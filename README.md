@@ -16,9 +16,27 @@ This repository **contains no vendor code and no APKs**. It holds:
 The resulting APKs are signed with the user's own key. They are for personal use and are not
 redistributed.
 
-**Unlike Dante's version, this compatibility layer DOES work on modern One UI Watch releases. It is
-verified on One UI 8 Watch (Wear OS 6, Android 16 / API 36).** Older One UI Watch releases have not
-been tested.
+> [!CAUTION]
+> **LibreWrist is a proof of concept, and its health readings are not validated.** The watch does
+> not let the modified Samsung apps use Samsung's own sensor channels, so LibreWrist feeds them with
+> its own code, and results can differ from an unmodified Samsung setup. There is no clinical or
+> comparative validation yet (a comparison against the unmodified apps on a Samsung phone is
+> planned). Do not use it for medical decisions. The software is provided "as is", without warranty
+> (see the [licence](LICENSE)).
+
+> [!WARNING]
+> **Built through reverse engineering, so some details may have been inferred incorrectly.** The
+> patches, the [Health Tracking protocol](docs/health-tracking-protocol.md) and the sensor
+> adapters' formats and calibration ([ECG](docs/ecg-calibration.md), [BP](docs/bp-calibration.md),
+> [SpO2](docs/spo2-calibration.md), [IHRN](docs/ihrn-adapter.md)) were worked out from the official
+> apps and firmware, not from vendor documentation. The adapters do their own filtering, contact
+> detection, quality checks and SpO2 estimation, so a wrong assumption can change the results.
+> If something looks off, please [open an issue](https://github.com/LibreStatic/LibreWrist/issues).
+
+> [!NOTE]
+> **LibreWrist is not Dante's SHM MOD.** SHM MOD keeps Samsung's own sensors and adapters as they
+> are; LibreWrist replaces them with its own, so their algorithms and results differ. LibreWrist is
+> verified on **One UI 8 Watch (Wear OS 6, Android 16 / API 36)**; older releases are untested.
 
 | Tested setup | Version |
 |---|---|
