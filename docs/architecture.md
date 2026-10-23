@@ -34,8 +34,12 @@ link: it goes through the GMS Data Layer). A framing violation (`len` < 2 or > 1
 
 Direct RFCOMM, no PC: the phone `BridgeLink` is the RFCOMM server (UUID
 `8b6d5c1e-3a24-4c0d-9f1b-6a7e2d5c4b3b`); the watch `RfcommLink` probes the bonded devices and
-connects, and its `FrameMux` carries the session. 15 s no-traffic watchdog on the phone (RFCOMM has
-no read timeout); both ends send their own `/__bridge__/ping` keepalive.
+connects, and its `FrameMux` carries the session. Both ends send their own `/__bridge__/ping`
+keepalive after 2 min without outgoing frames, and the watch answers every phone ping; the phone
+drops a session that sent nothing in 6 min of awake time (RFCOMM has no read timeout). A lost
+Bluetooth link closes the socket by itself, so the keepalive only catches a session that stopped
+answering. Keep the period in minutes: every frame from the phone wakes the watch CPU, and the
+earlier 2.5 s keepalive kept it awake about 70 % of the night with the screen off (~9 %/h).
 
 What keeps the watch side alive: when the phone is associated with the watch bridge in the watch's
 Companion Device Manager (the patcher does it over adb after installing the bridge, with the phone

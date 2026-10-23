@@ -22,7 +22,10 @@ import java.nio.charset.StandardCharsets;
  *   dropped; the first one of a session is logged (path length only, never the path).</li>
  *   <li><b>hub &rarr; RFCOMM:</b> always complete frames under a single write lock.</li>
  *   <li>The session emits its own {@code /__bridge__/ping} keepalive if the RFCOMM has been idle
- *   for {@code heartbeatMs}.</li>
+ *   for {@code heartbeatMs} (2 min), and answers every ping of the phone unless it wrote less
+ *   than {@link #ANSWER_MIN_GAP_MS} before. The period is long on purpose: every frame from the
+ *   phone wakes the watch CPU, and a seconds-scale keepalive kept it awake most of the night. A
+ *   lost link is reported by the Bluetooth stack (the socket closes), not by the keepalive.</li>
  *   <li>If the RFCOMM dies or desynchronizes (len &lt; 2, len &gt; 16 MB or pathLen &gt; len-2) the
  *   session is closed. There are no read timeouts on the RFCOMM: a healthy session is never cut
  *   by silence.</li>
@@ -123,6 +126,10 @@ public final class FrameMux {
      *  heartbeat (len=2, pathLen=0), which is not part of this channel. */
     static final String PING_PATH = "/__bridge__/ping";
     static final byte[] HEARTBEAT = encode(PING_PATH, new byte[0]);
+    /** Idle period of our own keepalive. */
+    static final long HEARTBEAT_MS = 120_000;
+    /** A phone ping is answered unless we wrote this recently (it already saw our traffic). */
+    static final long ANSWER_MIN_GAP_MS = 1000;
 
     // ------------------------------------------------------------------ session
 
@@ -132,7 +139,7 @@ public final class FrameMux {
     private final Listener listener;
     private final Logger logger;
 
-    private volatile long heartbeatMs = 2500;
+    private volatile long heartbeatMs = HEARTBEAT_MS;
     /** Wall clock (it keeps counting while the CPU is suspended); replaceable in tests. */
     private volatile Clock clock = SYSTEM_CLOCK;
 
@@ -182,7 +189,7 @@ public final class FrameMux {
             while (!closed) {
                 Frame f = readFrame(in);
                 if (f == null) break;
-                answerIfDue();
+                answerIfDue(f);
                 if (f.isBridge()) {
                     framesToHub++;
                     try {
@@ -251,13 +258,16 @@ public final class FrameMux {
     }
 
     /**
-     * Sends our keepalive right away when it is overdue. While the watch CPU is suspended the
-     * heartbeat thread's sleep stands still (it runs on the monotonic clock), so the phone would
-     * see no traffic and drop the link; a frame from the phone (its ping every 2.5 s) wakes the
-     * watch, and answering it here keeps the session up through Doze and battery saver.
+     * Answers a phone ping, or any frame when our keepalive is overdue. While the watch CPU is
+     * suspended the heartbeat thread's sleep stands still (it runs on the monotonic clock), so
+     * the phone would see no traffic and drop the link; its ping wakes the watch, and answering
+     * it here keeps the session up through Doze and battery saver. Answering every ping (not only
+     * an overdue one) also keeps a phone bridge with a shorter watchdog satisfied.
      */
-    private void answerIfDue() {
-        if (clock.now() - lastRemoteWrite < heartbeatMs) return;
+    private void answerIfDue(Frame f) {
+        long idle = clock.now() - lastRemoteWrite;
+        boolean ping = f.pathLen == PING_PATH.length() && PING_PATH.equals(f.path());
+        if (idle < (ping ? ANSWER_MIN_GAP_MS : heartbeatMs)) return;
         try {
             writeRemote(HEARTBEAT);
             heartbeatsSent++;

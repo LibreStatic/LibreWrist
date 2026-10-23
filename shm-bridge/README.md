@@ -123,8 +123,9 @@ comments of `FrameMux`, `BridgeHub` and `NotifCodec` and in
   (pure Java): it parses `[int len][short pathLen][path][data]` frames in both directions.
   `/__bridge__/*` frames go to `BridgeHub` (in-process); any other frame is dropped (logged once
   per session, path length only). All RFCOMM writes are complete frames under a single lock, an
-  own `/__bridge__/ping` keepalive is emitted after 2.5 s of inactivity, and an absurd `len`
-  (< 2 or > 16 MB) or `pathLen` means desynchronization and closes the session.
+  own `/__bridge__/ping` keepalive is emitted after 2 min of inactivity (and every phone ping is
+  answered), and an absurd `len` (< 2 or > 16 MB) or `pathLen` means desynchronization and
+  closes the session.
 - `BridgeNotifier` (tag `br:<id>`, channels `br_<pkg>` DEFAULT and `br_<pkg>_hi` HIGH for
   the msg/call/alarm categories), `AlarmMirror` + `AlarmRinger` + `RingActivity` (one managed
   `setAlarmClock` at `t + 5 s`, suppressed if `alarm/ring` arrived from the phone),
@@ -146,7 +147,7 @@ adb logcat -s SHMBridgeComms
 ## Communications channel `/__bridge__/` (phone)
 
 Phone side in `phone/src/shminterop/shmbridge/phone/`: `CommsService` (`specialUse` FGS;
-link `BridgeLink`, ping `/__bridge__/ping` every 2.5 s, alarm/next and call/state),
+link `BridgeLink`, ping `/__bridge__/ping` after 2 min idle, alarm/next and call/state),
 `BridgeNotificationListener` + `NotifCodec` (notif/*, alarm/ring|stop), `CommsHub` (dispatch
 and watch actions), `StatusProvider`, `CommsDebugReceiver`, `CommsBootReceiver`, and a minimal
 `MainActivity` that starts the service and shows the same state as the provider.

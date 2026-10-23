@@ -31,11 +31,13 @@ import java.util.concurrent.TimeUnit;
  * the channel (bare heartbeats, any other path) are ignored.</p>
  *
  * <p>Frame: {@code [int len][short pathLen][path UTF-8][data]} big-endian. The own keepalive
- * is an empty {@code /__bridge__/ping} every 2.5 s; bare heartbeats (len=2, pathLen=0) are
- * not part of the channel and are never sent. Reconnects with back-off; if no frame arrives
- * in 15 s of awake time (the peer sends its ping every 2.5 s, and answers ours at once when it
- * was suspended) the connection is considered dead (watched by the writer: RFCOMM has no read
- * timeout).</p>
+ * is an empty {@code /__bridge__/ping} after 2 min without outgoing frames; bare heartbeats
+ * (len=2, pathLen=0) are not part of the channel and are never sent. Reconnects with back-off;
+ * if no frame arrives in 6 min of awake time (the watch answers every ping, even when the ping
+ * woke it up) the connection is considered dead (watched by the writer: RFCOMM has no read
+ * timeout). The period is long on purpose: every ping wakes the watch CPU, and a seconds-scale
+ * keepalive kept it awake most of the night. A lost Bluetooth link closes the socket by itself;
+ * the watchdog only catches a session that stopped answering.</p>
  */
 final class BridgeLink {
 
@@ -50,8 +52,8 @@ final class BridgeLink {
     static final String PING = PREFIX + "ping";
     static final int MAX_FRAME = 16 * 1024 * 1024;
     static final int MAX_JSON = 64 * 1024;
-    static final long PING_MS = 2500;
-    static final int READ_TIMEOUT_MS = 15000;
+    static final long PING_MS = 120_000;
+    static final int READ_TIMEOUT_MS = 360_000;
     private static final byte[] STOP = new byte[0];
     /** Same UUID as the watch's {@code RfcommLink.RFCOMM_UUID}. */
     static final UUID RFCOMM_UUID = UUID.fromString("8b6d5c1e-3a24-4c0d-9f1b-6a7e2d5c4b3b");

@@ -419,7 +419,7 @@ public final class FrameMuxTest {
     /**
      * A suspended watch: the heartbeat thread is asleep for far longer than the keepalive period
      * (its sleep does not advance in suspend) while the wall clock moved on. A frame from the phone
-     * must be answered with our keepalive right away, or the phone's 15 s watchdog drops the link.
+     * must be answered with our keepalive right away, or the phone's watchdog drops the link.
      */
     static void testPeerFrameAnswersOverdueKeepalive() throws Exception {
         final long[] now = {1_000_000L};
@@ -444,6 +444,42 @@ public final class FrameMuxTest {
             check(answer != null && isKeepalive(answer), "keepalive answered on the phone's frame");
             check(s.mux.heartbeatsSent == 2, "one answer (" + s.mux.heartbeatsSent + ")");
             check(!s.mux.isClosed(), "alive");
+        } finally {
+            s.close();
+        }
+    }
+
+    /**
+     * Every phone ping is answered once our last write is {@link FrameMux#ANSWER_MIN_GAP_MS} old,
+     * even when our own keepalive is far from due (a phone bridge with a short watchdog keeps
+     * seeing traffic); other frames do not trigger an answer before the keepalive is due.
+     */
+    static void testPingAnsweredBeforeOwnKeepaliveIsDue() throws Exception {
+        final long[] now = {1_000_000L};
+        Session s = new Session(FrameMux.HEARTBEAT_MS, new FrameMux.Clock() {
+            @Override public long now() { synchronized (now) { return now[0]; } }
+        });
+        try {
+            DataInputStream in = new DataInputStream(s.phone.getInputStream());
+            FrameMux.Frame first = FrameMux.readFrame(in);
+            check(first != null && isKeepalive(first), "initial keepalive");
+            OutputStream po = s.phone.getOutputStream();
+            synchronized (now) { now[0] += 5_000; }
+            po.write(FrameMux.encode("/__bridge__/notif/post", new byte[]{1}));
+            po.flush();
+            sleep(200);
+            check(s.rec.paths.contains("/__bridge__/notif/post"), "channel frame delivered");
+            check(s.mux.heartbeatsSent == 1 && in.available() == 0, "a channel frame is not answered");
+            po.write(FrameMux.HEARTBEAT);
+            po.flush();
+            FrameMux.Frame answer = FrameMux.readFrame(in);
+            check(answer != null && isKeepalive(answer), "ping answered");
+            check(s.mux.heartbeatsSent == 2, "one answer (" + s.mux.heartbeatsSent + ")");
+            // A second ping right after (same clock) is not answered again.
+            po.write(FrameMux.HEARTBEAT);
+            po.flush();
+            sleep(200);
+            check(s.mux.heartbeatsSent == 2 && in.available() == 0, "no answer within the minimum gap");
         } finally {
             s.close();
         }
@@ -483,6 +519,7 @@ public final class FrameMuxTest {
         run("EOF mid-frame closes the session", FrameMuxTest::testEofMidFrame);
         run("idle session is not cut", FrameMuxTest::testIdleSessionStaysUp);
         run("phone frame answers an overdue keepalive", FrameMuxTest::testPeerFrameAnswersOverdueKeepalive);
+        run("phone ping answered before our keepalive is due", FrameMuxTest::testPingAnsweredBeforeOwnKeepaliveIsDue);
         System.out.println();
         System.out.println("FrameMuxTest: " + pass + " PASS, " + fail + " FAIL");
         System.exit(fail == 0 ? 0 : 1);
