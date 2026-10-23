@@ -55,6 +55,18 @@ public final class Spo2Store {
         return values.isEmpty() ? Long.MIN_VALUE : values.lastKey();
     }
 
+    /** Number of stored seconds with a valid value (non-zero). */
+    public synchronized int validCount() {
+        int n = 0;
+        for (Integer v : values.values()) if (v != 0) n++;
+        return n;
+    }
+
+    /** Epoch ms of the oldest stored second, or Long.MAX_VALUE when empty. */
+    public synchronized long oldest() {
+        return values.isEmpty() ? Long.MAX_VALUE : values.firstKey();
+    }
+
     /** Forgets everything, in memory and in the file. */
     public synchronized void clear() {
         values.clear();

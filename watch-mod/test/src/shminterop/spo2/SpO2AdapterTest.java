@@ -47,6 +47,7 @@ public final class SpO2AdapterTest {
         fallbackStart();
         orientationFlip();
         orientationKept();
+        nightDiagnostics();
         SpO2Adapter.resetForTest();
         System.out.println(failures == 0 ? "ALL PASSED" : failures + " FAILED");
         System.exit(failures == 0 ? 0 : 1);
@@ -507,6 +508,71 @@ public final class SpO2AdapterTest {
             check(Math.abs(v - expected) <= 1, "value " + v + " ~ " + expected);
             SpO2Adapter.unregister(l, 49);
         } finally {
+            SpO2Adapter.contextOverride = null;
+            SpO2Adapter.resetForTest();
+        }
+    }
+
+    // ------------------------------------------------------------ night diagnostics (issue #13)
+
+    static List<String> nightLines(List<String> sink, String prefix) {
+        List<String> out = new java.util.ArrayList<String>();
+        for (String l : sink) if (l.startsWith(prefix)) out.add(l);
+        return out;
+    }
+
+    static void nightDiagnostics() throws Exception {
+        TestContext c = new TestContext("night-diag");
+        SpO2Adapter.contextOverride = c;
+        List<String> sink = new CopyOnWriteArrayList<String>();
+        SpO2Adapter.logSink = sink;
+        try {
+            // A recorded flow followed by GET_DATA.
+            SpO2Adapter.resetForTest();
+            Recorder l = new Recorder();
+            SpO2Adapter.register(l, 49);
+            startNight(l);
+            SpO2Adapter.trackerListener().onArmed();
+            feedPulses(140, 0.52);
+            long now = nowSecond();
+            check(getData(l, now - 3_600_000L, now), "GET_DATA returns true");
+            List<String> summary = nightLines(sink, "night: ");
+            List<String> events = nightLines(sink, "night-event: ");
+            eq(1, summary.size(), "one night summary line");
+            if (!summary.isEmpty()) {
+                System.out.println("SAMPLE " + summary.get(0));
+                check(summary.get(0).contains("recording=true") && summary.get(0).contains("coverage "),
+                        "summary reports recording and coverage: " + summary.get(0));
+            }
+            String joined = String.join("\n", events);
+            for (String l2 : events) System.out.println("SAMPLE " + l2);
+            check(joined.contains("process start"), "journal has process start");
+            check(joined.contains("recording start: new night"), "journal has the recording start");
+            check(joined.contains("cmd SET_OPERATION_MODE"), "journal has SET_OPERATION_MODE");
+            check(joined.contains("tracker armed"), "journal has tracker armed");
+            check(new File(spo2Dir(c), "events.log").isFile(), "journal file written");
+            SpO2Adapter.unregister(l, 49);
+            check(SpO2Adapter.journal.since(0).toString().length() > 0
+                    && SpO2Adapter.journal.size() >= 5, "journal holds entries after unregister");
+
+            // GET_DATA with no recording at all.
+            SpO2Adapter.resetForTest();
+            sink.clear();
+            Recorder m = new Recorder();
+            SpO2Adapter.register(m, 49);
+            check(getData(m, now - 3_600_000L, now), "idle GET_DATA returns true");
+            summary = nightLines(sink, "night: ");
+            eq(1, summary.size(), "idle: one night summary line");
+            if (!summary.isEmpty()) {
+                System.out.println("SAMPLE " + summary.get(0));
+                check(summary.get(0).contains("recording=false") && summary.get(0).contains("coverage 0"),
+                        "idle summary: recording=false, coverage 0: " + summary.get(0));
+                check(summary.get(0).contains("stored 0 s"), "idle summary: nothing stored");
+            }
+            check(nightLines(sink, "night-event: ").size() >= 2, "idle: journal entries dumped");
+            SpO2Adapter.unregister(m, 49);
+        } finally {
+            SpO2Adapter.logSink = null;
             SpO2Adapter.contextOverride = null;
             SpO2Adapter.resetForTest();
         }

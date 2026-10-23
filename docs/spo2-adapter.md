@@ -155,6 +155,29 @@ is what guards the result against an unreliable night. The log line reports the 
 seconds, e.g. `GET_DATA a..b -> 3 event(s), coverage 64.2% (SHM needs 70%)`, so a rejected night
 can be told apart from a recording that did not run.
 
+### Diagnostics (night journal)
+
+Logcat rotates within minutes, so by the time a morning log is exported the overnight lines are
+gone. The adapter therefore keeps a small journal, `<filesDir>/shminterop-spo2/events.log`
+(`NightLog`): one line per event, `<epoch ms> <text>`, append-only, newest 300 lines kept (the file
+is rewritten once it passes 400 lines). Entries recorded before an application context exists are
+buffered and written on attach; every I/O error is swallowed.
+
+Recorded: first entry in the process, register / unregister (listener identity, recorder or not),
+each command (SET_OPERATION_MODE with its mode, GET_DATA window, GET_VERSION, FLUSH), recording
+start (new night, resumed with N s, auto-resume after a restart, fallback start) and stop, tracker
+armed / unsupported / connection failed / ended / error, watchdog re-arms, wake lock not acquired,
+persistence and delivery failures, the orientation decision, and every 15 minutes while recording
+one aggregate (valid/total seconds of the period, stored total). The per-minute stats stay in
+logcat only.
+
+On GET_DATA, after the answer was handed to delivery, the adapter logs (tag `SpO2Adapter`) one
+`night: window <start>..<end> (<n> s), coverage X%, recording=..., recorder=..., stored N s (V valid)
+<first>..<last>, wake lock held=...` line, then `night-event: HH:mm:ss <text>` for every journal
+entry since two hours before the window start (watch local time). A log export taken right after
+the morning GET_DATA is thus enough to tell whether recording never started, the tracker failed
+or the store was lost.
+
 ## 5. Simulation mode (end-to-end test without sleeping)
 
 Set the system property `debug.shminterop.spo2_sim` to `<hours>[:<eventsPerHour>]`, for example

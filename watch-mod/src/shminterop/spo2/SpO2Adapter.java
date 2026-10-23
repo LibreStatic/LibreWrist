@@ -18,6 +18,8 @@ import shminterop.hsdk.ServiceProtocol;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +28,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -104,6 +107,17 @@ public final class SpO2Adapter {
     private static final Set<SemSensorListener> listeners =
             Collections.newSetFromMap(new IdentityHashMap<SemSensorListener, Boolean>());
     static final Spo2Store store = new Spo2Store();
+    /** Bounded journal of the overnight events, dumped to logcat on GET_DATA (docs/spo2-adapter.md). */
+    static final NightLog journal = new NightLog();
+    static final long AGGREGATE_MS = 15L * 60L * 1000L;
+    /** The dump covers journal entries from this long before the requested window. */
+    static final long DUMP_LEAD_MS = 2L * 60L * 60L * 1000L;
+    private static boolean journalAttached;
+    private static boolean processStartNoted;
+    private static long lastAggregateMs;
+    private static int aggSeconds, aggValid; // under FEED_LOCK
+    /** Test hook: every log line is also appended here when set. */
+    static volatile List<String> logSink;
 
     private static SemSensorListener recorder;
     private static boolean recorderAdopted; // recorder role taken at register, not by SET_OPERATION_MODE
@@ -169,9 +183,11 @@ public final class SpO2Adapter {
             log(String.format(Locale.ROOT,
                     "orientation: median R %.3f over %d s, swapping red/IR (swap=%b)",
                     med, ORIENTATION_SAMPLES, swap));
+            note(String.format(Locale.ROOT, "orientation: median R %.3f, swapped (swap=%b)", med, swap));
             writeOrientation(swap);
         } else {
             log(String.format(Locale.ROOT, "orientation: median R %.3f, keeping swap=%b", med, swap));
+            note(String.format(Locale.ROOT, "orientation: median R %.3f, kept (swap=%b)", med, swap));
         }
     }
 
@@ -189,6 +205,7 @@ public final class SpO2Adapter {
             }
         } catch (Throwable t) {
             log("orientation not persisted: " + t);
+            note("persistence failure: orientation not persisted: " + t);
         }
     }
 
@@ -224,7 +241,9 @@ public final class SpO2Adapter {
     public static boolean register(SemSensorListener listener, int type) {
         try {
             ApneaTestDriver.ensureStarted();
+            entered();
             log("register: listener=" + listener + " type=" + type);
+            note("register " + idOf(listener));
             synchronized (LOCK) {
                 maybeAutoResume();
                 if (listener != null) {
@@ -251,6 +270,7 @@ public final class SpO2Adapter {
     public static boolean setAttribute(SemSensorListener listener, int type, SemSensorAttribute attribute) {
         try {
             ApneaTestDriver.ensureStarted();
+            entered();
             synchronized (LOCK) {
                 maybeAutoResume();
             }
@@ -274,17 +294,21 @@ public final class SpO2Adapter {
             }
             if (cmds.contains("SET_OPERATION_MODE")) {
                 log("SET_OPERATION_MODE mode=" + b.getSerializable("mode"));
+                note("cmd SET_OPERATION_MODE mode=" + b.getSerializable("mode") + " " + idOf(listener));
                 startRecording(listener);
             }
             if (cmds.contains("GET_VERSION")) {
+                note("cmd GET_VERSION " + b.getSerializable("versionType"));
                 sendVersion(listener, b.getSerializable("versionType"));
             }
             if (cmds.contains("GET_DATA")) {
+                note("cmd GET_DATA window " + b.getLong("startTimestamp") + ".." + b.getLong("endTimestamp"));
                 answerData(listener, b.getLong("startTimestamp"), b.getLong("endTimestamp"));
                 stopOrphanRecording();
             }
             if (cmds.contains("FLUSH")) {
                 log("FLUSH accepted (nothing to flush)");
+                note("cmd FLUSH");
             }
             if (cmds.isEmpty()) {
                 log("setAttribute: no command in the bundle; ignored");
@@ -298,6 +322,7 @@ public final class SpO2Adapter {
     /** sa2.e(listener, type) and WatchOverrides.unregisterListener for type 0x31. */
     public static void unregister(SemSensorListener listener, int type) {
         try {
+            entered();
             log("unregister: listener=" + listener + " type=" + type);
             boolean wasRecorder;
             synchronized (LOCK) {
@@ -309,6 +334,7 @@ public final class SpO2Adapter {
                     recorderAdopted = false;
                 }
             }
+            note("unregister " + idOf(listener) + (wasRecorder ? " (was the recorder)" : ""));
             if (wasRecorder) stopRecording();
         } catch (Throwable t) {
             log("unregister failed: " + t);
@@ -363,6 +389,39 @@ public final class SpO2Adapter {
         log("GET_DATA " + startMs + ".." + endMs + " -> " + events.size() + " event(s)"
                 + (lastCoverage.isEmpty() ? "" : ", " + lastCoverage));
         deliver(listener, events);
+        dumpNight(startMs, endMs);
+    }
+
+    /** Logs the night summary and the journal to logcat so a morning log export explains the night. */
+    static void dumpNight(long startMs, long endMs) {
+        try {
+            SimpleDateFormat day = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT);
+            SimpleDateFormat clock = new SimpleDateFormat("HH:mm:ss", Locale.ROOT);
+            TimeZone tz = TimeZone.getDefault();
+            day.setTimeZone(tz);
+            clock.setTimeZone(tz);
+            long windowS = Math.max(0L, (endMs - startMs) / 1000L);
+            String cov = lastCoverage.isEmpty()
+                    ? String.format(Locale.ROOT, "coverage 0%% (SHM needs %.0f%%)", SHM_MIN_COVERAGE_PCT)
+                    : lastCoverage;
+            int stored = store.size();
+            String span = stored == 0 ? "-"
+                    : clock.format(new Date(store.oldest())) + ".." + clock.format(new Date(store.newest()));
+            boolean held = false;
+            PowerManager.WakeLock wl = wakeLock;
+            if (wl != null) {
+                try { held = wl.isHeld(); } catch (Throwable ignored) {}
+            }
+            log("night: window " + day.format(new Date(startMs)) + ".." + clock.format(new Date(endMs))
+                    + " (" + windowS + " s), " + cov + ", recording=" + recording
+                    + ", recorder=" + (recorder != null) + ", stored " + stored + " s ("
+                    + store.validCount() + " valid) " + span + ", wake lock held=" + held);
+            for (NightLog.Entry e : journal.since(startMs - DUMP_LEAD_MS)) {
+                log("night-event: " + clock.format(new Date(e.epochMs)) + " " + e.text);
+            }
+        } catch (Throwable t) {
+            log("night dump failed: " + t);
+        }
     }
 
     /** The events answering GET_DATA: NORMAL chunks, or a single EMPTY event. */
@@ -443,8 +502,10 @@ public final class SpO2Adapter {
                             linkageLogged = true;
                             log("deliver failed: hidden-API enforcement may deny the"
                                     + " SemSleepWatchSpO2SensorEvent constructor (" + t + ")");
+                            note("deliver failed (hidden API?): " + t);
                         } else {
                             log("deliver failed: " + t);
+                            note("deliver failed: " + t);
                         }
                     }
                 }
@@ -494,6 +555,7 @@ public final class SpO2Adapter {
                 return;
             }
             Context ctx = appContext();
+            attachJournal(ctx);
             if (ctx != null) {
                 try {
                     File dir = new File(ctx.getFilesDir(), "shminterop-spo2");
@@ -509,9 +571,11 @@ public final class SpO2Adapter {
             if (store.size() > 0 && now - store.newest() <= RESUME_MS) {
                 log("start: resuming the night (" + store.size() + " s stored, newest "
                         + (now - store.newest()) / 1000 + " s ago)");
+                note("recording start: resumed with " + store.size() + " s stored");
             } else {
                 store.clear();
                 log("start: new night");
+                note("recording start: new night");
             }
             synchronized (FEED_LOCK) {
                 swap = readOrientation(orientationFile);
@@ -521,6 +585,9 @@ public final class SpO2Adapter {
                 statSeconds = 0;
                 statValid = 0;
                 statR.clear();
+                aggSeconds = 0;
+                aggValid = 0;
+                lastAggregateMs = now;
             }
             recording = true;
             writeMarker();
@@ -538,12 +605,13 @@ public final class SpO2Adapter {
         synchronized (LOCK) {
             if (!recording) return;
             log("stop recording (" + store.size() + " s stored)");
+            note("recording stop: " + store.size() + " s stored");
             recording = false;
             stopTracker();
             ScheduledExecutorService w = watchdog;
             watchdog = null;
             if (w != null) w.shutdownNow();
-            logStats();
+            logStats(true);
             store.flush();
             deleteMarker();
             releaseWakeLock();
@@ -559,12 +627,16 @@ public final class SpO2Adapter {
             new FileOutputStream(m).close();
         } catch (Throwable t) {
             log("recording marker not written: " + t);
+            note("persistence failure: recording marker not written: " + t);
         }
     }
 
     private static void deleteMarker() {
         File m = markerFile;
-        if (m != null && m.exists() && !m.delete()) log("recording marker not deleted");
+        if (m != null && m.exists() && !m.delete()) {
+            log("recording marker not deleted");
+            note("recording marker not deleted");
+        }
     }
 
     /**
@@ -577,6 +649,7 @@ public final class SpO2Adapter {
             Object pm = ctx.getSystemService(Context.POWER_SERVICE);
             if (!(pm instanceof PowerManager)) {
                 log("no PowerManager; recording without a wake lock");
+                note("wake lock not acquired: no PowerManager");
                 return;
             }
             releaseWakeLock();
@@ -587,6 +660,7 @@ public final class SpO2Adapter {
             wakeLock = wl;
         } catch (Throwable t) {
             log("wake lock not acquired: " + t);
+            note("wake lock not acquired: " + t);
         }
     }
 
@@ -606,6 +680,7 @@ public final class SpO2Adapter {
         if (autoResumeChecked || recording) return;
         Context ctx = appContext();
         if (ctx == null) return;
+        attachJournal(ctx);
         autoResumeChecked = true;
         try {
             File dir = new File(ctx.getFilesDir(), "shminterop-spo2");
@@ -616,6 +691,7 @@ public final class SpO2Adapter {
             long now = System.currentTimeMillis();
             if (store.size() > 0 && now - store.newest() < AUTO_RESUME_MS) {
                 log("start: auto-resuming after a process restart");
+                note("recording start: auto-resume after restart (" + store.size() + " s stored)");
                 startRecording(null);
             } else {
                 log("stale recording marker removed");
@@ -656,6 +732,7 @@ public final class SpO2Adapter {
             if (recording || !listeners.contains(listener) || commanded.contains(listener)) return;
             log("start: no SET_OPERATION_MODE " + fallbackDelayMs / 1000
                     + " s after register; recording anyway");
+            note("recording start: fallback start without SET_OPERATION_MODE " + idOf(listener));
             startRecording(listener);
         }
     }
@@ -663,6 +740,7 @@ public final class SpO2Adapter {
     private static void startTracker(Context ctx) {
         if (ctx == null) {
             log("no application context; the PPG tracker cannot start");
+            note("no application context; the PPG tracker cannot start");
             return;
         }
         try {
@@ -671,6 +749,7 @@ public final class SpO2Adapter {
             tracker.start();
         } catch (Throwable t) {
             log("tracker start failed: " + t);
+            note("tracker start failed: " + t);
             tracker = null;
         }
     }
@@ -702,6 +781,7 @@ public final class SpO2Adapter {
             long ref = Math.max(lastBatchMs, lastArmMs);
             if (e - ref > LIVENESS_MS) {
                 log("no PPG batch for " + (e - ref) / 1000 + " s; re-arming the tracker");
+                note("watchdog: no PPG batch for " + (e - ref) / 1000 + " s, re-arming the tracker");
                 stopTracker();
                 lastArmMs = e;
                 startTracker(appContext());
@@ -715,6 +795,10 @@ public final class SpO2Adapter {
     }
 
     private static void logStats() {
+        logStats(false);
+    }
+
+    private static void logStats(boolean force) {
         synchronized (FEED_LOCK) {
             double med = Double.NaN;
             if (!statR.isEmpty()) {
@@ -724,9 +808,18 @@ public final class SpO2Adapter {
             }
             log(String.format("stats: valid %d/%d s, median R %.3f (swap=%b), stored %d s",
                     statValid, statSeconds, med, swap, store.size()));
+            aggSeconds += statSeconds;
+            aggValid += statValid;
             statSeconds = 0;
             statValid = 0;
             statR.clear();
+            long now = System.currentTimeMillis();
+            if (force ? aggSeconds > 0 : now - lastAggregateMs >= AGGREGATE_MS) {
+                note("period: valid " + aggValid + "/" + aggSeconds + " s, stored " + store.size() + " s");
+                aggSeconds = 0;
+                aggValid = 0;
+                lastAggregateMs = now;
+            }
         }
     }
 
@@ -739,15 +832,21 @@ public final class SpO2Adapter {
     }
 
     static final class Conn implements PpgTracker.Listener {
-        @Override public void onArmed() { log("tracker armed (RED, IR)"); }
+        @Override public void onArmed() { log("tracker armed (RED, IR)"); note("tracker armed"); }
 
-        @Override public void onUnsupported() { log("PPG_ON_DEMAND not supported by the health service"); }
+        @Override public void onUnsupported() {
+            log("PPG_ON_DEMAND not supported by the health service");
+            note("tracker onUnsupported: PPG_ON_DEMAND not supported");
+        }
 
-        @Override public void onConnectionFailed(String reason) { log("onConnectionFailed " + reason); }
+        @Override public void onConnectionFailed(String reason) {
+            log("onConnectionFailed " + reason);
+            note("tracker onConnectionFailed " + reason);
+        }
 
-        @Override public void onConnectionEnded() { log("onConnectionEnded"); }
+        @Override public void onConnectionEnded() { log("onConnectionEnded"); note("tracker onConnectionEnded"); }
 
-        @Override public void onError(HealthError error) { log("onError " + error); }
+        @Override public void onError(HealthError error) { log("onError " + error); note("tracker onError " + error); }
 
         @Override public void onBatch(PpgBatch batch) {
             if (!recording || batch == null) return;
@@ -789,6 +888,10 @@ public final class SpO2Adapter {
             listeners.clear();
             commanded.clear();
             autoResumeChecked = false;
+            journalAttached = false;
+            processStartNoted = false;
+            journal.attach(null);
+            journal.clear();
             markerFile = null;
             orientationFile = null;
             releaseWakeLock();
@@ -805,6 +908,8 @@ public final class SpO2Adapter {
             statSeconds = 0;
             statValid = 0;
             statR.clear();
+            aggSeconds = 0;
+            aggValid = 0;
         }
         store.attach(null);
         store.clear();
@@ -824,5 +929,51 @@ public final class SpO2Adapter {
 
     static void log(String s) {
         Log.i(TAG, s);
+        List<String> sink = logSink;
+        if (sink != null) sink.add(s);
+    }
+
+    // ------------------------------------------------------------------ night journal
+
+    /** Records one journal entry; never throws. */
+    static void note(String text) {
+        try {
+            journal.add(System.currentTimeMillis(), text);
+        } catch (Throwable ignored) {
+            // diagnostics must never break recording
+        }
+    }
+
+    private static String idOf(Object listener) {
+        return listener == null ? "null" : "#" + Integer.toHexString(System.identityHashCode(listener));
+    }
+
+    /** First entry into the adapter in this process: journal it and attach the file when possible. */
+    private static void entered() {
+        try {
+            boolean first;
+            synchronized (journal) {
+                first = !processStartNoted;
+                processStartNoted = true;
+            }
+            if (first) note("process start");
+            attachJournal(appContext());
+        } catch (Throwable ignored) {
+        }
+    }
+
+    /** Attaches the journal file once per process; earlier entries are written on attach. */
+    private static void attachJournal(Context ctx) {
+        if (ctx == null) return;
+        try {
+            synchronized (journal) {
+                if (journalAttached) return;
+                journalAttached = true;
+            }
+            File dir = new File(ctx.getFilesDir(), "shminterop-spo2");
+            journal.attach(new File(dir, "events.log"));
+        } catch (Throwable t) {
+            log("night journal not attached: " + t);
+        }
     }
 }
