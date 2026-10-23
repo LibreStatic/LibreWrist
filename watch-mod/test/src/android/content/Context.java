@@ -26,6 +26,12 @@ public class Context {
         return "shminterop.test";
     }
 
+    public android.content.pm.ApplicationInfo getApplicationInfo() {
+        android.content.pm.ApplicationInfo info = new android.content.pm.ApplicationInfo();
+        info.labelRes = 0x7f120001;
+        return info;
+    }
+
     public android.content.res.Resources getResources() {
         return new android.content.res.Resources();
     }

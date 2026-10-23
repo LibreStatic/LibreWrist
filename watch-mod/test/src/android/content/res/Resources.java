@@ -19,6 +19,13 @@ public class Resources {
         return id;
     }
 
+    /** Package name of the resource table, as getResourcePackageName reports it for any id. */
+    public static String tablePackage = "shminterop.test";
+
+    public String getResourcePackageName(int id) {
+        return tablePackage;
+    }
+
     public String getString(int id) {
         String text = BY_ID.get(id);
         if (text == null) throw new IllegalArgumentException("no string " + id);

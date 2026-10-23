@@ -121,6 +121,7 @@ public final class WatchOverridesServiceTest {
     static void apneaTitleOnlyWhenShown() {
         ForegroundRequired.clear();
         android.content.res.Resources.STRINGS.clear();
+        android.content.res.Resources.tablePackage = "shminterop.test";
         android.content.res.Resources.STRINGS.put("shminterop.test:" + WatchOverrides.APNEA_TITLE_RES, "Sleep apnea");
         FakeContext ctx = new FakeContext();
         SvcA quiet = new SvcA();
@@ -142,6 +143,7 @@ public final class WatchOverridesServiceTest {
     static void apneaTitleFromVendorPackageAndKeepsExisting() {
         ForegroundRequired.clear();
         android.content.res.Resources.STRINGS.clear();
+        android.content.res.Resources.tablePackage = "com.samsung.android.shealthmonitor";
         android.content.res.Resources.STRINGS.put(
                 "com.samsung.android.shealthmonitor:" + WatchOverrides.APNEA_TITLE_RES, "Schlafapnoe");
         FakeContext ctx = new FakeContext();

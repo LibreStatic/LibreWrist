@@ -191,7 +191,6 @@ public final class WatchOverrides {
     }
 
     static final String APNEA_TITLE_RES = "apnea_sleep_apnea";
-    private static final String VENDOR_PACKAGE = "com.samsung.android.shealthmonitor";
 
     /** Sets the notification's title from the app's string [resName] if it has none. Never throws. */
     static void addTitle(Context context, Notification notification, String resName) {
@@ -202,7 +201,16 @@ public final class WatchOverrides {
             }
             android.content.res.Resources res = context.getResources();
             int resId = res.getIdentifier(resName, "string", context.getPackageName());
-            if (resId == 0) resId = res.getIdentifier(resName, "string", VENDOR_PACKAGE);
+            if (resId == 0) {
+                // The rebrand keeps the vendor package name in the resource table, so look the
+                // string up there too. The name is read at runtime: a literal of it in our code
+                // fails the rebrand's check that the vendor constant is gone.
+                int label = context.getApplicationInfo().labelRes;
+                String table = label == 0 ? null : res.getResourcePackageName(label);
+                if (table != null && !table.equals(context.getPackageName())) {
+                    resId = res.getIdentifier(resName, "string", table);
+                }
+            }
             if (resId == 0) return;
             notification.extras.putCharSequence(Notification.EXTRA_TITLE, res.getString(resId));
         } catch (Throwable t) {
