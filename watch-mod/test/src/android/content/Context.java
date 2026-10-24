@@ -18,6 +18,11 @@ public class Context {
         return new File(".");
     }
 
+    /** Null like a device without mounted shared storage, unless a test overrides it. */
+    public File getExternalFilesDir(String type) {
+        return null;
+    }
+
     public ClassLoader getClassLoader() {
         return Context.class.getClassLoader();
     }

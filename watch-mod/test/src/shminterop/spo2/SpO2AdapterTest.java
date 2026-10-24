@@ -268,7 +268,7 @@ public final class SpO2AdapterTest {
 
     // ------------------------------------------------------------ night robustness (issue #13)
 
-    static final class TestContext extends Context {
+    static class TestContext extends Context {
         final File dir;
         final PowerManager pm = new PowerManager();
 
@@ -571,6 +571,22 @@ public final class SpO2AdapterTest {
             }
             check(nightLines(sink, "night-event: ").size() >= 2, "idle: journal entries dumped");
             SpO2Adapter.unregister(m, 49);
+
+            // With shared storage the journal goes to the external files dir the patcher reads.
+            final File ext = new File(c.dir, "external");
+            TestContext e = new TestContext("night-ext") {
+                @Override public File getExternalFilesDir(String type) {
+                    return ext;
+                }
+            };
+            SpO2Adapter.contextOverride = e;
+            SpO2Adapter.resetForTest();
+            Recorder x = new Recorder();
+            SpO2Adapter.register(x, 49);
+            SpO2Adapter.unregister(x, 49);
+            check(new File(new File(ext, "shminterop-spo2"), "events.log").isFile(),
+                    "journal written to the external files dir");
+            check(!new File(spo2Dir(e), "events.log").exists(), "no internal journal with shared storage");
         } finally {
             SpO2Adapter.logSink = null;
             SpO2Adapter.contextOverride = null;

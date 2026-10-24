@@ -48,7 +48,8 @@ interface RunnerListener {
 
 /**
  * Keeps one device's capture going: connects through [source], finds the monitored apps, streams their
- * logcat into [sink], and reconnects when the link ends. After [maxFailures] failed attempts in a row it
+ * logcat into [sink] (plus the new entries of their SpO2 night journal every [journalMillis]), and
+ * reconnects when the link ends. After [maxFailures] failed attempts in a row it
  * reports Disconnected and waits for [retry]. All timing uses coroutine delays, so tests run on virtual time.
  */
 class DeviceLogRunner(
@@ -60,6 +61,8 @@ class DeviceLogRunner(
     private val maxFailures: Int = 3,
     private val recheckMillis: Long = 30_000,
     private val pidRefreshMillis: Long = 15_000,
+    private val journalMillis: Long = 600_000,
+    private val journals: JournalReader = JournalReader(),
 ) {
     private val trigger = Channel<Unit>(Channel.CONFLATED)
     private val appCursor = ResumeCursor()
@@ -154,6 +157,12 @@ class DeviceLogRunner(
         guarded { streamApps(session, uids, packages) }
         guarded { streamSystem(session, packages) }
         launch {
+            while (true) {
+                readJournals(session, packages)
+                delay(journalMillis)
+            }
+        }
+        launch {
             try {
                 while (true) {
                     delay(recheckMillis)
@@ -227,6 +236,20 @@ class DeviceLogRunner(
         systemCursor.resume()
         session.stream(LogCommands.system(systemCursor.since)) { line ->
             if (LogFilter.keepSystemLine(line, packages) && systemCursor.accept(line)) sink.append(line)
+        }
+    }
+
+    /** Appends the new night journal entries of the monitored apps; a failed read is retried next time. */
+    private suspend fun readJournals(session: LogSession, packages: Set<String>) {
+        for (pkg in packages.sorted()) {
+            try {
+                val result = session.shell(LogCommands.journal(pkg))
+                journals.newLines(pkg, result.stdout).forEach(sink::append)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                // The streams notice a dead link; the journal is only extra detail.
+            }
         }
     }
 

@@ -10,6 +10,7 @@ import io.openshm.patcher.device.LogLinkStatus
 import io.openshm.patcher.device.holdFalse
 import io.openshm.patcher.device.logs.DeviceLogRunner
 import io.openshm.patcher.device.logs.DeviceLogSource
+import io.openshm.patcher.device.logs.JournalReader
 import io.openshm.patcher.device.logs.LogBuffer
 import io.openshm.patcher.device.logs.LogCommands
 import io.openshm.patcher.device.logs.LogExport
@@ -22,6 +23,7 @@ import io.openshm.patcher.device.logs.ResumeCursor
 import io.openshm.patcher.device.logs.RunnerListener
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.time.ZoneOffset
 import java.util.TimeZone
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.awaitCancellation
@@ -33,6 +35,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -326,6 +329,7 @@ private class FakeSession(
     val onStream: suspend (String, (String) -> Unit) -> Unit,
     val installed: String = "package:com.samsung.android.shealthmonitors uid:10123\npackage:com.other uid:10999\n",
     val pidof: String = "",
+    var journal: String = "",
 ) : LogSession {
     val streams = mutableListOf<String>()
     var closed = false
@@ -335,6 +339,7 @@ private class FakeSession(
         command.startsWith("getprop ro.product.model") -> LogShellResult(0, "SM-L320\n")
         command.startsWith("getprop ro.build.version.release") -> LogShellResult(0, "15\n")
         command.startsWith("pidof") -> LogShellResult(0, pidof)
+        command.startsWith("cat /sdcard/Android/data/") -> LogShellResult(0, journal)
         else -> LogShellResult(1, "")
     }
 
@@ -434,6 +439,31 @@ class DeviceLogRunnerTest {
         assertEquals(1, source.resets)
         assertEquals(listOf(l1, l2, l3), lines)
         assertTrue(second.streams.any { it == "logcat -v threadtime -b main,system,crash --uid=10123 -T '10-12 12:00:02.000'" })
+    }
+
+    @Test
+    fun `the night journal is read at start and again later, each entry once`() = runTest {
+        val session = FakeSession({ _, _ -> awaitCancellation() }, journal = "1761264000000 process start\nnot a line\n")
+        val source = FakeSource(ArrayDeque(listOf<() -> LogSession>({ session })))
+        val lines = mutableListOf<String>()
+        val runner = DeviceLogRunner(source, targets, { lines += it }, Recorder(), journals = JournalReader(ZoneOffset.UTC))
+        backgroundScope.launch { runner.run() }
+        runCurrent()
+        assertEquals(listOf("spo2-journal com.samsung.android.shealthmonitors 2025-10-24 00:00:00.000 process start"), lines)
+        session.journal = "1761264000000 process start\n1761264060500 register #1a\n"
+        advanceTimeBy(600_001)
+        runCurrent()
+        assertEquals("spo2-journal com.samsung.android.shealthmonitors 2025-10-24 00:01:00.500 register #1a", lines.last())
+        assertEquals(2, lines.size)
+    }
+
+    @Test
+    fun `the journal command only takes a plain package name`() {
+        assertEquals(
+            "cat /sdcard/Android/data/com.example.app/files/*spo2/events.log 2>/dev/null",
+            LogCommands.journal("com.example.app"),
+        )
+        assertThrows(IllegalArgumentException::class.java) { LogCommands.journal("a; rm -rf /") }
     }
 
     @Test

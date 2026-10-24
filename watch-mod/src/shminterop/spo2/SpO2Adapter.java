@@ -962,6 +962,22 @@ public final class SpO2Adapter {
         }
     }
 
+    /**
+     * The journal lives in the app's external files dir (Android/data/<package>/files), which
+     * the adb shell user can read, so the patcher's log capture reads it without waking or
+     * changing this app. Without shared storage it stays in the internal files dir.
+     */
+    static File journalFile(Context ctx) {
+        File base = null;
+        try {
+            base = ctx.getExternalFilesDir(null);
+        } catch (Throwable ignored) {
+            // no shared storage
+        }
+        if (base == null) base = ctx.getFilesDir();
+        return new File(new File(base, "shminterop-spo2"), "events.log");
+    }
+
     /** Attaches the journal file once per process; earlier entries are written on attach. */
     private static void attachJournal(Context ctx) {
         if (ctx == null) return;
@@ -970,8 +986,7 @@ public final class SpO2Adapter {
                 if (journalAttached) return;
                 journalAttached = true;
             }
-            File dir = new File(ctx.getFilesDir(), "shminterop-spo2");
-            journal.attach(new File(dir, "events.log"));
+            journal.attach(journalFile(ctx));
         } catch (Throwable t) {
             log("night journal not attached: " + t);
         }

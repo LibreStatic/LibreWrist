@@ -1,5 +1,9 @@
 package io.openshm.patcher.device.logs
 
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+
 /**
  * The logcat command lines and the small facts read from `threadtime` lines. Commands are built only
  * from validated numbers and timestamps; no device text is ever pasted into one.
@@ -28,6 +32,16 @@ object LogCommands {
     fun pidof(packages: Collection<String>): String {
         require(packages.isNotEmpty() && packages.all { PACKAGE.matches(it) }) { "bad package name" }
         return "pidof ${packages.joinToString(" ")}"
+    }
+
+    /**
+     * Prints the SpO2 adapter's night journal of a patched watch app (docs/spo2-adapter.md), kept in
+     * its external files dir so the shell user can read it; prints nothing where there is none.
+     */
+    fun journal(pkg: String): String {
+        require(PACKAGE.matches(pkg)) { "bad package name" }
+        // The build rewrites the placeholder in the folder name (`<prefix>-spo2`), hence the glob.
+        return "cat /sdcard/Android/data/$pkg/files/*spo2/events.log 2>/dev/null"
     }
 
     private val PACKAGE = Regex("[A-Za-z0-9_.]+")
@@ -97,5 +111,37 @@ class ResumeCursor {
         }
         atLast += line
         return true
+    }
+}
+
+/**
+ * Turns the night journal's `<epoch ms> <text>` lines into log lines with a readable local time, each
+ * entry once: the journal is read again during a long capture and its file is rewritten when trimmed.
+ */
+class JournalReader(private val zone: ZoneId = ZoneId.systemDefault()) {
+    private val seen = LinkedHashSet<String>()
+
+    /** The new entries of [output] as log lines, oldest first; unparsable lines are skipped. */
+    fun newLines(pkg: String, output: String): List<String> {
+        val out = mutableListOf<String>()
+        for (raw in output.lineSequence()) {
+            val line = raw.trimEnd()
+            val space = line.indexOf(' ')
+            if (space <= 0) continue
+            val epochMs = line.substring(0, space).toLongOrNull() ?: continue
+            val key = "$pkg $line"
+            if (!seen.add(key)) continue
+            if (seen.size > MAX_SEEN) seen.remove(seen.first())
+            val time = FORMAT.format(Instant.ofEpochMilli(epochMs).atZone(zone))
+            out += "spo2-journal $pkg $time ${line.substring(space + 1).take(MAX_TEXT)}"
+        }
+        return out
+    }
+
+    private companion object {
+        /** Above the journal's 400-line file limit, for every app it is read from. */
+        const val MAX_SEEN = 2_000
+        const val MAX_TEXT = 500
+        val FORMAT: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
     }
 }

@@ -158,8 +158,9 @@ can be told apart from a recording that did not run.
 ### Diagnostics (night journal)
 
 Logcat rotates within minutes, so by the time a morning log is exported the overnight lines are
-gone. The adapter therefore keeps a small journal, `<filesDir>/shminterop-spo2/events.log`
-(`NightLog`): one line per event, `<epoch ms> <text>`, append-only, newest 300 lines kept (the file
+gone. The adapter therefore keeps a small journal, `shminterop-spo2/events.log` in the app's
+external files dir (`Android/data/<package>/files`, or the internal files dir without shared
+storage) (`NightLog`): one line per event, `<epoch ms> <text>`, append-only, newest 300 lines kept (the file
 is rewritten once it passes 400 lines). Entries recorded before an application context exists are
 buffered and written on attach; every I/O error is swallowed.
 
@@ -177,6 +178,12 @@ On GET_DATA, after the answer was handed to delivery, the adapter logs (tag `SpO
 entry since two hours before the window start (watch local time). A log export taken right after
 the morning GET_DATA is thus enough to tell whether recording never started, the tracker failed
 or the store was lost.
+
+The external files dir is readable by the adb shell user, so the patcher's watch log capture also
+reads the journal file itself (`files/*spo2/events.log`: builds rewrite the `shminterop`
+placeholder in the folder name), when it connects and every 10 minutes after, and adds each new entry
+as `spo2-journal <package> <yyyy-MM-dd HH:mm:ss.SSS> <text>` (phone local time). Any log export
+therefore holds the last nights, without waking or changing the watch app.
 
 ## 5. Simulation mode (end-to-end test without sleeping)
 
