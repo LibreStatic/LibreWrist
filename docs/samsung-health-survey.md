@@ -64,6 +64,13 @@ name crosses a trust boundary are local, not cloud:
 - **SakAttestation** (`SakAttestation` sets `AttestationParameterSpec.setPackageName(...)`,
   literal): a renamed app attesting the stock name produces a key-attestation chain that doesn't
   match its UID package. Only matters if/when a server-side flow uses that attestation.
+  It also matters locally: on a Samsung phone (Android 12+, Knox API level >= 20, SAK supported)
+  `KnoxAdapter.isAksSakMandatory()` is true and the data service must create its database key
+  through the Knox TIMA key store or SAK, which refuse the renamed copy. The first-run setup then
+  stopped with `0x2700010` (issue #19: `OOBE_ERROR_KNOX_INIT` = `0x27`, then the Knox result 16
+  as `IcccAdapter.getValueWithHex` = `00010`). Pattern `shealth-knox-absent` makes
+  `KnoxAdapter.isSupportedKnoxVersion()` return false, so the app uses the Android key store
+  (`requestKeyInitForNonSamsung`) as on other phones.
 
 ### Verdict for Q1
 

@@ -1,6 +1,6 @@
 {
   "schema": 2,
-  "serial": 61,
+  "serial": 62,
   "minAppVersion": 45,
   "inputs": [
     {
@@ -234,6 +234,7 @@
           "shealth-rename-code",
           "shealth-rename-account-xml",
           "shealth-samsung-account-absent",
+          "shealth-knox-absent",
           "shealth-capability-gates",
           "shealth-shm-providers",
           "shealth-launcher-badge",
@@ -255,6 +256,7 @@
           "shealth-rename-code",
           "shealth-rename-account-xml",
           "shealth-samsung-account-absent",
+          "shealth-knox-absent",
           "shealth-capability-gates",
           "shealth-shm-providers",
           "shealth-launcher-badge"
@@ -3124,6 +3126,29 @@
         }
       ]
     },
+    "shealth-knox-absent": {
+      "families": [
+        "shealth-phone"
+      ],
+      "title": "Software key store on Samsung phones",
+      "description": "On Samsung phones the data service sets up its database key with the Android key store (as on other phones) instead of the Knox TIMA key store or the Samsung Attestation Key, which this renamed copy cannot use: the Knox version check (KnoxAdapter.isSupportedKnoxVersion) reports an unsupported version, so the SAK-mandatory check, Knox availability and the SAK integrity checker all report Knox as absent. Without it the first-run setup stops with \"temporarily unavailable\" (0x27..., OOBE_ERROR_KNOX_INIT). A no-op where Knox is absent",
+      "optional": false,
+      "ops": [
+        {
+          "op": "setMethodBody",
+          "fileRegex": "com/samsung/android/service/health/security/KnoxAdapter\\.smali$",
+          "sigRegex": "private static isSupportedKnoxVersion\\(\\)Z",
+          "body": [
+            "    .locals 1",
+            "",
+            "    const/4 v0, 0x0",
+            "",
+            "    return v0"
+          ],
+          "expect": 1
+        }
+      ]
+    },
     "shealth-capability-gates": {
       "families": [
         "shealth-phone"
@@ -4182,6 +4207,7 @@
       "pattern.shealth-rename-code.description": "Updates the app's internal references to the new package name.",
       "pattern.shealth-rename-account-xml.description": "Gives the app its own account and sync registration so cloud sync works next to the original.",
       "pattern.shealth-samsung-account-absent.description": "Signs in through the browser page on Samsung phones too, like on other phones, because the Samsung Account app does not accept this copy.",
+      "pattern.shealth-knox-absent.description": "Sets up the data key with the Android key store on Samsung phones too, like on other phones, because Knox does not accept this copy.",
       "pattern.shealth-capability-gates.description": "Turns on Vitals, Training load and the fitness index, which otherwise require a Galaxy Watch8 or Ultra. They are computed on the phone from your synced history.",
       "pattern.shealth-shm-providers.description": "Connects Samsung Health+ to the patched Health Monitor so the sleep apnea card and the blood pressure status reach it.",
       "pattern.shealth-launcher-badge.description": "Adds a small LibreWrist badge to the app icon so you can tell it apart from the original.",
@@ -4302,6 +4328,7 @@
       "pattern.shealth-rename-code.description": "يحدّث المراجع الداخلية للتطبيق إلى اسم الحزمة الجديد.",
       "pattern.shealth-rename-account-xml.description": "يمنح التطبيق تسجيل حساب ومزامنة خاصًا به لتعمل المزامنة السحابية بجوار الأصلي.",
       "pattern.shealth-samsung-account-absent.description": "يسجّل الدخول عبر صفحة المتصفح على هواتف Samsung أيضًا، مثل الهواتف الأخرى، لأن تطبيق Samsung Account لا يقبل هذه النسخة.",
+      "pattern.shealth-knox-absent.description": "يُعِدّ مفتاح البيانات باستخدام مخزن مفاتيح Android على هواتف Samsung أيضًا، مثل الهواتف الأخرى، لأن Knox لا يقبل هذه النسخة.",
       "pattern.shealth-capability-gates.description": "يفعّل المؤشرات الحيوية وحمل التدريب ومؤشر اللياقة، التي تتطلب بخلاف ذلك Galaxy Watch8 أو Ultra. تُحسب على الهاتف من سجلّك المتزامن.",
       "pattern.shealth-shm-providers.description": "يربط Samsung Health+ بتطبيق Health Monitor المعدّل حتى تصل إليه بطاقة انقطاع النفس أثناء النوم وحالة ضغط الدم.",
       "pattern.shealth-launcher-badge.description": "يضيف شارة LibreWrist صغيرة إلى أيقونة التطبيق لتتمكن من تمييزه عن الأصلي.",
@@ -4422,6 +4449,7 @@
       "pattern.shealth-rename-code.description": "Aktualisiert die internen Verweise der App auf den neuen Paketnamen.",
       "pattern.shealth-rename-account-xml.description": "Gibt der App eine eigene Konto- und Synchronisierungsregistrierung, damit die Cloud-Synchronisierung neben dem Original funktioniert.",
       "pattern.shealth-samsung-account-absent.description": "Meldet auch auf Samsung-Smartphones über die Browserseite an, wie auf anderen Smartphones, weil die Samsung-Account-App diese Kopie nicht akzeptiert.",
+      "pattern.shealth-knox-absent.description": "Richtet den Datenschlüssel auch auf Samsung-Smartphones mit dem Android-Schlüsselspeicher ein, wie auf anderen Smartphones, weil Knox diese Kopie nicht akzeptiert.",
       "pattern.shealth-capability-gates.description": "Schaltet Vitalwerte, Trainingsbelastung und den Fitnessindex ein, die sonst eine Galaxy Watch8 oder Ultra erfordern. Sie werden auf dem Smartphone aus deinem synchronisierten Verlauf berechnet.",
       "pattern.shealth-shm-providers.description": "Verbindet Samsung Health+ mit dem angepassten Health Monitor, damit die Schlafapnoe-Karte und der Blutdruckstatus dort ankommen.",
       "pattern.shealth-launcher-badge.description": "Fügt dem App-Symbol ein kleines LibreWrist-Abzeichen hinzu, damit du es vom Original unterscheiden kannst.",
@@ -4542,6 +4570,7 @@
       "pattern.shealth-rename-code.description": "Actualiza las referencias internas de la app al nuevo nombre de paquete.",
       "pattern.shealth-rename-account-xml.description": "Le da a la app su propio registro de cuenta y sincronización para que la sincronización con la nube funcione junto a la original.",
       "pattern.shealth-samsung-account-absent.description": "Inicia sesión mediante la página del navegador también en teléfonos Samsung, como en otros teléfonos, porque la app Samsung Account no acepta esta copia.",
+      "pattern.shealth-knox-absent.description": "Configura la clave de datos con el almacén de claves de Android también en teléfonos Samsung, como en otros teléfonos, porque Knox no acepta esta copia.",
       "pattern.shealth-capability-gates.description": "Activa Signos vitales, Carga de entrenamiento y el índice de forma física, que de otro modo requieren un Galaxy Watch8 o Ultra. Se calculan en el teléfono a partir de tu historial sincronizado.",
       "pattern.shealth-shm-providers.description": "Conecta Samsung Health+ con el Health Monitor parcheado para que le lleguen la tarjeta de apnea del sueño y el estado de la presión arterial.",
       "pattern.shealth-launcher-badge.description": "Agrega una pequeña insignia de LibreWrist al ícono de la app para distinguirla de la original.",
@@ -4662,6 +4691,7 @@
       "pattern.shealth-rename-code.description": "Met à jour les références internes de l'app vers le nouveau nom de paquet.",
       "pattern.shealth-rename-account-xml.description": "Donne à l'app son propre enregistrement de compte et de synchronisation pour que la synchronisation cloud fonctionne à côté de l'original.",
       "pattern.shealth-samsung-account-absent.description": "Se connecte aussi par la page du navigateur sur les téléphones Samsung, comme sur les autres téléphones, car l'app Samsung Account n'accepte pas cette copie.",
+      "pattern.shealth-knox-absent.description": "Configure la clé des données avec le magasin de clés Android aussi sur les téléphones Samsung, comme sur les autres téléphones, car Knox n'accepte pas cette copie.",
       "pattern.shealth-capability-gates.description": "Active Signes vitaux, Charge d'entraînement et l'indice de forme, qui nécessitent sinon une Galaxy Watch8 ou Ultra. Ils sont calculés sur le téléphone à partir de votre historique synchronisé.",
       "pattern.shealth-shm-providers.description": "Relie Samsung Health+ au Health Monitor modifié pour qu'il reçoive la carte d'apnée du sommeil et l'état de la tension artérielle.",
       "pattern.shealth-launcher-badge.description": "Ajoute un petit badge LibreWrist à l'icône de l'app pour la distinguer de l'originale.",
@@ -4782,6 +4812,7 @@
       "pattern.shealth-rename-code.description": "ऐप के आंतरिक संदर्भों को नए पैकेज नाम पर अपडेट करता है।",
       "pattern.shealth-rename-account-xml.description": "ऐप को अपना खाता और सिंक पंजीकरण देता है ताकि क्लाउड सिंक मूल ऐप के बगल में काम करे।",
       "pattern.shealth-samsung-account-absent.description": "Samsung फ़ोन पर भी अन्य फ़ोन की तरह ब्राउज़र पेज से साइन इन करता है, क्योंकि Samsung Account ऐप इस प्रति को स्वीकार नहीं करता।",
+      "pattern.shealth-knox-absent.description": "Samsung फ़ोन पर भी अन्य फ़ोन की तरह डेटा कुंजी Android की-स्टोर से सेट करता है, क्योंकि Knox इस प्रति को स्वीकार नहीं करता।",
       "pattern.shealth-capability-gates.description": "वाइटल्स, ट्रेनिंग लोड और फ़िटनेस इंडेक्स चालू करता है, जिनके लिए वरना Galaxy Watch8 या Ultra चाहिए। इनकी गणना फ़ोन पर आपके सिंक किए गए इतिहास से होती है।",
       "pattern.shealth-shm-providers.description": "Samsung Health+ को पैच किए गए Health Monitor से जोड़ता है ताकि स्लीप एप्निया कार्ड और ब्लड प्रेशर की स्थिति उस तक पहुँचे।",
       "pattern.shealth-launcher-badge.description": "ऐप आइकन में एक छोटा LibreWrist बैज जोड़ता है, ताकि आप इसे मूल ऐप से अलग पहचान सकें।",
@@ -4902,6 +4933,7 @@
       "pattern.shealth-rename-code.description": "Memperbarui referensi internal aplikasi ke nama paket baru.",
       "pattern.shealth-rename-account-xml.description": "Memberi aplikasi registrasi akun dan sinkronisasi sendiri agar sinkronisasi cloud berfungsi berdampingan dengan aslinya.",
       "pattern.shealth-samsung-account-absent.description": "Login lewat halaman browser juga di ponsel Samsung, seperti di ponsel lain, karena aplikasi Samsung Account tidak menerima salinan ini.",
+      "pattern.shealth-knox-absent.description": "Menyiapkan kunci data dengan penyimpanan kunci Android juga di ponsel Samsung, seperti di ponsel lain, karena Knox tidak menerima salinan ini.",
       "pattern.shealth-capability-gates.description": "Mengaktifkan Vital, Beban latihan, dan indeks kebugaran, yang biasanya membutuhkan Galaxy Watch8 atau Ultra. Semuanya dihitung di ponsel dari riwayat Anda yang tersinkron.",
       "pattern.shealth-shm-providers.description": "Menghubungkan Samsung Health+ ke Health Monitor yang sudah di-patch agar kartu apnea tidur dan status tekanan darah sampai ke sana.",
       "pattern.shealth-launcher-badge.description": "Menambahkan lencana LibreWrist kecil pada ikon aplikasi agar mudah dibedakan dari aslinya.",
@@ -5022,6 +5054,7 @@
       "pattern.shealth-rename-code.description": "Aggiorna i riferimenti interni dell'app al nuovo nome di pacchetto.",
       "pattern.shealth-rename-account-xml.description": "Dà all'app una propria registrazione di account e sincronizzazione, così la sincronizzazione cloud funziona accanto all'originale.",
       "pattern.shealth-samsung-account-absent.description": "Accede tramite la pagina del browser anche sui telefoni Samsung, come sugli altri telefoni, perché l'app Samsung Account non accetta questa copia.",
+      "pattern.shealth-knox-absent.description": "Configura la chiave dei dati con l'archivio chiavi di Android anche sui telefoni Samsung, come sugli altri telefoni, perché Knox non accetta questa copia.",
       "pattern.shealth-capability-gates.description": "Attiva Parametri vitali, Carico di allenamento e l'indice di forma fisica, che altrimenti richiedono un Galaxy Watch8 o Ultra. Vengono calcolati sul telefono dalla tua cronologia sincronizzata.",
       "pattern.shealth-shm-providers.description": "Collega Samsung Health+ all'Health Monitor modificato in modo che riceva la scheda dell'apnea notturna e lo stato della pressione arteriosa.",
       "pattern.shealth-launcher-badge.description": "Aggiunge un piccolo badge LibreWrist all'icona dell'app per distinguerla dall'originale.",
@@ -5142,6 +5175,7 @@
       "pattern.shealth-rename-code.description": "アプリの内部参照を新しいパッケージ名に更新します。",
       "pattern.shealth-rename-account-xml.description": "アプリに独自のアカウントと同期の登録を与え、元のアプリの隣でもクラウド同期が動作するようにします。",
       "pattern.shealth-samsung-account-absent.description": "Samsung のスマートフォンでも、他のスマートフォンと同じようにブラウザのページでサインインします。Samsung Account アプリはこのコピーを受け付けないためです。",
+      "pattern.shealth-knox-absent.description": "Knox がこのコピーを受け付けないため、Samsung のスマートフォンでも他のスマートフォンと同様に Android キーストアでデータキーを設定します。",
       "pattern.shealth-capability-gates.description": "通常は Galaxy Watch8 または Ultra が必要な「バイタル」「トレーニング負荷」と体力指数を有効にします。同期済みの履歴からスマートフォン上で計算されます。",
       "pattern.shealth-shm-providers.description": "Samsung Health+ をパッチ済みの Health Monitor に接続し、睡眠時無呼吸カードと血圧の状態が届くようにします。",
       "pattern.shealth-launcher-badge.description": "アプリのアイコンに小さな LibreWrist バッジを追加し、元のアプリと見分けられるようにします。",
@@ -5262,6 +5296,7 @@
       "pattern.shealth-rename-code.description": "앱의 내부 참조를 새 패키지 이름으로 업데이트합니다.",
       "pattern.shealth-rename-account-xml.description": "앱에 고유한 계정 및 동기화 등록을 부여하여 원본 옆에서도 클라우드 동기화가 작동하도록 합니다.",
       "pattern.shealth-samsung-account-absent.description": "Samsung 휴대폰에서도 다른 휴대폰처럼 브라우저 페이지로 로그인합니다. Samsung Account 앱이 이 사본을 받아들이지 않기 때문입니다.",
+      "pattern.shealth-knox-absent.description": "Knox가 이 사본을 허용하지 않으므로 Samsung 휴대전화에서도 다른 휴대전화처럼 Android 키 저장소로 데이터 키를 설정합니다.",
       "pattern.shealth-capability-gates.description": "원래 Galaxy Watch8 또는 Ultra가 필요한 바이탈, 트레이닝 부하, 체력 지수를 켭니다. 동기화된 기록을 바탕으로 휴대전화에서 계산됩니다.",
       "pattern.shealth-shm-providers.description": "Samsung Health+를 패치된 Health Monitor에 연결하여 수면 무호흡 카드와 혈압 상태가 전달되도록 합니다.",
       "pattern.shealth-launcher-badge.description": "앱 아이콘에 작은 LibreWrist 배지를 추가하여 원본 앱과 구별할 수 있게 합니다.",
@@ -5382,6 +5417,7 @@
       "pattern.shealth-rename-code.description": "Werkt de interne verwijzingen van de app bij naar de nieuwe pakketnaam.",
       "pattern.shealth-rename-account-xml.description": "Geeft de app een eigen account- en synchronisatieregistratie zodat cloudsynchronisatie naast het origineel werkt.",
       "pattern.shealth-samsung-account-absent.description": "Meldt zich ook op Samsung-telefoons aan via de browserpagina, zoals op andere telefoons, omdat de Samsung Account-app deze kopie niet accepteert.",
+      "pattern.shealth-knox-absent.description": "Stelt de gegevenssleutel ook op Samsung-telefoons in met de Android-sleutelopslag, zoals op andere telefoons, omdat Knox deze kopie niet accepteert.",
       "pattern.shealth-capability-gates.description": "Zet Vitale waarden, Trainingsbelasting en de fitnessindex aan, die anders een Galaxy Watch8 of Ultra vereisen. Ze worden op de telefoon berekend uit je gesynchroniseerde geschiedenis.",
       "pattern.shealth-shm-providers.description": "Verbindt Samsung Health+ met de aangepaste Health Monitor zodat de slaapapneukaart en de bloeddrukstatus er aankomen.",
       "pattern.shealth-launcher-badge.description": "Voegt een kleine LibreWrist-badge toe aan het app-pictogram, zodat je het van het origineel kunt onderscheiden.",
@@ -5502,6 +5538,7 @@
       "pattern.shealth-rename-code.description": "Aktualizuje wewnętrzne odwołania aplikacji do nowej nazwy pakietu.",
       "pattern.shealth-rename-account-xml.description": "Nadaje aplikacji własną rejestrację konta i synchronizacji, aby synchronizacja z chmurą działała obok oryginału.",
       "pattern.shealth-samsung-account-absent.description": "Loguje przez stronę w przeglądarce także na telefonach Samsung, tak jak na innych telefonach, ponieważ aplikacja Samsung Account nie akceptuje tej kopii.",
+      "pattern.shealth-knox-absent.description": "Konfiguruje klucz danych za pomocą magazynu kluczy Androida także na telefonach Samsung, jak na innych telefonach, ponieważ Knox nie akceptuje tej kopii.",
       "pattern.shealth-capability-gates.description": "Włącza Parametry życiowe, Obciążenie treningowe i wskaźnik sprawności, które inaczej wymagają Galaxy Watch8 lub Ultra. Są obliczane na telefonie na podstawie Twojej zsynchronizowanej historii.",
       "pattern.shealth-shm-providers.description": "Łączy Samsung Health+ ze zmodyfikowanym Health Monitor, aby trafiały do niego karta bezdechu sennego i stan ciśnienia krwi.",
       "pattern.shealth-launcher-badge.description": "Dodaje małą odznakę LibreWrist do ikony aplikacji, aby można ją było odróżnić od oryginału.",
@@ -5622,6 +5659,7 @@
       "pattern.shealth-rename-code.description": "Atualiza as referências internas do app para o novo nome de pacote.",
       "pattern.shealth-rename-account-xml.description": "Dá ao app seu próprio registro de conta e de sincronização para que a sincronização na nuvem funcione ao lado do original.",
       "pattern.shealth-samsung-account-absent.description": "Entra pela página do navegador também em telefones Samsung, como em outros telefones, porque o app Samsung Account não aceita esta cópia.",
+      "pattern.shealth-knox-absent.description": "Configura a chave de dados com o armazenamento de chaves do Android também em telefones Samsung, como em outros telefones, porque o Knox não aceita esta cópia.",
       "pattern.shealth-capability-gates.description": "Ativa Sinais vitais, Carga de treino e o índice de condicionamento físico, que de outro modo exigem um Galaxy Watch8 ou Ultra. Eles são calculados no celular a partir do seu histórico sincronizado.",
       "pattern.shealth-shm-providers.description": "Conecta o Samsung Health+ ao Health Monitor modificado para que o cartão de apneia do sono e o status da pressão arterial cheguem até ele.",
       "pattern.shealth-launcher-badge.description": "Adiciona um pequeno emblema do LibreWrist ao ícone do app para você distingui-lo do original.",
@@ -5742,6 +5780,7 @@
       "pattern.shealth-rename-code.description": "Обновляет внутренние ссылки приложения на новое имя пакета.",
       "pattern.shealth-rename-account-xml.description": "Даёт приложению собственную регистрацию учётной записи и синхронизации, чтобы облачная синхронизация работала рядом с оригиналом.",
       "pattern.shealth-samsung-account-absent.description": "Выполняет вход через страницу в браузере и на телефонах Samsung, как на других телефонах, потому что приложение Samsung Account не принимает эту копию.",
+      "pattern.shealth-knox-absent.description": "Настраивает ключ данных через хранилище ключей Android и на телефонах Samsung, как на других телефонах, потому что Knox не принимает эту копию.",
       "pattern.shealth-capability-gates.description": "Включает «Жизненные показатели», «Тренировочную нагрузку» и индекс физической формы, для которых иначе нужны Galaxy Watch8 или Ultra. Они вычисляются на телефоне по синхронизированной истории.",
       "pattern.shealth-shm-providers.description": "Связывает Samsung Health+ с изменённым Health Monitor, чтобы до него доходили карточка апноэ во сне и состояние давления.",
       "pattern.shealth-launcher-badge.description": "Добавляет на значок приложения небольшой бейдж LibreWrist, чтобы его можно было отличить от оригинала.",
@@ -5862,6 +5901,7 @@
       "pattern.shealth-rename-code.description": "Uygulamanın dahili referanslarını yeni paket adına günceller.",
       "pattern.shealth-rename-account-xml.description": "Bulut senkronizasyonunun orijinalin yanında çalışması için uygulamaya kendi hesap ve senkronizasyon kaydını verir.",
       "pattern.shealth-samsung-account-absent.description": "Samsung Account uygulaması bu kopyayı kabul etmediği için, Samsung telefonlarda da diğer telefonlardaki gibi tarayıcı sayfası üzerinden oturum açar.",
+      "pattern.shealth-knox-absent.description": "Knox bu kopyayı kabul etmediği için veri anahtarını Samsung telefonlarda da diğer telefonlardaki gibi Android anahtar deposuyla ayarlar.",
       "pattern.shealth-capability-gates.description": "Aksi halde Galaxy Watch8 veya Ultra gerektiren Hayati Değerler, Antrenman Yükü ve kondisyon endeksini açar. Bunlar telefonda, eşitlenmiş geçmişinizden hesaplanır.",
       "pattern.shealth-shm-providers.description": "Uyku apnesi kartının ve tansiyon durumunun ulaşması için Samsung Health+ uygulamasını yamalı Health Monitor'a bağlar.",
       "pattern.shealth-launcher-badge.description": "Orijinalinden ayırt edebilmeniz için uygulama simgesine küçük bir LibreWrist rozeti ekler.",
@@ -5982,6 +6022,7 @@
       "pattern.shealth-rename-code.description": "Оновлює внутрішні посилання застосунку на нову назву пакета.",
       "pattern.shealth-rename-account-xml.description": "Надає застосунку власну реєстрацію облікового запису й синхронізації, щоб хмарна синхронізація працювала поруч з оригіналом.",
       "pattern.shealth-samsung-account-absent.description": "Виконує вхід через сторінку в браузері й на телефонах Samsung, як на інших телефонах, бо застосунок Samsung Account не приймає цю копію.",
+      "pattern.shealth-knox-absent.description": "Налаштовує ключ даних через сховище ключів Android і на телефонах Samsung, як на інших телефонах, бо Knox не приймає цю копію.",
       "pattern.shealth-capability-gates.description": "Вмикає «Життєві показники», «Тренувальне навантаження» та індекс фізичної форми, яким інакше потрібен Galaxy Watch8 або Ultra. Їх обчислюють на телефоні із синхронізованої історії.",
       "pattern.shealth-shm-providers.description": "З'єднує Samsung Health+ зі зміненим Health Monitor, щоб до нього надходили картка апное уві сні та стан тиску.",
       "pattern.shealth-launcher-badge.description": "Додає на значок застосунку невеликий бейдж LibreWrist, щоб його можна було відрізнити від оригіналу.",
@@ -6102,6 +6143,7 @@
       "pattern.shealth-rename-code.description": "将应用的内部引用更新为新的包名。",
       "pattern.shealth-rename-account-xml.description": "为应用提供独立的账号和同步注册，使云同步能在原应用旁边正常工作。",
       "pattern.shealth-samsung-account-absent.description": "在 Samsung 手机上也像其他手机一样通过浏览器页面登录，因为 Samsung Account 应用不接受此副本。",
+      "pattern.shealth-knox-absent.description": "由于 Knox 不接受此副本，在 Samsung 手机上也像其他手机一样使用 Android 密钥库设置数据密钥。",
       "pattern.shealth-capability-gates.description": "开启“生命体征”“训练负荷”和体能指数，否则它们需要 Galaxy Watch8 或 Ultra。它们根据你已同步的历史记录在手机上计算。",
       "pattern.shealth-shm-providers.description": "将 Samsung Health+ 连接到已修补的 Health Monitor，使睡眠呼吸暂停卡片和血压状态能够送达。",
       "pattern.shealth-launcher-badge.description": "在应用图标上添加一个小的 LibreWrist 角标，方便与原版区分。",
@@ -6222,6 +6264,7 @@
       "pattern.shealth-rename-code.description": "將應用程式的內部參照更新為新的套件名稱。",
       "pattern.shealth-rename-account-xml.description": "為應用程式提供獨立的帳戶和同步註冊，使雲端同步能在原應用程式旁邊正常運作。",
       "pattern.shealth-samsung-account-absent.description": "在 Samsung 手機上也像其他手機一樣透過瀏覽器頁面登入，因為 Samsung Account 應用程式不接受此副本。",
+      "pattern.shealth-knox-absent.description": "由於 Knox 不接受此副本，在 Samsung 手機上也像其他手機一樣使用 Android 金鑰庫設定資料金鑰。",
       "pattern.shealth-capability-gates.description": "開啟「生命徵象」「訓練負荷」和體能指數，否則它們需要 Galaxy Watch8 或 Ultra。它們會根據你已同步的歷史記錄在手機上計算。",
       "pattern.shealth-shm-providers.description": "將 Samsung Health+ 連接到已修補的 Health Monitor，讓睡眠呼吸中止卡片和血壓狀態能夠送達。",
       "pattern.shealth-launcher-badge.description": "在應用程式圖示上加入一個小的 LibreWrist 角標，方便與原版區分。",

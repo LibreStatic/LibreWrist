@@ -44,7 +44,7 @@ class CatalogueTest {
 
     @Test fun committedCatalogueParses() {
         val c = Catalogue.parse(String(catalogueBytes, Charsets.UTF_8))
-        assertEquals(69, c.patterns.size)
+        assertEquals(70, c.patterns.size)
         assertEquals(setOf("gms", "alarm", "shealth", "shealth-cn"), c.profiles.keys)
     }
 
@@ -259,7 +259,7 @@ class CatalogueTest {
 
     @Test fun parseSignedVerifiesBeforeParsing() {
         val key = CatalogueVerifier.parsePublicKey(pem)
-        assertEquals(69, Catalogue.parseSigned(catalogueBytes, signature, key).patterns.size)
+        assertEquals(70, Catalogue.parseSigned(catalogueBytes, signature, key).patterns.size)
         val tampered = catalogueBytes.copyOf().also { it[100] = (it[100].toInt() xor 1).toByte() }
         try {
             Catalogue.parseSigned(tampered, signature, key)
@@ -302,7 +302,77 @@ class CatalogueTest {
         assertEquals(patched, f.smali.get(path))
     }
 
+    /** The Knox step reports an unsupported Knox version, so Samsung phones take the Android key
+     *  store path, and it must still match its own patched form for the self-check (issue #19). */
+    @Test fun knoxVersionStepAppliesAndVerifies() {
+        @Suppress("UNCHECKED_CAST")
+        val patterns = (Json.parse(String(catalogueBytes)) as Map<String, Any?>)["patterns"] as Map<String, Any?>
+        @Suppress("UNCHECKED_CAST")
+        val step = ((patterns["shealth-knox-absent"] as Map<String, Any?>)["ops"] as List<Map<String, Any?>>).single()
+        val path = "smali_classes6/com/samsung/android/service/health/security/KnoxAdapter.smali"
+        val f = Fixture()
+        f.smali.put(path, KNOX_ADAPTER_SMALI)
+        val op = OpRegistry.prepare(step["op"] as String, step - "op")
+        assertEquals(1, op.apply(f.ctx).size)
+        val patched = f.smali.get(path)!!
+        assertFalse("EnterpriseDeviceManager;->getAPILevel" in patched)
+        assertTrue("isSupportedKnoxVersion()Z\n    .locals 1\n\n    const/4 v0, 0x0\n\n    return v0\n.end method" in patched)
+        assertTrue("isSupportedTimaVersion()Z\n    .locals 1" in patched)
+        assertEquals(1, op.verifyApplied(f.ctx).size)
+        op.apply(f.ctx)
+        assertEquals(patched, f.smali.get(path))
+    }
+
     private companion object {
+        val KNOX_ADAPTER_SMALI = """
+            .class public abstract Lcom/samsung/android/service/health/security/KnoxAdapter;
+            .super Ljava/lang/Object;
+
+            .method private static isSupportedKnoxVersion()Z
+                .locals 2
+
+                sget-boolean v0, Lcom/samsung/android/service/health/security/KnoxAdapter;->sIsKnoxSupported:Z
+
+                if-nez v0, :cond_1
+
+                :try_start_0
+                invoke-static {}, Lcom/samsung/android/knox/EnterpriseDeviceManager;->getAPILevel()I
+
+                move-result v0
+
+                const/16 v1, 0x14
+
+                if-lt v0, v1, :cond_0
+
+                const/4 v0, 0x1
+
+                goto :goto_0
+
+                :cond_0
+                const/4 v0, 0x0
+
+                :goto_0
+                sput-boolean v0, Lcom/samsung/android/service/health/security/KnoxAdapter;->sIsKnoxSupported:Z
+                :try_end_0
+                .catch Ljava/lang/RuntimeException; {:try_start_0 .. :try_end_0} :catch_0
+
+                :catch_0
+                :cond_1
+                sget-boolean v0, Lcom/samsung/android/service/health/security/KnoxAdapter;->sIsKnoxSupported:Z
+
+                return v0
+            .end method
+
+            .method public static isSupportedTimaVersion()Z
+                .locals 1
+
+                const/4 v0, 0x1
+
+                return v0
+            .end method
+        """.trimIndent() + "\n"
+
+
         val ACCOUNT_MANAGER_SMALI = """
             .class public Lcom/samsung/android/service/health/server/account/SHealthAccountManager;
             .super Ljava/lang/Object;
