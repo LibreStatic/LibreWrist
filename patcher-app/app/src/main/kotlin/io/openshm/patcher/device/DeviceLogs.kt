@@ -222,6 +222,7 @@ object DeviceLogs {
         source = source,
         targets = { PackageTargets.of(AppCatalogue.current, device, SetupSession.state.value.packagePrefix) },
         sink = buffer,
+        readJournal = device == LogDevice.Watch,
         listener = object : RunnerListener {
             override fun status(status: LogLinkStatus) = update(device) { it.copy(status = status) }
             override fun label(label: String?) = update(device) { it.copy(deviceLabel = label ?: it.deviceLabel) }

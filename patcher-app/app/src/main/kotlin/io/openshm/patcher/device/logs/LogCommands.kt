@@ -36,12 +36,13 @@ object LogCommands {
 
     /**
      * Prints the SpO2 adapter's night journal of a patched watch app (docs/spo2-adapter.md), kept in
-     * its external files dir so the shell user can read it; prints nothing where there is none.
+     * its external files dir so the shell user can read it. Errors (no such file, permission denied)
+     * are printed too, so a capture can say why it found no journal.
      */
     fun journal(pkg: String): String {
         require(PACKAGE.matches(pkg)) { "bad package name" }
         // The build rewrites the placeholder in the folder name (`<prefix>-spo2`), hence the glob.
-        return "cat /sdcard/Android/data/$pkg/files/*spo2/events.log 2>/dev/null"
+        return "cat /sdcard/Android/data/$pkg/files/*spo2/events.log 2>&1"
     }
 
     private val PACKAGE = Regex("[A-Za-z0-9_.]+")
@@ -120,6 +121,10 @@ class ResumeCursor {
  */
 class JournalReader(private val zone: ZoneId = ZoneId.systemDefault()) {
     private val seen = LinkedHashSet<String>()
+    private val withJournal = HashSet<String>()
+
+    /** True once a journal entry was read for [pkg]. */
+    fun found(pkg: String): Boolean = pkg in withJournal
 
     /** The new entries of [output] as log lines, oldest first; unparsable lines are skipped. */
     fun newLines(pkg: String, output: String): List<String> {
@@ -129,6 +134,7 @@ class JournalReader(private val zone: ZoneId = ZoneId.systemDefault()) {
             val space = line.indexOf(' ')
             if (space <= 0) continue
             val epochMs = line.substring(0, space).toLongOrNull() ?: continue
+            withJournal += pkg
             val key = "$pkg $line"
             if (!seen.add(key)) continue
             if (seen.size > MAX_SEEN) seen.remove(seen.first())

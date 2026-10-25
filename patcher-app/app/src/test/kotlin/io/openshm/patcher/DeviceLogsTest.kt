@@ -394,7 +394,7 @@ class DeviceLogRunnerTest {
         val session = FakeSession({ _, _ -> awaitCancellation() })
         val source = FakeSource(ArrayDeque(listOf<() -> LogSession>(fail, fail, fail, { session })))
         val listener = Recorder()
-        val runner = DeviceLogRunner(source, targets, {}, listener)
+        val runner = DeviceLogRunner(source, targets, {}, listener, readJournal = false)
         backgroundScope.launch { runner.run() }
         runCurrent()
         assertEquals(listOf(LogLinkStatus.Connecting, LogLinkStatus.Reconnecting), listener.statuses)
@@ -414,7 +414,7 @@ class DeviceLogRunnerTest {
     fun `a not paired device disconnects at once`() = runTest {
         val source = FakeSource(ArrayDeque(listOf<() -> LogSession>({ throw LogLinkException(DisconnectReason.NotPaired) })))
         val listener = Recorder()
-        backgroundScope.launch { DeviceLogRunner(source, targets, {}, listener).run() }
+        backgroundScope.launch { DeviceLogRunner(source, targets, {}, listener, readJournal = false).run() }
         runCurrent()
         assertEquals(LogLinkStatus.Disconnected(DisconnectReason.NotPaired), listener.statuses.last())
     }
@@ -429,7 +429,7 @@ class DeviceLogRunnerTest {
         val source = FakeSource(ArrayDeque(listOf<() -> LogSession>({ first }, { second })))
         val listener = Recorder()
         val lines = mutableListOf<String>()
-        backgroundScope.launch { DeviceLogRunner(source, targets, { lines += it }, listener).run() }
+        backgroundScope.launch { DeviceLogRunner(source, targets, { lines += it }, listener, readJournal = false).run() }
         runCurrent()
         assertEquals(LogLinkStatus.Reconnecting, listener.statuses.last())
         assertTrue(first.closed)
@@ -458,9 +458,37 @@ class DeviceLogRunnerTest {
     }
 
     @Test
+    fun `a capture without a journal says why once, and the phone reads none`() = runTest {
+        val error = "cat: '/sdcard/Android/data/com.samsung.android.shealthmonitors/files/*spo2/events.log': No such file or directory"
+        val watch = FakeSession({ _, _ -> awaitCancellation() }, journal = error)
+        val lines = mutableListOf<String>()
+        backgroundScope.launch {
+            DeviceLogRunner(FakeSource(ArrayDeque(listOf<() -> LogSession>({ watch }))), targets, { lines += it }, Recorder()).run()
+        }
+        runCurrent()
+        advanceTimeBy(600_001)
+        runCurrent()
+        assertEquals(
+            listOf("spo2-journal: no night journal found; com.samsung.android.shealthmonitors: $error (exit 0)"),
+            lines,
+        )
+
+        val phone = FakeSession({ _, _ -> awaitCancellation() }, journal = "1761264000000 process start\n")
+        val phoneLines = mutableListOf<String>()
+        backgroundScope.launch {
+            DeviceLogRunner(
+                FakeSource(ArrayDeque(listOf<() -> LogSession>({ phone }))), targets, { phoneLines += it }, Recorder(),
+                readJournal = false,
+            ).run()
+        }
+        runCurrent()
+        assertEquals(emptyList<String>(), phoneLines)
+    }
+
+    @Test
     fun `the journal command only takes a plain package name`() {
         assertEquals(
-            "cat /sdcard/Android/data/com.example.app/files/*spo2/events.log 2>/dev/null",
+            "cat /sdcard/Android/data/com.example.app/files/*spo2/events.log 2>&1",
             LogCommands.journal("com.example.app"),
         )
         assertThrows(IllegalArgumentException::class.java) { LogCommands.journal("a; rm -rf /") }
@@ -473,7 +501,7 @@ class DeviceLogRunnerTest {
         val session = FakeSession({ cmd, emit -> if (cmd.contains("--uid=1000")) { emit(keep); emit(drop) }; awaitCancellation() })
         val source = FakeSource(ArrayDeque(listOf<() -> LogSession>({ session })))
         val lines = mutableListOf<String>()
-        backgroundScope.launch { DeviceLogRunner(source, targets, { lines += it }, Recorder()).run() }
+        backgroundScope.launch { DeviceLogRunner(source, targets, { lines += it }, Recorder(), readJournal = false).run() }
         runCurrent()
         assertEquals(listOf(keep), lines)
     }
@@ -520,7 +548,7 @@ class DeviceLogRunnerTest {
         )
         val lines = mutableListOf<String>()
         val source = FakeSource(ArrayDeque(listOf<() -> LogSession>({ session })))
-        backgroundScope.launch { DeviceLogRunner(source, targets, { lines += it }, Recorder()).run() }
+        backgroundScope.launch { DeviceLogRunner(source, targets, { lines += it }, Recorder(), readJournal = false).run() }
         runCurrent()
         assertEquals(listOf(mine), lines)
         assertTrue(session.streams.any { it == "logcat -v threadtime -b main,system,crash" })

@@ -61,10 +61,15 @@ class DeviceLogRunner(
     private val maxFailures: Int = 3,
     private val recheckMillis: Long = 30_000,
     private val pidRefreshMillis: Long = 15_000,
+    private val readJournal: Boolean = true,
     private val journalMillis: Long = 600_000,
     private val journals: JournalReader = JournalReader(),
 ) {
     private val trigger = Channel<Unit>(Channel.CONFLATED)
+
+    /** Whether a night journal was found, or its absence was already reported, in this capture. */
+    @Volatile
+    private var journalSettled = false
     private val appCursor = ResumeCursor()
     private val systemCursor = ResumeCursor()
 
@@ -156,10 +161,12 @@ class DeviceLogRunner(
         }
         guarded { streamApps(session, uids, packages) }
         guarded { streamSystem(session, packages) }
-        launch {
-            while (true) {
-                readJournals(session, packages)
-                delay(journalMillis)
+        if (readJournal) {
+            launch {
+                while (true) {
+                    readJournals(session, packages)
+                    delay(journalMillis)
+                }
             }
         }
         launch {
@@ -239,17 +246,33 @@ class DeviceLogRunner(
         }
     }
 
-    /** Appends the new night journal entries of the monitored apps; a failed read is retried next time. */
+    /**
+     * Appends the new night journal entries of the monitored apps; a failed read is retried next time.
+     * When the first read finds no journal in any app, one line says why for each app, so an export
+     * tells an old watch build (no such file) from a storage the shell cannot read.
+     */
     private suspend fun readJournals(session: LogSession, packages: Set<String>) {
+        val missing = mutableListOf<String>()
         for (pkg in packages.sorted()) {
             try {
                 val result = session.shell(LogCommands.journal(pkg))
-                journals.newLines(pkg, result.stdout).forEach(sink::append)
+                val lines = journals.newLines(pkg, result.stdout)
+                lines.forEach(sink::append)
+                if (journals.found(pkg)) {
+                    journalSettled = true
+                } else {
+                    val why = result.stdout.lineSequence().map { it.trim() }.firstOrNull { it.isNotEmpty() }
+                    missing += "$pkg: ${why?.take(MAX_REASON) ?: "empty"} (exit ${result.exitCode})"
+                }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
                 // The streams notice a dead link; the journal is only extra detail.
             }
+        }
+        if (!journalSettled && missing.isNotEmpty()) {
+            journalSettled = true
+            sink.append("spo2-journal: no night journal found; " + missing.joinToString("; "))
         }
     }
 
@@ -269,6 +292,7 @@ class DeviceLogRunner(
     private companion object {
         /** A `--uid` error shows in the first lines; later text is a real log line. */
         const val USAGE_WINDOW = 5
+        const val MAX_REASON = 200
         val LABEL_PART = Regex("[A-Za-z0-9][A-Za-z0-9 ._+-]{0,63}")
     }
 }
