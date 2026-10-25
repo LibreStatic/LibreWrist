@@ -21,6 +21,7 @@ public class PowerManager {
         public boolean referenceCounted = true;
         public boolean held;
         public long timeoutMs;
+        public int acquires;
 
         WakeLock(int level, String tag) {
             this.level = level;
@@ -34,6 +35,7 @@ public class PowerManager {
         public void acquire(long timeout) {
             held = true;
             timeoutMs = timeout;
+            acquires++;
         }
 
         public void release() {

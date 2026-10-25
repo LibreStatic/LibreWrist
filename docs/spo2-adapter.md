@@ -118,10 +118,13 @@ Battery: the red and IR LEDs run at ~100 Hz all night while recording.
 
 ### Wake lock
 
-While recording the adapter holds a `PARTIAL_WAKE_LOCK` (tag `shminterop:spo2`, not reference
-counted, 12 h timeout as a safety net), acquired in `startRecording` and released on stop. The
-watchdog executor needs the CPU awake during Doze. The SHM twin already holds `WAKE_LOCK`. A
-failure to get the lock is logged, never thrown.
+While recording the adapter has a `PARTIAL_WAKE_LOCK` (tag `shminterop:spo2`, not reference
+counted), created in `startRecording` and released on stop. Like SHM's own `PowerLock` for its
+sensor batches, it is held only in short timed spans: 1 s from every PPG batch, and 10 s while the
+tracker connects (start and watchdog re-arm). 0.10.4 to 0.10.8 held it for the whole night, which
+drained the battery (issue #13); the nights that failed before 0.10.4 failed because recording never
+started (no SET_OPERATION_MODE), not for lack of a wake lock. The SHM twin already holds
+`WAKE_LOCK`. A failure to get the lock is logged, never thrown.
 
 ### Auto-resume after a process restart
 
@@ -183,7 +186,10 @@ The external files dir is readable by the adb shell user, so the patcher's watch
 reads the journal file itself (`files/*spo2/events.log`: builds rewrite the `shminterop`
 placeholder in the folder name), when it connects and every 10 minutes after, and adds each new entry
 as `spo2-journal <package> <yyyy-MM-dd HH:mm:ss.SSS> <text>` (phone local time). Any log export
-therefore holds the last nights, without waking or changing the watch app.
+therefore holds the last nights, without waking or changing the watch app. When the first read
+finds no journal in any monitored app, the capture adds one `spo2-journal: no night journal found;
+<package>: <cat error> (exit N); ...` line, which tells a watch build older than 0.10.7 (no such
+file) from a storage the shell cannot read (permission denied). The phone capture reads no journal.
 
 ## 5. Simulation mode (end-to-end test without sleeping)
 

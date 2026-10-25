@@ -96,7 +96,12 @@ public final class SpO2Adapter {
     static final long AUTO_RESUME_MS = 30L * 60L * 1000L;
     /** If SHM skips SET_OPERATION_MODE, a listener silent for this long after register starts recording. */
     static final long FALLBACK_START_MS = 5000L;
-    static final long WAKE_LOCK_TIMEOUT_MS = 12L * 60L * 60L * 1000L;
+    /**
+     * The wake lock is held briefly, like SHM's own PowerLock for its sensor batches (1 s per
+     * batch), instead of for the whole night: per PPG batch, and while the tracker (re)connects.
+     */
+    static final long BATCH_WAKE_LOCK_MS = 1000L;
+    static final long ARM_WAKE_LOCK_MS = 10000L;
     static final long LIVENESS_MS = 15000L;
     static final long WATCHDOG_TICK_MS = 5000L;
     static final long FLUSH_MS = 60000L;
@@ -592,6 +597,7 @@ public final class SpO2Adapter {
             recording = true;
             writeMarker();
             acquireWakeLock(ctx);
+            holdWakeLock(ARM_WAKE_LOCK_MS);
             long e = SystemClock.elapsedRealtime();
             lastBatchMs = 0L;
             lastArmMs = e;
@@ -640,8 +646,8 @@ public final class SpO2Adapter {
     }
 
     /**
-     * Keeps the CPU awake while recording: the watchdog executor and the PPG batches rely on it
-     * during Doze. The 12 h timeout is a safety net only; stopRecording releases it.
+     * Creates the recording's wake lock without holding it; holdWakeLock takes it for a short,
+     * timed span (one PPG batch, or a tracker connection). stopRecording releases it.
      */
     private static void acquireWakeLock(Context ctx) {
         if (ctx == null) return;
@@ -656,11 +662,21 @@ public final class SpO2Adapter {
             PowerManager.WakeLock wl =
                     ((PowerManager) pm).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "shminterop:spo2");
             wl.setReferenceCounted(false);
-            wl.acquire(WAKE_LOCK_TIMEOUT_MS);
             wakeLock = wl;
         } catch (Throwable t) {
             log("wake lock not acquired: " + t);
             note("wake lock not acquired: " + t);
+        }
+    }
+
+    /** Holds the wake lock for [ms] from now (a new hold replaces the previous timeout). */
+    static void holdWakeLock(long ms) {
+        PowerManager.WakeLock wl = wakeLock;
+        if (wl == null) return;
+        try {
+            wl.acquire(ms);
+        } catch (Throwable t) {
+            log("wake lock hold: " + t);
         }
     }
 
@@ -784,6 +800,7 @@ public final class SpO2Adapter {
                 note("watchdog: no PPG batch for " + (e - ref) / 1000 + " s, re-arming the tracker");
                 stopTracker();
                 lastArmMs = e;
+                holdWakeLock(ARM_WAKE_LOCK_MS);
                 startTracker(appContext());
             }
             if (e - lastFlushMs >= FLUSH_MS) {
@@ -850,6 +867,7 @@ public final class SpO2Adapter {
 
         @Override public void onBatch(PpgBatch batch) {
             if (!recording || batch == null) return;
+            holdWakeLock(BATCH_WAKE_LOCK_MS);
             lastBatchMs = SystemClock.elapsedRealtime();
             synchronized (FEED_LOCK) {
                 // Re-read per sample: an orientation flip replaces the estimator mid-batch.
