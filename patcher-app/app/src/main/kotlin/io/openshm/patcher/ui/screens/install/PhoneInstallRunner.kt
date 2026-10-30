@@ -74,7 +74,7 @@ internal class PhoneInstallRunner(
         locked = false
         state.update {
             it.copy(
-                running = true, errorRes = null, errorDetail = null, needsUnknownSources = false, conflict = null, confirmingReinstall = false,
+                running = true, errorRes = null, errorDetail = null, adbInstallRestricted = false, needsUnknownSources = false, conflict = null, confirmingReinstall = false,
                 removingLeftovers = emptyList(), leftoversKept = emptyList(),
             )
         }
@@ -217,7 +217,10 @@ internal class PhoneInstallRunner(
                     kind = installer.packageKind(item.packageName),
                     detail = detail,
                 )
-                if (!offered) fail(state, installFailureRes(result.code), detail)
+                if (!offered) {
+                    fail(state, installFailureRes(result.code), detail)
+                    if (result.code == INSTALL_FAILED_USER_RESTRICTED) state.update { it.copy(adbInstallRestricted = true) }
+                }
                 false
             }
         }

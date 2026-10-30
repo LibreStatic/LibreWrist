@@ -294,9 +294,11 @@
     <string name="install_error_build_missing">빌드가 없거나 이 설정과 일치하지 않습니다. 다시 빌드한 다음 설치하세요.</string>
     <string name="install_error_failed">설치가 거부되었습니다.</string>
     <string name="install_error_signature">다른 키로 서명된 사본이 이미 설치되어 있습니다. 아무것도 제거하지 않았습니다. 해당 사본을 직접 제거한 다음 다시 시도하세요.</string>
+    <string name="install_error_adb_restricted">이 휴대전화는 디버깅을 통한 설치를 차단합니다. Xiaomi, Redmi, POCO에서는 개발자 옵션 › USB를 통해 설치를 켜세요. OPPO, realme, vivo에서는 휴대전화에 표시되는 안내를 허용하거나 권한 모니터링을 끄세요. 또는 시스템 확인 창을 통해 설치하세요.</string>
     <string name="install_error_grant">접근 설정을 적용하지 못했습니다.</string>
     <string name="action_open">열기</string>
     <string name="action_allow_installing">앱 설치 허용</string>
+    <string name="action_install_with_confirmation">확인 후 설치</string>
     <string name="install_check_again">다시 확인</string>
     <string name="install_continue_anyway">그래도 계속</string>
     <string name="install_onboarding">Samsung Health Monitor를 열고 설정을 완료하세요</string>

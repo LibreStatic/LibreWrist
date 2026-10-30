@@ -301,9 +301,11 @@
     <string name="install_error_build_missing">De build ontbreekt of past niet bij deze configuratie. Bouw opnieuw en installeer dan.</string>
     <string name="install_error_failed">De installatie is geweigerd.</string>
     <string name="install_error_signature">Er is al een kopie geïnstalleerd die met een andere sleutel is ondertekend. Er is niets verwijderd. Verwijder die kopie zelf en probeer het daarna opnieuw.</string>
+    <string name="install_error_adb_restricted">Deze telefoon blokkeert installaties via foutopsporing. Zet op Xiaomi, Redmi of POCO Ontwikkelaarsopties › Installeren via USB aan. Accepteer op OPPO, realme of vivo de melding van de telefoon, of zet Machtigingsbewaking uit. Of installeer met de bevestiging van het systeem.</string>
     <string name="install_error_grant">Een toegangsinstelling kon niet worden toegepast.</string>
     <string name="action_open">Openen</string>
     <string name="action_allow_installing">Apps installeren toestaan</string>
+    <string name="action_install_with_confirmation">Installeren met bevestiging</string>
     <string name="install_check_again">Opnieuw controleren</string>
     <string name="install_continue_anyway">Toch doorgaan</string>
     <string name="install_onboarding">Open Samsung Health Monitor en rond de configuratie ervan af</string>

@@ -315,9 +315,11 @@
     <string name="install_error_build_missing">Brak kompilacji lub nie pasuje do tej konfiguracji. Zbuduj ponownie, a potem zainstaluj.</string>
     <string name="install_error_failed">Instalacja została odrzucona.</string>
     <string name="install_error_signature">Jest już zainstalowana kopia podpisana innym kluczem. Nic nie zostało usunięte. Odinstaluj tę kopię samodzielnie, a potem spróbuj ponownie.</string>
+    <string name="install_error_adb_restricted">Ten telefon blokuje instalację przez debugowanie. Na Xiaomi, Redmi lub POCO włącz Opcje programisty › Instaluj przez USB. Na OPPO, realme lub vivo zaakceptuj komunikat wyświetlony na telefonie albo wyłącz monitorowanie uprawnień. Możesz też zainstalować z potwierdzeniem systemu.</string>
     <string name="install_error_grant">Nie udało się zastosować ustawienia dostępu.</string>
     <string name="action_open">Otwórz</string>
     <string name="action_allow_installing">Zezwól na instalowanie aplikacji</string>
+    <string name="action_install_with_confirmation">Zainstaluj z potwierdzeniem</string>
     <string name="install_check_again">Sprawdź ponownie</string>
     <string name="install_continue_anyway">Kontynuuj mimo to</string>
     <string name="install_onboarding">Otwórz Samsung Health Monitor i dokończ jego konfigurację</string>

@@ -301,9 +301,11 @@
     <string name="install_error_build_missing">बिल्ड मौजूद नहीं है या इस सेटअप से मेल नहीं खाता। दोबारा बिल्ड करें, फिर इंस्टॉल करें।</string>
     <string name="install_error_failed">इंस्टॉल अस्वीकार कर दिया गया।</string>
     <string name="install_error_signature">दूसरी कुंजी से साइन की गई एक कॉपी पहले से इंस्टॉल है। कुछ भी हटाया नहीं गया। उस कॉपी को खुद अनइंस्टॉल करें, फिर दोबारा कोशिश करें।</string>
+    <string name="install_error_adb_restricted">यह फ़ोन डीबगिंग के ज़रिए इंस्टॉल करने से रोकता है। Xiaomi, Redmi या POCO पर डेवलपर विकल्प › USB के ज़रिए इंस्टॉल करें चालू करें। OPPO, realme या vivo पर फ़ोन में दिखने वाला संकेत स्वीकार करें या अनुमति निगरानी बंद करें। या इसके बजाय सिस्टम की पुष्टि के साथ इंस्टॉल करें।</string>
     <string name="install_error_grant">एक पहुँच सेटिंग लागू नहीं हो सकी।</string>
     <string name="action_open">खोलें</string>
     <string name="action_allow_installing">ऐप इंस्टॉल करने की अनुमति दें</string>
+    <string name="action_install_with_confirmation">पुष्टि के साथ इंस्टॉल करें</string>
     <string name="install_check_again">दोबारा जाँचें</string>
     <string name="install_continue_anyway">फिर भी जारी रखें</string>
     <string name="install_onboarding">Samsung Health Monitor खोलें और उसका सेटअप पूरा करें</string>

@@ -294,9 +294,11 @@
     <string name="install_error_build_missing">构建缺失，或与此次设置不匹配。请重新构建后再安装。</string>
     <string name="install_error_failed">安装被拒绝。</string>
     <string name="install_error_signature">已安装使用不同密钥签名的副本。未移除任何内容。请自行卸载该副本，然后重试。</string>
+    <string name="install_error_adb_restricted">此手机阻止通过调试安装。在小米、红米或 POCO 上，请开启 开发者选项 › 通过 USB 安装。在 OPPO、realme 或 vivo 上，请允许手机显示的提示，或关闭权限监控。也可以改用系统确认方式安装。</string>
     <string name="install_error_grant">无法应用某项访问设置。</string>
     <string name="action_open">打开</string>
     <string name="action_allow_installing">允许安装应用</string>
+    <string name="action_install_with_confirmation">确认后安装</string>
     <string name="install_check_again">重新检查</string>
     <string name="install_continue_anyway">仍然继续</string>
     <string name="install_onboarding">打开 Samsung Health Monitor 并完成其设置</string>

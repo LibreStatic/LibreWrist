@@ -301,9 +301,11 @@
     <string name="install_error_build_missing">Der Build fehlt oder passt nicht zu dieser Einrichtung. Erstelle ihn neu und installiere dann.</string>
     <string name="install_error_failed">Die Installation wurde abgelehnt.</string>
     <string name="install_error_signature">Es ist bereits eine Kopie installiert, die mit einem anderen Schlüssel signiert ist. Es wurde nichts entfernt. Deinstalliere diese Kopie selbst und versuche es dann erneut.</string>
+    <string name="install_error_adb_restricted">Dieses Telefon blockiert Installationen über Debugging. Aktiviere bei Xiaomi, Redmi oder POCO unter Entwickleroptionen › Über USB installieren. Bestätige bei OPPO, realme oder vivo die Abfrage des Telefons oder deaktiviere die Berechtigungsüberwachung. Oder installiere stattdessen mit der Bestätigung des Systems.</string>
     <string name="install_error_grant">Eine Zugriffseinstellung konnte nicht angewendet werden.</string>
     <string name="action_open">Öffnen</string>
     <string name="action_allow_installing">Installation von Apps erlauben</string>
+    <string name="action_install_with_confirmation">Mit Bestätigung installieren</string>
     <string name="install_check_again">Erneut prüfen</string>
     <string name="install_continue_anyway">Trotzdem fortfahren</string>
     <string name="install_onboarding">Samsung Health Monitor öffnen und die Einrichtung abschließen</string>
