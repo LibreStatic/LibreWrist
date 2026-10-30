@@ -294,9 +294,11 @@
     <string name="install_error_build_missing">Build tidak ada atau tidak cocok dengan penyiapan ini. Bangun lagi, lalu pasang.</string>
     <string name="install_error_failed">Pemasangan ditolak.</string>
     <string name="install_error_signature">Salinan yang ditandatangani dengan kunci lain sudah terpasang. Tidak ada yang dihapus. Copot sendiri salinan itu, lalu coba lagi.</string>
+    <string name="install_error_adb_restricted">Ponsel ini memblokir instalasi lewat debugging. Di Xiaomi, Redmi, atau POCO, aktifkan Opsi pengembang › Instal via USB. Di OPPO, realme, atau vivo, setujui perintah yang ditampilkan ponsel, atau matikan Pemantauan izin. Atau instal dengan konfirmasi sistem.</string>
     <string name="install_error_grant">Satu setelan akses tidak dapat diterapkan.</string>
     <string name="action_open">Buka</string>
     <string name="action_allow_installing">Izinkan memasang aplikasi</string>
+    <string name="action_install_with_confirmation">Instal dengan konfirmasi</string>
     <string name="install_check_again">Periksa lagi</string>
     <string name="install_continue_anyway">Tetap lanjutkan</string>
     <string name="install_onboarding">Buka Samsung Health Monitor dan selesaikan penyiapannya</string>

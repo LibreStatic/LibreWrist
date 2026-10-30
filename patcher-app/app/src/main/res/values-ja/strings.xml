@@ -294,9 +294,11 @@
     <string name="install_error_build_missing">ビルドが見つからないか、このセットアップと一致しません。もう一度ビルドしてからインストールしてください。</string>
     <string name="install_error_failed">インストールが拒否されました。</string>
     <string name="install_error_signature">別のキーで署名されたコピーがすでにインストールされています。何も削除していません。そのコピーをご自身でアンインストールしてから、もう一度お試しください。</string>
+    <string name="install_error_adb_restricted">このスマートフォンはデバッグ経由のインストールをブロックしています。Xiaomi、Redmi、POCO では 開発者向けオプション › USB経由でインストール をオンにしてください。OPPO、realme、vivo では端末に表示される確認を許可するか、権限モニタリングをオフにしてください。または、システムの確認を使ってインストールします。</string>
     <string name="install_error_grant">アクセス設定を適用できませんでした。</string>
     <string name="action_open">開く</string>
     <string name="action_allow_installing">アプリのインストールを許可</string>
+    <string name="action_install_with_confirmation">確認してインストール</string>
     <string name="install_check_again">再確認</string>
     <string name="install_continue_anyway">このまま続ける</string>
     <string name="install_onboarding">Samsung Health Monitor を開いて、セットアップを完了する</string>

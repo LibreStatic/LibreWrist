@@ -301,9 +301,11 @@
     <string name="install_error_build_missing">Falta la compilación o no coincide con esta configuración. Compila de nuevo y luego instala.</string>
     <string name="install_error_failed">Se rechazó la instalación.</string>
     <string name="install_error_signature">Ya hay instalada una copia firmada con otra clave. No se quitó nada. Desinstala esa copia tú mismo y vuelve a intentarlo.</string>
+    <string name="install_error_adb_restricted">Este teléfono bloquea las instalaciones por depuración. En Xiaomi, Redmi o POCO, activa Opciones de desarrollador › Instalar vía USB. En OPPO, realme o vivo, acepta el aviso que muestra el teléfono o desactiva la supervisión de permisos. O instala con la confirmación del sistema.</string>
     <string name="install_error_grant">No se pudo aplicar un ajuste de acceso.</string>
     <string name="action_open">Abrir</string>
     <string name="action_allow_installing">Permitir instalar apps</string>
+    <string name="action_install_with_confirmation">Instalar con confirmación</string>
     <string name="install_check_again">Comprobar de nuevo</string>
     <string name="install_continue_anyway">Continuar de todos modos</string>
     <string name="install_onboarding">Abre Samsung Health Monitor y termina su configuración</string>

@@ -125,6 +125,7 @@ class InstallPhoneViewModel(application: Application) : AndroidViewModel(applica
             InstallEvent.CancelReinstall -> cancelReinstall(_state)
             InstallEvent.ConfirmReinstall -> reinstall()
             InstallEvent.AcknowledgeAdbOutcome -> _state.update { it.copy(adbOutcome = null) }
+            InstallEvent.InstallWithConfirmation -> installWithConfirmation()
         }
     }
 
@@ -154,6 +155,16 @@ class InstallPhoneViewModel(application: Application) : AndroidViewModel(applica
         viewModelScope.launch(Dispatchers.IO) { runner.run(_state) }
     }
 
+    /**
+     * The explicit way out when the phone blocks installs over debugging: the platform installer,
+     * with the system's confirmation. Only this tap does it; unattended mode never falls back by itself.
+     */
+    private fun installWithConfirmation() {
+        if (_state.value.running) return
+        _state.update { it.copy(running = true, errorRes = null, errorDetail = null, adbInstallRestricted = false) }
+        viewModelScope.launch(Dispatchers.IO) { runner.run(_state) }
+    }
+
     /** What unattended mode does once the phone's own ADB session is connected, before the grants. */
     private enum class PendingInstall { Install, Reinstall }
 
@@ -171,7 +182,7 @@ class InstallPhoneViewModel(application: Application) : AndroidViewModel(applica
             pending = null
             return
         }
-        _state.update { it.copy(running = true, confirmingReinstall = false, errorRes = null, errorDetail = null, adbOutcome = null) }
+        _state.update { it.copy(running = true, confirmingReinstall = false, errorRes = null, errorDetail = null, adbOutcome = null, adbInstallRestricted = false) }
         settingsOpened = false
         SelfAdbService.start(getApplication())
     }
@@ -265,11 +276,26 @@ class InstallPhoneViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
+    /** Xiaomi's "Install via USB" switch, read before any APK is sent. Unknown (shell error) counts as not blocked. */
+    private suspend fun isBlockedByPhone(client: AdbClient): Boolean = try {
+        adbInstallBlocked(client.shell("getprop persist.security.adbinstall").stdout)
+    } catch (e: kotlinx.coroutines.CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        Log.w(TAG, "install pre-check skipped", e)
+        false
+    }
+
     /**
      * The install (or the replacement of a copy another key signed) through [client]. True when every
      * app is installed and the grants can follow; otherwise the runner set the error (Retry shows).
      */
     private suspend fun installOverAdb(client: AdbClient, action: PendingInstall): Boolean {
+        if (isBlockedByPhone(client)) {
+            _state.update { it.copy(running = false, adbInstallRestricted = true) }
+            fail(_state, R.string.install_error_adb_restricted, "persist.security.adbinstall=0")
+            return false
+        }
         runner.installerOverride = AdbPhoneInstaller(client, sessionInstaller)
         try {
             when (action) {

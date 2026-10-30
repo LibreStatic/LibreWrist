@@ -30,7 +30,20 @@ internal fun fail(state: MutableStateFlow<InstallUiState>, @StringRes res: Int, 
 /** The message for a refused install; a copy with another signature is called out. */
 @StringRes
 internal fun installFailureRes(code: String?): Int =
-    if (code == "INSTALL_FAILED_UPDATE_INCOMPATIBLE") R.string.install_error_signature else R.string.install_error_failed
+    when (code) {
+        "INSTALL_FAILED_UPDATE_INCOMPATIBLE" -> R.string.install_error_signature
+        INSTALL_FAILED_USER_RESTRICTED -> R.string.install_error_adb_restricted
+        else -> R.string.install_error_failed
+    }
+
+/** The package manager's code when the phone blocks installs over debugging (MIUI/HyperOS "Install via USB", OPPO/vivo prompt). */
+internal const val INSTALL_FAILED_USER_RESTRICTED = "INSTALL_FAILED_USER_RESTRICTED"
+
+/**
+ * True when `getprop persist.security.adbinstall` says installs over debugging are off (Xiaomi's
+ * "Install via USB" switch reads "0"). Other vendors print nothing, which is not a block.
+ */
+internal fun adbInstallBlocked(getpropOutput: String): Boolean = getpropOutput.trim() == "0"
 
 /**
  * True when a refused install means another key signed the installed copy: the package manager's

@@ -315,9 +315,11 @@
     <string name="install_error_build_missing">Збірка відсутня або не відповідає цьому налаштуванню. Зберіть знову, потім встановіть.</string>
     <string name="install_error_failed">Встановлення відхилено.</string>
     <string name="install_error_signature">Уже встановлено копію, підписану іншим ключем. Нічого не видалено. Видаліть цю копію самі й спробуйте ще раз.</string>
+    <string name="install_error_adb_restricted">Цей телефон блокує встановлення через налагодження. На Xiaomi, Redmi або POCO увімкніть «Для розробників» › «Встановлення через USB». На OPPO, realme або vivo підтвердьте запит на телефоні або вимкніть контроль дозволів. Або встановіть із підтвердженням системи.</string>
     <string name="install_error_grant">Не вдалося застосувати налаштування доступу.</string>
     <string name="action_open">Відкрити</string>
     <string name="action_allow_installing">Дозволити встановлення застосунків</string>
+    <string name="action_install_with_confirmation">Встановити з підтвердженням</string>
     <string name="install_check_again">Перевірити знову</string>
     <string name="install_continue_anyway">Усе одно продовжити</string>
     <string name="install_onboarding">Відкрийте Samsung Health Monitor і завершіть його налаштування</string>

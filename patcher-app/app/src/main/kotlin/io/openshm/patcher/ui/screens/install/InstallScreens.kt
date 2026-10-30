@@ -123,6 +123,8 @@ data class InstallUiState(
     val leftoversKept: List<String> = emptyList(),
     /** Copies of an earlier prefix still on the phone, as last read by a refresh; the screen offers to remove them. */
     val leftoversFound: List<String> = emptyList(),
+    /** The phone install over Wireless debugging was blocked by the phone; the screen offers the platform installer. */
+    val adbInstallRestricted: Boolean = false,
 ) {
     /** Everything is installed but some access is still open: the user may go on without it. */
     val canSkipGrants: Boolean get() = !running && !done && items.isNotEmpty() && items.all { it.status == CheckStatus.Passed }
@@ -163,6 +165,9 @@ sealed interface InstallEvent {
 
     /** The error dialog of a Wireless debugging run was acknowledged, or its success overlay ran out. */
     data object AcknowledgeAdbOutcome : InstallEvent
+
+    /** Install with the system's own confirmation, after the install over Wireless debugging was blocked (phone only). */
+    data object InstallWithConfirmation : InstallEvent
 }
 
 @Composable
@@ -337,6 +342,9 @@ private fun InstallStep(
                     state.errorDetail?.let { detail -> PackageId(detail, maxLines = 3) }
                 }
             }
+        }
+        if (phone && state.adbInstallRestricted && !state.running) {
+            OutlinedAction(stringResource(R.string.action_install_with_confirmation), { onEvent(InstallEvent.InstallWithConfirmation) }, Icons.Rounded.Settings)
         }
         if (state.needsUnknownSources) {
             OutlinedAction(stringResource(R.string.action_allow_installing), { onEvent(InstallEvent.OpenUnknownSources) }, Icons.Rounded.Settings)

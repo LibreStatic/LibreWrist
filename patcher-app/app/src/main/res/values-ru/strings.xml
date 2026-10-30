@@ -315,9 +315,11 @@
     <string name="install_error_build_missing">Сборка отсутствует или не соответствует этой настройке. Соберите заново, затем установите.</string>
     <string name="install_error_failed">Установка отклонена.</string>
     <string name="install_error_signature">Уже установлена копия, подписанная другим ключом. Ничего не удалено. Удалите эту копию сами и повторите попытку.</string>
+    <string name="install_error_adb_restricted">Этот телефон блокирует установку через отладку. На Xiaomi, Redmi и POCO включите «Для разработчиков» › «Установка через USB». На OPPO, realme и vivo подтвердите запрос на телефоне или отключите контроль разрешений. Либо установите с подтверждением системы.</string>
     <string name="install_error_grant">Не удалось применить настройку доступа.</string>
     <string name="action_open">Открыть</string>
     <string name="action_allow_installing">Разрешить установку приложений</string>
+    <string name="action_install_with_confirmation">Установить с подтверждением</string>
     <string name="install_check_again">Проверить снова</string>
     <string name="install_continue_anyway">Всё равно продолжить</string>
     <string name="install_onboarding">Откройте Samsung Health Monitor и завершите его настройку</string>

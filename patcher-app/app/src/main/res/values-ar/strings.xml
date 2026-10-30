@@ -329,9 +329,11 @@
     <string name="install_error_build_missing">الإصدار المبني غير موجود أو لا يطابق هذا الإعداد. ابنِ مرة أخرى ثم ثبّت.</string>
     <string name="install_error_failed">رُفض التثبيت.</string>
     <string name="install_error_signature">توجد نسخة مثبّتة موقّعة بمفتاح مختلف. لم يُزَل شيء. أزل تثبيت تلك النسخة بنفسك ثم حاول مرة أخرى.</string>
+    <string name="install_error_adb_restricted">يمنع هذا الهاتف التثبيت عبر التصحيح. على Xiaomi أو Redmi أو POCO فعّل خيارات المطور › التثبيت عبر USB. على OPPO أو realme أو vivo اقبل الرسالة التي يعرضها الهاتف أو أوقف مراقبة الأذونات. أو ثبّت بدلاً من ذلك بتأكيد من النظام.</string>
     <string name="install_error_grant">تعذّر تطبيق أحد إعدادات الوصول.</string>
     <string name="action_open">فتح</string>
     <string name="action_allow_installing">السماح بتثبيت التطبيقات</string>
+    <string name="action_install_with_confirmation">التثبيت مع التأكيد</string>
     <string name="install_check_again">افحص مرة أخرى</string>
     <string name="install_continue_anyway">متابعة على أي حال</string>
     <string name="install_onboarding">افتح Samsung Health Monitor وأكمل إعداده</string>

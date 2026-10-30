@@ -300,9 +300,11 @@
     <string name="install_error_build_missing">Derleme yok veya bu kurulumla uyuşmuyor. Yeniden derleyin, sonra kurun.</string>
     <string name="install_error_failed">Kurulum reddedildi.</string>
     <string name="install_error_signature">Farklı bir anahtarla imzalanmış bir kopya zaten kurulu. Hiçbir şey kaldırılmadı. O kopyayı kendiniz kaldırın, sonra tekrar deneyin.</string>
+    <string name="install_error_adb_restricted">Bu telefon hata ayıklama üzerinden kurulumu engelliyor. Xiaomi, Redmi veya POCO\'da Geliştirici seçenekleri › USB ile yükle seçeneğini açın. OPPO, realme veya vivo\'da telefonun gösterdiği istemi kabul edin ya da izin izlemeyi kapatın. Ya da sistemin onayıyla kurun.</string>
     <string name="install_error_grant">Bir erişim ayarı uygulanamadı.</string>
     <string name="action_open">Aç</string>
     <string name="action_allow_installing">Uygulama kurulumuna izin ver</string>
+    <string name="action_install_with_confirmation">Onayla kur</string>
     <string name="install_check_again">Tekrar denetle</string>
     <string name="install_continue_anyway">Yine de devam et</string>
     <string name="install_onboarding">Samsung Health Monitor\'ü açıp kurulumunu bitirin</string>
