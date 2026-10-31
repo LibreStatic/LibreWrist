@@ -23,7 +23,7 @@ android {
         val catalogueMinApp = Regex("\"minAppVersion\":\\s*(\\d+)")
             .find(rootProject.file("../catalogue/catalogue.json").readText())?.groupValues?.get(1)?.toInt() ?: 1
         versionCode = System.getenv("PATCHER_VERSION_CODE")?.toIntOrNull() ?: catalogueMinApp
-        versionName = "0.10.11"
+        versionName = "0.10.12"
         // Base URL of the raw `catalogue/` directory of the public repository (config.env CATALOGUE_URL,
         // or -PcatalogueUrl). Empty disables catalogue updates. Only https is accepted.
         val catalogueUrl = (providers.gradleProperty("catalogueUrl").orNull ?: System.getenv("CATALOGUE_URL") ?: "").trim()
