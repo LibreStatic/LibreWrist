@@ -378,8 +378,7 @@ public final class SpO2AdapterTest {
             eq(10_000L, PowerManager.last.timeoutMs, "wake lock held 10 s while the tracker connects");
             int before = PowerManager.last.acquires;
             feedPulses(3, 0.52);
-            check(PowerManager.last.acquires > before, "each PPG batch holds the wake lock again");
-            eq(1_000L, PowerManager.last.timeoutMs, "a PPG batch holds the wake lock for 1 s");
+            eq(before, PowerManager.last.acquires, "PPG batches do not hold the wake lock again");
             check(getData(l, nowSecond() - 100_000L, nowSecond()), "GET_DATA still answered");
             check(l.await(1).size() == 1, "GET_DATA event delivered after auto-resume");
             SpO2Adapter.unregister(l, 49);

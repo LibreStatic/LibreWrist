@@ -119,11 +119,15 @@ Battery: the red and IR LEDs run at ~100 Hz all night while recording.
 ### Wake lock
 
 While recording the adapter has a `PARTIAL_WAKE_LOCK` (tag `shminterop:spo2`, not reference
-counted), created in `startRecording` and released on stop. Like SHM's own `PowerLock` for its
-sensor batches, it is held only in short timed spans: 1 s from every PPG batch, and 10 s while the
-tracker connects (start and watchdog re-arm). 0.10.4 to 0.10.8 held it for the whole night, which
-drained the battery (issue #13); the nights that failed before 0.10.4 failed because recording never
-started (no SET_OPERATION_MODE), not for lack of a wake lock. The SHM twin already holds
+counted), created in `startRecording` and released on stop. It is held only for 10 s while the
+tracker connects (start and watchdog re-arm). PPG delivery needs no hold: while the PPG streams, the
+sensor hub driver holds its own kernel wake lock (`ssp_wake_lock`) and the CPU never suspends.
+0.10.4 to 0.10.8 held the lock for the whole night, and 0.10.9 and 0.10.10 held it again for 1 s from
+every PPG sample (~100 `acquire` calls per second); both drained the battery (issue #13). Measured on
+a Galaxy Watch5 Pro, screen off, while recording: about 124 mAh/h with the per-sample hold, 38 mAh/h
+without it, with the same coverage (1500 of 1508 s); about 12 mAh/h when not recording. The nights
+that failed before 0.10.4 failed because recording never started (no SET_OPERATION_MODE), not for
+lack of a wake lock. The SHM twin already holds
 `WAKE_LOCK`. A failure to get the lock is logged, never thrown.
 
 ### Auto-resume after a process restart

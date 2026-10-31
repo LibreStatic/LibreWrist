@@ -97,10 +97,10 @@ public final class SpO2Adapter {
     /** If SHM skips SET_OPERATION_MODE, a listener silent for this long after register starts recording. */
     static final long FALLBACK_START_MS = 5000L;
     /**
-     * The wake lock is held briefly, like SHM's own PowerLock for its sensor batches (1 s per
-     * batch), instead of for the whole night: per PPG batch, and while the tracker (re)connects.
+     * The wake lock is held only while the tracker (re)connects. PPG delivery needs no hold: the
+     * sensor hub keeps the CPU awake while it streams, and re-acquiring the lock for every sample
+     * (~100 per second) tripled the watch's drain.
      */
-    static final long BATCH_WAKE_LOCK_MS = 1000L;
     static final long ARM_WAKE_LOCK_MS = 10000L;
     static final long LIVENESS_MS = 15000L;
     static final long WATCHDOG_TICK_MS = 5000L;
@@ -647,7 +647,7 @@ public final class SpO2Adapter {
 
     /**
      * Creates the recording's wake lock without holding it; holdWakeLock takes it for a short,
-     * timed span (one PPG batch, or a tracker connection). stopRecording releases it.
+     * timed span while the tracker connects. stopRecording releases it.
      */
     private static void acquireWakeLock(Context ctx) {
         if (ctx == null) return;
@@ -867,7 +867,6 @@ public final class SpO2Adapter {
 
         @Override public void onBatch(PpgBatch batch) {
             if (!recording || batch == null) return;
-            holdWakeLock(BATCH_WAKE_LOCK_MS);
             lastBatchMs = SystemClock.elapsedRealtime();
             synchronized (FEED_LOCK) {
                 // Re-read per sample: an orientation flip replaces the estimator mid-batch.
