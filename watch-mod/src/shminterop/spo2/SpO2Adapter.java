@@ -94,6 +94,13 @@ public final class SpO2Adapter {
     static final long RESUME_MS = 6L * 60L * 60L * 1000L;
     /** After a process restart, recording resumes by itself if the marker exists and the newest second is this fresh. */
     static final long AUTO_RESUME_MS = 30L * 60L * 1000L;
+    /**
+     * Safety bound: a recording whose oldest stored second (or start, while the store is empty) is
+     * older than this is stopped by the watchdog, and a stored night this old is never auto-resumed.
+     */
+    static final long MAX_NIGHT_MS = 12L * 60L * 60L * 1000L;
+    /** Safety bound: a recording that no listener has owned for this long is stopped by the watchdog. */
+    static final long ORPHAN_MS = 10L * 60L * 1000L;
     /** If SHM skips SET_OPERATION_MODE, a listener silent for this long after register starts recording. */
     static final long FALLBACK_START_MS = 5000L;
     /**
@@ -137,6 +144,9 @@ public final class SpO2Adapter {
     /** Test hooks: the application context, and the delay of the fallback start check. */
     static volatile Context contextOverride;
     static volatile long fallbackDelayMs = FALLBACK_START_MS;
+    /** Test hooks: the safety bounds. */
+    static volatile long maxNightMs = MAX_NIGHT_MS;
+    static volatile long orphanMs = ORPHAN_MS;
     /** Coverage text of the last GET_DATA answer (log and tests). */
     static volatile String lastCoverage = "";
     private static PpgTracker tracker;
@@ -144,6 +154,10 @@ public final class SpO2Adapter {
     private static volatile boolean recording;
     private static volatile long lastBatchMs;
     private static long lastArmMs;
+    /** Wall clock of the recording start (bounds the night while the store is still empty). */
+    private static long recordingStartMs;
+    /** elapsedRealtime since when the recording has had no owner, or -1 while it has one. Under LOCK. */
+    private static long orphanSinceMs = -1L;
     private static long lastFlushMs;
     private static ExecutorService delivery;
 
@@ -257,6 +271,7 @@ public final class SpO2Adapter {
                     if (recording && recorder == null) {
                         recorder = listener;
                         recorderAdopted = true;
+                        orphanSinceMs = -1L;
                         log("register: now tied to the auto-resumed recording: " + listener);
                     }
                 }
@@ -294,6 +309,7 @@ public final class SpO2Adapter {
                     if (cmds.contains("GET_VERSION") && listener == recorder && recorderAdopted) {
                         recorder = null;
                         recorderAdopted = false;
+                        if (recording) orphanSinceMs = SystemClock.elapsedRealtime();
                     }
                 }
             }
@@ -309,7 +325,7 @@ public final class SpO2Adapter {
             if (cmds.contains("GET_DATA")) {
                 note("cmd GET_DATA window " + b.getLong("startTimestamp") + ".." + b.getLong("endTimestamp"));
                 answerData(listener, b.getLong("startTimestamp"), b.getLong("endTimestamp"));
-                stopOrphanRecording();
+                stopRecordingAtNightEnd();
             }
             if (cmds.contains("FLUSH")) {
                 log("FLUSH accepted (nothing to flush)");
@@ -555,6 +571,7 @@ public final class SpO2Adapter {
         synchronized (LOCK) {
             recorder = listener;
             recorderAdopted = false;
+            orphanSinceMs = listener == null ? SystemClock.elapsedRealtime() : -1L;
             if (recording) {
                 log("start: already recording; now tied to " + listener);
                 return;
@@ -594,6 +611,7 @@ public final class SpO2Adapter {
                 aggValid = 0;
                 lastAggregateMs = now;
             }
+            recordingStartMs = now;
             recording = true;
             writeMarker();
             acquireWakeLock(ctx);
@@ -705,7 +723,11 @@ public final class SpO2Adapter {
             store.attach(new File(dir, "night.bin"));
             store.load();
             long now = System.currentTimeMillis();
-            if (store.size() > 0 && now - store.newest() < AUTO_RESUME_MS) {
+            if (store.size() > 0 && now - store.oldest() > maxNightMs) {
+                log("stored night older than " + maxNightMs / 3600000L + " h; not auto-resuming");
+                note("auto-resume skipped: stored night older than " + maxNightMs / 3600000L + " h");
+                marker.delete();
+            } else if (store.size() > 0 && now - store.newest() < AUTO_RESUME_MS) {
                 log("start: auto-resuming after a process restart");
                 note("recording start: auto-resume after restart (" + store.size() + " s stored)");
                 startRecording(null);
@@ -719,13 +741,17 @@ public final class SpO2Adapter {
     }
 
     /**
-     * GET_DATA marks the end of the night. A recording no listener owns (auto-resumed, not yet
-     * adopted) would never see the unregister that normally stops it, so it stops here.
+     * GET_DATA marks the end of the night (or of a sleep segment: the next SLEEPING registers again
+     * and resumes it). The unregister that normally stops the recording does not always come: SHM
+     * recreates its apnea service for each sleep state, and the new instance unregisters its own,
+     * never registered listener, so the recording listener is never unregistered. An auto-resumed
+     * recording may also have no listener at all.
      */
-    private static void stopOrphanRecording() {
+    private static void stopRecordingAtNightEnd() {
         synchronized (LOCK) {
-            if (!recording || recorder != null) return;
-            log("GET_DATA with no recording listener; stopping the auto-resumed recording");
+            if (!recording) return;
+            log("GET_DATA ends the night; stopping the recording");
+            note("recording stop: GET_DATA ends the night");
             stopRecording();
         }
     }
@@ -794,6 +820,22 @@ public final class SpO2Adapter {
         synchronized (LOCK) {
             if (!recording) return;
             long e = SystemClock.elapsedRealtime();
+            long wall = System.currentTimeMillis();
+            long nightStart = store.size() > 0 ? store.oldest() : recordingStartMs;
+            if (wall - nightStart > maxNightMs) {
+                log("night longer than " + maxNightMs / 3600000L + " h; stopping the recording");
+                note("recording stop: night longer than " + maxNightMs / 3600000L
+                        + " h without a stop from SHM (safety bound)");
+                stopRecording();
+                return;
+            }
+            if (recorder == null && orphanSinceMs >= 0 && e - orphanSinceMs > orphanMs) {
+                log("no listener owned the recording for " + (e - orphanSinceMs) / 1000 + " s; stopping");
+                note("recording stop: no listener owned the recording for " + orphanMs / 60000L
+                        + " min (safety bound)");
+                stopRecording();
+                return;
+            }
             long ref = Math.max(lastBatchMs, lastArmMs);
             if (e - ref > LIVENESS_MS) {
                 log("no PPG batch for " + (e - ref) / 1000 + " s; re-arming the tracker");
@@ -902,6 +944,10 @@ public final class SpO2Adapter {
             recording = false;
             recorder = null;
             recorderAdopted = false;
+            orphanSinceMs = -1L;
+            recordingStartMs = 0L;
+            maxNightMs = MAX_NIGHT_MS;
+            orphanMs = ORPHAN_MS;
             listeners.clear();
             commanded.clear();
             autoResumeChecked = false;

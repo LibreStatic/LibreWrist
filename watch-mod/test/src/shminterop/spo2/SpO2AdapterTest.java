@@ -44,6 +44,8 @@ public final class SpO2AdapterTest {
         answerCoverage();
         resumeWindow();
         autoResume();
+        safetyBounds();
+        getDataEndsNight();
         fallbackStart();
         orientationFlip();
         orientationKept();
@@ -425,6 +427,123 @@ public final class SpO2AdapterTest {
             SpO2Adapter.contextOverride = null;
             SpO2Adapter.resetForTest();
         }
+    }
+
+    /** The watchdog stops a night longer than MAX_NIGHT_MS and a recording nobody owns for ORPHAN_MS. */
+    static void safetyBounds() throws Exception {
+        try {
+            // Night older than the max: the stored seconds count, the tick stops the recording.
+            TestContext c = new TestContext("bound-old");
+            SpO2Adapter.contextOverride = c;
+            SpO2Adapter.resetForTest();
+            Recorder l = new Recorder();
+            SpO2Adapter.register(l, 49);
+            startNight(l);
+            SpO2Adapter.store.put(nowSecond() - SpO2Adapter.MAX_NIGHT_MS - 60_000L, 95);
+            SpO2Adapter.store.put(nowSecond() - 1000L, 96);
+            SpO2Adapter.tick();
+            check(!SpO2Adapter.isRecording(), "tick stops a night older than the maximum");
+            check(!new File(spo2Dir(c), "recording").exists(), "marker deleted by the night bound");
+            check(!PowerManager.last.held, "wake lock released by the night bound");
+            check(getData(l, nowSecond() - 2_000L, nowSecond()), "GET_DATA after the night bound");
+            check(l.await(1).size() == 1, "data still answered after the night bound stopped the recording");
+
+            // Night younger than the max: kept.
+            SpO2Adapter.contextOverride = new TestContext("bound-young");
+            SpO2Adapter.resetForTest();
+            Recorder y = new Recorder();
+            SpO2Adapter.register(y, 49);
+            startNight(y);
+            SpO2Adapter.store.put(nowSecond() - SpO2Adapter.MAX_NIGHT_MS + 3_600_000L, 95);
+            SpO2Adapter.tick();
+            check(SpO2Adapter.isRecording(), "tick keeps a night younger than the maximum");
+            SpO2Adapter.unregister(y, 49);
+
+            // Empty store: measured from the recording start.
+            SpO2Adapter.contextOverride = new TestContext("bound-empty");
+            SpO2Adapter.resetForTest();
+            Recorder e = new Recorder();
+            SpO2Adapter.register(e, 49);
+            startNight(e);
+            SpO2Adapter.maxNightMs = 50L;
+            Thread.sleep(120L);
+            SpO2Adapter.tick();
+            check(!SpO2Adapter.isRecording(), "an empty store is bounded from the recording start");
+
+            // Auto-resume skipped for a stored night older than the max (newest is fresh).
+            TestContext old = new TestContext("bound-noresume");
+            SpO2Adapter.contextOverride = old;
+            SpO2Adapter.resetForTest();
+            Recorder a = new Recorder();
+            SpO2Adapter.register(a, 49);
+            startNight(a);
+            SpO2Adapter.store.put(nowSecond() - SpO2Adapter.MAX_NIGHT_MS - 3_600_000L, 95);
+            SpO2Adapter.store.put(nowSecond() - 60_000L, 96);
+            SpO2Adapter.store.flush();
+            SpO2Adapter.resetForTest();
+            Recorder b = new Recorder();
+            SpO2Adapter.register(b, 49);
+            check(!SpO2Adapter.isRecording(), "a stored night older than the maximum is not auto-resumed");
+            check(!new File(spo2Dir(old), "recording").exists(), "marker removed for the too-old night");
+
+            // Orphan: auto-resumed and never adopted.
+            killedMidNight("bound-orphan", 60_000L, true);
+            SpO2Adapter.orphanMs = 100L;
+            SpO2Adapter.setAttribute(null, 49, attr(EnumSet.of(Cmd.FLUSH))); // triggers the auto-resume
+            check(SpO2Adapter.isRecording(), "auto-resumed without a listener");
+            SpO2Adapter.tick();
+            check(SpO2Adapter.isRecording(), "an unowned recording survives within the orphan timeout");
+            Thread.sleep(200L);
+            SpO2Adapter.tick();
+            check(!SpO2Adapter.isRecording(), "tick stops a recording nobody owned for the orphan timeout");
+
+            // Adopted within the timeout: kept.
+            killedMidNight("bound-adopted", 60_000L, true);
+            SpO2Adapter.orphanMs = 100L;
+            Recorder ad = new Recorder();
+            SpO2Adapter.register(ad, 49);
+            check(SpO2Adapter.isRecording(), "auto-resumed and adopted");
+            Thread.sleep(200L);
+            SpO2Adapter.tick();
+            check(SpO2Adapter.isRecording(), "an adopted recording is not an orphan");
+
+            // The adopter drops the role on GET_VERSION: the orphan clock starts then.
+            SpO2Adapter.setAttribute(ad, 49, attr(EnumSet.of(Cmd.GET_VERSION),
+                    "versionType", SemSleepWatchSpO2SensorParam.VersionType.values()[0]));
+            SpO2Adapter.tick();
+            check(SpO2Adapter.isRecording(), "orphan clock starts at the GET_VERSION drop");
+            Thread.sleep(200L);
+            SpO2Adapter.tick();
+            check(!SpO2Adapter.isRecording(), "recording stopped after the adopter dropped the role");
+        } finally {
+            SpO2Adapter.contextOverride = null;
+            SpO2Adapter.resetForTest();
+        }
+    }
+
+    /**
+     * SHM recreates its apnea service per sleep state: on AWAKE the new instance unregisters its own
+     * listener, never the one that started the recording. GET_DATA from that other listener still
+     * ends the night.
+     */
+    static void getDataEndsNight() throws Exception {
+        simValue = "";
+        SpO2Adapter.resetForTest();
+        Recorder sleeping = new Recorder();
+        SpO2Adapter.register(sleeping, 49);
+        startNight(sleeping);
+        check(SpO2Adapter.isRecording(), "recording after SET_OPERATION_MODE");
+        feedPulses(5, 0.52);
+        Recorder awake = new Recorder();
+        SpO2Adapter.unregister(awake, 49);
+        check(SpO2Adapter.isRecording(), "an unknown listener's unregister does not stop the night");
+        SpO2Adapter.register(awake, 49);
+        check(getData(awake, nowSecond() - 60_000L, nowSecond() + 1000L), "GET_DATA returns true");
+        check(!SpO2Adapter.isRecording(), "GET_DATA from another listener stops the recording");
+        eq(1, awake.await(1).size(), "GET_DATA still answered");
+        SpO2Adapter.unregister(sleeping, 49);
+        SpO2Adapter.unregister(awake, 49);
+        SpO2Adapter.resetForTest();
     }
 
     static void fallbackStart() {

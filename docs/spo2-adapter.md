@@ -116,6 +116,22 @@ keeps the earlier part of the night. Do not run it together with the BP flow: bo
 
 Battery: the red and IR LEDs run at ~100 Hz all night while recording.
 
+End of the night (issue #13). The recorder's `unregister` does not reliably come: SHM recreates
+`ApneaMonitoringService` (and with it its `cc` sensor controller and `bc` listener) for each sleep
+state it handles, so on AWAKE the new instance unregisters its own listener, which never registered,
+and the listener that owns the recording stays registered (observed with the test driver: SLEEPING
+registered `bc@f7859b7`, AWAKE unregistered `bc@ac5f061`). The LEDs then stayed on for hours.
+Therefore any GET_DATA stops the recording, whichever listener sends it: SHM sends it only to
+evaluate a finished sleep segment, and a later SLEEPING registers again and resumes the same night
+(see above). The data stays stored for that answer and later ones.
+
+Safety bounds. The watchdog tick also stops the recording (through the normal `stopRecording`) when:
+
+- the night is longer than 12 hours (`MAX_NIGHT_MS`), measured from the oldest stored second so a
+  process restart does not reset the clock (from the recording start while the store is empty); or
+- no listener has owned the recording for 10 minutes (`ORPHAN_MS`): it was auto-resumed and not
+  adopted, or the adopter gave the role up on GET_VERSION.
+
 ### Wake lock
 
 While recording the adapter has a `PARTIAL_WAKE_LOCK` (tag `shminterop:spo2`, not reference
@@ -136,13 +152,13 @@ On start the adapter writes the marker file `<filesDir>/shminterop-spo2/recordin
 when the recording stops. In a new process, on the first entry (`register` or `setAttribute`), if
 the marker exists and the newest stored second is less than 30 minutes old (`AUTO_RESUME_MS`), the
 adapter records again without a listener and logs `start: auto-resuming after a process restart`.
-A stale marker is deleted; with no marker nothing is resumed. The next listener that calls
+A stale marker is deleted, and so is the marker of a stored night whose oldest second is more than
+12 hours old (`MAX_NIGHT_MS`); with no marker nothing is resumed. The next listener that calls
 `register` adopts the recorder role (its `unregister` then stops the recording). A listener that
 sends GET_VERSION gives the adopted role up again, so the version detector SHM runs at app open
 (register, GET_VERSION, unregister) does not stop a resumed night. SET_OPERATION_MODE ties the
-recording to its sender as usual, and GET_DATA is answered normally. A GET_DATA while no listener
-owns the recording (the restarted process's first call is the morning request) also stops it, as
-nothing would unregister it otherwise.
+recording to its sender as usual, and GET_DATA is answered normally and stops the recording (see
+"End of the night" above), also when no listener owns it.
 
 ### Fallback start
 
@@ -174,7 +190,9 @@ buffered and written on attach; every I/O error is swallowed.
 Recorded: first entry in the process, register / unregister (listener identity, recorder or not),
 each command (SET_OPERATION_MODE with its mode, GET_DATA window, GET_VERSION, FLUSH), recording
 start (new night, resumed with N s, auto-resume after a restart, fallback start) and stop, tracker
-armed / unsupported / connection failed / ended / error, watchdog re-arms, wake lock not acquired,
+armed / unsupported / connection failed / ended / error, watchdog re-arms, the stops at GET_DATA
+and at the safety bounds (night longer than 12 h, no listener owned the recording for 10 min; all as
+`recording stop: ...`), skipped auto-resume of a too-old night, wake lock not acquired,
 persistence and delivery failures, the orientation decision, and every 15 minutes while recording
 one aggregate (valid/total seconds of the period, stored total). The per-minute stats stay in
 logcat only.
