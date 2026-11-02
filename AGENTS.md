@@ -70,12 +70,32 @@ works". It lists real bugs reported on GitHub (`gh issue list --repo LibreStatic
 - **Only real bugs.** Leave out questions, usage help and expected behaviour, even when they were
   filed as issues. For example, #1 ("the bridge has no launcher icon") is by design, so it is not
   listed. The `bug` / `confirmed` labels help, but read the thread to decide.
-- One bullet per issue. Start it with the status emoji, then a bold one-line summary, then a link
-  to the issue (`[#N](https://github.com/LibreStatic/LibreWrist/issues/N)`). After that, add the
-  cause in plain words, the version that fixes it (or that it is in progress), and a workaround
-  when there is one.
+- An issue still being investigated can be listed when the owner labelled it `bug` and the thread
+  describes a plausible defect. Mark it `:mag:`.
+- One top-level bullet per issue, ordered by issue number. The bullet is only the status emoji, a
+  bold one-line summary of what the user sees, and the link
+  (`[#N](https://github.com/LibreStatic/LibreWrist/issues/N)`). No prose on that line.
+- Details go in nested bullets, one or two sentences each, with a bold label:
+  - `**Cause:**` in plain words.
+  - `**Status:**` what is confirmed, and what is in progress or still needs a log.
+  - `**Fixed in:**` the version that contains the fix and what to rebuild (phone app, watch app,
+    or both). Use the latest version that has the full fix. Mention an earlier version only when
+    users must avoid it (for example a build that fails).
+  - `**Workaround:**` only when there is one.
+  - `**Note:**` expected behaviour that users mistake for the bug (keep it to one bullet).
+- When one issue covers several separate problems, give each problem its own nested bullet that
+  starts with its own status emoji and a bold summary sentence, then the cause, fix and status in
+  the same bullet. The top-level emoji is then the least advanced status among them
+  (`:mag:` < `:construction:` < `:hourglass_flowing_sand:`). Drop a sub-problem once a user
+  confirms its fix, and drop the whole entry when none are left.
+- Do not keep the history of the fix (every intermediate version, measurements, dead ends). The
+  issue thread has it. Rewrite the entry instead of appending sentences to it.
+- The short paragraph under the legend tells users how to export a device log. Keep it in sync
+  with the patcher's log viewer.
 - Status emojis. Keep the legend line under the intro in sync with them:
-  - `:construction:` means the fix is in progress.
+  - `:mag:` means the bug is reported and under investigation (cause unknown, usually waiting for
+    a device log).
+  - `:construction:` means the cause is known and the fix is in progress.
   - `:hourglass_flowing_sand:` means the fix is released and waiting for user confirmation. Here,
     "confirmation" means a user saw the fix working on their device. It never means confirming that
     the bug exists. Word the entry that way: the bug is confirmed, the fix shipped in X, and an
