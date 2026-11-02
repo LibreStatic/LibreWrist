@@ -105,3 +105,15 @@ works". It lists real bugs reported on GitHub (`gh issue list --repo LibreStatic
   `gh issue view N --comments` before pushing. Add new real bugs, update statuses and versions, and
   drop resolved entries. Commit README changes in their own commit. If nothing changed, say so
   briefly.
+
+## README table of contents
+
+`README.md` has a `## Contents` list after the intro (right before the first `##` section). It
+links every `##` and `###` heading by its GitHub anchor (lowercase, punctuation removed except `-`,
+spaces turned into `-`; `### 1. Welcome` becomes `#1-welcome`). `###` entries are indented under
+their `##`. `####` headings are not listed.
+
+- Every `##` section after the first one has `[↑ Back to contents](#contents)` on its own line right
+  above its heading, and the file ends with the same link.
+- When you add, rename, move or remove a `##` or `###` heading, update the list and the back links
+  in the same commit. Check that every link in the list matches a heading.
