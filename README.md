@@ -50,12 +50,41 @@ The patcher recognizes the watch plugin of every Galaxy Watch family, and includ
 watch SHM closing on open on the Galaxy Watch8. The patcher UI is available in English and 17 other languages, and
 the bridge texts into the same 88 locales as the call notice.
 
+## Contents
+
+- [Quick start video](#quick-start-video)
+- [Getting started: the patcher app](#getting-started-the-patcher-app)
+- [Walkthrough](#walkthrough)
+  - [1. Welcome](#1-welcome)
+  - [2. Pick your watch](#2-pick-your-watch)
+  - [3. Pair the watch with Galaxy Wearable](#3-pair-the-watch-with-galaxy-wearable)
+  - [4. Connect to the watch over Wi-Fi](#4-connect-to-the-watch-over-wi-fi)
+  - [5. Bring the official apps](#5-bring-the-official-apps)
+  - [6. Review the patches and build](#6-review-the-patches-and-build)
+  - [7. Install on the phone](#7-install-on-the-phone)
+  - [8. Install on the watch](#8-install-on-the-watch)
+  - [9. Self-test](#9-self-test)
+  - [10. Home](#10-home)
+  - [Optional apps](#optional-apps)
+  - [What to expect when you are done](#what-to-expect-when-you-are-done)
+  - [How to check that it works](#how-to-check-that-it-works)
+- [Known issues](#known-issues)
+- [How it works](#how-it-works)
+- [Repository layout](#repository-layout)
+- [Building on a PC](#building-on-a-pc)
+  - [Building the patcher app](#building-the-patcher-app)
+- [Tests](#tests)
+- [Scope](#scope)
+- [Licence](#licence)
+
 ## Quick start video
 
 Prefer watching to reading? This 90-second video shows the whole setup, step by step. The screens
 use sample data. Click it to open the full-quality MP4.
 
 [![LibreWrist quick start](docs/media/quick-start.gif)](docs/media/quick-start.mp4)
+
+[↑ Back to contents](#contents)
 
 ## Getting started: the patcher app
 
@@ -90,6 +119,8 @@ copy in your Google account (Google Play services Block Store, end-to-end encryp
 has a screen lock) and restores it by itself when the phone has no key, for example after a
 reinstall. Upgrading the installed apps without losing data requires the **same key and the same
 package prefix**.
+
+[↑ Back to contents](#contents)
 
 ## Walkthrough
 
@@ -458,6 +489,8 @@ Turn the switch off if you do not want it. On a PC, `scripts/build_shealth.sh` b
    - a missing permission;
    - the watch disconnected from Galaxy Wearable.
 
+[↑ Back to contents](#contents)
+
 ## Known issues
 
 These come from user reports. Each one links to its GitHub issue, where progress is tracked.
@@ -481,6 +514,8 @@ the problem and tap **Export .txt**. Attach the file to the issue.
   - **Status:** reported on a Galaxy Watch Ultra 2 with One UI Watch 9. A device log is needed to find the cause.
   - **Note:** IHRN only keeps a history when it finds an irregular rhythm, so an empty IHRN history can be normal. Health Monitor completes a sleep apnea night by itself after at least 4 hours of sleep, up to 90 minutes after you wake up; there is no button to end it.
 
+[↑ Back to contents](#contents)
+
 ## How it works
 
 1. The watch is paired with the phone through the stock Galaxy Wearable flow, which creates the GMS
@@ -495,6 +530,8 @@ the problem and tap **Export .txt**. Attach the file to the issue.
 
 Everything runs on the two devices. Details are in [docs/architecture.md](docs/architecture.md).
 
+[↑ Back to contents](#contents)
+
 ## Repository layout
 
 | Path | What it is |
@@ -507,6 +544,8 @@ Everything runs on the two devices. Details are in [docs/architecture.md](docs/a
 | `scripts/` | The PC build (`build_all.sh`, `build_shm_*.sh`, `build_shealth.sh`, `fetch_deps.sh`), catalogue tooling (`catalogue.py`), and shared helpers in `scripts/lib/`. |
 | `apks/` | Where the official input APKs go for PC builds. They are not versioned; see [apks/README.md](apks/README.md) and `apks/inputs.json`. |
 | `docs/` | [Architecture](docs/architecture.md), [installation runbook](docs/installation.md), [patches](docs/patches.md), [Health Tracking client](docs/health-sdk.md) and [protocol](docs/health-tracking-protocol.md), [SpO2 adapter](docs/spo2-adapter.md), the sensor datasheets ([ECG](docs/ecg-calibration.md), [BP calibration](docs/bp-calibration.md), [SpO2](docs/spo2-calibration.md)), plus research notes on Samsung Health ([phone survey](docs/samsung-health-survey.md), [watch survey](docs/shealth-watch-survey.md)). |
+
+[↑ Back to contents](#contents)
 
 ## Building on a PC
 
@@ -537,6 +576,8 @@ Builds are signed with `patcher.p12` and `patcher.pass` from `OPENSHM_KEYS_DIR` 
 published releases are built by `.github/workflows/patcher-release.yml` and signed with the
 LibreStatic release key.
 
+[↑ Back to contents](#contents)
+
 ## Tests
 
 ```bash
@@ -546,6 +587,8 @@ shm-bridge/watch/test/run-tests.sh
 watch-mod/test/run-tests.sh
 JAVA_HOME=/path/to/jdk17 patcher-app/gradlew :engine:test :app:testDebugUnitTest
 ```
+
+[↑ Back to contents](#contents)
 
 ## Scope
 
@@ -559,6 +602,8 @@ Never needed:
 - a factory reset;
 - a Samsung phone.
 
+[↑ Back to contents](#contents)
+
 ## Licence
 
 Our own code is released under the [MIT Licence](LICENSE). The MIT licence does not cover:
@@ -568,3 +613,5 @@ Our own code is released under the [MIT Licence](LICENSE). The MIT licence does 
   [patcher-app/THIRD_PARTY.md](patcher-app/THIRD_PARTY.md)).
 
 This is an independent project. It is not affiliated with Samsung or Google.
+
+[↑ Back to contents](#contents)
