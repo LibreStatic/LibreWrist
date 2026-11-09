@@ -9,6 +9,8 @@ import java.io.File;
  */
 public class Context {
     public static final String POWER_SERVICE = "power";
+    public static final String ACTIVITY_SERVICE = "activity";
+    public static final String BATTERY_SERVICE = "batterymanager";
 
     public Object getSystemService(String name) {
         return null;
