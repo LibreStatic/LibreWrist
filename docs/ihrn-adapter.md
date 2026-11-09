@@ -134,6 +134,17 @@ Pattern `watch-ihrn-alert-overlay` declares `SYSTEM_ALERT_WINDOW`, and the `shm-
 grants it as an app-op (`appops set <pkg> SYSTEM_ALERT_WINDOW allow`). That is the same background
 activity launch exemption the bridge uses for its alarm and call screens on the watch.
 
+## Off-body detector
+
+SHM's `BodyOffDetectServiceActivity` creates the IHRN schedule only when its off-body sensor
+reports "wear on" (`values[0] == 1`), and cancels it on "wear off". The stock app asks for
+Samsung's `0x1101b` ("Samsung LowPower Offbody Detector"), which the framework only lets apps
+holding `com.samsung.permission.SSENSOR` enable; the re-signed app never got an event, so IHRN
+never measured (`latest_working_time` stayed 0, [#26](https://github.com/LibreStatic/LibreWrist/issues/26)).
+Pattern `watch-offbody-sensor` routes the lookup through `WatchOverrides.offBodySensor`, which
+returns the public low latency off-body detector (type 34, same values, no permission) when the
+watch has one. The log line `off-body: ...` (tag `ShmInterop`) says which sensor was used.
+
 ## Quiet services
 
 SHM starts `IhrnServiceActivity` and `BodyOffDetectServiceActivity` (both are `Service`s) with

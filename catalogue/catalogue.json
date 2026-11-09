@@ -1,6 +1,6 @@
 {
   "schema": 2,
-  "serial": 62,
+  "serial": 63,
   "minAppVersion": 45,
   "inputs": [
     {
@@ -176,6 +176,7 @@
           "watch-ecg-sensor-adapter",
           "watch-spo2-sensor-adapter",
           "watch-ihrn-sensor-adapter",
+          "watch-offbody-sensor",
           "watch-sensor-unregister-compat",
           "watch-ihrn-quiet-services",
           "watch-ihrn-alert-overlay",
@@ -1078,6 +1079,30 @@
             "    :ss_skip_ihrn_d",
             ""
           ]
+        }
+      ]
+    },
+    "watch-offbody-sensor": {
+      "families": [
+        "shm-watch"
+      ],
+      "title": "Off-body detector",
+      "description": "Watch: the two off-body detector lookups (IHRN body-off service, BP sensor controller) go through WatchOverrides.offBodySensor, which returns the public low latency off-body detector (34) instead of Samsung's 0x1101b; the framework only lets apps holding com.samsung.permission.SSENSOR enable 0x1101b, so IHRN never got the wear-on event that creates its schedule",
+      "optional": false,
+      "ops": [
+        {
+          "op": "replaceAllInFilesWithAnchor",
+          "fileContains": "Registering BodyOffSensor listener",
+          "old": "invoke-virtual {v0, v2, v1}, Landroid/hardware/SensorManager;->getDefaultSensor(IZ)Landroid/hardware/Sensor;",
+          "new": "invoke-static {v0, v2, v1}, L${PKG_PATH}/watch/WatchOverrides;->offBodySensor(Landroid/hardware/SensorManager;IZ)Landroid/hardware/Sensor;",
+          "expect": 1
+        },
+        {
+          "op": "replaceAllInFilesWithAnchor",
+          "fileContains": "Starting OffBodySensorImpl",
+          "old": "invoke-virtual {v0, v1}, Landroid/hardware/SensorManager;->getDefaultSensor(I)Landroid/hardware/Sensor;",
+          "new": "invoke-static {v0, v1}, L${PKG_PATH}/watch/WatchOverrides;->offBodySensor(Landroid/hardware/SensorManager;I)Landroid/hardware/Sensor;",
+          "expect": 1
         }
       ]
     },
@@ -4170,6 +4195,7 @@
       "pattern.watch-ecg-sensor-adapter.description": "Reads the ECG sensor through the Health Tracking service and treats the irregular heart rhythm and SpO2 sensors as available.",
       "pattern.watch-spo2-sensor-adapter.description": "Answers the sleep SpO2 sensor from raw red and infrared readings of the Health Tracking service, because the watch does not let a re-signed app use it directly.",
       "pattern.watch-ihrn-sensor-adapter.description": "Reads the irregular heart rhythm sensor through the Health Tracking service, because the watch does not let a re-signed app use it directly.",
+      "pattern.watch-offbody-sensor.description": "Detects whether the watch is on the wrist with the standard sensor, because the watch does not let a re-signed app use Samsung's own. Irregular heart rhythm checks only start once the watch is worn.",
       "pattern.watch-sensor-unregister-compat.description": "Stops sensor clean-up from closing the app on watches with a different sensor framework, such as the Galaxy Watch8.",
       "pattern.watch-ihrn-quiet-services.description": "Runs the irregular heart rhythm checks in the background without a permanent notification. A low-priority notification appears only when the watch requires one.",
       "pattern.watch-apnea-quiet-service.description": "Runs the overnight sleep apnea monitoring in the background without a notification that can't be cleared. A low-priority notification titled \"Sleep apnea\" appears only when the watch requires one.",
@@ -4291,6 +4317,7 @@
       "pattern.watch-ecg-sensor-adapter.description": "يقرأ مستشعر تخطيط القلب عبر خدمة Health Tracking، ويعامل مستشعري عدم انتظام ضربات القلب وSpO2 على أنهما متاحان.",
       "pattern.watch-spo2-sensor-adapter.description": "يجيب عن مستشعر تشبع الأكسجين أثناء النوم انطلاقًا من قراءات الأشعة الحمراء وتحت الحمراء الخام من خدمة Health Tracking، لأن الساعة لا تسمح لتطبيق أُعيد توقيعه باستخدامه مباشرة.",
       "pattern.watch-ihrn-sensor-adapter.description": "يقرأ مستشعر عدم انتظام ضربات القلب عبر خدمة Health Tracking، لأن الساعة لا تسمح لتطبيق أُعيد توقيعه باستخدامه مباشرةً.",
+      "pattern.watch-offbody-sensor.description": "يكتشف ما إذا كانت الساعة على المعصم باستخدام المستشعر القياسي، لأن الساعة لا تسمح لتطبيق أعيد توقيعه باستخدام مستشعر Samsung الخاص. لا تبدأ فحوصات عدم انتظام ضربات القلب إلا عند ارتداء الساعة.",
       "pattern.watch-sensor-unregister-compat.description": "يمنع إغلاق التطبيق عند إيقاف المستشعرات في الساعات ذات إطار مستشعرات مختلف، مثل Galaxy Watch8.",
       "pattern.watch-ihrn-quiet-services.description": "يشغّل فحوصات عدم انتظام ضربات القلب في الخلفية دون إشعار دائم. لا يظهر إشعار منخفض الأولوية إلا عندما تتطلبه الساعة.",
       "pattern.watch-apnea-quiet-service.description": "يشغّل مراقبة انقطاع النفس أثناء النوم ليلاً في الخلفية دون إشعار لا يمكن مسحه. لا يظهر إشعار منخفض الأولوية بعنوان \"انقطاع النفس أثناء النوم\" إلا عندما تتطلبه الساعة.",
@@ -4412,6 +4439,7 @@
       "pattern.watch-ecg-sensor-adapter.description": "Liest den EKG-Sensor über den Health-Tracking-Dienst aus und behandelt die Sensoren für unregelmäßigen Herzrhythmus und SpO2 als verfügbar.",
       "pattern.watch-spo2-sensor-adapter.description": "Beantwortet den Schlaf-SpO2-Sensor aus den rohen Rot- und Infrarotwerten des Health-Tracking-Dienstes, weil die Uhr einer neu signierten App den direkten Zugriff nicht erlaubt.",
       "pattern.watch-ihrn-sensor-adapter.description": "Liest den Sensor für unregelmäßigen Herzrhythmus über den Health-Tracking-Dienst aus, weil die Uhr einer neu signierten App den direkten Zugriff nicht erlaubt.",
+      "pattern.watch-offbody-sensor.description": "Erkennt mit dem Standardsensor, ob die Uhr am Handgelenk getragen wird, weil die Uhr einer neu signierten App den Samsung-eigenen Sensor nicht erlaubt. Die Prüfungen auf unregelmäßigen Herzrhythmus starten erst, wenn die Uhr getragen wird.",
       "pattern.watch-sensor-unregister-compat.description": "Verhindert, dass die App beim Beenden der Sensoren auf Uhren mit anderem Sensor-Framework wie der Galaxy Watch8 abstürzt.",
       "pattern.watch-ihrn-quiet-services.description": "Führt die Prüfungen auf unregelmäßigen Herzrhythmus im Hintergrund ohne dauerhafte Benachrichtigung aus. Eine Benachrichtigung mit niedriger Priorität erscheint nur, wenn die Uhr eine verlangt.",
       "pattern.watch-apnea-quiet-service.description": "Führt die nächtliche Schlafapnoe-Überwachung im Hintergrund aus, ohne Benachrichtigung, die sich nicht löschen lässt. Eine Benachrichtigung mit niedriger Priorität und dem Titel „Schlafapnoe“ erscheint nur, wenn die Uhr eine verlangt.",
@@ -4533,6 +4561,7 @@
       "pattern.watch-ecg-sensor-adapter.description": "Lee el sensor de ECG a través del servicio Health Tracking y trata como disponibles los sensores de ritmo cardíaco irregular y de SpO2.",
       "pattern.watch-spo2-sensor-adapter.description": "Responde al sensor de SpO2 del sueño con las lecturas en bruto de luz roja e infrarroja del servicio Health Tracking, porque el reloj no permite que una app firmada de nuevo lo use directamente.",
       "pattern.watch-ihrn-sensor-adapter.description": "Lee el sensor de ritmo cardíaco irregular a través del servicio Health Tracking, porque el reloj no deja que una app firmada de nuevo lo use directamente.",
+      "pattern.watch-offbody-sensor.description": "Detecta si el reloj está en la muñeca con el sensor estándar, porque el reloj no deja que una app firmada de nuevo use el de Samsung. Las comprobaciones de ritmo cardíaco irregular solo empiezan cuando llevas el reloj puesto.",
       "pattern.watch-sensor-unregister-compat.description": "Evita que la app se cierre al detener los sensores en relojes con otro framework de sensores, como el Galaxy Watch8.",
       "pattern.watch-ihrn-quiet-services.description": "Ejecuta las comprobaciones de ritmo cardíaco irregular en segundo plano sin una notificación permanente. Solo aparece una notificación de baja prioridad cuando el reloj la exige.",
       "pattern.watch-apnea-quiet-service.description": "Ejecuta el monitoreo nocturno de la apnea del sueño en segundo plano, sin una notificación que no se puede borrar. Solo aparece una notificación de baja prioridad titulada \"Apnea del sueño\" cuando el reloj la exige.",
@@ -4654,6 +4683,7 @@
       "pattern.watch-ecg-sensor-adapter.description": "Lit le capteur d'ECG via le service Health Tracking et considère les capteurs de rythme cardiaque irrégulier et de SpO2 comme disponibles.",
       "pattern.watch-spo2-sensor-adapter.description": "Répond au capteur de SpO2 du sommeil à partir des mesures brutes rouge et infrarouge du service Health Tracking, car la montre ne laisse pas une appli re-signée l'utiliser directement.",
       "pattern.watch-ihrn-sensor-adapter.description": "Lit le capteur de rythme cardiaque irrégulier via le service Health Tracking, car la montre ne laisse pas une app re-signée l'utiliser directement.",
+      "pattern.watch-offbody-sensor.description": "Détecte si la montre est au poignet avec le capteur standard, car la montre ne laisse pas une app re-signée utiliser celui de Samsung. Les contrôles du rythme cardiaque irrégulier ne démarrent que lorsque la montre est portée.",
       "pattern.watch-sensor-unregister-compat.description": "Empêche l'app de se fermer à l'arrêt des capteurs sur les montres dont le framework de capteurs diffère, comme la Galaxy Watch8.",
       "pattern.watch-ihrn-quiet-services.description": "Exécute les vérifications du rythme cardiaque irrégulier en arrière-plan sans notification permanente. Une notification de faible priorité n'apparaît que lorsque la montre l'exige.",
       "pattern.watch-apnea-quiet-service.description": "Exécute la surveillance nocturne de l'apnée du sommeil en arrière-plan, sans notification impossible à effacer. Une notification de faible priorité intitulée « Apnée du sommeil » n'apparaît que lorsque la montre l'exige.",
@@ -4775,6 +4805,7 @@
       "pattern.watch-ecg-sensor-adapter.description": "Health Tracking सेवा के ज़रिए ECG सेंसर पढ़ता है और अनियमित हृदय गति तथा SpO2 सेंसर को उपलब्ध मानता है।",
       "pattern.watch-spo2-sensor-adapter.description": "नींद के दौरान SpO2 सेंसर का उत्तर Health Tracking सेवा की कच्ची लाल और इन्फ्रारेड रीडिंग से देता है, क्योंकि घड़ी दोबारा हस्ताक्षरित ऐप को इसे सीधे उपयोग करने नहीं देती।",
       "pattern.watch-ihrn-sensor-adapter.description": "Health Tracking सेवा के ज़रिए अनियमित हृदय गति सेंसर पढ़ता है, क्योंकि घड़ी दोबारा साइन किए गए ऐप को इसे सीधे इस्तेमाल नहीं करने देती।",
+      "pattern.watch-offbody-sensor.description": "मानक सेंसर से पता लगाता है कि घड़ी कलाई पर है या नहीं, क्योंकि घड़ी दोबारा साइन किए गए ऐप को Samsung का अपना सेंसर इस्तेमाल नहीं करने देती। अनियमित हृदय गति की जाँच घड़ी पहनने के बाद ही शुरू होती है।",
       "pattern.watch-sensor-unregister-compat.description": "Galaxy Watch8 जैसी अलग सेंसर फ़्रेमवर्क वाली घड़ियों पर सेंसर बंद करते समय ऐप को बंद होने से रोकता है।",
       "pattern.watch-ihrn-quiet-services.description": "अनियमित हृदय गति की जाँच बिना स्थायी सूचना के बैकग्राउंड में चलाता है। कम प्राथमिकता वाली सूचना तभी दिखती है जब घड़ी इसकी माँग करती है।",
       "pattern.watch-apnea-quiet-service.description": "रात भर की स्लीप एप्निया निगरानी को बैकग्राउंड में चलाता है, बिना ऐसी सूचना के जिसे हटाया न जा सके। \"स्लीप एप्निया\" शीर्षक वाली कम प्राथमिकता की सूचना तभी दिखती है जब घड़ी इसकी माँग करती है।",
@@ -4896,6 +4927,7 @@
       "pattern.watch-ecg-sensor-adapter.description": "Membaca sensor EKG lewat layanan Health Tracking dan menganggap sensor ritme jantung tidak teratur dan SpO2 tersedia.",
       "pattern.watch-spo2-sensor-adapter.description": "Menjawab sensor SpO2 saat tidur dari bacaan mentah merah dan inframerah layanan Health Tracking, karena jam tidak mengizinkan aplikasi yang ditandatangani ulang memakainya secara langsung.",
       "pattern.watch-ihrn-sensor-adapter.description": "Membaca sensor irama jantung tidak teratur lewat layanan Health Tracking, karena jam tidak mengizinkan aplikasi yang ditandatangani ulang memakainya secara langsung.",
+      "pattern.watch-offbody-sensor.description": "Mendeteksi apakah jam ada di pergelangan tangan dengan sensor standar, karena jam tidak mengizinkan aplikasi yang ditandatangani ulang memakai sensor milik Samsung. Pemeriksaan ritme jantung tidak teratur baru dimulai saat jam dipakai.",
       "pattern.watch-sensor-unregister-compat.description": "Mencegah aplikasi tertutup saat sensor dihentikan di jam tangan dengan framework sensor berbeda, seperti Galaxy Watch8.",
       "pattern.watch-ihrn-quiet-services.description": "Menjalankan pemeriksaan irama jantung tidak teratur di latar belakang tanpa notifikasi permanen. Notifikasi berprioritas rendah hanya muncul saat jam mengharuskannya.",
       "pattern.watch-apnea-quiet-service.description": "Menjalankan pemantauan apnea tidur semalaman di latar belakang tanpa notifikasi yang tidak bisa dihapus. Notifikasi berprioritas rendah berjudul \"Apnea tidur\" hanya muncul saat jam mengharuskannya.",
@@ -5017,6 +5049,7 @@
       "pattern.watch-ecg-sensor-adapter.description": "Legge il sensore ECG tramite il servizio Health Tracking e considera disponibili i sensori del ritmo cardiaco irregolare e della SpO2.",
       "pattern.watch-spo2-sensor-adapter.description": "Risponde al sensore SpO2 del sonno con le letture grezze di luce rossa e infrarossa del servizio Health Tracking, perché l'orologio non permette a un'app firmata di nuovo di usarlo direttamente.",
       "pattern.watch-ihrn-sensor-adapter.description": "Legge il sensore del ritmo cardiaco irregolare tramite il servizio Health Tracking, perché l'orologio non consente a un'app rifirmata di usarlo direttamente.",
+      "pattern.watch-offbody-sensor.description": "Rileva se l'orologio è al polso con il sensore standard, perché l'orologio non permette a un'app rifirmata di usare quello di Samsung. I controlli del ritmo cardiaco irregolare partono solo quando l'orologio è indossato.",
       "pattern.watch-sensor-unregister-compat.description": "Evita che l'app si chiuda all'arresto dei sensori sugli orologi con un framework dei sensori diverso, come il Galaxy Watch8.",
       "pattern.watch-ihrn-quiet-services.description": "Esegue i controlli del ritmo cardiaco irregolare in background senza una notifica permanente. Una notifica a bassa priorità compare solo quando l'orologio la richiede.",
       "pattern.watch-apnea-quiet-service.description": "Esegue il monitoraggio notturno dell'apnea notturna in background, senza una notifica impossibile da cancellare. Una notifica a bassa priorità intitolata \"Apnea notturna\" compare solo quando l'orologio la richiede.",
@@ -5138,6 +5171,7 @@
       "pattern.watch-ecg-sensor-adapter.description": "Health Trackingサービス経由でECGセンサーを読み取り、不規則な心拍リズムとSpO2のセンサーを利用可能として扱います。",
       "pattern.watch-spo2-sensor-adapter.description": "再署名したアプリは直接使えないため、睡眠中のSpO2センサーへの要求に、Health Trackingサービスの赤色・赤外線の生データから応答します。",
       "pattern.watch-ihrn-sensor-adapter.description": "ウォッチでは再署名したアプリが不規則な心拍リズムのセンサーを直接使用できないため、Health Trackingサービス経由で読み取ります。",
+      "pattern.watch-offbody-sensor.description": "ウォッチが再署名されたアプリに Samsung 独自のセンサーを使わせないため、標準センサーで手首に着けているかを検出します。不規則な心拍リズムのチェックは、ウォッチを着けたときにのみ始まります。",
       "pattern.watch-sensor-unregister-compat.description": "Galaxy Watch8 など、センサーフレームワークが異なるウォッチでセンサー停止時にアプリが終了しないようにします。",
       "pattern.watch-ihrn-quiet-services.description": "不規則な心拍リズムのチェックを、常時表示の通知なしでバックグラウンドで実行します。ウォッチが必要とする場合にのみ、優先度の低い通知が表示されます。",
       "pattern.watch-apnea-quiet-service.description": "夜間の睡眠時無呼吸のモニタリングを、消去できない通知なしでバックグラウンドで実行します。ウォッチが必要とする場合にのみ、「睡眠時無呼吸」という優先度の低い通知が表示されます。",
@@ -5259,6 +5293,7 @@
       "pattern.watch-ecg-sensor-adapter.description": "Health Tracking 서비스를 통해 ECG 센서를 읽고, 불규칙 심장 리듬 및 SpO2 센서를 사용 가능한 것으로 처리합니다.",
       "pattern.watch-spo2-sensor-adapter.description": "재서명된 앱은 시계의 수면 SpO2 센서를 직접 사용할 수 없으므로, Health Tracking 서비스의 적색·적외선 원시 값으로 센서 요청에 응답합니다.",
       "pattern.watch-ihrn-sensor-adapter.description": "워치에서 재서명된 앱이 불규칙한 심장 리듬 센서를 직접 사용할 수 없으므로 Health Tracking 서비스를 통해 읽습니다.",
+      "pattern.watch-offbody-sensor.description": "워치가 다시 서명된 앱에 Samsung 자체 센서 사용을 허용하지 않으므로 표준 센서로 손목 착용 여부를 감지합니다. 불규칙한 심장 리듬 확인은 워치를 착용해야 시작됩니다.",
       "pattern.watch-sensor-unregister-compat.description": "Galaxy Watch8처럼 센서 프레임워크가 다른 워치에서 센서를 중지할 때 앱이 종료되지 않도록 합니다.",
       "pattern.watch-ihrn-quiet-services.description": "불규칙한 심장 리듬 검사를 상시 알림 없이 백그라운드에서 실행합니다. 워치가 요구할 때만 우선순위가 낮은 알림이 표시됩니다.",
       "pattern.watch-apnea-quiet-service.description": "밤새 수면 무호흡 모니터링을 지울 수 없는 알림 없이 백그라운드에서 실행합니다. 워치가 요구할 때만 \"수면 무호흡\"이라는 우선순위가 낮은 알림이 표시됩니다.",
@@ -5380,6 +5415,7 @@
       "pattern.watch-ecg-sensor-adapter.description": "Leest de ecg-sensor uit via de Health Tracking-service en behandelt de sensoren voor onregelmatig hartritme en SpO2 als beschikbaar.",
       "pattern.watch-spo2-sensor-adapter.description": "Beantwoordt de slaap-SpO2-sensor met de ruwe rode en infraroodmetingen van de Health Tracking-service, omdat het horloge een opnieuw ondertekende app geen directe toegang geeft.",
       "pattern.watch-ihrn-sensor-adapter.description": "Leest de sensor voor onregelmatig hartritme uit via de Health Tracking-service, omdat het horloge een opnieuw ondertekende app er niet rechtstreeks gebruik van laat maken.",
+      "pattern.watch-offbody-sensor.description": "Detecteert met de standaardsensor of het horloge om de pols zit, omdat het horloge een opnieuw ondertekende app de eigen sensor van Samsung niet laat gebruiken. De controles op een onregelmatig hartritme starten pas als het horloge gedragen wordt.",
       "pattern.watch-sensor-unregister-compat.description": "Voorkomt dat de app sluit bij het stoppen van sensoren op horloges met een ander sensorframework, zoals de Galaxy Watch8.",
       "pattern.watch-ihrn-quiet-services.description": "Voert de controles op onregelmatig hartritme op de achtergrond uit zonder permanente melding. Een melding met lage prioriteit verschijnt alleen als het horloge erom vraagt.",
       "pattern.watch-apnea-quiet-service.description": "Voert de nachtelijke bewaking van slaapapneu op de achtergrond uit, zonder melding die niet te wissen is. Een melding met lage prioriteit met de titel \"Slaapapneu\" verschijnt alleen als het horloge erom vraagt.",
@@ -5501,6 +5537,7 @@
       "pattern.watch-ecg-sensor-adapter.description": "Odczytuje czujnik EKG przez usługę Health Tracking i traktuje czujniki nieregularnego rytmu serca i SpO2 jako dostępne.",
       "pattern.watch-spo2-sensor-adapter.description": "Odpowiada na zapytania czujnika SpO2 podczas snu na podstawie surowych odczytów czerwonych i podczerwonych z usługi Health Tracking, bo zegarek nie pozwala ponownie podpisanej aplikacji korzystać z niego bezpośrednio.",
       "pattern.watch-ihrn-sensor-adapter.description": "Odczytuje czujnik nieregularnego rytmu serca przez usługę Health Tracking, ponieważ zegarek nie pozwala aplikacji podpisanej ponownie używać go bezpośrednio.",
+      "pattern.watch-offbody-sensor.description": "Wykrywa standardowym czujnikiem, czy zegarek jest na nadgarstku, ponieważ zegarek nie pozwala ponownie podpisanej aplikacji używać czujnika Samsunga. Sprawdzanie nieregularnego rytmu serca zaczyna się dopiero, gdy zegarek jest noszony.",
       "pattern.watch-sensor-unregister-compat.description": "Zapobiega zamykaniu aplikacji przy wyłączaniu czujników na zegarkach z innym frameworkiem czujników, np. Galaxy Watch8.",
       "pattern.watch-ihrn-quiet-services.description": "Wykonuje sprawdzanie nieregularnego rytmu serca w tle bez stałego powiadomienia. Powiadomienie o niskim priorytecie pojawia się tylko wtedy, gdy wymaga go zegarek.",
       "pattern.watch-apnea-quiet-service.description": "Wykonuje nocne monitorowanie bezdechu sennego w tle, bez powiadomienia, którego nie da się usunąć. Powiadomienie o niskim priorytecie z tytułem „Bezdech senny” pojawia się tylko wtedy, gdy wymaga go zegarek.",
@@ -5622,6 +5659,7 @@
       "pattern.watch-ecg-sensor-adapter.description": "Lê o sensor de ECG pelo serviço Health Tracking e trata os sensores de ritmo cardíaco irregular e de SpO2 como disponíveis.",
       "pattern.watch-spo2-sensor-adapter.description": "Responde ao sensor de SpO2 do sono com as leituras brutas de luz vermelha e infravermelha do serviço Health Tracking, porque o relógio não deixa um app assinado de novo usá-lo diretamente.",
       "pattern.watch-ihrn-sensor-adapter.description": "Lê o sensor de ritmo cardíaco irregular pelo serviço Health Tracking, porque o relógio não deixa um app assinado novamente usá-lo diretamente.",
+      "pattern.watch-offbody-sensor.description": "Detecta se o relógio está no pulso com o sensor padrão, porque o relógio não deixa um app assinado novamente usar o da Samsung. As verificações de ritmo cardíaco irregular só começam quando o relógio está no pulso.",
       "pattern.watch-sensor-unregister-compat.description": "Evita que o app feche ao parar os sensores em relógios com outro framework de sensores, como o Galaxy Watch8.",
       "pattern.watch-ihrn-quiet-services.description": "Executa as verificações de ritmo cardíaco irregular em segundo plano sem uma notificação permanente. Uma notificação de baixa prioridade só aparece quando o relógio a exige.",
       "pattern.watch-apnea-quiet-service.description": "Executa a monitorização noturna da apneia do sono em segundo plano, sem uma notificação que não pode ser apagada. Uma notificação de baixa prioridade com o título \"Apneia do sono\" só aparece quando o relógio a exige.",
@@ -5743,6 +5781,7 @@
       "pattern.watch-ecg-sensor-adapter.description": "Считывает датчик ЭКГ через службу Health Tracking и считает датчики нерегулярного сердечного ритма и SpO2 доступными.",
       "pattern.watch-spo2-sensor-adapter.description": "Отвечает за датчик SpO2 во сне по необработанным красным и инфракрасным показаниям службы Health Tracking, потому что часы не позволяют переподписанному приложению использовать его напрямую.",
       "pattern.watch-ihrn-sensor-adapter.description": "Считывает датчик нерегулярного сердечного ритма через службу Health Tracking, потому что часы не дают переподписанному приложению использовать его напрямую.",
+      "pattern.watch-offbody-sensor.description": "Определяет стандартным датчиком, надеты ли часы на запястье, потому что часы не разрешают повторно подписанному приложению использовать собственный датчик Samsung. Проверки нерегулярного сердечного ритма начинаются, только когда часы надеты.",
       "pattern.watch-sensor-unregister-compat.description": "Не даёт приложению закрываться при остановке датчиков на часах с другим фреймворком датчиков, например Galaxy Watch8.",
       "pattern.watch-ihrn-quiet-services.description": "Выполняет проверки нерегулярного сердечного ритма в фоне без постоянного уведомления. Уведомление с низким приоритетом появляется, только когда этого требуют часы.",
       "pattern.watch-apnea-quiet-service.description": "Выполняет ночной мониторинг апноэ сна в фоне без уведомления, которое нельзя смахнуть. Уведомление с низким приоритетом и заголовком «Апноэ сна» появляется, только когда этого требуют часы.",
@@ -5864,6 +5903,7 @@
       "pattern.watch-ecg-sensor-adapter.description": "EKG sensörünü Health Tracking hizmeti üzerinden okur ve düzensiz kalp ritmi ile SpO2 sensörlerini kullanılabilir olarak kabul eder.",
       "pattern.watch-spo2-sensor-adapter.description": "Saat, yeniden imzalanmış bir uygulamanın uyku SpO2 sensörünü doğrudan kullanmasına izin vermediği için sensörü Health Tracking hizmetinin ham kırmızı ve kızılötesi okumalarından yanıtlar.",
       "pattern.watch-ihrn-sensor-adapter.description": "Saat, yeniden imzalanmış bir uygulamanın düzensiz kalp ritmi sensörünü doğrudan kullanmasına izin vermediği için sensörü Health Tracking hizmeti üzerinden okur.",
+      "pattern.watch-offbody-sensor.description": "Saat, yeniden imzalanmış bir uygulamanın Samsung'un kendi sensörünü kullanmasına izin vermediği için saatin bilekte olup olmadığını standart sensörle algılar. Düzensiz kalp ritmi kontrolleri yalnızca saat takılıyken başlar.",
       "pattern.watch-sensor-unregister-compat.description": "Galaxy Watch8 gibi farklı sensör altyapısına sahip saatlerde sensörler durdurulurken uygulamanın kapanmasını önler.",
       "pattern.watch-ihrn-quiet-services.description": "Düzensiz kalp ritmi kontrollerini kalıcı bir bildirim olmadan arka planda çalıştırır. Düşük öncelikli bir bildirim yalnızca saat gerektirdiğinde görünür.",
       "pattern.watch-apnea-quiet-service.description": "Gece boyunca uyku apnesi izlemesini, temizlenemeyen bir bildirim olmadan arka planda çalıştırır. \"Uyku apnesi\" başlıklı düşük öncelikli bir bildirim yalnızca saat gerektirdiğinde görünür.",
@@ -5985,6 +6025,7 @@
       "pattern.watch-ecg-sensor-adapter.description": "Зчитує датчик ЕКГ через службу Health Tracking і вважає датчики нерегулярного серцевого ритму та SpO2 доступними.",
       "pattern.watch-spo2-sensor-adapter.description": "Відповідає за датчик SpO2 під час сну за необробленими червоними та інфрачервоними показниками служби Health Tracking, бо годинник не дозволяє повторно підписаному застосунку користуватися ним напряму.",
       "pattern.watch-ihrn-sensor-adapter.description": "Зчитує датчик нерегулярного серцевого ритму через службу Health Tracking, бо годинник не дозволяє переподписаному застосунку використовувати його напряму.",
+      "pattern.watch-offbody-sensor.description": "Визначає стандартним датчиком, чи годинник на зап'ясті, бо годинник не дозволяє повторно підписаному застосунку використовувати власний датчик Samsung. Перевірки нерегулярного серцевого ритму починаються, лише коли годинник надіто.",
       "pattern.watch-sensor-unregister-compat.description": "Не дає застосунку закриватися під час зупинки датчиків на годинниках з іншим фреймворком датчиків, як-от Galaxy Watch8.",
       "pattern.watch-ihrn-quiet-services.description": "Виконує перевірки нерегулярного серцевого ритму у фоні без постійного сповіщення. Сповіщення з низьким пріоритетом з'являється, лише коли цього вимагає годинник.",
       "pattern.watch-apnea-quiet-service.description": "Виконує нічний моніторинг апное сну у фоні без сповіщення, яке не можна прибрати. Сповіщення з низьким пріоритетом і заголовком «Апное сну» з'являється, лише коли цього вимагає годинник.",
@@ -6106,6 +6147,7 @@
       "pattern.watch-ecg-sensor-adapter.description": "通过 Health Tracking 服务读取心电图传感器，并将心律不齐和血氧（SpO2）传感器视为可用。",
       "pattern.watch-spo2-sensor-adapter.description": "重新签名的应用无法直接使用睡眠血氧传感器，因此改用 Health Tracking 服务的红光和红外光原始读数来响应传感器请求。",
       "pattern.watch-ihrn-sensor-adapter.description": "通过 Health Tracking 服务读取心律不齐传感器，因为手表不允许重新签名的应用直接使用它。",
+      "pattern.watch-offbody-sensor.description": "由于手表不允许重新签名的应用使用三星自己的传感器，改用标准传感器检测手表是否戴在手腕上。只有戴上手表后，才会开始心律不齐检查。",
       "pattern.watch-sensor-unregister-compat.description": "防止在传感器框架不同的手表（如 Galaxy Watch8）上停止传感器时应用关闭。",
       "pattern.watch-ihrn-quiet-services.description": "在后台运行心律不齐检查，不显示常驻通知。只有在手表要求时才会显示一条低优先级通知。",
       "pattern.watch-apnea-quiet-service.description": "在后台运行夜间睡眠呼吸暂停监测，不显示无法清除的通知。只有在手表要求时才会显示一条标题为“睡眠呼吸暂停”的低优先级通知。",
@@ -6227,6 +6269,7 @@
       "pattern.watch-ecg-sensor-adapter.description": "透過 Health Tracking 服務讀取心電圖感測器，並將心律不整和血氧（SpO2）感測器視為可用。",
       "pattern.watch-spo2-sensor-adapter.description": "重新簽署的應用程式無法直接使用睡眠血氧感測器，因此改用 Health Tracking 服務的紅光與紅外光原始讀數來回應感測器請求。",
       "pattern.watch-ihrn-sensor-adapter.description": "透過 Health Tracking 服務讀取心律不整感測器，因為手錶不允許重新簽署的應用程式直接使用它。",
+      "pattern.watch-offbody-sensor.description": "由於手錶不允許重新簽署的應用程式使用三星自己的感測器，改用標準感測器偵測手錶是否戴在手腕上。只有戴上手錶後，才會開始心律不整檢查。",
       "pattern.watch-sensor-unregister-compat.description": "避免在感測器框架不同的手錶（例如 Galaxy Watch8）上停止感測器時應用程式關閉。",
       "pattern.watch-ihrn-quiet-services.description": "在背景執行心律不整檢查，不顯示常駐通知。只有在手錶要求時才會顯示一則低優先順序通知。",
       "pattern.watch-apnea-quiet-service.description": "在背景執行夜間睡眠呼吸中止監測，不顯示無法清除的通知。只有在手錶要求時才會顯示一則標題為「睡眠呼吸中止」的低優先順序通知。",

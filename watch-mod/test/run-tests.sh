@@ -3,7 +3,7 @@
 # parcel is replaced by an in-memory fake), the unregisterListener overload choice of
 # shminterop.watch.UnregisterMethod, and the BpAdapter repackaging layer (the Android and vendor
 # types come from behavioural doubles in the test tree and PpgTracker from a shadow; the real
-# tracker needs the binder stack only a device has), the IHRN adapter (pairing, flags, modes, sessions) and the foreground-start fallback of WatchOverrides, and the SpO2 adapter pieces
+# tracker needs the binder stack only a device has), the IHRN adapter (pairing, flags, modes, sessions), the foreground-start fallback and the off-body detector choice of WatchOverrides, and the SpO2 adapter pieces
 # (estimator, synthetic night, answer chunking, store, flow with doubles).
 #   watch-mod/test/run-tests.sh
 set -euo pipefail
@@ -36,6 +36,7 @@ java -Xmx256m -cp "$OUT/classes" shminterop.ecg.LeadDebouncerTest || FAILED=1
 java -Xmx256m -cp "$OUT/classes" shminterop.ecg.BeatMonitorTest || FAILED=1
 java -Xmx256m -cp "$OUT/classes" shminterop.ihrn.IhrnAdapterTest || FAILED=1
 java -Xmx256m -cp "$OUT/classes" shminterop.watch.WatchOverridesServiceTest || FAILED=1
+java -Xmx256m -cp "$OUT/classes" shminterop.watch.OffBodySensorTest || FAILED=1
 java -Xmx256m -cp "$OUT/classes" shminterop.watch.UnregisterMethodTest || FAILED=1
 java -Xmx256m -cp "$OUT/classes" shminterop.watch.HrSensorAttributeFactoryTest || FAILED=1
 java -Xmx256m -cp "$OUT/classes" shminterop.bp.BpAdapterTest || FAILED=1
