@@ -5,6 +5,8 @@ import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.util.Log;
 
 import com.samsung.android.hardware.sensormanager.SemSensorListener;
@@ -48,6 +50,13 @@ import java.lang.reflect.Method;
  * makeHrSensorAttribute(): builds a SemHrSensorAttribute by reflection for the BP calibration
  * path (pattern watch-bp-attribute-guard); returns null when hidden-API enforcement denies
  * the constructor, so SHM takes its normal sensor-error path instead of dying.
+ *
+ * offBodySensor(): the off-body detector lookups of the IHRN body-off service and the BP sensor
+ * controller (pattern watch-offbody-sensor). SHM asks for Samsung's "LowPower Offbody Detector"
+ * (0x1101b), which the framework only lets apps holding com.samsung.permission.SSENSOR enable, so
+ * a re-signed app never gets an event, and IHRN only creates its schedule on a "wear on" event.
+ * The public low latency off-body detector (34) reports the same values (1.0 on the body, 0.0
+ * off it) and needs no permission; it is used when the watch has it.
  */
 public final class WatchOverrides {
     public static final String TAG = "ShmInterop";
@@ -55,6 +64,8 @@ public final class WatchOverrides {
     public static final int SENSOR_TYPE_IHRN = 0x25;   // 37 TYPE_WEAR_PPG_IHRN
     public static final int SENSOR_TYPE_SPO2 = 0x31;   // 49 SLEEP_WATCH_SPO2 (apnea)
     public static final int SENSOR_TYPE_BP = 0x1c;     // 28 manual BP (green PPG via BpAdapter)
+    public static final int SENSOR_TYPE_SAMSUNG_OFFBODY = 0x1101b; // needs com.samsung.permission.SSENSOR
+    public static final int SENSOR_TYPE_LOW_LATENCY_OFFBODY = 34;  // Sensor.TYPE_LOW_LATENCY_OFFBODY_DETECT
 
     // Logged once per (type, HAL result) so logcat is not flooded (IhrnScheduler polls often).
     private static volatile int sSensorLogged;
@@ -64,6 +75,8 @@ public final class WatchOverrides {
     private static volatile boolean sUnregisterResolved;
 
     private static volatile boolean sHrAttributeFailureLogged;
+
+    private static volatile boolean sOffBodyLogged;
 
     private WatchOverrides() {}
 
@@ -254,5 +267,41 @@ public final class WatchOverrides {
             }
         }
         return true;
+    }
+
+    /** SensorManager.getDefaultSensor(type) of the BP sensor controller; see offBodySensor below. */
+    public static Sensor offBodySensor(SensorManager manager, int type) {
+        Sensor sensor = publicOffBodySensor(manager, type);
+        return sensor != null ? sensor : manager.getDefaultSensor(type);
+    }
+
+    /**
+     * SensorManager.getDefaultSensor(type, wakeUp) of the IHRN body-off service: for Samsung's
+     * off-body detector returns the public low latency off-body detector when the watch has one
+     * (it is a wake-up sensor), otherwise the sensor that was asked for. Other types pass through.
+     */
+    public static Sensor offBodySensor(SensorManager manager, int type, boolean wakeUp) {
+        Sensor sensor = publicOffBodySensor(manager, type);
+        return sensor != null ? sensor : manager.getDefaultSensor(type, wakeUp);
+    }
+
+    private static Sensor publicOffBodySensor(SensorManager manager, int type) {
+        if (type != SENSOR_TYPE_SAMSUNG_OFFBODY) return null;
+        Sensor sensor = null;
+        try {
+            sensor = manager.getDefaultSensor(SENSOR_TYPE_LOW_LATENCY_OFFBODY);
+        } catch (Throwable t) {
+            Log.w(TAG, "off-body: lookup of the public detector failed: " + t);
+        }
+        if (!sOffBodyLogged) {
+            sOffBodyLogged = true;
+            if (sensor != null) {
+                Log.i(TAG, "off-body: using the public low latency off-body detector instead of 0x1101b: " + sensor);
+            } else {
+                Log.w(TAG, "off-body: no public low latency off-body detector; keeping 0x1101b, which needs"
+                        + " com.samsung.permission.SSENSOR (IHRN will not get wear events)");
+            }
+        }
+        return sensor;
     }
 }

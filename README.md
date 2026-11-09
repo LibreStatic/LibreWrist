@@ -510,9 +510,17 @@ the problem and tap **Export .txt**. Attach the file to the issue.
   - :hourglass_flowing_sand: **A daily "Health Monitor" notification on the watch that cannot be dismissed.** The sleep apnea service posted it. Since 0.10.4 it shows no notification when the patcher granted the battery optimization exemption, and a low-importance "Sleep apnea" one otherwise. An affected user still needs to report that it is gone.
   - :mag: **ECG readings sometimes fail.** A single brief loss of finger contact cancelled the reading; 0.10.0 ignores such short blips, but the reporter still sees occasional failures. A device log of a failed reading helps.
   - :mag: **The heart rate shown during an ECG jumps a lot.** Since 0.10.0 the device log records the beat timing during an ECG, so the jumps can be traced. A dirty, wet or scratched sensor can also cause this.
-- :mag: **Sleep apnea nights are not counted, and IHRN shows no measurements** ([#26](https://github.com/LibreStatic/LibreWrist/issues/26))
-  - **Status:** reported on a Galaxy Watch Ultra 2 with One UI Watch 9. A device log is needed to find the cause.
-  - **Note:** IHRN only keeps a history when it finds an irregular rhythm, so an empty IHRN history can be normal. Health Monitor completes a sleep apnea night by itself after at least 4 hours of sleep, up to 90 minutes after you wake up; there is no button to end it.
+- :hourglass_flowing_sand: **IHRN never measures on some watches** ([#26](https://github.com/LibreStatic/LibreWrist/issues/26))
+  - **Cause:** IHRN only schedules its measurements after it sees that the watch is on the wrist. It asked for that through a Samsung-only off-body sensor that the watch refuses to a re-signed Health Monitor, so it never saw the watch being worn and never measured. Confirmed from the reporter's device log on a Galaxy Watch Ultra 2.
+  - **Status:** 0.10.14 uses the standard Android off-body sensor instead (the blood pressure check uses it too). Rebuild and install the watch Health Monitor with 0.10.14. An affected user still needs to report that IHRN measures again.
+  - **Note:** IHRN only keeps a history when it finds an irregular rhythm, so an empty history after the fix can be normal.
+- :mag: **Some sleep apnea nights are not counted** ([#26](https://github.com/LibreStatic/LibreWrist/issues/26))
+  - **Cause, first night:** the Health Tracking service on the watch refused the recording all night, which happens when Health Platform developer mode is off. The recording then retried every 15 seconds without success. Since 0.10.14 it waits longer between retries and writes the cause once in the device log.
+  - **Cause, second night:** the recording stopped after midnight without a trace (the app was closed, or the watch shut down). Since 0.10.14 the device log records how the app was last closed and the battery level every 15 minutes, so a log from such a night shows the cause.
+  - **Workaround:** keep Health Platform developer mode on (see the setup steps) and charge the watch before sleeping.
+- :mag: **Sleep apnea recording drains the battery on a Galaxy Watch8** ([#27](https://github.com/LibreStatic/LibreWrist/issues/27))
+  - **Status:** reported on a Galaxy Watch8 40 mm with 0.10.12. While recording it draws about 55 to 80 mA, against about 26 mA above idle measured on a Galaxy Watch5 Pro, so the watch runs flat before morning. The cause is not known yet.
+  - **Workaround:** turn sleep apnea screening off on that watch until it is fixed.
 
 [↑ Back to contents](#contents)
 

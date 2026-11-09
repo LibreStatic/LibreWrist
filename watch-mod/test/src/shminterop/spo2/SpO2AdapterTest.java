@@ -50,6 +50,9 @@ public final class SpO2AdapterTest {
         orientationFlip();
         orientationKept();
         nightDiagnostics();
+        policyBackoff();
+        previousExit();
+        batteryInPeriod();
         SpO2Adapter.resetForTest();
         System.out.println(failures == 0 ? "ALL PASSED" : failures + " FAILED");
         System.exit(failures == 0 ? 0 : 1);
@@ -273,6 +276,8 @@ public final class SpO2AdapterTest {
     static class TestContext extends Context {
         final File dir;
         final PowerManager pm = new PowerManager();
+        final android.app.ActivityManager am = new android.app.ActivityManager();
+        final android.os.BatteryManager bm = new android.os.BatteryManager();
 
         TestContext(String name) {
             File base = new File(System.getProperty("test.tmp", "."), "spo2-adapter-test");
@@ -285,7 +290,10 @@ public final class SpO2AdapterTest {
         }
 
         @Override public Object getSystemService(String name) {
-            return POWER_SERVICE.equals(name) ? pm : null;
+            if (POWER_SERVICE.equals(name)) return pm;
+            if (ACTIVITY_SERVICE.equals(name)) return am;
+            if (BATTERY_SERVICE.equals(name)) return bm;
+            return null;
         }
     }
 
@@ -711,6 +719,205 @@ public final class SpO2AdapterTest {
             check(!new File(spo2Dir(e), "events.log").exists(), "no internal journal with shared storage");
         } finally {
             SpO2Adapter.logSink = null;
+            SpO2Adapter.contextOverride = null;
+            SpO2Adapter.resetForTest();
+        }
+    }
+
+    // ------------------------------------------------------- issue #26: policy backoff, diagnostics
+
+    static String joinedJournal() {
+        StringBuilder b = new StringBuilder();
+        for (NightLog.Entry e : SpO2Adapter.journal.since(0)) b.append(e.text).append('\n');
+        return b.toString();
+    }
+
+    static int count(String text, String part) {
+        int n = 0;
+        for (int i = text.indexOf(part); i >= 0; i = text.indexOf(part, i + 1)) n++;
+        return n;
+    }
+
+    /** Ticks with the watchdog clock skewed by skewMs; true when the tracker was re-armed. */
+    static boolean rearmedAt(long skewMs) {
+        int before = count(joinedJournal(), "watchdog: no PPG batch");
+        SpO2Adapter.tickSkewMs = skewMs;
+        SpO2Adapter.tick();
+        return count(joinedJournal(), "watchdog: no PPG batch") > before;
+    }
+
+    static void policyBackoff() throws Exception {
+        TestContext c = new TestContext("policy");
+        SpO2Adapter.contextOverride = c;
+        List<String> sink = new CopyOnWriteArrayList<String>();
+        SpO2Adapter.logSink = sink;
+        try {
+            eq(15_000L, SpO2Adapter.rearmDelayMs(0), "no policy error: the liveness delay");
+            eq(30_000L, SpO2Adapter.rearmDelayMs(1), "1 policy error: 30 s");
+            eq(60_000L, SpO2Adapter.rearmDelayMs(2), "2 policy errors: 60 s");
+            eq(120_000L, SpO2Adapter.rearmDelayMs(3), "3 policy errors: 120 s");
+            eq(SpO2Adapter.POLICY_BACKOFF_MAX_MS, SpO2Adapter.rearmDelayMs(7), "capped at 15 min");
+            eq(SpO2Adapter.POLICY_BACKOFF_MAX_MS, SpO2Adapter.rearmDelayMs(500), "stays capped");
+
+            SpO2Adapter.resetForTest();
+            Recorder l = new Recorder();
+            SpO2Adapter.register(l, 49);
+            startNight(l);
+            // Without errors the plain liveness delay and the plain watchdog text apply.
+            check(!rearmedAt(10_000L), "no re-arm inside the liveness delay");
+            check(rearmedAt(20_000L), "re-arm after the liveness delay without errors");
+            check(!joinedJournal().contains("policy errors"), "plain watchdog text without errors");
+
+            // Consecutive policy errors: the journal explains once, the re-arms back off.
+            PpgTrackerListener().onError(shminterop.hsdk.HealthError.SDK_POLICY_ERROR);
+            long t = 20_000L;
+            check(!rearmedAt(t + 20_000L), "1 error: no re-arm after 20 s");
+            check(rearmedAt(t + 31_000L), "1 error: re-arm after 30 s");
+            t += 31_000L;
+            PpgTrackerListener().onError(shminterop.hsdk.HealthError.SDK_POLICY_ERROR);
+            check(!rearmedAt(t + 59_000L), "2 errors: no re-arm after 59 s");
+            check(rearmedAt(t + 61_000L), "2 errors: re-arm after 60 s");
+            t += 61_000L;
+            PpgTrackerListener().onError(shminterop.hsdk.HealthError.SDK_POLICY_ERROR);
+            check(!rearmedAt(t + 119_000L), "3 errors: no re-arm after 119 s");
+            check(rearmedAt(t + 121_000L), "3 errors: re-arm after 120 s");
+            t += 121_000L;
+            String j = joinedJournal();
+            eq(1, count(j, "tracker onError SDK_POLICY_ERROR"), "the policy error is journaled once");
+            check(j.contains("the Health Tracking service refused this app (Health Platform developer"
+                    + " mode off?); retrying with backoff"), "explanatory policy line");
+            check(j.contains("(policy errors: 1, next check in 30 s)"), "watchdog note with K=1");
+            check(j.contains("(policy errors: 3, next check in 120 s)") == false
+                    || j.contains("policy errors: 2, next check in 60 s"), "watchdog note with K=2");
+            check(!sink.isEmpty() && String.join("\n", sink).contains("onError SDK_POLICY_ERROR"),
+                    "policy errors still reach logcat");
+
+            // A batch ends the streak: back to the liveness delay.
+            SpO2Adapter.trackerListener().onBatch(pulses(0, 100, 0.52));
+            t += 1_000L;
+            check(!rearmedAt(t + 10_000L), "after a batch: no re-arm inside the liveness delay");
+            check(rearmedAt(t + 20_000L), "after a batch: the liveness delay applies again");
+            SpO2Adapter.trackerListener().onError(shminterop.hsdk.HealthError.SDK_POLICY_ERROR);
+            eq(2, count(joinedJournal(), "tracker onError SDK_POLICY_ERROR"),
+                    "a new streak journals the explanation again");
+
+            // A permission error never backs off (fresh context: the journal file is per directory).
+            SpO2Adapter.contextOverride = new TestContext("policy-permission");
+            SpO2Adapter.resetForTest();
+            Recorder p = new Recorder();
+            SpO2Adapter.register(p, 49);
+            startNight(p);
+            for (int i = 0; i < 3; i++) {
+                SpO2Adapter.trackerListener().onError(shminterop.hsdk.HealthError.PERMISSION_ERROR);
+            }
+            eq(3, count(joinedJournal(), "tracker onError PERMISSION_ERROR"), "permission errors journaled");
+            check(rearmedAt(20_000L), "permission error: the liveness delay still applies");
+            check(!joinedJournal().contains("policy errors"), "permission error: no backoff note");
+            check(!joinedJournal().contains("retrying with backoff"), "permission error: no policy line");
+        } finally {
+            SpO2Adapter.logSink = null;
+            SpO2Adapter.contextOverride = null;
+            SpO2Adapter.resetForTest();
+        }
+    }
+
+    static shminterop.hsdk.PpgTracker.Listener PpgTrackerListener() {
+        return SpO2Adapter.trackerListener();
+    }
+
+    static void previousExit() throws Exception {
+        try {
+            TestContext c = new TestContext("exit-recorded");
+            c.am.exits = java.util.Collections.singletonList(new android.app.ApplicationExitInfo(
+                    android.app.ApplicationExitInfo.REASON_LOW_MEMORY, "lmkd kill", T0, 400, 1234L, 5678L));
+            SpO2Adapter.contextOverride = c;
+            SpO2Adapter.resetForTest();
+            Recorder l = new Recorder();
+            SpO2Adapter.register(l, 49);
+            String j = joinedJournal();
+            check(j.contains("previous exit: LOW_MEMORY (lmkd kill) at "), "recorded exit reason: " + j);
+            check(j.contains("importance 400") && j.contains("pss 1234 kB, rss 5678 kB"), "exit details");
+            eq("shminterop.test", c.am.lastPackage, "exit reasons asked for this package");
+            SpO2Adapter.unregister(l, 49);
+
+            TestContext n = new TestContext("exit-none");
+            SpO2Adapter.contextOverride = n;
+            SpO2Adapter.resetForTest();
+            Recorder m = new Recorder();
+            SpO2Adapter.register(m, 49);
+            check(joinedJournal().contains("previous exit: none recorded"), "no exit recorded");
+            SpO2Adapter.unregister(m, 49);
+
+            TestContext u = new TestContext("exit-unknown");
+            u.am.exits = java.util.Collections.singletonList(new android.app.ApplicationExitInfo(
+                    99, null, T0, 100, 0L, 0L));
+            SpO2Adapter.contextOverride = u;
+            SpO2Adapter.resetForTest();
+            Recorder k = new Recorder();
+            SpO2Adapter.register(k, 49);
+            check(joinedJournal().contains("previous exit: 99 ("), "unknown reason prints its number");
+            SpO2Adapter.unregister(k, 49);
+
+            TestContext f = new TestContext("exit-fail");
+            f.am.failure = new SecurityException("denied");
+            SpO2Adapter.contextOverride = f;
+            SpO2Adapter.resetForTest();
+            Recorder q = new Recorder();
+            SpO2Adapter.register(q, 49);
+            check(joinedJournal().contains("process start"), "a failing exit lookup does not break entry");
+            check(joinedJournal().contains("previous exit: unavailable"), "failed lookup noted");
+            SpO2Adapter.unregister(q, 49);
+
+            // No context: skipped quietly.
+            SpO2Adapter.contextOverride = null;
+            SpO2Adapter.resetForTest();
+            Recorder r = new Recorder();
+            SpO2Adapter.register(r, 49);
+            check(!joinedJournal().contains("previous exit"), "no context: no exit line");
+            SpO2Adapter.unregister(r, 49);
+        } finally {
+            SpO2Adapter.contextOverride = null;
+            SpO2Adapter.resetForTest();
+        }
+    }
+
+    static void batteryInPeriod() throws Exception {
+        try {
+            TestContext c = new TestContext("battery");
+            c.bm.capacity = 54;
+            SpO2Adapter.contextOverride = c;
+            SpO2Adapter.resetForTest();
+            Recorder l = new Recorder();
+            SpO2Adapter.register(l, 49);
+            startNight(l);
+            feedPulses(140, 0.52);
+            SpO2Adapter.unregister(l, 49); // the stop flushes the period line
+            check(joinedJournal().contains("period: valid ") && joinedJournal().contains(", battery 54%"),
+                    "period line carries the battery: " + joinedJournal());
+
+            TestContext f = new TestContext("battery-fail");
+            f.bm.failure = new SecurityException("denied");
+            SpO2Adapter.contextOverride = f;
+            SpO2Adapter.resetForTest();
+            Recorder m = new Recorder();
+            SpO2Adapter.register(m, 49);
+            startNight(m);
+            feedPulses(140, 0.52);
+            SpO2Adapter.unregister(m, 49);
+            String j = joinedJournal();
+            check(j.contains("period: valid ") && !j.contains("battery"), "failed battery read is omitted");
+
+            TestContext u = new TestContext("battery-unsupported");
+            u.bm.capacity = Integer.MIN_VALUE;
+            SpO2Adapter.contextOverride = u;
+            SpO2Adapter.resetForTest();
+            Recorder k = new Recorder();
+            SpO2Adapter.register(k, 49);
+            startNight(k);
+            feedPulses(140, 0.52);
+            SpO2Adapter.unregister(k, 49);
+            check(!joinedJournal().contains("battery"), "unsupported battery property is omitted");
+        } finally {
             SpO2Adapter.contextOverride = null;
             SpO2Adapter.resetForTest();
         }

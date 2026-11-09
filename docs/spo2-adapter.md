@@ -100,7 +100,11 @@ rewritten.
 
 SET_OPERATION_MODE starts a PPG tracker (`PPG_ON_DEMAND`, channels `RED` and `IR` only) tied to the
 calling listener and feeds the estimator; the per-second values go to an in-memory store. A
-watchdog (5 s tick) re-arms the tracker if no batch arrived for 15 s while recording. The store is
+watchdog (5 s tick) re-arms the tracker if no batch arrived for 15 s while recording. While the
+service answers `SDK_POLICY_ERROR` (Health Platform developer mode off on the watch; a re-arm cannot
+succeed until that is fixed) the re-arm backs off instead: 30 s after the first consecutive policy
+error, doubling per further one (60 s, 120 s, ...) up to 15 min. A PPG batch, or a recording
+start or stop, ends the streak. `PERMISSION_ERROR` does not back off. The store is
 appended to `<filesDir>/shminterop-spo2/night.bin` (fixed 9-byte records: big-endian long second
 in epoch ms + one value byte, no header), flushed at least every 60 s and on stop, so a process
 restart mid-night does not lose the night. Unregistering the recording listener stops the tracker
@@ -194,8 +198,19 @@ armed / unsupported / connection failed / ended / error, watchdog re-arms, the s
 and at the safety bounds (night longer than 12 h, no listener owned the recording for 10 min; all as
 `recording stop: ...`), skipped auto-resume of a too-old night, wake lock not acquired,
 persistence and delivery failures, the orientation decision, and every 15 minutes while recording
-one aggregate (valid/total seconds of the period, stored total). The per-minute stats stay in
-logcat only.
+one aggregate (valid/total seconds of the period, stored total, and the battery level when it can
+be read, e.g. `period: valid 900/900 s, stored 1792 s, battery 54%`; read through `BatteryManager`,
+which wakes nothing and registers no receiver). The per-minute stats stay in logcat only.
+
+Two entries explain a night that stops short. After `process start` the journal records how the
+previous process of the app ended (`ActivityManager.getHistoricalProcessExitReasons`): `previous
+exit: <reason> (<description>) at <time>, importance <n>, pss <kB>, rss <kB>` (reasons such as
+`LOW_MEMORY`, `CRASH`, `SIGNALED`, `FREEZER`; an unknown code prints its number), or `previous exit:
+none recorded`. A watch that shut down (for example on an empty battery) may leave no exit record,
+so compare the time of the record with the last journal entry before the gap. The first `SDK_POLICY_ERROR` of a streak is journaled once, as `tracker onError
+SDK_POLICY_ERROR: the Health Tracking service refused this app (Health Platform developer mode
+off?); retrying with backoff`, and not again for the rest of the streak (logcat still gets each one);
+the watchdog line then adds `(policy errors: K, next check in M s)`.
 
 On GET_DATA, after the answer was handed to delivery, the adapter logs (tag `SpO2Adapter`) one
 `night: window <start>..<end> (<n> s), coverage X%, recording=..., recorder=..., stored N s (V valid)

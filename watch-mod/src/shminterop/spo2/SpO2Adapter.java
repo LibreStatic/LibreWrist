@@ -1,6 +1,9 @@
 package shminterop.spo2;
 
+import android.app.ActivityManager;
+import android.app.ApplicationExitInfo;
 import android.content.Context;
+import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.SystemClock;
@@ -35,6 +38,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Answers every use of the sleep SpO2 sensor (0x31, SLEEP_WATCH_SPO2) of the modified SHM watch
@@ -110,6 +114,13 @@ public final class SpO2Adapter {
      */
     static final long ARM_WAKE_LOCK_MS = 10000L;
     static final long LIVENESS_MS = 15000L;
+    /**
+     * While the service answers SDK_POLICY_ERROR (Health Platform developer mode off) a re-arm
+     * cannot succeed, so the watchdog backs off: this long after the first consecutive policy
+     * error, doubling per further one up to POLICY_BACKOFF_MAX_MS (docs/spo2-adapter.md).
+     */
+    static final long POLICY_BACKOFF_START_MS = 30000L;
+    static final long POLICY_BACKOFF_MAX_MS = 15L * 60L * 1000L;
     static final long WATCHDOG_TICK_MS = 5000L;
     static final long FLUSH_MS = 60000L;
 
@@ -154,6 +165,10 @@ public final class SpO2Adapter {
     private static volatile boolean recording;
     private static volatile long lastBatchMs;
     private static long lastArmMs;
+    /** SDK_POLICY_ERRORs since the last PPG batch; written on binder threads. */
+    private static final AtomicInteger policyErrors = new AtomicInteger();
+    /** Test hook: added to the clock the watchdog reads, to step through the backoff. */
+    static volatile long tickSkewMs;
     /** Wall clock of the recording start (bounds the night while the store is still empty). */
     private static long recordingStartMs;
     /** elapsedRealtime since when the recording has had no owner, or -1 while it has one. Under LOCK. */
@@ -612,6 +627,7 @@ public final class SpO2Adapter {
                 lastAggregateMs = now;
             }
             recordingStartMs = now;
+            policyErrors.set(0);
             recording = true;
             writeMarker();
             acquireWakeLock(ctx);
@@ -631,6 +647,7 @@ public final class SpO2Adapter {
             log("stop recording (" + store.size() + " s stored)");
             note("recording stop: " + store.size() + " s stored");
             recording = false;
+            policyErrors.set(0);
             stopTracker();
             ScheduledExecutorService w = watchdog;
             watchdog = null;
@@ -819,7 +836,7 @@ public final class SpO2Adapter {
     static void tick() {
         synchronized (LOCK) {
             if (!recording) return;
-            long e = SystemClock.elapsedRealtime();
+            long e = SystemClock.elapsedRealtime() + tickSkewMs;
             long wall = System.currentTimeMillis();
             long nightStart = store.size() > 0 ? store.oldest() : recordingStartMs;
             if (wall - nightStart > maxNightMs) {
@@ -837,9 +854,16 @@ public final class SpO2Adapter {
                 return;
             }
             long ref = Math.max(lastBatchMs, lastArmMs);
-            if (e - ref > LIVENESS_MS) {
+            int policy = policyErrors.get();
+            long delay = rearmDelayMs(policy);
+            if (e - ref > delay) {
                 log("no PPG batch for " + (e - ref) / 1000 + " s; re-arming the tracker");
-                note("watchdog: no PPG batch for " + (e - ref) / 1000 + " s, re-arming the tracker");
+                if (policy == 0) {
+                    note("watchdog: no PPG batch for " + (e - ref) / 1000 + " s, re-arming the tracker");
+                } else {
+                    note("watchdog: no PPG batch for " + (e - ref) / 1000 + " s, re-arming the tracker"
+                            + " (policy errors: " + policy + ", next check in " + delay / 1000 + " s)");
+                }
                 stopTracker();
                 lastArmMs = e;
                 holdWakeLock(ARM_WAKE_LOCK_MS);
@@ -851,6 +875,14 @@ public final class SpO2Adapter {
                 logStats();
             }
         }
+    }
+
+    /** Silence tolerated before a re-arm: LIVENESS_MS, or the policy-error backoff. */
+    static long rearmDelayMs(int policyErrors) {
+        if (policyErrors <= 0) return LIVENESS_MS;
+        long d = POLICY_BACKOFF_START_MS;
+        for (int i = 1; i < policyErrors && d < POLICY_BACKOFF_MAX_MS; i++) d *= 2;
+        return Math.min(d, POLICY_BACKOFF_MAX_MS);
     }
 
     private static void logStats() {
@@ -874,7 +906,8 @@ public final class SpO2Adapter {
             statR.clear();
             long now = System.currentTimeMillis();
             if (force ? aggSeconds > 0 : now - lastAggregateMs >= AGGREGATE_MS) {
-                note("period: valid " + aggValid + "/" + aggSeconds + " s, stored " + store.size() + " s");
+                note("period: valid " + aggValid + "/" + aggSeconds + " s, stored " + store.size() + " s"
+                        + batteryText());
                 aggSeconds = 0;
                 aggValid = 0;
                 lastAggregateMs = now;
@@ -905,11 +938,23 @@ public final class SpO2Adapter {
 
         @Override public void onConnectionEnded() { log("onConnectionEnded"); note("tracker onConnectionEnded"); }
 
-        @Override public void onError(HealthError error) { log("onError " + error); note("tracker onError " + error); }
+        @Override public void onError(HealthError error) {
+            log("onError " + error);
+            if (error == HealthError.SDK_POLICY_ERROR) {
+                // The service refuses this app on every registration: note it once per streak.
+                if (policyErrors.incrementAndGet() == 1) {
+                    note("tracker onError SDK_POLICY_ERROR: the Health Tracking service refused this app"
+                            + " (Health Platform developer mode off?); retrying with backoff");
+                }
+                return;
+            }
+            note("tracker onError " + error);
+        }
 
         @Override public void onBatch(PpgBatch batch) {
             if (!recording || batch == null) return;
             lastBatchMs = SystemClock.elapsedRealtime();
+            policyErrors.set(0);
             synchronized (FEED_LOCK) {
                 // Re-read per sample: an orientation flip replaces the estimator mid-batch.
                 for (PpgSample s : batch.samples) {
@@ -948,6 +993,8 @@ public final class SpO2Adapter {
             recordingStartMs = 0L;
             maxNightMs = MAX_NIGHT_MS;
             orphanMs = ORPHAN_MS;
+            policyErrors.set(0);
+            tickSkewMs = 0L;
             listeners.clear();
             commanded.clear();
             autoResumeChecked = false;
@@ -1019,9 +1066,70 @@ public final class SpO2Adapter {
                 first = !processStartNoted;
                 processStartNoted = true;
             }
-            if (first) note("process start");
+            if (first) {
+                note("process start");
+                noteLastExit(appContext());
+            }
             attachJournal(appContext());
         } catch (Throwable ignored) {
+        }
+    }
+
+    /** Journals how this app's previous process ended, so a cut-off night can be explained. */
+    private static void noteLastExit(Context ctx) {
+        if (ctx == null) return;
+        try {
+            ActivityManager am = (ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
+            List<ApplicationExitInfo> exits =
+                    am == null ? null : am.getHistoricalProcessExitReasons(ctx.getPackageName(), 0, 1);
+            if (exits == null || exits.isEmpty()) {
+                // A watch that shut down (empty battery) may leave no exit record.
+                note("previous exit: none recorded");
+                return;
+            }
+            ApplicationExitInfo x = exits.get(0);
+            SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+            note("previous exit: " + exitReasonName(x.getReason()) + " (" + x.getDescription() + ") at "
+                    + f.format(new Date(x.getTimestamp())) + ", importance " + x.getImportance()
+                    + ", pss " + x.getPss() + " kB, rss " + x.getRss() + " kB");
+        } catch (Throwable t) {
+            note("previous exit: unavailable (" + t + ")");
+        }
+    }
+
+    static String exitReasonName(int reason) {
+        switch (reason) {
+            case ApplicationExitInfo.REASON_EXIT_SELF: return "EXIT_SELF";
+            case ApplicationExitInfo.REASON_SIGNALED: return "SIGNALED";
+            case ApplicationExitInfo.REASON_LOW_MEMORY: return "LOW_MEMORY";
+            case ApplicationExitInfo.REASON_CRASH: return "CRASH";
+            case ApplicationExitInfo.REASON_CRASH_NATIVE: return "CRASH_NATIVE";
+            case ApplicationExitInfo.REASON_ANR: return "ANR";
+            case ApplicationExitInfo.REASON_INITIALIZATION_FAILURE: return "INITIALIZATION_FAILURE";
+            case ApplicationExitInfo.REASON_PERMISSION_CHANGE: return "PERMISSION_CHANGE";
+            case ApplicationExitInfo.REASON_EXCESSIVE_RESOURCE_USAGE: return "EXCESSIVE_RESOURCE_USAGE";
+            case ApplicationExitInfo.REASON_USER_REQUESTED: return "USER_REQUESTED";
+            case ApplicationExitInfo.REASON_USER_STOPPED: return "USER_STOPPED";
+            case ApplicationExitInfo.REASON_DEPENDENCY_DIED: return "DEPENDENCY_DIED";
+            case ApplicationExitInfo.REASON_OTHER: return "OTHER";
+            case ApplicationExitInfo.REASON_FREEZER: return "FREEZER";
+            case ApplicationExitInfo.REASON_PACKAGE_STATE_CHANGE: return "PACKAGE_STATE_CHANGE";
+            case ApplicationExitInfo.REASON_PACKAGE_UPDATED: return "PACKAGE_UPDATED";
+            default: return String.valueOf(reason);
+        }
+    }
+
+    /** ", battery 54%" for the period line, or "" when it cannot be read; registers nothing. */
+    private static String batteryText() {
+        try {
+            Context ctx = appContext();
+            if (ctx == null) return "";
+            BatteryManager bm = (BatteryManager) ctx.getSystemService(Context.BATTERY_SERVICE);
+            if (bm == null) return "";
+            int pct = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+            return pct >= 0 && pct <= 100 ? ", battery " + pct + "%" : "";
+        } catch (Throwable t) {
+            return "";
         }
     }
 
