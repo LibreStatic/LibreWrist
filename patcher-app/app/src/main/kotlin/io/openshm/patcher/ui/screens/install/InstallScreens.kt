@@ -1,5 +1,6 @@
 package io.openshm.patcher.ui.screens.install
 
+import io.openshm.patcher.ui.components.PatcherAlertDialog
 import io.openshm.patcher.ui.components.ActionRow
 import io.openshm.patcher.ui.components.InstructionText
 import androidx.annotation.StringRes
@@ -30,7 +31,6 @@ import io.openshm.patcher.ui.components.PAIRING_CODE_LENGTH
 import io.openshm.patcher.ui.components.PairingCodeField
 import io.openshm.patcher.ui.components.ContainerTextAction
 import io.openshm.patcher.ui.components.QuietAction
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -472,7 +472,7 @@ private fun IntroText(intro: String) =
 @Composable
 internal fun ReinstallDialog(label: String, device: Device, onConfirm: () -> Unit, onDismiss: () -> Unit) {
     val uninstallActive = Automation.state.collectAsStateWithLifecycle().value.uninstallActive
-    AlertDialog(
+    PatcherAlertDialog(
         onDismissRequest = onDismiss,
         // The dialog is its own window: it reports touches itself so they pause the countdown.
         modifier = Modifier.observeUserInput(),

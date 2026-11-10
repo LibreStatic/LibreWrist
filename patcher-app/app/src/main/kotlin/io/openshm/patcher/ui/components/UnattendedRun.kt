@@ -24,7 +24,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PriorityHigh
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -407,7 +406,7 @@ fun UnattendedRunOverlay(phase: UnattendedPhase, modifier: Modifier = Modifier) 
 @Composable
 private fun UnattendedAttentionDialog(onDismiss: () -> Unit) {
     val status = PatcherTheme.status
-    AlertDialog(
+    PatcherAlertDialog(
         onDismissRequest = onDismiss,
         modifier = Modifier.testTag("unattendedAttention"),
         icon = {

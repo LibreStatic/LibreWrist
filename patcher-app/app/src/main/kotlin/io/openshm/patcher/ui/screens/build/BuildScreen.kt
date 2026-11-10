@@ -1,5 +1,6 @@
 package io.openshm.patcher.ui.screens.build
 
+import io.openshm.patcher.ui.components.PatcherAlertDialog
 import io.openshm.patcher.ui.components.ActionRow
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.Crossfade
@@ -30,7 +31,6 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Article
 import androidx.compose.material.icons.rounded.PhoneAndroid
 import androidx.compose.material.icons.rounded.Watch
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -209,7 +209,7 @@ fun BuildScreen(
         state.currentApp?.let { CurrentAppCard(it) }
     }
     if (confirmCancel) {
-        AlertDialog(
+        PatcherAlertDialog(
             onDismissRequest = { confirmCancel = false },
             title = { Text(stringResource(R.string.build_cancel_title)) },
             text = { Text(stringResource(R.string.build_cancel_body)) },

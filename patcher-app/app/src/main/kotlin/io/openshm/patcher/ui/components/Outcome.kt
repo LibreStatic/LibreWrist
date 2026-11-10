@@ -14,7 +14,6 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.ErrorOutline
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -56,9 +55,10 @@ internal const val SUCCESS_OVERLAY_MILLIS = 2000L
 fun AppErrorDialog(title: String, message: String, detail: String?, onAcknowledge: () -> Unit) {
     LaunchedEffect(Unit) { UnattendedRun.fail() }
     val colors = MaterialTheme.colorScheme
-    AlertDialog(
+    PatcherAlertDialog(
         onDismissRequest = {},
-        properties = DialogProperties(dismissOnClickOutside = false, dismissOnBackPress = false),
+        dismissOnClickOutside = false,
+        dismissOnBackPress = false,
         containerColor = colors.errorContainer,
         iconContentColor = colors.error,
         titleContentColor = colors.onErrorContainer,

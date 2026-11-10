@@ -1,5 +1,6 @@
 package io.openshm.patcher.ui.screens.signingkey
 
+import io.openshm.patcher.ui.components.PatcherAlertDialog
 import io.openshm.patcher.ui.components.ActionRow
 import android.content.ClipData
 import androidx.compose.foundation.background
@@ -24,7 +25,6 @@ import androidx.compose.material.icons.rounded.SaveAlt
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material.icons.rounded.Warning
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -280,7 +280,7 @@ private fun ExportDialog(state: SigningKeyUiState, onEvent: (SigningKeyEvent) ->
     var confirmLeft by remember { mutableStateOf(false) }
     val problem = ExportPasswordPolicy.shownProblem(password, confirm, passwordLeft, confirmLeft, state.formError)
     val mismatch = problem == R.string.signing_key_error_mismatch
-    AlertDialog(
+    PatcherAlertDialog(
         onDismissRequest = { if (!state.busy) onEvent(SigningKeyEvent.CloseForm) },
         icon = { Icon(Icons.Rounded.SaveAlt, contentDescription = null) },
         title = { Text(stringResource(R.string.signing_key_export)) },
@@ -337,7 +337,7 @@ private fun ImportDialog(state: SigningKeyUiState, onEvent: (SigningKeyEvent) ->
     var noSaved by remember { mutableStateOf(false) }
     var savedId by remember { mutableStateOf<String?>(null) }
     val scope = rememberCoroutineScope()
-    AlertDialog(
+    PatcherAlertDialog(
         onDismissRequest = { if (!state.busy) onEvent(SigningKeyEvent.CloseForm) },
         icon = { Icon(Icons.Rounded.FileOpen, contentDescription = null) },
         title = { Text(stringResource(R.string.signing_key_import)) },
@@ -442,7 +442,7 @@ private fun PasswordField(
 
 @Composable
 private fun ConfirmDialog(confirmation: ImportConfirmation, savedPasswordMismatch: Boolean, onEvent: (SigningKeyEvent) -> Unit) {
-    AlertDialog(
+    PatcherAlertDialog(
         onDismissRequest = { onEvent(SigningKeyEvent.DismissConfirmation) },
         icon = { Icon(Icons.Rounded.Warning, contentDescription = null) },
         title = { Text(stringResource(R.string.signing_key_confirm_title)) },

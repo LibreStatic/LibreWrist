@@ -1,5 +1,6 @@
 package io.openshm.patcher.ui.screens.devmode
 
+import io.openshm.patcher.ui.components.PatcherAlertDialog
 import io.openshm.patcher.ui.components.ActionRow
 import io.openshm.patcher.ui.components.InstructionText
 import androidx.compose.foundation.background
@@ -13,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.TouchApp
 import androidx.compose.material.icons.rounded.Watch
 import androidx.compose.material.icons.rounded.WifiOff
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextButton
@@ -178,7 +178,7 @@ private fun DevModeNoticeDialog(notice: DevModeNotice, onDismiss: () -> Unit) {
         DevModeNotice.Unreachable -> Triple(Icons.Rounded.WifiOff, R.string.devmode_unreachable_title, R.string.devmode_unreachable_message)
     }
     val freeRunActive = Automation.state.collectAsStateWithLifecycle().value.freeRunActive
-    AlertDialog(
+    PatcherAlertDialog(
         onDismissRequest = onDismiss,
         // The dialog is its own window: it reports touches itself so they pause the countdown.
         modifier = Modifier.observeUserInput(),

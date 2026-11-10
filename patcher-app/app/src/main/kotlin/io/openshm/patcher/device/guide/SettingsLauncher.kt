@@ -11,7 +11,6 @@ import android.os.UserManager
 import android.provider.Settings
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Accessibility
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
+import io.openshm.patcher.ui.components.PatcherAlertDialog
 import io.openshm.patcher.R
 import io.openshm.patcher.data.Automation
 import io.openshm.patcher.device.LaunchRequest
@@ -155,7 +155,7 @@ private fun openAppInfo(context: Context) {
 @Composable
 private fun EnableGuideDialog(onEnable: () -> Unit, onNotNow: () -> Unit) {
     val context = LocalContext.current
-    AlertDialog(
+    PatcherAlertDialog(
         onDismissRequest = onNotNow,
         icon = { Icon(Icons.Rounded.Accessibility, contentDescription = null) },
         title = { Text(stringResource(R.string.guide_enable_title), textAlign = TextAlign.Center) },

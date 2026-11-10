@@ -5,7 +5,6 @@ import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -25,6 +24,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogWindowProvider
+import io.openshm.patcher.ui.components.PatcherAlertDialog
 import io.openshm.patcher.R
 import io.openshm.patcher.ui.screens.signingkey.ExportPasswordPolicy
 import io.openshm.patcher.ui.screens.signingkey.onLeave
@@ -58,7 +58,7 @@ fun ManualBackupDialog(onSave: suspend (CharArray, CharArray) -> Boolean, onDism
     val shown = ExportPasswordPolicy.shownProblem(password, confirm, passwordLeft, confirmLeft, error)
     val transformation = if (visible) VisualTransformation.None else PasswordVisualTransformation()
     val keyboard = KeyboardOptions(keyboardType = KeyboardType.Password, autoCorrectEnabled = false)
-    AlertDialog(
+    PatcherAlertDialog(
         onDismissRequest = { if (!busy) onDismiss() },
         title = { Text(stringResource(R.string.key_backup_with_password_entry)) },
         text = {

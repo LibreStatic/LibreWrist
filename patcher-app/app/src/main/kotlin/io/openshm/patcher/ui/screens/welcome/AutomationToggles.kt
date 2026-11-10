@@ -12,7 +12,6 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.HelpOutline
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,6 +33,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import io.openshm.patcher.ui.components.PatcherAlertDialog
 import io.openshm.patcher.R
 import io.openshm.patcher.data.AutomationState
 import io.openshm.patcher.data.Region
@@ -162,7 +162,7 @@ private fun AutomationRow(
 @Composable
 internal fun AutomationDialogs(state: WelcomeUiState, onEvent: (WelcomeEvent) -> Unit) {
     if (state.appsNotice) {
-        AlertDialog(
+        PatcherAlertDialog(
             onDismissRequest = { onEvent(WelcomeEvent.AcknowledgeAppsNotice) },
             title = { Text(stringResource(R.string.automation_apps_notice_title)) },
             text = {
@@ -180,7 +180,7 @@ internal fun AutomationDialogs(state: WelcomeUiState, onEvent: (WelcomeEvent) ->
         return
     }
     state.help?.let { help ->
-        AlertDialog(
+        PatcherAlertDialog(
             onDismissRequest = { onEvent(WelcomeEvent.HideHelp) },
             title = { Text(stringResource(help.title)) },
             // The bodies mark what must not be missed (lost data) with <b>, escaped in the resources.
@@ -192,7 +192,7 @@ internal fun AutomationDialogs(state: WelcomeUiState, onEvent: (WelcomeEvent) ->
     }
     if (state.freeRunWarning) {
         var dontShowAgain by remember { mutableStateOf(false) }
-        AlertDialog(
+        PatcherAlertDialog(
             onDismissRequest = { onEvent(WelcomeEvent.CancelFreeRun) },
             title = { Text(stringResource(R.string.automation_free_run_warning_title)) },
             text = {

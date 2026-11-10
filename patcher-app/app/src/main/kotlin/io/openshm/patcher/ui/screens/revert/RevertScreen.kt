@@ -23,7 +23,6 @@ import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Key
 import androidx.compose.material.icons.rounded.Wifi
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -37,6 +36,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import io.openshm.patcher.ui.components.PatcherAlertDialog
 import io.openshm.patcher.R
 import io.openshm.patcher.data.AppCatalogue
 import io.openshm.patcher.data.Device
@@ -332,7 +332,7 @@ private fun RevertFooter(state: RevertUiState, onEvent: (RevertEvent) -> Unit, o
 @Composable
 internal fun RevertConfirmDialog(scope: RevertScope, onConfirm: () -> Unit, onDismiss: () -> Unit) {
     val watch = scope == RevertScope.Watch
-    AlertDialog(
+    PatcherAlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(if (watch) R.string.revert_confirm_title_watch else R.string.revert_confirm_title)) },
         text = { Text(stringResource(if (watch) R.string.revert_confirm_body_watch else R.string.revert_confirm_body)) },
@@ -348,7 +348,7 @@ internal fun RevertConfirmDialog(scope: RevertScope, onConfirm: () -> Unit, onDi
 /** The last, explicit step: removes this app. [partial] warns that part of the revert is still open. */
 @Composable
 internal fun SelfUninstallDialog(partial: Boolean, onConfirm: () -> Unit, onDismiss: () -> Unit) {
-    AlertDialog(
+    PatcherAlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.revert_self_title)) },
         text = {

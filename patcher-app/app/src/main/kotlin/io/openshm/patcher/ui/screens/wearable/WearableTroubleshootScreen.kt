@@ -1,5 +1,6 @@
 package io.openshm.patcher.ui.screens.wearable
 
+import io.openshm.patcher.ui.components.PatcherAlertDialog
 import io.openshm.patcher.ui.components.InstructionText
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,7 +16,6 @@ import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material.icons.rounded.Wifi
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -167,7 +167,7 @@ private fun DestructiveAction(text: String, onClick: () -> Unit) {
 /** The warning that always comes before anything is cleared. Cancel is the default; confirming is the error-colored one. */
 @Composable
 internal fun ConfirmClearDialog(onCancel: () -> Unit, onConfirm: () -> Unit) {
-    AlertDialog(
+    PatcherAlertDialog(
         onDismissRequest = onCancel,
         icon = { Icon(Icons.Rounded.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error) },
         title = { Text(stringResource(R.string.troubleshoot_dialog_title)) },
