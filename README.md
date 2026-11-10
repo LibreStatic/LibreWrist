@@ -19,9 +19,11 @@ redistributed.
 > [!CAUTION]
 > **LibreWrist is a proof of concept, and its health readings are not validated.** The watch does
 > not let the modified Samsung apps use Samsung's own sensor channels, so LibreWrist feeds them with
-> its own code, and results can differ from an unmodified Samsung setup. There is no clinical or
-> comparative validation yet (a comparison against the unmodified apps on a Samsung phone is
-> planned). Do not use it for medical decisions. The software is provided "as is", without warranty
+> its own code, and results can differ from an unmodified Samsung setup. There is no clinical
+> validation. So far only the ECG has been compared against the unmodified apps: on a Galaxy
+> Watch5 Pro paired to a Galaxy S24 Ultra, both gave the same classification and heart rate
+> ([details](docs/ecg-calibration.md), section 5b); blood pressure and SpO2 have not been compared
+> yet. Do not use it for medical decisions. The software is provided "as is", without warranty
 > (see the [licence](LICENSE)).
 
 > [!WARNING]
