@@ -281,7 +281,7 @@ class Interpreter(Tree):
             'shm-min-age-22-to-16', 'watch-min-age-22-to-16', 'shm-setup-network-gate', 'shm-sleep-apnea-support', 'shm-sleep-countries',
             'watch-apnea-country', 'watch-apnea-reeval-not-supported',
             'alarm-force-sound-vibrate', 'alarm-hide-launcher', 'alarm-relabel',
-            'shealth-oobe-local', 'shealth-china-account-gate', 'shealth-capability-gates',
+            'shealth-oobe-local', 'shealth-china-account-gate', 'shealth-capability-gates', 'shealth-capability-gates-v72',
             'shealth-launcher-badge', 'shm-launcher-badge', 'shm-samsung-health-link-off'})
         self.assertEqual({i for i, p in pats.items() if p.get('offByDefault')},
                          {'shealth-oobe-local', 'shealth-china-account-gate'})

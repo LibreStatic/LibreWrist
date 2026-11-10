@@ -80,7 +80,7 @@ class OutputFingerprintTest {
 
     @Test fun aPatternStepChangesOnlyOutputsThatApplyIt() {
         val patternId = "shm-min-age-22-to-16"
-        val other = modified("\"new\": \"const/16 v0, 0x10\",\n          \"context\": \"shealthmonitor/util/c\"", "\"new\": \"const/16 v0, 0x11\",\n          \"context\": \"shealthmonitor/util/c\"")
+        val other = modified("\"    const/16 p0, 0x10\",", "\"    const/16 p0, 0x11\",")
         assertNotEquals(engine.patterns.getValue(patternId).toString(), other.engine.patterns.getValue(patternId).toString())
         var changed = 0
         for ((id, from) in patched()) {

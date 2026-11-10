@@ -15,21 +15,21 @@ class AppCatalogueTest {
 
     @Test
     fun serialAndInputs() {
-        assertEquals(63L, c.serial)
+        assertEquals(64L, c.serial)
         assertEquals("chinaFrom / obtain.yyb need CI run 45", 45L, c.engine.minAppVersion)
         assertEquals(
             listOf(
-                listOf("shm-phone", "Samsung Health Monitor (phone)", "1.4.6.001", "Phone",
-                    "3f20656e8c2ea34b95acb0b4d006b8aab3210fcc37cfb16abd2a7e4b91ca8524", "com.samsung.android.shealthmonitor",
+                listOf("shm-phone", "Samsung Health Monitor (phone)", "1.5.3.011", "Phone",
+                    "77bcaad49db107f3fbb5526d1181229e44ccfa73d4053603400a5014913ee834", "com.samsung.android.shealthmonitor",
                     "samsung-electronics-co-ltd/samsung-health-monitor-2", "[ApkNotBundle, NoDpi, MinAndroid11]"),
-                listOf("shm-watch", "Samsung Health Monitor (Wear OS)", "1.5.1.022", "Watch",
-                    "a714e9a5950f456b8da4843bd6cdb19948a0c6fd9101b473e24beb3384a2c620", "com.samsung.android.shealthmonitor",
+                listOf("shm-watch", "Samsung Health Monitor (Wear OS)", "1.5.2.009", "Watch",
+                    "e3858b5e7b1d37f6b602521f676fcf57ebf137323ce6ae3f113aedccede64bcd", "com.samsung.android.shealthmonitor",
                     "samsung-electronics-co-ltd/samsung-health-monitor-wear-os", "[ApkNotBundle, NoDpi]"),
                 listOf("alarm-watch", "Alarm (Wear OS)", "1.3.05.5", "Watch",
                     "fdbb5942a3b2a6c5b9c7c1c333a0e5e669732b1dc5a27f8b63e3b9c62c621151", "com.samsung.android.watch.alarm",
                     "samsung-electronics-co-ltd/alarm-wear-os", "[ApkNotBundle, NoDpi, MinAndroid14]"),
-                listOf("shealth-phone", "Samsung Health", "7.00.6.011", "Phone",
-                    "e58c39dcdf4856510d487fae30ee52d1514198b58ca388c9be9753828f4fec89", "com.sec.android.app.shealth",
+                listOf("shealth-phone", "Samsung Health", "7.2.0.041", "Phone",
+                    "673dcb89e74182ce615dcbcd733b0e3a3396d812b946d9f03d1fea3b5b68c4bc", "com.sec.android.app.shealth",
                     "samsung-electronics-co-ltd/s-health", "[ApkNotBundle, NoDpi]"),
                 // the China build: only on YingYongBao, so no APKMirror slug
                 listOf("shealth-phone-cn", "Samsung Health (China)", "7.00.6.012", "Phone",
@@ -47,10 +47,10 @@ class AppCatalogueTest {
         )
         assertEquals(
             listOf(
-                "https://www.apkmirror.com/apk/samsung-electronics-co-ltd/samsung-health-monitor-2/samsung-health-monitor-1-4-6-001-release/",
-                "https://www.apkmirror.com/apk/samsung-electronics-co-ltd/samsung-health-monitor-wear-os/samsung-health-monitor-wear-os-1-5-1-022-release/",
+                "https://www.apkmirror.com/apk/samsung-electronics-co-ltd/samsung-health-monitor-2/samsung-health-monitor-1-5-3-011-release/",
+                "https://www.apkmirror.com/apk/samsung-electronics-co-ltd/samsung-health-monitor-wear-os/samsung-health-monitor-wear-os-1-5-2-009-release/",
                 "https://www.apkmirror.com/apk/samsung-electronics-co-ltd/alarm-wear-os/alarm-wear-os-1-3-05-5-release/",
-                "https://www.apkmirror.com/apk/samsung-electronics-co-ltd/s-health/samsung-health-7-00-6-011-release/",
+                "https://www.apkmirror.com/apk/samsung-electronics-co-ltd/s-health/samsung-health-7-2-0-041-release/",
             ),
             c.inputs.filter { it.onApkMirror }.map { io.openshm.patcher.data.ApkMirrorGuide.startUrl(it) },
         )

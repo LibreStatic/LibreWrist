@@ -405,7 +405,7 @@ public final class IhrnAdapter {
 
     // ---------------------------------------------------------------------- events
 
-    /** The Bundle of one SemPpgIhrnSensorEvent (keys: SemPpgIhrnSensorEvent getters in SHM 1.5.1.022). */
+    /** The Bundle of one SemPpgIhrnSensorEvent (keys: SemPpgIhrnSensorEvent getters in SHM 1.5.2.009). */
     static Bundle eventBundle(List<IhrnSample> samples, int sequence) {
         resolveEnums();
         Object type = eventNormal;

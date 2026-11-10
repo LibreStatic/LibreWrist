@@ -1,16 +1,16 @@
 {
   "schema": 2,
-  "serial": 63,
+  "serial": 64,
   "minAppVersion": 45,
   "inputs": [
     {
       "id": "shm-phone",
-      "file": "shm-phone-1.4.6.001.apk",
-      "sha256": "3f20656e8c2ea34b95acb0b4d006b8aab3210fcc37cfb16abd2a7e4b91ca8524",
+      "file": "shm-phone-1.5.3.011.apk",
+      "sha256": "77bcaad49db107f3fbb5526d1181229e44ccfa73d4053603400a5014913ee834",
       "label": "Samsung Health Monitor (phone)",
       "package": "com.samsung.android.shealthmonitor",
-      "versionName": "1.4.6.001",
-      "versionCode": 1406001,
+      "versionName": "1.5.3.011",
+      "versionCode": 1503011,
       "minSdk": 31,
       "targetSdk": 35,
       "abis": [
@@ -23,17 +23,17 @@
       "role": "patched",
       "obtain": {
         "apkmirror": "samsung-electronics-co-ltd/samsung-health-monitor-2",
-        "apkmirrorRelease": "samsung-health-monitor-1-4-6-001-release"
+        "apkmirrorRelease": "samsung-health-monitor-1-5-3-011-release"
       }
     },
     {
       "id": "shm-watch",
-      "file": "shm-watch-1.5.1.022.apk",
-      "sha256": "a714e9a5950f456b8da4843bd6cdb19948a0c6fd9101b473e24beb3384a2c620",
+      "file": "shm-watch-1.5.2.009.apk",
+      "sha256": "e3858b5e7b1d37f6b602521f676fcf57ebf137323ce6ae3f113aedccede64bcd",
       "label": "Samsung Health Monitor (Wear OS)",
       "package": "com.samsung.android.shealthmonitor",
-      "versionName": "1.5.1.022",
-      "versionCode": 1501022,
+      "versionName": "1.5.2.009",
+      "versionCode": 1502009,
       "minSdk": 30,
       "targetSdk": 36,
       "abis": [
@@ -45,7 +45,7 @@
       "role": "patched",
       "obtain": {
         "apkmirror": "samsung-electronics-co-ltd/samsung-health-monitor-wear-os",
-        "apkmirrorRelease": "samsung-health-monitor-wear-os-1-5-1-022-release"
+        "apkmirrorRelease": "samsung-health-monitor-wear-os-1-5-2-009-release"
       }
     },
     {
@@ -70,12 +70,12 @@
     },
     {
       "id": "shealth-phone",
-      "file": "shealth-7.00.6.011.apk",
-      "sha256": "e58c39dcdf4856510d487fae30ee52d1514198b58ca388c9be9753828f4fec89",
+      "file": "shealth-7.2.0.041.apk",
+      "sha256": "673dcb89e74182ce615dcbcd733b0e3a3396d812b946d9f03d1fea3b5b68c4bc",
       "label": "Samsung Health",
       "package": "com.sec.android.app.shealth",
-      "versionName": "7.00.6.011",
-      "versionCode": 7006011,
+      "versionName": "7.2.0.041",
+      "versionCode": 7020041,
       "minSdk": 29,
       "targetSdk": 36,
       "abis": [
@@ -89,7 +89,7 @@
       "obtain": {
         "note": "APKMirror release (same zip entries as the Galaxy Store install; only the signing block differs)",
         "apkmirror": "samsung-electronics-co-ltd/s-health",
-        "apkmirrorRelease": "samsung-health-7-00-6-011-release"
+        "apkmirrorRelease": "samsung-health-7-2-0-041-release"
       }
     },
     {
@@ -227,16 +227,16 @@
       "description": "Samsung Health+, a renamed copy of Samsung Health (${PKG_PREFIX}.shealth) that installs next to the stock app from Play, which stays connected to the watch. It reads the same data from the Samsung cloud and unlocks the local feature-flag UI, the Energy Score tile, Vitals, Training load and the fitness index. The optional Local-only pattern (off by default) removes the mandatory Samsung Account sign-in; enable it if sign-in does not work on this device. The optional China account pattern (experimental, off by default) lets this international build open with a Samsung Account registered in mainland China.",
       "families": {
         "shealth-phone": [
-          "shealth-res-webp",
+          "shealth-res-webp-v72",
           "shealth-ai-provider-start",
           "shealth-feature-dev-ui",
           "shealth-vitality-tile",
           "shealth-rename-manifest",
           "shealth-rename-code",
-          "shealth-rename-account-xml",
+          "shealth-rename-authorities-v72",
           "shealth-samsung-account-absent",
           "shealth-knox-absent",
-          "shealth-capability-gates",
+          "shealth-capability-gates-v72",
           "shealth-shm-providers",
           "shealth-launcher-badge",
           "shealth-oobe-local",
@@ -306,16 +306,24 @@
         "shm-phone"
       ],
       "title": "Minimum age 16",
-      "description": "MIN_AGE 0x16 (22) -> 0x10 (16) in util/c",
+      "description": "The minimum-age check (util/o.c0(age): true when the saved date of birth plus `age` years is still in the future) always uses 16: its age argument (22 for ECG/BP/IHRN, 22 or 18 for sleep apnea via cj/n.F()) is overwritten with 0x10 at method start",
       "optional": true,
       "optionGroup": "minimum-age",
       "ops": [
         {
-          "op": "swapConst",
-          "fileRegex": "/shealthmonitor/util/c\\.smali$",
-          "old": "const/16 v0, 0x16",
-          "new": "const/16 v0, 0x10",
-          "context": "shealthmonitor/util/c",
+          "op": "insertAtMethodStart",
+          "fileRegex": "/shealthmonitor/util/\\w+\\.smali$",
+          "sigRegex": "public static \\w+\\(I\\)Z",
+          "bodyAll": [
+            "Lcom/samsung/android/shealthmonitor/data/DateOfBirth;->isPastThanOrEqual(Lcom/samsung/android/shealthmonitor/data/DateOfBirth;)Z",
+            "Lcom/samsung/android/shealthmonitor/data/DateOfBirth;->setYear(I)V",
+            "Ljava/util/Calendar;->getInstance()Ljava/util/Calendar;"
+          ],
+          "insert": [
+            "",
+            "    const/16 p0, 0x10",
+            ""
+          ],
           "expect": 1
         }
       ]
@@ -468,7 +476,7 @@
           "sigRegex": "public.*getVersionName\\(\\)Ljava/lang/String;",
           "insert": [
             "",
-            "    const-string v0, \"1.5.1.022\"",
+            "    const-string v0, \"1.5.2.009\"",
             "",
             "    return-object v0",
             ""
@@ -481,7 +489,7 @@
           "sigRegex": "public.*getVersionCode\\(\\)Ljava/lang/String;",
           "insert": [
             "",
-            "    const-string v0, \"1501022\"",
+            "    const-string v0, \"1502009\"",
             "",
             "    return-object v0",
             ""
@@ -597,7 +605,7 @@
         "shm-phone"
       ],
       "title": "Sleep countries",
-      "description": "The sleep country list check passes for every country: the shared list lookup (util/r.o(country, list)) returns true when it is handed the sleep list (util/r.l), so the home Sleep controller (sleep tab, apnea onboarding), its Data Layer channel and the sleep content provider treat any saved SIM/network country as a sleep country",
+      "description": "The sleep apnea 1.0 country check passes for every country outside the SA2.0 list: the static check that reads the SA1.0 list (util/o.m) returns the negation of the SA2.0 check (util/o.h0(), list util/o.n), so the sleep-apnea-supported check util/o.i0() (SA1.0 or SA2.0) is true everywhere: the home Sleep controller (sleep tab, apnea onboarding), its Data Layer channel and the sleep content provider treat any saved SIM/network country as a sleep country. The two vendor lists are disjoint, so SA2.0 countries keep the vendor behaviour (SA2.0 module version, age 18) and every other country gets SA1.0",
       "optional": true,
       "optionGroup": "sleep-apnea",
       "ops": [
@@ -605,34 +613,44 @@
           "op": "verifyClassContains",
           "checks": [
             {
-              "className": "com/samsung/android/shealthmonitor/util/r",
-              "contains": "    filled-new-array/range {v1 .. v79}, [Ljava/lang/String;\n\n    move-result-object v0\n\n    sput-object v0, Lcom/samsung/android/shealthmonitor/util/r;->l:[Ljava/lang/String;"
+              "className": "cj/n",
+              "contains": "    invoke-static {}, Lcom/samsung/android/shealthmonitor/util/o;->h0()Z\n\n    move-result v0\n\n    if-eqz v0, :cond_1\n\n    const-string v0, \"getRestrictionAgeBeforeOnboarding() = 18. Because it is SA2.0 phone\""
             },
             {
-              "className": "com/samsung/android/shealthmonitor/util/r",
-              "contains": ".method public static o(Ljava/lang/String;[Ljava/lang/String;)Z"
+              "className": "com/samsung/android/shealthmonitor/util/o",
+              "contains": ".method public static i0()Z\n    .locals 1\n\n    invoke-static {}, Lcom/samsung/android/shealthmonitor/util/o;->g0()Z\n\n    move-result v0\n\n    if-nez v0, :cond_1\n\n    invoke-static {}, Lcom/samsung/android/shealthmonitor/util/o;->h0()Z"
+            },
+            {
+              "className": "com/samsung/android/shealthmonitor/util/o",
+              "contains": ".method public static g0()Z\n    .locals 2\n\n    sget-object v0, Lcom/samsung/android/shealthmonitor/util/o;->m:[Ljava/lang/String;"
+            },
+            {
+              "className": "ra/b",
+              "contains": "    invoke-static {}, Lcom/samsung/android/shealthmonitor/util/o;->i0()Z\n\n    move-result v1\n\n    if-eqz v1, :cond_0\n\n    const-string v1, \"com.samsung.android.shealthmonitor.sleep.control.SleepController\""
+            },
+            {
+              "className": "com/samsung/android/shealthmonitor/util/o",
+              "contains": ".method public static h0()Z\n    .locals 2\n\n    sget-object v0, Lcom/samsung/android/shealthmonitor/util/o;->n:[Ljava/lang/String;"
             }
           ]
         },
         {
           "op": "insertAtMethodStart",
-          "fileRegex": "/shealthmonitor/util/r\\.smali$",
-          "sigRegex": "public static o\\(Ljava/lang/String;\\[Ljava/lang/String;\\)Z",
+          "fileRegex": "/shealthmonitor/util/\\w+\\.smali$",
+          "sigRegex": "public static \\w+\\(\\)Z",
           "bodyAll": [
-            "Ljava/util/stream/Stream;->anyMatch(Ljava/util/function/Predicate;)Z"
+            "Lcom/samsung/android/shealthmonitor/util/o;->m:[Ljava/lang/String;"
           ],
           "needRegs": 1,
           "insert": [
             "",
-            "    sget-object v0, Lcom/samsung/android/shealthmonitor/util/r;->l:[Ljava/lang/String;",
+            "    invoke-static {}, Lcom/samsung/android/shealthmonitor/util/o;->h0()Z",
             "",
-            "    if-ne p1, v0, :interop_sleep_country_list",
+            "    move-result v0",
             "",
-            "    const/4 v0, 0x1",
+            "    xor-int/lit8 v0, v0, 0x1",
             "",
             "    return v0",
-            "",
-            "    :interop_sleep_country_list",
             ""
           ],
           "expect": 1
@@ -821,22 +839,10 @@
       "optionGroup": "minimum-age",
       "ops": [
         {
-          "op": "insertInMethodAtMatch",
-          "sigRegex": "public \\w+\\(\\)Z",
-          "fileAll": [
-            "Lcom/samsung/android/shealthmonitor/util/DateOfBirth;->isPastThanOrEqual"
-          ],
-          "bodyAll": [
-            "\"has date of birth\"",
-            "Lcom/samsung/android/shealthmonitor/util/DateOfBirth;->isPastThanOrEqual"
-          ],
-          "pattern": "invoke-virtual \\{p0\\}, L\\w+;->\\w+\\(\\)I\\n\\n    move-result (?P<reg>[pv]\\d+)\\n(?P<at>)",
-          "insert": [
-            "",
-            "    # PATCH: minimum age 16 for every feature",
-            "    const/16 {{reg}}, 0x10",
-            ""
-          ],
+          "op": "replaceAllInFilesWithAnchor",
+          "fileContains": "\"has date of birth\"",
+          "old": "    move-result p0\n\n    new-instance v0, Lcom/samsung/android/shealthmonitor/util/DateOfBirth;\n",
+          "new": "    move-result p0\n\n    # PATCH: minimum age 16 for every feature\n    const/16 p0, 0x10\n\n    new-instance v0, Lcom/samsung/android/shealthmonitor/util/DateOfBirth;\n",
           "expect": 1
         }
       ]
@@ -1087,7 +1093,7 @@
         "shm-watch"
       ],
       "title": "Off-body detector",
-      "description": "Watch: the two off-body detector lookups (IHRN body-off service, BP sensor controller) go through WatchOverrides.offBodySensor, which returns the public low latency off-body detector (34) instead of Samsung's 0x1101b; the framework only lets apps holding com.samsung.permission.SSENSOR enable 0x1101b, so IHRN never got the wear-on event that creates its schedule",
+      "description": "Watch: the two off-body detector lookups (IHRN body-off service, the BP path's OffBodySensorImpl.start) go through WatchOverrides.offBodySensor, which returns the public low latency off-body detector (34) instead of Samsung's 0x1101b; the framework only lets apps holding com.samsung.permission.SSENSOR enable 0x1101b, so IHRN never got the wear-on event that creates its schedule",
       "optional": false,
       "ops": [
         {
@@ -1100,8 +1106,8 @@
         {
           "op": "replaceAllInFilesWithAnchor",
           "fileContains": "Starting OffBodySensorImpl",
-          "old": "invoke-virtual {v0, v1}, Landroid/hardware/SensorManager;->getDefaultSensor(I)Landroid/hardware/Sensor;",
-          "new": "invoke-static {v0, v1}, L${PKG_PATH}/watch/WatchOverrides;->offBodySensor(Landroid/hardware/SensorManager;I)Landroid/hardware/Sensor;",
+          "old": "invoke-virtual {v1, v2}, Landroid/hardware/SensorManager;->getDefaultSensor(I)Landroid/hardware/Sensor;",
+          "new": "invoke-static {v1, v2}, L${PKG_PATH}/watch/WatchOverrides;->offBodySensor(Landroid/hardware/SensorManager;I)Landroid/hardware/Sensor;",
           "expect": 1
         }
       ]
@@ -1116,24 +1122,17 @@
       "ops": [
         {
           "op": "replaceAllInFilesWithAnchor",
-          "fileContains": "Lcom/samsung/android/hardware/sensormanager/SemSensorManager;->registerListener(",
+          "fileContains": "Lcom/samsung/android/hardware/sensormanager/SemSensorManager;",
           "old": "invoke-virtual {p0, p1, p2}, Lcom/samsung/android/hardware/sensormanager/SemSensorManager;->unregisterListener(Lcom/samsung/android/hardware/sensormanager/SemSensorListener;I)V",
           "new": "invoke-static {p0, p1, p2}, L${PKG_PATH}/watch/WatchOverrides;->unregisterListener(Ljava/lang/Object;Lcom/samsung/android/hardware/sensormanager/SemSensorListener;I)V",
           "expect": 1
         },
         {
           "op": "replaceAllInFilesWithAnchor",
-          "fileContains": "Lcom/samsung/android/hardware/sensormanager/SemSensorManager;->registerListener(",
-          "old": "invoke-virtual {v4, v1, v3}, Lcom/samsung/android/hardware/sensormanager/SemSensorManager;->unregisterListener(Lcom/samsung/android/hardware/sensormanager/SemSensorListener;I)V",
-          "new": "invoke-static {v4, v1, v3}, L${PKG_PATH}/watch/WatchOverrides;->unregisterListener(Ljava/lang/Object;Lcom/samsung/android/hardware/sensormanager/SemSensorListener;I)V",
-          "expect": 1
-        },
-        {
-          "op": "replaceAllInFilesWithAnchor",
-          "fileContains": "Lcom/samsung/android/hardware/sensormanager/SemSensorManager;->registerListener(",
-          "old": "invoke-virtual {v4, v1, v2}, Lcom/samsung/android/hardware/sensormanager/SemSensorManager;->unregisterListener(Lcom/samsung/android/hardware/sensormanager/SemSensorListener;I)V",
-          "new": "invoke-static {v4, v1, v2}, L${PKG_PATH}/watch/WatchOverrides;->unregisterListener(Ljava/lang/Object;Lcom/samsung/android/hardware/sensormanager/SemSensorListener;I)V",
-          "expect": 1
+          "fileContains": "Lcom/samsung/android/hardware/sensormanager/SemSensorManager;",
+          "old": "invoke-virtual {v1, p0, v0}, Lcom/samsung/android/hardware/sensormanager/SemSensorManager;->unregisterListener(Lcom/samsung/android/hardware/sensormanager/SemSensorListener;I)V",
+          "new": "invoke-static {v1, p0, v0}, L${PKG_PATH}/watch/WatchOverrides;->unregisterListener(Ljava/lang/Object;Lcom/samsung/android/hardware/sensormanager/SemSensorListener;I)V",
+          "expect": 2
         }
       ]
     },
@@ -1146,18 +1145,18 @@
       "optional": false,
       "ops": [
         {
-          "op": "replaceInClass",
-          "className": "tm0",
-          "old": "    invoke-virtual {p0, v0}, Landroid/content/Context;->startForegroundService(Landroid/content/Intent;)Landroid/content/ComponentName;",
-          "new": "    invoke-static {p0, v0}, L${PKG_PATH}/watch/WatchOverrides;->startService(Landroid/content/Context;Landroid/content/Intent;)Landroid/content/ComponentName;",
-          "count": 1
+          "op": "replaceAllInFilesWithAnchor",
+          "fileContains": "\"run ihrn module and create scheduler\"",
+          "old": "    const-class v2, Lcom/samsung/android/shealthmonitor/ihrn/manager/BodyOffDetectServiceActivity;\n\n    invoke-direct {v0, v1, v2}, Landroid/content/Intent;-><init>(Landroid/content/Context;Ljava/lang/Class;)V\n\n    invoke-virtual {p0, v0}, Landroid/content/Context;->startForegroundService(Landroid/content/Intent;)Landroid/content/ComponentName;",
+          "new": "    const-class v2, Lcom/samsung/android/shealthmonitor/ihrn/manager/BodyOffDetectServiceActivity;\n\n    invoke-direct {v0, v1, v2}, Landroid/content/Intent;-><init>(Landroid/content/Context;Ljava/lang/Class;)V\n\n    invoke-static {p0, v0}, L${PKG_PATH}/watch/WatchOverrides;->startService(Landroid/content/Context;Landroid/content/Intent;)Landroid/content/ComponentName;",
+          "expect": 1
         },
         {
-          "op": "replaceInClass",
-          "className": "p00",
-          "old": "    invoke-virtual {v0, v4}, Landroid/content/Context;->startForegroundService(Landroid/content/Intent;)Landroid/content/ComponentName;",
-          "new": "    invoke-static {v0, v4}, L${PKG_PATH}/watch/WatchOverrides;->startService(Landroid/content/Context;Landroid/content/Intent;)Landroid/content/ComponentName;",
-          "count": 1
+          "op": "replaceAllInFilesWithAnchor",
+          "fileContains": "\"SHWearMonitor-EnableIhrn\"",
+          "old": "    const-class v6, Lcom/samsung/android/shealthmonitor/ihrn/manager/BodyOffDetectServiceActivity;\n\n    invoke-direct {v4, v5, v6}, Landroid/content/Intent;-><init>(Landroid/content/Context;Ljava/lang/Class;)V\n\n    invoke-virtual {v0, v4}, Landroid/content/Context;->startForegroundService(Landroid/content/Intent;)Landroid/content/ComponentName;",
+          "new": "    const-class v6, Lcom/samsung/android/shealthmonitor/ihrn/manager/BodyOffDetectServiceActivity;\n\n    invoke-direct {v4, v5, v6}, Landroid/content/Intent;-><init>(Landroid/content/Context;Ljava/lang/Class;)V\n\n    invoke-static {v0, v4}, L${PKG_PATH}/watch/WatchOverrides;->startService(Landroid/content/Context;Landroid/content/Intent;)Landroid/content/ComponentName;",
+          "expect": 1
         },
         {
           "op": "replaceInClass",
@@ -1217,15 +1216,15 @@
         "shm-watch"
       ],
       "title": "Quiet sleep apnea service",
-      "description": "Watch: the sleep apnea service (ApneaMonitoringService) starts as a plain service and calls startForeground (and so shows its notification) only when the system refused the background start, like the IHRN services: the five start sites (WHS sleep listener, apnea alarm receiver, finish analysis, runtime reconcile, test emulator) go through WatchOverrides.startService, onCreate calls WatchOverrides.startApneaForegroundIfRequired (which also gives the title-less vendor notification SHM's own 'Sleep apnea' title) and onStartCommand calls WatchOverrides.ensureForegroundIfRequired for a fallback start of the running service. The notification channel of the fallback is low importance",
+      "description": "Watch: the sleep apnea service (ApneaMonitoringService) starts as a plain service and calls startForeground (and so shows its notification) only when the system refused the background start, like the IHRN services: the four start sites (the WHS sleep helper shared by the WHS sleep listener and the test emulator, apnea alarm receiver, finish analysis, runtime reconcile) go through WatchOverrides.startService, the service's foreground helper (called from onCreate) calls WatchOverrides.startApneaForegroundIfRequired (which also gives the title-less vendor notification SHM's own 'Sleep apnea' title) and onStartCommand calls WatchOverrides.ensureForegroundIfRequired for a fallback start of the running service. The notification channel of the fallback is low importance",
       "optional": false,
       "ops": [
         {
-          "op": "replaceInClass",
-          "className": "com/samsung/android/shealthmonitor/apnea/control/WhsSleepActivityListenerService",
-          "old": "    invoke-virtual {p0, v1}, Landroid/content/Context;->startForegroundService(Landroid/content/Intent;)Landroid/content/ComponentName;",
-          "new": "    invoke-static {p0, v1}, L${PKG_PATH}/watch/WatchOverrides;->startService(Landroid/content/Context;Landroid/content/Intent;)Landroid/content/ComponentName;",
-          "count": 1
+          "op": "replaceAllInFilesWithAnchor",
+          "fileContains": "\"Sending Intent to ApneaServiceActivity: action=\"",
+          "old": "    invoke-virtual {p0, v0}, Landroid/content/Context;->startForegroundService(Landroid/content/Intent;)Landroid/content/ComponentName;\n\n    return-void",
+          "new": "    invoke-static {p0, v0}, L${PKG_PATH}/watch/WatchOverrides;->startService(Landroid/content/Context;Landroid/content/Intent;)Landroid/content/ComponentName;\n\n    return-void",
+          "expect": 1
         },
         {
           "op": "replaceInClass",
@@ -1235,31 +1234,24 @@
           "count": 1
         },
         {
-          "op": "replaceInClass",
-          "className": "f9",
-          "old": "    invoke-virtual {p0, v0}, Landroid/content/Context;->startForegroundService(Landroid/content/Intent;)Landroid/content/ComponentName;",
-          "new": "    invoke-static {p0, v0}, L${PKG_PATH}/watch/WatchOverrides;->startService(Landroid/content/Context;Landroid/content/Intent;)Landroid/content/ComponentName;",
-          "count": 1
+          "op": "replaceAllInFilesWithAnchor",
+          "fileContains": "\"ApneaFinishAnalyze execute\"",
+          "old": "    const-string v1, \"com.samsung.android.shealthmonitor.apnea.finish\"\n\n    invoke-virtual {v0, v1}, Landroid/content/Intent;->setAction(Ljava/lang/String;)Landroid/content/Intent;\n\n    invoke-virtual {p0, v0}, Landroid/content/Context;->startForegroundService(Landroid/content/Intent;)Landroid/content/ComponentName;",
+          "new": "    const-string v1, \"com.samsung.android.shealthmonitor.apnea.finish\"\n\n    invoke-virtual {v0, v1}, Landroid/content/Intent;->setAction(Ljava/lang/String;)Landroid/content/Intent;\n\n    invoke-static {p0, v0}, L${PKG_PATH}/watch/WatchOverrides;->startService(Landroid/content/Context;Landroid/content/Intent;)Landroid/content/ComponentName;",
+          "expect": 1
         },
         {
-          "op": "replaceInClass",
-          "className": "sd2",
-          "old": "    invoke-virtual {p0, v0}, Landroid/content/Context;->startForegroundService(Landroid/content/Intent;)Landroid/content/ComponentName;",
-          "new": "    invoke-static {p0, v0}, L${PKG_PATH}/watch/WatchOverrides;->startService(Landroid/content/Context;Landroid/content/Intent;)Landroid/content/ComponentName;",
-          "count": 1
-        },
-        {
-          "op": "replaceInClass",
-          "className": "c72",
-          "old": "    invoke-virtual {p0, v0}, Landroid/content/Context;->startForegroundService(Landroid/content/Intent;)Landroid/content/ComponentName;",
-          "new": "    invoke-static {p0, v0}, L${PKG_PATH}/watch/WatchOverrides;->startService(Landroid/content/Context;Landroid/content/Intent;)Landroid/content/ComponentName;",
-          "count": 1
+          "op": "replaceAllInFilesWithAnchor",
+          "fileContains": "\"requestRuntimeReconcile: skip (apnea sensor permissions not granted)\"",
+          "old": "    const-string v1, \"com.samsung.android.shealthmonitor.apnea.reconcile_runtime\"\n\n    invoke-virtual {v0, v1}, Landroid/content/Intent;->setAction(Ljava/lang/String;)Landroid/content/Intent;\n\n    invoke-virtual {p0, v0}, Landroid/content/Context;->startForegroundService(Landroid/content/Intent;)Landroid/content/ComponentName;",
+          "new": "    const-string v1, \"com.samsung.android.shealthmonitor.apnea.reconcile_runtime\"\n\n    invoke-virtual {v0, v1}, Landroid/content/Intent;->setAction(Ljava/lang/String;)Landroid/content/Intent;\n\n    invoke-static {p0, v0}, L${PKG_PATH}/watch/WatchOverrides;->startService(Landroid/content/Context;Landroid/content/Intent;)Landroid/content/ComponentName;",
+          "expect": 1
         },
         {
           "op": "replaceInClass",
           "className": "com/samsung/android/shealthmonitor/apnea/control/ApneaMonitoringService",
-          "old": "    invoke-virtual {p0, v1, v2}, Landroid/app/Service;->startForeground(ILandroid/app/Notification;)V",
-          "new": "    invoke-static {p0, v1, v2}, L${PKG_PATH}/watch/WatchOverrides;->startApneaForegroundIfRequired(Landroid/app/Service;ILandroid/app/Notification;)V",
+          "old": "    invoke-virtual {p0, v0, v3}, Landroid/app/Service;->startForeground(ILandroid/app/Notification;)V",
+          "new": "    invoke-static {p0, v0, v3}, L${PKG_PATH}/watch/WatchOverrides;->startApneaForegroundIfRequired(Landroid/app/Service;ILandroid/app/Notification;)V",
           "count": 1
         },
         {
@@ -1325,28 +1317,14 @@
         "shm-watch"
       ],
       "title": "BP sensor attribute guard",
-      "description": "Watch: in the BP calibration path (sl.g), the SemHrSensorAttribute construction goes through WatchOverrides.makeHrSensorAttribute, which returns null when hidden-API enforcement denies the constructor; the setType/setDuration/setAttribute/registerListener calls that follow are skipped when it is null, so SHM takes its normal sensor-error path instead of dying on the uncaught NoSuchMethodError",
+      "description": "Watch: in the HR sensor start of the BP path (HrSensorImpl.start), the SemHrSensorAttribute construction goes through WatchOverrides.makeHrSensorAttribute, which returns null when hidden-API enforcement denies the constructor; the method returns when it is null, skipping the setType/setDuration/setAttribute/registerListener calls that follow, so SHM takes its normal sensor-error path instead of dying on the uncaught NoSuchMethodError",
       "optional": false,
       "ops": [
         {
           "op": "replaceInClass",
-          "className": "sl",
-          "old": [
-            "    new-instance v2, Lcom/samsung/android/hardware/sensormanager/SemHrSensorAttribute;",
-            "",
-            "    invoke-direct {v2}, Lcom/samsung/android/hardware/sensormanager/SemHrSensorAttribute;-><init>()V",
-            ""
-          ],
-          "new": [
-            "    invoke-static {}, L${PKG_PATH}/watch/WatchOverrides;->makeHrSensorAttribute()Ljava/lang/Object;",
-            "",
-            "    move-result-object v2",
-            "",
-            "    check-cast v2, Lcom/samsung/android/hardware/sensormanager/SemHrSensorAttribute;",
-            "",
-            "    if-eqz v2, :goto_0",
-            ""
-          ],
+          "className": "xm0",
+          "old": "    new-instance v0, Lcom/samsung/android/hardware/sensormanager/SemHrSensorAttribute;\n\n    invoke-direct {v0}, Lcom/samsung/android/hardware/sensormanager/SemHrSensorAttribute;-><init>()V",
+          "new": "    invoke-static {}, L${PKG_PATH}/watch/WatchOverrides;->makeHrSensorAttribute()Ljava/lang/Object;\n\n    move-result-object v0\n\n    check-cast v0, Lcom/samsung/android/hardware/sensormanager/SemHrSensorAttribute;\n\n    if-nez v0, :ss_hr_attribute_ok\n\n    return-void\n\n    :ss_hr_attribute_ok",
           "count": 1
         }
       ]
@@ -1360,27 +1338,11 @@
       "optional": false,
       "ops": [
         {
-          "op": "replaceInClass",
-          "className": "sl",
-          "old": [
-            "    iget-object p1, p1, Lkf;->h:Ljava/lang/Object;",
-            "",
-            "    check-cast p1, Lpl;",
-            "",
-            "    const/16 v1, 0x1c",
-            "",
-            "    invoke-virtual {v3, p1, v1}, Lcom/samsung/android/hardware/sensormanager/SemSensorManager;->registerListener(Lcom/samsung/android/hardware/sensormanager/SemSensorListener;I)I"
-          ],
-          "new": [
-            "    iget-object p1, p1, Lkf;->h:Ljava/lang/Object;",
-            "",
-            "    check-cast p1, Lpl;",
-            "",
-            "    const/16 v1, 0x1c",
-            "",
-            "    invoke-static {p1, v1}, L${PKG_PATH}/bp/BpAdapter;->start(Lcom/samsung/android/hardware/sensormanager/SemSensorListener;I)V"
-          ],
-          "count": 1
+          "op": "replaceAllInFilesWithAnchor",
+          "fileContains": "\"Starting BpManualSensorImpl\"",
+          "old": "    const/16 v0, 0x1c\n\n    invoke-virtual {v1, p0, v0}, Lcom/samsung/android/hardware/sensormanager/SemSensorManager;->registerListener(Lcom/samsung/android/hardware/sensormanager/SemSensorListener;I)I",
+          "new": "    const/16 v0, 0x1c\n\n    invoke-static {p0, v0}, L${PKG_PATH}/bp/BpAdapter;->start(Lcom/samsung/android/hardware/sensormanager/SemSensorListener;I)V",
+          "expect": 1
         }
       ]
     },
@@ -2385,7 +2347,7 @@
         "shealth-phone"
       ],
       "title": "Local-only mode (no Samsung Account)",
-      "description": "The SamsungAccountManager state getter (j9v.s0 in 7.00.6.011) reports LOG_IN, so the mandatory sign-in stop state right after OOBE never fires; the app runs account-less with no cloud sync",
+      "description": "The SamsungAccountManager state getter (j3x.s0 in 7.2.0.041) reports LOG_IN, so the mandatory sign-in stop state right after OOBE never fires; the app runs account-less with no cloud sync",
       "optional": true,
       "offByDefault": true,
       "ops": [
@@ -2413,16 +2375,26 @@
         "shealth-phone"
       ],
       "title": "China Samsung account (experimental)",
-      "description": "Regional check disabled: the post-sign-in OOBE coroutine (log \"Global APK, China SACC, NO Smart Switch\") sees the account-country check (ozn.Y) as false, so the international build no longer closes itself with HomeAppCloseActivity for a Samsung Account registered in CN. The build still uses the international servers, so cloud sync for a CN account may not work",
+      "description": "Regional check disabled: in the two post-sign-in OOBE paths that log \"Global APK, China SACC, NO Smart Switch\" (the HomeOobeWelcomeFragment coroutine and HomeOobeWelcomeSplashFragment, 7.2.x), the account-country check (account country == CN) that precedes the Smart Switch restore check is seen as false, so the international build no longer closes itself with HomeAppCloseActivity for a Samsung Account registered in CN. The build still uses the international servers, so cloud sync for a CN account may not work",
       "optional": true,
       "offByDefault": true,
       "ops": [
         {
-          "op": "forceInvokeResult",
-          "fileAnchor": "Global APK, China SACC, NO Smart Switch",
-          "invokeRegex": "Lozn;->Y\\(Landroid/content/Context;\\)Z",
-          "value": "0x0",
-          "expect": 1
+          "op": "insertInMethodAtMatch",
+          "sigRegex": ".+",
+          "bodyAll": [
+            "\"Global APK, China SACC, NO Smart Switch\"",
+            "SmartSwitchUtil;->isRestoreAvailable(Landroid/content/Context;)Z"
+          ],
+          "pattern": "invoke-static \\{(?P<c>[vp]\\d+)\\}, L\\w+;->\\w+\\(Landroid/content/Context;\\)Z\\n\\n\\s*move-result (?P<r>[vp]\\d+)\\n(?P<at>)\\n\\s*if-eqz (?P=r), :\\w+\\n\\n\\s*invoke-static \\{(?P=c)\\}, Lcom/samsung/android/sdk/healthdata/privileged/smartswitch/SmartSwitchUtil;->isRestoreAvailable\\(Landroid/content/Context;\\)Z\\n(?:.*\\n){1,8}?\\s*const-string [vp]\\d+, \"Global APK, China SACC, NO Smart Switch\"",
+          "insert": [
+            "",
+            "    const/4 {{r}}, 0x0",
+            "",
+            "    :interop_china_account_gate",
+            ""
+          ],
+          "expect": 2
         }
       ]
     },
@@ -2456,20 +2428,36 @@
         }
       ]
     },
+    "shealth-res-webp-v72": {
+      "families": [
+        "shealth-phone"
+      ],
+      "title": "Resource formats",
+      "description": "One drawable (phr_expanded_chart_image) stores JPEG bytes under a .png name (aapt2 refuses it): renamed to the extension of its real content; the resource keeps name and id. 7.2.x builds: the three WebP-as-.png drawables of 7.00.x are gone or already stored as .webp",
+      "optional": false,
+      "ops": [
+        {
+          "op": "renameFile",
+          "path": "res/drawable/phr_expanded_chart_image.png",
+          "name": "phr_expanded_chart_image.jpg"
+        }
+      ]
+    },
     "shealth-ai-provider-start": {
       "families": [
         "shealth-phone"
       ],
       "title": "Settings provider start",
-      "description": "GenerativeAiProvider.a() (the Settings AI menu refresh that ExternalSettingsProvider.onCreate starts on a background coroutine) returns early while ContextHolder has no context yet: providers are created before Application.onCreate sets it, and the coroutine reached SharedPreferences through a null context (NullPointerException in the main process at every cold start); Settings still gets the menu, since its get_menu_list call runs after the application is up",
+      "description": "GenerativeAiProvider's Settings AI menu refresh (the no-argument method that launches a background coroutine, started from ExternalSettingsProvider.onCreate) returns early while ContextHolder has no context yet: providers are created before Application.onCreate sets it, and the coroutine reached SharedPreferences through a null context (NullPointerException in the main process at every cold start); Settings still gets the menu, since its get_menu_list call runs after the application is up",
       "optional": false,
       "ops": [
         {
           "op": "insertAtMethodStart",
           "fileRegex": "/home/settings/advanced/generativeinsight/GenerativeAiProvider\\.smali$",
-          "sigRegex": "public final a\\(\\)V",
+          "sigRegex": "public final \\w+\\(\\)V",
           "bodyAll": [
-            "-><init>(Ljava/lang/Object;Lkotlin/coroutines/Continuation;I)V"
+            "Lkotlinx/coroutines/CoroutineScope;Lkotlin/coroutines/CoroutineContext;Lkotlinx/coroutines/CoroutineStart;Lkotlin/jvm/functions/Function2;I)L",
+            "Lkotlin/coroutines/Continuation;"
           ],
           "needRegs": 1,
           "insert": [
@@ -3031,6 +3019,47 @@
         }
       ]
     },
+    "shealth-rename-authorities-v72": {
+      "families": [
+        "shealth-phone"
+      ],
+      "title": "Package rename (account, sync XML and 7.2 authorities)",
+      "description": "Account authenticator and sync adapter XML (account type and datastore authority -> the new names; two packages cannot register the same authenticator type), plus the 7.2.x Help file provider outside the package namespace (com.samsung.android.app.shealth.home.help.fileprovider): its manifest authority and the FileProvider.getUriForFile literal -> the new namespace",
+      "optional": false,
+      "ops": [
+        {
+          "op": "resXmlReplaceString",
+          "old": "com.samsung.health.auth",
+          "new": "${PKG_PREFIX}.shealth.auth",
+          "expect": 4
+        },
+        {
+          "op": "resXmlReplaceString",
+          "old": "com.sec.android.app.shealth.datastore",
+          "new": "${PKG_PREFIX}.shealth.datastore",
+          "expect": 2
+        },
+        {
+          "op": "manifestSetAttr",
+          "select": {
+            "path": "application/provider",
+            "attr": {
+              "android:authorities": "com.samsung.android.app.shealth.home.help.fileprovider"
+            }
+          },
+          "attrs": {
+            "android:authorities": "${PKG_PREFIX}.shealth.app.home.help.fileprovider"
+          },
+          "expect": 1
+        },
+        {
+          "op": "replaceConstStringExact",
+          "old": "com.samsung.android.app.shealth.home.help.fileprovider",
+          "new": "${PKG_PREFIX}.shealth.app.home.help.fileprovider",
+          "expect": 1
+        }
+      ]
+    },
     "shealth-samsung-account-absent": {
       "families": [
         "shealth-phone"
@@ -3218,6 +3247,51 @@
         }
       ]
     },
+    "shealth-capability-gates-v72": {
+      "families": [
+        "shealth-phone"
+      ],
+      "title": "Watch capability gates",
+      "description": "7.2.x builds: the watch-advertised service list check is one shared helper (the static method that reads service_capability_list and logs \"getServiceList: size=\", used for tracker.vitals / tracker.training_load / program.fitness_index) -> true, and the per-sleep Vitals device check (the Vitals availability helper, SHEALTH#VitalsAvailabilityHelper) -> true: Vitals, Training load and the fitness index compute on the phone from the synced history without a Galaxy Watch8/Ultra model whitelist",
+      "optional": true,
+      "ops": [
+        {
+          "op": "setMethodBody",
+          "sigRegex": "public static \\w+\\(Ljava/lang/String;\\)Z",
+          "bodyAll": [
+            "\"service_capability_list\"",
+            "\"getServiceList: size=\"",
+            "Landroid/content/SharedPreferences;->getStringSet(",
+            "Ljava/util/List;->contains(Ljava/lang/Object;)Z"
+          ],
+          "body": [
+            "    .locals 0",
+            "",
+            "    const/4 p0, 0x1",
+            "",
+            "    return p0"
+          ],
+          "expect": 1
+        },
+        {
+          "op": "setMethodBody",
+          "sigRegex": "public \\w+\\(Lcom/samsung/android/app/shealth/sleep/data/SleepItem;L\\w+;\\)Ljava/lang/Object;",
+          "bodyAll": [
+            "\"SHEALTH#VitalsAvailabilityHelper\"",
+            "\"tracker.vitals\"",
+            "getSleepTrackDeviceList("
+          ],
+          "body": [
+            "    .locals 0",
+            "",
+            "    sget-object p0, Ljava/lang/Boolean;->TRUE:Ljava/lang/Boolean;",
+            "",
+            "    return-object p0"
+          ],
+          "expect": 1
+        }
+      ]
+    },
     "shealth-shm-providers": {
       "families": [
         "shealth-phone"
@@ -3360,7 +3434,7 @@
         "shm-phone"
       ],
       "title": "Home tabs fallback",
-      "description": "Home feature list without BP or without any ECG controller (saved SIM/network country in no per-feature list) -> BP (first) + ECG2 added; the home TabLayout is hidden instead of measured with zero tabs",
+      "description": "Home feature list without BP or without any ECG controller (saved SIM/network country in no per-feature list) -> BP (first) + ECG2 added; the home TabLayout (CardContainerLayout.d(ConstraintLayout, FloatingBottomLayout, TabLayout, FloatingToolbarLayout)) is hidden instead of measured with zero tabs",
       "optional": false,
       "ops": [
         {
@@ -3419,11 +3493,11 @@
         },
         {
           "op": "insertInMethodAtMatch",
-          "sigRegex": "public final \\w+\\(Landroid/widget/LinearLayout;Lcom/google/android/material/tabs/TabLayout;\\)V",
+          "sigRegex": "public final \\w+\\(.*Lcom/google/android/material/tabs/TabLayout;.*\\)V",
           "bodyAll": [
-            "Lcom/google/android/material/tabs/TabLayout;->setTabMode(I)V"
+            "Lcom/google/android/material/tabs/TabLayout;->setTabGravity(I)V"
           ],
-          "pattern": "Ljava/util/ArrayList;->size\\(\\)I\\n\\n    move-result (?P<n>[vp]\\d+)\\n\\n(?P<at>)(?=    (?:if-nez (?P=n), :\\w+\\n\\n    const/4 (?P=n), 0x1|const/4 [vp]\\d+, 0x1\\n\\n    if-ne (?P=n), [vp]\\d+, :\\w+)\\n)",
+          "pattern": "Lcom/google/android/material/tabs/TabLayout;->setTabGravity\\(I\\)V\\n\\n    invoke-virtual \\{[vp]\\d+\\}, Ljava/util/ArrayList;->size\\(\\)I\\n\\n    move-result (?P<n>[vp]\\d+)\\n\\n(?P<at>)(?=    (?:if-nez (?P=n), :\\w+\\n\\n    const/4 (?P=n), 0x1|(?:const/4 [vp]\\d+, 0x1\\n\\n    )?if-ne (?P=n), [vp]\\d+, :\\w+)\\n)",
           "insert": [
             "    if-nez {{n}}, :interop_home_tabs_some",
             "",
@@ -3441,47 +3515,55 @@
         "shm-phone"
       ],
       "title": "IHRN countries",
-      "description": "Countries where SHM offers ECG without IHRN (the ECG-only list: CN MO NZ LI TR RS UA PE) count as ECG2 countries (the ECG2 country check returns true for them), so the IHRN controller, its Data Layer channel, sync and settings are enabled; the home feature list no longer adds the ECG-only controller when the ECG2 check is true",
+      "description": "Countries where SHM offers ECG without IHRN (the ECG-only list util/o.j: LI TR RS CN and one more) count as ECG2 countries (the ECG2 country check util/o.Y() returns true for them), so the IHRN controller, its Data Layer channel, sync and settings are enabled; the home feature list no longer adds the ECG-only controller when the ECG2 check is true",
       "optional": false,
       "ops": [
         {
           "op": "verifyClassContains",
           "checks": [
             {
-              "className": "com/samsung/android/shealthmonitor/util/r",
-              "contains": "    const-string v8, \"CN\"\n\n    filled-new-array/range {v1 .. v8}, [Ljava/lang/String;\n\n    move-result-object v0\n\n    sput-object v0, Lcom/samsung/android/shealthmonitor/util/r;->i:[Ljava/lang/String;"
+              "className": "com/samsung/android/shealthmonitor/util/o",
+              "contains": "    filled-new-array {v2, v3, v1, v0, v6}, [Ljava/lang/String;\n\n    move-result-object v0\n\n    sput-object v0, Lcom/samsung/android/shealthmonitor/util/o;->j:[Ljava/lang/String;"
             },
             {
-              "className": "com/samsung/android/shealthmonitor/util/r",
-              "contains": ".method public static r()Z\n    .locals 2\n\n    sget-object v0, Lcom/samsung/android/shealthmonitor/util/r;->k:[Ljava/lang/String;"
+              "className": "com/samsung/android/shealthmonitor/util/o",
+              "contains": ".method public static Y()Z\n    .locals 2\n\n    sget-object v0, Lcom/samsung/android/shealthmonitor/util/o;->l:[Ljava/lang/String;"
             },
             {
-              "className": "com/samsung/android/shealthmonitor/util/r",
-              "contains": ".method public static h()Ljava/lang/String;"
+              "className": "com/samsung/android/shealthmonitor/util/o",
+              "contains": ".method public static E()Ljava/lang/String;"
             },
             {
-              "className": "com/samsung/android/shealthmonitor/util/r",
-              "contains": ".method public static o(Ljava/lang/String;[Ljava/lang/String;)Z"
+              "className": "com/samsung/android/shealthmonitor/util/o",
+              "contains": ".method public static U(Ljava/lang/String;[Ljava/lang/String;)Z"
+            },
+            {
+              "className": "ra/b",
+              "contains": "    sget-object v1, Lcom/samsung/android/shealthmonitor/util/o;->j:[Ljava/lang/String;\n\n    invoke-static {}, Lcom/samsung/android/shealthmonitor/util/o;->E()Ljava/lang/String;\n\n    move-result-object v2\n\n    invoke-static {v2, v1}, Lcom/samsung/android/shealthmonitor/util/o;->U(Ljava/lang/String;[Ljava/lang/String;)Z\n\n    move-result v1\n\n    if-eqz v1, :cond_2\n\n    const-string v1, \"com.samsung.android.shealthmonitor.ecg.control.EcgController\""
+            },
+            {
+              "className": "ra/b",
+              "contains": "    invoke-static {}, Lcom/samsung/android/shealthmonitor/util/o;->Y()Z\n\n    move-result v1\n\n    if-eqz v1, :cond_4\n\n    const-string v1, \"com.samsung.android.shealthmonitor.ecg2.control.Ecg2Controller\""
             }
           ]
         },
         {
           "op": "insertAtMethodStart",
-          "fileRegex": "/shealthmonitor/util/r\\.smali$",
-          "sigRegex": "public static r\\(\\)Z",
+          "fileRegex": "/shealthmonitor/util/\\w+\\.smali$",
+          "sigRegex": "public static \\w+\\(\\)Z",
           "bodyAll": [
-            "Lcom/samsung/android/shealthmonitor/util/r;->k:[Ljava/lang/String;"
+            "Lcom/samsung/android/shealthmonitor/util/o;->l:[Ljava/lang/String;"
           ],
           "needRegs": 2,
           "insert": [
             "",
-            "    sget-object v0, Lcom/samsung/android/shealthmonitor/util/r;->i:[Ljava/lang/String;",
+            "    sget-object v0, Lcom/samsung/android/shealthmonitor/util/o;->j:[Ljava/lang/String;",
             "",
-            "    invoke-static {}, Lcom/samsung/android/shealthmonitor/util/r;->h()Ljava/lang/String;",
+            "    invoke-static {}, Lcom/samsung/android/shealthmonitor/util/o;->E()Ljava/lang/String;",
             "",
             "    move-result-object v1",
             "",
-            "    invoke-static {v1, v0}, Lcom/samsung/android/shealthmonitor/util/r;->o(Ljava/lang/String;[Ljava/lang/String;)Z",
+            "    invoke-static {v1, v0}, Lcom/samsung/android/shealthmonitor/util/o;->U(Ljava/lang/String;[Ljava/lang/String;)Z",
             "",
             "    move-result v0",
             "",
@@ -3503,9 +3585,9 @@
             "\"com.samsung.android.shealthmonitor.ecg2.control.Ecg2Controller\"",
             "\"com.samsung.android.shealthmonitor.sleep.control.SleepController\""
           ],
-          "pattern": "    if-eqz (?P<reg>v\\d+), (?P<skip>:\\w+)\\n\\n(?P<at>)(?:    invoke-static \\{\\}, Lcom/samsung/android/shealthmonitor/util/r;->r\\(\\)Z\\n\\n    move-result (?P=reg)\\n\\n    if-nez (?P=reg), (?P=skip)\\n\\n)?    const-string (?P=reg), \"com\\.samsung\\.android\\.shealthmonitor\\.ecg\\.control\\.EcgController\"\\n",
+          "pattern": "    if-eqz (?P<reg>v\\d+), (?P<skip>:\\w+)\\n\\n(?P<at>)(?:    invoke-static \\{\\}, L[^;]+;->\\w+\\(\\)Z\\n\\n    move-result (?P=reg)\\n\\n    if-nez (?P=reg), (?P=skip)\\n\\n)?(?=    const-string (?P=reg), \"com\\.samsung\\.android\\.shealthmonitor\\.ecg\\.control\\.EcgController\"\\n[\\s\\S]*?    invoke-static \\{\\}, (?P<chk>L[^;]+;->\\w+\\(\\)Z)\\n\\n    move-result (?P=reg)\\n\\n    if-eqz (?P=reg), :\\w+\\n\\n    const-string (?P=reg), \"com\\.samsung\\.android\\.shealthmonitor\\.ecg2\\.control\\.Ecg2Controller\"\\n)",
           "insert": [
-            "    invoke-static {}, Lcom/samsung/android/shealthmonitor/util/r;->r()Z",
+            "    invoke-static {}, {{chk}}",
             "",
             "    move-result {{reg}}",
             "",
@@ -3522,41 +3604,39 @@
         "shm-phone"
       ],
       "title": "BP countries",
-      "description": "The BP country list check passes for every country: the shared list lookup (util/r.o(country, list)) returns true when it is handed the BP list (util/r.h), so the home BP controller, the BP sync channel, the BP notification setting and the watch BP module state (onboarding requestModuleDisableState) treat any saved SIM/network country, including unlisted ones and US, as a BP country",
+      "description": "The BP country check passes for every country: the static check that reads the BP list (util/o.i, via the shared lookup util/o.U) returns true, so the home BP controller, the BP sync channel, the BP notification setting and the watch BP module state (onboarding requestModuleDisableState) treat any saved SIM/network country, including unlisted ones and US, as a BP country",
       "optional": false,
       "ops": [
         {
           "op": "verifyClassContains",
           "checks": [
             {
-              "className": "com/samsung/android/shealthmonitor/util/r",
-              "contains": "    const-string v94, \"LB\"\n\n    filled-new-array/range {v1 .. v94}, [Ljava/lang/String;\n\n    move-result-object v0\n\n    sput-object v0, Lcom/samsung/android/shealthmonitor/util/r;->h:[Ljava/lang/String;"
+              "className": "com/samsung/android/shealthmonitor/util/o",
+              "contains": "    const-string v107, \"MD\"\n\n    filled-new-array/range {v7 .. v107}, [Ljava/lang/String;\n\n    move-result-object v1\n\n    sput-object v1, Lcom/samsung/android/shealthmonitor/util/o;->i:[Ljava/lang/String;"
             },
             {
-              "className": "com/samsung/android/shealthmonitor/util/r",
-              "contains": ".method public static o(Ljava/lang/String;[Ljava/lang/String;)Z\n    .locals 2"
+              "className": "com/samsung/android/shealthmonitor/util/o",
+              "contains": ".method public static Q()Z\n    .locals 2\n\n    sget-object v0, Lcom/samsung/android/shealthmonitor/util/o;->i:[Ljava/lang/String;"
+            },
+            {
+              "className": "ra/b",
+              "contains": "    invoke-static {}, Lcom/samsung/android/shealthmonitor/util/o;->Q()Z\n\n    move-result v1\n\n    if-eqz v1, :cond_1\n\n    const-string v1, \"com.samsung.android.shealthmonitor.bp.control.BloodPressureController\""
             }
           ]
         },
         {
           "op": "insertAtMethodStart",
-          "fileRegex": "/shealthmonitor/util/r\\.smali$",
-          "sigRegex": "public static o\\(Ljava/lang/String;\\[Ljava/lang/String;\\)Z",
+          "fileRegex": "/shealthmonitor/util/\\w+\\.smali$",
+          "sigRegex": "public static \\w+\\(\\)Z",
           "bodyAll": [
-            "Ljava/util/stream/Stream;->anyMatch(Ljava/util/function/Predicate;)Z"
+            "Lcom/samsung/android/shealthmonitor/util/o;->i:[Ljava/lang/String;"
           ],
           "needRegs": 1,
           "insert": [
             "",
-            "    sget-object v0, Lcom/samsung/android/shealthmonitor/util/r;->h:[Ljava/lang/String;",
-            "",
-            "    if-ne p1, v0, :interop_bp_country_list",
-            "",
             "    const/4 v0, 0x1",
             "",
             "    return v0",
-            "",
-            "    :interop_bp_country_list",
             ""
           ],
           "expect": 1
@@ -3575,20 +3655,20 @@
           "op": "replaceInClass",
           "className": "com/samsung/android/shealthmonitor/sleep/provider/SleepContentProvider",
           "old": [
-            "    const-string v4, \"com.sec.android.app.shealth\""
+            "\"com.sec.android.app.shealth\""
           ],
           "new": [
-            "    const-string v4, \"${PKG_PREFIX}.shealth\""
+            "\"${PKG_PREFIX}.shealth\""
           ]
         },
         {
           "op": "replaceInClass",
           "className": "com/samsung/android/shealthmonitor/bp/provider/BpContentProvider",
           "old": [
-            "    const-string v1, \"com.sec.android.app.shealth\""
+            "\"com.sec.android.app.shealth\""
           ],
           "new": [
-            "    const-string v1, \"${PKG_PREFIX}.shealth\""
+            "\"${PKG_PREFIX}.shealth\""
           ]
         }
       ]
@@ -3598,24 +3678,23 @@
         "shm-phone"
       ],
       "title": "Samsung Health link popup",
-      "description": "The Samsung Health data link permission popup is no longer shown: the request (SamsungHealthDataSyncManager.n, v8/l) reports a denied result to its listener at once, and apnea onboarding (SleepTurnOn, de/d) goes straight on as if the write permission were granted. The stock Samsung Health does not recognise the renamed, re-signed app and lists no data types, so the link could never be turned on",
+      "description": "The Samsung Health data link permission popup is no longer shown: the request (SamsungHealthDataSyncManager.o, xa/l) reports a denied result to its listener at once, and the two apnea flows that launch the write-permission request (Sleep1SwitchView, ai/g; SleepAllSet, qh/y) go on as if the write permission were granted. The stock Samsung Health does not recognise the renamed, re-signed app and lists no data types, so the link could never be turned on",
       "optional": true,
       "ops": [
         {
-          "op": "insertAtMethodStart",
-          "fileRegex": "/v8/l\\.smali$",
-          "sigRegex": "public final n\\(Ljava/util/Set;Landroid/app/Activity;\\)V",
+          "op": "insertInMethodAtMatch",
+          "sigRegex": "public final \\w+\\(Landroidx/fragment/app/FragmentActivity;Ljava/util/HashSet;\\)V",
           "bodyAll": [
             "HealthPermissionManager;->requestPermissions(Ljava/util/Set;Landroid/app/Activity;)",
-            "Lv8/l;->k:Ljava/lang/ref/WeakReference;"
+            "Ljava/lang/ref/WeakReference;"
           ],
+          "pattern": "\\.locals \\d+\\n\\n(?P<at>)    const/4 v0, 0x0\\n\\n    iput-object v0, p0, (?P<cls>L[^;]+;)->(?P<gf>\\w+):(?P<gt>L[^;]+;)\\n\\n(?=[\\s\\S]*?iget-object \\w+, p0, (?P=cls)->(?P<lf>\\w+):Ljava/lang/ref/WeakReference;\\n\\n    invoke-virtual \\{\\w+\\}, Ljava/lang/ref/Reference;->get\\(\\)Ljava/lang/Object;\\n\\n    move-result-object \\w+\\n\\n    check-cast \\w+, (?P<lt>L[^;]+;)\\n\\n    if-eqz \\w+, :\\w+\\n\\n    const/4 \\w+, 0x0\\n\\n    invoke-interface \\{\\w+, \\w+, \\w+\\}, (?P=lt)->a\\(ZZ\\)V)",
           "insert": [
-            "",
             "    const/4 v0, 0x0",
             "",
-            "    iput-object v0, p0, Lv8/l;->g:Ljava/util/Set;",
+            "    iput-object v0, p0, {{cls}}->{{gf}}:{{gt}}",
             "",
-            "    iget-object v0, p0, Lv8/l;->k:Ljava/lang/ref/WeakReference;",
+            "    iget-object v0, p0, {{cls}}->{{lf}}:Ljava/lang/ref/WeakReference;",
             "",
             "    if-eqz v0, :interop_sh_link_off",
             "",
@@ -3623,13 +3702,13 @@
             "",
             "    move-result-object v0",
             "",
-            "    check-cast v0, Lv8/j;",
+            "    check-cast v0, {{lt}}",
             "",
             "    if-eqz v0, :interop_sh_link_off",
             "",
             "    const/4 v1, 0x0",
             "",
-            "    invoke-interface {v0, v1, v1}, Lv8/j;->a(ZZ)V",
+            "    invoke-interface {v0, v1, v1}, {{lt}}->a(ZZ)V",
             "",
             "    :interop_sh_link_off",
             "",
@@ -3639,16 +3718,19 @@
           "expect": 1
         },
         {
-          "op": "replaceInClass",
-          "className": "de/d",
-          "old": [
-            "    if-eqz v0, :cond_0",
-            "",
-            "    const-string p1, \"Has apnea write permission\""
+          "op": "insertInMethodAtMatch",
+          "sigRegex": "public final \\w+\\(Ljava/lang/Object;\\)Ljava/lang/Object;",
+          "bodyAll": [
+            "\"Has apnea write permission\"",
+            "Lcom/samsung/android/shealthmonitor/sleep/viewmodel/card/activated/TurnOnViewModel;"
           ],
-          "new": [
-            "    const-string p1, \"Has apnea write permission\""
-          ]
+          "pattern": "(?P<at>)    if-eqz (?P<r>[vp]\\d+), :\\w+\\n\\n    const-string (?P=r), \"Has apnea write permission\"\\n",
+          "insert": [
+            "    const/16 {{r}}, 0x1",
+            "",
+            ""
+          ],
+          "expect": 2
         }
       ]
     },
@@ -4228,13 +4310,16 @@
       "pattern.shealth-oobe-local.description": "Off by default. Skips the Samsung Account sign-in requirement and runs the app locally without cloud sync, so it does not get the data that the Samsung Health app from Google Play uploads. Only turn it on if sign-in does not work.",
       "pattern.shealth-china-account-gate.description": "Experimental. Lets this international build open with a Samsung account from mainland China instead of closing at sign-in. It still talks to Samsung's international servers, so cloud sync for a China account may not work.",
       "pattern.shealth-res-webp.description": "Fixes four images stored with the wrong file extension so the app can be rebuilt (no visible change).",
+      "pattern.shealth-res-webp-v72.description": "Fixes four images stored with the wrong file extension so the app can be rebuilt (no visible change).",
       "pattern.shealth-ai-provider-start.description": "Fixes a crash of Samsung Health+ when it starts (no visible change).",
       "pattern.shealth-rename-manifest.description": "Gives the app its own package name and label (Samsung Health+) so it installs next to the original.",
       "pattern.shealth-rename-code.description": "Updates the app's internal references to the new package name.",
       "pattern.shealth-rename-account-xml.description": "Gives the app its own account and sync registration so cloud sync works next to the original.",
+      "pattern.shealth-rename-authorities-v72.description": "Gives the app its own account and sync registration so cloud sync works next to the original.",
       "pattern.shealth-samsung-account-absent.description": "Signs in through the browser page on Samsung phones too, like on other phones, because the Samsung Account app does not accept this copy.",
       "pattern.shealth-knox-absent.description": "Sets up the data key with the Android key store on Samsung phones too, like on other phones, because Knox does not accept this copy.",
       "pattern.shealth-capability-gates.description": "Turns on Vitals, Training load and the fitness index, which otherwise require a Galaxy Watch8 or Ultra. They are computed on the phone from your synced history.",
+      "pattern.shealth-capability-gates-v72.description": "Turns on Vitals, Training load and the fitness index, which otherwise require a Galaxy Watch8 or Ultra. They are computed on the phone from your synced history.",
       "pattern.shealth-shm-providers.description": "Connects Samsung Health+ to the patched Health Monitor so the sleep apnea card and the blood pressure status reach it.",
       "pattern.shealth-launcher-badge.description": "Adds a small LibreWrist badge to the app icon so you can tell it apart from the original.",
       "pattern.shm-home-tabs-fallback.description": "Shows blood pressure and ECG on the home screen when the country is on no feature list, instead of closing.",
@@ -4350,13 +4435,16 @@
       "pattern.shealth-oobe-local.description": "معطّل افتراضيًا. يتخطى شرط تسجيل الدخول إلى Samsung Account ويشغّل التطبيق محليًا دون مزامنة سحابية، لذا لا يحصل على البيانات التي يرفعها تطبيق Samsung Health من Google Play. فعّله فقط إذا لم يعمل تسجيل الدخول.",
       "pattern.shealth-china-account-gate.description": "تجريبي. يتيح لهذا الإصدار الدولي أن يفتح بحساب Samsung من البر الرئيسي للصين بدل أن يُغلق عند تسجيل الدخول. لكنه يظل يتصل بخوادم Samsung الدولية، لذا قد لا تعمل المزامنة السحابية لحساب صيني.",
       "pattern.shealth-res-webp.description": "يصلح أربع صور محفوظة بامتداد ملف خاطئ حتى يمكن إعادة بناء التطبيق (بلا تغيير مرئي).",
+      "pattern.shealth-res-webp-v72.description": "يصلح أربع صور محفوظة بامتداد ملف خاطئ حتى يمكن إعادة بناء التطبيق (بلا تغيير مرئي).",
       "pattern.shealth-ai-provider-start.description": "يصلح تعطّل Samsung Health+ عند بدء تشغيله (بلا تغيير مرئي).",
       "pattern.shealth-rename-manifest.description": "يمنح التطبيق اسم حزمة وتسمية خاصين به (Samsung Health+) ليُثبَّت بجوار الأصلي.",
       "pattern.shealth-rename-code.description": "يحدّث المراجع الداخلية للتطبيق إلى اسم الحزمة الجديد.",
       "pattern.shealth-rename-account-xml.description": "يمنح التطبيق تسجيل حساب ومزامنة خاصًا به لتعمل المزامنة السحابية بجوار الأصلي.",
+      "pattern.shealth-rename-authorities-v72.description": "يمنح التطبيق تسجيل حساب ومزامنة خاصًا به لتعمل المزامنة السحابية بجوار الأصلي.",
       "pattern.shealth-samsung-account-absent.description": "يسجّل الدخول عبر صفحة المتصفح على هواتف Samsung أيضًا، مثل الهواتف الأخرى، لأن تطبيق Samsung Account لا يقبل هذه النسخة.",
       "pattern.shealth-knox-absent.description": "يُعِدّ مفتاح البيانات باستخدام مخزن مفاتيح Android على هواتف Samsung أيضًا، مثل الهواتف الأخرى، لأن Knox لا يقبل هذه النسخة.",
       "pattern.shealth-capability-gates.description": "يفعّل المؤشرات الحيوية وحمل التدريب ومؤشر اللياقة، التي تتطلب بخلاف ذلك Galaxy Watch8 أو Ultra. تُحسب على الهاتف من سجلّك المتزامن.",
+      "pattern.shealth-capability-gates-v72.description": "يفعّل المؤشرات الحيوية وحمل التدريب ومؤشر اللياقة، التي تتطلب بخلاف ذلك Galaxy Watch8 أو Ultra. تُحسب على الهاتف من سجلّك المتزامن.",
       "pattern.shealth-shm-providers.description": "يربط Samsung Health+ بتطبيق Health Monitor المعدّل حتى تصل إليه بطاقة انقطاع النفس أثناء النوم وحالة ضغط الدم.",
       "pattern.shealth-launcher-badge.description": "يضيف شارة LibreWrist صغيرة إلى أيقونة التطبيق لتتمكن من تمييزه عن الأصلي.",
       "pattern.shm-home-tabs-fallback.description": "يعرض ضغط الدم وتخطيط القلب في الشاشة الرئيسية عندما لا تكون الدولة في أي قائمة ميزات، بدلًا من إغلاق التطبيق.",
@@ -4472,13 +4560,16 @@
       "pattern.shealth-oobe-local.description": "Standardmäßig aus. Überspringt die Pflicht zur Anmeldung mit dem Samsung-Konto und führt die App lokal ohne Cloud-Synchronisierung aus, daher erhält sie nicht die Daten, die die Samsung-Health-App aus Google Play hochlädt. Schalte das nur ein, wenn die Anmeldung nicht funktioniert.",
       "pattern.shealth-china-account-gate.description": "Experimentell. Lässt diese internationale Version mit einem Samsung-Konto aus Festlandchina starten, statt sich bei der Anmeldung zu schließen. Sie verbindet sich weiterhin mit Samsungs internationalen Servern, daher funktioniert die Cloud-Synchronisierung für ein chinesisches Konto eventuell nicht.",
       "pattern.shealth-res-webp.description": "Korrigiert vier Bilder mit falscher Dateiendung, damit die App neu gebaut werden kann (keine sichtbare Änderung).",
+      "pattern.shealth-res-webp-v72.description": "Korrigiert vier Bilder mit falscher Dateiendung, damit die App neu gebaut werden kann (keine sichtbare Änderung).",
       "pattern.shealth-ai-provider-start.description": "Behebt einen Absturz von Samsung Health+ beim Start (keine sichtbare Änderung).",
       "pattern.shealth-rename-manifest.description": "Gibt der App einen eigenen Paketnamen und eine eigene Bezeichnung (Samsung Health+), damit sie neben dem Original installiert wird.",
       "pattern.shealth-rename-code.description": "Aktualisiert die internen Verweise der App auf den neuen Paketnamen.",
       "pattern.shealth-rename-account-xml.description": "Gibt der App eine eigene Konto- und Synchronisierungsregistrierung, damit die Cloud-Synchronisierung neben dem Original funktioniert.",
+      "pattern.shealth-rename-authorities-v72.description": "Gibt der App eine eigene Konto- und Synchronisierungsregistrierung, damit die Cloud-Synchronisierung neben dem Original funktioniert.",
       "pattern.shealth-samsung-account-absent.description": "Meldet auch auf Samsung-Smartphones über die Browserseite an, wie auf anderen Smartphones, weil die Samsung-Account-App diese Kopie nicht akzeptiert.",
       "pattern.shealth-knox-absent.description": "Richtet den Datenschlüssel auch auf Samsung-Smartphones mit dem Android-Schlüsselspeicher ein, wie auf anderen Smartphones, weil Knox diese Kopie nicht akzeptiert.",
       "pattern.shealth-capability-gates.description": "Schaltet Vitalwerte, Trainingsbelastung und den Fitnessindex ein, die sonst eine Galaxy Watch8 oder Ultra erfordern. Sie werden auf dem Smartphone aus deinem synchronisierten Verlauf berechnet.",
+      "pattern.shealth-capability-gates-v72.description": "Schaltet Vitalwerte, Trainingsbelastung und den Fitnessindex ein, die sonst eine Galaxy Watch8 oder Ultra erfordern. Sie werden auf dem Smartphone aus deinem synchronisierten Verlauf berechnet.",
       "pattern.shealth-shm-providers.description": "Verbindet Samsung Health+ mit dem angepassten Health Monitor, damit die Schlafapnoe-Karte und der Blutdruckstatus dort ankommen.",
       "pattern.shealth-launcher-badge.description": "Fügt dem App-Symbol ein kleines LibreWrist-Abzeichen hinzu, damit du es vom Original unterscheiden kannst.",
       "pattern.shm-home-tabs-fallback.description": "Zeigt Blutdruck und EKG auf dem Startbildschirm, wenn das Land auf keiner Funktionsliste steht, statt die App zu schließen.",
@@ -4594,13 +4685,16 @@
       "pattern.shealth-oobe-local.description": "Desactivado de forma predeterminada. Omite el requisito de iniciar sesión con la cuenta Samsung y ejecuta la app de forma local sin sincronización con la nube, así que no recibe los datos que sube la app Samsung Health de Google Play. Actívalo solo si el inicio de sesión no funciona.",
       "pattern.shealth-china-account-gate.description": "Experimental. Permite que esta versión internacional se abra con una cuenta Samsung de China continental en lugar de cerrarse al iniciar sesión. Sigue usando los servidores internacionales de Samsung, así que la sincronización en la nube de una cuenta china puede no funcionar.",
       "pattern.shealth-res-webp.description": "Corrige cuatro imágenes guardadas con la extensión equivocada para poder reconstruir la app (sin cambios visibles).",
+      "pattern.shealth-res-webp-v72.description": "Corrige cuatro imágenes guardadas con la extensión equivocada para poder reconstruir la app (sin cambios visibles).",
       "pattern.shealth-ai-provider-start.description": "Corrige un cierre inesperado de Samsung Health+ al iniciarse (sin cambios visibles).",
       "pattern.shealth-rename-manifest.description": "Le da a la app su propio nombre de paquete y etiqueta (Samsung Health+) para que se instale junto a la original.",
       "pattern.shealth-rename-code.description": "Actualiza las referencias internas de la app al nuevo nombre de paquete.",
       "pattern.shealth-rename-account-xml.description": "Le da a la app su propio registro de cuenta y sincronización para que la sincronización con la nube funcione junto a la original.",
+      "pattern.shealth-rename-authorities-v72.description": "Le da a la app su propio registro de cuenta y sincronización para que la sincronización con la nube funcione junto a la original.",
       "pattern.shealth-samsung-account-absent.description": "Inicia sesión mediante la página del navegador también en teléfonos Samsung, como en otros teléfonos, porque la app Samsung Account no acepta esta copia.",
       "pattern.shealth-knox-absent.description": "Configura la clave de datos con el almacén de claves de Android también en teléfonos Samsung, como en otros teléfonos, porque Knox no acepta esta copia.",
       "pattern.shealth-capability-gates.description": "Activa Signos vitales, Carga de entrenamiento y el índice de forma física, que de otro modo requieren un Galaxy Watch8 o Ultra. Se calculan en el teléfono a partir de tu historial sincronizado.",
+      "pattern.shealth-capability-gates-v72.description": "Activa Signos vitales, Carga de entrenamiento y el índice de forma física, que de otro modo requieren un Galaxy Watch8 o Ultra. Se calculan en el teléfono a partir de tu historial sincronizado.",
       "pattern.shealth-shm-providers.description": "Conecta Samsung Health+ con el Health Monitor parcheado para que le lleguen la tarjeta de apnea del sueño y el estado de la presión arterial.",
       "pattern.shealth-launcher-badge.description": "Agrega una pequeña insignia de LibreWrist al ícono de la app para distinguirla de la original.",
       "pattern.shm-home-tabs-fallback.description": "Muestra la presión arterial y el ECG en la pantalla principal cuando el país no figura en ninguna lista de funciones, en lugar de cerrarse.",
@@ -4716,13 +4810,16 @@
       "pattern.shealth-oobe-local.description": "Désactivé par défaut. Ignore l'obligation de se connecter avec le compte Samsung et exécute l'app en local, sans synchronisation cloud : elle ne reçoit donc pas les données envoyées par l'app Samsung Health de Google Play. À n'activer que si la connexion ne fonctionne pas.",
       "pattern.shealth-china-account-gate.description": "Expérimental. Permet à cette version internationale de s'ouvrir avec un compte Samsung de Chine continentale au lieu de se fermer à la connexion. Elle utilise toujours les serveurs internationaux de Samsung : la synchronisation cloud d'un compte chinois peut donc ne pas fonctionner.",
       "pattern.shealth-res-webp.description": "Corrige quatre images enregistrées avec la mauvaise extension pour pouvoir reconstruire l'app (aucun changement visible).",
+      "pattern.shealth-res-webp-v72.description": "Corrige quatre images enregistrées avec la mauvaise extension pour pouvoir reconstruire l'app (aucun changement visible).",
       "pattern.shealth-ai-provider-start.description": "Corrige un plantage de Samsung Health+ au démarrage (aucun changement visible).",
       "pattern.shealth-rename-manifest.description": "Donne à l'app son propre nom de paquet et son propre libellé (Samsung Health+) pour qu'elle s'installe à côté de l'original.",
       "pattern.shealth-rename-code.description": "Met à jour les références internes de l'app vers le nouveau nom de paquet.",
       "pattern.shealth-rename-account-xml.description": "Donne à l'app son propre enregistrement de compte et de synchronisation pour que la synchronisation cloud fonctionne à côté de l'original.",
+      "pattern.shealth-rename-authorities-v72.description": "Donne à l'app son propre enregistrement de compte et de synchronisation pour que la synchronisation cloud fonctionne à côté de l'original.",
       "pattern.shealth-samsung-account-absent.description": "Se connecte aussi par la page du navigateur sur les téléphones Samsung, comme sur les autres téléphones, car l'app Samsung Account n'accepte pas cette copie.",
       "pattern.shealth-knox-absent.description": "Configure la clé des données avec le magasin de clés Android aussi sur les téléphones Samsung, comme sur les autres téléphones, car Knox n'accepte pas cette copie.",
       "pattern.shealth-capability-gates.description": "Active Signes vitaux, Charge d'entraînement et l'indice de forme, qui nécessitent sinon une Galaxy Watch8 ou Ultra. Ils sont calculés sur le téléphone à partir de votre historique synchronisé.",
+      "pattern.shealth-capability-gates-v72.description": "Active Signes vitaux, Charge d'entraînement et l'indice de forme, qui nécessitent sinon une Galaxy Watch8 ou Ultra. Ils sont calculés sur le téléphone à partir de votre historique synchronisé.",
       "pattern.shealth-shm-providers.description": "Relie Samsung Health+ au Health Monitor modifié pour qu'il reçoive la carte d'apnée du sommeil et l'état de la tension artérielle.",
       "pattern.shealth-launcher-badge.description": "Ajoute un petit badge LibreWrist à l'icône de l'app pour la distinguer de l'originale.",
       "pattern.shm-home-tabs-fallback.description": "Affiche la tension artérielle et l'ECG sur l'écran d'accueil quand le pays ne figure dans aucune liste de fonctions, au lieu de se fermer.",
@@ -4838,13 +4935,16 @@
       "pattern.shealth-oobe-local.description": "डिफ़ॉल्ट रूप से बंद। Samsung Account से साइन इन की ज़रूरत छोड़ देता है और ऐप को क्लाउड सिंक के बिना लोकल रूप से चलाता है, इसलिए उसे वह डेटा नहीं मिलता जो Google Play वाला Samsung Health ऐप अपलोड करता है। इसे तभी चालू करें जब साइन इन काम न करे।",
       "pattern.shealth-china-account-gate.description": "प्रायोगिक। इस अंतरराष्ट्रीय बिल्ड को मुख्यभूमि चीन के Samsung खाते के साथ साइन इन पर बंद होने के बजाय खुलने देता है। यह फिर भी Samsung के अंतरराष्ट्रीय सर्वर से जुड़ता है, इसलिए चीनी खाते का क्लाउड सिंक शायद काम न करे।",
       "pattern.shealth-res-webp.description": "गलत फ़ाइल एक्सटेंशन वाली चार इमेज ठीक करता है ताकि ऐप दोबारा बनाया जा सके (कोई दिखने वाला बदलाव नहीं)।",
+      "pattern.shealth-res-webp-v72.description": "गलत फ़ाइल एक्सटेंशन वाली चार इमेज ठीक करता है ताकि ऐप दोबारा बनाया जा सके (कोई दिखने वाला बदलाव नहीं)।",
       "pattern.shealth-ai-provider-start.description": "शुरू होते समय Samsung Health+ के क्रैश होने की समस्या ठीक करता है (कोई दिखने वाला बदलाव नहीं)।",
       "pattern.shealth-rename-manifest.description": "ऐप को अपना पैकेज नाम और लेबल (Samsung Health+) देता है ताकि वह मूल ऐप के बगल में इंस्टॉल हो सके।",
       "pattern.shealth-rename-code.description": "ऐप के आंतरिक संदर्भों को नए पैकेज नाम पर अपडेट करता है।",
       "pattern.shealth-rename-account-xml.description": "ऐप को अपना खाता और सिंक पंजीकरण देता है ताकि क्लाउड सिंक मूल ऐप के बगल में काम करे।",
+      "pattern.shealth-rename-authorities-v72.description": "ऐप को अपना खाता और सिंक पंजीकरण देता है ताकि क्लाउड सिंक मूल ऐप के बगल में काम करे।",
       "pattern.shealth-samsung-account-absent.description": "Samsung फ़ोन पर भी अन्य फ़ोन की तरह ब्राउज़र पेज से साइन इन करता है, क्योंकि Samsung Account ऐप इस प्रति को स्वीकार नहीं करता।",
       "pattern.shealth-knox-absent.description": "Samsung फ़ोन पर भी अन्य फ़ोन की तरह डेटा कुंजी Android की-स्टोर से सेट करता है, क्योंकि Knox इस प्रति को स्वीकार नहीं करता।",
       "pattern.shealth-capability-gates.description": "वाइटल्स, ट्रेनिंग लोड और फ़िटनेस इंडेक्स चालू करता है, जिनके लिए वरना Galaxy Watch8 या Ultra चाहिए। इनकी गणना फ़ोन पर आपके सिंक किए गए इतिहास से होती है।",
+      "pattern.shealth-capability-gates-v72.description": "वाइटल्स, ट्रेनिंग लोड और फ़िटनेस इंडेक्स चालू करता है, जिनके लिए वरना Galaxy Watch8 या Ultra चाहिए। इनकी गणना फ़ोन पर आपके सिंक किए गए इतिहास से होती है।",
       "pattern.shealth-shm-providers.description": "Samsung Health+ को पैच किए गए Health Monitor से जोड़ता है ताकि स्लीप एप्निया कार्ड और ब्लड प्रेशर की स्थिति उस तक पहुँचे।",
       "pattern.shealth-launcher-badge.description": "ऐप आइकन में एक छोटा LibreWrist बैज जोड़ता है, ताकि आप इसे मूल ऐप से अलग पहचान सकें।",
       "pattern.shm-home-tabs-fallback.description": "जब देश किसी भी फ़ीचर सूची में नहीं होता, तो ऐप बंद होने के बजाय होम स्क्रीन पर ब्लड प्रेशर और ईसीजी दिखाता है।",
@@ -4960,13 +5060,16 @@
       "pattern.shealth-oobe-local.description": "Nonaktif secara default. Melewati keharusan login dengan akun Samsung dan menjalankan aplikasi secara lokal tanpa sinkronisasi cloud, jadi aplikasi ini tidak mendapatkan data yang diunggah aplikasi Samsung Health dari Google Play. Aktifkan hanya jika login tidak berhasil.",
       "pattern.shealth-china-account-gate.description": "Eksperimental. Membuat build internasional ini bisa dibuka dengan akun Samsung dari Tiongkok daratan, bukan tertutup saat login. Build ini tetap memakai server internasional Samsung, jadi sinkronisasi cloud untuk akun Tiongkok mungkin tidak berfungsi.",
       "pattern.shealth-res-webp.description": "Memperbaiki empat gambar yang tersimpan dengan ekstensi file yang salah agar aplikasi dapat dibangun ulang (tidak ada perubahan yang terlihat).",
+      "pattern.shealth-res-webp-v72.description": "Memperbaiki empat gambar yang tersimpan dengan ekstensi file yang salah agar aplikasi dapat dibangun ulang (tidak ada perubahan yang terlihat).",
       "pattern.shealth-ai-provider-start.description": "Memperbaiki Samsung Health+ yang mogok saat dimulai (tidak ada perubahan yang terlihat).",
       "pattern.shealth-rename-manifest.description": "Memberi aplikasi nama paket dan label sendiri (Samsung Health+) agar terpasang berdampingan dengan aslinya.",
       "pattern.shealth-rename-code.description": "Memperbarui referensi internal aplikasi ke nama paket baru.",
       "pattern.shealth-rename-account-xml.description": "Memberi aplikasi registrasi akun dan sinkronisasi sendiri agar sinkronisasi cloud berfungsi berdampingan dengan aslinya.",
+      "pattern.shealth-rename-authorities-v72.description": "Memberi aplikasi registrasi akun dan sinkronisasi sendiri agar sinkronisasi cloud berfungsi berdampingan dengan aslinya.",
       "pattern.shealth-samsung-account-absent.description": "Login lewat halaman browser juga di ponsel Samsung, seperti di ponsel lain, karena aplikasi Samsung Account tidak menerima salinan ini.",
       "pattern.shealth-knox-absent.description": "Menyiapkan kunci data dengan penyimpanan kunci Android juga di ponsel Samsung, seperti di ponsel lain, karena Knox tidak menerima salinan ini.",
       "pattern.shealth-capability-gates.description": "Mengaktifkan Vital, Beban latihan, dan indeks kebugaran, yang biasanya membutuhkan Galaxy Watch8 atau Ultra. Semuanya dihitung di ponsel dari riwayat Anda yang tersinkron.",
+      "pattern.shealth-capability-gates-v72.description": "Mengaktifkan Vital, Beban latihan, dan indeks kebugaran, yang biasanya membutuhkan Galaxy Watch8 atau Ultra. Semuanya dihitung di ponsel dari riwayat Anda yang tersinkron.",
       "pattern.shealth-shm-providers.description": "Menghubungkan Samsung Health+ ke Health Monitor yang sudah di-patch agar kartu apnea tidur dan status tekanan darah sampai ke sana.",
       "pattern.shealth-launcher-badge.description": "Menambahkan lencana LibreWrist kecil pada ikon aplikasi agar mudah dibedakan dari aslinya.",
       "pattern.shm-home-tabs-fallback.description": "Menampilkan tekanan darah dan EKG di layar utama saat negara tidak ada di daftar fitur mana pun, alih-alih menutup aplikasi.",
@@ -5082,13 +5185,16 @@
       "pattern.shealth-oobe-local.description": "Disattivato per impostazione predefinita. Salta l'obbligo di accedere con l'account Samsung ed esegue l'app in locale senza sincronizzazione cloud, quindi non riceve i dati che carica l'app Samsung Health di Google Play. Attivalo solo se l'accesso non funziona.",
       "pattern.shealth-china-account-gate.description": "Sperimentale. Consente a questa versione internazionale di aprirsi con un account Samsung della Cina continentale invece di chiudersi all'accesso. Continua a usare i server internazionali di Samsung, quindi la sincronizzazione cloud di un account cinese potrebbe non funzionare.",
       "pattern.shealth-res-webp.description": "Corregge quattro immagini salvate con l'estensione sbagliata per poter ricostruire l'app (nessuna modifica visibile).",
+      "pattern.shealth-res-webp-v72.description": "Corregge quattro immagini salvate con l'estensione sbagliata per poter ricostruire l'app (nessuna modifica visibile).",
       "pattern.shealth-ai-provider-start.description": "Corregge un arresto anomalo di Samsung Health+ all'avvio (nessuna modifica visibile).",
       "pattern.shealth-rename-manifest.description": "Dà all'app un proprio nome di pacchetto e un'etichetta (Samsung Health+) per installarla accanto all'originale.",
       "pattern.shealth-rename-code.description": "Aggiorna i riferimenti interni dell'app al nuovo nome di pacchetto.",
       "pattern.shealth-rename-account-xml.description": "Dà all'app una propria registrazione di account e sincronizzazione, così la sincronizzazione cloud funziona accanto all'originale.",
+      "pattern.shealth-rename-authorities-v72.description": "Dà all'app una propria registrazione di account e sincronizzazione, così la sincronizzazione cloud funziona accanto all'originale.",
       "pattern.shealth-samsung-account-absent.description": "Accede tramite la pagina del browser anche sui telefoni Samsung, come sugli altri telefoni, perché l'app Samsung Account non accetta questa copia.",
       "pattern.shealth-knox-absent.description": "Configura la chiave dei dati con l'archivio chiavi di Android anche sui telefoni Samsung, come sugli altri telefoni, perché Knox non accetta questa copia.",
       "pattern.shealth-capability-gates.description": "Attiva Parametri vitali, Carico di allenamento e l'indice di forma fisica, che altrimenti richiedono un Galaxy Watch8 o Ultra. Vengono calcolati sul telefono dalla tua cronologia sincronizzata.",
+      "pattern.shealth-capability-gates-v72.description": "Attiva Parametri vitali, Carico di allenamento e l'indice di forma fisica, che altrimenti richiedono un Galaxy Watch8 o Ultra. Vengono calcolati sul telefono dalla tua cronologia sincronizzata.",
       "pattern.shealth-shm-providers.description": "Collega Samsung Health+ all'Health Monitor modificato in modo che riceva la scheda dell'apnea notturna e lo stato della pressione arteriosa.",
       "pattern.shealth-launcher-badge.description": "Aggiunge un piccolo badge LibreWrist all'icona dell'app per distinguerla dall'originale.",
       "pattern.shm-home-tabs-fallback.description": "Mostra la pressione sanguigna e l'ECG nella schermata principale quando il paese non è in nessun elenco di funzioni, invece di chiudersi.",
@@ -5204,13 +5310,16 @@
       "pattern.shealth-oobe-local.description": "初期設定ではオフ。Samsung アカウントでのサインイン要件を省略し、クラウド同期なしでアプリをローカルで実行します。そのため、Google Play の Samsung Health アプリがアップロードしたデータは取得されません。サインインできない場合のみオンにしてください。",
       "pattern.shealth-china-account-gate.description": "試験的な機能。中国本土の Samsung アカウントでも、この国際版がサインイン時に終了せず起動できるようにします。接続先は引き続き Samsung の国際サーバーのため、中国アカウントのクラウド同期は動作しない可能性があります。",
       "pattern.shealth-res-webp.description": "誤ったファイル拡張子で保存されている4つの画像を修正し、アプリを再ビルドできるようにします（見た目の変化はありません）。",
+      "pattern.shealth-res-webp-v72.description": "誤ったファイル拡張子で保存されている4つの画像を修正し、アプリを再ビルドできるようにします（見た目の変化はありません）。",
       "pattern.shealth-ai-provider-start.description": "Samsung Health+ が起動時にクラッシュする問題を修正します（見た目の変化はありません）。",
       "pattern.shealth-rename-manifest.description": "アプリに独自のパッケージ名とラベル（Samsung Health+）を与え、元のアプリの隣にインストールできるようにします。",
       "pattern.shealth-rename-code.description": "アプリの内部参照を新しいパッケージ名に更新します。",
       "pattern.shealth-rename-account-xml.description": "アプリに独自のアカウントと同期の登録を与え、元のアプリの隣でもクラウド同期が動作するようにします。",
+      "pattern.shealth-rename-authorities-v72.description": "アプリに独自のアカウントと同期の登録を与え、元のアプリの隣でもクラウド同期が動作するようにします。",
       "pattern.shealth-samsung-account-absent.description": "Samsung のスマートフォンでも、他のスマートフォンと同じようにブラウザのページでサインインします。Samsung Account アプリはこのコピーを受け付けないためです。",
       "pattern.shealth-knox-absent.description": "Knox がこのコピーを受け付けないため、Samsung のスマートフォンでも他のスマートフォンと同様に Android キーストアでデータキーを設定します。",
       "pattern.shealth-capability-gates.description": "通常は Galaxy Watch8 または Ultra が必要な「バイタル」「トレーニング負荷」と体力指数を有効にします。同期済みの履歴からスマートフォン上で計算されます。",
+      "pattern.shealth-capability-gates-v72.description": "通常は Galaxy Watch8 または Ultra が必要な「バイタル」「トレーニング負荷」と体力指数を有効にします。同期済みの履歴からスマートフォン上で計算されます。",
       "pattern.shealth-shm-providers.description": "Samsung Health+ をパッチ済みの Health Monitor に接続し、睡眠時無呼吸カードと血圧の状態が届くようにします。",
       "pattern.shealth-launcher-badge.description": "アプリのアイコンに小さな LibreWrist バッジを追加し、元のアプリと見分けられるようにします。",
       "pattern.shm-home-tabs-fallback.description": "国がどの機能リストにも含まれない場合、アプリを終了せずにホーム画面に血圧と心電図を表示します。",
@@ -5326,13 +5435,16 @@
       "pattern.shealth-oobe-local.description": "기본값은 꺼짐입니다. 삼성 계정 로그인 요구를 건너뛰고 클라우드 동기화 없이 앱을 로컬로 실행하므로, Google Play에서 받은 Samsung Health 앱이 업로드하는 데이터를 받지 못합니다. 로그인이 되지 않을 때만 켜세요.",
       "pattern.shealth-china-account-gate.description": "실험적 기능입니다. 중국 본토 삼성 계정으로도 이 글로벌 버전이 로그인 시 종료되지 않고 열리게 합니다. 여전히 삼성 글로벌 서버에 연결되므로 중국 계정의 클라우드 동기화는 작동하지 않을 수 있습니다.",
       "pattern.shealth-res-webp.description": "잘못된 파일 확장자로 저장된 이미지 4개를 고쳐 앱을 다시 빌드할 수 있게 합니다(눈에 보이는 변화 없음).",
+      "pattern.shealth-res-webp-v72.description": "잘못된 파일 확장자로 저장된 이미지 4개를 고쳐 앱을 다시 빌드할 수 있게 합니다(눈에 보이는 변화 없음).",
       "pattern.shealth-ai-provider-start.description": "Samsung Health+가 시작할 때 비정상 종료되는 문제를 고칩니다(눈에 보이는 변화 없음).",
       "pattern.shealth-rename-manifest.description": "앱에 고유한 패키지 이름과 레이블(Samsung Health+)을 부여하여 원본 옆에 설치되도록 합니다.",
       "pattern.shealth-rename-code.description": "앱의 내부 참조를 새 패키지 이름으로 업데이트합니다.",
       "pattern.shealth-rename-account-xml.description": "앱에 고유한 계정 및 동기화 등록을 부여하여 원본 옆에서도 클라우드 동기화가 작동하도록 합니다.",
+      "pattern.shealth-rename-authorities-v72.description": "앱에 고유한 계정 및 동기화 등록을 부여하여 원본 옆에서도 클라우드 동기화가 작동하도록 합니다.",
       "pattern.shealth-samsung-account-absent.description": "Samsung 휴대폰에서도 다른 휴대폰처럼 브라우저 페이지로 로그인합니다. Samsung Account 앱이 이 사본을 받아들이지 않기 때문입니다.",
       "pattern.shealth-knox-absent.description": "Knox가 이 사본을 허용하지 않으므로 Samsung 휴대전화에서도 다른 휴대전화처럼 Android 키 저장소로 데이터 키를 설정합니다.",
       "pattern.shealth-capability-gates.description": "원래 Galaxy Watch8 또는 Ultra가 필요한 바이탈, 트레이닝 부하, 체력 지수를 켭니다. 동기화된 기록을 바탕으로 휴대전화에서 계산됩니다.",
+      "pattern.shealth-capability-gates-v72.description": "원래 Galaxy Watch8 또는 Ultra가 필요한 바이탈, 트레이닝 부하, 체력 지수를 켭니다. 동기화된 기록을 바탕으로 휴대전화에서 계산됩니다.",
       "pattern.shealth-shm-providers.description": "Samsung Health+를 패치된 Health Monitor에 연결하여 수면 무호흡 카드와 혈압 상태가 전달되도록 합니다.",
       "pattern.shealth-launcher-badge.description": "앱 아이콘에 작은 LibreWrist 배지를 추가하여 원본 앱과 구별할 수 있게 합니다.",
       "pattern.shm-home-tabs-fallback.description": "국가가 어떤 기능 목록에도 없을 때 앱을 종료하는 대신 홈 화면에 혈압과 심전도를 표시합니다.",
@@ -5448,13 +5560,16 @@
       "pattern.shealth-oobe-local.description": "Standaard uit. Slaat de verplichting over om in te loggen met het Samsung-account en draait de app lokaal zonder cloudsynchronisatie, dus hij krijgt de gegevens niet die de Samsung Health-app uit Google Play uploadt. Zet dit alleen aan als inloggen niet werkt.",
       "pattern.shealth-china-account-gate.description": "Experimenteel. Laat deze internationale versie openen met een Samsung-account uit het Chinese vasteland in plaats van te sluiten bij het inloggen. Hij praat nog steeds met de internationale servers van Samsung, dus cloudsynchronisatie voor een Chinees account werkt mogelijk niet.",
       "pattern.shealth-res-webp.description": "Herstelt vier afbeeldingen met de verkeerde bestandsextensie zodat de app opnieuw kan worden gebouwd (geen zichtbare wijziging).",
+      "pattern.shealth-res-webp-v72.description": "Herstelt vier afbeeldingen met de verkeerde bestandsextensie zodat de app opnieuw kan worden gebouwd (geen zichtbare wijziging).",
       "pattern.shealth-ai-provider-start.description": "Verhelpt een crash van Samsung Health+ bij het opstarten (geen zichtbare wijziging).",
       "pattern.shealth-rename-manifest.description": "Geeft de app een eigen pakketnaam en label (Samsung Health+) zodat ze naast het origineel wordt geïnstalleerd.",
       "pattern.shealth-rename-code.description": "Werkt de interne verwijzingen van de app bij naar de nieuwe pakketnaam.",
       "pattern.shealth-rename-account-xml.description": "Geeft de app een eigen account- en synchronisatieregistratie zodat cloudsynchronisatie naast het origineel werkt.",
+      "pattern.shealth-rename-authorities-v72.description": "Geeft de app een eigen account- en synchronisatieregistratie zodat cloudsynchronisatie naast het origineel werkt.",
       "pattern.shealth-samsung-account-absent.description": "Meldt zich ook op Samsung-telefoons aan via de browserpagina, zoals op andere telefoons, omdat de Samsung Account-app deze kopie niet accepteert.",
       "pattern.shealth-knox-absent.description": "Stelt de gegevenssleutel ook op Samsung-telefoons in met de Android-sleutelopslag, zoals op andere telefoons, omdat Knox deze kopie niet accepteert.",
       "pattern.shealth-capability-gates.description": "Zet Vitale waarden, Trainingsbelasting en de fitnessindex aan, die anders een Galaxy Watch8 of Ultra vereisen. Ze worden op de telefoon berekend uit je gesynchroniseerde geschiedenis.",
+      "pattern.shealth-capability-gates-v72.description": "Zet Vitale waarden, Trainingsbelasting en de fitnessindex aan, die anders een Galaxy Watch8 of Ultra vereisen. Ze worden op de telefoon berekend uit je gesynchroniseerde geschiedenis.",
       "pattern.shealth-shm-providers.description": "Verbindt Samsung Health+ met de aangepaste Health Monitor zodat de slaapapneukaart en de bloeddrukstatus er aankomen.",
       "pattern.shealth-launcher-badge.description": "Voegt een kleine LibreWrist-badge toe aan het app-pictogram, zodat je het van het origineel kunt onderscheiden.",
       "pattern.shm-home-tabs-fallback.description": "Toont bloeddruk en ECG op het startscherm als het land op geen enkele functielijst staat, in plaats van te sluiten.",
@@ -5570,13 +5685,16 @@
       "pattern.shealth-oobe-local.description": "Domyślnie wyłączone. Pomija wymóg logowania na konto Samsung i uruchamia aplikację lokalnie bez synchronizacji z chmurą, więc nie otrzymuje ona danych przesyłanych przez aplikację Samsung Health z Google Play. Włącz tylko wtedy, gdy logowanie nie działa.",
       "pattern.shealth-china-account-gate.description": "Eksperymentalne. Pozwala tej międzynarodowej wersji uruchomić się z kontem Samsung z Chin kontynentalnych, zamiast zamykać się przy logowaniu. Nadal łączy się z międzynarodowymi serwerami Samsunga, więc synchronizacja z chmurą dla chińskiego konta może nie działać.",
       "pattern.shealth-res-webp.description": "Naprawia cztery obrazy zapisane z błędnym rozszerzeniem, aby można było przebudować aplikację (bez widocznych zmian).",
+      "pattern.shealth-res-webp-v72.description": "Naprawia cztery obrazy zapisane z błędnym rozszerzeniem, aby można było przebudować aplikację (bez widocznych zmian).",
       "pattern.shealth-ai-provider-start.description": "Naprawia awarię Samsung Health+ podczas uruchamiania (bez widocznych zmian).",
       "pattern.shealth-rename-manifest.description": "Nadaje aplikacji własną nazwę pakietu i etykietę (Samsung Health+), aby instalowała się obok oryginału.",
       "pattern.shealth-rename-code.description": "Aktualizuje wewnętrzne odwołania aplikacji do nowej nazwy pakietu.",
       "pattern.shealth-rename-account-xml.description": "Nadaje aplikacji własną rejestrację konta i synchronizacji, aby synchronizacja z chmurą działała obok oryginału.",
+      "pattern.shealth-rename-authorities-v72.description": "Nadaje aplikacji własną rejestrację konta i synchronizacji, aby synchronizacja z chmurą działała obok oryginału.",
       "pattern.shealth-samsung-account-absent.description": "Loguje przez stronę w przeglądarce także na telefonach Samsung, tak jak na innych telefonach, ponieważ aplikacja Samsung Account nie akceptuje tej kopii.",
       "pattern.shealth-knox-absent.description": "Konfiguruje klucz danych za pomocą magazynu kluczy Androida także na telefonach Samsung, jak na innych telefonach, ponieważ Knox nie akceptuje tej kopii.",
       "pattern.shealth-capability-gates.description": "Włącza Parametry życiowe, Obciążenie treningowe i wskaźnik sprawności, które inaczej wymagają Galaxy Watch8 lub Ultra. Są obliczane na telefonie na podstawie Twojej zsynchronizowanej historii.",
+      "pattern.shealth-capability-gates-v72.description": "Włącza Parametry życiowe, Obciążenie treningowe i wskaźnik sprawności, które inaczej wymagają Galaxy Watch8 lub Ultra. Są obliczane na telefonie na podstawie Twojej zsynchronizowanej historii.",
       "pattern.shealth-shm-providers.description": "Łączy Samsung Health+ ze zmodyfikowanym Health Monitor, aby trafiały do niego karta bezdechu sennego i stan ciśnienia krwi.",
       "pattern.shealth-launcher-badge.description": "Dodaje małą odznakę LibreWrist do ikony aplikacji, aby można ją było odróżnić od oryginału.",
       "pattern.shm-home-tabs-fallback.description": "Pokazuje ciśnienie krwi i EKG na ekranie głównym, gdy kraju nie ma na żadnej liście funkcji, zamiast zamykać aplikację.",
@@ -5692,13 +5810,16 @@
       "pattern.shealth-oobe-local.description": "Desativado por padrão. Dispensa a exigência de entrar com a conta Samsung e executa o app localmente, sem sincronização na nuvem, então ele não recebe os dados que o app Samsung Health do Google Play envia. Ative somente se o login não funcionar.",
       "pattern.shealth-china-account-gate.description": "Experimental. Permite que esta versão internacional abra com uma conta Samsung da China continental em vez de fechar ao entrar. Ela continua usando os servidores internacionais da Samsung, então a sincronização na nuvem de uma conta chinesa pode não funcionar.",
       "pattern.shealth-res-webp.description": "Corrige quatro imagens salvas com a extensão errada para que o app possa ser reconstruído (sem mudança visível).",
+      "pattern.shealth-res-webp-v72.description": "Corrige quatro imagens salvas com a extensão errada para que o app possa ser reconstruído (sem mudança visível).",
       "pattern.shealth-ai-provider-start.description": "Corrige uma falha do Samsung Health+ ao iniciar (sem mudança visível).",
       "pattern.shealth-rename-manifest.description": "Dá ao app seu próprio nome de pacote e rótulo (Samsung Health+) para que seja instalado ao lado do original.",
       "pattern.shealth-rename-code.description": "Atualiza as referências internas do app para o novo nome de pacote.",
       "pattern.shealth-rename-account-xml.description": "Dá ao app seu próprio registro de conta e de sincronização para que a sincronização na nuvem funcione ao lado do original.",
+      "pattern.shealth-rename-authorities-v72.description": "Dá ao app seu próprio registro de conta e de sincronização para que a sincronização na nuvem funcione ao lado do original.",
       "pattern.shealth-samsung-account-absent.description": "Entra pela página do navegador também em telefones Samsung, como em outros telefones, porque o app Samsung Account não aceita esta cópia.",
       "pattern.shealth-knox-absent.description": "Configura a chave de dados com o armazenamento de chaves do Android também em telefones Samsung, como em outros telefones, porque o Knox não aceita esta cópia.",
       "pattern.shealth-capability-gates.description": "Ativa Sinais vitais, Carga de treino e o índice de condicionamento físico, que de outro modo exigem um Galaxy Watch8 ou Ultra. Eles são calculados no celular a partir do seu histórico sincronizado.",
+      "pattern.shealth-capability-gates-v72.description": "Ativa Sinais vitais, Carga de treino e o índice de condicionamento físico, que de outro modo exigem um Galaxy Watch8 ou Ultra. Eles são calculados no celular a partir do seu histórico sincronizado.",
       "pattern.shealth-shm-providers.description": "Conecta o Samsung Health+ ao Health Monitor modificado para que o cartão de apneia do sono e o status da pressão arterial cheguem até ele.",
       "pattern.shealth-launcher-badge.description": "Adiciona um pequeno emblema do LibreWrist ao ícone do app para você distingui-lo do original.",
       "pattern.shm-home-tabs-fallback.description": "Mostra a pressão arterial e o ECG na tela inicial quando o país não está em nenhuma lista de recursos, em vez de fechar.",
@@ -5814,13 +5935,16 @@
       "pattern.shealth-oobe-local.description": "По умолчанию выключено. Пропускает обязательный вход в Samsung Account и запускает приложение локально, без облачной синхронизации, поэтому оно не получает данные, которые загружает приложение Samsung Health из Google Play. Включайте, только если вход не работает.",
       "pattern.shealth-china-account-gate.description": "Экспериментально. Позволяет этой международной версии открываться с аккаунтом Samsung из материкового Китая, а не закрываться при входе. Она по-прежнему работает с международными серверами Samsung, поэтому облачная синхронизация для китайского аккаунта может не работать.",
       "pattern.shealth-res-webp.description": "Исправляет четыре изображения с неверным расширением файла, чтобы приложение можно было пересобрать (видимых изменений нет).",
+      "pattern.shealth-res-webp-v72.description": "Исправляет четыре изображения с неверным расширением файла, чтобы приложение можно было пересобрать (видимых изменений нет).",
       "pattern.shealth-ai-provider-start.description": "Исправляет сбой Samsung Health+ при запуске (видимых изменений нет).",
       "pattern.shealth-rename-manifest.description": "Даёт приложению собственное имя пакета и название (Samsung Health+), чтобы оно устанавливалось рядом с оригиналом.",
       "pattern.shealth-rename-code.description": "Обновляет внутренние ссылки приложения на новое имя пакета.",
       "pattern.shealth-rename-account-xml.description": "Даёт приложению собственную регистрацию учётной записи и синхронизации, чтобы облачная синхронизация работала рядом с оригиналом.",
+      "pattern.shealth-rename-authorities-v72.description": "Даёт приложению собственную регистрацию учётной записи и синхронизации, чтобы облачная синхронизация работала рядом с оригиналом.",
       "pattern.shealth-samsung-account-absent.description": "Выполняет вход через страницу в браузере и на телефонах Samsung, как на других телефонах, потому что приложение Samsung Account не принимает эту копию.",
       "pattern.shealth-knox-absent.description": "Настраивает ключ данных через хранилище ключей Android и на телефонах Samsung, как на других телефонах, потому что Knox не принимает эту копию.",
       "pattern.shealth-capability-gates.description": "Включает «Жизненные показатели», «Тренировочную нагрузку» и индекс физической формы, для которых иначе нужны Galaxy Watch8 или Ultra. Они вычисляются на телефоне по синхронизированной истории.",
+      "pattern.shealth-capability-gates-v72.description": "Включает «Жизненные показатели», «Тренировочную нагрузку» и индекс физической формы, для которых иначе нужны Galaxy Watch8 или Ultra. Они вычисляются на телефоне по синхронизированной истории.",
       "pattern.shealth-shm-providers.description": "Связывает Samsung Health+ с изменённым Health Monitor, чтобы до него доходили карточка апноэ во сне и состояние давления.",
       "pattern.shealth-launcher-badge.description": "Добавляет на значок приложения небольшой бейдж LibreWrist, чтобы его можно было отличить от оригинала.",
       "pattern.shm-home-tabs-fallback.description": "Показывает давление и ЭКГ на главном экране, если страны нет ни в одном списке функций, вместо закрытия приложения.",
@@ -5936,13 +6060,16 @@
       "pattern.shealth-oobe-local.description": "Varsayılan olarak kapalı. Samsung hesabıyla oturum açma zorunluluğunu atlar ve uygulamayı bulut eşitlemesi olmadan yerel olarak çalıştırır; bu yüzden Google Play'deki Samsung Health uygulamasının yüklediği verileri almaz. Yalnızca oturum açma çalışmıyorsa açın.",
       "pattern.shealth-china-account-gate.description": "Deneysel. Bu uluslararası sürümün, Çin anakarasına ait bir Samsung hesabıyla oturum açarken kapanmak yerine açılmasını sağlar. Yine de Samsung'un uluslararası sunucularına bağlanır, bu yüzden Çin hesabı için bulut eşitlemesi çalışmayabilir.",
       "pattern.shealth-res-webp.description": "Yanlış dosya uzantısıyla saklanan dört görseli düzeltir, böylece uygulama yeniden derlenebilir (görünür bir değişiklik yok).",
+      "pattern.shealth-res-webp-v72.description": "Yanlış dosya uzantısıyla saklanan dört görseli düzeltir, böylece uygulama yeniden derlenebilir (görünür bir değişiklik yok).",
       "pattern.shealth-ai-provider-start.description": "Samsung Health+ uygulamasının açılırken çökmesini düzeltir (görünür bir değişiklik yok).",
       "pattern.shealth-rename-manifest.description": "Uygulamaya, orijinalinin yanına kurulabilmesi için kendi paket adını ve etiketini (Samsung Health+) verir.",
       "pattern.shealth-rename-code.description": "Uygulamanın dahili referanslarını yeni paket adına günceller.",
       "pattern.shealth-rename-account-xml.description": "Bulut senkronizasyonunun orijinalin yanında çalışması için uygulamaya kendi hesap ve senkronizasyon kaydını verir.",
+      "pattern.shealth-rename-authorities-v72.description": "Bulut senkronizasyonunun orijinalin yanında çalışması için uygulamaya kendi hesap ve senkronizasyon kaydını verir.",
       "pattern.shealth-samsung-account-absent.description": "Samsung Account uygulaması bu kopyayı kabul etmediği için, Samsung telefonlarda da diğer telefonlardaki gibi tarayıcı sayfası üzerinden oturum açar.",
       "pattern.shealth-knox-absent.description": "Knox bu kopyayı kabul etmediği için veri anahtarını Samsung telefonlarda da diğer telefonlardaki gibi Android anahtar deposuyla ayarlar.",
       "pattern.shealth-capability-gates.description": "Aksi halde Galaxy Watch8 veya Ultra gerektiren Hayati Değerler, Antrenman Yükü ve kondisyon endeksini açar. Bunlar telefonda, eşitlenmiş geçmişinizden hesaplanır.",
+      "pattern.shealth-capability-gates-v72.description": "Aksi halde Galaxy Watch8 veya Ultra gerektiren Hayati Değerler, Antrenman Yükü ve kondisyon endeksini açar. Bunlar telefonda, eşitlenmiş geçmişinizden hesaplanır.",
       "pattern.shealth-shm-providers.description": "Uyku apnesi kartının ve tansiyon durumunun ulaşması için Samsung Health+ uygulamasını yamalı Health Monitor'a bağlar.",
       "pattern.shealth-launcher-badge.description": "Orijinalinden ayırt edebilmeniz için uygulama simgesine küçük bir LibreWrist rozeti ekler.",
       "pattern.shm-home-tabs-fallback.description": "Ülke hiçbir özellik listesinde yoksa uygulamayı kapatmak yerine ana ekranda tansiyon ve EKG'yi gösterir.",
@@ -6058,13 +6185,16 @@
       "pattern.shealth-oobe-local.description": "За замовчуванням вимкнено. Пропускає обов'язковий вхід у Samsung Account і запускає застосунок локально, без хмарної синхронізації, тому він не отримує даних, які вивантажує застосунок Samsung Health з Google Play. Вмикайте, лише якщо вхід не працює.",
       "pattern.shealth-china-account-gate.description": "Експериментально. Дає цій міжнародній версії відкриватися з обліковим записом Samsung із материкового Китаю, а не закриватися під час входу. Вона й далі працює з міжнародними серверами Samsung, тому хмарна синхронізація для китайського облікового запису може не працювати.",
       "pattern.shealth-res-webp.description": "Виправляє чотири зображення з помилковим розширенням файлу, щоб застосунок можна було перебудувати (видимих змін немає).",
+      "pattern.shealth-res-webp-v72.description": "Виправляє чотири зображення з помилковим розширенням файлу, щоб застосунок можна було перебудувати (видимих змін немає).",
       "pattern.shealth-ai-provider-start.description": "Виправляє збій Samsung Health+ під час запуску (видимих змін немає).",
       "pattern.shealth-rename-manifest.description": "Надає застосунку власну назву пакета й мітку (Samsung Health+), щоб він встановлювався поруч з оригіналом.",
       "pattern.shealth-rename-code.description": "Оновлює внутрішні посилання застосунку на нову назву пакета.",
       "pattern.shealth-rename-account-xml.description": "Надає застосунку власну реєстрацію облікового запису й синхронізації, щоб хмарна синхронізація працювала поруч з оригіналом.",
+      "pattern.shealth-rename-authorities-v72.description": "Надає застосунку власну реєстрацію облікового запису й синхронізації, щоб хмарна синхронізація працювала поруч з оригіналом.",
       "pattern.shealth-samsung-account-absent.description": "Виконує вхід через сторінку в браузері й на телефонах Samsung, як на інших телефонах, бо застосунок Samsung Account не приймає цю копію.",
       "pattern.shealth-knox-absent.description": "Налаштовує ключ даних через сховище ключів Android і на телефонах Samsung, як на інших телефонах, бо Knox не приймає цю копію.",
       "pattern.shealth-capability-gates.description": "Вмикає «Життєві показники», «Тренувальне навантаження» та індекс фізичної форми, яким інакше потрібен Galaxy Watch8 або Ultra. Їх обчислюють на телефоні із синхронізованої історії.",
+      "pattern.shealth-capability-gates-v72.description": "Вмикає «Життєві показники», «Тренувальне навантаження» та індекс фізичної форми, яким інакше потрібен Galaxy Watch8 або Ultra. Їх обчислюють на телефоні із синхронізованої історії.",
       "pattern.shealth-shm-providers.description": "З'єднує Samsung Health+ зі зміненим Health Monitor, щоб до нього надходили картка апное уві сні та стан тиску.",
       "pattern.shealth-launcher-badge.description": "Додає на значок застосунку невеликий бейдж LibreWrist, щоб його можна було відрізнити від оригіналу.",
       "pattern.shm-home-tabs-fallback.description": "Показує тиск і ЕКГ на головному екрані, якщо країни немає в жодному списку функцій, замість закриття застосунку.",
@@ -6180,13 +6310,16 @@
       "pattern.shealth-oobe-local.description": "默认关闭。跳过三星账号登录要求，在本地运行应用且不进行云同步，因此无法获得来自 Google Play 的 Samsung Health 应用上传的数据。仅在无法登录时开启。",
       "pattern.shealth-china-account-gate.description": "实验性功能。让此国际版在使用中国大陆三星账号登录时不再自动关闭。它仍连接三星国际服务器，因此中国账号的云同步可能无法使用。",
       "pattern.shealth-res-webp.description": "修复四张文件扩展名错误的图片，使应用可以重新构建（无可见变化）。",
+      "pattern.shealth-res-webp-v72.description": "修复四张文件扩展名错误的图片，使应用可以重新构建（无可见变化）。",
       "pattern.shealth-ai-provider-start.description": "修复 Samsung Health+ 启动时崩溃的问题（无可见变化）。",
       "pattern.shealth-rename-manifest.description": "为应用提供独立的包名和标签（Samsung Health+），使其可安装在原应用旁边。",
       "pattern.shealth-rename-code.description": "将应用的内部引用更新为新的包名。",
       "pattern.shealth-rename-account-xml.description": "为应用提供独立的账号和同步注册，使云同步能在原应用旁边正常工作。",
+      "pattern.shealth-rename-authorities-v72.description": "为应用提供独立的账号和同步注册，使云同步能在原应用旁边正常工作。",
       "pattern.shealth-samsung-account-absent.description": "在 Samsung 手机上也像其他手机一样通过浏览器页面登录，因为 Samsung Account 应用不接受此副本。",
       "pattern.shealth-knox-absent.description": "由于 Knox 不接受此副本，在 Samsung 手机上也像其他手机一样使用 Android 密钥库设置数据密钥。",
       "pattern.shealth-capability-gates.description": "开启“生命体征”“训练负荷”和体能指数，否则它们需要 Galaxy Watch8 或 Ultra。它们根据你已同步的历史记录在手机上计算。",
+      "pattern.shealth-capability-gates-v72.description": "开启“生命体征”“训练负荷”和体能指数，否则它们需要 Galaxy Watch8 或 Ultra。它们根据你已同步的历史记录在手机上计算。",
       "pattern.shealth-shm-providers.description": "将 Samsung Health+ 连接到已修补的 Health Monitor，使睡眠呼吸暂停卡片和血压状态能够送达。",
       "pattern.shealth-launcher-badge.description": "在应用图标上添加一个小的 LibreWrist 角标，方便与原版区分。",
       "pattern.shm-home-tabs-fallback.description": "当国家/地区不在任何功能列表中时，在主屏幕显示血压和心电图，而不是关闭应用。",
@@ -6302,13 +6435,16 @@
       "pattern.shealth-oobe-local.description": "預設關閉。略過三星帳戶登入要求，在本機執行應用程式且不進行雲端同步，因此無法取得來自 Google Play 的 Samsung Health 應用程式上傳的資料。僅在無法登入時開啟。",
       "pattern.shealth-china-account-gate.description": "實驗性功能。讓此國際版在使用中國大陸三星帳戶登入時不再自動關閉。它仍連線至三星國際伺服器，因此中國帳戶的雲端同步可能無法使用。",
       "pattern.shealth-res-webp.description": "修正四張副檔名錯誤的圖片，讓應用程式可以重新建置（無可見變化）。",
+      "pattern.shealth-res-webp-v72.description": "修正四張副檔名錯誤的圖片，讓應用程式可以重新建置（無可見變化）。",
       "pattern.shealth-ai-provider-start.description": "修正 Samsung Health+ 啟動時當機的問題（無可見變化）。",
       "pattern.shealth-rename-manifest.description": "為應用程式提供獨立的套件名稱和標籤（Samsung Health+），使其可安裝在原應用程式旁邊。",
       "pattern.shealth-rename-code.description": "將應用程式的內部參照更新為新的套件名稱。",
       "pattern.shealth-rename-account-xml.description": "為應用程式提供獨立的帳戶和同步註冊，使雲端同步能在原應用程式旁邊正常運作。",
+      "pattern.shealth-rename-authorities-v72.description": "為應用程式提供獨立的帳戶和同步註冊，使雲端同步能在原應用程式旁邊正常運作。",
       "pattern.shealth-samsung-account-absent.description": "在 Samsung 手機上也像其他手機一樣透過瀏覽器頁面登入，因為 Samsung Account 應用程式不接受此副本。",
       "pattern.shealth-knox-absent.description": "由於 Knox 不接受此副本，在 Samsung 手機上也像其他手機一樣使用 Android 金鑰庫設定資料金鑰。",
       "pattern.shealth-capability-gates.description": "開啟「生命徵象」「訓練負荷」和體能指數，否則它們需要 Galaxy Watch8 或 Ultra。它們會根據你已同步的歷史記錄在手機上計算。",
+      "pattern.shealth-capability-gates-v72.description": "開啟「生命徵象」「訓練負荷」和體能指數，否則它們需要 Galaxy Watch8 或 Ultra。它們會根據你已同步的歷史記錄在手機上計算。",
       "pattern.shealth-shm-providers.description": "將 Samsung Health+ 連接到已修補的 Health Monitor，讓睡眠呼吸中止卡片和血壓狀態能夠送達。",
       "pattern.shealth-launcher-badge.description": "在應用程式圖示上加入一個小的 LibreWrist 角標，方便與原版區分。",
       "pattern.shm-home-tabs-fallback.description": "當國家/地區不在任何功能清單中時，在主畫面顯示血壓與心電圖，而不是關閉應用程式。",

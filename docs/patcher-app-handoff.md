@@ -77,8 +77,8 @@ an app asset, generated at build time.
 
 | Input | Version | Target | Notes |
 |---|---|---|---|
-| SHM phone | 1.4.6.001 | phone | — |
-| SHM watch | 1.5.1.022 | watch | Pinned version: downloaded from APKMirror or picked as a file. |
+| SHM phone | 1.5.3.011 | phone | — |
+| SHM watch | 1.5.2.009 | watch | Pinned version: downloaded from APKMirror or picked as a file. |
 | AlarmWatch | 1.3.05.5 | watch | Exact build. The alarm patterns name obfuscated classes directly. Published on APKMirror; the build preinstalled on a watch usually differs and fails the hash. |
 
 | Output | Package | Signed with |

@@ -19,7 +19,7 @@ import shminterop.spo2.SpO2Adapter;
 import java.lang.reflect.Method;
 
 /**
- * Vendor overrides on the watch side (SHM 1.5.1.022). Called from smali patched by the
+ * Vendor overrides on the watch side (SHM 1.5.2.009). Called from smali patched by the
  * superpatcher pattern watch-ecg-sensor-adapter.
  *
  * sensorAvailability(): availability exemption for the sensor wrapper (sa2.a) for IHRN

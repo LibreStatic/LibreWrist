@@ -4,7 +4,7 @@ import android.os.Bundle;
 
 /**
  * Host-test double of the vendor IHRN event (run-tests.sh only, never dexed): Bundle-backed with
- * the getters and keys of SHM 1.5.1.022 (qm0.onEventChanged), so a drift of a key or its type in
+ * the getters and keys of SHM 1.5.2.009 (qm0.onEventChanged), so a drift of a key or its type in
  * IhrnAdapter fails a test.
  */
 public class SemPpgIhrnSensorEvent extends SemSensorEvent {

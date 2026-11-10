@@ -44,7 +44,7 @@ class CatalogueTest {
 
     @Test fun committedCatalogueParses() {
         val c = Catalogue.parse(String(catalogueBytes, Charsets.UTF_8))
-        assertEquals(71, c.patterns.size)
+        assertEquals(74, c.patterns.size)
         assertEquals(setOf("gms", "alarm", "shealth", "shealth-cn"), c.profiles.keys)
     }
 
@@ -193,7 +193,7 @@ class CatalogueTest {
             setOf(
                 "shm-min-age-22-to-16", "watch-min-age-22-to-16", "shm-setup-network-gate", "shm-sleep-apnea-support", "shm-sleep-countries", "watch-apnea-country",
                 "watch-apnea-reeval-not-supported", "alarm-force-sound-vibrate", "alarm-hide-launcher", "alarm-relabel",
-                "shealth-oobe-local", "shealth-china-account-gate", "shealth-capability-gates", "shealth-launcher-badge",
+                "shealth-oobe-local", "shealth-china-account-gate", "shealth-capability-gates", "shealth-capability-gates-v72", "shealth-launcher-badge",
                 "shm-launcher-badge", "shm-samsung-health-link-off",
             ),
             c.patterns.values.filter { it.optional }.map { it.id }.toSet(),
@@ -259,7 +259,7 @@ class CatalogueTest {
 
     @Test fun parseSignedVerifiesBeforeParsing() {
         val key = CatalogueVerifier.parsePublicKey(pem)
-        assertEquals(71, Catalogue.parseSigned(catalogueBytes, signature, key).patterns.size)
+        assertEquals(74, Catalogue.parseSigned(catalogueBytes, signature, key).patterns.size)
         val tampered = catalogueBytes.copyOf().also { it[100] = (it[100].toInt() xor 1).toByte() }
         try {
             Catalogue.parseSigned(tampered, signature, key)

@@ -1,9 +1,9 @@
 # Samsung Health survey (account sign-in, side-by-side build, gated features)
 
 Status: **survey + implemented phone patches** (owner approved the follow-up). The patches live
-in the catalogue (profile `shealth`, see [patches.md](patches.md) "Samsung Health 7.00.6.011")
+in the catalogue (profile `shealth`, see [patches.md](patches.md) "Samsung Health 7.2.0.041")
 and `scripts/build_shealth.sh` produces a statically verified, signed build
-(`dist/shealth-7.00.6.011-shealth.apk`) — **not installed on any device yet**. The watch-side
+(`dist/shealth-7.2.0.041-shealth.apk`) — **not installed on any device yet**. The watch-side
 follow-up (Vascular Load on the GW5P) was surveyed and is a **hardware no-go** — see
 [shealth-watch-survey.md](shealth-watch-survey.md). Data lives in `$WORK_DIR/shealth-survey/`
 and `$WORK_DIR/shealth-watch-survey/` (APKs, decoded trees, evidence logs). Nothing from the

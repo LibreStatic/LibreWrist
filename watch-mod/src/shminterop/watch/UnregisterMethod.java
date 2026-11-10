@@ -6,7 +6,7 @@ import java.lang.reflect.Modifier;
 /**
  * Picks the sensor manager's unregisterListener overload at runtime. The framework method differs
  * between watch models (the Galaxy Watch8 framework has no unregisterListener(listener, int)V,
- * which SHM 1.5.1.022 links against), so the patched call sites go through reflection instead.
+ * which SHM 1.5.2.009 links against), so the patched call sites go through reflection instead.
  * Pure Java (no Android types) so the choice can be tested on the host.
  */
 final class UnregisterMethod {

@@ -680,7 +680,7 @@ class SelfTestSupportTest {
         val header = ReportHeader(
             appVersion = "0.1.0 (1)",
             catalogueSerial = 7,
-            inputs = listOf("shm-watch Samsung Health Monitor 1.5.1.022"),
+            inputs = listOf("shm-watch Samsung Health Monitor 1.5.2.009"),
             packages = listOf("shm-phone io.test.shm"),
         )
         val report = buildSelfTestReport(
@@ -691,7 +691,7 @@ class SelfTestSupportTest {
         )
         assertTrue(report.contains("App: 0.1.0 (1)"))
         assertTrue(report.contains("Catalogue serial: 7"))
-        assertTrue(report.contains("shm-watch Samsung Health Monitor 1.5.1.022"))
+        assertTrue(report.contains("shm-watch Samsung Health Monitor 1.5.2.009"))
         assertTrue(report.contains("[FAIL]"))
         assertTrue(report.contains("[PASS]"))
         assertTrue(report.contains("== shm-phone (1/5) =="))

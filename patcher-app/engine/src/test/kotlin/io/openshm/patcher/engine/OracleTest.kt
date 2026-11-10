@@ -13,8 +13,8 @@ import org.w3c.dom.Node
  * Equivalence oracle: the Kotlin engine against the Python pipeline (apktool + superpatcher.py).
  *
  * Opt-in: runs only when SHM_ORACLE_APKS points at a directory with the official APKs
- * (`alarm-watch-1.3.05.5.apk`, `shm-watch-1.5.1.022.apk`, `shm-phone-1.4.6.001.apk`,
- * `shealth-7.00.6.011.apk`, and `shealth-7.00.6.012-cn.apk` for the `shealth-cn` subset, the China build). It needs
+ * (`alarm-watch-1.3.05.5.apk`, `shm-watch-1.5.2.009.apk`, `shm-phone-1.5.3.011.apk`,
+ * `shealth-7.2.0.041.apk`, and `shealth-7.00.6.012-cn.apk` for the `shealth-cn` subset, the China build). It needs
  * the tools of the scripts (python3, bash, apktool, Android build tools, javac), takes minutes and
  * several GB of memory (apktool runs one at a time, 4 GB heap). Variables:
  *
@@ -72,9 +72,9 @@ class OracleTest {
 
     private val targets = listOf(
         Target("alarm", "alarm-watch-1.3.05.5.apk", "alarm-watch", "alarm", "alarm-fork"),
-        Target("watch", "shm-watch-1.5.1.022.apk", "shm-watch", "gms", "watch-mod"),
-        Target("phone", "shm-phone-1.4.6.001.apk", "shm-phone", "gms", null),
-        Target("shealth", "shealth-7.00.6.011.apk", "shealth-phone", "shealth", null, relaxed = true),
+        Target("watch", "shm-watch-1.5.2.009.apk", "shm-watch", "gms", "watch-mod"),
+        Target("phone", "shm-phone-1.5.3.011.apk", "shm-phone", "gms", null),
+        Target("shealth", "shealth-7.2.0.041.apk", "shealth-phone", "shealth", null, relaxed = true),
         Target("shealth-cn", "shealth-7.00.6.012-cn.apk", "shealth-phone-cn", "shealth-cn", null, relaxed = true),
         Target("bridge-watch", "", "bridge-watch", "", null),
         Target("bridge-phone", "", "bridge-phone", "", null),

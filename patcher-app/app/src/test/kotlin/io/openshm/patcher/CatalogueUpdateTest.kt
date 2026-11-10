@@ -231,16 +231,16 @@ class CatalogueUpdateTest {
     // ---- the Home update offer
 
     private val ids = listOf("shm-phone", "shm-watch", "bridge-watch", "alarm-fork", "bridge-phone")
-    private val watchSha = "a714e9a5950f456b8da4843bd6cdb19948a0c6fd9101b473e24beb3384a2c620"
+    private val watchSha = "e3858b5e7b1d37f6b602521f676fcf57ebf137323ce6ae3f113aedccede64bcd"
 
     private fun builtWith(catalogue: LoadedCatalogue, facts: Map<String, String> = buildFacts(catalogue, ids)) =
         BuiltBuild("k", "p", catalogue.serial, 0, listOf(BuiltRecord("shm-phone", "x", 1, "ff")), facts)
 
     @Test fun anUpdatedInputOffersItsVersions() {
         val old = load(text(5))
-        val new = load(text(6) { it.replace(watchSha, "b".repeat(64)).replace("\"versionName\": \"1.5.1.022\"", "\"versionName\": \"1.5.2.004\"") })
+        val new = load(text(6) { it.replace(watchSha, "b".repeat(64)).replace("\"versionName\": \"1.5.2.009\"", "\"versionName\": \"1.5.3.000\"") })
         assertEquals(
-            UpdateOffer(new.input("shm-watch").label, "1.5.1.022", "1.5.2.004"),
+            UpdateOffer(new.input("shm-watch").label, "1.5.2.009", "1.5.3.000"),
             updateOfferFor(new, builtWith(old), ids),
         )
     }

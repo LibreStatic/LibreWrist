@@ -262,8 +262,8 @@ internal object PreviewData {
 
     fun guidedBrowser(step: Int = 2, wrongVersion: Boolean = false): GuidedBrowserUiState {
         val (title, body) = when (step) {
-            1 -> "Open the right release" to "Open version 1.5.1.022 of the app."
-            2 -> "Pick the variant" to "In the variants table, pick the APK (not BUNDLE) marked nodpi for version 1.5.1.022."
+            1 -> "Open the right release" to "Open version 1.5.2.009 of the app."
+            2 -> "Pick the variant" to "In the variants table, pick the APK (not BUNDLE) marked nodpi for version 1.5.2.009."
             else -> "Download" to "Tap Download APK. The patcher picks the file up when it finishes."
         }
         return GuidedBrowserUiState(
@@ -272,8 +272,8 @@ internal object PreviewData {
             coachStep = step,
             coachTotal = 3,
             coachTitle = title,
-            coachBody = if (wrongVersion) "That is another version. Go back and open 1.5.1.022." else body,
-            target = "1.5.1.022 · APK, not bundle · nodpi · armeabi-v7a",
+            coachBody = if (wrongVersion) "That is another version. Go back and open 1.5.2.009." else body,
+            target = "1.5.2.009 · APK, not bundle · nodpi · armeabi-v7a",
         )
     }
 
@@ -584,8 +584,8 @@ internal object PreviewData {
             status = HomeStatus(CheckStatus.Passed, daysAgo = 2),
             update = when {
                 !update -> null
-                patchesOnly -> UpdateOffer(SampleApps.input(SampleApps.watchMain).label, "1.5.1.022", "1.5.1.022", patchesOnly = true)
-                else -> UpdateOffer(SampleApps.input(SampleApps.watchMain).label, "1.5.1.022", "1.5.2.004")
+                patchesOnly -> UpdateOffer(SampleApps.input(SampleApps.watchMain).label, "1.5.2.009", "1.5.2.009", patchesOnly = true)
+                else -> UpdateOffer(SampleApps.input(SampleApps.watchMain).label, "1.5.2.009", "1.5.3.000")
             },
             builds = builds,
             menuOpen = menu,

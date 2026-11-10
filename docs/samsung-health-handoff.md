@@ -1,6 +1,6 @@
 # Hand-off: Samsung Health patches — state and remaining work
 
-For the model taking over: read this, then `docs/patches.md` § "Samsung Health 7.00.6.011",
+For the model taking over: read this, then `docs/patches.md` § "Samsung Health 7.2.0.041",
 then the two surveys. Everything below is verified against the sources listed; do not re-derive.
 (This file was the survey-phase hand-off; its questions are all answered in the documents above.)
 
@@ -18,13 +18,16 @@ Status: **phone patches implemented and the build verified statically; watch sur
 
 ## What exists (implemented in this phase)
 
-- **Input**: `apks/shealth-7.00.6.011.apk` (stock Samsung Health phone 7.00.6.011, hash-pinned
+- **Input**: `apks/shealth-7.2.0.041.apk` (stock Samsung Health phone 7.2.0.041, hash-pinned
   in `apks/inputs.json` + `apks/SHA256SUMS`, row in `apks/README.md`).
 - **Catalogue** (serial 18, signed, `minAppVersion` 7): family `shealth-phone` (package
   `com.sec.android.app.shealth`), profile `shealth`, output `shealth-phone`, installOrder entry.
-  Patterns, in profile order:
-  1. `shealth-res-webp` — `renameFile` ×4 (four drawables carry WebP/JPEG bytes under a `.png`
-     name; aapt2 refuses them, so `apktool b` failed without this).
+  Patterns, in profile order (this list is the original 7.00.6.011 snapshot; the international
+  profile now uses the `-v72` ids for the resource, authority and capability-gate patterns, and the
+  old ids serve only the China build 7.00.6.012, see `docs/patches.md` § "Samsung Health 7.2.0.041"):
+  1. `shealth-res-webp` (now `shealth-res-webp-v72` on 7.2.0.041: one drawable, `phr_expanded_chart_image`,
+     renamed to `.jpg`) — `renameFile` ×4 on 7.00.x (four drawables carry WebP/JPEG bytes under a
+     `.png` name; aapt2 refuses them, so `apktool b` failed without this).
   2. `shealth-feature-dev-ui` — `FeatureManager.isEnabled()` → true;
      `HomeSettingsAboutActivity.L1()` no longer requires Samsung developer mode. Exposes the
      in-app feature-flag list (Settings ▸ About, ~400 runtime toggles over
@@ -32,7 +35,7 @@ Status: **phone patches implemented and the build verified statically; watch sur
   3. `shealth-vitality-tile` — default of feature key `vitality_show_tile_without_capabilities`
      → true (Energy Score tile does not wait for the watch capability advertisement).
   4. `shealth-oobe-local` — **optional, `offByDefault: true`**:
-     `SamsungAccountManager.s0` → always `LOG_IN`, so the mandatory sign-in stop state right
+     `SamsungAccountManager.s0` (`j3x.s0` in 7.2.0.041) → always `LOG_IN`, so the mandatory sign-in stop state right
      after OOBE never fires (account-less local mode).
 - **Engine/schema**: new `offByDefault` pattern key validated in both engines
   (`superpatcher/patterns.py`, patcher-app `engine/.../Catalogue.kt`); the patcher app switches
@@ -44,14 +47,14 @@ Status: **phone patches implemented and the build verified statically; watch sur
   ARSCLib). `OracleTest` maps the renamed files back before comparing.
 - **Patcher app**: switch "Samsung Health (optional)" on the Acquire step, on by default
   (opt-out; `SessionState.samsungHealth`, persisted as `includeSamsungHealth`; `inputIds`/`outputIds`
-  add `shealth-phone`). The input is the APKMirror release `samsung-health-7-00-6-011-release`
+  add `shealth-phone`). The input is the APKMirror release `samsung-health-7-2-0-041-release`
   (`samsung-electronics-co-ltd/s-health`); its zip entries match the Galaxy Store install, only the
   APK signing block differs. The watch app 7.00.0.131 is on APKMirror too
   (`samsung-health-wear-os/samsung-health-wear-os-7-00-0-131-release`) but is not patched. The stock app is removed through the
   existing signature-conflict reinstall flow (the user confirms). Strings in all 18 locales.
 - **Build script**: `scripts/build_shealth.sh` — skips every `offByDefault` pattern of the profile
   unless the env var named after its id is `1` (`SHEALTH_OOBE_LOCAL=1`).
-- **Output**: `dist/shealth-7.00.6.011-shealth.apk` — stock package, OpenSHM signature.
+- **Output**: `dist/shealth-7.2.0.041-shealth.apk` — stock package, OpenSHM signature.
 - **Analysis data** (never in the repo): `$WORK_DIR/shealth-survey/` — phone APK, `res/`,
   per-dex jadx trees `java-perdex/classes{,2..8}/sources`, lossless apktool smali `smali/`,
   driver `run_jadx_perdex.sh`; `$WORK_DIR/shealth-watch-survey/` — watch APK 7.00.0.131,
@@ -65,7 +68,7 @@ Status: **phone patches implemented and the build verified statically; watch sur
    ("Samsung Health+"), signed in to the same Samsung Account and fed from the Samsung cloud
    (data lags by the cloud sync cadence). Both apps handle the sign-in redirect, so Android shows
    a chooser at sign-in. The soft gates (Vitals, Training load, fitness index) are forced on by
-   `shealth-capability-gates`.
+   `shealth-capability-gates-v72` (`shealth-capability-gates` on the China build).
 2. **Local-only OOBE patch stays off by default.** The earlier "Iniciar sesión" stall happened
    on the **stock** app (flaky Custom-Tab redirect to `ResponseReceiverActivity`; closing the
    tab, clearing Samsung Health from recents and retrying fixed it), so it says nothing about
@@ -108,7 +111,7 @@ Not verified (the remaining work): everything on-device —
 
 ## Working notes
 
-- **Obfuscated-name map (phone 7.00.6.011)**: `cln`=OOBEManager, `b11`=AppStateManager,
+- **Obfuscated-name map (phone 7.00.6.011; historical, not re-derived for 7.2.0.041 except `j9v` → `j3x` for SamsungAccountManager)**: `cln`=OOBEManager, `b11`=AppStateManager,
   `j9v`=SamsungAccountManager, `l220`=TermsOfUseManager2, `m9v`=SA-app intent dispatcher,
   `aa1`=sasdk web flow, `e9v`=SA availability, `ozn`=build flavor/country, `dwc`=GMS wearable
   helper, `tf80`=WearOsNodeStatusHelper, `ye80`=VL capability check, `xg80`=phone capability

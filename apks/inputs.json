@@ -3,12 +3,12 @@
   "inputs": [
     {
       "id": "shm-phone",
-      "file": "shm-phone-1.4.6.001.apk",
-      "sha256": "3f20656e8c2ea34b95acb0b4d006b8aab3210fcc37cfb16abd2a7e4b91ca8524",
+      "file": "shm-phone-1.5.3.011.apk",
+      "sha256": "77bcaad49db107f3fbb5526d1181229e44ccfa73d4053603400a5014913ee834",
       "label": "Samsung Health Monitor (phone)",
       "package": "com.samsung.android.shealthmonitor",
-      "versionName": "1.4.6.001",
-      "versionCode": 1406001,
+      "versionName": "1.5.3.011",
+      "versionCode": 1503011,
       "minSdk": 31,
       "targetSdk": 35,
       "abis": [
@@ -21,17 +21,17 @@
       "role": "patched",
       "obtain": {
         "apkmirror": "samsung-electronics-co-ltd/samsung-health-monitor-2",
-        "apkmirrorRelease": "samsung-health-monitor-1-4-6-001-release"
+        "apkmirrorRelease": "samsung-health-monitor-1-5-3-011-release"
       }
     },
     {
       "id": "shm-watch",
-      "file": "shm-watch-1.5.1.022.apk",
-      "sha256": "a714e9a5950f456b8da4843bd6cdb19948a0c6fd9101b473e24beb3384a2c620",
+      "file": "shm-watch-1.5.2.009.apk",
+      "sha256": "e3858b5e7b1d37f6b602521f676fcf57ebf137323ce6ae3f113aedccede64bcd",
       "label": "Samsung Health Monitor (Wear OS)",
       "package": "com.samsung.android.shealthmonitor",
-      "versionName": "1.5.1.022",
-      "versionCode": 1501022,
+      "versionName": "1.5.2.009",
+      "versionCode": 1502009,
       "minSdk": 30,
       "targetSdk": 36,
       "abis": [
@@ -43,7 +43,7 @@
       "role": "patched",
       "obtain": {
         "apkmirror": "samsung-electronics-co-ltd/samsung-health-monitor-wear-os",
-        "apkmirrorRelease": "samsung-health-monitor-wear-os-1-5-1-022-release"
+        "apkmirrorRelease": "samsung-health-monitor-wear-os-1-5-2-009-release"
       }
     },
     {
@@ -68,12 +68,12 @@
     },
     {
       "id": "shealth-phone",
-      "file": "shealth-7.00.6.011.apk",
-      "sha256": "e58c39dcdf4856510d487fae30ee52d1514198b58ca388c9be9753828f4fec89",
+      "file": "shealth-7.2.0.041.apk",
+      "sha256": "673dcb89e74182ce615dcbcd733b0e3a3396d812b946d9f03d1fea3b5b68c4bc",
       "label": "Samsung Health",
       "package": "com.sec.android.app.shealth",
-      "versionName": "7.00.6.011",
-      "versionCode": 7006011,
+      "versionName": "7.2.0.041",
+      "versionCode": 7020041,
       "minSdk": 29,
       "targetSdk": 36,
       "abis": [
@@ -87,7 +87,7 @@
       "obtain": {
         "note": "APKMirror release (same zip entries as the Galaxy Store install; only the signing block differs)",
         "apkmirror": "samsung-electronics-co-ltd/s-health",
-        "apkmirrorRelease": "samsung-health-7-00-6-011-release"
+        "apkmirrorRelease": "samsung-health-7-2-0-041-release"
       }
     },
     {

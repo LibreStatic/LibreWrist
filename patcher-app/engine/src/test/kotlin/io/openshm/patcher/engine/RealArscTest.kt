@@ -9,7 +9,7 @@ import org.junit.Test
 /** Applies `defineResourceEntry` to the real `resources.arsc` of the official watch APK (git-ignored `apks/`; skipped if absent). */
 class RealArscTest {
     @Test fun anchorOnTheRealWatchTable() {
-        val apk = File(System.getProperty("shm.repoRoot"), "apks/shm-watch-1.5.1.022.apk")
+        val apk = File(System.getProperty("shm.repoRoot"), "apks/shm-watch-1.5.2.009.apk")
         Assume.assumeTrue(apk.isFile)
         val bytes = ZipFile(apk).use { z -> z.getInputStream(z.getEntry("resources.arsc")).readBytes() }
         val before = ArscResourceTable(bytes)

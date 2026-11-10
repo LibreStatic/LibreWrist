@@ -80,7 +80,13 @@ class ChinaSourceTest {
         val china = catalogue.patches("shealth-phone-cn").map { it.id }
         assertTrue("shealth-oobe-local" in global && "shealth-china-account-gate" in global)
         assertTrue("shealth-oobe-local" !in china && "shealth-china-account-gate" !in china)
-        assertEquals(global - setOf("shealth-oobe-local", "shealth-china-account-gate"), china)
+        // 7.2.x anchors differ from the 7.00.x ones of the China build: three patterns have a separate id per build
+        val legacy = mapOf(
+            "shealth-res-webp-v72" to "shealth-res-webp",
+            "shealth-rename-authorities-v72" to "shealth-rename-account-xml",
+            "shealth-capability-gates-v72" to "shealth-capability-gates",
+        )
+        assertEquals((global - setOf("shealth-oobe-local", "shealth-china-account-gate")).map { legacy[it] ?: it }, china)
         assertTrue(catalogue.patternCount(listOf("shealth-phone-cn")) < catalogue.patternCount(listOf("shealth-phone")))
     }
 

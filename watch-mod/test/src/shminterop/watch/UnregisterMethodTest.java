@@ -7,7 +7,7 @@ public final class UnregisterMethodTest {
     interface Listener {}
     static final class ListenerImpl implements Listener {}
 
-    /** The framework SHM 1.5.1.022 was built against. */
+    /** The framework SHM 1.5.2.009 was built against. */
     public static final class ClassicManager {
         int calls;
         public void unregisterListener(Listener l, int type) { calls += type; }
