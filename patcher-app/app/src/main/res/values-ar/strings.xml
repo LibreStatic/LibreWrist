@@ -782,7 +782,7 @@
     <string name="revert_manual_title">ما يزال عليك فعله يدويًا</string>
     <string name="revert_manual_devmode">أوقف وضع المطوّر في Health Platform إذا كنت قد فعّلته.</string>
     <string name="revert_manual_adb">اسحب تفويض تصحيح الأخطاء وأوقف تصحيح الأخطاء اللاسلكي على الساعة وعلى هذا الهاتف.</string>
-    <string name="revert_manual_keys">تبقى النسخ الاحتياطية لمفتاح التوقيع (المستندات/OpenSHM) وكلمة المرور المحفوظة. احذفها من الملفات أو من مدير كلمات المرور إذا لم تعد بحاجة إليها.</string>
+    <string name="revert_manual_keys">تبقى النسخ الاحتياطية لمفتاح التوقيع (Documents/OpenSHM) وكلمة المرور المحفوظة. احذفها من الملفات أو من مدير كلمات المرور إذا لم تعد بحاجة إليها.</string>
     <string name="revert_self_action">إلغاء تثبيت LibreWrist</string>
     <string name="revert_self_title">إلغاء تثبيت LibreWrist؟</string>
     <string name="revert_self_body">سيطلب منك Android التأكيد. سيُزال التطبيق وبياناته المخزّنة، بما فيها مفتاح التوقيع المحفوظ بداخله. تبقى النسخ الاحتياطية التي حفظتها في مكان آخر.</string>
