@@ -520,8 +520,8 @@ the problem and tap **Export .txt**. Attach the file to the issue.
   - **Cause, first night:** the Health Tracking service on the watch refused the recording all night, which happens when Health Platform developer mode is off. The recording then retried every 15 seconds without success. Since 0.10.14 it waits longer between retries and writes the cause once in the device log.
   - **Cause, second night:** the recording stopped after midnight without a trace (the app was closed, or the watch shut down). Since 0.10.14 the device log records how the app was last closed and the battery level every 15 minutes, so a log from such a night shows the cause.
   - **Workaround:** keep Health Platform developer mode on (see the setup steps) and charge the watch before sleeping.
-- :mag: **Sleep apnea recording drains the battery on a Galaxy Watch8** ([#27](https://github.com/LibreStatic/LibreWrist/issues/27))
-  - **Status:** reported on a Galaxy Watch8 40 mm with 0.10.12. While recording it draws about 55 to 80 mA, against about 26 mA above idle measured on a Galaxy Watch5 Pro, so the watch runs flat before morning. The cause is not known yet.
+- :construction: **Sleep apnea recording drains the battery on a Galaxy Watch8** ([#27](https://github.com/LibreStatic/LibreWrist/issues/27))
+  - **Status:** reported on a Galaxy Watch8 40 mm with 0.10.12. While recording it draws about 55 to 80 mA, against about 26 mA above idle measured on a Galaxy Watch5 Pro, so the watch runs flat before morning. Confirmed. A fix is in progress: a way to record without holding the watch awake is being tested.
   - **Workaround:** turn sleep apnea screening off on that watch until it is fixed.
 
 [↑ Back to contents](#contents)
