@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_enable_title">Zapnout průvodce Tica?</string>
+    <string name="guide_enable_message">Aby vás Tic mohl provést Nastavením, potřebuje službu usnadnění aplikace LibreWrist. Dívá se jen na obrazovky Nastavení, které LibreWrist otevře, a sám nikdy neklepne na nic, co maže data nebo potvrzuje zabezpečení.</string>
+    <string name="guide_enable_restricted">Pokud je přepínač zašedlý: otevřete Informace o aplikaci, klepněte na ⋮ a zvolte „Povolit omezená nastavení“, pak to zkuste znovu.</string>
+    <string name="guide_enable_open">Zapnout</string>
+    <string name="guide_enable_app_info">Informace o aplikaci</string>
+    <string name="guide_enable_not_now">Teď ne</string>
+    <string name="guide_service_description">Umožňuje Ticovi, průvodci aplikace LibreWrist, ukazovat na kroky nastavení LibreWrist v Nastavení a klepat na ně. Funguje jen tehdy, když je otevřený krok s průvodcem, a nic jiného nečte.</string>
+    <string name="guide_wake_description">Probudit Tica, aby pokračoval</string>
+</resources>

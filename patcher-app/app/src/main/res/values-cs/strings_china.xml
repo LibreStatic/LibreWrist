@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="automation_china_title">Režim pro Čínu</string>
+    <string name="automation_china_help">Zapne se sám, když to vypadá, že je tento telefon v pevninské Číně (SIM, síť nebo nastavení oblasti). Záplatovací nástroj pak nejdřív otevře 应用宝, kde stáhne oficiální aplikace, které tam podporuje, a použije sestavení Samsung Health pro pevninskou Čínu, pokud je k dispozici. To funguje s účty Samsung registrovanými v Číně. Vypněte ho, chcete-li místo toho použít APKMirror a mezinárodní sestavení.</string>
+</resources>

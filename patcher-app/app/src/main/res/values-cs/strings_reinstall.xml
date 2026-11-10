@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="reinstall_action">Odinstalovat a nainstalovat</string>
+    <string name="reinstall_error_phone">V tomto telefonu už je kopie podepsaná jiným klíčem, proto ji nelze aktualizovat.</string>
+    <string name="reinstall_error_watch">V těchto hodinkách už je kopie podepsaná jiným klíčem, proto ji nelze aktualizovat.</string>
+    <string name="reinstall_error_uninstall">Nainstalovanou kopii se nepodařilo odinstalovat, proto se nic nenainstalovalo.</string>
+    <string name="reinstall_dialog_title">Odinstalovat %1$s?</string>
+    <string name="reinstall_dialog_body_phone">Nainstalovaná kopie byla podepsána jiným klíčem, proto ji nelze aktualizovat. Přeinstalováním se smažou její data v tomto telefonu, například nastavení, párování a dosud nesynchronizovaná měření. Nelze to vrátit zpět.</string>
+    <string name="reinstall_dialog_body_watch">Nainstalovaná kopie byla podepsána jiným klíčem, proto ji nelze aktualizovat. Přeinstalováním se smažou její data v těchto hodinkách, například nastavení, párování a dosud nesynchronizovaná měření. Nelze to vrátit zpět.</string>
+</resources>

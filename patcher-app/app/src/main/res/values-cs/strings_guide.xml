@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_build_number_hello">Ahoj! Jsem Tic. Vaše možnosti pro vývojáře jsou skryté. Odemknu je tak, že 7krát klepnu na %1$s…</string>
+    <string name="guide_software_info">Váš telefon má číslo sestavení uvnitř položky %1$s. Otevírám ji…</string>
+    <string name="guide_pin">Android žádá o potvrzení vaším PINem. Tohle je na vás: nevidím, co píšete. Až budete hotovi, klepněte na Potvrdit.</string>
+    <string name="guide_unlocked_opening">Teď jste vývojář! Otevírám možnosti pro vývojáře…</string>
+    <string name="guide_tic_opens">Otevírám %1$s…</string>
+    <string name="guide_tic_taps">Klepu na %1$s…</string>
+    <string name="guide_devopts_on">Možnosti pro vývojáře jsou vypnuté. Zapínám %1$s…</string>
+    <string name="guide_wireless_tap">Ahoj! Jsem Tic. Jednoduchá klepnutí udělám za vás: klepu na %1$s…</string>
+    <string name="guide_wireless_switch">Zapínám %1$s…</string>
+    <string name="guide_wireless_allow">Tohle je na vás: Android se ptá, zda této síti Wi-Fi důvěřujete. Pokud je to vaše domácí síť, klepněte na %1$s.</string>
+    <string name="guide_pair_tap">Díky! Dál už to zvládnu: klepu na %1$s…</string>
+    <string name="guide_code_searching">Hledám párovací kód…</string>
+    <string name="guide_code_found">Mám ho! Váš kód je %1$s. Páruji…</string>
+    <string name="guide_code_entry">Odtud kód přečíst nedokážu. Napište mi ho! Je to 6 číslic v rámečku.</string>
+    <string name="guide_code_thanks">Díky! Páruji…</string>
+    <string name="guide_paired">Spárováno! Nemuseli jste nic psát.</string>
+    <string name="guide_perm_overlay">Aby aplikace mohla zobrazovat svá upozornění, zapínám %1$s…</string>
+    <string name="guide_perm_unknown">Aby bylo možné instalovat z této aplikace, zapínám %1$s…</string>
+    <string name="guide_perm_battery">Aby aplikace fungovala i na pozadí, vybírám %1$s…</string>
+    <string name="guide_perm_app_details">Najděte na této obrazovce %1$s a zapněte to.</string>
+    <string name="guide_perm_listener">Zapínám %1$s, aby aplikace mohla číst oznámení…</string>
+    <string name="guide_perm_listener_confirm">Tohle je na vás: Android žádá o potvrzení. Klepněte na %1$s.</string>
+    <string name="guide_restricted_menu">Android toto oprávnění blokuje, dokud ho nepovolíte. Jste na řadě: klepněte vpravo nahoře na nabídku ⋮ (%1$s).</string>
+    <string name="guide_restricted_allow">Jste na řadě: klepněte na %1$s a potvrďte svým PINem.</string>
+    <string name="guide_back_done">Hotovo! Vracím se tlačítkem Zpět…</string>
+    <string name="guide_gms_clear">Tohle je na vás. Vymažou se tím data Služeb Google Play. Až budete připraveni, klepněte na %1$s.</string>
+    <string name="guide_gms_confirm">Potvrďte pomocí %1$s. Klepnutí je vždy na vás: já jen ukazuji.</string>
+    <string name="guide_user_taps">Jste na řadě: klepněte na %1$s.</string>
+    <string name="guide_user_toggles">Jste na řadě: zapněte %1$s.</string>
+    <string name="guide_searching">Hledám %1$s…</string>
+    <string name="guide_not_found">Nemohu najít %1$s. Zkusíte to najít vy? Mělo by to vypadat zhruba takto:</string>
+    <string name="guide_done">Vše hotovo! Až budete připraveni, vraťte se do LibreWrist.</string>
+    <string name="guide_enabled_hello">Hotovo, zapnuli jste Tica!</string>
+    <string name="guide_farewell_attended">Hotovo! Teď jste na řadě vy.</string>
+    <string name="guide_farewell_unattended">Hotovo! Dál pokračuje LibreWrist.</string>
+    <string name="guide_debugging_disallowed">Tento telefon nepovoluje funkce ladění (blokuje je pracovní profil nebo omezení), takže nemohu pokračovat.</string>
+</resources>

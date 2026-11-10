@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="update_dialog_title">Je dostupná nová verze</string>
+    <string name="update_dialog_body">Je dostupné sestavení %1$d (v%2$s). Máte sestavení %3$d.</string>
+    <string name="update_notes_show">Zobrazit poznámky k vydání</string>
+    <string name="update_notes_hide">Skrýt poznámky k vydání</string>
+    <string name="update_action_update">Aktualizovat</string>
+    <string name="update_action_later">Později</string>
+    <string name="update_skip_version">Tuto verzi už nezobrazovat</string>
+    <string name="update_closing_note">Aplikace se během aktualizace zavře. Poté ji znovu otevřete.</string>
+    <string name="update_permission_text">Chcete-li aktualizovat, povolte na stránce nastavení, která se právě otevřela, aplikaci LibreWrist instalovat aplikace, pak se vraťte a klepněte na Pokračovat.</string>
+    <string name="update_downloading">Stahuji aktualizaci…</string>
+    <string name="update_verifying">Kontroluji stažený soubor…</string>
+    <string name="update_installing">Instaluji aktualizaci…</string>
+    <string name="update_error_download">Stahování selhalo. Zkontrolujte připojení a zkuste to znovu.</string>
+    <string name="update_error_too_large">Stahovaný soubor je větší, než se čekalo, a stahování bylo zastaveno.</string>
+    <string name="update_error_hash">Stažený soubor neodpovídá zveřejněnému kontrolnímu součtu, proto byl zahozen.</string>
+    <string name="update_error_not_this_app">Stažený soubor není tato aplikace, proto byl zahozen.</string>
+    <string name="update_error_wrong_build">Stažený soubor není oznámené sestavení, proto byl zahozen.</string>
+    <string name="update_error_other_signer">Stažený soubor je podepsán jiným klíčem, takže tuto aplikaci nemůže aktualizovat a byl zahozen.</string>
+    <string name="update_error_unreadable">Stažený soubor se nepodařilo přečíst.</string>
+    <string name="update_error_install">Instalace se nedokončila.</string>
+    <string name="update_error_install_detail">Instalace se nedokončila (%1$s).</string>
+    <string name="settings_updates_heading">Aktualizace</string>
+    <string name="settings_auto_check">Automaticky kontrolovat aktualizace</string>
+    <string name="settings_check_now">Zkontrolovat nyní</string>
+    <string name="settings_checking">Kontroluji…</string>
+    <string name="settings_updates_unavailable">V tomto sestavení nejsou aktualizace dostupné.</string>
+    <string name="settings_updates_explainer">Hledá novější oficiální vydání na GitHubu. Tuto aplikaci mohou aktualizovat jen vydání podepsaná stejným klíčem.</string>
+    <string name="settings_up_to_date">Máte nejnovější verzi</string>
+    <string name="settings_check_failed">Aktualizace se nepodařilo zkontrolovat</string>
+    <string name="settings_signing_key_summary">Zálohujte nebo obnovte klíč, kterým se podepisují vaše sestavení</string>
+    <string name="settings_version_label">Verze</string>
+    <string name="settings_version_value">%1$s (sestavení %2$d)</string>
+    <string name="update_channel_name">Aktualizace aplikace</string>
+    <string name="update_channel_description">Upozorní vás, když je dostupná novější verze LibreWrist.</string>
+    <string name="update_notification_title">Je dostupná nová verze</string>
+    <string name="update_notification_text">Sestavení %1$d (v%2$s) je připraveno k instalaci</string>
+</resources>

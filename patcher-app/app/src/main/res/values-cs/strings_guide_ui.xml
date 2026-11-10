@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_ui_pet_description">Tic, váš průvodce nastavením</string>
+    <string name="guide_ui_chip_tic">Udělám to</string>
+    <string name="guide_ui_chip_user">Jste na řadě</string>
+    <string name="guide_ui_strip_controlling">Tic ovládá vaši obrazovku. Dotykem ho pozastavíte.</string>
+    <string name="guide_ui_strip_paused">Tic je pozastaven. Klepnutím na něj bude pokračovat.</string>
+    <string name="guide_ui_code_description">Párovací kód, šest číslic</string>
+    <string name="guide_ui_code_not_now">Teď ne</string>
+</resources>

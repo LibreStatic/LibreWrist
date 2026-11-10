@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="key_backup_saving">Ukládám váš podpisový klíč…</string>
+    <string name="key_backup_saved">Klíč uložen v Documents/OpenSHM · heslo ve vašem správci hesel</string>
+    <string name="key_backup_failed">Klíč se nepodařilo uložit automaticky</string>
+    <string name="key_backup_use_saved">Použít uložené heslo</string>
+    <string name="key_backup_use_saved_none">Žádné uložené heslo nebylo nalezeno.</string>
+    <string name="key_backup_auto_present">Automatická záloha: Documents/OpenSHM/%1$s · heslo ve vašem správci hesel</string>
+    <string name="key_backup_auto_missing">V Documents/OpenSHM nebyla nalezena žádná automatická záloha. Vytvoří se po dokončení sestavení.</string>
+    <string name="key_backup_manual_heading">Pokročilé: ruční záloha</string>
+    <string name="key_backup_consent">Klíč se zašifrovaný uloží do Documents/OpenSHM a jeho heslo se uchová ve vašem správci hesel.</string>
+    <string name="key_backup_declined">Záloha nebyla uložena</string>
+    <string name="key_backup_save_action">Uložit zálohu</string>
+    <string name="key_backup_wrong_key">Toto uložené heslo patří k jinému klíči</string>
+    <string name="key_backup_private_title">Uloženo jen v úložišti aplikace</string>
+    <string name="key_backup_private_hint">Vymazáním dat aplikace se tato kopie smaže. Uložte zálohu, abyste ji měli také ve správci hesel a ve složce Documents.</string>
+    <string name="local_backup_title">Místní záloha</string>
+    <string name="local_backup_show_password">Zobrazit heslo</string>
+    <string name="local_backup_export">Exportovat soubor</string>
+    <string name="key_backup_with_password_action">Uložit s heslem</string>
+    <string name="key_backup_with_password_entry">Uložit do Documents s vlastním heslem</string>
+    <string name="key_backup_with_password_hint">Klíč se uloží do Documents/OpenSHM a chrání ho heslo, které si zvolíte. Aplikace si ho neuchovává, proto si ho zapište.</string>
+    <string name="key_backup_no_manager_hint">Vymazáním dat aplikace se tato kopie smaže. Není k dispozici žádný správce hesel, proto ji uložte do Documents s heslem, které si zvolíte.</string>
+    <string name="key_backup_cloud_saved">Kopie ve vašem účtu Google: uložena</string>
+    <string name="key_backup_cloud_local_only">Jen v tomto telefonu (pro nahrání zapněte zámek obrazovky)</string>
+    <string name="key_backup_cloud_restore">Obnovit z vašeho účtu Google</string>
+    <string name="key_backup_cloud_restored">Podpisový klíč obnoven z vašeho účtu Google</string>
+</resources>
