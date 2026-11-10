@@ -53,11 +53,12 @@ public final class EcgAdapter {
     static final java.util.List<Float> baselineBuf = new java.util.ArrayList<Float>();
     static volatile int bandHiAdc = ADC_CENTER + (int) Math.round(5.0 / LSB_MV); // +5mV
     static volatile int bandLoAdc = ADC_CENTER - (int) Math.round(5.0 / LSB_MV); // -5mV
-    // Baseline EMA: the SHS ECG_MV is DC-coupled (electrode baseline, -142..-31 mV
-    // measured) while the native pipeline expects a centred AC signal (the Samsung
-    // front-end couples it in AC). A small alpha = cutoff
-    // below 0.5 Hz, preserves the QRS.
-    static double ema = Double.NaN;
+    // Baseline removal: the SHS ECG_MV is DC-coupled (electrode baseline, -142..+200 mV
+    // measured, drifting) while the native pipeline expects a centred AC signal (the
+    // Samsung front-end couples it in AC). See BaselineFilter.
+    static final BaselineFilter BASELINE = new BaselineFilter();
+    static int lastLead = 5;
+    static double lastBaseline = 0;
     static int statBatches = 0;
     static double statMin = Double.MAX_VALUE, statMax = -Double.MAX_VALUE, statSum = 0, statSumSq = 0;
     static int statN = 0;
@@ -86,10 +87,9 @@ public final class EcgAdapter {
         everReal.set(false);
         offsetsSet = false;
         baselineBuf.clear();
-        ema = Double.NaN;
         statBatches = 0;
         lastRealMs = 0L;
-        synchronized (DELIVERY_LOCK) { LEAD.reset(); BEATS.reset(); }
+        synchronized (DELIVERY_LOCK) { LEAD.reset(); BEATS.reset(); BASELINE.reset(); lastLead = 5; }
         Context ctx = appContext();
         log("start: sink=" + listener + " ctx=" + ctx);
         if (ctx == null) {
@@ -170,14 +170,15 @@ public final class EcgAdapter {
             // Normalization is unchanged: 5 stays 5, anything else (0, absent) is 0.
             // Short no-contact blips are held back so they do not cancel a running measurement.
             int leadNorm = LEAD.next((batch.leadOff == 5) ? 5 : 0);
-            // DC filter: filtered sample = mv - EMA(mv). The native pipeline
-            // expects the signal as the Samsung front-end delivers it (AC).
-            double a = 0.001; // EMA alpha (time constant ~2 s at 500 Hz)
+            // The native pipeline expects the signal as the Samsung front-end delivers it
+            // (AC). Without contact the input sits at a rail, so the baseline is taken
+            // again from the first sample with contact.
+            if (leadNorm != 5 && lastLead == 5) BASELINE.reset();
+            lastLead = leadNorm;
             for (int i = 0; i < n; i++) {
                 double v = (mv[i] - ADC_CENTER) * LSB_MV;
-                if (Double.isNaN(ema)) ema = v;
-                ema += a * (v - ema);
-                double f = v - ema;
+                double f = BASELINE.next(v);
+                lastBaseline = v - f;
                 mv[i] = (int) Math.round(ADC_CENTER + f / LSB_MV);
                 if (leadNorm != 5) {
                     BEATS.feed(f);
@@ -190,8 +191,8 @@ public final class EcgAdapter {
             if (statBatches % 100 == 0 && statN > 0) {
                 double mean = statSum / statN;
                 double rms = Math.sqrt(statSumSq / statN - mean * mean);
-                log(String.format("stats: n=%d min=%.3f max=%.3f mean=%.4f rms=%.3f mV (ema=%.3f)",
-                        statN, statMin, statMax, mean, rms, ema));
+                log(String.format("stats: n=%d min=%.3f max=%.3f mean=%.4f rms=%.3f mV (baseline=%.3f)",
+                        statN, statMin, statMax, mean, rms, lastBaseline));
                 String beats = BEATS.summary();
                 if (beats != null) log(beats);
                 statN = 0; statSum = 0; statSumSq = 0;

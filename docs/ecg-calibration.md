@@ -290,7 +290,7 @@ least one session, and the load-bearing ones in two (§0.1).
 | v1 count selector | byte `0x3f`: `0 ⇒ count 5`, `1 ⇒ 10`, else `0` | `ECGHandler` v1 [V] |
 | lead normalization | `0` = contact, `5` = no contact | HTS `sb` parsed path [V+C] |
 | adapter band | `bandHi/bandLo = 0x200000 ± round(5.0 / LSB)` | `EcgAdapter` L54-55; **no firmware `±5 mV` literal** [V adapter / C negative] |
-| adapter EMA high-pass | `alpha = 0.001` (~2 s @ 500 Hz) | `EcgAdapter` L171 [V] |
+| adapter baseline high-pass | 2nd-order Butterworth, 0.5 Hz @ 500 Hz, re-seeded on contact | `BaselineFilter` [V] |
 | adapter keepalive | synthetic events, `lead = 5`, 10 Hz | `EcgAdapter` L239-260 [V] |
 
 ---
@@ -366,10 +366,24 @@ the `getEcg()` float path [V note 70 §3; C note 90 §Q6].
 
 **Adapter-only choices that are not contract divergences** (recorded for completeness) [V note 70 §3]:
 the adapter synthesises only the `"value"` key (stock never sends it — HTS re-derives the parsed
-fields); it applies its own EMA high-pass (`alpha = 0.001`), because the HTS-consumed signal is
-DC-coupled (−142…−31 mV observed) whereas the stock front-end couples the signal in AC; and it runs a
+fields); it applies its own baseline high-pass (`BaselineFilter`), because the HTS-consumed signal is
+DC-coupled (−142…+200 mV observed) whereas the stock front-end couples the signal in AC; and it runs a
 10 Hz `lead = 5` keepalive to feed the pipeline watchdog until real data flows. None of these changes
 the `pl`-visible raw contract.
+
+**Baseline high-pass (adapter choice, 2026-11-09).** Until this date the adapter used a single-pole
+EMA high-pass (`alpha = 0.001`, time constant ≈ 2 s). In the A/B of 2026-11-09 (SM-R920, adapter and
+stock SHM measured seconds apart, 5 + 6 recordings) both gave sinus rhythm and heart rates within
+the beat-to-beat spread, but the adapter traces showed baseline steps and wander that the stock
+traces did not. The adapter's own `stats:` lines explain it: the HTS baseline sat at 160–200 mV and
+kept rising by 0.3–1 mV/s, and a single-pole high-pass leaves `drift rate × time constant` on a
+ramp, so the output carried a +0.5…+2.3 mV offset that moved whenever the drift rate or the finger
+pressure changed; after contact it needed about 8 s to settle, with the first seconds far outside
+the ±5 mV band. The filter is now a second-order Butterworth high-pass at 0.5 Hz (no steady-state
+error on a ramp, a step is gone within about 2 s), and its state is taken again from the first
+sample with contact, since without contact the input sits at a rail. On a synthetic beat it costs
+about 2 % of the R height and shifts the ST level by about 10 µV. The cutoff of the stock front-end
+is still unknown; 0.5 Hz is the usual monitoring-mode value, not a measured one.
 
 **Lead-off debounce (adapter choice, 2026-10-20).** SHM's lead state machine needs 50 consecutive
 `lead = 0` events to reach `LEAD_ON_CHECKED`, but from there a **single** `lead != 0` event cancels the
@@ -423,7 +437,8 @@ on-wrist / off-body run measured items 1, 4 and 5 (see §5a, tagged [V]); items 
    within ≤ 2.7 %. → protocol §9.2.
 
 The **comparison CSVs** that would settle the concurrent stock-vs-HTS question do not exist: the
-**§9.10 A/B was SKIPPED by owner decision**, and the adapter-timeline run has not happened yet. The
+**§9.10 A/B was skipped on 2026-10-15** and the adapter-timeline run has not happened yet. A
+sequential A/B of whole recordings against the stock apps did happen on 2026-11-09 (§5b). The
 **on-wrist / off-body HTS datasets** of 2026-10-15 did land in the analysis cache; their numbers are
 §5a. (Full per-session tables: `ecg-val/RESULTS.md`, outside this repository.)
 
@@ -464,8 +479,39 @@ baseline this run tests against.
    only, not concluded. (c) `onwrist1`'s meta wall window (51258 ms) disagrees with the probe's log
    (50011 ms) and the CSV span (49757 ms); the CSV matches the log, so the meta value is the outlier.
 4. **§9.10 A/B was SKIPPED by owner decision** — no concurrent stock SHM ECG measurement was run (no
-   `EcgServiceModule` line in either logcat), so the gain/rate/lead-off stock-vs-HTS comparison has no
-   data yet.
+   `EcgServiceModule` line in either logcat), so the gain/rate/lead-off stock-vs-HTS comparison had no
+   data in this session. §5b has the later comparison of whole recordings.
+
+### 5b. ECG validated against the stock apps — 2026-11-09 (SM-R920 + Galaxy S24 Ultra) [V]
+
+**Setup.** The owner's Galaxy Watch5 Pro (SM-R920, One UI 8 Watch) paired to a Samsung Galaxy S24
+Ultra (SM-S928B, Android 16) with both pairs installed side by side: the stock Samsung Health Monitor
+(watch 1.5.2.009, phone 1.5.3.011) and the patched copy fed by the adapter (watch 1.5.1.022, phone
+1.4.6.001). Same person, same wrist, seated, 30 s recordings taken alternately within a few minutes
+of each other, each exported as the app's own PDF report. The recordings are sequential, not
+concurrent, so beat-to-beat values are not expected to be equal.
+
+| round | adapter (patched copy) | stock |
+|---|---|---|
+| 1, single-pole EMA high-pass | sinus rhythm × 2: 90, 94 bpm | sinus rhythm × 3: 91, 92, 94 bpm |
+| 2, single-pole EMA high-pass | sinus rhythm × 3: 87, 89, 89 bpm | sinus rhythm × 3: 89, 90, 88 bpm |
+| 3, `BaselineFilter` | sinus rhythm × 3: 84, 83, 81 bpm | sinus rhythm × 3: 84, 83, 82 bpm |
+
+1. **Classification and heart rate agree.** All 17 recordings were classified as sinus rhythm, and
+   within each round the average heart rates of the two apps overlap (largest difference between
+   neighbouring recordings: 3 bpm).
+2. **Waveform.** In both apps the R wave is upright at about 0.5–0.6 mV on the 10 mm/mV report,
+   which supports the gain constant (`LSB_MV`) and the polarity.
+3. **Baseline.** In rounds 1 and 2 the adapter traces had baseline steps and wander that the stock
+   traces did not have; that led to the `BaselineFilter` change described in §4. In round 3 the
+   adapter's baseline is as flat as the stock one, and the remaining 0.2–0.3 mV ripples appear in
+   both apps (finger movement). The adapter's logged mean stayed within ±0.05 mV, against
+   +0.5…+2.3 mV before.
+4. **Not covered.** One round-1 adapter recording showed growing high-frequency noise that did not
+   come back in the eight later ones; its cause is unknown. The comparison is visual, on the PDF
+   reports: there is no sample-level comparison, no arrhythmia case (only sinus rhythm was
+   available), one person and one watch. It is a comparison against the unmodified apps, not a
+   clinical validation.
 
 ---
 
@@ -494,10 +540,10 @@ SemSensorManager framework library [V note 70 §0; note 90 §5].
   service (the SpO2 extraction kept only SpO2-named libs; validation hand-off §3).
 - The **device**: an owner-authorized session ran 2026-10-15 (§5a) — the delivered rate, the
   parsed-vs-legacy branch and the lead-off semantics are now **measured**; the sysfs message
-  version (Q2) and an adapter-driven timeline run (Q3) remain unobserved, and the §9.10 A/B
-  against the system SHM was skipped by owner decision.
+  version (Q2) and an adapter-driven timeline run (Q3) remain unobserved. The concurrent §9.10 A/B
+  against the system SHM was skipped; whole recordings were compared on 2026-11-09 (§5b).
 - A **per-model comparison** of the HAL / HealthPlatform across the seven watch families (the ECG HAL
   was analyzed on the SM-R920 only; the SpO2 binaries were byte-identical across families, but that
   was not re-established for the ECG HAL).
 - The **BP** and **SpO2** tracks (separate documents).
-- Clinical validation of any output; and any implementation change (report-only, §4).
+- Clinical validation of any output (§5b is a comparison against the stock apps only).

@@ -23,6 +23,7 @@ javac --release 11 -nowarn -encoding UTF-8 -d "$OUT/classes" \
   ../src/shminterop/watch/ForegroundRequired.java \
   ../src/shminterop/watch/WatchOverrides.java \
   ../src/shminterop/ecg/LeadDebouncer.java ../src/shminterop/ecg/BeatMonitor.java \
+  ../src/shminterop/ecg/BaselineFilter.java \
   $(find ../src/shminterop/ihrn -name '*.java') \
   $(find ../src/shminterop/bp -name '*.java') \
   $(find ../src/shminterop/spo2 -name '*.java') \
@@ -34,6 +35,7 @@ java -Xmx256m -cp "$OUT/classes" shminterop.hsdk.ServiceProtocolPpgTest || FAILE
 java -Xmx256m -cp "$OUT/classes" shminterop.hsdk.ServiceProtocolAccelTest || FAILED=1
 java -Xmx256m -cp "$OUT/classes" shminterop.ecg.LeadDebouncerTest || FAILED=1
 java -Xmx256m -cp "$OUT/classes" shminterop.ecg.BeatMonitorTest || FAILED=1
+java -Xmx256m -cp "$OUT/classes" shminterop.ecg.BaselineFilterTest || FAILED=1
 java -Xmx256m -cp "$OUT/classes" shminterop.ihrn.IhrnAdapterTest || FAILED=1
 java -Xmx256m -cp "$OUT/classes" shminterop.watch.WatchOverridesServiceTest || FAILED=1
 java -Xmx256m -cp "$OUT/classes" shminterop.watch.OffBodySensorTest || FAILED=1
