@@ -766,7 +766,7 @@
     <string name="revert_manual_title">Ještě je třeba udělat ručně</string>
     <string name="revert_manual_devmode">Vypněte režim vývojáře platformy Health Platform, pokud jste ho zapnuli.</string>
     <string name="revert_manual_adb">Zrušte oprávnění k ladění a vypněte Bezdrátové ladění v hodinkách i v tomto telefonu.</string>
-    <string name="revert_manual_keys">Zálohy vašeho podpisového klíče (Dokumenty/OpenSHM) a uložené heslo zůstávají. Pokud je už nepotřebujete, smažte je v aplikaci Soubory nebo ve správci hesel.</string>
+    <string name="revert_manual_keys">Zálohy vašeho podpisového klíče (Documents/OpenSHM) a uložené heslo zůstávají. Pokud je už nepotřebujete, smažte je v aplikaci Soubory nebo ve správci hesel.</string>
     <string name="revert_self_action">Odinstalovat LibreWrist</string>
     <string name="revert_self_title">Odinstalovat LibreWrist?</string>
     <string name="revert_self_body">Android vás požádá o potvrzení. Aplikace a její uložená data, včetně podpisového klíče uloženého uvnitř, se odeberou. Zálohy, které jste uložili jinam, zůstanou.</string>
