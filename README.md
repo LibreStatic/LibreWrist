@@ -525,6 +525,10 @@ the problem and tap **Export .txt**. Attach the file to the issue.
 - :construction: **Sleep apnea recording drains the battery on a Galaxy Watch8** ([#27](https://github.com/LibreStatic/LibreWrist/issues/27))
   - **Status:** reported on a Galaxy Watch8 40 mm with 0.10.12. While recording it draws about 55 to 80 mA, against about 26 mA above idle measured on a Galaxy Watch5 Pro, so the watch runs flat before morning. Confirmed. A fix is in progress: a way to record without holding the watch awake is being tested.
   - **Workaround:** turn sleep apnea screening off on that watch until it is fixed.
+- :hourglass_flowing_sand: **Google Play Protect blocks the installation** ([#31](https://github.com/LibreStatic/LibreWrist/issues/31))
+  - **Cause:** two separate Play Protect checks. In some countries it blocks apps installed outside the store that declare an accessibility service, and LibreWrist declares one for its optional interactive guide. Play Protect also flags the release files since 0.10.10 as "Harmful app blocked"; that flag is tied to the published files, not to anything the app does on the phone.
+  - **Status:** confirmed. Since 0.11.1 each release also carries `openshm-patcher-noguide-….apk`, the same app without the guide and without an accessibility service. An affected user still needs to report that it installs.
+  - **Workaround:** install the APK from a PC over ADB with **Verify apps over USB** turned off in Developer options; Play Protect stays on for everything else.
 
 [↑ Back to contents](#contents)
 
