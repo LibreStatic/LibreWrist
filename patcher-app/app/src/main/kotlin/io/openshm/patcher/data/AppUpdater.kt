@@ -30,13 +30,14 @@ sealed interface AppUpdateResult {
 /**
  * Asks the GitHub Releases API of [repo] (`owner/name`) for the latest release and decides whether it
  * is a newer patcher build than [versionCode]. The release tag is `patcher-v<ver>-r<N>`, where N is the
- * build number (CI sets versionCode to it); it must carry the APK `openshm-patcher-<ver>-r<N>.apk` and
+ * build number (CI sets versionCode to it); it must carry the APK `<assetPrefix>-<ver>-r<N>.apk` and
  * a `SHA256SUMS` listing it, otherwise nothing is offered. Pure logic over [CatalogueFetcher].
  */
 class AppUpdater(
     private val repo: String,
     private val versionCode: Long,
     private val fetcher: CatalogueFetcher,
+    private val assetPrefix: String = "openshm-patcher",
 ) {
     fun check(): AppUpdateResult {
         if (repo.isBlank()) return AppUpdateResult.Disabled
@@ -56,7 +57,7 @@ class AppUpdater(
         if (build <= versionCode) return AppUpdateResult.UpToDate
 
         val assets = (release["assets"] as? List<*>).orEmpty().filterIsInstance<Map<*, *>>()
-        val apkName = "openshm-patcher-$versionName-r$build.apk"
+        val apkName = "$assetPrefix-$versionName-r$build.apk"
         val apk = assets.firstOrNull { it["name"] == apkName } ?: return AppUpdateResult.Failed("the release has no $apkName")
         val sums = assets.firstOrNull { it["name"] == "SHA256SUMS" } ?: return AppUpdateResult.Failed("the release has no SHA256SUMS")
         val apkUrl = apk["browser_download_url"] as? String ?: return AppUpdateResult.Failed("the APK has no download link")

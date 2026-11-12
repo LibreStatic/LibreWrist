@@ -35,7 +35,7 @@ internal fun newAppUpdateChecker(context: Context, settings: AppUpdatePrefs = Ap
     return AppUpdateChecker(
         BuildConfig.UPDATE_REPO,
         settings,
-        { AppUpdater(BuildConfig.UPDATE_REPO, BuildConfig.VERSION_CODE.toLong(), fetcher).check() },
+        { AppUpdater(BuildConfig.UPDATE_REPO, BuildConfig.VERSION_CODE.toLong(), fetcher, BuildConfig.UPDATE_ASSET_PREFIX).check() },
         versionCode = BuildConfig.VERSION_CODE.toLong(),
     )
 }

@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import io.openshm.patcher.ui.components.PatcherAlertDialog
+import io.openshm.patcher.BuildConfig
 import io.openshm.patcher.R
 import io.openshm.patcher.data.Automation
 import io.openshm.patcher.device.LaunchRequest
@@ -80,7 +81,7 @@ fun rememberSettingsLauncher(): (LaunchRequest) -> Unit {
     return remember(context) {
         { request ->
             when {
-                request.guide == null || !Automation.state.value.guidePet -> startPlain(context, request)
+                request.guide == null || !BuildConfig.GUIDE_AVAILABLE || !Automation.state.value.guidePet -> startPlain(context, request)
                 GuideAccessibilityService.isEnabled(context) -> startGuided(context, request)
                 else -> asking = request
             }
