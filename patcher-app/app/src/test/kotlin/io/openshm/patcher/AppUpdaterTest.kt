@@ -77,6 +77,27 @@ class AppUpdaterTest {
         assertEquals(12345L, result.update.sizeBytes)
     }
 
+    @Test fun aCustomAssetPrefixPicksItsOwnApkAndHashFromAReleaseWithBoth() {
+        val noGuideApkUrl = "https://example.invalid/openshm-patcher-noguide-0.1.0-r9.apk"
+        val noGuideHash = "cd".repeat(32)
+        val both = """{"tag_name":"patcher-v0.1.0-r9","body":"","assets":[
+            {"name":"openshm-patcher-0.1.0-r9.apk","browser_download_url":"$apkUrl","size":12345},
+            {"name":"openshm-patcher-noguide-0.1.0-r9.apk","browser_download_url":"$noGuideApkUrl","size":6789},
+            {"name":"SHA256SUMS","browser_download_url":"$sumsUrl","size":200}]}""".toByteArray()
+        val sums = "$hash  openshm-patcher-0.1.0-r9.apk\n$noGuideHash  openshm-patcher-noguide-0.1.0-r9.apk\n"
+        val noGuide = AppUpdater("owner/name", 6, fetcher(both, sums), "openshm-patcher-noguide").check() as AppUpdateResult.Available
+        assertEquals("openshm-patcher-noguide-0.1.0-r9.apk", noGuide.update.apkName)
+        assertEquals(noGuideApkUrl, noGuide.update.apkUrl)
+        assertEquals(noGuideHash, noGuide.update.sha256)
+        assertEquals(6789L, noGuide.update.sizeBytes)
+        val regular = check(fetcher(both, sums)) as AppUpdateResult.Available
+        assertEquals("openshm-patcher-0.1.0-r9.apk", regular.update.apkName)
+        assertEquals(apkUrl, regular.update.apkUrl)
+        assertEquals(hash, regular.update.sha256)
+        // A release that only carries the regular APK offers nothing to the build without the guide.
+        assertTrue(AppUpdater("owner/name", 6, fetcher(release()), "openshm-patcher-noguide").check() is AppUpdateResult.Failed)
+    }
+
     @Test fun theSameOrAnOlderBuildIsUpToDate() {
         assertEquals(AppUpdateResult.UpToDate, check(fetcher(release()), versionCode = 9))
         assertEquals(AppUpdateResult.UpToDate, check(fetcher(release()), versionCode = 12))

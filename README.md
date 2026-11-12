@@ -94,6 +94,11 @@ The easiest way is **LibreWrist** (`patcher-app/`). This Android app does the wh
 phone itself; no PC is needed. Download the latest APK from the
 [Releases](https://github.com/LibreStatic/LibreWrist/releases) page and install it on the phone.
 
+Each release also carries `openshm-patcher-noguide-<version>-r<build>.apk`: the same app without the
+interactive guide (Tic), so it declares no accessibility service. Use it on phones where Play Protect
+blocks apps that declare one. It installs as a separate app (`io.openshm.patcher.noguide`), does not
+upgrade the regular build, and updates itself from its own file.
+
 The app guides you through these steps:
 
 1. **Pairing**: the stock Galaxy Wearable pairing, then a Wireless debugging (ADB) pairing with the
@@ -379,7 +384,8 @@ every 12 hours in the background. When there is one, the app shows an update dia
 notification if the background check found it first); tapping **Update** downloads the APK, checks
 its SHA-256 against the release's `SHA256SUMS`, checks that it is this app signed with the same key,
 and then asks Android to install it. The app closes while it updates; open it again afterwards. Only
-official releases signed with the same key can update the app.
+official releases signed with the same key can update the app. The build without the guide looks for
+its own `openshm-patcher-noguide-…` file in the same release.
 
 GitHub is asked at most once an hour; in between, the app offers the last build it found each time
 it opens. **Later** shows it again on the next opening; ticking **Don't show this version again**
@@ -580,7 +586,9 @@ JAVA_HOME=/path/to/jdk17 patcher-app/gradlew :engine:test :app:testDebugUnitTest
 Builds are signed with `patcher.p12` and `patcher.pass` from `OPENSHM_KEYS_DIR` (key alias
 `PATCHER_KEY_ALIAS`, default `patcher`). Without them, builds fall back to the SDK debug key. The
 published releases are built by `.github/workflows/patcher-release.yml` and signed with the
-LibreStatic release key.
+LibreStatic release key. `-PnoGuide` (or `PATCHER_NO_GUIDE=1`) builds the variant without the
+interactive guide (package `io.openshm.patcher.noguide`, no accessibility service); the workflow
+publishes both.
 
 [↑ Back to contents](#contents)
 

@@ -1,5 +1,9 @@
-# Builds the LibreWrist app and publishes its APK as a GitHub release whenever something under
-# patcher-app/, or one of the directories it bundles, changes on main (or on demand).
+# Builds the LibreWrist app and publishes its APKs as a GitHub release whenever something under
+# patcher-app/, or one of the directories it bundles, changes on main (or on demand). Each release
+# carries two APKs with the same versionName and build number: openshm-patcher-<ver>-r<N>.apk (the full
+# app) and openshm-patcher-noguide-<ver>-r<N>.apk (built with -PnoGuide: package
+# io.openshm.patcher.noguide, no accessibility service, for phones where Play Protect blocks apps that
+# declare one), plus SHA256SUMS.
 #
 # Repository secrets (the LibreStatic release key; store and key share one password):
 #   LIBRESTATIC_KEYSTORE_BASE64   base64 of the PKCS#12 keystore
@@ -61,6 +65,7 @@ jobs:
             echo "::error::could not read versionName from patcher-app/app/build.gradle.kts"
             exit 1
           fi
+          echo "PATCHER_VERSION_NAME=$version" >> "$GITHUB_ENV"
           taken="$(git tag --list "patcher-v$version-r*")"
           if [ -n "$taken" ]; then
             echo "::error::versionName $version was already released ($(echo $taken)); bump it in patcher-app/app/build.gradle.kts"
@@ -128,24 +133,60 @@ jobs:
       # One Gradle run: the build is configured once and the release tasks overlap with the tests. A
       # failing test still fails the step before anything is published.
       - name: Test and build the release APK
-        run: patcher-app/gradlew --no-daemon :engine:test :app:testDebugUnitTest :app:assembleRelease
+        run: |
+          patcher-app/gradlew --no-daemon :engine:test :app:testDebugUnitTest :app:assembleRelease
+          mkdir -p "$RUNNER_TEMP/out"
+          cp patcher-app/app/build/outputs/apk/release/app-release.apk "$RUNNER_TEMP/out/openshm-patcher-$PATCHER_VERSION_NAME-r$PATCHER_VERSION_CODE.apk"
+
+      # The same app as a separate package without Tic, the interactive guide, so it declares no
+      # accessibility service. Same output path as the full build, hence the copy right after each run.
+      - name: Build the APK without the guide
+        run: |
+          patcher-app/gradlew --no-daemon -PnoGuide :app:assembleRelease
+          cp patcher-app/app/build/outputs/apk/release/app-release.apk "$RUNNER_TEMP/out/openshm-patcher-noguide-$PATCHER_VERSION_NAME-r$PATCHER_VERSION_CODE.apk"
 
       - name: Check the signature
         env:
           EXPECTED_CERT: ${{ vars.PATCHER_CERT_SHA256 }}
         run: |
-          apk=patcher-app/app/build/outputs/apk/release/app-release.apk
           apksigner="$ANDROID_HOME/build-tools/37.0.0/apksigner"
-          certs="$("$apksigner" verify --print-certs "$apk")"
-          # "Signer #1 certificate ..." with a v1 signature, "V2 Signer: certificate ..." without one.
-          actual="$(printf '%s\n' "$certs" | sed -nE 's/^(Signer #1|V[0-9.]+ Signer:) certificate SHA-256 digest: //p' | head -n1)"
-          if [ -z "$actual" ]; then
-            echo "::error::could not read the signing certificate"
+          for apk in "$RUNNER_TEMP"/out/*.apk; do
+            echo "Checking $(basename "$apk")"
+            certs="$("$apksigner" verify --print-certs "$apk")"
+            # "Signer #1 certificate ..." with a v1 signature, "V2 Signer: certificate ..." without one.
+            actual="$(printf '%s\n' "$certs" | sed -nE 's/^(Signer #1|V[0-9.]+ Signer:) certificate SHA-256 digest: //p' | head -n1)"
+            if [ -z "$actual" ]; then
+              echo "::error::could not read the signing certificate"
+              exit 1
+            fi
+            echo "Signing certificate SHA-256: $actual"
+            if [ -n "$EXPECTED_CERT" ] && [ "$actual" != "$(printf '%s' "$EXPECTED_CERT" | tr -d ': ' | tr 'A-F' 'a-f')" ]; then
+              echo "::error::signing certificate does not match PATCHER_CERT_SHA256"
+              exit 1
+            fi
+          done
+
+      # The point of the second APK: a different package that declares no accessibility service at all.
+      - name: Check the APK without the guide
+        run: |
+          aapt2="$ANDROID_HOME/build-tools/37.0.0/aapt2"
+          full="$RUNNER_TEMP/out/openshm-patcher-$PATCHER_VERSION_NAME-r$PATCHER_VERSION_CODE.apk"
+          noguide="$RUNNER_TEMP/out/openshm-patcher-noguide-$PATCHER_VERSION_NAME-r$PATCHER_VERSION_CODE.apk"
+          if [ "$("$aapt2" dump packagename "$full")" != "io.openshm.patcher" ]; then
+            echo "::error::the full APK is not package io.openshm.patcher"
             exit 1
           fi
-          echo "Signing certificate SHA-256: $actual"
-          if [ -n "$EXPECTED_CERT" ] && [ "$actual" != "$(printf '%s' "$EXPECTED_CERT" | tr -d ': ' | tr 'A-F' 'a-f')" ]; then
-            echo "::error::signing certificate does not match PATCHER_CERT_SHA256"
+          if [ "$("$aapt2" dump packagename "$noguide")" != "io.openshm.patcher.noguide" ]; then
+            echo "::error::the APK without the guide is not package io.openshm.patcher.noguide"
+            exit 1
+          fi
+          manifest="$("$aapt2" dump xmltree --file AndroidManifest.xml "$noguide")"
+          if [ -z "$manifest" ]; then
+            echo "::error::could not read the manifest of the APK without the guide"
+            exit 1
+          fi
+          if printf '%s\n' "$manifest" | grep -qi accessibility; then
+            echo "::error::the APK without the guide still mentions accessibility in its manifest"
             exit 1
           fi
 
@@ -153,11 +194,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          version="$(sed -n 's/^ *versionName = "\(.*\)"$/\1/p' patcher-app/app/build.gradle.kts)"
+          version="$PATCHER_VERSION_NAME"
           tag="patcher-v$version-r$PATCHER_VERSION_CODE"
           out="$RUNNER_TEMP/out"
-          mkdir -p "$out"
-          cp patcher-app/app/build/outputs/apk/release/app-release.apk "$out/openshm-patcher-$version-r$PATCHER_VERSION_CODE.apk"
           ( cd "$out" && sha256sum *.apk > SHA256SUMS )
           # The earlier patcher release with the highest build number; its commit bounds the change list.
           previous="$(git tag --list 'patcher-v*' | awk -F-r -v n="$PATCHER_VERSION_CODE" \
@@ -181,7 +220,7 @@ jobs:
               echo "- …and $((total - limit)) more"
             fi
             echo
-            echo "Install the APK on the phone; it upgrades any earlier build in place. Checksums: SHA256SUMS."
+            echo "Install openshm-patcher-$version-r$PATCHER_VERSION_CODE.apk on the phone; it upgrades any earlier build in place. openshm-patcher-noguide-$version-r$PATCHER_VERSION_CODE.apk is the same app without Tic, the interactive guide, so it declares no accessibility service; it installs as a separate app and does not upgrade the regular one. Checksums: SHA256SUMS."
           } > "$out/notes.md"
           gh release create "$tag" "$out"/*.apk "$out/SHA256SUMS" \
             --target "$GITHUB_SHA" \

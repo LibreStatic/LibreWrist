@@ -34,6 +34,7 @@ import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import io.openshm.patcher.ui.components.PatcherAlertDialog
+import io.openshm.patcher.BuildConfig
 import io.openshm.patcher.R
 import io.openshm.patcher.data.AutomationState
 import io.openshm.patcher.data.Region
@@ -50,25 +51,29 @@ enum class AutomationHelp(@StringRes val title: Int, @StringRes val body: Int) {
 }
 
 /**
- * The automation switches under "Get started": the guide pet first, then unattended mode and its two
- * dependent switches, which are shown off and disabled while unattended mode is off, and China mode
- * where it was detected or ever set.
+ * The automation switches under "Get started": the guide pet first (left out when [guideAvailable] is
+ * false, in the build without the guide), then unattended mode and its two dependent switches, which
+ * are shown off and disabled while unattended mode is off, and China mode where it was detected or
+ * ever set.
  */
 @Composable
 internal fun AutomationToggles(
     automation: AutomationState,
     onEvent: (WelcomeEvent) -> Unit,
     modifier: Modifier = Modifier,
+    guideAvailable: Boolean = BuildConfig.GUIDE_AVAILABLE,
 ) {
     val dependent = automation.unattended
     Column(modifier.fillMaxWidth()) {
-        AutomationRow(
-            label = R.string.automation_guide_title,
-            checked = automation.guidePet,
-            enabled = true,
-            onChange = { onEvent(WelcomeEvent.SetGuidePet(it)) },
-            onHelp = { onEvent(WelcomeEvent.ShowHelp(AutomationHelp.Guide)) },
-        )
+        if (guideAvailable) {
+            AutomationRow(
+                label = R.string.automation_guide_title,
+                checked = automation.guidePet,
+                enabled = true,
+                onChange = { onEvent(WelcomeEvent.SetGuidePet(it)) },
+                onHelp = { onEvent(WelcomeEvent.ShowHelp(AutomationHelp.Guide)) },
+            )
+        }
         AutomationRow(
             label = R.string.automation_unattended_title,
             checked = automation.unattended,

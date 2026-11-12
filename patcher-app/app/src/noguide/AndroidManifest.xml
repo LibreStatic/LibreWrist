@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- Merged only by -PnoGuide builds: Tic, the interactive guide, is the one accessibility service the app declares. -->
+    <application>
+        <service android:name=".device.guide.GuideAccessibilityService" tools:node="remove" />
+    </application>
+</manifest>

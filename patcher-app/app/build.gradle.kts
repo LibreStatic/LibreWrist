@@ -6,6 +6,11 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+// -PnoGuide (or PATCHER_NO_GUIDE=1) builds the variant without Tic, the interactive guide: a separate
+// package that declares no accessibility service (src/noguide/AndroidManifest.xml removes it), for
+// phones whose Play Protect blocks sideloaded apps that declare one. Default builds are unchanged.
+val noGuide = providers.gradleProperty("noGuide").isPresent || System.getenv("PATCHER_NO_GUIDE") == "1"
+
 android {
     // Lists the translated locales for the per-app language setting (Android 13+).
     androidResources {
@@ -16,6 +21,7 @@ android {
 
     defaultConfig {
         applicationId = "io.openshm.patcher"
+        if (noGuide) applicationIdSuffix = ".noguide"
         minSdk = 31
         targetSdk = 36
         // CI sets PATCHER_VERSION_CODE (the workflow run number) so every published APK upgrades the last.
@@ -38,6 +44,10 @@ android {
             "UPDATE_REPO must look like owner/name"
         }
         buildConfigField("String", "UPDATE_REPO", "\"$updateRepo\"")
+        buildConfigField("boolean", "GUIDE_AVAILABLE", (!noGuide).toString())
+        // Prefix of the release asset the self-update downloads (`<prefix>-<ver>-r<N>.apk`), so each build
+        // updates itself from its own file.
+        buildConfigField("String", "UPDATE_ASSET_PREFIX", if (noGuide) "\"openshm-patcher-noguide\"" else "\"openshm-patcher\"")
         // Hash of the code that decides what a built APK contains (the engine, its library versions and the
         // build package of the app), so a build is only reused while that code is unchanged (see
         // BuildFacts.outputFingerprint).
@@ -183,6 +193,9 @@ apply { from("own-code.gradle.kts") }
 @Suppress("UNCHECKED_CAST")
 val ownCodeAssets = extra["ownCode.assetsTask"] as TaskProvider<Task>
 androidComponents.onVariants { variant ->
+    if (noGuide) {
+        variant.sources.manifests.addStaticManifestFile("src/noguide/AndroidManifest.xml")
+    }
     variant.sources.assets?.addGeneratedSourceDirectory(ownCodeAssets, { task: Task ->
         // The task's `assets` property (DirectoryProperty), read reflectively: its class lives in the script.
         @Suppress("UNCHECKED_CAST")
