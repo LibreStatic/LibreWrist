@@ -399,6 +399,14 @@ values per point, regardless of the selected channels. The nominal sensor rate i
 type 61); the timestamp keeps the 4.1/4.3 wall-clock semantics. Flush is not allowed for
 `PPG_ON_DEMAND` (see 3.4); data flows without it because every sensor event is delivered directly.
 
+`PPG_CONTINUOUS` uses the same six positions and the same code 8 channel selection (observed on a
+Galaxy Watch8, SM-L320, with `RED` and `IR` requested: red and IR counts with status 0, green count
+0 with status -1). It differs in rate and delivery: the sensor hub samples at 25 Hz and the service
+sends one `onDataUpdated` with N = 200 data points about every 8 s (about 185 kB per call). Each
+data point has its own timestamp, 40 ms after the previous one, so per-sample times need not be
+derived here. Flush is allowed (3.4). Between two calls the CPU may suspend, which it cannot while
+`PPG_ON_DEMAND` streams.
+
 #### Code 8: setPpgType
 
 Request after the interface token, in order: `String appId`, `String trackerType`, string list of

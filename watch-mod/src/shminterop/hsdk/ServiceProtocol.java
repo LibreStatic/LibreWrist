@@ -26,6 +26,16 @@ public final class ServiceProtocol {
     public static final String TRACKER_ECG = "ECG";
     /** On-demand PPG tracker type; delivers green/red/IR ADC counts (protocol 4.4). */
     public static final String TRACKER_PPG_ON_DEMAND = "PPG_ON_DEMAND";
+    /**
+     * Continuous PPG tracker type: the same value layout as PPG_ON_DEMAND (protocol 4.4), but the
+     * sensor hub samples at 25 Hz and delivers its buffer in one callback (200 data points about
+     * every 8 s, each with its own timestamp), so the CPU may suspend between callbacks. Flush is
+     * allowed.
+     */
+    public static final String TRACKER_PPG_CONTINUOUS = "PPG_CONTINUOUS";
+    /** Nominal sample rates of the two PPG tracker types. */
+    public static final int PPG_ON_DEMAND_HZ = 100;
+    public static final int PPG_CONTINUOUS_HZ = 25;
     /** setPpgType channel name for the green LED (the BP tracker uses only this one). */
     public static final String PPG_TYPE_GREEN = "GREEN";
     /** setPpgType channel names for the red and infrared LEDs (the SpO2 adapter uses these two). */
@@ -78,6 +88,23 @@ public final class ServiceProtocol {
         void onError(HealthError error);
         /** The batch did not match the documented layout and was dropped. */
         void onMalformed(String reason);
+    }
+
+    /** Nominal sample rate of a PPG tracker type (PPG_ON_DEMAND_HZ for any type but the continuous one). */
+    public static int ppgSampleRateHz(String trackerType) {
+        return TRACKER_PPG_CONTINUOUS.equals(trackerType) ? PPG_CONTINUOUS_HZ : PPG_ON_DEMAND_HZ;
+    }
+
+    /**
+     * The first tracker type of {@code preferred} that the service lists in {@code supported}
+     * (the code 5 reply), or null when none is.
+     */
+    public static String pickTrackerType(List<String> supported, List<String> preferred) {
+        if (supported == null || preferred == null) return null;
+        for (String t : preferred) {
+            if (supported.contains(t)) return t;
+        }
+        return null;
     }
 
     // ------------------------------------------------------------- requests
@@ -203,7 +230,7 @@ public final class ServiceProtocol {
             case CB_ERROR:
                 sink.onError(HealthError.fromWireCode(data.readInt()));
                 break;
-            default: // onFlushCompleted: flush is not allowed for PPG_ON_DEMAND; ignore the rest
+            default: // onFlushCompleted: nothing to do; ignore the rest
                 break;
         }
     }

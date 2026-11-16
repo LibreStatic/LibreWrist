@@ -13,6 +13,8 @@ import java.util.concurrent.Executors;
 /**
  * PPG tracker of the Health Tracking Service: connect, capability check, create, select the LED
  * channels, register the listener, deliver batches and errors; re-arms after a service restart.
+ * The tracker type is the first of the preferred types that the service supports (PPG_ON_DEMAND
+ * unless the caller names others); {@link #trackerType()} tells which one was armed.
  *
  * {@link Listener} callbacks may run on binder or main threads and must return quickly.
  */
@@ -33,6 +35,8 @@ public final class PpgTracker {
     private final HealthClient client;
     private final Listener out;
     private final List<String> channels;
+    private final List<String> preferredTypes;
+    private volatile String type; // the armed tracker type; null until the capability check
     private final ListenerBinder binder;
     private final ExecutorService worker = Executors.newSingleThreadExecutor();
     private volatile boolean running;
@@ -44,8 +48,17 @@ public final class PpgTracker {
 
     /** Tracker for the given LED channels (ServiceProtocol.PPG_TYPE_*), e.g. RED and IR for SpO2. */
     public PpgTracker(Context context, List<String> channels, Listener listener) {
+        this(context, channels, Collections.singletonList(ServiceProtocol.TRACKER_PPG_ON_DEMAND), listener);
+    }
+
+    /**
+     * Tracker for the given LED channels on the first supported type of {@code preferredTypes}
+     * (ServiceProtocol.TRACKER_PPG_*), e.g. PPG_CONTINUOUS then PPG_ON_DEMAND.
+     */
+    public PpgTracker(Context context, List<String> channels, List<String> preferredTypes, Listener listener) {
         this.out = listener;
         this.channels = new ArrayList<String>(channels);
+        this.preferredTypes = new ArrayList<String>(preferredTypes);
         this.binder = new ListenerBinder(new ServiceProtocol.PpgSink() {
             @Override public void onBatch(PpgBatch batch) { out.onBatch(batch); }
             @Override public void onError(HealthError error) { out.onError(error); }
@@ -59,6 +72,11 @@ public final class PpgTracker {
         });
     }
 
+    /** The tracker type in use; null before the capability check or when none is supported. */
+    public String trackerType() {
+        return type;
+    }
+
     public void start() {
         running = true;
         client.connect();
@@ -67,8 +85,9 @@ public final class PpgTracker {
     /** Code 3, then unbind. */
     public void stop() {
         running = false;
-        if (client.isConnected()) {
-            try { client.unsetEventListener(ServiceProtocol.TRACKER_PPG_ON_DEMAND); } catch (Throwable t) {
+        String armed = type;
+        if (armed != null && client.isConnected()) {
+            try { client.unsetEventListener(armed); } catch (Throwable t) {
                 Log.w(TAG, "unset failed: " + t);
             }
         }
@@ -90,20 +109,22 @@ public final class PpgTracker {
         if (!running) return;
         try {
             List<String> types = client.getSupportedTrackerTypes();
-            if (types == null || !types.contains(ServiceProtocol.TRACKER_PPG_ON_DEMAND)) {
+            String t = ServiceProtocol.pickTrackerType(types, preferredTypes);
+            if (t == null) {
                 out.onUnsupported();
                 return;
             }
-            client.createTracker(ServiceProtocol.TRACKER_PPG_ON_DEMAND);
+            type = t;
+            client.createTracker(t);
             // Before code 2 and on the request-handler queue ahead of it: the service applies the
             // LED channels only when it (re)registers the tracker's sensor, so a setPpgType sent
             // after registration would not change anything until the tracker restarts. This is the
             // order the on-watch probe validated (codes 1, 8, 2).
-            client.setPpgType(ServiceProtocol.TRACKER_PPG_ON_DEMAND, channels);
+            client.setPpgType(t, channels);
             // No lock is held here: PERMISSION_ERROR may call back on this thread.
-            client.setEventListener(ServiceProtocol.TRACKER_PPG_ON_DEMAND, binder);
+            client.setEventListener(t, binder);
             if (!running) {
-                client.unsetEventListener(ServiceProtocol.TRACKER_PPG_ON_DEMAND);
+                client.unsetEventListener(t);
                 return;
             }
             out.onArmed();

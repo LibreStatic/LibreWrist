@@ -27,7 +27,22 @@ public class PpgTracker {
     public PpgTracker(Context context, java.util.List<String> channels, Listener listener) {
     }
 
+    /** Test hook: what {@link #trackerType()} answers, and the preferred types of the last instance. */
+    public static volatile String armedType;
+    public static volatile java.util.List<String> lastPreferred;
+    public static volatile int starts;
+
+    public PpgTracker(Context context, java.util.List<String> channels,
+                      java.util.List<String> preferredTypes, Listener listener) {
+        lastPreferred = preferredTypes;
+    }
+
+    public String trackerType() {
+        return armedType;
+    }
+
     public void start() {
+        starts++;
     }
 
     public void stop() {

@@ -101,6 +101,17 @@ public final class ServiceProtocolPpgTest {
     static void constants() {
         eq(8, ServiceProtocol.TX_SET_PPG_TYPE, "tx setPpgType");
         eq("PPG_ON_DEMAND", ServiceProtocol.TRACKER_PPG_ON_DEMAND, "tracker type string");
+        eq("PPG_CONTINUOUS", ServiceProtocol.TRACKER_PPG_CONTINUOUS, "continuous tracker type string");
+        eq(100, ServiceProtocol.ppgSampleRateHz("PPG_ON_DEMAND"), "on-demand rate");
+        eq(25, ServiceProtocol.ppgSampleRateHz("PPG_CONTINUOUS"), "continuous rate");
+        eq(100, ServiceProtocol.ppgSampleRateHz(null), "unknown type: the on-demand rate");
+        java.util.List<String> both = java.util.Arrays.asList("PPG_CONTINUOUS", "PPG_ON_DEMAND");
+        eq("PPG_CONTINUOUS", ServiceProtocol.pickTrackerType(
+                java.util.Arrays.asList("ECG", "PPG_ON_DEMAND", "PPG_CONTINUOUS"), both), "first preferred type wins");
+        eq("PPG_ON_DEMAND", ServiceProtocol.pickTrackerType(
+                java.util.Arrays.asList("ECG", "PPG_ON_DEMAND"), both), "falls back to the next preferred type");
+        eq(null, ServiceProtocol.pickTrackerType(java.util.Arrays.asList("ECG"), both), "none supported");
+        eq(null, ServiceProtocol.pickTrackerType(null, both), "null supported list");
         eq("GREEN", ServiceProtocol.PPG_TYPE_GREEN, "green channel string");
         eq("RED", ServiceProtocol.PPG_TYPE_RED, "red channel string");
         eq("IR", ServiceProtocol.PPG_TYPE_IR, "IR channel string");
