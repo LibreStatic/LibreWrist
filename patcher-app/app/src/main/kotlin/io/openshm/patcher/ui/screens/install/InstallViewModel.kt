@@ -1,6 +1,8 @@
 package io.openshm.patcher.ui.screens.install
 
 import android.app.Application
+import android.content.ComponentName
+import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -30,6 +32,8 @@ import io.openshm.patcher.device.WatchAwake
 import io.openshm.patcher.device.WatchKeepAlive
 import io.openshm.patcher.device.WatchLink
 import io.openshm.patcher.ui.components.CheckStatus
+import io.openshm.patcher.ui.screens.selftest.BridgeStatus
+import io.openshm.patcher.ui.screens.selftest.ContentResolverBridgeStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.channels.Channel
@@ -45,6 +49,9 @@ import kotlinx.coroutines.launch
 private const val TAG = "SelfAdb"
 private const val ADB_REREADS = 6
 private const val ADB_REREAD_MS = 500L
+
+/** The phone bridge has no launcher icon. This exported screen starts its service. */
+private const val PHONE_BRIDGE_ACTIVITY = ".MainActivity"
 
 /** Phases in which the user has to act in Wireless debugging (the stored pairing did not reconnect). */
 internal val NEEDS_PAIRING_SCREEN = setOf(SelfAdbPhase.WaitingForService, SelfAdbPhase.Ambiguous, SelfAdbPhase.WaitingForCode)
@@ -103,6 +110,12 @@ class InstallPhoneViewModel(application: Application) : AndroidViewModel(applica
         // only the apps this setup builds: an app the user skipped is not replaced, so its older copies stay
         outputs = AppCatalogue.current.outputs.filter { it.id in SetupSession.state.value.outputIds },
         ownPackage = application.packageName,
+        bridgeServiceRunning = { authority ->
+            when (val status = ContentResolverBridgeStatus(application).query(authority)) {
+                is BridgeStatus.Reading -> status.serviceRunning
+                BridgeStatus.Denied, BridgeStatus.ProviderMissing -> false
+            }
+        },
     )
 
     init {
@@ -112,11 +125,12 @@ class InstallPhoneViewModel(application: Application) : AndroidViewModel(applica
     fun onEvent(event: InstallEvent) {
         when (event) {
             InstallEvent.Start -> start()
-            InstallEvent.Refresh -> runner.refresh(_state)
+            InstallEvent.Refresh -> viewModelScope.launch(Dispatchers.IO) { runner.refresh(_state) }
             InstallEvent.RemoveLeftovers -> removeLeftovers()
             is InstallEvent.OpenGrantSettings -> openSettings(event)
             InstallEvent.OpenUnknownSources -> outgoing.trySend(PhoneSettings.unknownSources(getApplication()))
             is InstallEvent.OpenApp -> openApp(event.outputId)
+            InstallEvent.OpenBridge -> openBridge()
             InstallEvent.GrantWithAdb -> startAdb()
             is InstallEvent.SubmitPairingCode -> SelfAdbController.submitCode(event.code)
             InstallEvent.CancelAdb -> SelfAdbController.finish()
@@ -198,6 +212,18 @@ class InstallPhoneViewModel(application: Application) : AndroidViewModel(applica
         val item = _state.value.items.firstOrNull { it.outputId == outputId } ?: return
         getApplication<Application>().packageManager.getLaunchIntentForPackage(item.packageName)
             ?.let { outgoing.trySend(LaunchRequest(it)) }
+    }
+
+    /**
+     * Opens the phone bridge from this screen's activity. The bridge has no launcher entry, so the
+     * explicit component is the only way in; the tap is what lets its service start on phones that
+     * block a start from the install broadcast.
+     */
+    private fun openBridge() {
+        val out = AppCatalogue.current.outputs.firstOrNull { it.device == Device.Phone && it.statusAuthority != null } ?: return
+        val pkg = _state.value.items.firstOrNull { it.outputId == out.id }?.packageName
+            ?: out.packageName(SetupSession.state.value.packagePrefix)
+        outgoing.trySend(LaunchRequest(Intent().setComponent(ComponentName(pkg, pkg + PHONE_BRIDGE_ACTIVITY))))
     }
 
     private fun startAdb() {

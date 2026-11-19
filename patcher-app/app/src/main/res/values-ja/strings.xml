@@ -287,6 +287,8 @@
     <string name="leftover_found_body">以前のセットアップが、別のパッケージ名でこれらのアプリを残しています。古いブリッジのコピーは、ウォッチとの接続を現在のブリッジと取り合います。古いSamsung Health+のコピーは現在のものと重複しており、現在のものはSamsungアカウントから同じデータを取得します。Androidがアンインストールのたびに確認を求めます。</string>
     <string name="leftover_found_title">以前のセットアップの古いコピー</string>
     <string name="install_phone_note">権限、他のアプリの上に重ねて表示、通知へのアクセス、バッテリー使用量の制限なし、制限付き設定は、ご自身でオンにしてください。その後この画面に戻ると、再確認されます。</string>
+    <string name="bridge_open_body">一部のスマートフォンでは、ブリッジは一度開くまで止まったままです。その後この画面に戻ると、再確認されます。</string>
+    <string name="bridge_open_action">ブリッジを開く</string>
     <string name="install_watch_title">ウォッチにインストール</string>
     <string name="install_watch_intro">Wi-Fi経由で、下に表示された順に1つずつインストールします。</string>
     <string name="install_watch_note">実行中は、ウォッチをスリープさせず、Wi-Fiに接続したままにしてください。</string>

@@ -322,6 +322,8 @@
     <string name="leftover_found_body">ترك إعداد سابق هذه التطبيقات باسم حزمة مختلف. النسخ القديمة من الجسر تنافس النسخة الحالية على الاتصال بالساعة؛ ونسخة Samsung Health+ القديمة مكررة من النسخة الحالية التي تحصل على البيانات نفسها من حساب Samsung الخاص بك. يطلب منك Android تأكيد كل عملية إلغاء تثبيت.</string>
     <string name="leftover_found_title">نسخ قديمة من إعداد سابق</string>
     <string name="install_phone_note">الأذونات والعرض فوق التطبيقات الأخرى والوصول إلى الإشعارات واستخدام البطارية دون قيود والإعدادات المقيّدة تفعّلها أنت. عُد إلى هذه الشاشة بعد ذلك وستتحقق منها مرة أخرى.</string>
+    <string name="bridge_open_body">على بعض الهواتف يبقى الجسر متوقفاً حتى تفتحه مرة واحدة. عُد إلى هذه الشاشة بعد ذلك وستتحقق منه مرة أخرى.</string>
+    <string name="bridge_open_action">افتح الجسر</string>
     <string name="install_watch_title">التثبيت على ساعتك</string>
     <string name="install_watch_intro">يُثبَّت عبر Wi-Fi تطبيقًا تلو الآخر، بالترتيب الظاهر أدناه.</string>
     <string name="install_watch_note">أبقِ الساعة نشطة ومتصلة بشبكة Wi-Fi أثناء ذلك.</string>

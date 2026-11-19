@@ -308,6 +308,8 @@
     <string name="leftover_found_body">Wcześniejsza konfiguracja zostawiła te aplikacje pod inną nazwą pakietu. Stare kopie mostka konkurują z obecną o połączenie z zegarkiem; stara kopia Samsung Health+ jest duplikatem obecnej, która otrzymuje te same dane z Twojego konta Samsung. Android prosi o potwierdzenie każdego odinstalowania.</string>
     <string name="leftover_found_title">Stare kopie z wcześniejszej konfiguracji</string>
     <string name="install_phone_note">Uprawnienia, wyświetlanie nad innymi aplikacjami, dostęp do powiadomień, nieograniczone użycie baterii i ustawienia z ograniczeniami włączasz samodzielnie. Potem wróć do tego ekranu, a sprawdzi je ponownie.</string>
+    <string name="bridge_open_body">Na niektórych telefonach mostek pozostaje zatrzymany, dopóki nie otworzysz go raz. Potem wróć do tego ekranu, a sprawdzi to ponownie.</string>
+    <string name="bridge_open_action">Otwórz mostek</string>
     <string name="install_watch_title">Instalacja na zegarku</string>
     <string name="install_watch_intro">Instalacja przez Wi-Fi, aplikacja po aplikacji, w kolejności pokazanej poniżej.</string>
     <string name="install_watch_note">Podczas tej operacji trzymaj zegarek z włączonym ekranem i połączony z Wi-Fi.</string>

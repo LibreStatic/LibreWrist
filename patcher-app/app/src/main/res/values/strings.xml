@@ -401,6 +401,8 @@
     <string name="leftover_found_body">An earlier setup left these apps under a different package name. Old bridge copies compete with the current one for the watch link; an old Samsung Health+ copy is a duplicate of the current one, which gets the same data from your Samsung account. Android asks you to confirm each uninstall.</string>
     <string name="leftover_found_title">Old copies from an earlier setup</string>
     <string name="install_phone_note">Permissions, display over other apps, notification access, unrestricted battery use and restricted settings are switched on by you. Come back to this screen afterwards and it checks again.</string>
+    <string name="bridge_open_body">On some phones the bridge stays stopped until you open it once. Come back to this screen afterwards and it checks again.</string>
+    <string name="bridge_open_action">Open the bridge</string>
     <string name="install_watch_title">Install on your watch</string>
     <string name="install_watch_intro">Installed over Wi-Fi, one app at a time, in the order shown below.</string>
     <string name="install_watch_note">Keep the watch awake and on Wi-Fi while this runs.</string>

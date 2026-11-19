@@ -295,6 +295,8 @@
     <string name="leftover_found_body">Uma configuração anterior deixou estes apps com outro nome de pacote. As cópias antigas da ponte competem com a atual pelo vínculo com o relógio; uma cópia antiga do Samsung Health+ é uma duplicata da atual, que recebe os mesmos dados da sua conta Samsung. O Android pede que você confirme cada desinstalação.</string>
     <string name="leftover_found_title">Cópias antigas de uma configuração anterior</string>
     <string name="install_phone_note">As permissões, a sobreposição a outros apps, o acesso às notificações, o uso irrestrito da bateria e as configurações restritas são ativados por você. Depois, volte a esta tela e ela verifica de novo.</string>
+    <string name="bridge_open_body">Em alguns telefones a ponte fica parada até você abri-la uma vez. Depois, volte a esta tela e ela verifica de novo.</string>
+    <string name="bridge_open_action">Abrir a ponte</string>
     <string name="install_watch_title">Instalar no seu relógio</string>
     <string name="install_watch_intro">Instalação por Wi-Fi, um app de cada vez, na ordem mostrada abaixo.</string>
     <string name="install_watch_note">Mantenha o relógio com a tela ativa e conectado ao Wi-Fi enquanto isso é executado.</string>

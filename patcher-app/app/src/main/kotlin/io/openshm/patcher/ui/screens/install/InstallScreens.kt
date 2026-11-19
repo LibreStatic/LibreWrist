@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Refresh
@@ -125,6 +126,11 @@ data class InstallUiState(
     val leftoversFound: List<String> = emptyList(),
     /** The phone install over Wireless debugging was blocked by the phone; the screen offers the platform installer. */
     val adbInstallRestricted: Boolean = false,
+    /**
+     * The phone bridge is installed and its service was not seen running. The screen offers to open
+     * it; a later refresh clears this once the status provider reports the service running.
+     */
+    val bridgeNeedsOpen: Boolean = false,
 ) {
     /** Everything is installed but some access is still open: the user may go on without it. */
     val canSkipGrants: Boolean get() = !running && !done && items.isNotEmpty() && items.all { it.status == CheckStatus.Passed }
@@ -168,6 +174,9 @@ sealed interface InstallEvent {
 
     /** Install with the system's own confirmation, after the install over Wireless debugging was blocked (phone only). */
     data object InstallWithConfirmation : InstallEvent
+
+    /** Open the phone bridge's screen so its service can start. Phone screen only. */
+    data object OpenBridge : InstallEvent
 }
 
 @Composable
@@ -327,6 +336,9 @@ private fun InstallStep(
         secondary = {
             // Wide: the list is split over both panes, so the right one continues it before the notes.
             if (LocalTwoPane.current) items.drop(split).forEach { InstallItemGroup(it, state, onEvent) }
+            if (phone && state.bridgeNeedsOpen && !state.running) {
+                BridgeOpenCard { onEvent(InstallEvent.OpenBridge) }
+            }
             if (phone) SelfAdbSection(state, onEvent)
             NoteRow(Icons.Rounded.Info, note, Modifier.padding(top = 4.dp))
         },
@@ -360,7 +372,7 @@ private fun InstallStep(
                 message = stringResource(R.string.phone_adb_success_message),
                 onFinished = {
                     onEvent(InstallEvent.AcknowledgeAdbOutcome)
-                    onContinue()
+                    if (!state.bridgeNeedsOpen) onContinue()
                 },
             )
             is AdbOutcome.Failure -> AppErrorDialog(
@@ -462,6 +474,19 @@ private fun InstallItemGroup(item: InstallItem, state: InstallUiState, onEvent: 
                 }
             }
         }
+}
+
+/** The phone bridge is installed but its service was not seen running: opening it once starts the service. */
+@Composable
+private fun BridgeOpenCard(onOpen: () -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 4.dp)) {
+        InstructionText(
+            stringResource(R.string.bridge_open_body),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        OutlinedAction(stringResource(R.string.bridge_open_action), onOpen, Icons.AutoMirrored.Rounded.OpenInNew)
+    }
 }
 
 @Composable

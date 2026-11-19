@@ -17,10 +17,14 @@ import io.openshm.patcher.device.UninstallResult
 import io.openshm.patcher.ui.components.CheckStatus
 import java.io.File
 import java.io.IOException
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 /** The phase of the Wireless debugging fallback the screen shows; null phase means it is not in use. */
 internal fun SelfAdbState.toPhase(): SelfAdbPhase? = when (this) {
@@ -56,6 +60,14 @@ internal class PhoneInstallRunner(
     private val ownPackage: String = "",
     /** Called with the output id once that output is installed (Home's restored outputs forget it). */
     private val onInstalled: (String) -> Unit = {},
+    /**
+     * True when the phone bridge's status provider reports its service running for this authority.
+     * False, or a thrown [IOException] or [RuntimeException], means the service was not seen running.
+     * Callers that do not ask leave the row off.
+     */
+    private val bridgeServiceRunning: (String) -> Boolean = { true },
+    /** Pause between status reads after [startBridge] sent the START broadcast, while the service boots. */
+    private val bridgeStatusPollMs: Long = BRIDGE_STATUS_POLL_MS,
 ) {
     private val platformInstaller = installer
 
@@ -69,21 +81,24 @@ internal class PhoneInstallRunner(
     private val installer: PhoneInstaller get() = installerOverride ?: platformInstaller
 
     private var locked = false
+    private var bridgeStartSent = false
+    private val refreshLock = ReentrantLock()
 
     suspend fun run(state: MutableStateFlow<InstallUiState>) {
         locked = false
+        bridgeStartSent = false
         state.update {
             it.copy(
                 running = true, errorRes = null, errorDetail = null, adbInstallRestricted = false, needsUnknownSources = false, conflict = null, confirmingReinstall = false,
-                removingLeftovers = emptyList(), leftoversKept = emptyList(),
+                removingLeftovers = emptyList(), leftoversKept = emptyList(), bridgeNeedsOpen = false,
             )
         }
         try {
             walk(state)
+            if (bridgeStartSent) awaitBridgeService(state.value.items)
         } finally {
-            state.update { it.copy(running = false) }
+            finishRun(state)
         }
-        refresh(state)
     }
 
     private suspend fun walk(state: MutableStateFlow<InstallUiState>) {
@@ -164,9 +179,8 @@ internal class PhoneInstallRunner(
         try {
             removeLeftovers(state)
         } finally {
-            state.update { it.copy(running = false) }
+            finishRun(state)
         }
-        refresh(state)
     }
 
     private fun keep(state: MutableStateFlow<InstallUiState>, pkg: String) {
@@ -183,6 +197,7 @@ internal class PhoneInstallRunner(
         val action = out.startAction(prefix()) ?: return
         try {
             installer.startBridge(item.packageName, start.receiver, BridgeStart.requireAction(action))
+            bridgeStartSent = true
         } catch (e: RuntimeException) {
             log("start request for ${item.outputId} failed: ${e.javaClass.simpleName}")
         }
@@ -258,25 +273,83 @@ internal class PhoneInstallRunner(
 
     /**
      * Re-reads the grant rows of the installed items from the system and clears the "allow
-     * installing" stop once it was given, and lists the leftover copies still on the phone. Does
-     * nothing while a run is in progress.
+     * installing" stop once it was given, lists the leftover copies still on the phone, and asks
+     * whether the installed phone bridge's service is running. Does nothing while a run is in progress.
      */
-    fun refresh(state: MutableStateFlow<InstallUiState>) {
+    fun refresh(state: MutableStateFlow<InstallUiState>) = refreshLock.withLock {
         if (state.value.running) return
+        applyRefresh(state, clearRunning = false)
+    }
+
+    /**
+     * Ends a run by reading the post-run state (grants, leftovers, bridge service status) and
+     * publishing it in the same state update that clears [InstallUiState.running], so completion is
+     * never exposed before [InstallUiState.bridgeNeedsOpen] is known.
+     */
+    private fun finishRun(state: MutableStateFlow<InstallUiState>) = refreshLock.withLock {
+        applyRefresh(state, clearRunning = true)
+    }
+
+    private fun applyRefresh(state: MutableStateFlow<InstallUiState>, clearRunning: Boolean) {
         val leftovers = findLeftovers()
+        val bridgeNeedsOpen = bridgeNeedsOpen(state.value.items)
         state.update { current ->
+            if (!clearRunning && current.running) return@update current
             val items = current.items.map { item ->
                 if (item.status == CheckStatus.Passed) item.copy(grants = grants.refresh(item.packageName, item.grants)) else item
             }
             val allowed = current.needsUnknownSources && installer.canInstallPackages()
             current.copy(
+                running = if (clearRunning) false else current.running,
                 items = items,
                 leftoversFound = leftovers,
                 needsUnknownSources = current.needsUnknownSources && !allowed,
                 errorRes = if (allowed) null else current.errorRes,
                 errorDetail = if (allowed) null else current.errorDetail,
+                bridgeNeedsOpen = bridgeNeedsOpen,
             )
         }
+    }
+
+    /**
+     * True when the phone bridge is installed and its service was not seen running. A status read
+     * that fails counts as not running: the screen then offers to open the bridge. No phone bridge
+     * in this setup, or one that is not installed yet, leaves the row off.
+     */
+    private fun bridgeNeedsOpen(items: List<InstallItem>): Boolean {
+        val authority = installedBridgeAuthority(items) ?: return false
+        return !bridgeServiceSeenRunning(authority)
+    }
+
+    /**
+     * Gives a freshly broadcast START a moment to spin up the bridge process and its foreground
+     * service before [refresh] decides whether the user still has to open the bridge manually.
+     */
+    private suspend fun awaitBridgeService(items: List<InstallItem>) {
+        val authority = installedBridgeAuthority(items) ?: return
+        repeat(BRIDGE_STATUS_POLLS) {
+            if (bridgeServiceSeenRunning(authority)) return
+            if (bridgeStatusPollMs > 0) delay(bridgeStatusPollMs)
+        }
+    }
+
+    private fun installedBridgeAuthority(items: List<InstallItem>): String? {
+        val bridge = outputs.firstOrNull { it.device == Device.Phone && it.statusAuthority != null } ?: return null
+        val item = items.firstOrNull { it.outputId == bridge.id } ?: return null
+        if (item.status != CheckStatus.Passed) return null
+        return bridge.statusAuthority(prefix())
+    }
+
+    private fun bridgeServiceSeenRunning(authority: String): Boolean = try {
+        bridgeServiceRunning(authority)
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: IOException) {
+        log("bridge status not read: ${e.javaClass.simpleName}")
+        false
+    } catch (e: RuntimeException) {
+        log("bridge status not read: ${e.javaClass.simpleName}")
+        false
     }
 
     /**
@@ -298,9 +371,13 @@ internal class PhoneInstallRunner(
                 }
             }
         } finally {
-            state.update { it.copy(running = false) }
+            finishRun(state)
         }
-        refresh(state)
         return ok
+    }
+
+    private companion object {
+        const val BRIDGE_STATUS_POLLS = 5
+        const val BRIDGE_STATUS_POLL_MS = 200L
     }
 }

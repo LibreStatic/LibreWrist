@@ -413,6 +413,8 @@
     <string name="leftover_found_body">Předchozí nastavení zanechalo tyto aplikace pod jiným názvem balíčku. Staré kopie mostu soupeří s aktuální o spojení s hodinkami. Stará kopie Samsung Health+ je duplikát té aktuální, která dostává stejná data z vašeho účtu Samsung. Android vás požádá o potvrzení každého odinstalování.</string>
     <string name="leftover_found_title">Staré kopie z dřívějšího nastavení</string>
     <string name="install_phone_note">Oprávnění, zobrazení přes jiné aplikace, přístup k oznámením, neomezené používání baterie a omezená nastavení zapínáte vy. Poté se vraťte na tuto obrazovku a znovu se zkontrolují.</string>
+    <string name="bridge_open_body">Na některých telefonech most zůstane zastavený, dokud ho jednou neotevřete. Poté se vraťte na tuto obrazovku a znovu se zkontroluje.</string>
+    <string name="bridge_open_action">Otevřít most</string>
     <string name="install_watch_title">Instalace do hodinek</string>
     <string name="install_watch_intro">Instaluje se přes Wi-Fi, po jedné aplikaci, v pořadí uvedeném níže.</string>
     <string name="install_watch_note">Po dobu instalace nechte hodinky probuzené a připojené k Wi-Fi.</string>

@@ -1,5 +1,7 @@
 package io.openshm.patcher
 
+import io.openshm.patcher.ui.components.CheckStatus
+import io.openshm.patcher.ui.screens.install.InstallItem
 import io.openshm.patcher.ui.screens.install.InstallUiState
 import io.openshm.patcher.ui.screens.install.SelfAdbPhase
 import io.openshm.patcher.ui.screens.install.installFooterAuto
@@ -18,6 +20,22 @@ class InstallFooterAutoTest {
     @Test
     fun retryIsNeverAuto() {
         assertFalse(installFooterAuto(InstallUiState(errorRes = R.string.action_retry), phone = false))
+    }
+
+    @Test
+    fun continueWaitsWhileThePhoneBridgeStillNeedsOpening() {
+        val done = InstallUiState(
+            items = listOf(InstallItem("bridge-phone", "Bridge", "p", CheckStatus.Passed)),
+            bridgeNeedsOpen = true,
+        )
+        assertTrue(done.done)
+        assertFalse(installFooterAuto(done, phone = true))
+        assertTrue(installFooterAuto(done.copy(bridgeNeedsOpen = false), phone = true))
+        assertFalse(installFooterAuto(done.copy(running = true, bridgeNeedsOpen = false), phone = true))
+        assertFalse(installFooterAuto(done.copy(running = true), phone = false))
+        assertTrue(installFooterAuto(done, phone = false))
+        assertTrue(installNeedsUser(done, phone = true))
+        assertFalse(installNeedsUser(done, phone = false))
     }
 
     @Test
