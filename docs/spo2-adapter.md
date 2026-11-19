@@ -39,7 +39,9 @@ enums are looked up by class and constant name through reflection.
    window and filter lengths are counted in samples at the nominal rate of the tracker in use
    (25 Hz for `PPG_CONTINUOUS`, 100 Hz for `PPG_ON_DEMAND`; the 90 ms smoothing average is 2 or 9
    samples). R is a ratio of two channels filtered identically, so a small deviation of the true
-   rate only stretches the window slightly, and the two rates give the same R.
+   rate only stretches the window slightly. Identical filtering does not make the two rates give
+   the same R when red and IR differ in frequency content (the smoothing average passes more of
+   it at 25 Hz); that the two trackers give the same SpO2 on real data is not verified yet.
 5. **Bundle filling** (the rules the SHM consumers `ua`, `yb`/`zb`, `ac` enforce):
    - VERSION: `data_type` = `DataType.VERSION`, `version_type` = the requested `VersionType`,
      `version` = `int[3]` (calculation 1.11.1, signal check 1.0.0), `versionMap` = `{1: version}`.
@@ -109,10 +111,11 @@ one callback of 200 data points about every 8 s, each point with its own timesta
 and the value layout of `PPG_ON_DEMAND` (health-tracking-protocol 4.4), so the CPU can suspend
 between callbacks (see Battery below). The estimator is built for the rate of the tracker that
 armed; the journal line `tracker armed PPG_CONTINUOUS 25 Hz` names it. The last seconds before a
-stop (up to one batch, 8 s) are still in the hub and are not part of the answer. If the first 200
-samples of a `PPG_CONTINUOUS` recording carry no red and IR counts (a watch whose continuous
-tracker lacks these channels), the adapter notes it and re-arms on `PPG_ON_DEMAND` until the
-process restarts.
+stop (up to one batch, 8 s) are still in the hub and are not part of the answer. If the first 600
+samples (three batches, 24 s) of a `PPG_CONTINUOUS` recording carry no red and IR counts (a watch
+whose continuous tracker lacks these channels), the adapter notes it and re-arms on
+`PPG_ON_DEMAND` for the rest of that recording; the next recording tries `PPG_CONTINUOUS` again.
+A batch that arrives before the tracker reports itself armed is already fed at the armed rate.
 
 A watchdog (5 s tick) re-arms the tracker if no batch arrived for 15 s while recording (30 s on
 `PPG_CONTINUOUS`). Its timer does not run while the CPU is suspended, so on `PPG_CONTINUOUS` the

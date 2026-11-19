@@ -119,11 +119,12 @@ public final class SpO2Adapter {
     /** The same for PPG_CONTINUOUS, whose batches are about 8 s apart. */
     static final long LIVENESS_BATCHED_MS = 30000L;
     /**
-     * Samples of a PPG_CONTINUOUS recording examined before the source is trusted (one batch). If
-     * none of them carries both a red and an IR count, the watch does not deliver these channels
-     * on that tracker and the adapter goes back to PPG_ON_DEMAND until the process restarts.
+     * Samples of a PPG_CONTINUOUS recording examined before the source is trusted (three batches,
+     * 24 s). If none of them carries both a red and an IR count, the watch does not deliver these
+     * channels on that tracker and the adapter goes back to PPG_ON_DEMAND for the rest of the
+     * recording.
      */
-    static final int CONTINUOUS_CHECK_SAMPLES = 200;
+    static final int CONTINUOUS_CHECK_SAMPLES = 600;
     /**
      * While the service answers SDK_POLICY_ERROR (Health Platform developer mode off) a re-arm
      * cannot succeed, so the watchdog backs off: this long after the first consecutive policy
@@ -647,6 +648,10 @@ public final class SpO2Adapter {
             }
             recordingStartMs = now;
             policyErrors.set(0);
+            // A rejection of PPG_CONTINUOUS holds for one recording only, so a bad start (no red/IR
+            // counts for a while) does not keep the per-sample tracker for the rest of the process.
+            continuousRejected = false;
+            rearmRequested = false;
             recording = true;
             writeMarker();
             acquireWakeLock(ctx);
@@ -846,6 +851,8 @@ public final class SpO2Adapter {
     static void onSource(String trackerType) {
         int hz = ServiceProtocol.ppgSampleRateHz(trackerType);
         synchronized (FEED_LOCK) {
+            // Called again from onArmed after onBatch already switched: keep the check state.
+            if (hz == sourceHz && (estimator == null || estimator.sampleRateHz() == hz)) return;
             sourceHz = hz;
             checkSeen = 0;
             checkPassed = hz != ServiceProtocol.PPG_CONTINUOUS_HZ;
@@ -1011,6 +1018,12 @@ public final class SpO2Adapter {
             lastBatchMs = SystemClock.elapsedRealtime();
             policyErrors.set(0);
             synchronized (FEED_LOCK) {
+                // The tracker registers its listener before onArmed, so a batch can arrive first:
+                // switch to the armed type's rate here too (null: not armed yet, or a late batch
+                // of a tracker that was replaced).
+                PpgTracker t = tracker;
+                String type = t == null ? null : t.trackerType();
+                if (type != null && ServiceProtocol.ppgSampleRateHz(type) != sourceHz) onSource(type);
                 if (!checkPassed && !hasRedAndIr(batch)) return;
                 // Re-read per sample: an orientation flip replaces the estimator mid-batch.
                 for (PpgSample s : batch.samples) {
