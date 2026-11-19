@@ -56,6 +56,7 @@ public final class SpO2AdapterTest {
         batchedSource();
         continuousWithoutRedIr();
         batchBeforeArmed();
+        checkAgainNextRecording();
         SpO2Adapter.resetForTest();
         System.out.println(failures == 0 ? "ALL PASSED" : failures + " FAILED");
         System.exit(failures == 0 ? 0 : 1);
@@ -706,6 +707,38 @@ public final class SpO2AdapterTest {
             check(!SpO2Adapter.continuousRejected, "a new recording clears the rejection");
             eq(java.util.Arrays.asList("PPG_CONTINUOUS", "PPG_ON_DEMAND"), shminterop.hsdk.PpgTracker.lastPreferred,
                     "the next recording tries the batched tracker again");
+            SpO2Adapter.unregister(l, 49);
+        } finally {
+            shminterop.hsdk.PpgTracker.armedType = null;
+            SpO2Adapter.contextOverride = null;
+        }
+    }
+
+    /** A recording whose batched source passed the check does not exempt the next one from it. */
+    static void checkAgainNextRecording() throws Exception {
+        TestContext c = new TestContext("batched-twice");
+        SpO2Adapter.contextOverride = c;
+        try {
+            SpO2Adapter.resetForTest();
+            shminterop.hsdk.PpgTracker.armedType = "PPG_CONTINUOUS";
+            Recorder l = new Recorder();
+            SpO2Adapter.register(l, 49);
+            startNight(l);
+            SpO2Adapter.trackerListener().onArmed();
+            long t0 = nowSecond() - 60_000L;
+            SpO2Adapter.trackerListener().onBatch(batch25(t0, 0, 200, 0.52));
+            SpO2Adapter.stopRecording();
+            check(!SpO2Adapter.continuousRejected, "the first recording passed the check");
+            startNight(l);
+            SpO2Adapter.trackerListener().onArmed();
+            for (int b = 0; b < 3; b++) {
+                PpgSample[] s = new PpgSample[200];
+                for (int k = 0; k < s.length; k++) {
+                    s[k] = new PpgSample(t0 + 10_000L + (b * 200 + k) * 40L, 1234, 0, 0, -1, 0, -1);
+                }
+                SpO2Adapter.trackerListener().onBatch(new PpgBatch(s));
+            }
+            check(SpO2Adapter.continuousRejected, "the second recording checks its stream again");
             SpO2Adapter.unregister(l, 49);
         } finally {
             shminterop.hsdk.PpgTracker.armedType = null;

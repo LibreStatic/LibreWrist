@@ -638,6 +638,11 @@ public final class SpO2Adapter {
                 swap = readOrientation(orientationFile);
                 orientDecided = false;
                 orientR.clear();
+                // Each recording starts on the per-sample default; the armed tracker's onSource
+                // (or an earlier batch) sets the batched rate and its red/IR check again.
+                sourceHz = ServiceProtocol.PPG_ON_DEMAND_HZ;
+                checkSeen = 0;
+                checkPassed = true;
                 estimator = newEstimator();
                 statSeconds = 0;
                 statValid = 0;
