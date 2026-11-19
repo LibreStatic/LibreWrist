@@ -295,6 +295,8 @@
     <string name="leftover_found_body">Una configurazione precedente ha lasciato queste app con un altro nome di pacchetto. Le vecchie copie del bridge competono con quella attuale per il collegamento con lo smartwatch; una vecchia copia di Samsung Health+ è un duplicato di quella attuale, che riceve gli stessi dati dal tuo account Samsung. Android ti chiede di confermare ogni disinstallazione.</string>
     <string name="leftover_found_title">Vecchie copie di una configurazione precedente</string>
     <string name="install_phone_note">Le autorizzazioni, la visualizzazione sopra altre app, l\'accesso alle notifiche, l\'uso della batteria senza limitazioni e le impostazioni con restrizioni li attivi tu. Poi torna a questa schermata e verrà ricontrollato tutto.</string>
+    <string name="bridge_open_body">Su alcuni telefoni il bridge resta fermo finché non lo apri una volta. Poi torna a questa schermata e verrà ricontrollato.</string>
+    <string name="bridge_open_action">Apri il bridge</string>
     <string name="install_watch_title">Installa sul tuo orologio</string>
     <string name="install_watch_intro">Installazione via Wi-Fi, un\'app alla volta, nell\'ordine mostrato qui sotto.</string>
     <string name="install_watch_note">Tieni l\'orologio con lo schermo acceso e connesso al Wi-Fi mentre l\'operazione è in corso.</string>

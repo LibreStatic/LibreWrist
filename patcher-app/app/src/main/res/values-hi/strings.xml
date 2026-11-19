@@ -294,6 +294,8 @@
     <string name="leftover_found_body">पिछले सेटअप ने ये ऐप अलग पैकेज नाम से छोड़ दिए हैं। ब्रिज की पुरानी प्रतियाँ घड़ी से कनेक्शन के लिए मौजूदा प्रति से होड़ करती हैं; Samsung Health+ की पुरानी प्रति मौजूदा प्रति की दोहरी प्रति है, जिसे आपके Samsung खाते से वही डेटा मिलता है। Android हर अनइंस्टॉल की पुष्टि करने को कहता है।</string>
     <string name="leftover_found_title">पिछले सेटअप की पुरानी प्रतियाँ</string>
     <string name="install_phone_note">अनुमतियाँ, दूसरे ऐप के ऊपर दिखाना, सूचना एक्सेस, बैटरी का बिना पाबंदी उपयोग और प्रतिबंधित सेटिंग आप खुद चालू करते हैं। बाद में इस स्क्रीन पर लौटें, यह फिर से जाँच करेगी।</string>
+    <string name="bridge_open_body">कुछ फ़ोन पर ब्रिज तब तक रुका रहता है, जब तक आप उसे एक बार नहीं खोलते। बाद में इस स्क्रीन पर लौटें, यह फिर से जाँच करेगी।</string>
+    <string name="bridge_open_action">ब्रिज खोलें</string>
     <string name="install_watch_title">अपनी घड़ी पर इंस्टॉल करें</string>
     <string name="install_watch_intro">Wi-Fi पर एक-एक करके, नीचे दिखाए गए क्रम में इंस्टॉल होता है।</string>
     <string name="install_watch_note">जब तक यह चल रहा है, घड़ी को जगाए रखें और Wi-Fi पर रखें।</string>

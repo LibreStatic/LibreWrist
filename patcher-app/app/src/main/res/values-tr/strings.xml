@@ -293,6 +293,8 @@
     <string name="leftover_found_body">Önceki bir kurulum bu uygulamaları farklı bir paket adıyla bıraktı. Köprünün eski kopyaları, saatle bağlantı için güncel olanla yarışır; eski bir Samsung Health+ kopyası, aynı verileri Samsung hesabınızdan alan güncel olanın kopyasıdır. Android her kaldırmayı onaylamanızı ister.</string>
     <string name="leftover_found_title">Önceki kurulumdan eski kopyalar</string>
     <string name="install_phone_note">İzinleri, diğer uygulamaların üzerinde göstermeyi, bildirim erişimini, kısıtlamasız pil kullanımını ve kısıtlanmış ayarları siz açarsınız. Ardından bu ekrana dönün, yeniden kontrol edilir.</string>
+    <string name="bridge_open_body">Bazı telefonlarda köprü, siz bir kez açana kadar durmuş kalır. Ardından bu ekrana dönün, yeniden kontrol edilir.</string>
+    <string name="bridge_open_action">Köprüyü aç</string>
     <string name="install_watch_title">Saatinize kurun</string>
     <string name="install_watch_intro">Wi-Fi üzerinden, aşağıda gösterilen sırayla tek tek kurulur.</string>
     <string name="install_watch_note">Bu işlem sürerken saatin ekranını açık ve saati Wi-Fi\'ye bağlı tutun.</string>

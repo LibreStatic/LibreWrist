@@ -415,6 +415,76 @@ class PhoneInstallRunnerTest {
         )
     }
 
+    private fun statusRunner(build: BuiltBuild?, pollMs: Long = 0L, running: (String) -> Boolean) = PhoneInstallRunner(
+        installer, PhoneGrants(probe), { build }, { prefix }, { locked++ }, { logged += it },
+        outputs = listOf(
+            OutputApp(
+                "bridge-phone", "Bridge", Device.Phone, "\${PKG_PREFIX}.shmbridge.phone", null,
+                statusAuthority = "\${PKG_PREFIX}.shmbridge.phone.status",
+            ),
+        ),
+        bridgeServiceRunning = running,
+        bridgeStatusPollMs = pollMs,
+    )
+
+    @Test
+    fun aFreshBridgeStartPollsBrieflyBeforeAskingToBeOpened() = runBlocking {
+        var reads = 0
+        val s = state()
+        statusRunner(built("shm-phone", "bridge-phone")) {
+            reads++ >= 3
+        }.run(s)
+        assertEquals(5, reads)
+        assertFalse(s.value.bridgeNeedsOpen)
+    }
+
+    @Test
+    fun aFreshBridgeWhoseServiceNeverStartsStillAsksToBeOpened() = runBlocking {
+        var reads = 0
+        val s = state()
+        statusRunner(built("shm-phone", "bridge-phone")) {
+            reads++
+            false
+        }.run(s)
+        assertTrue(reads > 1)
+        assertTrue(s.value.bridgeNeedsOpen)
+    }
+
+    @Test
+    fun anAlreadyInstalledBridgeIsNotStartedAgainButStillAsksToBeOpened() = runBlocking {
+        val s = state(items().map { it.copy(status = CheckStatus.Passed) })
+        var authority = ""
+        statusRunner(built("shm-phone", "bridge-phone")) {
+            authority = it
+            false
+        }.run(s)
+        assertTrue(installer.started.isEmpty())
+        assertEquals("$prefix.shmbridge.phone.status", authority)
+        assertTrue(s.value.bridgeNeedsOpen)
+    }
+
+    @Test
+    fun aRunningBridgeServiceClearsTheOpenRowOnRefresh() = runBlocking {
+        val s = state(items().map { it.copy(status = CheckStatus.Passed) })
+        statusRunner(null) { true }.refresh(s)
+        assertFalse(s.value.bridgeNeedsOpen)
+    }
+
+    @Test
+    fun anUnreadableBridgeStatusKeepsTheOpenRow() = runBlocking {
+        val s = state(items().map { it.copy(status = CheckStatus.Passed) })
+        statusRunner(null) { throw SecurityException("denied") }.refresh(s)
+        assertTrue(s.value.bridgeNeedsOpen)
+        assertTrue(logged.any { it.contains("bridge status") })
+    }
+
+    @Test
+    fun theOpenRowStaysOffUntilTheBridgeIsInstalled() = runBlocking {
+        val s = state()
+        statusRunner(null) { false }.refresh(s)
+        assertFalse(s.value.bridgeNeedsOpen)
+    }
+
     @Test
     fun aFailedStartRequestIsLoggedAndDoesNotFailTheRun() = runBlocking {
         installer.startThrows = SecurityException("denied")

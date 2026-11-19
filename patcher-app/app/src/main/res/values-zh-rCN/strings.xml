@@ -287,6 +287,8 @@
     <string name="leftover_found_body">早先的设置以不同的包名留下了这些应用。旧的桥接应用副本会与当前副本争用手表连接；旧的 Samsung Health+ 副本是当前副本的重复项，当前副本会从您的 Samsung 账号获取相同的数据。Android 会要求您确认每次卸载。</string>
     <string name="leftover_found_title">早先设置留下的旧副本</string>
     <string name="install_phone_note">权限、显示在其他应用的上层、通知使用权、不受限制的电池使用以及受限制的设置，都需要由你自行开启。之后回到此界面，它会重新检查。</string>
+    <string name="bridge_open_body">在一些手机上，桥接会一直停着，直到你打开一次。之后回到此界面，它会重新检查。</string>
+    <string name="bridge_open_action">打开桥接</string>
     <string name="install_watch_title">安装到你的手表</string>
     <string name="install_watch_intro">通过 Wi-Fi 按下方显示的顺序逐个安装。</string>
     <string name="install_watch_note">运行期间，请保持手表处于唤醒状态并连接 Wi-Fi。</string>
