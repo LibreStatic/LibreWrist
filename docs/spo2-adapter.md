@@ -35,9 +35,13 @@ enums are looked up by class and constant name through reflection.
    needs per-second values only. `dcRatioList` / `accPowerList` are sent as `short[]` zeros of the
    chunk length (V1 ignores them, V2 null-checks them); their real encoding is undefined
    (spo2-calibration 4.4), so no values are invented.
-4. **No resampling.** The estimator works in wall-clock seconds on the HTS ~100 Hz stream; window and
-   filter lengths are counted in samples at a nominal 100 Hz. R is a ratio of two channels filtered
-   identically, so a small deviation of the true rate only stretches the window slightly.
+4. **No resampling.** The estimator works in wall-clock seconds on the HTS stream as delivered;
+   window and filter lengths are counted in samples at the nominal rate of the tracker in use
+   (25 Hz for `PPG_CONTINUOUS`, 100 Hz for `PPG_ON_DEMAND`; the 90 ms smoothing average is 2 or 9
+   samples). R is a ratio of two channels filtered identically, so a small deviation of the true
+   rate only stretches the window slightly. Identical filtering does not make the two rates give
+   the same R when red and IR differ in frequency content (the smoothing average passes more of
+   it at 25 Hz); that the two trackers give the same SpO2 on real data is not verified yet.
 5. **Bundle filling** (the rules the SHM consumers `ua`, `yb`/`zb`, `ac` enforce):
    - VERSION: `data_type` = `DataType.VERSION`, `version_type` = the requested `VersionType`,
      `version` = `int[3]` (calculation 1.11.1, signal check 1.0.0), `versionMap` = `{1: version}`.
@@ -98,9 +102,25 @@ rewritten.
 
 ## 4. Recording
 
-SET_OPERATION_MODE starts a PPG tracker (`PPG_ON_DEMAND`, channels `RED` and `IR` only) tied to the
-calling listener and feeds the estimator; the per-second values go to an in-memory store. A
-watchdog (5 s tick) re-arms the tracker if no batch arrived for 15 s while recording. While the
+SET_OPERATION_MODE starts a PPG tracker (channels `RED` and `IR` only) tied to the calling listener
+and feeds the estimator; the per-second values go to an in-memory store.
+
+Tracker type. The adapter asks for `PPG_CONTINUOUS` and falls back to `PPG_ON_DEMAND` when the
+service does not list it. `PPG_CONTINUOUS` is sampled by the sensor hub at 25 Hz and delivered in
+one callback of 200 data points about every 8 s, each point with its own timestamp (40 ms apart)
+and the value layout of `PPG_ON_DEMAND` (health-tracking-protocol 4.4), so the CPU can suspend
+between callbacks (see Battery below). The estimator is built for the rate of the tracker that
+armed; the journal line `tracker armed PPG_CONTINUOUS 25 Hz` names it. The last seconds before a
+stop (up to one batch, 8 s) are still in the hub and are not part of the answer. If the first 600
+samples (three batches, 24 s) of a `PPG_CONTINUOUS` recording carry no red and IR counts (a watch
+whose continuous tracker lacks these channels), the adapter notes it and re-arms on
+`PPG_ON_DEMAND` for the rest of that recording; the next recording tries `PPG_CONTINUOUS` again.
+A batch that arrives before the tracker reports itself armed is already fed at the armed rate.
+
+A watchdog (5 s tick) re-arms the tracker if no batch arrived for 15 s while recording (30 s on
+`PPG_CONTINUOUS`). Its timer does not run while the CPU is suspended, so on `PPG_CONTINUOUS` the
+tick comes when the watch is next awake and a silent tracker is noticed later than on
+`PPG_ON_DEMAND`. While the
 service answers `SDK_POLICY_ERROR` (Health Platform developer mode off on the watch; a re-arm cannot
 succeed until that is fixed) the re-arm backs off instead: 30 s after the first consecutive policy
 error, doubling per further one (60 s, 120 s, ...) up to 15 min. A PPG batch, or a recording
@@ -115,10 +135,24 @@ second is less than 6 hours old (`RESUME_MS`) the night is resumed instead. GET_
 seconds inside the requested window, so keeping older seconds never pollutes an answer; clearing
 only bounds the file, and a new night always starts more than 6 h after the last recorded second
 of the previous one. A brief awakening (AWAKE, GET_DATA, unregister, then SLEEPING again) therefore
-keeps the earlier part of the night. Do not run it together with the BP flow: both use the same
-`PPG_ON_DEMAND` tracker of the service.
+keeps the earlier part of the night. Do not run it together with the BP flow: on a watch that
+falls back to it, both use the same `PPG_ON_DEMAND` tracker of the service.
 
-Battery: the red and IR LEDs run at ~100 Hz all night while recording.
+Battery: the red and IR LEDs run all night while recording. What differs between the two tracker
+types is the CPU. `PPG_ON_DEMAND` makes one binder call per sample (100 per second) and the sensor
+hub driver holds its kernel wake lock (`ssp_wake_lock`) for as long as it streams, so the watch
+never suspends. `PPG_CONTINUOUS` wakes it for one call every 8 s. Measured on a Galaxy Watch8
+(SM-L320, One UI 8 Watch), worn, screen off, 120 s per run, two runs each, with a test client of
+the service (issue #27):
+
+| Tracker | CPU awake | `ssp_wake_lock` held | Callbacks | Data points |
+|---|---|---|---|---|
+| `PPG_ON_DEMAND` | 120 s of 120 s | 120 s | about 11980 | about 11980 |
+| `PPG_CONTINUOUS` | 7 s and 10 s of 120 s | 5 s and 7 s | 15 | 3000 |
+
+A whole night on `PPG_ON_DEMAND` on that watch drew about 73 mA and held `ssp_wake_lock` for 3 h
+21 min of a 3 h 23 min recording, which emptied the battery. Both trackers gave the same red and
+IR levels on the wrist.
 
 End of the night (issue #13). The recorder's `unregister` does not reliably come: SHM recreates
 `ApneaMonitoringService` (and with it its `cc` sensor controller and `bc` listener) for each sleep
@@ -140,8 +174,10 @@ Safety bounds. The watchdog tick also stops the recording (through the normal `s
 
 While recording the adapter has a `PARTIAL_WAKE_LOCK` (tag `shminterop:spo2`, not reference
 counted), created in `startRecording` and released on stop. It is held only for 10 s while the
-tracker connects (start and watchdog re-arm). PPG delivery needs no hold: while the PPG streams, the
-sensor hub driver holds its own kernel wake lock (`ssp_wake_lock`) and the CPU never suspends.
+tracker connects (start and watchdog re-arm). PPG delivery needs no hold: on `PPG_CONTINUOUS` the
+sensor hub wakes the CPU for each batch and the estimator runs inside that callback; on
+`PPG_ON_DEMAND` the sensor hub driver holds its own kernel wake lock (`ssp_wake_lock`) while the
+PPG streams and the CPU never suspends.
 0.10.4 to 0.10.8 held the lock for the whole night, and 0.10.9 and 0.10.10 held it again for 1 s from
 every PPG sample (~100 `acquire` calls per second); both drained the battery (issue #13). Measured on
 a Galaxy Watch5 Pro, screen off, while recording: about 124 mAh/h with the per-sample hold, 38 mAh/h

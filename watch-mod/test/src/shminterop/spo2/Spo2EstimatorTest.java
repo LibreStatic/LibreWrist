@@ -15,6 +15,7 @@ public final class Spo2EstimatorTest {
 
     public static void main(String[] args) {
         knownRatio();
+        continuousRate();
         perSecondBucketing();
         antiCorrelatedAndUncorrelated();
         badStatusWindow();
@@ -72,6 +73,33 @@ public final class Spo2EstimatorTest {
                 check(Math.abs(v - expected) <= 1, "R=" + r + " second " + i + " value " + v
                         + " expected ~" + expected);
                 check(Math.abs(rec.rs.get(i) - r) < 0.03, "R=" + r + " measured " + rec.rs.get(i));
+            }
+        }
+    }
+
+    /** The 25 Hz source (PPG_CONTINUOUS): same values and R as at 100 Hz, same seconds emitted. */
+    static void continuousRate() {
+        eq(9, Spo2Estimator.smoothLength(100), "smoothing at 100 Hz");
+        eq(2, Spo2Estimator.smoothLength(25), "smoothing at 25 Hz");
+        eq(1, Spo2Estimator.smoothLength(5), "smoothing never below one sample");
+        double[] rs = {0.5, 0.7, 1.0, 1.4};
+        for (double r : rs) {
+            Rec rec = new Rec();
+            Spo2Estimator e = new Spo2Estimator(25, rec);
+            eq(25, e.sampleRateHz(), "rate of the estimator");
+            for (int i = 0; i < 20 * 25; i++) {
+                double s = Math.sin(2 * Math.PI * 1.2 * i / 25.0);
+                e.add(T0 + i * 40L, (int) Math.round(100000 * (1 + 0.01 * r * s)),
+                        (int) Math.round(120000 * (1 + 0.01 * s)), true);
+            }
+            int expected = Spo2Estimator.fromR(r);
+            eq(12, rec.out.size(), "25 Hz, R=" + r + ": emitted seconds");
+            for (int i = 0; i < rec.out.size(); i++) {
+                eq(T0 + (7 + i) * 1000L, rec.out.get(i)[0], "25 Hz second timestamp " + i);
+                long v = rec.out.get(i)[1];
+                check(Math.abs(v - expected) <= 1, "25 Hz, R=" + r + " second " + i + " value " + v
+                        + " expected ~" + expected);
+                check(Math.abs(rec.rs.get(i) - r) < 0.03, "25 Hz, R=" + r + " measured " + rec.rs.get(i));
             }
         }
     }

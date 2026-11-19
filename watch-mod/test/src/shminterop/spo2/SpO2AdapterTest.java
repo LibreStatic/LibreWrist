@@ -53,6 +53,10 @@ public final class SpO2AdapterTest {
         policyBackoff();
         previousExit();
         batteryInPeriod();
+        batchedSource();
+        continuousWithoutRedIr();
+        batchBeforeArmed();
+        checkAgainNextRecording();
         SpO2Adapter.resetForTest();
         System.out.println(failures == 0 ? "ALL PASSED" : failures + " FAILED");
         System.exit(failures == 0 ? 0 : 1);
@@ -580,6 +584,166 @@ public final class SpO2AdapterTest {
         check(!SpO2Adapter.isRecording(), "the fallback listener owns the recording");
         SpO2Adapter.unregister(probe, 49);
         SpO2Adapter.unregister(data, 49);
+    }
+
+    /** One PPG_CONTINUOUS callback: count samples 40 ms apart, 1.2 Hz pulses with a known R. */
+    static PpgBatch batch25(long firstMs, int firstSample, int count, double r) {
+        PpgSample[] s = new PpgSample[count];
+        for (int k = 0; k < count; k++) {
+            int i = firstSample + k;
+            double p = Math.sin(2 * Math.PI * 1.2 * i / 25.0);
+            int algoRed = (int) Math.round(100000 * (1 + 0.01 * r * p));
+            int algoIr = (int) Math.round(120000 * (1 + 0.01 * p));
+            int labelledRed = SpO2Adapter.SWAP_RED_IR ? algoIr : algoRed;
+            int labelledIr = SpO2Adapter.SWAP_RED_IR ? algoRed : algoIr;
+            s[k] = new PpgSample(firstMs + i * 40L, 0, -1, labelledRed, 0, labelledIr, 0);
+        }
+        return new PpgBatch(s);
+    }
+
+    /** The batched 25 Hz tracker: preferred, estimator at its rate, longer liveness delay. */
+    static void batchedSource() throws Exception {
+        TestContext c = new TestContext("batched");
+        SpO2Adapter.contextOverride = c;
+        try {
+            SpO2Adapter.resetForTest();
+            eq(java.util.Arrays.asList("PPG_CONTINUOUS", "PPG_ON_DEMAND"), SpO2Adapter.preferredTrackerTypes(),
+                    "the batched tracker is preferred");
+            shminterop.hsdk.PpgTracker.armedType = "PPG_CONTINUOUS";
+            Recorder l = new Recorder();
+            SpO2Adapter.register(l, 49);
+            startNight(l);
+            eq(java.util.Arrays.asList("PPG_CONTINUOUS", "PPG_ON_DEMAND"),
+                    shminterop.hsdk.PpgTracker.lastPreferred, "the tracker was asked for both types in order");
+            SpO2Adapter.trackerListener().onArmed();
+            check(joinedJournal().contains("tracker armed PPG_CONTINUOUS 25 Hz"), "journal names the source");
+            eq(SpO2Adapter.LIVENESS_BATCHED_MS, SpO2Adapter.rearmDelayMs(0), "liveness delay of the batched source");
+            // 40 s in callbacks of 200 samples (8 s each), as the service delivers them. Recent
+            // timestamps: the watchdog ticks below must not see a night older than the safety bound.
+            long t0 = nowSecond() - 60_000L;
+            for (int i = 0; i < 40 * 25; i += 200) {
+                SpO2Adapter.trackerListener().onBatch(batch25(t0, i, 200, 0.52));
+            }
+            int expected = Spo2Estimator.fromR(0.52);
+            int stored = 0;
+            for (int sec = 0; sec < 40; sec++) {
+                int v = SpO2Adapter.store.get(t0 + sec * 1000L);
+                if (v == 0) continue;
+                stored++;
+                check(Math.abs(v - expected) <= 1, "25 Hz second " + sec + " value " + v + " expected ~" + expected);
+            }
+            // The 8 s window fills during second 7; second 39 is still pending.
+            eq(32, stored, "seconds stored from five batches");
+            check(!rearmedAt(20_000L), "no re-arm after 20 s of silence between batches");
+            check(rearmedAt(31_000L), "re-arm after 31 s of silence");
+            SpO2Adapter.unregister(l, 49);
+        } finally {
+            shminterop.hsdk.PpgTracker.armedType = null;
+            SpO2Adapter.contextOverride = null;
+        }
+    }
+
+    /** A batch delivered before onArmed (the listener is registered first) is fed at 25 Hz. */
+    static void batchBeforeArmed() throws Exception {
+        TestContext c = new TestContext("batched-early");
+        SpO2Adapter.contextOverride = c;
+        try {
+            SpO2Adapter.resetForTest();
+            shminterop.hsdk.PpgTracker.armedType = "PPG_CONTINUOUS";
+            Recorder l = new Recorder();
+            SpO2Adapter.register(l, 49);
+            startNight(l);
+            long t0 = nowSecond() - 60_000L;
+            SpO2Adapter.trackerListener().onBatch(batch25(t0, 0, 200, 0.52));
+            SpO2Adapter.trackerListener().onArmed();
+            for (int i = 200; i < 40 * 25; i += 200) {
+                SpO2Adapter.trackerListener().onBatch(batch25(t0, i, 200, 0.52));
+            }
+            int stored = 0;
+            for (int sec = 0; sec < 40; sec++) if (SpO2Adapter.store.get(t0 + sec * 1000L) > 0) stored++;
+            eq(32, stored, "the batch before onArmed counts like the others");
+            check(joinedJournal().contains("tracker armed PPG_CONTINUOUS 25 Hz"), "journal names the source");
+            SpO2Adapter.unregister(l, 49);
+        } finally {
+            shminterop.hsdk.PpgTracker.armedType = null;
+            SpO2Adapter.contextOverride = null;
+        }
+    }
+
+    /** A watch whose PPG_CONTINUOUS has no red/IR: three batches, then back to PPG_ON_DEMAND. */
+    static void continuousWithoutRedIr() throws Exception {
+        TestContext c = new TestContext("batched-empty");
+        SpO2Adapter.contextOverride = c;
+        try {
+            SpO2Adapter.resetForTest();
+            shminterop.hsdk.PpgTracker.armedType = "PPG_CONTINUOUS";
+            Recorder l = new Recorder();
+            SpO2Adapter.register(l, 49);
+            startNight(l);
+            SpO2Adapter.trackerListener().onArmed();
+            int starts = shminterop.hsdk.PpgTracker.starts;
+            for (int b = 0; b < 3; b++) {
+                check(!SpO2Adapter.continuousRejected, "not rejected after " + b + " batches");
+                PpgSample[] s = new PpgSample[200];
+                for (int k = 0; k < s.length; k++) {
+                    s[k] = new PpgSample(T0 + (b * 200 + k) * 40L, 1234, 0, 0, -1, 0, -1);
+                }
+                SpO2Adapter.trackerListener().onBatch(new PpgBatch(s));
+            }
+            check(SpO2Adapter.continuousRejected, "three batches without red/IR reject the batched tracker");
+            check(joinedJournal().contains("PPG_CONTINUOUS carries no red/IR"), "the journal says why");
+            SpO2Adapter.tick();
+            check(shminterop.hsdk.PpgTracker.starts > starts, "the tracker was re-armed");
+            eq(java.util.Collections.singletonList("PPG_ON_DEMAND"), shminterop.hsdk.PpgTracker.lastPreferred,
+                    "re-armed on PPG_ON_DEMAND only");
+            shminterop.hsdk.PpgTracker.armedType = "PPG_ON_DEMAND";
+            SpO2Adapter.trackerListener().onArmed();
+            eq(SpO2Adapter.LIVENESS_MS, SpO2Adapter.rearmDelayMs(0), "back to the per-sample liveness delay");
+            feedPulses(20, 0.52);
+            check(SpO2Adapter.store.get(T0 + 15_000L) > 0, "values again from PPG_ON_DEMAND at 100 Hz");
+            SpO2Adapter.stopRecording();
+            check(SpO2Adapter.continuousRejected, "the rejection holds until the recording ends");
+            startNight(l);
+            check(!SpO2Adapter.continuousRejected, "a new recording clears the rejection");
+            eq(java.util.Arrays.asList("PPG_CONTINUOUS", "PPG_ON_DEMAND"), shminterop.hsdk.PpgTracker.lastPreferred,
+                    "the next recording tries the batched tracker again");
+            SpO2Adapter.unregister(l, 49);
+        } finally {
+            shminterop.hsdk.PpgTracker.armedType = null;
+            SpO2Adapter.contextOverride = null;
+        }
+    }
+
+    /** A recording whose batched source passed the check does not exempt the next one from it. */
+    static void checkAgainNextRecording() throws Exception {
+        TestContext c = new TestContext("batched-twice");
+        SpO2Adapter.contextOverride = c;
+        try {
+            SpO2Adapter.resetForTest();
+            shminterop.hsdk.PpgTracker.armedType = "PPG_CONTINUOUS";
+            Recorder l = new Recorder();
+            SpO2Adapter.register(l, 49);
+            startNight(l);
+            SpO2Adapter.trackerListener().onArmed();
+            long t0 = nowSecond() - 60_000L;
+            SpO2Adapter.trackerListener().onBatch(batch25(t0, 0, 200, 0.52));
+            SpO2Adapter.stopRecording();
+            check(!SpO2Adapter.continuousRejected, "the first recording passed the check");
+            startNight(l);
+            SpO2Adapter.trackerListener().onArmed();
+            for (int b = 0; b < 3; b++) {
+                PpgSample[] s = new PpgSample[200];
+                for (int k = 0; k < s.length; k++) {
+                    s[k] = new PpgSample(t0 + 10_000L + (b * 200 + k) * 40L, 1234, 0, 0, -1, 0, -1);
+                }
+                SpO2Adapter.trackerListener().onBatch(new PpgBatch(s));
+            }
+            check(SpO2Adapter.continuousRejected, "the second recording checks its stream again");
+            SpO2Adapter.unregister(l, 49);
+        } finally {
+            shminterop.hsdk.PpgTracker.armedType = null;
+            SpO2Adapter.contextOverride = null;
+        }
     }
 
     static void feedPulses(int seconds, double r) {

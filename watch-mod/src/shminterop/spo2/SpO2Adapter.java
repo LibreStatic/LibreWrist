@@ -108,12 +108,23 @@ public final class SpO2Adapter {
     /** If SHM skips SET_OPERATION_MODE, a listener silent for this long after register starts recording. */
     static final long FALLBACK_START_MS = 5000L;
     /**
-     * The wake lock is held only while the tracker (re)connects. PPG delivery needs no hold: the
-     * sensor hub keeps the CPU awake while it streams, and re-acquiring the lock for every sample
-     * (~100 per second) tripled the watch's drain.
+     * The wake lock is held only while the tracker (re)connects. PPG delivery needs no hold: on
+     * PPG_CONTINUOUS the sensor hub wakes the CPU for each batch and the estimator runs inside
+     * that callback; on PPG_ON_DEMAND the hub keeps the CPU awake for as long as it streams, and
+     * re-acquiring the lock for every sample (~100 per second) tripled the watch's drain.
      */
     static final long ARM_WAKE_LOCK_MS = 10000L;
+    /** Silence tolerated on PPG_ON_DEMAND (a callback per sample) before the tracker is re-armed. */
     static final long LIVENESS_MS = 15000L;
+    /** The same for PPG_CONTINUOUS, whose batches are about 8 s apart. */
+    static final long LIVENESS_BATCHED_MS = 30000L;
+    /**
+     * Samples of a PPG_CONTINUOUS recording examined before the source is trusted (three batches,
+     * 24 s). If none of them carries both a red and an IR count, the watch does not deliver these
+     * channels on that tracker and the adapter goes back to PPG_ON_DEMAND for the rest of the
+     * recording.
+     */
+    static final int CONTINUOUS_CHECK_SAMPLES = 600;
     /**
      * While the service answers SDK_POLICY_ERROR (Health Platform developer mode off) a re-arm
      * cannot succeed, so the watchdog backs off: this long after the first consecutive policy
@@ -164,6 +175,15 @@ public final class SpO2Adapter {
     private static ScheduledExecutorService watchdog;
     private static volatile boolean recording;
     private static volatile long lastBatchMs;
+    /** Nominal rate of the armed tracker type (ServiceProtocol.PPG_*_HZ); set when it arms. */
+    private static volatile int sourceHz = ServiceProtocol.PPG_ON_DEMAND_HZ;
+    /** PPG_CONTINUOUS delivered no red/IR on this watch: use PPG_ON_DEMAND. Package-visible for tests. */
+    static volatile boolean continuousRejected;
+    /** Set on a binder thread to make the next watchdog tick re-arm the tracker. */
+    private static volatile boolean rearmRequested;
+    // Touched only under FEED_LOCK: the red/IR presence check of a PPG_CONTINUOUS source.
+    private static int checkSeen;
+    private static boolean checkPassed = true;
     private static long lastArmMs;
     /** SDK_POLICY_ERRORs since the last PPG batch; written on binder threads. */
     private static final AtomicInteger policyErrors = new AtomicInteger();
@@ -201,7 +221,7 @@ public final class SpO2Adapter {
     };
 
     static Spo2Estimator newEstimator() {
-        return new Spo2Estimator(OUT);
+        return new Spo2Estimator(sourceHz, OUT);
     }
 
     /** Called under FEED_LOCK once enough finite R values were collected; decides once. */
@@ -618,6 +638,11 @@ public final class SpO2Adapter {
                 swap = readOrientation(orientationFile);
                 orientDecided = false;
                 orientR.clear();
+                // Each recording starts on the per-sample default; the armed tracker's onSource
+                // (or an earlier batch) sets the batched rate and its red/IR check again.
+                sourceHz = ServiceProtocol.PPG_ON_DEMAND_HZ;
+                checkSeen = 0;
+                checkPassed = true;
                 estimator = newEstimator();
                 statSeconds = 0;
                 statValid = 0;
@@ -628,6 +653,10 @@ public final class SpO2Adapter {
             }
             recordingStartMs = now;
             policyErrors.set(0);
+            // A rejection of PPG_CONTINUOUS holds for one recording only, so a bad start (no red/IR
+            // counts for a while) does not keep the per-sample tracker for the rest of the process.
+            continuousRejected = false;
+            rearmRequested = false;
             recording = true;
             writeMarker();
             acquireWakeLock(ctx);
@@ -804,12 +833,35 @@ public final class SpO2Adapter {
         }
         try {
             tracker = new PpgTracker(ctx,
-                    Arrays.asList(ServiceProtocol.PPG_TYPE_RED, ServiceProtocol.PPG_TYPE_IR), CONN);
+                    Arrays.asList(ServiceProtocol.PPG_TYPE_RED, ServiceProtocol.PPG_TYPE_IR),
+                    preferredTrackerTypes(), CONN);
             tracker.start();
         } catch (Throwable t) {
             log("tracker start failed: " + t);
             note("tracker start failed: " + t);
             tracker = null;
+        }
+    }
+
+    /** The batched tracker first (the CPU can sleep between its batches), then the per-sample one. */
+    static List<String> preferredTrackerTypes() {
+        if (continuousRejected) return Collections.singletonList(ServiceProtocol.TRACKER_PPG_ON_DEMAND);
+        return Arrays.asList(ServiceProtocol.TRACKER_PPG_CONTINUOUS, ServiceProtocol.TRACKER_PPG_ON_DEMAND);
+    }
+
+    /**
+     * The tracker armed on {@code trackerType} (null when unknown: PPG_ON_DEMAND): the estimator is
+     * rebuilt if it was made for another sample rate. Package-visible for tests.
+     */
+    static void onSource(String trackerType) {
+        int hz = ServiceProtocol.ppgSampleRateHz(trackerType);
+        synchronized (FEED_LOCK) {
+            // Called again from onArmed after onBatch already switched: keep the check state.
+            if (hz == sourceHz && (estimator == null || estimator.sampleRateHz() == hz)) return;
+            sourceHz = hz;
+            checkSeen = 0;
+            checkPassed = hz != ServiceProtocol.PPG_CONTINUOUS_HZ;
+            if (estimator != null && estimator.sampleRateHz() != hz) estimator = newEstimator();
         }
     }
 
@@ -856,7 +908,13 @@ public final class SpO2Adapter {
             long ref = Math.max(lastBatchMs, lastArmMs);
             int policy = policyErrors.get();
             long delay = rearmDelayMs(policy);
-            if (e - ref > delay) {
+            if (rearmRequested) {
+                rearmRequested = false;
+                stopTracker();
+                lastArmMs = e;
+                holdWakeLock(ARM_WAKE_LOCK_MS);
+                startTracker(appContext());
+            } else if (e - ref > delay) {
                 log("no PPG batch for " + (e - ref) / 1000 + " s; re-arming the tracker");
                 if (policy == 0) {
                     note("watchdog: no PPG batch for " + (e - ref) / 1000 + " s, re-arming the tracker");
@@ -877,9 +935,11 @@ public final class SpO2Adapter {
         }
     }
 
-    /** Silence tolerated before a re-arm: LIVENESS_MS, or the policy-error backoff. */
+    /** Silence tolerated before a re-arm: the liveness delay of the source, or the policy-error backoff. */
     static long rearmDelayMs(int policyErrors) {
-        if (policyErrors <= 0) return LIVENESS_MS;
+        if (policyErrors <= 0) {
+            return sourceHz == ServiceProtocol.PPG_CONTINUOUS_HZ ? LIVENESS_BATCHED_MS : LIVENESS_MS;
+        }
         long d = POLICY_BACKOFF_START_MS;
         for (int i = 1; i < policyErrors && d < POLICY_BACKOFF_MAX_MS; i++) d *= 2;
         return Math.min(d, POLICY_BACKOFF_MAX_MS);
@@ -924,11 +984,18 @@ public final class SpO2Adapter {
     }
 
     static final class Conn implements PpgTracker.Listener {
-        @Override public void onArmed() { log("tracker armed (RED, IR)"); note("tracker armed"); }
+        @Override public void onArmed() {
+            PpgTracker t = tracker;
+            String type = t == null ? null : t.trackerType();
+            onSource(type);
+            String what = type == null ? "" : " " + type + " " + sourceHz + " Hz";
+            log("tracker armed (RED, IR)" + what);
+            note("tracker armed" + what);
+        }
 
         @Override public void onUnsupported() {
-            log("PPG_ON_DEMAND not supported by the health service");
-            note("tracker onUnsupported: PPG_ON_DEMAND not supported");
+            log("no PPG tracker type supported by the health service");
+            note("tracker onUnsupported: neither PPG_CONTINUOUS nor PPG_ON_DEMAND is supported");
         }
 
         @Override public void onConnectionFailed(String reason) {
@@ -956,6 +1023,13 @@ public final class SpO2Adapter {
             lastBatchMs = SystemClock.elapsedRealtime();
             policyErrors.set(0);
             synchronized (FEED_LOCK) {
+                // The tracker registers its listener before onArmed, so a batch can arrive first:
+                // switch to the armed type's rate here too (null: not armed yet, or a late batch
+                // of a tracker that was replaced).
+                PpgTracker t = tracker;
+                String type = t == null ? null : t.trackerType();
+                if (type != null && ServiceProtocol.ppgSampleRateHz(type) != sourceHz) onSource(type);
+                if (!checkPassed && !hasRedAndIr(batch)) return;
                 // Re-read per sample: an orientation flip replaces the estimator mid-batch.
                 for (PpgSample s : batch.samples) {
                     Spo2Estimator est = estimator;
@@ -964,6 +1038,40 @@ public final class SpO2Adapter {
                 }
             }
         }
+    }
+
+    /**
+     * Under FEED_LOCK, while a PPG_CONTINUOUS source is unchecked: true once a sample carries both
+     * channels. After CONTINUOUS_CHECK_SAMPLES without one, the source is rejected and the watchdog
+     * re-arms on PPG_ON_DEMAND (not from here: this runs inside the service's callback).
+     */
+    private static boolean hasRedAndIr(PpgBatch batch) {
+        for (PpgSample s : batch.samples) {
+            if (s.redAdc != 0 && s.irAdc != 0) {
+                checkPassed = true;
+                return true;
+            }
+        }
+        checkSeen += batch.samples.length;
+        if (checkSeen >= CONTINUOUS_CHECK_SAMPLES && !continuousRejected) {
+            continuousRejected = true;
+            rearmRequested = true;
+            log("PPG_CONTINUOUS carries no red/IR on this watch; going back to PPG_ON_DEMAND");
+            note("tracker: PPG_CONTINUOUS carries no red/IR, going back to PPG_ON_DEMAND");
+            ScheduledExecutorService w = watchdog;
+            if (w != null) {
+                try {
+                    w.execute(new Runnable() {
+                        @Override public void run() {
+                            try { tick(); } catch (Throwable t) { log("watchdog: " + t); }
+                        }
+                    });
+                } catch (RuntimeException rejected) {
+                    // stopping: nothing to re-arm
+                }
+            }
+        }
+        return false;
     }
 
     // ------------------------------------------------------------------------ utils
@@ -994,6 +1102,9 @@ public final class SpO2Adapter {
             maxNightMs = MAX_NIGHT_MS;
             orphanMs = ORPHAN_MS;
             policyErrors.set(0);
+            sourceHz = ServiceProtocol.PPG_ON_DEMAND_HZ;
+            continuousRejected = false;
+            rearmRequested = false;
             tickSkewMs = 0L;
             listeners.clear();
             commanded.clear();
@@ -1012,6 +1123,8 @@ public final class SpO2Adapter {
         }
         synchronized (FEED_LOCK) {
             estimator = null;
+            checkSeen = 0;
+            checkPassed = true;
             swap = SWAP_RED_IR;
             orientDecided = false;
             orientR.clear();

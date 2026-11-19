@@ -6,7 +6,7 @@ package shminterop.spo2;
  * Implements the windowed ratio-of-ratios of docs/spo2-calibration.md 2.1 / docs/spo2-adapter.md:
  *
  *   DC  = trailing mean of the last round(1.5 * fs) samples of each channel;
- *   AC  = (x - DC), then a trailing moving average of 9 samples;
+ *   AC  = (x - DC), then a trailing moving average of 90 ms (9 samples at 100 Hz, 2 at 25 Hz);
  *   at every whole-second boundary, over the trailing 8 s window:
  *     R = (std(AC_red) / mean(red)) / (std(AC_ir) / mean(ir))
  *   quality gates (a failed gate yields 0): every sample of the window has both channels normal,
@@ -18,9 +18,10 @@ package shminterop.spo2;
  * deliberate difference is the cadence. The reference emits every round(fs) samples; this
  * streaming version emits when the wall-clock second of the sample timestamps changes, so the
  * output is bucketed by real seconds whatever the delivery jitter. The window and filter lengths
- * are counted in samples from the nominal rate {@code fs} (100 Hz, the Health Tracking Service
- * rate): a true rate within a couple of percent only stretches the 8 s window slightly, and R
- * is a ratio of two channels filtered identically, so it is insensitive to that.
+ * are counted in samples from the nominal rate {@code fs} of the source (100 Hz for the
+ * PPG_ON_DEMAND tracker, 25 Hz for PPG_CONTINUOUS): a true rate within a couple of percent only
+ * stretches the 8 s window slightly, and R is a ratio of two channels filtered identically, so
+ * it is insensitive to that and to the length of the smoothing average.
  *
  * Warm-up: nothing is emitted until the window is full (and the DC filter has settled, whichever
  * is later). A gap of more than 2 s between samples (or a backwards jump) emits the pending
@@ -30,6 +31,7 @@ public final class Spo2Estimator {
     public static final double C0 = 109.6912003, C1 = -20.3647995, C2 = -2.1715099812;
     public static final double R_MIN = 0.08, R_MAX = 1.84;
     public static final double DC_SECONDS = 1.5;
+    /** Length of the AC moving average at NOMINAL_FS; other rates scale it (see {@link #smoothLength}). */
     public static final int SMOOTH = 9;
     public static final int WINDOW_SECONDS = 8;
     public static final double MIN_CORRELATION = 0.7;
@@ -49,7 +51,9 @@ public final class Spo2Estimator {
     }
 
     private final Output out;
+    private final int fs;
     private final int dcn;
+    private final int smooth;
     private final int win;
     private final int start;
 
@@ -57,8 +61,7 @@ public final class Spo2Estimator {
     private final int[] rawRed, rawIr;
     private final double[] acRed, acIr;
     private final boolean[] okRing;
-    private final double[] smoothRed = new double[SMOOTH];
-    private final double[] smoothIr = new double[SMOOTH];
+    private final double[] smoothRed, smoothIr;
 
     private int n;                 // samples since the last reset
     private long dcSumRed, dcSumIr;
@@ -71,7 +74,12 @@ public final class Spo2Estimator {
     }
 
     public Spo2Estimator(int fs, Output out) {
+        if (fs <= 0) throw new IllegalArgumentException("fs " + fs);
         this.out = out;
+        this.fs = fs;
+        this.smooth = smoothLength(fs);
+        smoothRed = new double[smooth];
+        smoothIr = new double[smooth];
         this.dcn = Math.max(1, (int) Math.round(DC_SECONDS * fs));
         this.win = WINDOW_SECONDS * fs;
         this.start = Math.max(win, WARMUP_SECONDS * fs + dcn);
@@ -80,6 +88,16 @@ public final class Spo2Estimator {
         acRed = new double[win];
         acIr = new double[win];
         okRing = new boolean[win];
+    }
+
+    /** The nominal sample rate this estimator was built for. */
+    public int sampleRateHz() {
+        return fs;
+    }
+
+    /** Samples of the AC moving average at rate {@code fs}: the 90 ms of SMOOTH at NOMINAL_FS, at least 1. */
+    public static int smoothLength(int fs) {
+        return Math.max(1, (int) Math.round((double) SMOOTH * fs / NOMINAL_FS));
     }
 
     public static int fromR(double r) {
@@ -119,9 +137,9 @@ public final class Spo2Estimator {
             dcSumIr -= rawIr[old];
         }
         int dn = Math.min(n + 1, dcn);
-        smoothRed[n % SMOOTH] = red - (double) dcSumRed / dn;
-        smoothIr[n % SMOOTH] = ir - (double) dcSumIr / dn;
-        int sn = Math.min(n + 1, SMOOTH);
+        smoothRed[n % smooth] = red - (double) dcSumRed / dn;
+        smoothIr[n % smooth] = ir - (double) dcSumIr / dn;
+        int sn = Math.min(n + 1, smooth);
         double sr = 0, si = 0;
         for (int k = 0; k < sn; k++) {
             sr += smoothRed[k];
