@@ -51,6 +51,8 @@ public final class SpO2AdapterTest {
         orientationKept();
         nightDiagnostics();
         policyBackoff();
+        ppgSharedWithBp();
+        continuousTrackerAndFallback();
         previousExit();
         batteryInPeriod();
         SpO2Adapter.resetForTest();
@@ -110,14 +112,16 @@ public final class SpO2AdapterTest {
     /** 1.2 Hz pulses with a known R under the adapter's channel orientation. */
     static PpgBatch pulses(int firstSample, int count, double r) {
         PpgSample[] s = new PpgSample[count];
+        int fs = SpO2Adapter.sampleRate();
+        long stepMs = 1000L / fs;
         for (int k = 0; k < count; k++) {
             int i = firstSample + k;
-            double p = Math.sin(2 * Math.PI * 1.2 * i / 100.0);
+            double p = Math.sin(2 * Math.PI * 1.2 * i / fs);
             int algoRed = (int) Math.round(100000 * (1 + 0.01 * r * p));
             int algoIr = (int) Math.round(120000 * (1 + 0.01 * p));
             int labelledRed = SpO2Adapter.SWAP_RED_IR ? algoIr : algoRed;
             int labelledIr = SpO2Adapter.SWAP_RED_IR ? algoRed : algoIr;
-            s[k] = new PpgSample(T0 + i * 10L, 0, 0, labelledRed, 0, labelledIr, 0);
+            s[k] = new PpgSample(T0 + i * stepMs, 0, 0, labelledRed, 0, labelledIr, 0);
         }
         return new PpgBatch(s);
     }
@@ -160,7 +164,7 @@ public final class SpO2AdapterTest {
         eq(0, l.events.size(), "FLUSH sends nothing");
 
         // 30 s of pulses, R = 0.7, delivered in 50-sample batches like the service does.
-        for (int i = 0; i < 3000; i += 50) {
+        for (int i = 0; i < 30 * SpO2Adapter.sampleRate(); i += 50) {
             SpO2Adapter.trackerListener().onBatch(pulses(i, 50, 0.7));
         }
         int expected = Spo2Estimator.fromR(0.7);
@@ -583,7 +587,7 @@ public final class SpO2AdapterTest {
     }
 
     static void feedPulses(int seconds, double r) {
-        for (int i = 0; i < seconds * 100; i += 50) {
+        for (int i = 0; i < seconds * SpO2Adapter.sampleRate(); i += 50) {
             SpO2Adapter.trackerListener().onBatch(pulses(i, 50, r));
         }
     }
@@ -752,7 +756,12 @@ public final class SpO2AdapterTest {
         List<String> sink = new CopyOnWriteArrayList<String>();
         SpO2Adapter.logSink = sink;
         try {
-            eq(15_000L, SpO2Adapter.rearmDelayMs(0), "no policy error: the liveness delay");
+            eq(SpO2Adapter.LIVENESS_CONTINUOUS_MS, SpO2Adapter.rearmDelayMs(0),
+                    "no policy error: the PPG_CONTINUOUS liveness delay");
+            SpO2Adapter.trackerType = shminterop.hsdk.ServiceProtocol.TRACKER_PPG_ON_DEMAND;
+            eq(15_000L, SpO2Adapter.rearmDelayMs(0), "no policy error: the PPG_ON_DEMAND liveness delay");
+            SpO2Adapter.trackerType = shminterop.hsdk.ServiceProtocol.TRACKER_PPG_CONTINUOUS;
+            final long L = SpO2Adapter.rearmDelayMs(0);
             eq(30_000L, SpO2Adapter.rearmDelayMs(1), "1 policy error: 30 s");
             eq(60_000L, SpO2Adapter.rearmDelayMs(2), "2 policy errors: 60 s");
             eq(120_000L, SpO2Adapter.rearmDelayMs(3), "3 policy errors: 120 s");
@@ -764,13 +773,13 @@ public final class SpO2AdapterTest {
             SpO2Adapter.register(l, 49);
             startNight(l);
             // Without errors the plain liveness delay and the plain watchdog text apply.
-            check(!rearmedAt(10_000L), "no re-arm inside the liveness delay");
-            check(rearmedAt(20_000L), "re-arm after the liveness delay without errors");
+            check(!rearmedAt(L - 5_000L), "no re-arm inside the liveness delay");
+            check(rearmedAt(L + 5_000L), "re-arm after the liveness delay without errors");
             check(!joinedJournal().contains("policy errors"), "plain watchdog text without errors");
 
             // Consecutive policy errors: the journal explains once, the re-arms back off.
             PpgTrackerListener().onError(shminterop.hsdk.HealthError.SDK_POLICY_ERROR);
-            long t = 20_000L;
+            long t = L + 5_000L;
             check(!rearmedAt(t + 20_000L), "1 error: no re-arm after 20 s");
             check(rearmedAt(t + 31_000L), "1 error: re-arm after 30 s");
             t += 31_000L;
@@ -795,8 +804,8 @@ public final class SpO2AdapterTest {
             // A batch ends the streak: back to the liveness delay.
             SpO2Adapter.trackerListener().onBatch(pulses(0, 100, 0.52));
             t += 1_000L;
-            check(!rearmedAt(t + 10_000L), "after a batch: no re-arm inside the liveness delay");
-            check(rearmedAt(t + 20_000L), "after a batch: the liveness delay applies again");
+            check(!rearmedAt(t + L - 5_000L), "after a batch: no re-arm inside the liveness delay");
+            check(rearmedAt(t + L + 5_000L), "after a batch: the liveness delay applies again");
             SpO2Adapter.trackerListener().onError(shminterop.hsdk.HealthError.SDK_POLICY_ERROR);
             eq(2, count(joinedJournal(), "tracker onError SDK_POLICY_ERROR"),
                     "a new streak journals the explanation again");
@@ -811,7 +820,7 @@ public final class SpO2AdapterTest {
                 SpO2Adapter.trackerListener().onError(shminterop.hsdk.HealthError.PERMISSION_ERROR);
             }
             eq(3, count(joinedJournal(), "tracker onError PERMISSION_ERROR"), "permission errors journaled");
-            check(rearmedAt(20_000L), "permission error: the liveness delay still applies");
+            check(rearmedAt(L + 5_000L), "permission error: the liveness delay still applies");
             check(!joinedJournal().contains("policy errors"), "permission error: no backoff note");
             check(!joinedJournal().contains("retrying with backoff"), "permission error: no policy line");
         } finally {
@@ -823,6 +832,173 @@ public final class SpO2AdapterTest {
 
     static shminterop.hsdk.PpgTracker.Listener PpgTrackerListener() {
         return SpO2Adapter.trackerListener();
+    }
+
+    /**
+     * A recording arms the batched PPG_CONTINUOUS tracker at 25 Hz; when the service does not offer
+     * it, the adapter falls back to PPG_ON_DEMAND (100 Hz) and keeps estimating.
+     */
+    static void continuousTrackerAndFallback() throws Exception {
+        TestContext c = new TestContext("ppg-continuous");
+        SpO2Adapter.contextOverride = c;
+        try {
+            SpO2Adapter.resetForTest();
+            shminterop.hsdk.PpgTracker.requestedTypes.clear();
+            eq(shminterop.hsdk.ServiceProtocol.TRACKER_PPG_CONTINUOUS, SpO2Adapter.trackerType,
+                    "default tracker type");
+            eq(25, SpO2Adapter.sampleRate(), "PPG_CONTINUOUS rate");
+            Recorder l = new Recorder();
+            SpO2Adapter.register(l, 49);
+            startNight(l);
+            eq(shminterop.hsdk.ServiceProtocol.TRACKER_PPG_CONTINUOUS,
+                    lastRequested(), "recording arms PPG_CONTINUOUS");
+
+            // 30 s at 25 Hz in 200-sample batches (one every 8 s, as the hub delivers them).
+            for (int i = 0; i < 30 * 25; i += 200) {
+                SpO2Adapter.trackerListener().onBatch(pulses(i, Math.min(200, 30 * 25 - i), 0.7));
+            }
+            check(getData(l, T0, T0 + 29_000L), "GET_DATA after continuous batches");
+            List<Bundle> ev = l.await(1);
+            int[] v = ev.isEmpty() ? null : ev.get(0).getIntArray("secSpO2List");
+            check(v != null && Math.abs(v[20] - Spo2Estimator.fromR(0.7)) <= 1,
+                    "25 Hz batches give the expected SpO2: " + (v == null ? null : v[20]));
+
+            // The service does not offer PPG_CONTINUOUS: fall back to PPG_ON_DEMAND.
+            SpO2Adapter.resetForTest();
+            shminterop.hsdk.PpgTracker.requestedTypes.clear();
+            Recorder m = new Recorder();
+            SpO2Adapter.register(m, 49);
+            startNight(m);
+            SpO2Adapter.trackerListener().onUnsupported();
+            long end = System.currentTimeMillis() + 5000;
+            while (!shminterop.hsdk.ServiceProtocol.TRACKER_PPG_ON_DEMAND.equals(lastRequested())
+                    && System.currentTimeMillis() < end) {
+                Thread.sleep(10);
+            }
+            eq(shminterop.hsdk.ServiceProtocol.TRACKER_PPG_ON_DEMAND, lastRequested(),
+                    "fallback re-arms PPG_ON_DEMAND");
+            eq(100, SpO2Adapter.sampleRate(), "PPG_ON_DEMAND rate after the fallback");
+            check(joinedJournal().contains("tracker fallback: PPG_ON_DEMAND"), "fallback journaled");
+            eq(SpO2Adapter.LIVENESS_MS, SpO2Adapter.rearmDelayMs(0), "fallback uses the 15 s liveness");
+            SpO2Adapter.trackerListener().onUnsupported(); // PPG_ON_DEMAND missing too: no loop
+            Thread.sleep(100);
+            eq(shminterop.hsdk.ServiceProtocol.TRACKER_PPG_ON_DEMAND, SpO2Adapter.trackerType,
+                    "no further fallback");
+            SpO2Adapter.unregister(m, 49);
+        } finally {
+            SpO2Adapter.contextOverride = null;
+            SpO2Adapter.resetForTest();
+        }
+    }
+
+    /** The one started, not stopped tracker, or null (fails the test if there are several). */
+    static shminterop.hsdk.PpgTracker liveTracker() {
+        shminterop.hsdk.PpgTracker live = null;
+        for (shminterop.hsdk.PpgTracker t : shminterop.hsdk.PpgTracker.instances) {
+            if (t.started && !t.stopped) {
+                check(live == null, "at most one live tracker");
+                live = t;
+            }
+        }
+        return live;
+    }
+
+    static String lastRequested() {
+        List<String> r = shminterop.hsdk.PpgTracker.requestedTypes;
+        return r.isEmpty() ? null : r.get(r.size() - 1);
+    }
+
+    /** Ignores every event: stands in for SHM's BP listener, which only BpAdapter feeds. */
+    static final SemSensorListener BP_SINK = new SemSensorListener() {
+        @Override public void onEventChanged(SemSensorEvent event) {
+        }
+
+        @Override public void onStatusChanged(int status, String s) {
+        }
+    };
+
+    /**
+     * BP and the apnea recording both use this app's PPG_ON_DEMAND tracker, of which the service
+     * keeps only one: a BP session must take it from the recording and give it back.
+     */
+    static void ppgSharedWithBp() throws Exception {
+        TestContext c = new TestContext("ppg-share");
+        SpO2Adapter.contextOverride = c;
+        try {
+            SpO2Adapter.resetForTest();
+            Recorder l = new Recorder();
+            SpO2Adapter.register(l, 49);
+            startNight(l);
+            check(SpO2Adapter.isRecording(), "night recording before BP");
+            shminterop.hsdk.PpgTracker rec = liveTracker();
+            check(rec != null, "the recording runs a tracker before BP");
+
+            // BP starts (through BpAdapter, as the patched SHM does): the recording yields.
+            shminterop.bp.BpAdapter.start(BP_SINK, 28);
+            check(SpO2Adapter.isPpgYielded(), "BP start yields the PPG tracker");
+            check(rec != null && rec.stopped, "BP start stops the recording tracker");
+            check(liveTracker() == null, "no recording tracker runs during BP");
+            check(joinedJournal().contains("PPG tracker yielded to blood pressure"), "yield journaled");
+            // A BP round is silent for the recording: the watchdog must not take the tracker back.
+            check(!rearmedAt(60_000L), "no liveness re-arm while yielded");
+            check(SpO2Adapter.isRecording(), "the night keeps recording while yielded");
+
+            // A non-BP stop changes nothing; the BP stop gives the tracker back.
+            shminterop.bp.BpAdapter.stop(BP_SINK, 27);
+            check(SpO2Adapter.isPpgYielded(), "a non-BP stop does not reclaim");
+            shminterop.bp.BpAdapter.stop(BP_SINK, 28);
+            check(!SpO2Adapter.isPpgYielded(), "BP stop reclaims the PPG tracker");
+            shminterop.hsdk.PpgTracker back = liveTracker();
+            check(back != null && back != rec, "BP stop starts a replacement recording tracker");
+            check(joinedJournal().contains("PPG tracker reclaimed from blood pressure"), "reclaim journaled");
+            // The reclaim counts as an arm: the liveness delay restarts from it.
+            long live = SpO2Adapter.rearmDelayMs(0);
+            check(!rearmedAt(60_000L + live - 5_000L), "no re-arm right after the reclaim");
+            check(rearmedAt(60_000L + live + 5_000L), "liveness re-arm applies again after the reclaim");
+
+            // Safety bound: a BP session that never stops does not starve the night.
+            SpO2Adapter.tickSkewMs = 0L;
+            shminterop.hsdk.PpgTracker beforeBound = liveTracker();
+            SpO2Adapter.yieldPpg("blood pressure");
+            check(beforeBound != null && beforeBound.stopped, "yield stops the tracker");
+            check(!rearmedAt(SpO2Adapter.YIELD_MAX_MS - 10_000L), "still yielded inside the bound");
+            check(liveTracker() == null, "no tracker inside the bound");
+            check(SpO2Adapter.isPpgYielded(), "yield holds inside the bound");
+            SpO2Adapter.tickSkewMs = SpO2Adapter.YIELD_MAX_MS + 10_000L;
+            SpO2Adapter.tick();
+            check(!SpO2Adapter.isPpgYielded(), "yield released by the safety bound");
+            check(joinedJournal().contains("(safety bound)"), "safety-bound reclaim journaled");
+            check(liveTracker() != null, "the safety-bound reclaim restarts a tracker");
+
+            // Stop/start of the night while yielded: the new night waits for the release.
+            SpO2Adapter.tickSkewMs = 0L;
+            SpO2Adapter.unregister(l, 49);
+            check(!SpO2Adapter.isRecording(), "night stopped");
+            shminterop.bp.BpAdapter.start(BP_SINK, 28);
+            Recorder m = new Recorder();
+            int created = shminterop.hsdk.PpgTracker.instances.size();
+            SpO2Adapter.register(m, 49);
+            startNight(m);
+            check(SpO2Adapter.isRecording(), "a night can start while BP holds the tracker");
+            eq(created, shminterop.hsdk.PpgTracker.instances.size(),
+                    "a night started during the yield creates no tracker");
+            check(joinedJournal().contains("PPG tracker in use by blood pressure, arming it when released"),
+                    "deferred arm journaled");
+            shminterop.bp.BpAdapter.stop(BP_SINK, 28);
+            check(!SpO2Adapter.isPpgYielded(), "released after BP");
+            check(shminterop.hsdk.PpgTracker.instances.size() == created + 1 && liveTracker() != null,
+                    "the deferred night arms its tracker on release");
+            SpO2Adapter.unregister(m, 49);
+
+            // Nothing recording: yield/reclaim only flip the flag.
+            shminterop.bp.BpAdapter.start(BP_SINK, 28);
+            check(SpO2Adapter.isPpgYielded(), "yield without a night");
+            shminterop.bp.BpAdapter.stop(BP_SINK, 28);
+            check(!SpO2Adapter.isPpgYielded(), "reclaim without a night");
+        } finally {
+            SpO2Adapter.contextOverride = null;
+            SpO2Adapter.resetForTest();
+        }
     }
 
     static void previousExit() throws Exception {

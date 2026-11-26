@@ -21,15 +21,35 @@ public class PpgTracker {
         void onConnectionEnded();
     }
 
+    /** Every tracker the code under test created, oldest first (tests read it). */
+    public static final java.util.List<PpgTracker> instances =
+            new java.util.concurrent.CopyOnWriteArrayList<PpgTracker>();
+    /** Tracker types requested by the code under test, newest last (tests read it). */
+    public static final java.util.List<String> requestedTypes =
+            new java.util.concurrent.CopyOnWriteArrayList<String>();
+
+    public final String trackerType;
+    public volatile boolean started, stopped;
+
     public PpgTracker(Context context, Listener listener) {
+        this(context, "PPG_ON_DEMAND", null, listener);
     }
 
     public PpgTracker(Context context, java.util.List<String> channels, Listener listener) {
+        this(context, "PPG_ON_DEMAND", channels, listener);
+    }
+
+    public PpgTracker(Context context, String trackerType, java.util.List<String> channels, Listener listener) {
+        this.trackerType = trackerType;
+        requestedTypes.add(trackerType);
+        instances.add(this);
     }
 
     public void start() {
+        started = true;
     }
 
     public void stop() {
+        stopped = true;
     }
 }

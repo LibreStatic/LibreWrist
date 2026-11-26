@@ -414,6 +414,26 @@ therefore precede code 2 (`setEventListener`) on a freshly created tracker; send
 effect until the tracker stops and starts again. A tracker created and armed without code 8 keeps
 the channel set of whoever armed it last.
 
+### 4.5 PPG_CONTINUOUS
+
+Same `onDataUpdated` framing and the same six values per data point as `PPG_ON_DEMAND` (4.4: green,
+green status, red, red status, IR, IR status; an unselected channel is count 0 with status -1).
+Observed on a Galaxy Watch7 (One UI 8 Watch, Health Platform 1.7.00.05) with a probe client and
+read from the service:
+
+- The service registers sensor type 60, the 25 Hz PPG sensor, instead of type 61. The LED
+  channels come from code 8 exactly as for `PPG_ON_DEMAND` (set before code 2). Note that the
+  service *adds* each code 8 list to the channel set until the tracker is unregistered.
+- The sensor hub batches the samples: one `onDataUpdated` carries a list of data points, each with
+  its own sample timestamp (unlike 4.3, where all points of a batch share one). With `RED` and `IR`
+  selected, every batch held 200 points, about one batch every 8 s; gaps between batches of up to
+  ~19 s were seen while the CPU was asleep.
+- Flush (code 4) is allowed for `PPG_CONTINUOUS` and is answered with `onFlushCompleted`.
+- Permissions are the same as for `PPG_ON_DEMAND` (`BODY_SENSORS`, or
+  `READ_ADDITIONAL_HEALTH_DATA` for a target SDK 36 app on an SDK 36 watch).
+- With the screen off, a client holding only this tracker let the CPU sleep 80-92 % of the time,
+  where `PPG_ON_DEMAND` kept it awake 100 % (one binder call per 100 Hz sample).
+
 ---
 
 ## 5. Connect sequence

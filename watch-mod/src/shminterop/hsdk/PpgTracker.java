@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * PPG tracker of the Health Tracking Service: connect, capability check, create, select the LED
@@ -18,6 +19,8 @@ import java.util.concurrent.Executors;
  */
 public final class PpgTracker {
     private static final String TAG = "PpgTracker";
+    /** How long {@link #stop} waits for an arm already past its running check to finish. */
+    static final long ARM_WAIT_MS = 2000L;
 
     public interface Listener {
         /** Registered with the service; data (or an error) follows. */
@@ -32,18 +35,30 @@ public final class PpgTracker {
 
     private final HealthClient client;
     private final Listener out;
+    private final String trackerType;
     private final List<String> channels;
     private final ListenerBinder binder;
     private final ExecutorService worker = Executors.newSingleThreadExecutor();
     private volatile boolean running;
+    /** True between a successful code 2 of this tracker and its code 3. */
+    private volatile boolean registered;
 
-    /** Green-only tracker (BP). */
+    /** Green-only PPG_ON_DEMAND tracker (BP). */
     public PpgTracker(Context context, Listener listener) {
         this(context, Collections.singletonList(ServiceProtocol.PPG_TYPE_GREEN), listener);
     }
 
-    /** Tracker for the given LED channels (ServiceProtocol.PPG_TYPE_*), e.g. RED and IR for SpO2. */
+    /** PPG_ON_DEMAND tracker for the given LED channels (ServiceProtocol.PPG_TYPE_*). */
     public PpgTracker(Context context, List<String> channels, Listener listener) {
+        this(context, ServiceProtocol.TRACKER_PPG_ON_DEMAND, channels, listener);
+    }
+
+    /**
+     * Tracker of the given PPG type (ServiceProtocol.TRACKER_PPG_ON_DEMAND or
+     * TRACKER_PPG_CONTINUOUS) for the given LED channels, e.g. RED and IR for SpO2.
+     */
+    public PpgTracker(Context context, String trackerType, List<String> channels, Listener listener) {
+        this.trackerType = trackerType;
         this.out = listener;
         this.channels = new ArrayList<String>(channels);
         this.binder = new ListenerBinder(new ServiceProtocol.PpgSink() {
@@ -64,16 +79,37 @@ public final class PpgTracker {
         client.connect();
     }
 
-    /** Code 3, then unbind. */
+    /**
+     * Code 3 (only for a listener this tracker registered), then unbind.
+     *
+     * The service keys listeners by appId and tracker type, so another tracker of this app may
+     * register the same key right after this returns (BP taking the sensor from the apnea
+     * recording in its PPG_ON_DEMAND fallback). Waiting for an arm already in flight guarantees
+     * that no registration of this tracker commits after stop() returns, and that its cleanup
+     * cannot detach the other tracker's listener. The worker's callbacks take no lock of the
+     * callers, so waiting here cannot deadlock.
+     */
     public void stop() {
         running = false;
-        if (client.isConnected()) {
-            try { client.unsetEventListener(ServiceProtocol.TRACKER_PPG_ON_DEMAND); } catch (Throwable t) {
-                Log.w(TAG, "unset failed: " + t);
+        worker.shutdown(); // no new arm; an arm in flight sees running == false and undoes itself
+        try {
+            if (!worker.awaitTermination(ARM_WAIT_MS, TimeUnit.MILLISECONDS)) {
+                Log.w(TAG, "arm still running after " + ARM_WAIT_MS + " ms; stopping anyway");
             }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
+        unsetIfRegistered();
         client.disconnect();
         worker.shutdownNow();
+    }
+
+    private void unsetIfRegistered() {
+        if (!registered || !client.isConnected()) return;
+        registered = false;
+        try { client.unsetEventListener(trackerType); } catch (Throwable t) {
+            Log.w(TAG, "unset failed: " + t);
+        }
     }
 
     private void arm() {
@@ -90,20 +126,21 @@ public final class PpgTracker {
         if (!running) return;
         try {
             List<String> types = client.getSupportedTrackerTypes();
-            if (types == null || !types.contains(ServiceProtocol.TRACKER_PPG_ON_DEMAND)) {
+            if (types == null || !types.contains(trackerType)) {
                 out.onUnsupported();
                 return;
             }
-            client.createTracker(ServiceProtocol.TRACKER_PPG_ON_DEMAND);
+            client.createTracker(trackerType);
             // Before code 2 and on the request-handler queue ahead of it: the service applies the
             // LED channels only when it (re)registers the tracker's sensor, so a setPpgType sent
             // after registration would not change anything until the tracker restarts. This is the
             // order the on-watch probe validated (codes 1, 8, 2).
-            client.setPpgType(ServiceProtocol.TRACKER_PPG_ON_DEMAND, channels);
+            client.setPpgType(trackerType, channels);
             // No lock is held here: PERMISSION_ERROR may call back on this thread.
-            client.setEventListener(ServiceProtocol.TRACKER_PPG_ON_DEMAND, binder);
+            client.setEventListener(trackerType, binder);
+            registered = true;
             if (!running) {
-                client.unsetEventListener(ServiceProtocol.TRACKER_PPG_ON_DEMAND);
+                unsetIfRegistered();
                 return;
             }
             out.onArmed();

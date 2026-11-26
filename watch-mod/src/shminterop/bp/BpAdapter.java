@@ -11,6 +11,7 @@ import shminterop.hsdk.HealthError;
 import shminterop.hsdk.PpgBatch;
 import shminterop.hsdk.PpgSample;
 import shminterop.hsdk.PpgTracker;
+import shminterop.spo2.SpO2Adapter;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -44,6 +45,7 @@ public final class BpAdapter {
     static final int TYPE_BP = 28;
     static final String GREEN_RAW_KEY = "green_raw";
     static final String TAG = "BpAdapter";
+    static final String SPO2_YIELD_NAME = "blood pressure";
 
     static volatile SemSensorListener sink;
     static PpgTracker tracker;
@@ -77,6 +79,10 @@ public final class BpAdapter {
         }
         sink = listener;
         stopTracker();
+        // The apnea recording (SpO2Adapter) drives the same optical sensor with RED/IR selected, and
+        // in its PPG_ON_DEMAND fallback even the same tracker of this app (the service keeps one
+        // per appId and tracker type), so it steps aside while BP measures.
+        yieldSpo2();
         running.set(true);
         everReal.set(false);
         synchronized (DELIVERY_LOCK) { resetStats(); }
@@ -104,6 +110,23 @@ public final class BpAdapter {
         stopKeepalive();
         stopTracker();
         sink = null;
+        reclaimSpo2();
+    }
+
+    static void yieldSpo2() {
+        try {
+            SpO2Adapter.yieldPpg(SPO2_YIELD_NAME);
+        } catch (Throwable t) {
+            log("SpO2 yield failed: " + t);
+        }
+    }
+
+    static void reclaimSpo2() {
+        try {
+            SpO2Adapter.reclaimPpg(SPO2_YIELD_NAME);
+        } catch (Throwable t) {
+            log("SpO2 reclaim failed: " + t);
+        }
     }
 
     static void stopTracker() {

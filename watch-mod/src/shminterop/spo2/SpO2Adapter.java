@@ -113,7 +113,16 @@ public final class SpO2Adapter {
      * (~100 per second) tripled the watch's drain.
      */
     static final long ARM_WAKE_LOCK_MS = 10000L;
+    /** Silence tolerated before a re-arm with PPG_ON_DEMAND (a sample every 10 ms). */
     static final long LIVENESS_MS = 15000L;
+    /**
+     * Silence tolerated before a re-arm with PPG_CONTINUOUS: the hub delivers a batch about every
+     * 8 s, and gaps of up to ~19 s were seen on a Galaxy Watch7 with the CPU asleep.
+     */
+    static final long LIVENESS_CONTINUOUS_MS = 45000L;
+    /** Nominal sample rate of each tracker type (sensor 60 is the 25 Hz PPG, sensor 61 the 100 Hz one). */
+    static final int FS_CONTINUOUS = 25;
+    static final int FS_ON_DEMAND = Spo2Estimator.NOMINAL_FS;
     /**
      * While the service answers SDK_POLICY_ERROR (Health Platform developer mode off) a re-arm
      * cannot succeed, so the watchdog backs off: this long after the first consecutive policy
@@ -123,6 +132,12 @@ public final class SpO2Adapter {
     static final long POLICY_BACKOFF_MAX_MS = 15L * 60L * 1000L;
     static final long WATCHDOG_TICK_MS = 5000L;
     static final long FLUSH_MS = 60000L;
+    /**
+     * Safety bound: the PPG tracker is taken back this long after {@link #yieldPpg} even if the
+     * other user never called {@link #reclaimPpg} (a BP calibration round or measurement lasts
+     * well under a minute).
+     */
+    static final long YIELD_MAX_MS = 5L * 60L * 1000L;
 
     private static final Object LOCK = new Object();
     private static final Object FEED_LOCK = new Object();
@@ -161,6 +176,13 @@ public final class SpO2Adapter {
     /** Coverage text of the last GET_DATA answer (log and tests). */
     static volatile String lastCoverage = "";
     private static PpgTracker tracker;
+    /**
+     * Tracker type the recording uses: PPG_CONTINUOUS, whose batched delivery lets the CPU sleep
+     * (PPG_ON_DEMAND delivers each 100 Hz sample in its own binder call and kept the CPU awake all
+     * night: ~40 mA on a Galaxy Watch7). Falls back to PPG_ON_DEMAND for the rest of the process
+     * when the service does not offer PPG_CONTINUOUS. Written under LOCK.
+     */
+    static volatile String trackerType = ServiceProtocol.TRACKER_PPG_CONTINUOUS;
     private static ScheduledExecutorService watchdog;
     private static volatile boolean recording;
     private static volatile long lastBatchMs;
@@ -169,6 +191,17 @@ public final class SpO2Adapter {
     private static final AtomicInteger policyErrors = new AtomicInteger();
     /** Test hook: added to the clock the watchdog reads, to step through the backoff. */
     static volatile long tickSkewMs;
+    /**
+     * True while another adapter (BP) owns the PPG hardware. With the PPG_ON_DEMAND fallback both
+     * use the same tracker of this app, of which the service keeps one per appId and tracker type:
+     * BP would replace ours (and get our RED/IR LED setup, i.e. a green channel of zeros), and our
+     * unsetEventListener on a re-arm would detach theirs. With PPG_CONTINUOUS the trackers differ,
+     * but both drive the same optical sensor, so the recording still steps aside. Under LOCK.
+     */
+    private static boolean yielded;
+    /** elapsedRealtime (watchdog clock) of the yield, or -1. Under LOCK. */
+    private static long yieldedSinceMs = -1L;
+    private static String yieldedTo = "";
     /** Wall clock of the recording start (bounds the night while the store is still empty). */
     private static long recordingStartMs;
     /** elapsedRealtime since when the recording has had no owner, or -1 while it has one. Under LOCK. */
@@ -201,7 +234,12 @@ public final class SpO2Adapter {
     };
 
     static Spo2Estimator newEstimator() {
-        return new Spo2Estimator(OUT);
+        return new Spo2Estimator(sampleRate(), OUT);
+    }
+
+    /** Nominal sample rate of the current tracker type. */
+    static int sampleRate() {
+        return ServiceProtocol.TRACKER_PPG_CONTINUOUS.equals(trackerType) ? FS_CONTINUOUS : FS_ON_DEMAND;
     }
 
     /** Called under FEED_LOCK once enough finite R values were collected; decides once. */
@@ -636,8 +674,61 @@ public final class SpO2Adapter {
             lastBatchMs = 0L;
             lastArmMs = e;
             lastFlushMs = e;
-            startTracker(ctx);
+            if (yielded) {
+                log("start: PPG tracker yielded to " + yieldedTo + "; arming it when released");
+                note("recording start: PPG tracker in use by " + yieldedTo + ", arming it when released");
+            } else {
+                startTracker(ctx);
+            }
             startWatchdog();
+        }
+    }
+
+    // ------------------------------------------------------------- PPG sharing
+
+    /**
+     * Hands the PPG hardware to another adapter of this app (BP calibration or
+     * measurement) until {@link #reclaimPpg}. Stops our tracker if a night is recording and keeps
+     * the watchdog from re-arming it meanwhile; the night keeps its stored seconds and simply has
+     * no samples for that span. Safe to call when nothing is recording.
+     */
+    public static void yieldPpg(String who) {
+        synchronized (LOCK) {
+            if (yielded) return;
+            yielded = true;
+            yieldedTo = who == null ? "another adapter" : who;
+            yieldedSinceMs = SystemClock.elapsedRealtime() + tickSkewMs;
+            if (!recording) return;
+            log("PPG tracker yielded to " + yieldedTo);
+            note("PPG tracker yielded to " + yieldedTo);
+            stopTracker();
+        }
+    }
+
+    /** Takes the PPG hardware back after {@link #yieldPpg}; re-arms the tracker if a night is recording. */
+    public static void reclaimPpg(String who) {
+        synchronized (LOCK) {
+            if (!yielded) return;
+            reclaimLocked("released by " + (who == null ? yieldedTo : who));
+        }
+    }
+
+    private static void reclaimLocked(String why) {
+        yielded = false;
+        yieldedSinceMs = -1L;
+        String to = yieldedTo;
+        yieldedTo = "";
+        if (!recording) return;
+        log("PPG tracker reclaimed from " + to + " (" + why + ")");
+        note("PPG tracker reclaimed from " + to + " (" + why + ")");
+        lastArmMs = SystemClock.elapsedRealtime() + tickSkewMs;
+        holdWakeLock(ARM_WAKE_LOCK_MS);
+        startTracker(appContext());
+    }
+
+    static boolean isPpgYielded() {
+        synchronized (LOCK) {
+            return yielded;
         }
     }
 
@@ -803,7 +894,7 @@ public final class SpO2Adapter {
             return;
         }
         try {
-            tracker = new PpgTracker(ctx,
+            tracker = new PpgTracker(ctx, trackerType,
                     Arrays.asList(ServiceProtocol.PPG_TYPE_RED, ServiceProtocol.PPG_TYPE_IR), CONN);
             tracker.start();
         } catch (Throwable t) {
@@ -853,10 +944,15 @@ public final class SpO2Adapter {
                 stopRecording();
                 return;
             }
+            if (yielded && e - yieldedSinceMs > YIELD_MAX_MS) {
+                reclaimLocked("not released after " + YIELD_MAX_MS / 60000L + " min (safety bound)");
+            }
             long ref = Math.max(lastBatchMs, lastArmMs);
             int policy = policyErrors.get();
             long delay = rearmDelayMs(policy);
-            if (e - ref > delay) {
+            if (yielded) {
+                // The tracker belongs to the other adapter: no liveness re-arm until it is released.
+            } else if (e - ref > delay) {
                 log("no PPG batch for " + (e - ref) / 1000 + " s; re-arming the tracker");
                 if (policy == 0) {
                     note("watchdog: no PPG batch for " + (e - ref) / 1000 + " s, re-arming the tracker");
@@ -879,7 +975,10 @@ public final class SpO2Adapter {
 
     /** Silence tolerated before a re-arm: LIVENESS_MS, or the policy-error backoff. */
     static long rearmDelayMs(int policyErrors) {
-        if (policyErrors <= 0) return LIVENESS_MS;
+        if (policyErrors <= 0) {
+            return ServiceProtocol.TRACKER_PPG_CONTINUOUS.equals(trackerType)
+                    ? LIVENESS_CONTINUOUS_MS : LIVENESS_MS;
+        }
         long d = POLICY_BACKOFF_START_MS;
         for (int i = 1; i < policyErrors && d < POLICY_BACKOFF_MAX_MS; i++) d *= 2;
         return Math.min(d, POLICY_BACKOFF_MAX_MS);
@@ -924,11 +1023,16 @@ public final class SpO2Adapter {
     }
 
     static final class Conn implements PpgTracker.Listener {
-        @Override public void onArmed() { log("tracker armed (RED, IR)"); note("tracker armed"); }
+        @Override public void onArmed() {
+            log("tracker armed (" + trackerType + ", RED, IR)");
+            note("tracker armed (" + trackerType + ")");
+        }
 
         @Override public void onUnsupported() {
-            log("PPG_ON_DEMAND not supported by the health service");
-            note("tracker onUnsupported: PPG_ON_DEMAND not supported");
+            String type = trackerType;
+            log(type + " not supported by the health service");
+            note("tracker onUnsupported: " + type + " not supported");
+            if (ServiceProtocol.TRACKER_PPG_CONTINUOUS.equals(type)) fallBackToOnDemand();
         }
 
         @Override public void onConnectionFailed(String reason) {
@@ -966,6 +1070,30 @@ public final class SpO2Adapter {
         }
     }
 
+    /**
+     * The service does not offer PPG_CONTINUOUS: use PPG_ON_DEMAND (100 Hz) for the rest of the
+     * process. Runs on the tracker's worker thread, so the restart is handed to another thread.
+     */
+    private static void fallBackToOnDemand() {
+        new Thread(new Runnable() {
+            @Override public void run() {
+                synchronized (LOCK) {
+                    if (!ServiceProtocol.TRACKER_PPG_CONTINUOUS.equals(trackerType)) return;
+                    trackerType = ServiceProtocol.TRACKER_PPG_ON_DEMAND;
+                    log("falling back to " + trackerType);
+                    note("tracker fallback: " + trackerType);
+                    synchronized (FEED_LOCK) {
+                        estimator = newEstimator();
+                    }
+                    if (!recording || yielded) return;
+                    stopTracker();
+                    lastArmMs = SystemClock.elapsedRealtime() + tickSkewMs;
+                    startTracker(appContext());
+                }
+            }
+        }, "SpO2Adapter-fallback").start();
+    }
+
     // ------------------------------------------------------------------------ utils
 
     /** Package-visible for the tests: the tracker callbacks the adapter registered. */
@@ -995,6 +1123,10 @@ public final class SpO2Adapter {
             orphanMs = ORPHAN_MS;
             policyErrors.set(0);
             tickSkewMs = 0L;
+            yielded = false;
+            yieldedSinceMs = -1L;
+            yieldedTo = "";
+            trackerType = ServiceProtocol.TRACKER_PPG_CONTINUOUS;
             listeners.clear();
             commanded.clear();
             autoResumeChecked = false;
