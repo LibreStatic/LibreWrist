@@ -449,6 +449,14 @@ installs **next to** the stock Samsung Health from the Play Store instead of rep
   with the Samsung cloud: **Settings → Sync with Samsung account** shows "No sync history", and the
   home banner only says the data has not synced for some days. Turn on the cycle tracking and
   medication consents too if you use those features.
+- **Let the Samsung apps start in the background.** New data reaches Samsung Health+ through the
+  cloud: the stock app uploads it within minutes, and the server then pushes a sync request to
+  Samsung Health+, which downloads it. Both steps need the apps to be allowed to start in the
+  background. On Xiaomi phones (HyperOS/MIUI) that is off by default and comes back off: allow it in
+  **Security → Autostart** (on HyperOS 3, *Autoinicio en segundo plano* / background autostart) for
+  Samsung Health, Samsung Health+, Galaxy Wearable, the Galaxy Watch plugin, Health Monitor and SHM
+  Bridge, and set their battery saver to *No restrictions*. With that, a step count taken on a
+  Galaxy Watch7 reached Samsung Health+ about one minute later.
 - It reads the sleep apnea status and the BP measurement flag from the patched Health Monitor, so
   the Sleep apnea card shows up under Sleep. This only works because both apps are signed with your
   key.
@@ -519,7 +527,7 @@ the problem and tap **Export .txt**. Attach the file to the issue.
   - **Cause:** Samsung Health+ has no direct link to the watch. The stock Samsung Health uploads the watch data to the Samsung cloud, and Samsung Health+ downloads it from there. That round trip can take more than a day, and a sync that stops halfway or clashes with data Samsung Health+ already has loses part of the data.
   - **Status:** confirmed. A more reliable sync is in progress.
   - **Workaround:** the stock Samsung Health app has the up-to-date data. Samsung Health Monitor (ECG, blood pressure, IHRN, sleep apnea) is not affected, because it syncs straight from the watch.
-  - **Note:** if Samsung Health+ never syncs at all (**Settings → Sync with Samsung account** says "No sync history"), its own health data consent is off, and it skips every sync on purpose (`Withdrawn to shd` in the log). Turn on **Settings → Privacy → Consent to the processing of health and wellness data** in Samsung Health+, then tap **Sync**.
+  - **Note:** if Samsung Health+ never syncs at all (**Settings → Sync with Samsung account** says "No sync history"), its own health data consent is off, and it skips every sync on purpose (`Withdrawn to shd` in the log). Turn on **Settings → Privacy → Consent to the processing of health and wellness data** in Samsung Health+, then tap **Sync**. On Xiaomi phones, also allow background autostart for the Samsung apps (see [Samsung Health+](#samsung-health)).
 - :mag: **Several smaller Samsung Health Monitor problems on the watch** ([#13](https://github.com/LibreStatic/LibreWrist/issues/13))
   - :hourglass_flowing_sand: **Sleep apnea tracking drains the battery, and the sensor light stays on after waking up.** Since 0.10.4 the overnight recording held the watch awake, and 0.10.9 and 0.10.10 renewed that hold for every sensor sample (about three times the battery use). Health Monitor also did not always tell the recording to end. 0.10.11 no longer holds the watch awake while the sensor sends data, and 0.10.12 ends the recording when Health Monitor reads the night's data (or after 12 hours, or 10 minutes without a sleep session). Rebuild and install the watch Health Monitor with 0.10.12. An affected user still needs to report that the battery is back to normal and that nights still count.
   - :hourglass_flowing_sand: **A daily "Health Monitor" notification on the watch that cannot be dismissed.** The sleep apnea service posted it. Since 0.10.4 it shows no notification when the patcher granted the battery optimization exemption, and a low-importance "Sleep apnea" one otherwise. An affected user still needs to report that it is gone.
