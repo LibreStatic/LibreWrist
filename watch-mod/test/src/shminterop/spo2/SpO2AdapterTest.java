@@ -891,6 +891,18 @@ public final class SpO2AdapterTest {
         }
     }
 
+    /** The one started, not stopped tracker, or null (fails the test if there are several). */
+    static shminterop.hsdk.PpgTracker liveTracker() {
+        shminterop.hsdk.PpgTracker live = null;
+        for (shminterop.hsdk.PpgTracker t : shminterop.hsdk.PpgTracker.instances) {
+            if (t.started && !t.stopped) {
+                check(live == null, "at most one live tracker");
+                live = t;
+            }
+        }
+        return live;
+    }
+
     static String lastRequested() {
         List<String> r = shminterop.hsdk.PpgTracker.requestedTypes;
         return r.isEmpty() ? null : r.get(r.size() - 1);
@@ -918,10 +930,14 @@ public final class SpO2AdapterTest {
             SpO2Adapter.register(l, 49);
             startNight(l);
             check(SpO2Adapter.isRecording(), "night recording before BP");
+            shminterop.hsdk.PpgTracker rec = liveTracker();
+            check(rec != null, "the recording runs a tracker before BP");
 
             // BP starts (through BpAdapter, as the patched SHM does): the recording yields.
             shminterop.bp.BpAdapter.start(BP_SINK, 28);
             check(SpO2Adapter.isPpgYielded(), "BP start yields the PPG tracker");
+            check(rec != null && rec.stopped, "BP start stops the recording tracker");
+            check(liveTracker() == null, "no recording tracker runs during BP");
             check(joinedJournal().contains("PPG tracker yielded to blood pressure"), "yield journaled");
             // A BP round is silent for the recording: the watchdog must not take the tracker back.
             check(!rearmedAt(60_000L), "no liveness re-arm while yielded");
@@ -932,6 +948,8 @@ public final class SpO2AdapterTest {
             check(SpO2Adapter.isPpgYielded(), "a non-BP stop does not reclaim");
             shminterop.bp.BpAdapter.stop(BP_SINK, 28);
             check(!SpO2Adapter.isPpgYielded(), "BP stop reclaims the PPG tracker");
+            shminterop.hsdk.PpgTracker back = liveTracker();
+            check(back != null && back != rec, "BP stop starts a replacement recording tracker");
             check(joinedJournal().contains("PPG tracker reclaimed from blood pressure"), "reclaim journaled");
             // The reclaim counts as an arm: the liveness delay restarts from it.
             long live = SpO2Adapter.rearmDelayMs(0);
@@ -940,13 +958,17 @@ public final class SpO2AdapterTest {
 
             // Safety bound: a BP session that never stops does not starve the night.
             SpO2Adapter.tickSkewMs = 0L;
+            shminterop.hsdk.PpgTracker beforeBound = liveTracker();
             SpO2Adapter.yieldPpg("blood pressure");
+            check(beforeBound != null && beforeBound.stopped, "yield stops the tracker");
             check(!rearmedAt(SpO2Adapter.YIELD_MAX_MS - 10_000L), "still yielded inside the bound");
+            check(liveTracker() == null, "no tracker inside the bound");
             check(SpO2Adapter.isPpgYielded(), "yield holds inside the bound");
             SpO2Adapter.tickSkewMs = SpO2Adapter.YIELD_MAX_MS + 10_000L;
             SpO2Adapter.tick();
             check(!SpO2Adapter.isPpgYielded(), "yield released by the safety bound");
             check(joinedJournal().contains("(safety bound)"), "safety-bound reclaim journaled");
+            check(liveTracker() != null, "the safety-bound reclaim restarts a tracker");
 
             // Stop/start of the night while yielded: the new night waits for the release.
             SpO2Adapter.tickSkewMs = 0L;
@@ -954,13 +976,18 @@ public final class SpO2AdapterTest {
             check(!SpO2Adapter.isRecording(), "night stopped");
             shminterop.bp.BpAdapter.start(BP_SINK, 28);
             Recorder m = new Recorder();
+            int created = shminterop.hsdk.PpgTracker.instances.size();
             SpO2Adapter.register(m, 49);
             startNight(m);
             check(SpO2Adapter.isRecording(), "a night can start while BP holds the tracker");
+            eq(created, shminterop.hsdk.PpgTracker.instances.size(),
+                    "a night started during the yield creates no tracker");
             check(joinedJournal().contains("PPG tracker in use by blood pressure, arming it when released"),
                     "deferred arm journaled");
             shminterop.bp.BpAdapter.stop(BP_SINK, 28);
             check(!SpO2Adapter.isPpgYielded(), "released after BP");
+            check(shminterop.hsdk.PpgTracker.instances.size() == created + 1 && liveTracker() != null,
+                    "the deferred night arms its tracker on release");
             SpO2Adapter.unregister(m, 49);
 
             // Nothing recording: yield/reclaim only flip the flag.
