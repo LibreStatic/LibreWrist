@@ -57,8 +57,10 @@ public final class Spo2Estimator {
     private final int[] rawRed, rawIr;
     private final double[] acRed, acIr;
     private final boolean[] okRing;
-    private final double[] smoothRed = new double[SMOOTH];
-    private final double[] smoothIr = new double[SMOOTH];
+    /** AC smoothing length in samples: SMOOTH at the nominal 100 Hz, the same duration otherwise. */
+    private final int smooth;
+    private final double[] smoothRed;
+    private final double[] smoothIr;
 
     private int n;                 // samples since the last reset
     private long dcSumRed, dcSumIr;
@@ -71,7 +73,15 @@ public final class Spo2Estimator {
     }
 
     public Spo2Estimator(int fs, Output out) {
+        this(fs, Math.max(1, (int) Math.round((double) SMOOTH * fs / NOMINAL_FS)), out);
+    }
+
+    /** As {@link #Spo2Estimator(int, Output)} with an explicit AC smoothing length (tests, probes). */
+    public Spo2Estimator(int fs, int smooth, Output out) {
         this.out = out;
+        this.smooth = Math.max(1, smooth);
+        smoothRed = new double[this.smooth];
+        smoothIr = new double[this.smooth];
         this.dcn = Math.max(1, (int) Math.round(DC_SECONDS * fs));
         this.win = WINDOW_SECONDS * fs;
         this.start = Math.max(win, WARMUP_SECONDS * fs + dcn);
@@ -119,9 +129,9 @@ public final class Spo2Estimator {
             dcSumIr -= rawIr[old];
         }
         int dn = Math.min(n + 1, dcn);
-        smoothRed[n % SMOOTH] = red - (double) dcSumRed / dn;
-        smoothIr[n % SMOOTH] = ir - (double) dcSumIr / dn;
-        int sn = Math.min(n + 1, SMOOTH);
+        smoothRed[n % smooth] = red - (double) dcSumRed / dn;
+        smoothIr[n % smooth] = ir - (double) dcSumIr / dn;
+        int sn = Math.min(n + 1, smooth);
         double sr = 0, si = 0;
         for (int k = 0; k < sn; k++) {
             sr += smoothRed[k];

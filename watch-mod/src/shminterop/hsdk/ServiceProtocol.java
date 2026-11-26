@@ -26,6 +26,12 @@ public final class ServiceProtocol {
     public static final String TRACKER_ECG = "ECG";
     /** On-demand PPG tracker type; delivers green/red/IR ADC counts (protocol 4.4). */
     public static final String TRACKER_PPG_ON_DEMAND = "PPG_ON_DEMAND";
+    /**
+     * Continuous PPG tracker type: same six-value data points as PPG_ON_DEMAND, but from the 25 Hz
+     * sensor 60, delivered by the sensor hub in batches (about 200 samples every 8 s), so the CPU
+     * sleeps between deliveries (protocol 4.5).
+     */
+    public static final String TRACKER_PPG_CONTINUOUS = "PPG_CONTINUOUS";
     /** setPpgType channel name for the green LED (the BP tracker uses only this one). */
     public static final String PPG_TYPE_GREEN = "GREEN";
     /** setPpgType channel names for the red and infrared LEDs (the SpO2 adapter uses these two). */

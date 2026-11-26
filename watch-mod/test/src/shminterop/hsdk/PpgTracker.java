@@ -27,6 +27,14 @@ public class PpgTracker {
     public PpgTracker(Context context, java.util.List<String> channels, Listener listener) {
     }
 
+    /** Tracker types requested by the code under test, newest last (tests read it). */
+    public static final java.util.List<String> requestedTypes =
+            new java.util.concurrent.CopyOnWriteArrayList<String>();
+
+    public PpgTracker(Context context, String trackerType, java.util.List<String> channels, Listener listener) {
+        requestedTypes.add(trackerType);
+    }
+
     public void start() {
     }
 

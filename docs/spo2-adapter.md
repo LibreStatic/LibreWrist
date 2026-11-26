@@ -35,9 +35,11 @@ enums are looked up by class and constant name through reflection.
    needs per-second values only. `dcRatioList` / `accPowerList` are sent as `short[]` zeros of the
    chunk length (V1 ignores them, V2 null-checks them); their real encoding is undefined
    (spo2-calibration 4.4), so no values are invented.
-4. **No resampling.** The estimator works in wall-clock seconds on the HTS ~100 Hz stream; window and
-   filter lengths are counted in samples at a nominal 100 Hz. R is a ratio of two channels filtered
-   identically, so a small deviation of the true rate only stretches the window slightly.
+4. **No resampling.** The estimator works in wall-clock seconds on the HTS stream (25 Hz from
+   `PPG_CONTINUOUS`, ~100 Hz from the `PPG_ON_DEMAND` fallback); window and filter lengths are
+   counted in samples at the tracker's nominal rate, and the AC smoothing keeps its duration (9
+   samples at 100 Hz, 2 at 25 Hz). R is a ratio of two channels filtered identically, so a small
+   deviation of the true rate only stretches the window slightly.
 5. **Bundle filling** (the rules the SHM consumers `ua`, `yb`/`zb`, `ac` enforce):
    - VERSION: `data_type` = `DataType.VERSION`, `version_type` = the requested `VersionType`,
      `version` = `int[3]` (calculation 1.11.1, signal check 1.0.0), `versionMap` = `{1: version}`.
@@ -98,9 +100,10 @@ rewritten.
 
 ## 4. Recording
 
-SET_OPERATION_MODE starts a PPG tracker (`PPG_ON_DEMAND`, channels `RED` and `IR` only) tied to the
-calling listener and feeds the estimator; the per-second values go to an in-memory store. A
-watchdog (5 s tick) re-arms the tracker if no batch arrived for 15 s while recording. While the
+SET_OPERATION_MODE starts a PPG tracker (`PPG_CONTINUOUS`, channels `RED` and `IR` only) tied to
+the calling listener and feeds the estimator; the per-second values go to an in-memory store. A
+watchdog (5 s tick) re-arms the tracker if no batch arrived for 45 s while recording (15 s with the
+`PPG_ON_DEMAND` fallback). While the
 service answers `SDK_POLICY_ERROR` (Health Platform developer mode off on the watch; a re-arm cannot
 succeed until that is fixed) the re-arm backs off instead: 30 s after the first consecutive policy
 error, doubling per further one (60 s, 120 s, ...) up to 15 min. A PPG batch, or a recording
@@ -115,10 +118,24 @@ second is less than 6 hours old (`RESUME_MS`) the night is resumed instead. GET_
 seconds inside the requested window, so keeping older seconds never pollutes an answer; clearing
 only bounds the file, and a new night always starts more than 6 h after the last recorded second
 of the previous one. A brief awakening (AWAKE, GET_DATA, unregister, then SLEEPING again) therefore
-keeps the earlier part of the night. Do not run it together with the BP flow: both use the same
-`PPG_ON_DEMAND` tracker of the service.
+keeps the earlier part of the night. BP measurements take the sensor over meanwhile (see
+*Sharing the PPG tracker with blood pressure* below).
 
-Battery: the red and IR LEDs run at ~100 Hz all night while recording.
+### Tracker type and battery
+
+Up to 0.11.1 the recording used `PPG_ON_DEMAND`, which delivers every 100 Hz sample in its own
+binder call (protocol 4.4). The CPU never slept while recording: on a Galaxy Watch7 (One UI 8
+Watch) the battery fell about 14 % per hour (~40 mA) all night, against ~2 % per hour during the
+day, so the watch ran flat before morning (issue #27 reports the same on a Galaxy Watch8).
+
+The recording now uses `PPG_CONTINUOUS` (protocol 4.5): the 25 Hz sensor 60, batched by the sensor
+hub, about 200 samples every 8 s. Measured on the same Watch7 with the screen off, the share of time
+the CPU was awake (uptime over elapsed realtime) dropped from 100 % with `PPG_ON_DEMAND` to 8-20 %.
+Run side by side on the wrist for four minutes, the per-10 s median R of the two streams agreed
+(median difference -0.001 with the duration-preserving AC smoothing, +0.02 with a fixed 9-sample
+smoothing at 25 Hz). If the service does not list `PPG_CONTINUOUS` (`onUnsupported`), the adapter
+falls back to `PPG_ON_DEMAND` at 100 Hz for the rest of the process and journals `tracker fallback:
+PPG_ON_DEMAND`.
 
 End of the night (issue #13). The recorder's `unregister` does not reliably come: SHM recreates
 `ApneaMonitoringService` (and with it its `cc` sensor controller and `bc` listener) for each sleep
@@ -173,6 +190,29 @@ that listener is still registered, nothing is recording and the listener has sen
 SET_OPERATION_MODE, GET_VERSION nor GET_DATA since registering, the adapter starts recording tied
 to it and logs `start: no SET_OPERATION_MODE <n> s after register; recording anyway`. The version
 detector (GET_VERSION within about 2 s, then unregister) never triggers it.
+
+### Sharing the PPG tracker with blood pressure
+
+`BpAdapter` uses `PPG_ON_DEMAND` from the same appId, with only `GREEN` selected. When the
+recording used the same tracker type (before `PPG_CONTINUOUS`, and still in the `PPG_ON_DEMAND`
+fallback), the two could not run side by side, because the Health Tracking service keeps one
+tracker per appId and tracker type ([protocol](health-tracking-protocol.md), codes 1 and 3):
+
+- BP's `createTracker` replaces the recording's tracker while the sensor is already streaming with
+  RED/IR, so BP gets batches whose green channel is all zeros (`BpAdapter: stats: ... min=0 max=0
+  ... adc abnormal=100/100`);
+- the recording's watchdog then sees no batches, re-arms, and its `unsetEventListener` detaches
+  BP's listener. BP gets nothing at all after that, SHM's drain logs `isReadBufferInvalid` every
+  10 ms and the calibration screen freezes (seen at ~40 % on a Galaxy Watch7, One UI 8 Watch).
+
+With `PPG_CONTINUOUS` the trackers differ, but both still drive the same optical sensor. So
+`BpAdapter.start` calls `SpO2Adapter.yieldPpg("blood pressure")` before arming its tracker and
+`BpAdapter.stop` calls `reclaimPpg`. While yielded, the recording stops its tracker, the watchdog
+does not re-arm it, and a recording that starts meanwhile arms it only when it is released. The
+night keeps its stored seconds; the BP span has no samples, like any other gap. If BP never
+releases it, the watchdog takes it back after `YIELD_MAX_MS` (5 min). The journal records
+`PPG tracker yielded to …` and `PPG tracker reclaimed from … (released by … | not released after
+5 min (safety bound))`.
 
 ### GET_DATA coverage log
 
@@ -281,7 +321,7 @@ Things that get in the way of a run:
 `watch-mod/test/run-tests.sh` covers the estimator (known R, every gate,
 bucketing, gap), the synthetic night, the answer chunking and the store, the
 adapter flow with doubles (including the 6 h resume, auto-resume, fallback start, orientation
-check, wake lock and coverage), the driver
+check, wake lock, coverage and the PPG hand-over to BP), the driver
 logic and the red/IR parsing. The host tool `shminterop.spo2.Spo2CsvCheck <probe.csv>` runs the
 estimator with the adapter's orientation over a probe CSV, to compare with
 `analyze.py --swap`.
